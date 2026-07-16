@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de salida generados por los reportes (muestras regenerables)
+docs/demo_kardex_*.xlsx
+docs/demo_kardex_*.pdf
+
+# Editores / SO
+*.swp
+.DS_Store

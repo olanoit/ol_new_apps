@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_l10n_pe_kardex_wizard" model="ir.actions.act_window">
+        <field name="name">Kardex SUNAT (13.1 / 12.1)</field>
+        <field name="res_model">l10n_pe.kardex.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_l10n_pe_kardex"
+              name="Kardex SUNAT (13.1 / 12.1)"
+              parent="stock.menu_warehouse_report"
+              action="action_l10n_pe_kardex_wizard"
+              groups="stock.group_stock_user"
+              sequence="200"/>
+</odoo>

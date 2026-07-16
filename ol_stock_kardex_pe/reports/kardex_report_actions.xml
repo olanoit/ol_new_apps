@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_kardex_landscape" model="report.paperformat">
+        <field name="name">Kardex SUNAT A4 horizontal</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">4</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_kardex" model="ir.actions.report">
+        <field name="name">Kardex SUNAT</field>
+        <field name="model">l10n_pe.kardex.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ol_stock_kardex_pe.report_kardex</field>
+        <field name="report_file">ol_stock_kardex_pe.report_kardex</field>
+        <field name="paperformat_id" ref="paperformat_kardex_landscape"/>
+        <field name="print_report_name">object._get_export_filename('pdf')</field>
+    </record>
+</odoo>

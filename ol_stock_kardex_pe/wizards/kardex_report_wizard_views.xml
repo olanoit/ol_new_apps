@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_l10n_pe_kardex_report_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.kardex.report.wizard.form</field>
+        <field name="model">l10n_pe.kardex.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Kardex SUNAT">
+                <group>
+                    <group>
+                        <field name="report_type" widget="radio"/>
+                        <label for="date_from" string="Período"/>
+                        <div>
+                            <field name="date_from" class="oe_inline"
+                                   widget="daterange"
+                                   options="{'end_date_field': 'date_to'}"/>
+                            <field name="date_to" invisible="1"/>
+                        </div>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group>
+                        <field name="warehouse_ids" widget="many2many_tags"/>
+                        <field name="group_by_warehouse"/>
+                        <field name="include_no_movement"/>
+                    </group>
+                </group>
+                <group string="Filtros de producto">
+                    <field name="product_ids" widget="many2many_tags"/>
+                    <field name="categ_ids" widget="many2many_tags"
+                           invisible="product_ids"/>
+                </group>
+                <footer>
+                    <button name="action_view" string="Ver en pantalla"
+                            type="object" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_export_xlsx" string="Exportar Excel"
+                            type="object" class="btn-secondary" data-hotkey="w"/>
+                    <button name="action_print_pdf" string="PDF"
+                            type="object" class="btn-secondary" data-hotkey="e"/>
+                    <button string="Cancelar" class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
