@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_form_company_inherited_l10n_pe_vat" model="ir.ui.view">
+        <field name="name">res.company.inherit.l10n_pe_vat</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="country_code" invisible="1"/>
+            </xpath>
+            <xpath expr="//page[@name='general_info']" position="after">
+                <page string="Validación RUC/DNI (PE)"
+                      name="l10n_pe_vat_sunat"
+                      invisible="country_code and country_code != 'PE'">
+                    <group>
+                        <group string="Validación de RUC">
+                            <field name="l10n_pe_ruc_validation"/>
+                            <field name="l10n_pe_api_ruc_connection"
+                                   invisible="not l10n_pe_ruc_validation"
+                                   required="l10n_pe_ruc_validation"/>
+                            <field name="legal_representatives"
+                                   invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
+                            <field name="annexed_locals"
+                                   invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
+                        </group>
+                        <group string="Validación de DNI">
+                            <field name="l10n_pe_dni_validation"/>
+                            <field name="l10n_pe_api_dni_connection"
+                                   invisible="not l10n_pe_dni_validation"
+                                   required="l10n_pe_dni_validation"/>
+                            <field name="vision_api"
+                                   invisible="l10n_pe_api_dni_connection != 'api_net'"
+                                   required="l10n_pe_api_dni_connection == 'api_net'"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

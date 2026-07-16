@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        Placeholders para los parámetros del sistema. El administrador
+        debe completar los tokens en:
+
+            Ajustes → Contactos → Validación RUC/DNI (PE)
+
+        NO se commitean tokens reales en el repositorio: subir
+        credenciales al control de versiones es un riesgo de
+        seguridad.
+    -->
+
+    <record id="api_peru_url" model="ir.config_parameter">
+        <field name="key">api_peru.url</field>
+        <field name="value">https://apiperu.dev/api</field>
+    </record>
+    <record id="api_peru_token" model="ir.config_parameter">
+        <field name="key">api_peru.token</field>
+        <field name="value"></field>
+    </record>
+
+    <record id="api_net_url" model="ir.config_parameter">
+        <field name="key">api_net.url</field>
+        <field name="value">https://api.apis.net.pe</field>
+    </record>
+    <record id="api_net_token" model="ir.config_parameter">
+        <field name="key">api_net.token</field>
+        <field name="value"></field>
+    </record>
+
+</odoo>

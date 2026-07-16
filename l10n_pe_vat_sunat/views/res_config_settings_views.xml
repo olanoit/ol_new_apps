@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_l10n_pe_vat" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.l10n_pe_vat</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='invoicing_settings']" position="after">
+
+                <app name="l10n_pe_vat_sunat" string="Contactos" key="contacts"
+                     groups="account.group_account_manager">
+                    <block title="Validación RUC/DNI (PE)"
+                           id="l10n_pe_vat_validation_block">
+                        <setting id="enable_ruc"
+                                 string="Validar RUC"
+                                 help="Consultar SUNAT al ingresar/modificar un RUC.">
+                            <field name="l10n_pe_ruc_validation"/>
+                            <div class="content-group"
+                                 invisible="not l10n_pe_ruc_validation">
+                                <label for="l10n_pe_api_ruc_connection"/>
+                                <field name="l10n_pe_api_ruc_connection"
+                                       class="o_light_label"/>
+                                <field name="legal_representatives"
+                                       invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
+                                <field name="annexed_locals"
+                                       invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
+                            </div>
+                        </setting>
+                        <setting id="enable_dni"
+                                 string="Validar DNI"
+                                 help="Consultar el padrón al ingresar/modificar un DNI.">
+                            <field name="l10n_pe_dni_validation"/>
+                            <div class="content-group"
+                                 invisible="not l10n_pe_dni_validation">
+                                <label for="l10n_pe_api_dni_connection"/>
+                                <field name="l10n_pe_api_dni_connection"
+                                       class="o_light_label"/>
+                                <field name="vision_api"
+                                       invisible="l10n_pe_api_dni_connection != 'api_net'"/>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Credenciales de APIs"
+                           id="l10n_pe_vat_credentials_block">
+                        <setting id="api_peru_creds"
+                                 string="apiperu.dev"
+                                 help="URL y token del servicio apiperu.dev.">
+                            <div class="content-group">
+                                <field name="api_peru_url"/>
+                                <field name="api_peru_token" password="True"/>
+                            </div>
+                        </setting>
+                        <setting id="api_net_creds"
+                                 string="apis.net.pe"
+                                 help="URL y token del servicio apis.net.pe.">
+                            <div class="content-group">
+                                <field name="api_net_url"/>
+                                <field name="api_net_token" password="True"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="l10n_pe_vat_sunat_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Ajustes RUC/DNI</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form_l10n_pe_vat"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'contacts'}</field>
+    </record>
+
+    <menuitem name="Ajustes RUC/DNI"
+              parent="contacts.res_partner_menu_config"
+              groups="base.group_system"
+              id="sunat_settings"
+              sequence="0"
+              action="l10n_pe_vat_sunat_config_settings_action"/>
+
+</odoo>
