@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_l10n_pe_exchange_rate_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.exchange.rate.wizard.form</field>
+        <field name="model">l10n_pe.exchange.rate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Actualizar tipo de cambio">
+                <group>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="range" widget="radio" options="{'horizontal': True}"/>
+                </group>
+                <group>
+                    <field name="date" invisible="range != 'date'"
+                           required="range == 'date'"/>
+                    <label for="date_start" string="Desde / Hasta"
+                           invisible="range != 'dates'"/>
+                    <div invisible="range != 'dates'">
+                        <field name="date_start" class="oe_inline"
+                               required="range == 'dates'"/>
+                        <span> — </span>
+                        <field name="date_end" class="oe_inline"
+                               required="range == 'dates'"/>
+                    </div>
+                    <label for="month" string="Mes / año"
+                           invisible="range != 'month'"/>
+                    <div invisible="range != 'month'">
+                        <field name="month" class="oe_inline" required="range == 'month'"/>
+                        <span>/</span>
+                        <field name="year" class="oe_inline" required="range == 'month'"/>
+                    </div>
+                    <field name="apis_net_token" invisible="range == 'now'"
+                           password="True"/>
+                </group>
+                <p class="text-muted" invisible="range == 'now'">
+                    Las fechas históricas se consultan en apis.net.pe (puede
+                    requerir token). "Hoy" usa el TXT oficial de SUNAT (gratis).
+                </p>
+                <footer>
+                    <button string="Aceptar" name="action_process" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_exchange_rate_wizard" model="ir.actions.act_window">
+        <field name="name">Actualizar tipo de cambio</field>
+        <field name="res_model">l10n_pe.exchange.rate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

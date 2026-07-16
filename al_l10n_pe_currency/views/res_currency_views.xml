@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lista de tipos de cambio: compra / venta / origen -->
+    <record id="view_currency_rate_list_inherit" model="ir.ui.view">
+        <field name="name">res.currency.rate.list.pe</field>
+        <field name="model">res.currency.rate</field>
+        <field name="inherit_id" ref="base.view_currency_rate_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="rate_purchase" optional="show"/>
+                <field name="rate_sale" optional="show"/>
+                <field name="ref_origin" widget="badge"
+                       decoration-primary="ref_origin == 'sunat'"
+                       decoration-info="ref_origin == 'apis_net'"
+                       decoration-warning="ref_origin == 'manual'"
+                       optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Formulario de tipo de cambio -->
+    <record id="view_currency_rate_form_inherit" model="ir.ui.view">
+        <field name="name">res.currency.rate.form.pe</field>
+        <field name="model">res.currency.rate</field>
+        <field name="inherit_id" ref="base.view_currency_rate_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="rate_purchase"/>
+                <field name="rate_sale"/>
+                <field name="ref_origin"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Moneda: botones de actualización + compra/venta en la lista de tasas -->
+    <record id="view_currency_form_inherit" model="ir.ui.view">
+        <field name="name">res.currency.form.pe</field>
+        <field name="model">res.currency</field>
+        <field name="inherit_id" ref="base.view_currency_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button type="object" string="Actualizar hoy (SUNAT)"
+                            class="btn-primary" name="action_update_today_sunat"
+                            invisible="name != 'USD'"/>
+                    <button type="object" string="Actualizar por fecha/mes"
+                            name="action_open_rate_wizard"
+                            invisible="name != 'USD'"/>
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='rate_ids']/list//field[@name='rate']"
+                   position="after">
+                <field name="rate_purchase" optional="show"/>
+                <field name="rate_sale" optional="show"/>
+                <field name="ref_origin" widget="badge"
+                       decoration-primary="ref_origin == 'sunat'"
+                       decoration-info="ref_origin == 'apis_net'"
+                       decoration-warning="ref_origin == 'manual'"
+                       optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
