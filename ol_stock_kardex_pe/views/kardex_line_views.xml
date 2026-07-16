@@ -4,31 +4,36 @@
         <field name="name">l10n_pe.kardex.line.list</field>
         <field name="model">l10n_pe.kardex.line</field>
         <field name="arch" type="xml">
-            <list create="0" edit="0" delete="0" default_order="sequence, id">
-                <field name="sequence" column_invisible="1"/>
-                <field name="warehouse_id" optional="hide"/>
+            <list create="0" edit="0" delete="0" default_order="product_id, date, id">
                 <field name="product_id"/>
-                <field name="line_type" optional="hide"/>
+                <field name="warehouse_id" optional="show"/>
                 <field name="date" widget="date"/>
                 <field name="document_type_code" string="Tipo (T.10)"/>
                 <field name="serie"/>
                 <field name="folio"/>
                 <field name="operation_type" string="Op. (T.12)"/>
-                <field name="qty_in" sum="Total entradas"/>
+                <field name="qty_in" sum="Entradas"/>
                 <field name="cost_unit_in" optional="show"
                        column_invisible="context.get('kardex_physical')"/>
-                <field name="cost_total_in" sum="Total"
+                <field name="cost_total_in" sum="Total entradas"
                        column_invisible="context.get('kardex_physical')"/>
-                <field name="qty_out" sum="Total salidas"/>
+                <field name="qty_out" sum="Salidas"/>
                 <field name="cost_unit_out" optional="show"
                        column_invisible="context.get('kardex_physical')"/>
-                <field name="cost_total_out" sum="Total"
+                <field name="cost_total_out" sum="Total salidas"
                        column_invisible="context.get('kardex_physical')"/>
-                <field name="balance_qty"/>
+                <field name="balance_qty"
+                       column_invisible="context.get('kardex_by_warehouse')"/>
                 <field name="balance_unit_cost" optional="show"
-                       column_invisible="context.get('kardex_physical')"/>
+                       column_invisible="context.get('kardex_physical') or context.get('kardex_by_warehouse')"/>
                 <field name="balance_value"
-                       column_invisible="context.get('kardex_physical')"/>
+                       column_invisible="context.get('kardex_physical') or context.get('kardex_by_warehouse')"/>
+                <field name="balance_qty_wh" string="Saldo (alm.)"
+                       column_invisible="not context.get('kardex_by_warehouse')"/>
+                <field name="balance_unit_cost_wh" string="C.U. saldo (alm.)" optional="show"
+                       column_invisible="context.get('kardex_physical') or not context.get('kardex_by_warehouse')"/>
+                <field name="balance_value_wh" string="C.T. saldo (alm.)"
+                       column_invisible="context.get('kardex_physical') or not context.get('kardex_by_warehouse')"/>
                 <button name="action_open_origin" type="object"
                         icon="fa-external-link" title="Abrir documento origen"/>
             </list>
@@ -44,8 +49,6 @@
                 <field name="warehouse_id"/>
                 <field name="serie"/>
                 <field name="folio"/>
-                <filter name="filter_moves" string="Solo movimientos"
-                        domain="[('line_type', '=', 'move')]"/>
                 <filter name="group_by_product" string="Producto"
                         context="{'group_by': 'product_id'}"/>
                 <filter name="group_by_warehouse" string="Almacén"

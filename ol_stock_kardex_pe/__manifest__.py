@@ -15,7 +15,7 @@ Kardex SUNAT para la localización peruana
   reutiliza sus campos SUNAT (Tabla 5, Tabla 12, establecimiento anexo).
     """,
     'countries': ['pe'],
-    'version': '0.2026071601',
+    'version': '0.2026071602',
     'category': 'OL-INVENTORY/Apps',
     'author': 'OLANOIT',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -28,7 +28,9 @@ Kardex SUNAT para la localización peruana
     'external_dependencies': {'python': ['xlsxwriter']},
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
         'views/kardex_line_views.xml',
+        'views/kardex_report_views.xml',
         'wizards/kardex_report_wizard_views.xml',
         'reports/kardex_report_actions.xml',
         'reports/kardex_report_templates.xml',

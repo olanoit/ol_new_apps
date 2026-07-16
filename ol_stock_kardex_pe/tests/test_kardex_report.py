@@ -104,16 +104,25 @@ class TestKardexReport(TestSaleCommon):
         defaults.update(values)
         return self.env['l10n_pe.kardex.report.wizard'].create(defaults)
 
+    def _blocks_for(self, wizard, product):
+        """Devuelve la lista de bloques (uno por ámbito) del producto."""
+        blocks = []
+        for scope in wizard._get_report_data():
+            for block in scope['products']:
+                if block['product'] == product:
+                    blocks.append(block)
+        return blocks
+
     def test_01_kardex_valorizado_avco(self):
         self._build_moves()
         wizard = self._create_wizard()
-        wizard._generate_lines()
-        lines = wizard.line_ids.filtered(lambda l: l.product_id == self.product_kdx)
-        self.assertEqual(
-            lines.mapped('line_type'),
-            ['opening', 'move', 'move', 'move', 'total'])
+        block = self._blocks_for(wizard, self.product_kdx)[0]
+        rows = block['lines']
+        total = block['total_line']
+        self.assertEqual([r.line_type for r in rows],
+                         ['opening', 'move', 'move', 'move'])
 
-        opening, in1, in2, out, total = lines
+        opening, in1, in2, out = rows
         # Saldo inicial cero
         self.assertEqual(opening.operation_type, '16')
         self.assertEqual(opening.balance_qty, 0)
@@ -147,10 +156,10 @@ class TestKardexReport(TestSaleCommon):
     def test_02_saldo_inicial_periodo_siguiente(self):
         self._build_moves()
         wizard = self._create_wizard(date_from='2024-02-01', date_to='2024-02-29')
-        wizard._generate_lines()
-        lines = wizard.line_ids.filtered(lambda l: l.product_id == self.product_kdx)
-        self.assertEqual(lines.mapped('line_type'), ['opening', 'total'])
-        opening = lines[0]
+        block = self._blocks_for(wizard, self.product_kdx)[0]
+        rows = block['lines']
+        self.assertEqual([r.line_type for r in rows], ['opening'])
+        opening = rows[0]
         self.assertAlmostEqual(opening.balance_qty, 15)
         self.assertAlmostEqual(opening.balance_value, 225.0, places=2)
         self.assertAlmostEqual(opening.balance_unit_cost, 15.0, places=2)
@@ -158,19 +167,32 @@ class TestKardexReport(TestSaleCommon):
     def test_03_kardex_fisico_por_almacen(self):
         self._build_moves()
         wizard = self._create_wizard(report_type='1201', group_by_warehouse=True)
-        wizard._generate_lines()
-        lines = wizard.line_ids.filtered(lambda l: l.product_id == self.product_kdx)
-        self.assertTrue(lines)
-        self.assertTrue(all(l.warehouse_id for l in lines))
-        total = lines.filtered(lambda l: l.line_type == 'total')
-        self.assertAlmostEqual(sum(total.mapped('balance_qty')), 15)
+        blocks = self._blocks_for(wizard, self.product_kdx)
+        self.assertTrue(blocks)
+        # Saldo final sumado sobre almacenes = 15
+        self.assertAlmostEqual(
+            sum(b['total_line'].balance_qty for b in blocks), 15)
         # Físico: sin costos
-        self.assertFalse(any(lines.mapped('cost_total_in')))
+        for b in blocks:
+            self.assertFalse(any(r.cost_total_in for r in b['lines']))
 
-    def test_04_renderizadores(self):
+    def test_04_vista_sql_sin_poblar(self):
+        """La vista SQL entrega el saldo corrido sin poblar registros."""
+        self._build_moves()
+        Line = self.env['l10n_pe.kardex.line']
+        lines = Line.search([('product_id', '=', self.product_kdx.id)], order='date, id')
+        # 3 movimientos valorados (2 compras + 1 venta)
+        self.assertEqual(len(lines), 3)
+        # Saldo corrido consolidado por window function
+        self.assertAlmostEqual(lines[0].balance_qty, 10)
+        self.assertAlmostEqual(lines[1].balance_qty, 20)
+        self.assertAlmostEqual(lines[1].balance_unit_cost, 15.0, places=2)
+        self.assertAlmostEqual(lines[2].balance_qty, 15)
+        self.assertAlmostEqual(lines[2].balance_value, 225.0, places=2)
+
+    def test_05_renderizadores(self):
         self._build_moves()
         wizard = self._create_wizard()
-        wizard._generate_lines()
         content = build_kardex_xlsx(wizard)
         self.assertGreater(len(content), 1000)
         self.assertEqual(content[:2], b'PK')  # firma ZIP/XLSX
@@ -178,3 +200,15 @@ class TestKardexReport(TestSaleCommon):
             'ol_stock_kardex_pe.report_kardex', wizard.ids)[0]
         self.assertIn(b'FORMATO 13.1', html)
         self.assertIn(b'KDX-001', html)
+
+    def test_06_generacion_segundo_plano(self):
+        self._build_moves()
+        report = self.env['l10n_pe.kardex.report'].create({
+            'company_id': self.env.company.id,
+            'date_from': '2024-01-01', 'date_to': '2024-01-31',
+            'report_type': '1301', 'file_format': 'xlsx',
+        })
+        self.env['l10n_pe.kardex.report']._cron_generate()
+        self.assertEqual(report.state, 'done')
+        self.assertTrue(report.output_file)
+        self.assertTrue(report.output_filename.endswith('.xlsx'))

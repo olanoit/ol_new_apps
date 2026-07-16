@@ -35,6 +35,10 @@
                             type="object" class="btn-secondary" data-hotkey="w"/>
                     <button name="action_print_pdf" string="PDF"
                             type="object" class="btn-secondary" data-hotkey="e"/>
+                    <button name="action_generate_background"
+                            string="Generar en segundo plano"
+                            type="object" class="btn-secondary" data-hotkey="b"
+                            title="Recomendado para períodos largos o muchos productos: el archivo se genera sin bloquear la pantalla."/>
                     <button string="Cancelar" class="btn-secondary"
                             special="cancel" data-hotkey="x"/>
                 </footer>

@@ -13,4 +13,11 @@
               action="action_l10n_pe_kardex_wizard"
               groups="stock.group_stock_user"
               sequence="200"/>
+
+    <menuitem id="menu_l10n_pe_kardex_generated"
+              name="Kardex SUNAT · Generados"
+              parent="stock.menu_warehouse_report"
+              action="action_l10n_pe_kardex_report"
+              groups="stock.group_stock_user"
+              sequence="201"/>
 </odoo>

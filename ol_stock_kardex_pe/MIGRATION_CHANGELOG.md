@@ -30,6 +30,23 @@ reescribió sobre la arquitectura nueva.
   aparente: `dictfetchall()` sin query previa); el saldo inicial usa la API
   nativa `to_date`.
 
+## 0.2026071602 — Rendimiento y arquitectura
+
+- **`l10n_pe.kardex.line` deja de ser `TransientModel` y pasa a vista SQL**
+  (`_auto = False`): ya no se puebla en cada corrida. El saldo corrido se
+  calcula con *window functions* de PostgreSQL (consolidado y por almacén).
+  El `init()` detecta el `relkind` para migrar la tabla previa a vista sin
+  romper el upgrade.
+- Saldo inicial vía un único `DISTINCT ON` sobre la vista (sin recorrer la
+  historia). Campos de documento/operación como computados no almacenados,
+  por lote. Filas de saldo inicial/totales solo en memoria (`SimpleNamespace`).
+- **Generación en segundo plano**: modelo persistente `l10n_pe.kardex.report`
+  + `ir.cron` (despertado con `_trigger()`), menú *Kardex SUNAT · Generados*.
+- El PDF/XLSX y la cuadratura contable quedan idénticos; el refactor es
+  transparente al renderizado. Análisis en `docs/kardex/ANALISIS_RENDIMIENTO.md`.
+- Gotcha v19: `registry.in_test_mode()` no existe → usar `config['test_enable']`
+  / `modules.module.current_test`.
+
 ## 0.2026071601
 
 - Versión inicial: wizard, motor de cálculo, vista interactiva, XLSX 13.1 y

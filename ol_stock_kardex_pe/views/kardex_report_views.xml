@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_l10n_pe_kardex_report_list" model="ir.ui.view">
+        <field name="name">l10n_pe.kardex.report.list</field>
+        <field name="model">l10n_pe.kardex.report</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="create_date" string="Solicitado"/>
+                <field name="name"/>
+                <field name="report_type"/>
+                <field name="file_format"/>
+                <field name="user_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state in ('pending', 'generating')"/>
+                <button name="action_download" type="object" string="Descargar"
+                        icon="fa-download" invisible="state != 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_kardex_report_form" model="ir.ui.view">
+        <field name="name">l10n_pe.kardex.report.form</field>
+        <field name="model">l10n_pe.kardex.report</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_download" type="object" string="Descargar"
+                            class="btn-primary" invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,generating,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="report_type"/>
+                            <field name="file_format"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="group_by_warehouse"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <field name="error_message" invisible="state != 'error'"
+                           class="text-danger"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_kardex_report" model="ir.actions.act_window">
+        <field name="name">Kardex SUNAT · Generados</field>
+        <field name="res_model">l10n_pe.kardex.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
