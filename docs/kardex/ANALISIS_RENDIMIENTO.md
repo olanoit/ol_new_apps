@@ -124,6 +124,10 @@ integrarse con el cierre contable.
   extremos (cientos de miles de movimientos y muchos productos a la vez) puede
   optimizarse con una **tabla materializada** por período (snapshot del cierre)
   o un índice parcial; la vista actual es el punto óptimo simplicidad/velocidad
-  para el rango objetivo (miles/año).
+  para el rango objetivo (miles/año). **Diseño detallado de esta evolución en
+  [`MEJORA_FUTURA_SNAPSHOT.md`](MEJORA_FUTURA_SNAPSHOT.md)** (propuesta, no
+  implementada): índice parcial → materialized view → snapshot de cierres, con
+  poblado incremental, invalidación por `stale`/lock dates y activación por
+  compañía.
 - El costo por almacén sigue siendo **aproximado**: Odoo valoriza por compañía.
   El modo consolidado es el contablemente exacto y el que cuadra con el TXT PLE.
