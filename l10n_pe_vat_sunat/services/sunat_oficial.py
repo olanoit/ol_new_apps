@@ -47,7 +47,7 @@ def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False):
     están activos, hace consultas adicionales y los anexa al resultado.
     """
     # Import diferido para evitar ciclo de imports.
-    from .providers import RucResult
+    from .results import RucResult
 
     import requests
     session = requests.Session()
@@ -149,7 +149,7 @@ def _extract_num_rnd(html):
 
 def _parse_ruc_html(html, ruc):
     """Convierte el HTML del detalle de RUC en un ``RucResult``."""
-    from .providers import RucResult
+    from .results import RucResult
 
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -170,21 +170,28 @@ def _parse_ruc_html(html, ruc):
             status_code=200, body=html, service='SUNAT',
         )
 
-    # El primer h4 trae "20XXXXXXXXX - RAZON SOCIAL"; los siguientes
-    # son secciones de detalle. Los <p> texto vienen en orden:
-    #   0 Tipo Contribuyente
-    #   1 Nombre Comercial
-    #   2 Fecha Inscripción
-    #   3 Fecha Inicio Actividades
-    #   4 Estado del Contribuyente
-    #   5 Condición del Contribuyente
-    #   6 Domicilio Fiscal
-    #   ...
-    header_text = headers[0].get_text(strip=True)
+    # La cabecera "20XXXXXXXXX - RAZON SOCIAL" es uno de los h4, pero su
+    # posición NO es fija (SUNAT intercala etiquetas como "Número de RUC:").
+    # Se localiza por su patrón: "<dígitos> - <razón social>". Los <p> texto
+    # vienen en orden:
+    #   0 Tipo Contribuyente   1 Nombre Comercial   2 Fecha Inscripción
+    #   3 Fecha Inicio Act.     4 Estado             5 Condición
+    #   6 Domicilio Fiscal      ...
+    header_text = ''
+    for h in headers:
+        txt = h.get_text(strip=True)
+        if ' - ' not in txt:
+            continue
+        left = txt.split(' - ', 1)[0].strip()
+        if left == ruc:
+            header_text = txt
+            break
+        if not header_text and left.isdigit():
+            header_text = txt
     if ' - ' in header_text:
         ruc_field, name_field = header_text.split(' - ', 1)
     else:
-        ruc_field, name_field = ruc, header_text
+        ruc_field, name_field = ruc, header_text or ruc
 
     def _at(idx):
         return items[idx].get_text(strip=True) if idx < len(items) else ''
@@ -301,7 +308,7 @@ def _parse_annex(html):
 
 def fetch_ruc_multi(ruc):
     """Consulta el portal multi-RUC y devuelve ``RucResult``."""
-    from .providers import RucResult
+    from .results import RucResult
 
     import requests
     session = requests.Session()

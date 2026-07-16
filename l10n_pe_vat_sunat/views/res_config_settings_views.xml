@@ -12,53 +12,24 @@
                      groups="account.group_account_manager">
                     <block title="Validación RUC/DNI (PE)"
                            id="l10n_pe_vat_validation_block">
-                        <setting id="enable_ruc"
-                                 string="Validar RUC"
-                                 help="Consultar SUNAT al ingresar/modificar un RUC.">
+                        <setting id="enable_ruc" string="Validar RUC"
+                                 help="Consultar la API al ingresar/modificar un RUC.">
                             <field name="l10n_pe_ruc_validation"/>
-                            <div class="content-group"
-                                 invisible="not l10n_pe_ruc_validation">
-                                <label for="l10n_pe_api_ruc_connection"/>
-                                <field name="l10n_pe_api_ruc_connection"
-                                       class="o_light_label"/>
-                                <field name="legal_representatives"
-                                       invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
-                                <field name="annexed_locals"
-                                       invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
-                            </div>
                         </setting>
-                        <setting id="enable_dni"
-                                 string="Validar DNI"
-                                 help="Consultar el padrón al ingresar/modificar un DNI.">
+                        <setting id="enable_dni" string="Validar DNI"
+                                 help="Consultar la API al ingresar/modificar un DNI.">
                             <field name="l10n_pe_dni_validation"/>
-                            <div class="content-group"
-                                 invisible="not l10n_pe_dni_validation">
-                                <label for="l10n_pe_api_dni_connection"/>
-                                <field name="l10n_pe_api_dni_connection"
-                                       class="o_light_label"/>
-                                <field name="vision_api"
-                                       invisible="l10n_pe_api_dni_connection != 'api_net'"/>
-                            </div>
                         </setting>
-                    </block>
-
-                    <block title="Credenciales de APIs"
-                           id="l10n_pe_vat_credentials_block">
-                        <setting id="api_peru_creds"
-                                 string="apiperu.dev"
-                                 help="URL y token del servicio apiperu.dev.">
-                            <div class="content-group">
-                                <field name="api_peru_url"/>
-                                <field name="api_peru_token" password="True"/>
-                            </div>
+                        <setting id="api_fallback" string="Fallback en cascada"
+                                 help="Desactivado: usa solo la conexión activa de mayor prioridad. Activado: si falla, prueba la siguiente.">
+                            <field name="l10n_pe_api_use_fallback"/>
                         </setting>
-                        <setting id="api_net_creds"
-                                 string="apis.net.pe"
-                                 help="URL y token del servicio apis.net.pe.">
-                            <div class="content-group">
-                                <field name="api_net_url"/>
-                                <field name="api_net_token" password="True"/>
-                            </div>
+                        <setting id="api_connections" string="Conexiones de API"
+                                 help="Configura las APIs de consulta, su prioridad y el mapeo de campos.">
+                            <button name="action_open_pe_api_connections"
+                                    type="object" class="btn-link"
+                                    string="Configurar conexiones RUC/DNI"
+                                    icon="fa-arrow-right"/>
                         </setting>
                     </block>
                 </app>
@@ -83,5 +54,12 @@
               id="sunat_settings"
               sequence="0"
               action="l10n_pe_vat_sunat_config_settings_action"/>
+
+    <menuitem name="Conexiones RUC/DNI"
+              parent="contacts.res_partner_menu_config"
+              groups="base.group_system"
+              id="menu_l10n_pe_api_connection"
+              sequence="1"
+              action="action_l10n_pe_api_connection"/>
 
 </odoo>

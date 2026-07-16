@@ -9,7 +9,7 @@ puede ser testeada de forma aislada y reutilizada por otros módulos
 """
 
 from . import http
-from . import providers
+from . import results
 from . import sunat_oficial
 from . import sunat_padron
 from . import ubigeo

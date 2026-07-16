@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_l10n_pe_sunat_padron_user,l10n.pe.sunat.padron.user,model_l10n_pe_sunat_padron,base.group_user,1,0,0,0
 access_l10n_pe_sunat_padron_admin,l10n.pe.sunat.padron.admin,model_l10n_pe_sunat_padron,base.group_system,1,1,1,1
+access_l10n_pe_api_connection_user,l10n.pe.api.connection.user,model_l10n_pe_api_connection,base.group_user,1,0,0,0
+access_l10n_pe_api_connection_admin,l10n.pe.api.connection.admin,model_l10n_pe_api_connection,base.group_system,1,1,1,1
+access_l10n_pe_api_field_mapping_user,l10n.pe.api.field.mapping.user,model_l10n_pe_api_field_mapping,base.group_user,1,0,0,0
+access_l10n_pe_api_field_mapping_admin,l10n.pe.api.field.mapping.admin,model_l10n_pe_api_field_mapping,base.group_system,1,1,1,1

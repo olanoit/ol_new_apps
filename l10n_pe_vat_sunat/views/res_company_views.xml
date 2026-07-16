@@ -13,26 +13,23 @@
                       name="l10n_pe_vat_sunat"
                       invisible="country_code and country_code != 'PE'">
                     <group>
-                        <group string="Validación de RUC">
+                        <group string="Validaciones automáticas">
                             <field name="l10n_pe_ruc_validation"/>
-                            <field name="l10n_pe_api_ruc_connection"
-                                   invisible="not l10n_pe_ruc_validation"
-                                   required="l10n_pe_ruc_validation"/>
-                            <field name="legal_representatives"
-                                   invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
-                            <field name="annexed_locals"
-                                   invisible="l10n_pe_api_ruc_connection != 'sunat_oficial'"/>
-                        </group>
-                        <group string="Validación de DNI">
                             <field name="l10n_pe_dni_validation"/>
-                            <field name="l10n_pe_api_dni_connection"
-                                   invisible="not l10n_pe_dni_validation"
-                                   required="l10n_pe_dni_validation"/>
-                            <field name="vision_api"
-                                   invisible="l10n_pe_api_dni_connection != 'api_net'"
-                                   required="l10n_pe_api_dni_connection == 'api_net'"/>
+                        </group>
+                        <group string="Estrategia de consulta">
+                            <field name="l10n_pe_api_use_fallback"/>
                         </group>
                     </group>
+                    <separator string="Conexiones de consulta (por prioridad)"/>
+                    <p class="text-muted">
+                        Por defecto se usa <b>solo la conexión activa de mayor
+                        prioridad</b> (la primera de la lista). Activa "Usar
+                        fallback en cascada" para que, si esa falla, se pruebe
+                        la siguiente, y así sucesivamente. Cada conexión mapea
+                        los atributos de su respuesta a los campos del contacto.
+                    </p>
+                    <field name="l10n_pe_api_connection_ids" context="{'default_company_id': id}"/>
                 </page>
             </xpath>
         </field>

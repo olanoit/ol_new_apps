@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_l10n_pe_api_connection_list" model="ir.ui.view">
+        <field name="name">l10n_pe.api.connection.list</field>
+        <field name="model">l10n_pe.api.connection</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0" import="0" duplicate="0">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="engine"/>
+                <field name="document_type"/>
+                <field name="base_url"  widget="url" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="enabled" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_api_connection_form" model="ir.ui.view">
+        <field name="name">l10n_pe.api.connection.form</field>
+        <field name="model">l10n_pe.api.connection</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0" import="0" duplicate="0">
+                <sheet>
+                    <widget name="web_ribbon" title="Deshabilitada"
+                            bg_color="text-bg-secondary" invisible="enabled"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. apiperu.dev"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="engine"/>
+                            <field name="document_type"/>
+                            <field name="sequence"/>
+                            <field name="enabled" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+
+                    <group string="Conexión REST" invisible="engine != 'rest_json'">
+                        <group>
+                            <field name="base_url" widget="url" placeholder="https://apiperu.dev/api"/>
+                            <field name="endpoint_ruc"
+                                   invisible="document_type == 'dni'"
+                                   placeholder="/ruc/{doc}"/>
+                            <field name="endpoint_dni"
+                                   invisible="document_type == 'ruc'"
+                                   placeholder="/dni/{doc}"/>
+                            <field name="http_method"/>
+                            <field name="body_ruc"
+                                   invisible="http_method != 'post' or document_type == 'dni'"
+                                   placeholder='{"ruc": "{doc}"}'/>
+                            <field name="body_dni"
+                                   invisible="http_method != 'post' or document_type == 'ruc'"
+                                   placeholder='{"dni": "{doc}"}'/>
+                            <field name="timeout"/>
+                        </group>
+                        <group>
+                            <field name="auth_type"/>
+                            <field name="auth_key"
+                                   invisible="auth_type not in ('header', 'query')"
+                                   required="auth_type in ('header', 'query')"
+                                   placeholder="X-Api-Key"/>
+                            <field name="token" password="True"
+                                   invisible="auth_type == 'none'"/>
+                            <field name="success_path" placeholder="success"/>
+                            <field name="data_root" placeholder="data"/>
+                        </group>
+                    </group>
+
+                    <group string="Scraper SUNAT" invisible="engine != 'sunat_oficial'">
+                        <field name="import_legal_reps"/>
+                        <field name="import_annexed_locals"/>
+                    </group>
+
+                    <group string="Ubigeo (resolución geográfica)">
+                        <group>
+                            <field name="ubigeo_path" placeholder="ubigeo"/>
+                            <field name="district_path" placeholder="distrito"/>
+                        </group>
+                        <group>
+                            <field name="province_path" placeholder="provincia"/>
+                            <field name="department_path" placeholder="departamento"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Mapeo de campos" name="mapping">
+                            <p class="text-muted">
+                                Cada fila toma el valor de un atributo de la
+                                respuesta y lo escribe en un campo del contacto.
+                                Usa rutas con puntos (<code>data.direccion</code>)
+                                o plantillas para concatenar
+                                (<code>{nombres} {apellido_paterno}</code>).
+                            </p>
+                            <field name="mapping_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="for_document"/>
+                                    <field name="source_path"/>
+                                    <field name="field_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="transform"/>
+                                    <field name="default_value" optional="hide"/>
+                                    <field name="skip_if_empty" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_api_connection" model="ir.actions.act_window">
+        <field name="name">Conexiones de consulta RUC/DNI</field>
+        <field name="res_model">l10n_pe.api.connection</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -10,7 +10,7 @@
             <!-- Header con botón Update + estado SUNAT como statusbar -->
             <sheet position="before">
                 <header>
-                    <button string="Actualizar desde SUNAT"
+                    <button string="Actualizar desde API"
                             type="object" name="btn_update_document"
                             class="oe_highlight"
                             invisible="country_code != 'PE'"

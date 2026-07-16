@@ -18,9 +18,7 @@ from odoo.exceptions import UserError
 
 from ..services import (
     http as http_service,
-    providers,
     sunat_padron,
-    ubigeo,
 )
 
 _logger = logging.getLogger(__name__)
@@ -139,7 +137,11 @@ class ResPartner(models.Model):
 
     @api.onchange('vat', 'l10n_latam_identification_type_id')
     def _doc_number_change(self):
-        """Dispara la consulta automática a la API si está habilitada."""
+        """Consulta automática al escribir (onchange): silenciosa, solo marca
+        alerta si falla — no interrumpe la edición."""
+        self._run_document_lookup(raise_on_fail=False)
+
+    def _run_document_lookup(self, raise_on_fail=False):
         if not self.vat or not self.l10n_latam_identification_type_id:
             return
         # Sólo si la compañía habilitó validación.
@@ -148,15 +150,15 @@ class ResPartner(models.Model):
         vat_code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
         if vat_code == '1' and company.l10n_pe_dni_validation:
             self._validate_dni(vat)
-            self._fetch_dni()
+            self._fetch_document('dni', raise_on_fail=raise_on_fail)
         elif vat_code == '6' and company.l10n_pe_ruc_validation:
             self._validate_ruc(vat)
-            self._fetch_ruc()
+            self._fetch_document('ruc', raise_on_fail=raise_on_fail)
 
     def btn_update_document(self):
-        """Botón "Update RUC/DNI" del form."""
+        """Botón "Actualizar RUC/DNI": si falla, muestra el motivo real."""
         for partner in self:
-            partner._doc_number_change()
+            partner._run_document_lookup(raise_on_fail=True)
 
     # ============================================================ #
     # Validación de formato                                         #
@@ -176,92 +178,81 @@ class ResPartner(models.Model):
             ))
 
     # ============================================================ #
-    # Despacho a proveedor (Strategy pattern)                       #
+    # Despacho a conexiones configuradas (config-driven)           #
     # ============================================================ #
 
-    def _fetch_ruc(self):
-        """Consulta el RUC en el proveedor configurado en la compañía."""
-        company = self.env.company
-        provider_code = company.l10n_pe_api_ruc_connection or 'api_peru'
-        try:
-            provider = providers.get_ruc_provider(self.env, provider_code)
-            result = provider.fetch((self.vat or '').strip())
-        except (http_service.HttpError, ValueError) as exc:
-            _logger.warning(
-                '[%s] Consulta RUC %s falló: %s',
-                provider_code, self.vat, exc,
-            )
-            self.alert_warning_vat = True
-            return
+    def _fetch_document(self, doc_type, raise_on_fail=False):
+        """Consulta el documento recorriendo las conexiones de la compañía
+        por prioridad; usa la primera que responda (fallback en cascada).
 
-        self._apply_ruc_result(result)
-        # Padrón SUNAT (caché diaria, no descarga ZIP en este momento).
-        self.is_good_taxpayer = sunat_padron.is_good_taxpayer(
-            self.env, self.vat,
-        )
-        self.is_retention_agent = sunat_padron.is_retention_agent(
-            self.env, self.vat,
-        )
+        Si todas fallan y ``raise_on_fail`` (botón manual), lanza un
+        ``UserError`` con el motivo real de la última conexión; si no
+        (onchange automático), solo marca la alerta sin interrumpir.
+        """
+        self.ensure_one()
+        company = self.env.company
+        connections = company._get_pe_api_connections(doc_type)
+        if not connections:
+            self.alert_warning_vat = True
+            msg = self.env._(
+                'No hay ninguna conexión de %(doc)s activa y utilizable. '
+                'Configúrala en Ajustes ▸ Conexiones RUC/DNI.',
+                doc=doc_type.upper())
+            _logger.warning(msg)
+            if raise_on_fail:
+                raise UserError(msg)
+            return
+        document = (self.vat or '').strip()
+        last_exc = None
+        for connection in connections:
+            try:
+                vals, extra = connection.run(document, doc_type)
+            except (http_service.HttpError, UserError, ValueError) as exc:
+                last_exc = exc
+                _logger.warning('[%s] Consulta %s %s falló: %s',
+                                connection.name, doc_type.upper(), document, exc)
+                continue
+            self._apply_api_result(doc_type, vals, extra)
+            return
+        # Todas las conexiones fallaron.
+        self.alert_warning_vat = True
+        _logger.warning('Todas las conexiones de %s fallaron para %s.',
+                        doc_type.upper(), document)
+        if raise_on_fail and last_exc:
+            raise UserError(self.env._(
+                'No se pudo consultar el %(doc)s %(num)s:\n\n%(err)s',
+                doc=doc_type.upper(), num=document, err=str(last_exc)))
+
+    # Compatibilidad con llamadas previas.
+    def _fetch_ruc(self):
+        return self._fetch_document('ruc')
 
     def _fetch_dni(self):
-        """Consulta el DNI en el proveedor configurado en la compañía."""
-        company = self.env.company
-        provider_code = company.l10n_pe_api_dni_connection or 'api_peru'
-        try:
-            provider = providers.get_dni_provider(self.env, provider_code)
-            result = provider.fetch((self.vat or '').strip())
-        except (http_service.HttpError, ValueError) as exc:
-            _logger.warning(
-                '[%s] Consulta DNI %s falló: %s',
-                provider_code, self.vat, exc,
-            )
-            self.alert_warning_vat = True
-            return
-
-        if result.full_name:
-            self.name = result.full_name
-            self.company_type = 'person'
-            self.alert_warning_vat = False
+        return self._fetch_document('dni')
 
     # ============================================================ #
-    # Aplicar resultado RUC al partner                              #
+    # Aplicar resultado de la API al partner                        #
     # ============================================================ #
 
-    def _apply_ruc_result(self, result):
-        """Vuelca un ``RucResult`` sobre el partner.
-
-        - Resuelve el ubigeo (preferentemente por código).
-        - Crea contactos hijos para representantes legales y locales
-          anexos cuando vienen poblados.
-        """
-        vals = {
-            'name': result.name or self.name,
-            'commercial_name': result.commercial_name or self.commercial_name,
-            'state': result.state or self.state,
-            'sunat_condition': result.condition or self.sunat_condition,
-            'company_type': 'company',
-            'alert_warning_vat': False,
-        }
-        if result.address:
-            vals['street'] = result.address
-
-        # Ubigeo
-        ubi_vals = ubigeo.resolve(
-            self.env,
-            ubigeo_code=result.ubigeo,
-            district=result.district,
-            city=result.province,
-            state=result.department,
-        )
-        vals.update(ubi_vals)
+    def _apply_api_result(self, doc_type, vals, extra):
+        """Escribe el dict mapeado y post-procesa estructuras especiales."""
+        self.ensure_one()
+        vals = dict(vals or {})
+        vals.setdefault('company_type', 'person' if doc_type == 'dni' else 'company')
+        vals['alert_warning_vat'] = False
+        # No sobrescribir el nombre con vacío.
+        if not (vals.get('name') or '').strip():
+            vals.pop('name', None)
         self.write(vals)
 
-        # Representantes legales
-        if result.legal_representatives and self.is_company:
-            self._sync_legal_representatives(result.legal_representatives)
-        # Locales anexos
-        if result.annexed_locals and self.is_company:
-            self._sync_annexed_locals(result.annexed_locals)
+        if doc_type == 'ruc':
+            if extra.get('legal_representatives') and self.is_company:
+                self._sync_legal_representatives(extra['legal_representatives'])
+            if extra.get('annexed_locals') and self.is_company:
+                self._sync_annexed_locals(extra['annexed_locals'])
+            # Padrón SUNAT (caché diaria).
+            self.is_good_taxpayer = sunat_padron.is_good_taxpayer(self.env, self.vat)
+            self.is_retention_agent = sunat_padron.is_retention_agent(self.env, self.vat)
 
     def _sync_legal_representatives(self, reps):
         """Crea como child_ids los representantes con cargos relevantes."""
@@ -291,17 +282,12 @@ class ResPartner(models.Model):
             label = '%s - %s' % (local.get('code', ''), local.get('type', ''))
             if label in existing_names:
                 continue
-            ubi = ubigeo.resolve_by_names(
-                self.env,
-                district='', city='', state='',  # sin info estructurada
-            )
             creates.append({
                 'name': label,
                 'street': local.get('address', ''),
                 'type': 'delivery',
                 'parent_id': self.id,
                 'is_company': False,
-                **ubi,
             })
         if creates:
             self.env['res.partner'].create(creates)
