@@ -21,7 +21,7 @@ Tipo de cambio Perú — refactor Odoo 19
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'Accounting/Localizations',
-    'version': '19.0.1.0.0',
+    'version': '1.20260717',
     'license': 'LGPL-3',
     'depends': ['account'],
     'external_dependencies': {'python': ['requests']},
