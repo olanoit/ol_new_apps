@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ple_withholding_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.withholding.list</field>
+        <field name="model">l10n_pe.ple.withholding</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" multi_edit="1">
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="partner_vat"/>
+                <field name="gross_amount" sum="Total bruto"/>
+                <field name="withheld_amount" sum="Total retenido"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ple_withholding_search" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.withholding.search</field>
+        <field name="model">l10n_pe.ple.withholding</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <filter name="filter_date" date="date" string="Fecha"/>
+                <separator/>
+                <filter name="group_partner" string="Prestador"
+                        context="{'group_by': 'partner_id'}"/>
+                <filter name="group_date" string="Mes"
+                        context="{'group_by': 'date:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ple_withholding" model="ir.actions.act_window">
+        <field name="name">Retenciones 4.1 (Art. 34 LIR)</field>
+        <field name="res_model">l10n_pe.ple.withholding</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Capture las retenciones de los incisos e) y f) del Art. 34
+                de la LIR
+            </p>
+            <p>Estos registros alimentan el TXT del PLE 4.1 que se genera
+               desde Perú ▸ Libros PLE ▸ Exportar.</p>
+        </field>
+    </record>
+</odoo>

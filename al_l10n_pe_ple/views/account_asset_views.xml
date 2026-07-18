@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_asset_form_ple" model="ir.ui.view">
+        <field name="name">account.asset.form.ple.pe</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='main_page']" position="after">
+                <page string="PLE SUNAT" name="l10n_pe_ple"
+                      invisible="state == 'model'">
+                    <group>
+                        <group string="Identificación (7.1)">
+                            <field name="l10n_pe_ple_code"/>
+                            <field name="l10n_pe_ple_catalog"/>
+                            <field name="l10n_pe_asset_type"/>
+                            <field name="l10n_pe_asset_status"/>
+                            <field name="l10n_pe_brand"/>
+                            <field name="l10n_pe_model"/>
+                            <field name="l10n_pe_plate"/>
+                        </group>
+                        <group string="Depreciación SUNAT">
+                            <field name="l10n_pe_depre_method"/>
+                            <field name="l10n_pe_depre_rate"/>
+                            <field name="l10n_pe_depre_auth_doc"/>
+                        </group>
+                        <group string="Diferencia de cambio (7.3)">
+                            <field name="l10n_pe_fx_currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_fx_amount"
+                                   invisible="not l10n_pe_fx_currency_id"/>
+                            <field name="l10n_pe_fx_rate"
+                                   invisible="not l10n_pe_fx_currency_id"/>
+                        </group>
+                        <group string="Arrendamiento financiero (7.4)">
+                            <field name="l10n_pe_is_leasing"/>
+                            <field name="l10n_pe_leasing_contract"
+                                   invisible="not l10n_pe_is_leasing"/>
+                            <field name="l10n_pe_leasing_date"
+                                   invisible="not l10n_pe_is_leasing"/>
+                            <field name="l10n_pe_leasing_start"
+                                   invisible="not l10n_pe_is_leasing"/>
+                            <field name="l10n_pe_leasing_installments"
+                                   invisible="not l10n_pe_is_leasing"/>
+                            <field name="l10n_pe_leasing_total"
+                                   invisible="not l10n_pe_is_leasing"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

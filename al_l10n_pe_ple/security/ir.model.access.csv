@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ple_export_wizard,l10n_pe.ple.export.wizard,model_l10n_pe_ple_export_wizard,account.group_account_user,1,1,1,1
+access_ple_withholding_user,l10n_pe.ple.withholding user,model_l10n_pe_ple_withholding,account.group_account_user,1,1,1,1
+access_ple_withholding_read,l10n_pe.ple.withholding readonly,model_l10n_pe_ple_withholding,account.group_account_readonly,1,0,0,0
+access_ple_investment_user,l10n_pe.ple.investment user,model_l10n_pe_ple_investment,account.group_account_user,1,1,1,1
+access_ple_investment_read,l10n_pe.ple.investment readonly,model_l10n_pe_ple_investment,account.group_account_readonly,1,0,0,0
+access_ple_equity_user,l10n_pe.ple.equity user,model_l10n_pe_ple_equity,account.group_account_user,1,1,1,1
+access_ple_equity_read,l10n_pe.ple.equity readonly,model_l10n_pe_ple_equity,account.group_account_readonly,1,0,0,0
+access_ple_cost_sales_user,l10n_pe.ple.cost.sales user,model_l10n_pe_ple_cost_sales,account.group_account_user,1,1,1,1
+access_ple_cost_sales_read,l10n_pe.ple.cost.sales readonly,model_l10n_pe_ple_cost_sales,account.group_account_readonly,1,0,0,0
+access_ple_cost_element_user,l10n_pe.ple.cost.element user,model_l10n_pe_ple_cost_element,account.group_account_user,1,1,1,1
+access_ple_cost_element_read,l10n_pe.ple.cost.element readonly,model_l10n_pe_ple_cost_element,account.group_account_readonly,1,0,0,0
+access_ple_cost_production_user,l10n_pe.ple.cost.production user,model_l10n_pe_ple_cost_production,account.group_account_user,1,1,1,1
+access_ple_cost_production_read,l10n_pe.ple.cost.production readonly,model_l10n_pe_ple_cost_production,account.group_account_readonly,1,0,0,0
+access_ple_cost_center_user,l10n_pe.ple.cost.center user,model_l10n_pe_ple_cost_center,account.group_account_user,1,1,1,1
+access_ple_cost_center_read,l10n_pe.ple.cost.center readonly,model_l10n_pe_ple_cost_center,account.group_account_readonly,1,0,0,0

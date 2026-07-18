@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ple_investment_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.investment.list</field>
+        <field name="model">l10n_pe.ple.investment</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" multi_edit="1">
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="issuer_name" optional="hide"/>
+                <field name="title_code"/>
+                <field name="nominal_value"/>
+                <field name="quantity"/>
+                <field name="book_cost" sum="Total en libros"/>
+                <field name="provision" sum="Total provisión"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_investment" model="ir.actions.act_window">
+        <field name="name">Inversiones 3.8 (cta. 30)</field>
+        <field name="res_model">l10n_pe.ple.investment</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Capture el detalle de inversiones mobiliarias al cierre
+            </p>
+            <p>Estos registros alimentan el TXT del PLE 3.8. Use la misma
+               fecha de EEFF que indicará en el wizard de exportación.</p>
+        </field>
+    </record>
+
+    <record id="view_ple_equity_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.equity.list</field>
+        <field name="model">l10n_pe.ple.equity</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" multi_edit="1">
+                <field name="date"/>
+                <field name="rubric_id"/>
+                <field name="catalog_code"/>
+                <field name="capital"/>
+                <field name="investment_shares" optional="hide"/>
+                <field name="additional_capital" optional="hide"/>
+                <field name="unrealized_results" optional="hide"/>
+                <field name="legal_reserves" optional="hide"/>
+                <field name="other_reserves" optional="hide"/>
+                <field name="retained_earnings"/>
+                <field name="conversion_diff" optional="hide"/>
+                <field name="equity_adjustments" optional="hide"/>
+                <field name="net_result"/>
+                <field name="revaluation_surplus" optional="hide"/>
+                <field name="period_result"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_equity" model="ir.actions.act_window">
+        <field name="name">Patrimonio 3.19</field>
+        <field name="res_model">l10n_pe.ple.equity</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Capture el estado de cambios en el patrimonio neto
+            </p>
+            <p>Una fila por rubro (tabla 34) con las doce columnas del
+               Anexo 2; alimenta el TXT del PLE 3.19.</p>
+        </field>
+    </record>
+</odoo>

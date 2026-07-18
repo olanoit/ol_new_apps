@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ple_root" name="Libros PLE"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_user"
+              sequence="50"/>
+
+    <!-- Acción de aterrizaje de la app "Perú": sin ella, Odoo abre la
+         primera hoja del menú (el wizard Exportar PLE, target=new), que
+         se muestra como un formulario suelto. El Libro Mayor (con los
+         botones PLE 5.1/5.3/6.1) es la pantalla de entrada natural. -->
+    <record id="al_account_base.al_l10n_pe_root" model="ir.ui.menu">
+        <field name="action"
+               eval="'ir.actions.client,%d' % ref('account_reports.action_account_report_general_ledger')"/>
+    </record>
+
+    <menuitem id="menu_ple_export" name="Exportar PLE"
+              parent="menu_ple_root"
+              action="action_ple_export_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_ple_withholding" name="Retenciones 4.1"
+              parent="menu_ple_root"
+              action="action_ple_withholding"
+              sequence="20"/>
+
+    <menuitem id="menu_ple_investment" name="Inversiones 3.8"
+              parent="menu_ple_root"
+              action="action_ple_investment"
+              sequence="30"/>
+
+    <menuitem id="menu_ple_equity" name="Patrimonio 3.19"
+              parent="menu_ple_root"
+              action="action_ple_equity"
+              sequence="40"/>
+
+    <menuitem id="menu_ple_cost" name="Costos (Libro 10)"
+              parent="menu_ple_root" sequence="50"/>
+
+    <menuitem id="menu_ple_cost_sales" name="10.1 Costo de ventas"
+              parent="menu_ple_cost" action="action_ple_cost_sales"
+              sequence="10"/>
+    <menuitem id="menu_ple_cost_element" name="10.2 Elementos del costo"
+              parent="menu_ple_cost" action="action_ple_cost_element"
+              sequence="20"/>
+    <menuitem id="menu_ple_cost_production" name="10.3 Costo de producción"
+              parent="menu_ple_cost" action="action_ple_cost_production"
+              sequence="30"/>
+    <menuitem id="menu_ple_cost_center" name="10.4 Centros de costos"
+              parent="menu_ple_cost" action="action_ple_cost_center"
+              sequence="40"/>
+
+    <!-- ============================================================ -->
+    <!-- Reportes PLE nativos (EE): enlaces para concentrar en la     -->
+    <!-- única aplicación Perú todo lo relacionado al PLE.            -->
+    <!-- ============================================================ -->
+    <record id="action_report_ple_sales_14_1" model="ir.actions.client">
+        <field name="name">Registro de Ventas (PLE 14.1)</field>
+        <field name="tag">account_report</field>
+        <field name="context"
+               eval="{'report_id': ref('l10n_pe_reports.tax_report_ple_sales_14_1')}"/>
+    </record>
+
+    <record id="action_report_ple_purchase_8_1" model="ir.actions.client">
+        <field name="name">Registro de Compras (PLE 8.1)</field>
+        <field name="tag">account_report</field>
+        <field name="context"
+               eval="{'report_id': ref('l10n_pe_reports.tax_report_ple_purchase_8_1')}"/>
+    </record>
+
+    <record id="action_report_ple_purchase_8_2" model="ir.actions.client">
+        <field name="name">Compras no domiciliados (PLE 8.2)</field>
+        <field name="tag">account_report</field>
+        <field name="context"
+               eval="{'report_id': ref('l10n_pe_reports.tax_report_ple_purchase_8_2')}"/>
+    </record>
+
+    <record id="action_ple_stock_wizard" model="ir.actions.act_window">
+        <field name="name">Inventario permanente TXT (PLE 12.1 / 13.1)</field>
+        <field name="res_model">l10n_pe.stock.ple.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_ple_native" name="Reportes PLE nativos"
+              parent="menu_ple_root" sequence="60"/>
+
+    <menuitem id="menu_ple_native_gl" name="Diario y Mayor (5.1 / 5.3 / 6.1)"
+              parent="menu_ple_native"
+              action="account_reports.action_account_report_general_ledger"
+              sequence="10"/>
+
+    <menuitem id="menu_ple_native_cash" name="Caja y Bancos (1.1 / 1.2)"
+              parent="menu_ple_native"
+              action="account_reports.action_account_report_cs"
+              sequence="20"/>
+
+    <menuitem id="menu_ple_native_sales" name="Ventas (14.1)"
+              parent="menu_ple_native"
+              action="action_report_ple_sales_14_1"
+              sequence="30"/>
+
+    <menuitem id="menu_ple_native_purchase" name="Compras (8.1)"
+              parent="menu_ple_native"
+              action="action_report_ple_purchase_8_1"
+              sequence="40"/>
+
+    <menuitem id="menu_ple_native_purchase_82" name="Compras no domiciliados (8.2)"
+              parent="menu_ple_native"
+              action="action_report_ple_purchase_8_2"
+              sequence="50"/>
+
+    <menuitem id="menu_ple_native_stock" name="Inventarios TXT (12.1 / 13.1)"
+              parent="menu_ple_native"
+              action="action_ple_stock_wizard"
+              sequence="60"/>
+</odoo>

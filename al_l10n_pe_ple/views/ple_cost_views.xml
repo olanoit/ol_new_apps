@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ple_cost_sales_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.cost.sales.list</field>
+        <field name="model">l10n_pe.ple.cost.sales</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="year"/>
+                <field name="initial_finished"/>
+                <field name="production_cost"/>
+                <field name="final_finished"/>
+                <field name="adjustments"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_cost_sales" model="ir.actions.act_window">
+        <field name="name">10.1 Costo de ventas anual</field>
+        <field name="res_model">l10n_pe.ple.cost.sales</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_ple_cost_element_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.cost.element.list</field>
+        <field name="model">l10n_pe.ple.cost.element</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="year"/>
+                <field name="month"/>
+                <field name="direct_materials"/>
+                <field name="direct_labor"/>
+                <field name="other_direct"/>
+                <field name="gif_materials"/>
+                <field name="gif_labor"/>
+                <field name="other_gif"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_cost_element" model="ir.actions.act_window">
+        <field name="name">10.2 Elementos del costo mensual</field>
+        <field name="res_model">l10n_pe.ple.cost.element</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_ple_cost_production_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.cost.production.list</field>
+        <field name="model">l10n_pe.ple.cost.production</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="year"/>
+                <field name="process_code"/>
+                <field name="process_name"/>
+                <field name="direct_materials"/>
+                <field name="direct_labor"/>
+                <field name="other_direct"/>
+                <field name="gif_materials" optional="hide"/>
+                <field name="gif_labor" optional="hide"/>
+                <field name="other_gif" optional="hide"/>
+                <field name="initial_wip"/>
+                <field name="final_wip"/>
+                <field name="grouping_code"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_cost_production" model="ir.actions.act_window">
+        <field name="name">10.3 Costo de producción valorizado</field>
+        <field name="res_model">l10n_pe.ple.cost.production</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_ple_cost_center_list" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.cost.center.list</field>
+        <field name="model">l10n_pe.ple.cost.center</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="year"/>
+                <field name="analytic_account_id"/>
+                <field name="operation_unit_code"/>
+                <field name="operation_unit_name"/>
+                <field name="cost_center_code"/>
+                <field name="cost_center_name"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ple_cost_center" model="ir.actions.act_window">
+        <field name="name">10.4 Centros de costos</field>
+        <field name="res_model">l10n_pe.ple.cost.center</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

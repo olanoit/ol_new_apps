@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ple_export_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.ple.export.wizard.form</field>
+        <field name="model">l10n_pe.ple.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Exportar Libros PLE">
+                <group>
+                    <group>
+                        <field name="company_id"
+                               groups="base.group_multi_company"
+                               options="{'no_create': True}"/>
+                        <field name="year"/>
+                        <field name="month"
+                               invisible="not export_41 and not export_91 and not export_92 and not export_52 and not export_54 and not export_83 and not export_142"
+                               required="export_41 or export_91 or export_92 or export_52 or export_54 or export_83 or export_142"/>
+                        <field name="operations_indicator"/>
+                    </group>
+                    <group string="Libro 7 — Activos Fijos (anual)">
+                        <field name="export_71"/>
+                        <field name="export_73"/>
+                        <field name="export_74"/>
+                    </group>
+                    <group string="Libros mensuales">
+                        <field name="export_41"/>
+                        <field name="export_91"/>
+                        <field name="export_92"/>
+                    </group>
+                    <group string="Formatos simplificados (mensuales)"
+                           invisible="not l10n_pe_ple_simplified">
+                        <field name="l10n_pe_ple_simplified" invisible="1"/>
+                        <field name="export_52"/>
+                        <field name="export_54"/>
+                        <field name="export_83"/>
+                        <field name="export_142"/>
+                    </group>
+                    <group string="Libro 10 — Registro de Costos (anual)">
+                        <field name="export_101"/>
+                        <field name="export_102"/>
+                        <field name="export_103"/>
+                        <field name="export_104"/>
+                    </group>
+                    <group string="Libro 3 — Inventarios y Balances">
+                        <field name="export_38"/>
+                        <field name="export_39"/>
+                        <field name="export_319"/>
+                        <field name="notes_pdf"/>
+                        <field name="balance_date"
+                               invisible="not export_38 and not export_39 and not export_319 and not notes_pdf"
+                               required="export_38 or export_39 or export_319 or notes_pdf"/>
+                        <field name="opportunity"
+                               invisible="not export_38 and not export_39 and not export_319 and not notes_pdf"/>
+                    </group>
+                </group>
+                <group invisible="not file_data" string="Archivo generado">
+                    <field name="file_name" invisible="1"/>
+                    <field name="file_data" filename="file_name"
+                           readonly="1" widget="binary"/>
+                </group>
+                <div class="text-muted" invisible="file_data">
+                    Los registros de Ventas (14.1), Compras (8.1/8.2), Diario
+                    y Mayor (5.1/5.3/6.1), Caja y Bancos (1.1/1.2), Libro 3 e
+                    Inventarios (12.1/13.1) se generan desde los reportes
+                    contables nativos (Contabilidad ▸ Informes).
+                </div>
+                <footer>
+                    <button name="action_export" string="Generar"
+                            type="object" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Cerrar" class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ple_export_wizard" model="ir.actions.act_window">
+        <field name="name">Libros PLE</field>
+        <field name="res_model">l10n_pe.ple.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
