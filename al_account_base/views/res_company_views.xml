@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Página única "Contabilidad PE" en la compañía: contenedor donde los
+         módulos AL de localización agregan sus grupos de configuración. -->
+    <record id="view_company_form_pe" model="ir.ui.view">
+        <field name="name">res.company.form.al.base</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_info']" position="after">
+                <page name="pg_pe_accounting" string="Contabilidad PE">
+                    <group name="pe_accounting_group"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

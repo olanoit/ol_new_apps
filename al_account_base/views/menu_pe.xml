@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú raíz "Perú" y configuración (extensible por otros módulos AL) -->
+    <menuitem id="al_l10n_pe_root" name="Perú"
+              web_icon="al_account_base,static/description/icon.png"
+              sequence="-100"/>
+
+    <menuitem id="al_l10n_pe_config" name="Configuración"
+              parent="al_l10n_pe_root" sequence="100"/>
+
+    <menuitem id="pe_menu_action_accounts" name="Plan contable"
+              parent="al_l10n_pe_config" action="account.action_account_form"
+              groups="account.group_account_readonly" sequence="10"/>
+
+    <!-- Ajustes: abre la app "Perú" de la pantalla de configuración -->
+    <record id="action_pe_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_account_base', 'bin_size': False}</field>
+    </record>
+
+    <menuitem id="menu_pe_settings" name="Ajustes"
+              parent="al_l10n_pe_config" sequence="0"
+              action="action_pe_settings"
+              groups="base.group_system"/>
+</odoo>

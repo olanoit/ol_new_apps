@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aplicación "Perú" en Ajustes: contenedor de secciones donde los
+         módulos AL de localización agregan sus ajustes (patrón de extensión). -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.base</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Perú" string="Perú" name="al_account_base"
+                     groups="account.group_account_manager">
+                    <block title="Contabilidad (PE)" name="pe_accounting_block"/>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
