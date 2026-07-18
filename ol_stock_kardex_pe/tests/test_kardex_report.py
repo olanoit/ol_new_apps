@@ -201,6 +201,40 @@ class TestKardexReport(TestSaleCommon):
         self.assertIn(b'FORMATO 13.1', html)
         self.assertIn(b'KDX-001', html)
 
+    def test_07_precarga_desde_contexto(self):
+        """El botón «Ver Kardex» precarga producto/variante/categoría según el
+        modelo activo del contexto."""
+        Wizard = self.env['l10n_pe.kardex.report.wizard']
+        # Variante de producto
+        wiz = Wizard.with_context(
+            active_model='product.product',
+            active_ids=self.product_kdx.ids).create({})
+        self.assertEqual(wiz.product_ids, self.product_kdx)
+        # Plantilla → todas sus variantes
+        tmpl = self.product_kdx.product_tmpl_id
+        wiz = Wizard.with_context(
+            active_model='product.template',
+            active_ids=tmpl.ids).create({})
+        self.assertEqual(wiz.product_ids, tmpl.product_variant_ids)
+        # Categoría
+        wiz = Wizard.with_context(
+            active_model='product.category',
+            active_ids=self.categ_avco.ids).create({})
+        self.assertEqual(wiz.categ_ids, self.categ_avco)
+
+    @freeze_time('2024-03-10')
+    def test_08_periodo_por_mes(self):
+        """El modo «Por mes» calcula date_from/date_to del mes seleccionado."""
+        wizard = self._create_wizard(period_range='month', month='2', year='2024')
+        wizard._sync_period_dates()
+        self.assertEqual(str(wizard.date_from), '2024-02-01')
+        self.assertEqual(str(wizard.date_to), '2024-02-29')  # bisiesto
+        # El default es «Por mes» con el mes/año actuales congelados
+        default = self.env['l10n_pe.kardex.report.wizard'].create({})
+        self.assertEqual(default.period_range, 'month')
+        self.assertEqual(default.month, '3')
+        self.assertEqual(default.year, '2024')
+
     def test_06_generacion_segundo_plano(self):
         self._build_moves()
         report = self.env['l10n_pe.kardex.report'].create({

@@ -8,11 +8,24 @@
                 <group>
                     <group>
                         <field name="report_type" widget="radio"/>
-                        <label for="date_from" string="Período"/>
-                        <div>
+                        <field name="period_range" widget="radio"
+                               options="{'horizontal': True}"/>
+                        <label for="month" string="Mes / año"
+                               invisible="period_range != 'month'"/>
+                        <div invisible="period_range != 'month'">
+                            <field name="month" class="oe_inline"
+                                   required="period_range == 'month'"/>
+                            <span> / </span>
+                            <field name="year" class="oe_inline"
+                                   required="period_range == 'month'"/>
+                        </div>
+                        <label for="date_from" string="Desde / Hasta"
+                               invisible="period_range != 'dates'"/>
+                        <div invisible="period_range != 'dates'">
                             <field name="date_from" class="oe_inline"
                                    widget="daterange"
-                                   options="{'end_date_field': 'date_to'}"/>
+                                   options="{'end_date_field': 'date_to'}"
+                                   required="period_range == 'dates'"/>
                             <field name="date_to" invisible="1"/>
                         </div>
                         <field name="company_id" groups="base.group_multi_company"/>

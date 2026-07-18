@@ -20,4 +20,23 @@
               action="action_l10n_pe_kardex_report"
               groups="stock.group_stock_user"
               sequence="201"/>
+
+    <!-- Entrada en la aplicación única "Perú" (además de Inventario) -->
+    <menuitem id="menu_l10n_pe_kardex_peru"
+              name="Kardex (12.1 / 13.1)"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="stock.group_stock_user"
+              sequence="60"/>
+
+    <menuitem id="menu_l10n_pe_kardex_peru_wizard"
+              name="Generar Kardex"
+              parent="menu_l10n_pe_kardex_peru"
+              action="action_l10n_pe_kardex_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_pe_kardex_peru_generated"
+              name="Kardex generados"
+              parent="menu_l10n_pe_kardex_peru"
+              action="action_l10n_pe_kardex_report"
+              sequence="20"/>
 </odoo>

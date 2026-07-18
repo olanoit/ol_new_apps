@@ -1,5 +1,6 @@
 import base64
-from datetime import datetime, time
+import calendar
+from datetime import date, datetime, time
 from types import SimpleNamespace
 
 from dateutil.relativedelta import relativedelta
@@ -16,6 +17,12 @@ VALUATION_METHOD_LABELS = {
     'fifo': 'PEPS (FIFO)',
     'standard': 'COSTO ESTÁNDAR',
 }
+
+MONTH_SELECTION = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
+    ('9', 'Setiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre'),
+]
 
 # Tabla 5 SUNAT (tipo de existencia) en español, indexada por el código del
 # Selection de l10n_pe_reports_stock (cuyas etiquetas están en inglés).
@@ -43,11 +50,40 @@ class L10nPeKardexReportWizard(models.TransientModel):
         date_from = Date.today().replace(day=1)
         results.setdefault('date_from', date_from)
         results.setdefault('date_to', date_from + relativedelta(months=1, days=-1))
+        results.update(self._defaults_from_context())
         return results
+
+    @api.model
+    def _defaults_from_context(self):
+        """Precarga productos/categorías cuando el asistente se abre desde el
+        botón «Ver Kardex» de un producto, plantilla o categoría."""
+        ctx = self.env.context
+        model = ctx.get('active_model')
+        active_ids = ctx.get('active_ids') or (
+            [ctx['active_id']] if ctx.get('active_id') else [])
+        if not active_ids:
+            return {}
+        if model == 'product.product':
+            return {'product_ids': [(6, 0, active_ids)]}
+        if model == 'product.template':
+            variants = self.env['product.template'].browse(
+                active_ids).product_variant_ids
+            return {'product_ids': [(6, 0, variants.ids)]}
+        if model == 'product.category':
+            return {'categ_ids': [(6, 0, active_ids)]}
+        return {}
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
         default=lambda self: self.env.company)
+    period_range = fields.Selection(
+        [('month', 'Por mes'), ('dates', 'Rango de fechas')],
+        string='Período', default='month', required=True)
+    month = fields.Selection(
+        MONTH_SELECTION, string='Mes',
+        default=lambda self: str(fields.Date.context_today(self).month))
+    year = fields.Char(
+        'Año', default=lambda self: str(fields.Date.context_today(self).year))
     date_from = fields.Date(string='Desde', required=True)
     date_to = fields.Date(string='Hasta', required=True)
     report_type = fields.Selection(
@@ -82,12 +118,35 @@ class L10nPeKardexReportWizard(models.TransientModel):
     mimetype = fields.Char(readonly=True)
 
     # -------------------------------------------------------------------------
+    # Período
+    # -------------------------------------------------------------------------
+
+    @api.onchange('period_range', 'month', 'year')
+    def _onchange_period(self):
+        for rec in self:
+            rec._sync_period_dates()
+
+    def _sync_period_dates(self):
+        """En modo «Por mes» calcula date_from/date_to a partir de mes/año."""
+        self.ensure_one()
+        if self.period_range != 'month' or not (self.month and self.year):
+            return
+        try:
+            y, m = int(self.year), int(self.month)
+        except (TypeError, ValueError):
+            return
+        last_day = calendar.monthrange(y, m)[1]
+        self.date_from = date(y, m, 1)
+        self.date_to = date(y, m, last_day)
+
+    # -------------------------------------------------------------------------
     # Acciones
     # -------------------------------------------------------------------------
 
     def action_view(self):
         """Abre la vista SQL del kardex filtrada; no se puebla nada."""
         self.ensure_one()
+        self._sync_period_dates()
         group_by = ['warehouse_id', 'product_id'] if self.group_by_warehouse else ['product_id']
         return {
             'name': self.env._('Kardex %(fmt)s (%(df)s a %(dt)s)',
@@ -106,6 +165,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
 
     def action_export_xlsx(self):
         self.ensure_one()
+        self._sync_period_dates()
         content = build_kardex_xlsx(self)
         self.write({
             'report_data': base64.b64encode(content),
@@ -116,11 +176,13 @@ class L10nPeKardexReportWizard(models.TransientModel):
 
     def action_print_pdf(self):
         self.ensure_one()
+        self._sync_period_dates()
         return self.env.ref('ol_stock_kardex_pe.action_report_kardex').report_action(self)
 
     def action_generate_background(self):
         """Encola la generación del archivo en segundo plano."""
         self.ensure_one()
+        self._sync_period_dates()
         report = self.env['l10n_pe.kardex.report'].create(self._background_vals())
         report._enqueue()
         return {

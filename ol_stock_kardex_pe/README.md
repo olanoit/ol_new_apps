@@ -11,6 +11,10 @@ PLE): reutiliza sus campos SUNAT y añade la capa visual que falta.
 
 ## Funcionalidades
 
+- **Integrado a la aplicación única «Perú»**: además de Inventario ▸
+  Informes, el menú **Perú ▸ Kardex (12.1/13.1)** (vía `al_account_base`)
+  ofrece «Generar Kardex» y «Kardex generados» junto al resto de libros
+  PLE (`al_l10n_pe_ple`).
 - **Kardex interactivo en pantalla**: líneas con saldo corrido (cantidad,
   costo unitario y costo total), agrupables por producto/almacén, con sumas
   por columna y botón para abrir el documento origen (comprobante,
@@ -67,10 +71,20 @@ Ver análisis detallado en `docs/kardex/ANALISIS_RENDIMIENTO.md`.
 
 `Inventario ▸ Informes ▸ Kardex SUNAT (13.1 / 12.1)`
 
-1. Elegir formato (13.1 valorizado / 12.1 físico) y período.
+1. Elegir formato (13.1 valorizado / 12.1 físico) y período. El **período** se
+   selecciona **Por mes** (opción por defecto — el kardex SUNAT se declara
+   mensualmente, calcula automáticamente desde/hasta) o como **Rango de
+   fechas** libre.
 2. Filtrar opcionalmente por almacén, productos o categorías.
 3. **Ver en pantalla** (abre la vista SQL filtrada, instantáneo),
    **Exportar Excel**, **PDF** o **Generar en segundo plano**.
+
+### Acceso directo desde un producto o categoría
+
+El botón **Ver Kardex** aparece en la cabecera del formulario de un producto
+(plantilla o variante almacenable) y de una categoría de producto. Abre el
+asistente con ese producto/categoría ya precargado en los filtros, listo para
+elegir período y generar.
 
 ## Notas / limitaciones conocidas
 

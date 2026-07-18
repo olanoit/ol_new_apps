@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Botón «Ver Kardex» en la plantilla de producto.
+         product.product_normal_form_view (variante) es una vista primary que
+         hereda de esta, por lo que el botón aparece también en la variante. -->
+    <record id="product_template_form_view_kardex" model="ir.ui.view">
+        <field name="name">product.template.form.kardex</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="before">
+                <header>
+                    <button name="%(action_l10n_pe_kardex_wizard)d"
+                            type="action" string="Ver Kardex"
+                            class="btn-secondary"
+                            groups="stock.group_stock_user"
+                            invisible="not is_storable"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Botón «Ver Kardex» en la categoría de producto -->
+    <record id="product_category_form_view_kardex" model="ir.ui.view">
+        <field name="name">product.category.form.kardex</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="%(action_l10n_pe_kardex_wizard)d"
+                            type="action" string="Ver Kardex"
+                            class="btn-secondary"
+                            groups="stock.group_stock_user"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+</odoo>
