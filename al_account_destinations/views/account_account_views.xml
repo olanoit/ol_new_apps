@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_form" model="ir.ui.view">
+        <field name="name">account.account.form.al.destinations</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_ids']" position="after">
+                <field name="l10n_pe_work_destinies" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//page[@name='accounting']" position="after">
+                <page name="page_destiny" string="Configuración de destinos"
+                      invisible="not l10n_pe_work_destinies">
+                    <field name="l10n_pe_allowed_dest_ids" invisible="1"/>
+                    <field name="l10n_pe_destiny_ids"
+                           required="l10n_pe_load_account_id != False">
+                        <list editable="bottom">
+                            <field name="dest_account_id" force_save="1"
+                                   domain="[('id', 'in', parent.l10n_pe_allowed_dest_ids)]"
+                                   options="{'no_create': True}"/>
+                            <field name="percentage" force_save="1" widget="percentage"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="l10n_pe_load_account_id"
+                               invisible="not l10n_pe_destiny_ids"
+                               options="{'no_create': True}"
+                               required="not l10n_pe_no_destiny and l10n_pe_destiny_ids and l10n_pe_work_destinies"/>
+                        <field name="l10n_pe_no_destiny"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_account_destiny_list" model="ir.ui.view">
+        <field name="name">account.account.list.al.destinations</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="l10n_pe_has_destiny" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

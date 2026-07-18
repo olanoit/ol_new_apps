@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_pe_account_destiny,l10n_pe.account.destiny user,model_l10n_pe_account_destiny,account.group_account_user,1,1,1,1

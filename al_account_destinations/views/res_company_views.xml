@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Grupo "Destinos" dentro de la página única "Contabilidad PE" del base -->
+    <record id="al_view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form.al.destinations</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="al_account_base.view_company_form_pe"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='pg_pe_accounting']/group[@name='pe_accounting_group']"
+                   position="inside">
+                <group name="gb_destinations" string="Destinos">
+                    <field name="l10n_pe_dest_type" widget="radio"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

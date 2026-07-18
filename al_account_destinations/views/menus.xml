@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Destinos, bajo la configuración PE (del base) y bajo el menú contable nativo -->
+    <menuitem id="pe_account_destiny_categ" name="Destinos"
+              parent="al_account_base.al_l10n_pe_config" sequence="30"/>
+    <menuitem id="pe_account_account_destiny_menu" name="Cuentas contables"
+              parent="pe_account_destiny_categ"
+              action="account_account_destiny_action" sequence="10"/>
+
+    <menuitem id="account_destiny_categ" name="Destinos"
+              parent="account.account_account_menu" sequence="1"/>
+    <menuitem id="account_account_destiny_menu" name="Cuentas contables"
+              parent="account_destiny_categ"
+              action="account_account_destiny_action" sequence="10"/>
+</odoo>
