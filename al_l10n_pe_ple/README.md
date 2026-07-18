@@ -3,7 +3,9 @@
 Completa los libros electrónicos PLE de SUNAT que la localización oficial
 de Odoo 19 (CE + EE) no genera. Plan completo:
 [`docs/ple/PLAN_MODULO_al_l10n_pe_ple.md`](../docs/ple/PLAN_MODULO_al_l10n_pe_ple.md) ·
-Mapa de cobertura: [`docs/ple/reportes/README.md`](../docs/ple/reportes/README.md).
+Mapa de cobertura: [`docs/ple/reportes/README.md`](../docs/ple/reportes/README.md) ·
+**Guía funcional por menú** (para consultores): [`docs/README.md`](docs/README.md) ·
+Datos de demostración y validación integral: [`tools/ple_demo_data.py`](tools/ple_demo_data.py).
 
 ## Estado actual (Fases 0 a 5 — alcance del plan completo)
 
