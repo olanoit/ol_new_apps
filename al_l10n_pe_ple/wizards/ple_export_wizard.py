@@ -766,7 +766,9 @@ class L10nPePleExportWizard(models.TransientModel):
         lines = []
         for move in self._invoice_moves(('in_invoice', 'in_refund')):
             row = self._simplified_invoice_row(move)
-            row += ['', '',                                      # 24-25 detracción
+            row += [self._ple_date(move.l10n_pe_detraction_date),  # 24
+                    self._ple_text(move.l10n_pe_detraction_number,
+                                   24),                          # 25 constancia
                     '',                                          # 26 retención
                     '',                                          # 27 clasificación
                     '', '', '',                                  # 28-30 errores

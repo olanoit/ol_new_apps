@@ -545,6 +545,8 @@ class TestPleExport(TransactionCase):
     def test_export_83(self):
         self.company.l10n_pe_ple_simplified = True
         invoice, tax = self._make_invoice('in_invoice', 'purchase')
+        invoice.write({'l10n_pe_detraction_number': '2025-000777',
+                       'l10n_pe_detraction_date': date(2025, 3, 25)})
         wizard = self._wizard(export_83=True)
         wizard.action_export()
         self.assertIn('080300', wizard.file_name)
@@ -555,6 +557,8 @@ class TestPleExport(TransactionCase):
         self.assertEqual(row[7], '00000123')      # folio del ref
         if tax:
             self.assertEqual(row[16], '118.00')   # total
+        self.assertEqual(row[23], '25/03/2025')   # fecha constancia detracción
+        self.assertEqual(row[24], '2025-000777')  # nº constancia
         self.assertEqual(row[31], '1')
 
     def test_export_52_54(self):
