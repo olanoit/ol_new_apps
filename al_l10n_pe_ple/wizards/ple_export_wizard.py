@@ -74,6 +74,10 @@ class L10nPePleExportWizard(models.TransientModel):
              'adjunta el archivo aquí, se incluye en el ZIP con el nombre '
              'oficial.')
 
+    generate_xlsx = fields.Boolean(
+        string='Incluir Excel', default=True,
+        help='Además del TXT oficial, genera un XLSX con los mismos datos '
+             'en el formato de revisión SUNAT (encabezados del Anexo 2).')
     file_name = fields.Char(readonly=True)
     file_data = fields.Binary(string='Archivo', readonly=True)
 
@@ -105,39 +109,39 @@ class L10nPePleExportWizard(models.TransientModel):
                               'formatos del Libro 3.'))
         exports = []
         if self.export_71:
-            exports.append(self._export_71())
+            exports.extend(self._export_71())
         if self.export_73:
-            exports.append(self._export_73())
+            exports.extend(self._export_73())
         if self.export_74:
-            exports.append(self._export_74())
+            exports.extend(self._export_74())
         if self.export_41:
-            exports.append(self._export_41())
+            exports.extend(self._export_41())
         if self.export_91:
-            exports.append(self._export_9('090100'))
+            exports.extend(self._export_9('090100'))
         if self.export_92:
-            exports.append(self._export_9('090200'))
+            exports.extend(self._export_9('090200'))
         if self.export_52:
-            exports.append(self._export_52())
+            exports.extend(self._export_52())
         if self.export_54:
-            exports.append(self._export_54())
+            exports.extend(self._export_54())
         if self.export_83:
-            exports.append(self._export_83())
+            exports.extend(self._export_83())
         if self.export_142:
-            exports.append(self._export_142())
+            exports.extend(self._export_142())
         if self.export_101:
-            exports.append(self._export_101())
+            exports.extend(self._export_101())
         if self.export_102:
-            exports.append(self._export_102())
+            exports.extend(self._export_102())
         if self.export_103:
-            exports.append(self._export_103())
+            exports.extend(self._export_103())
         if self.export_104:
-            exports.append(self._export_104())
+            exports.extend(self._export_104())
         if self.export_38:
-            exports.append(self._export_38())
+            exports.extend(self._export_38())
         if self.export_39:
-            exports.append(self._export_39())
+            exports.extend(self._export_39())
         if self.export_319:
-            exports.append(self._export_319())
+            exports.extend(self._export_319())
         if self.notes_pdf:
             exports.append((
                 self._lib_filename('032300', True, extension='.pdf'),
@@ -233,11 +237,21 @@ class L10nPePleExportWizard(models.TransientModel):
                 label=label,
                 assets=', '.join(missing.mapped('display_name')[:20])))
 
+    def _build_files(self, book_code, lines, file_name, month='00'):
+        """TXT oficial + XLSX opcional (formato de revisión v18)."""
+        files = [(file_name, self._ple_content(book_code, lines))]
+        if self.generate_xlsx:
+            files.append((
+                file_name.rsplit('.', 1)[0] + '.xlsx',
+                self._ple_xlsx(book_code, lines, self.company_id,
+                               self.year, month)))
+        return files
+
     def _make_file(self, book_code, lines):
         file_name = self._ple_filename(
             self.company_id, book_code, self.year,
             operations=self.operations_indicator, has_data=bool(lines))
-        return file_name, self._ple_content(book_code, lines)
+        return self._build_files(book_code, lines, file_name)
 
     # ------------------------------------------------------------------
     # Utilidades de libros mensuales
@@ -254,7 +268,8 @@ class L10nPePleExportWizard(models.TransientModel):
         file_name = self._ple_filename(
             self.company_id, book_code, self.year, month=int(self.month),
             operations=self.operations_indicator, has_data=bool(lines))
-        return file_name, self._ple_content(book_code, lines)
+        return self._build_files(book_code, lines, file_name,
+                                 month=self.month)
 
     def _partner_doc(self, partner):
         """(tipo doc tabla 2, nº doc, nombre) de una contraparte."""
@@ -286,8 +301,9 @@ class L10nPePleExportWizard(models.TransientModel):
             extension=extension)
 
     def _make_file_lib(self, book_code, lines):
-        return (self._lib_filename(book_code, bool(lines)),
-                self._ple_content(book_code, lines))
+        return self._build_files(
+            book_code, lines, self._lib_filename(book_code, bool(lines)),
+            month='%02d' % self.balance_date.month)
 
     # ------------------------------------------------------------------
     # 7.1 — Activos fijos revaluados y no revaluados (37 campos)

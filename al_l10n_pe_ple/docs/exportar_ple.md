@@ -21,6 +21,7 @@ ZIP si son varios).
 | **Fecha de los EEFF** | Solo Libro 3: fecha del balance (por defecto 31/12 del ejercicio); define el `AAAAMMDD` del nombre. |
 | **Oportunidad (CC)** | Solo Libro 3: `01` al 31/12 (habitual) … `07` libre propósito. |
 | **3.23 Notas (PDF)** | Adjuntar el PDF de notas a los EEFF: se incluye en el ZIP con el nombre oficial (no tiene estructura TXT). |
+| **Incluir Excel** | Activada por defecto: además del TXT oficial genera un `.xlsx` de revisión por cada formato (mismos datos, encabezados del Anexo 2, formato heredado del módulo v18) dentro del ZIP. El TXT es el único archivo que se carga al PLE de SUNAT; el Excel es para revisión del contador. |
 
 ## Formatos disponibles
 

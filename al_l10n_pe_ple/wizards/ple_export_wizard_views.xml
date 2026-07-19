@@ -15,6 +15,7 @@
                                invisible="not export_41 and not export_91 and not export_92 and not export_52 and not export_54 and not export_83 and not export_142"
                                required="export_41 or export_91 or export_92 or export_52 or export_54 or export_83 or export_142"/>
                         <field name="operations_indicator"/>
+                        <field name="generate_xlsx"/>
                     </group>
                     <group string="Libro 7 — Activos Fijos (anual)">
                         <field name="export_71"/>

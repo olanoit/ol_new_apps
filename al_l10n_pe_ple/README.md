@@ -19,6 +19,11 @@ Datos de demostración y validación integral: [`tools/ple_demo_data.py`](tools/
   archivo (33 caracteres), serialización con `|` (CRLF, UTF-8, igual que
   `l10n_pe_reports` EE), formatos de fecha/importe/TC y validación del
   número exacto de campos por formato según el Anexo 2.
+- **Excel de revisión por formato** (casilla «Incluir Excel», activa por
+  defecto): un `.xlsx` junto a cada TXT con los mismos datos y el formato
+  visual heredado del módulo v18 (`ce18 al_l10n_pe_ple`): título de
+  compañía, fila RUC/Período/Mes, numeración de columnas y encabezados
+  oficiales del Anexo 2.
 - **Wizard** en **Perú ▸ Libros PLE**: ejercicio + indicador de operaciones
   + selección de formatos; genera TXT (o ZIP si son varios).
 - **Libro 7 — Registro de Activos Fijos** sobre `account.asset` (EE):

@@ -55,7 +55,8 @@ class TestPleExport(TransactionCase):
 
     def _wizard(self, **kwargs):
         values = {'year': 2025, 'month': '03', 'export_71': False,
-                  'export_73': False, 'export_74': False}
+                  'export_73': False, 'export_74': False,
+                  'generate_xlsx': False}
         values.update(kwargs)
         return self.env['l10n_pe.ple.export.wizard'].create(values)
 
@@ -598,6 +599,37 @@ class TestPleExport(TransactionCase):
         self.assertEqual(len(first), 8)
         self.assertEqual(first[0], '20250301')
         self.assertEqual(first[3], '01')          # plan PCGE (t17)
+
+    # ------------------------------------------------------------------
+    # Exportación Excel (formato v18)
+    # ------------------------------------------------------------------
+    def test_xlsx_headers_match_structures(self):
+        from odoo.addons.al_l10n_pe_ple.models.ple_mixin import (
+            PLE_EXPECTED_FIELDS)
+        from odoo.addons.al_l10n_pe_ple.models.ple_xlsx import (
+            PLE_XLSX_HEADERS, PLE_XLSX_TITLES)
+        for code, headers in PLE_XLSX_HEADERS.items():
+            self.assertEqual(
+                len(headers), PLE_EXPECTED_FIELDS[code],
+                'Encabezados de %s no coinciden con el Anexo 2' % code)
+            self.assertLessEqual(len(PLE_XLSX_TITLES[code]), 31)
+
+    def test_export_with_xlsx(self):
+        import io
+        import zipfile
+        wizard = self._wizard(export_71=True, generate_xlsx=True)
+        wizard.action_export()
+        # TXT + XLSX del mismo formato → ZIP
+        self.assertTrue(wizard.file_name.endswith('.zip'))
+        archive = zipfile.ZipFile(
+            io.BytesIO(base64.b64decode(wizard.file_data)))
+        names = archive.namelist()
+        self.assertTrue(any(n.endswith('070100001111.txt') for n in names))
+        xlsx_name = next(n for n in names if n.endswith('.xlsx'))
+        self.assertIn('070100', xlsx_name)
+        content = archive.read(xlsx_name)
+        self.assertEqual(content[:2], b'PK')   # XLSX válido
+        self.assertGreater(len(content), 1000)
 
     # ------------------------------------------------------------------
     # Varios formatos → ZIP
