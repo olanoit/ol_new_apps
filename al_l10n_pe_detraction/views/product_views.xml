@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_detraction" model="ir.ui.view">
+        <field name="name">product.template.form.detraction.pe</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="l10n_pe_edi.product_template_form_inherit_l10n_pe_edi"/>
+        <field name="arch" type="xml">
+            <field name="l10n_pe_withhold_code" position="before">
+                <field name="l10n_pe_detraction_type_id"
+                       invisible="'PE' not in fiscal_country_codes"
+                       options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+</odoo>

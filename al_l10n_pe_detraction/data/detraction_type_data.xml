@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Catálogo 54 SUNAT — R.S. 183-2004/SUNAT y modificatorias.
+             Porcentajes vigentes; los códigos 027/030/040 corrigen el 40%
+             erróneo del módulo v18 (el oficial es 4%). Montos mínimos
+             editables (Anexo 1: 1/2 UIT según la UIT vigente). -->
+        <record id="detraction_001" model="l10n_pe.detraction.type">
+            <field name="code">001</field>
+            <field name="name">Azúcar y melaza de caña</field>
+            <field name="min_amount">2675.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">Anexo 1: mínimo 1/2 UIT (actualizar según la UIT vigente).</field>
+        </record>
+        <record id="detraction_003" model="l10n_pe.detraction.type">
+            <field name="code">003</field>
+            <field name="name">Alcohol etílico</field>
+            <field name="min_amount">2675.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">Anexo 1: mínimo 1/2 UIT (actualizar según la UIT vigente).</field>
+        </record>
+        <record id="detraction_004" model="l10n_pe.detraction.type">
+            <field name="code">004</field>
+            <field name="name">Recursos hidrobiológicos</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_005" model="l10n_pe.detraction.type">
+            <field name="code">005</field>
+            <field name="name">Maíz amarillo duro</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_008" model="l10n_pe.detraction.type">
+            <field name="code">008</field>
+            <field name="name">Madera</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_009" model="l10n_pe.detraction.type">
+            <field name="code">009</field>
+            <field name="name">Arena y piedra</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_010" model="l10n_pe.detraction.type">
+            <field name="code">010</field>
+            <field name="name">Residuos, subproductos, desechos, recortes y desperdicios</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">15</field>
+        </record>
+        <record id="detraction_012" model="l10n_pe.detraction.type">
+            <field name="code">012</field>
+            <field name="name">Intermediación laboral y tercerización</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">12</field>
+            <field name="comment">12% desde la R.S. 071-2018/SUNAT.</field>
+        </record>
+        <record id="detraction_014" model="l10n_pe.detraction.type">
+            <field name="code">014</field>
+            <field name="name">Carnes y despojos comestibles</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_017" model="l10n_pe.detraction.type">
+            <field name="code">017</field>
+            <field name="name">Harina, polvo y pellets de pescado, crustáceos y moluscos</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_019" model="l10n_pe.detraction.type">
+            <field name="code">019</field>
+            <field name="name">Arrendamiento de bienes muebles</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_020" model="l10n_pe.detraction.type">
+            <field name="code">020</field>
+            <field name="name">Mantenimiento y reparación de bienes muebles</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">12</field>
+        </record>
+        <record id="detraction_021" model="l10n_pe.detraction.type">
+            <field name="code">021</field>
+            <field name="name">Movimiento de carga</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_022" model="l10n_pe.detraction.type">
+            <field name="code">022</field>
+            <field name="name">Otros servicios empresariales</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">12</field>
+        </record>
+        <record id="detraction_024" model="l10n_pe.detraction.type">
+            <field name="code">024</field>
+            <field name="name">Comisión mercantil</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_025" model="l10n_pe.detraction.type">
+            <field name="code">025</field>
+            <field name="name">Fabricación de bienes por encargo</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_026" model="l10n_pe.detraction.type">
+            <field name="code">026</field>
+            <field name="name">Servicio de transporte de personas</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_027" model="l10n_pe.detraction.type">
+            <field name="code">027</field>
+            <field name="name">Servicio de transporte de bienes por vía terrestre</field>
+            <field name="min_amount">400.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_030" model="l10n_pe.detraction.type">
+            <field name="code">030</field>
+            <field name="name">Contratos de construcción</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+        </record>
+        <record id="detraction_031" model="l10n_pe.detraction.type">
+            <field name="code">031</field>
+            <field name="name">Oro gravado con el IGV</field>
+            <field name="min_amount">0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_034" model="l10n_pe.detraction.type">
+            <field name="code">034</field>
+            <field name="name">Minerales metálicos no auríferos</field>
+            <field name="min_amount">0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_035" model="l10n_pe.detraction.type">
+            <field name="code">035</field>
+            <field name="name">Bienes exonerados del IGV</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">1.5</field>
+        </record>
+        <record id="detraction_036" model="l10n_pe.detraction.type">
+            <field name="code">036</field>
+            <field name="name">Oro y demás minerales metálicos exonerados del IGV</field>
+            <field name="min_amount">0</field>
+            <field name="percentage">1.5</field>
+        </record>
+        <record id="detraction_037" model="l10n_pe.detraction.type">
+            <field name="code">037</field>
+            <field name="name">Demás servicios gravados con el IGV</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">12</field>
+        </record>
+        <record id="detraction_039" model="l10n_pe.detraction.type">
+            <field name="code">039</field>
+            <field name="name">Minerales no metálicos</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+        </record>
+        <record id="detraction_040" model="l10n_pe.detraction.type">
+            <field name="code">040</field>
+            <field name="name">Primera venta de bien inmueble gravado con IGV</field>
+            <field name="min_amount">0</field>
+            <field name="percentage">4</field>
+        </record>
+    </data>
+</odoo>

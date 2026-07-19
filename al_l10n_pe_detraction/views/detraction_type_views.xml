@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_detraction_type_list" model="ir.ui.view">
+        <field name="name">l10n_pe.detraction.type.list</field>
+        <field name="model">l10n_pe.detraction.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="percentage"/>
+                <field name="min_amount"/>
+                <field name="product_count" string="Productos"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_detraction_type_form" model="ir.ui.view">
+        <field name="name">l10n_pe.detraction.type.form</field>
+        <field name="model">l10n_pe.detraction.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_sync_products" type="object"
+                            string="Actualizar productos vinculados"
+                            class="btn-secondary"
+                            help="Reaplica el porcentaje y código vigentes a todos los productos que usan este tipo."/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_products" type="object"
+                                class="oe_stat_button" icon="fa-cubes">
+                            <field name="product_count" widget="statinfo"
+                                   string="Productos"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="percentage"/>
+                            <field name="min_amount"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="comment" nolabel="1"
+                               placeholder="Notas (base legal, vigencia...)"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_detraction_type" model="ir.actions.act_window">
+        <field name="name">Tipos de detracción (SPOT)</field>
+        <field name="res_model">l10n_pe.detraction.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Catálogo 54 de SUNAT: bienes y servicios sujetos a detracción
+            </p>
+            <p>Asigne un tipo a cada producto afecto; el porcentaje se
+               sincroniza con los campos que usa la factura electrónica.</p>
+        </field>
+    </record>
+</odoo>

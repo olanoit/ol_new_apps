@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_detraction" model="ir.ui.view">
+        <field name="name">account.move.form.detraction.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_info']" position="after">
+                <page string="Detracción" name="l10n_pe_detraction"
+                      invisible="not l10n_pe_detraction_applies">
+                    <group>
+                        <group string="Cálculo">
+                            <field name="l10n_pe_detraction_type_id"
+                                   readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_detraction_percent"
+                                   readonly="state != 'draft'"/>
+                            <field name="l10n_pe_detraction_amount"/>
+                            <field name="l10n_pe_detraction_net"/>
+                        </group>
+                        <group string="Constancia de depósito">
+                            <field name="l10n_pe_detraction_number"
+                                   readonly="1"/>
+                            <field name="l10n_pe_detraction_date"
+                                   readonly="1"/>
+                            <button name="action_open_detraction_deposit"
+                                    type="object"
+                                    string="Registrar depósito"
+                                    class="btn-primary"
+                                    invisible="state != 'posted' or l10n_pe_detraction_number"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter_detraction" model="ir.ui.view">
+        <field name="name">account.invoice.filter.detraction.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <filter name="late" position="after">
+                <separator/>
+                <filter name="filter_detraction" string="Con detracción"
+                        domain="[('l10n_pe_detraction_applies', '=', True)]"/>
+                <filter name="filter_detraction_pending"
+                        string="Detracción sin constancia"
+                        domain="[('l10n_pe_detraction_applies', '=', True),
+                                 ('l10n_pe_detraction_number', '=', False),
+                                 ('state', '=', 'posted')]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

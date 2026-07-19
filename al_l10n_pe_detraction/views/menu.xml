@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_detraction_type" name="Detracciones (SPOT)"
+              parent="al_account_base.al_l10n_pe_config"
+              action="action_detraction_type"
+              groups="account.group_account_manager"
+              sequence="30"/>
+</odoo>

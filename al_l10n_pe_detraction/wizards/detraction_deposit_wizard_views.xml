@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_detraction_deposit_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.detraction.deposit.wizard.form</field>
+        <field name="model">l10n_pe.detraction.deposit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registrar depósito de detracción">
+                <group>
+                    <field name="move_id"/>
+                    <field name="company_currency_id" invisible="1"/>
+                    <field name="amount"/>
+                    <field name="journal_id"/>
+                    <field name="payment_date"/>
+                    <field name="constancy_number"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Registrar"
+                            type="object" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Cancelar" class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
