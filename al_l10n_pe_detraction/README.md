@@ -26,6 +26,12 @@ de punta a punta.
     mismo criterio que el XML nativo) y **neto** a cobrar/pagar;
   - al publicar una venta afecta se fija solo el **tipo de operación
     `1001`** si no se eligió un valor 100x (requisito del XML).
+- **Reparto contable opcional** (Ajustes ▸ Perú ▸ «Separar detracción en
+  el asiento»): la línea por cobrar/pagar se divide **dentro del mismo
+  asiento de la factura** — neto en la cuenta del tercero y detracción en
+  las cuentas configuradas (por cobrar 121x / por pagar 424x, requeridas
+  al activar la opción). Sin segundo asiento; desactivada, comportamiento
+  estándar.
 - **Depósito y constancia** (botón «Registrar depósito»):
   - compras: registra el pago parcial de la factura por el monto detraído
     desde el diario del banco (depósito propio al BN a nombre del

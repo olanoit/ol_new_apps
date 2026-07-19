@@ -137,6 +137,77 @@ class TestDetraction(TransactionCase):
         self.assertEqual(move.l10n_pe_edi_operation_type, operation_before)
 
     # ------------------------------------------------------------------
+    # Reparto en el asiento de la factura (opción de Ajustes)
+    # ------------------------------------------------------------------
+    def _enable_split(self):
+        Account = self.env['account.account'].with_company(self.company)
+        receivable = Account.create({
+            'code': '121901', 'name': 'Detracciones por cobrar Test',
+            'account_type': 'asset_receivable', 'reconcile': True})
+        payable = Account.create({
+            'code': '424901', 'name': 'Detracciones por pagar Test',
+            'account_type': 'liability_payable', 'reconcile': True})
+        self.company.write({
+            'l10n_pe_detraction_split': True,
+            'l10n_pe_detraction_receivable_account_id': receivable.id,
+            'l10n_pe_detraction_payable_account_id': payable.id,
+        })
+        return receivable, payable
+
+    def test_split_customer_invoice(self):
+        receivable, _payable = self._enable_split()
+        move = self._invoice('out_invoice', 1000.0)  # total 1180, det 142
+        move.action_post()
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        self.assertEqual(len(term_lines), 2)
+        det_line = term_lines.filtered(lambda l: l.account_id == receivable)
+        main_line = term_lines - det_line
+        self.assertEqual(det_line.balance, 142.0)     # detracción al debe
+        self.assertEqual(main_line.balance, 1038.0)   # neto en la cuenta 12
+        # mismo asiento: total, balance y residual intactos
+        self.assertEqual(move.amount_total, 1180.0)
+        self.assertEqual(move.amount_residual, 1180.0)
+        self.assertEqual(sum(move.line_ids.mapped('balance')), 0.0)
+
+    def test_split_vendor_bill(self):
+        _receivable, payable = self._enable_split()
+        move = self._invoice('in_invoice', 1000.0)
+        move.action_post()
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        self.assertEqual(len(term_lines), 2)
+        det_line = term_lines.filtered(lambda l: l.account_id == payable)
+        main_line = term_lines - det_line
+        self.assertEqual(det_line.balance, -142.0)    # detracción al haber
+        self.assertEqual(main_line.balance, -1038.0)  # neto al proveedor
+        self.assertEqual(move.amount_residual, 1180.0)
+
+    def test_split_requires_accounts(self):
+        from odoo.exceptions import UserError
+        self.company.l10n_pe_detraction_split = True
+        self.company.l10n_pe_detraction_receivable_account_id = False
+        move = self._invoice('out_invoice', 1000.0)
+        with self.assertRaises(UserError):
+            move.action_post()
+
+    def test_split_disabled_keeps_single_line(self):
+        self.company.l10n_pe_detraction_split = False
+        move = self._invoice('out_invoice', 1000.0)
+        move.action_post()
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        self.assertEqual(len(term_lines), 1)
+
+    def test_split_not_applied_below_minimum(self):
+        self._enable_split()
+        move = self._invoice('out_invoice', 500.0)  # 590 <= 700: no aplica
+        move.action_post()
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        self.assertEqual(len(term_lines), 1)
+
+    # ------------------------------------------------------------------
     # Depósito y constancia
     # ------------------------------------------------------------------
     def test_deposit_wizard_purchase(self):

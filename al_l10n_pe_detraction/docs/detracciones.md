@@ -31,6 +31,16 @@ minerales e inmuebles).
 4. **Diario del BN** (recomendado) — crear un diario de banco que
    represente la cuenta de detracciones, para registrar los cobros de
    detracción de las ventas.
+5. **Separar la detracción en el asiento** (opcional) — Ajustes ▸ Perú ▸
+   «Separar detracción en el asiento»: al activarlo se exigen las dos
+   cuentas (**Detracciones por cobrar**, tipo por cobrar, p. ej. 121001;
+   **Detracciones por pagar**, tipo por pagar, p. ej. 424001). Con la
+   opción activa, al publicar una factura afecta la línea por
+   cobrar/pagar se reparte **dentro del mismo asiento** (no se crea un
+   segundo asiento): el neto queda en la cuenta normal del
+   cliente/proveedor y la detracción en la cuenta configurada, cada una
+   conciliable por separado. Desactivada, todo el total queda en la
+   cuenta del tercero (comportamiento estándar).
 
 ## Flujo en ventas
 
@@ -74,6 +84,7 @@ minerales e inmuebles).
 | Situación | Causa / solución |
 |---|---|
 | No aparece la pestaña Detracción | El producto no tiene tipo SPOT, o el total no supera el mínimo del código. |
+| «…falta configurar la cuenta de detracciones…» al publicar | La opción de separar está activa sin cuentas: configurarlas en Ajustes ▸ Perú o desactivar la opción. |
 | XML sin bloque de detracción | Falta la cuenta del Banco de la Nación en la compañía, o el tipo de operación no es 100x. |
 | % desactualizado en facturas nuevas | Editar el catálogo y «Actualizar productos vinculados»; las facturas en borrador recalculan al editar líneas. |
 | 8.1/8.3 sin constancia | No se usó «Registrar depósito» (o no se llenaron los campos de constancia de la factura). |

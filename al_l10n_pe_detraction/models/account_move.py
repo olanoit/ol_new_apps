@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools import float_round
 
 DETRACTION_OPERATION_TYPES = ('1001', '1002', '1003', '1004')
@@ -80,7 +81,74 @@ class AccountMove(models.Model):
                     and move.l10n_pe_edi_operation_type
                     not in DETRACTION_OPERATION_TYPES):
                 move.l10n_pe_edi_operation_type = '1001'
+            if (move.l10n_pe_detraction_applies
+                    and move.company_id.l10n_pe_detraction_split
+                    and move.state == 'draft'):
+                move._l10n_pe_apply_detraction_split()
         return super()._post(soft=soft)
+
+    # ------------------------------------------------------------------
+    # Reparto de la detracción dentro del MISMO asiento de la factura
+    # ------------------------------------------------------------------
+    def _l10n_pe_detraction_split_account(self):
+        self.ensure_one()
+        company = self.company_id
+        if self.move_type == 'out_invoice':
+            account = company.l10n_pe_detraction_receivable_account_id
+        else:
+            account = company.l10n_pe_detraction_payable_account_id
+        if not account:
+            raise UserError(self.env._(
+                'La opción «Separar la detracción en el asiento» está '
+                'activa pero falta configurar la cuenta de detracciones '
+                '%(kind)s en Ajustes ▸ Perú.',
+                kind=self.env._('por cobrar')
+                if self.move_type == 'out_invoice'
+                else self.env._('por pagar')))
+        return account
+
+    def _l10n_pe_apply_detraction_split(self):
+        """Divide la línea por cobrar/pagar del propio asiento: neto en la
+        cuenta del tercero y detracción en la cuenta configurada. No se
+        crea un segundo asiento."""
+        self.ensure_one()
+        account = self._l10n_pe_detraction_split_account()
+        det_amount = self.l10n_pe_detraction_amount  # soles, positivo
+        if self.company_currency_id.is_zero(det_amount):
+            return
+        term_lines = self.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        if not term_lines or any(
+                l.account_id == account for l in term_lines):
+            return  # sin términos o ya repartido (re-publicación)
+        main = max(term_lines, key=lambda l: abs(l.balance))
+        if abs(main.balance) <= det_amount:
+            return  # término menor a la detracción (multi-cuota atípica)
+        sign = 1 if main.balance > 0 else -1
+        det_balance = sign * det_amount
+        ratio = det_balance / main.balance
+        det_amount_currency = main.currency_id.round(
+            main.amount_currency * ratio)
+        label = self.env._(
+            'Detracción SPOT %(code)s',
+            code=self.l10n_pe_detraction_type_id.code or '')
+        self.write({'line_ids': [
+            (1, main.id, {
+                'balance': main.balance - det_balance,
+                'amount_currency':
+                    main.amount_currency - det_amount_currency,
+            }),
+            (0, 0, {
+                'name': label,
+                'account_id': account.id,
+                'partner_id': main.partner_id.id,
+                'currency_id': main.currency_id.id,
+                'balance': det_balance,
+                'amount_currency': det_amount_currency,
+                'date_maturity': main.date_maturity,
+                'display_type': 'payment_term',
+            }),
+        ]})
 
     def action_open_detraction_deposit(self):
         self.ensure_one()
