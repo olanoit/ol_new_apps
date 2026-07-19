@@ -34,13 +34,8 @@ minerales e inmuebles).
 5. **Separar la detracción en el asiento** (opcional) — Ajustes ▸ Perú ▸
    «Separar detracción en el asiento»: al activarlo se exigen las dos
    cuentas (**Detracciones por cobrar**, tipo por cobrar, p. ej. 121001;
-   **Detracciones por pagar**, tipo por pagar, p. ej. 424001). Con la
-   opción activa, al publicar una factura afecta la línea por
-   cobrar/pagar se reparte **dentro del mismo asiento** (no se crea un
-   segundo asiento): el neto queda en la cuenta normal del
-   cliente/proveedor y la detracción en la cuenta configurada, cada una
-   conciliable por separado. Desactivada, todo el total queda en la
-   cuenta del tercero (comportamiento estándar).
+   **Detracciones por pagar**, tipo por pagar, p. ej. 424001). Ver la
+   sección [Reparto contable](#reparto-contable-de-la-detracción-opcional).
 
 ## Flujo en ventas
 
@@ -70,6 +65,46 @@ minerales e inmuebles).
 > El crédito fiscal del IGV de una operación sujeta a detracción solo se
 > puede ejercer desde que el depósito está efectuado: la constancia
 > registrada es la evidencia.
+
+## Reparto contable de la detracción (opcional)
+
+Con **Ajustes ▸ Perú ▸ «Separar detracción en el asiento»** activo, al
+publicar una factura afecta la línea por cobrar/pagar se reparte **dentro
+del mismo asiento de la factura** — no se crea un segundo asiento:
+
+```
+Factura de cliente S/ 1.180 (detracción 12% = S/ 142):
+
+  Cuenta                          Debe        Haber
+  1211  Clientes               1.038,00              ← neto que paga el cliente
+  121001 Detracc. por cobrar     142,00              ← lo que depositará en el BN
+  40111 IGV                                  180,00
+  70xx  Ventas                             1.000,00
+```
+
+En compras es el espejo: el neto queda al haber en la cuenta del proveedor
+(42xx) y la detracción en «Detracciones por pagar» (424xxx).
+
+Puntos clave para el consultor:
+
+- **Total, residual e importes de la factura no cambian**: solo se
+  reclasifica la contrapartida en dos líneas, cada una **conciliable por
+  separado** — el neto contra el pago/cobro normal y la línea de
+  detracción contra el depósito del Banco de la Nación (al conciliar el
+  extracto, elegir la línea de la cuenta de detracciones).
+- **Recálculo automático en el ciclo de vida**: si la factura vuelve a
+  borrador y se cambian montos, al republicar el reparto se rehace con el
+  nuevo importe; si el total cae por debajo del mínimo, el reparto
+  desaparece y todo vuelve a la cuenta del tercero. No quedan líneas
+  duplicadas ni obsoletas.
+- **Cuentas requeridas**: con la opción activa, publicar una factura
+  afecta sin las cuentas configuradas se detiene con un aviso que indica
+  dónde configurarlas.
+- **Desactivada** (valor por defecto), el comportamiento es el estándar:
+  todo el total en la cuenta del cliente/proveedor.
+- Prueba reproducible del ciclo completo:
+  `tools/detraction_split_demo.py` (publicar → borrador → cambiar monto →
+  republicar, verificando el balance del asiento en cada paso).
 
 ## Reportes
 
