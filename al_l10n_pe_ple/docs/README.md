@@ -18,6 +18,7 @@ configura y cómo se genera. La referencia técnica campo a campo está en
 | Ficha del activo (pestaña PLE SUNAT) → Libro 7 | [libro_7_activos_fijos.md](libro_7_activos_fijos.md) |
 | Albaranes marcados → Libro 9 | [consignaciones_libro_9.md](consignaciones_libro_9.md) |
 | Ajustes ▸ Perú → formatos simplificados | [simplificados.md](simplificados.md) |
+| Perú ▸ Configuración ▸ **Detracciones (SPOT)** + pestaña Detracción en facturas | [detracciones.md](../../al_l10n_pe_detraction/docs/detracciones.md) |
 
 ## Conceptos comunes
 
