@@ -241,7 +241,8 @@ CASES = [
 ]
 for label, flags, code in CASES:
     vals = {'year': YEAR, 'month': MONTH, 'balance_date': BALANCE,
-            'opportunity': '07', 'export_71': False}
+            'opportunity': '07', 'export_71': False,
+            'generate_xlsx': False}
     vals.update(flags)
     wizard = env['l10n_pe.ple.export.wizard'].create(vals)
     try:
@@ -290,6 +291,63 @@ try:
             log('EE %s' % label, False, str(exc)[:120])
 except Exception as exc:
     log('EE cash', False, str(exc)[:120])
+
+print('=== 4. Validación del Excel de revisión (formato v18) ===')
+import io
+import zipfile
+from openpyxl import load_workbook
+from odoo.addons.al_l10n_pe_ple.models.ple_xlsx import (
+    PLE_XLSX_HEADERS, PLE_XLSX_TITLES)
+
+for label, flags, code in CASES:
+    vals = {'year': YEAR, 'month': MONTH, 'balance_date': BALANCE,
+            'opportunity': '07', 'export_71': False, 'generate_xlsx': True}
+    vals.update(flags)
+    wizard = env['l10n_pe.ple.export.wizard'].create(vals)
+    try:
+        wizard.action_export()
+        archive = zipfile.ZipFile(
+            io.BytesIO(base64.b64decode(wizard.file_data)))
+        names = archive.namelist()
+        txt_name = next(n for n in names if n.endswith('.txt'))
+        xlsx_name = next(n for n in names if n.endswith('.xlsx'))
+        txt_lines = [l for l in
+                     archive.read(txt_name).decode().split('\r\n') if l]
+        book = load_workbook(io.BytesIO(archive.read(xlsx_name)),
+                             read_only=False)
+        sheet = book[PLE_XLSX_TITLES[code]]         # nombre de hoja exacto
+        headers = PLE_XLSX_HEADERS[code]
+        # título de compañía en A1
+        title_ok = (sheet.cell(1, 1).value or '').startswith(company.name)
+        # fila RUC
+        ruc_ok = (sheet.cell(2, 1).value == 'RUC'
+                  and sheet.cell(2, 2).value == company.partner_id.vat)
+        # encabezados en la fila 4, columnas B..; numeración en fila 3
+        head_ok = all(sheet.cell(4, i + 2).value == h
+                      for i, h in enumerate(headers))
+        num_ok = all(sheet.cell(3, i + 2).value == i + 1
+                     for i in range(len(headers)))
+        # datos: misma cantidad de filas que el TXT y primera fila igual
+        data_ok = True
+        for r, line in enumerate(txt_lines):
+            fields_txt = line.split('|')
+            for c, value in enumerate(fields_txt):
+                cell = sheet.cell(6 + r, c + 2).value
+                if str(cell if cell is not None else '') != value:
+                    data_ok = False
+                    break
+            if not data_ok:
+                break
+        extra = sheet.cell(6 + len(txt_lines), 2).value
+        ok = all([title_ok, ruc_ok, head_ok, num_ok, data_ok, extra is None])
+        log('XLS %s' % label, ok,
+            '%s filas=%d título=%s ruc=%s cab=%s num=%s datos=%s' % (
+                xlsx_name, len(txt_lines),
+                'ok' if title_ok else 'MAL', 'ok' if ruc_ok else 'MAL',
+                'ok' if head_ok else 'MAL', 'ok' if num_ok else 'MAL',
+                'ok' if data_ok and extra is None else 'MAL'))
+    except Exception as exc:
+        log('XLS %s' % label, False, 'excepción: %s' % str(exc)[:120])
 
 env.cr.commit()
 print('=== RESUMEN ===')
