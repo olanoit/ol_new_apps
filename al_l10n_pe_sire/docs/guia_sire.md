@@ -2,7 +2,7 @@
 
 ## Configuración
 
-**Ajustes → Contabilidad → sección Contabilidad (PE) → API SIRE (SUNAT):**
+**Ajustes → Perú → sección SIRE (RVIE / RCE):**
 
 | Campo | Origen |
 | --- | --- |

@@ -46,7 +46,7 @@ Los formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib`` /
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '2.20260719',
+    'version': '3.20260719',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',

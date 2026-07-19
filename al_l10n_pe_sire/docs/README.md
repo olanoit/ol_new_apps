@@ -10,7 +10,7 @@
 | Perú → SIRE → Ventas (RVIE) | [guia_sire.md](guia_sire.md) |
 | Perú → SIRE → Compras (RCE) | [guia_sire.md](guia_sire.md) |
 | Perú → Configuración → SIRE: campos de comparación | [guia_sire.md § Campos de comparación](guia_sire.md#campos-de-comparación) |
-| Ajustes → Contabilidad (PE) → API SIRE (SUNAT) | [guia_sire.md § Configuración](guia_sire.md#configuración) |
+| Ajustes → Perú → SIRE (RVIE / RCE) | [guia_sire.md § Configuración](guia_sire.md#configuración) |
 
 ## Conceptos comunes
 

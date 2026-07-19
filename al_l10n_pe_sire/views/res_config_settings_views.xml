@@ -4,30 +4,33 @@
     <record id="res_config_settings_view_form" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.sire</field>
         <field name="model">res.config.settings</field>
+        <field name="priority" eval="64"/>
         <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//block[@name='pe_accounting_block']" position="inside">
-                <setting string="API SIRE (SUNAT)"
-                         help="Credenciales para descargar la propuesta RVIE/RCE por servicio web. Se generan en SOL: Empresas → Credenciales de API SUNAT.">
-                    <div class="content-group">
-                        <div class="row mt8">
-                            <label for="l10n_pe_sire_sol_user" class="col-lg-5 o_light_label"/>
-                            <field name="l10n_pe_sire_sol_user"/>
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="SIRE (RVIE / RCE)" name="pe_sire_block">
+                    <setting string="API SIRE (SUNAT)"
+                             help="Credenciales para descargar la propuesta RVIE/RCE por servicio web. Se generan en SOL: Empresas → Credenciales de API SUNAT.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_sire_sol_user" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_sire_sol_user"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_sire_sol_password" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_sire_sol_password" password="True"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_sire_client_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_sire_client_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_sire_client_secret" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_sire_client_secret" password="True"/>
+                            </div>
                         </div>
-                        <div class="row">
-                            <label for="l10n_pe_sire_sol_password" class="col-lg-5 o_light_label"/>
-                            <field name="l10n_pe_sire_sol_password" password="True"/>
-                        </div>
-                        <div class="row">
-                            <label for="l10n_pe_sire_client_id" class="col-lg-5 o_light_label"/>
-                            <field name="l10n_pe_sire_client_id"/>
-                        </div>
-                        <div class="row">
-                            <label for="l10n_pe_sire_client_secret" class="col-lg-5 o_light_label"/>
-                            <field name="l10n_pe_sire_client_secret" password="True"/>
-                        </div>
-                    </div>
-                </setting>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>

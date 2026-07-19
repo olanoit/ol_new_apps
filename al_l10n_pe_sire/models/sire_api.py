@@ -46,7 +46,7 @@ class L10nPeSireApi(models.AbstractModel):
         ]
         if missing:
             raise UserError(_(
-                'Faltan credenciales de la API SIRE en Ajustes → Contabilidad (PE): %s.',
+                'Faltan credenciales de la API SIRE en Ajustes → Perú → SIRE (RVIE / RCE): %s.',
                 ', '.join(missing)))
         return {
             'ruc': ruc,

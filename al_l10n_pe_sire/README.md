@@ -8,7 +8,7 @@ reemplazo y el XLSX de trabajo.
 ## Inicio rápido
 
 1. Instalar el módulo (requiere `al_account_base` y `l10n_pe_edi`).
-2. Ajustes → Contabilidad (PE) → **API SIRE (SUNAT)**: usuario/clave SOL y
+2. Ajustes → Perú → **SIRE (RVIE / RCE)**: usuario/clave SOL y
    client_id/client_secret (generados en SOL → Credenciales de API SUNAT).
 3. Menú **Perú → SIRE → Ventas (RVIE)** o **Compras (RCE)** → crear periodo.
 4. Flujo: *Solicitar propuesta → Consultar ticket → Descargar propuesta →

@@ -33,7 +33,7 @@ carga a mano y el flujo continúa igual.
 
 | Pieza | Dónde | Uso desde este módulo |
 | --- | --- | --- |
-| Menú raíz «Perú» y bloque de ajustes | `al_account_base` (`al_l10n_pe_root`, `al_l10n_pe_config`, block `pe_accounting_block`) | Colgar menús y settings |
+| Menú raíz «Perú» y app de ajustes | `al_account_base` (`al_l10n_pe_root`, `al_l10n_pe_config`, app `al_account_base`) | Colgar menús; el módulo añade su propio bloque `pe_sire_block` («SIRE (RVIE / RCE)») |
 | Tipo/afectación de impuestos PE | `l10n_pe_edi` (`l10n_pe_edi_affectation_reason`, `l10n_pe_edi_tax_code`, `l10n_pe_edi_operation_type`, `l10n_pe_edi_refund_reason`) | Clasificar bases (gravada/exonerada/inafecta/exportación/gratuita) |
 | Tipo de documento y serie-folio | `l10n_latam_invoice_document` | `l10n_latam_document_type_id.code`, `l10n_latam_document_number` |
 | Detracciones | `al_l10n_pe_detraction` (`l10n_pe_detraction_applies`) | Columna «Detracción» del RCE (chequeo suave, sin dependencia dura) |
@@ -125,6 +125,6 @@ Regla RVIE: NC (07) de comprobante de periodo anterior → montos a columnas de
 
 ## 7. Configuración previa
 
-Ajustes → Contabilidad (PE): usuario SOL, clave SOL, client_id y client_secret de la API
+Ajustes → Perú → SIRE (RVIE / RCE): usuario SOL, clave SOL, client_id y client_secret de la API
 SIRE (se generan en SOL: Empresas → Credenciales de API SUNAT). Sin credenciales, los
 botones de API lanzan `UserError`; la vía manual sigue disponible.

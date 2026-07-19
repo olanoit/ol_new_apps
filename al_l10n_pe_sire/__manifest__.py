@@ -20,7 +20,7 @@ trabajo (XLSX).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '1.20260719',
+    'version': '2.20260719',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',
