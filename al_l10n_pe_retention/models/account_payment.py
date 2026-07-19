@@ -48,6 +48,9 @@ CRE_DOCUMENT = """  <sac:SUNATRetentionDocumentReference>
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
+    # Etiqueta en español del marco nativo
+    withholding_line_ids = fields.One2many(string='Retenciones')
+
     l10n_pe_retention_number = fields.Char(
         string='Nº comprobante de retención',
         compute='_compute_l10n_pe_retention_number', store=True)

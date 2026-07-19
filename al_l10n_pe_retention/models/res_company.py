@@ -35,6 +35,12 @@ class ResCompany(models.Model):
     l10n_pe_retention_received_journal_id = fields.Many2one(
         'account.journal', string='Diario de retenciones sufridas',
         check_company=True, domain=[('type', '=', 'general')])
+    l10n_pe_retention_outstanding_account_id = fields.Many2one(
+        'account.account', string='Cuenta transitoria (retenciones)',
+        check_company=True,
+        help='Cuenta transitoria de pagos que el wizard propone al '
+             'registrar pagos con retención cuando el método de pago no '
+             'tiene cuenta propia (el campo es obligatorio en el pago).')
 
 
 class ResConfigSettings(models.TransientModel):
@@ -53,4 +59,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False)
     l10n_pe_retention_received_journal_id = fields.Many2one(
         related='company_id.l10n_pe_retention_received_journal_id',
+        readonly=False)
+    l10n_pe_retention_outstanding_account_id = fields.Many2one(
+        related='company_id.l10n_pe_retention_outstanding_account_id',
         readonly=False)

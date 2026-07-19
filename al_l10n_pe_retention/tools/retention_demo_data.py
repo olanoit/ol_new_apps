@@ -45,11 +45,15 @@ if not tax:
         lambda l: l.repartition_type == 'tax').account_id = acc_ret
     tax.refund_repartition_line_ids.filtered(
         lambda l: l.repartition_type == 'tax').account_id = acc_ret
+acc_out = get_or_create('account.account', [('code', '=', '104901')], {
+    'code': '104901', 'name': 'Pagos pendientes (DEMO)',
+    'account_type': 'asset_current', 'reconcile': True})
 company.write({
     'l10n_pe_retention_agent': True, 'l10n_pe_retention_rate': 3.0,
     'l10n_pe_retention_min_amount': 700.0,
     'l10n_pe_retention_tax_id': tax.id,
-    'l10n_pe_retention_received_account_id': acc_suf.id})
+    'l10n_pe_retention_received_account_id': acc_suf.id,
+    'l10n_pe_retention_outstanding_account_id': acc_out.id})
 log('configuración agente', bool(company.l10n_pe_retention_tax_id),
     'impuesto=%s' % tax.name)
 

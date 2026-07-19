@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
 from . import retention_summary_wizard
+from . import account_payment_register

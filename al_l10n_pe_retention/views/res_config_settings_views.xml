@@ -28,6 +28,11 @@
                                    class="col-lg-5 o_light_label"/>
                             <field name="l10n_pe_retention_tax_id"/>
                         </div>
+                        <div class="row">
+                            <label for="l10n_pe_retention_outstanding_account_id"
+                                   class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_retention_outstanding_account_id"/>
+                        </div>
                     </div>
                 </setting>
                 <setting string="Retenciones sufridas (clientes agentes)"

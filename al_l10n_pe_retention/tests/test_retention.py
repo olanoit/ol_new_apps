@@ -167,6 +167,111 @@ class TestRetentionApplies(TransactionCase):
         bill.action_post()
         self.assertNotIn(tax, bill.invoice_line_ids.tax_ids)
 
+    def test_outstanding_account_default(self):
+        self._setup_retention_tax()
+        Account = self.env['account.account'].with_company(self.company)
+        outstanding = Account.search(
+            [('code', '=', '104901')], limit=1) or Account.create({
+                'code': '104901', 'name': 'Pagos pendientes Test',
+                'account_type': 'asset_current', 'reconcile': True})
+        self.company.l10n_pe_retention_outstanding_account_id = outstanding
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill)
+        if not wizard.withholding_payment_account_id:
+            self.assertEqual(
+                wizard.withholding_outstanding_account_id, outstanding)
+
+    def test_wizard_amount_edit_recomputes(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill, amount=295.0)  # 25%
+        self.assertAlmostEqual(
+            wizard.withholding_line_ids.amount, 8.85, 2)  # 3% de 295
+        wizard.amount = 1180.0
+        self.assertAlmostEqual(
+            wizard.withholding_line_ids.amount, 35.40, 2)
+
+    def test_wizard_line_removable(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill)
+        wizard.withholding_line_ids = [(5, 0, 0)]
+        payments = wizard._create_payments()
+        self.assertFalse(payments.l10n_pe_retention_number)
+
+    def test_sequence_increments(self):
+        self._setup_retention_tax()
+        numbers = []
+        for _i in range(2):
+            bill = self._bill(1000.0)
+            bill.action_post()
+            payments = self._register_payment(bill)._create_payments()
+            numbers.append(payments.l10n_pe_retention_number)
+        self.assertTrue(all(n and n.startswith('R001-') for n in numbers))
+        self.assertNotEqual(numbers[0], numbers[1])
+
+    def test_applies_recomputes_on_partner_flag(self):
+        bill = self._bill(1000.0)
+        self.assertTrue(bill.l10n_pe_retention_applies)
+        self.partner.l10n_pe_retention_agent = True
+        self.assertFalse(bill.l10n_pe_retention_applies)
+        self.partner.l10n_pe_retention_agent = False
+        self.assertTrue(bill.l10n_pe_retention_applies)
+
+    def test_not_applies_boleta(self):
+        bill = self._bill(1000.0)
+        doc_type = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '03'), ('country_id.code', '=', 'PE')], limit=1)
+        if not doc_type:
+            self.skipTest('sin tipo de documento 03')
+        bill.l10n_latam_document_type_id = doc_type
+        self.assertFalse(bill.l10n_pe_retention_applies)
+
+    def test_cre_xml_content(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        payments = self._register_payment(bill)._create_payments()
+        payments.action_l10n_pe_generate_cre_xml()
+        attachment = self.env['ir.attachment'].search(
+            [('res_model', '=', 'account.payment'),
+             ('res_id', '=', payments.id),
+             ('mimetype', '=', 'application/xml')],
+            limit=1, order='id desc')
+        xml = attachment.raw.decode()
+        self.assertIn(self.company.vat, xml)
+        self.assertIn(self.partner.vat, xml)
+        self.assertIn(payments.l10n_pe_retention_number, xml)
+        self.assertIn('<sac:SUNATRetentionPercent>3', xml)
+        self.assertIn('35.40', xml)
+
+    def test_summary_excludes_other_months(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill)
+        wizard.payment_date = date(2025, 6, 15)
+        wizard._create_payments()
+        summary = self.env['l10n_pe.retention.summary.wizard'].create({
+            'year': 2025, 'month': '07'})
+        summary.action_export()
+        import base64
+        content = base64.b64decode(summary.file_data or b'').decode()
+        self.assertNotIn(str(date(2025, 6, 15)), content)
+
+    def test_retention_received_reset_draft(self):
+        self.test_retention_received()
+        received = self.env['l10n_pe.retention.received'].search(
+            [('name', '=', 'R002-00000077')], limit=1)
+        invoice = received.move_id
+        received.action_draft()
+        self.assertEqual(received.state, 'draft')
+        self.assertFalse(received.entry_id)
+        self.assertAlmostEqual(invoice.amount_residual, 2360.0, 2)
+
     # ------------------------------------------------------------------
     # Fase 2: retenciones sufridas (ventas)
     # ------------------------------------------------------------------

@@ -24,7 +24,9 @@ class AccountMove(models.Model):
 
     @api.depends('move_type', 'partner_id', 'amount_total_signed',
                  'company_id', 'l10n_latam_document_type_id',
-                 'invoice_line_ids.product_id')
+                 'invoice_line_ids.product_id',
+                 'commercial_partner_id.l10n_pe_retention_agent',
+                 'commercial_partner_id.l10n_pe_good_contributor')
     def _compute_l10n_pe_retention(self):
         for move in self:
             company = move.company_id

@@ -13,6 +13,26 @@ Nación**; el proveedor cobra el neto. Aplica en general a operaciones
 mayores a **S/ 700** (S/ 400 en transporte de bienes; sin mínimo en oro,
 minerales e inmuebles).
 
+## Diagrama de flujo
+
+```mermaid
+flowchart TD
+    A[Factura con productos SPOT] --> B{"¿Aplica detracción?<br/>total &gt; mínimo del código<br/>(S/700 / S/400 / sin mínimo)"}
+    B -- No --> C[Flujo normal]
+    B -- Sí --> D["Pestaña Detracción:<br/>código dominante (mayor %),<br/>monto redondeado a soles, neto"]
+    D --> E{¿Reparto en el asiento activo?}
+    E -- Sí --> F["Mismo asiento:<br/>neto → cuenta del tercero<br/>detracción → 121x/424x"]
+    E -- No --> G[Todo el total en la<br/>cuenta del tercero]
+    F --> H{Ventas o compras}
+    G --> H
+    H -- Venta --> I["Publicar: op. EDI 1001,<br/>XML con bloque Detraccion<br/>(cuenta BN, medio 999)"]
+    I --> J[Cliente deposita en el BN<br/>→ Registrar depósito + constancia]
+    H -- Compra --> K[Depositar en el BN<br/>a nombre del proveedor]
+    K --> L[Registrar depósito:<br/>pago parcial + constancia]
+    J --> M[Constancia → PLE 8.1/8.3<br/>campos 32-33 / 24-25]
+    L --> M
+```
+
 ## Configuración inicial (una sola vez)
 
 1. **Catálogo** — Perú ▸ Configuración ▸ Detracciones (SPOT): viene

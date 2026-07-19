@@ -10,6 +10,25 @@
 formulario 626. El proveedor retenido usa ese monto como crédito contra su
 IGV. La retención se efectúa **en cada pago** (parciales incluidos).
 
+## Diagrama de flujo
+
+```mermaid
+flowchart TD
+    A[Factura de proveedor publicada] --> B{"¿Aplica retención?<br/>agente + &gt;S/700 + sin excepciones<br/>(agente-agente, buen contribuyente,<br/>boleta, detracción)"}
+    B -- No --> C[Pago normal]
+    B -- Sí --> D[Impuesto -3% inyectado<br/>en líneas: total intacto]
+    D --> E[Registrar pago:<br/>wizard propone 3% del monto pagado]
+    E --> F["Pago asentado:<br/>neto → proveedor<br/>retención → 4011x"]
+    F --> G[Nº comprobante R001-…<br/>+ botón XML CRE]
+    G --> H[Resumen 626 mensual<br/>+ marca en PLE 8.3]
+
+    subgraph Ventas: nos retienen
+        V1[Cliente agente paga neto<br/>y entrega comprobante] --> V2[Perú ▸ Retenciones sufridas:<br/>registrar Nº, fecha y monto]
+        V2 --> V3["Asiento 40114 ↔ cliente,<br/>conciliado con la factura"]
+        V3 --> V4[Crédito contra el IGV<br/>en la declaración]
+    end
+```
+
 ## Configuración inicial
 
 1. **Ajustes ▸ Perú ▸ «Agente de retención del IGV»**: activar y revisar
