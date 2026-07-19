@@ -81,10 +81,15 @@ class AccountMove(models.Model):
                     and move.l10n_pe_edi_operation_type
                     not in DETRACTION_OPERATION_TYPES):
                 move.l10n_pe_edi_operation_type = '1001'
-            if (move.l10n_pe_detraction_applies
-                    and move.company_id.l10n_pe_detraction_split
-                    and move.state == 'draft'):
-                move._l10n_pe_apply_detraction_split()
+            if (move.company_id.l10n_pe_detraction_split
+                    and move.state == 'draft'
+                    and move.move_type in ('out_invoice', 'in_invoice')):
+                # al reeditar en borrador, la sincronización de términos
+                # puede reutilizar la línea de detracción: normalizar
+                # siempre y repartir de cero si aplica
+                move._l10n_pe_normalize_detraction_terms()
+                if move.l10n_pe_detraction_applies:
+                    move._l10n_pe_apply_detraction_split()
         return super()._post(soft=soft)
 
     # ------------------------------------------------------------------
@@ -107,10 +112,49 @@ class AccountMove(models.Model):
                 else self.env._('por pagar')))
         return account
 
+    def _l10n_pe_standard_counterpart_account(self):
+        self.ensure_one()
+        partner = self.commercial_partner_id.with_company(self.company_id)
+        if self.move_type == 'out_invoice':
+            return partner.property_account_receivable_id
+        return partner.property_account_payable_id
+
+    def _l10n_pe_normalize_detraction_terms(self):
+        """Deshace cualquier reparto previo antes de recalcular: devuelve
+        las líneas de término que quedaron en cuentas de detracción (por
+        una edición en borrador) a la cuenta estándar del tercero."""
+        self.ensure_one()
+        company = self.company_id
+        det_accounts = (company.l10n_pe_detraction_receivable_account_id
+                        | company.l10n_pe_detraction_payable_account_id)
+        if not det_accounts:
+            return
+        term_lines = self.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        det_lines = term_lines.filtered(
+            lambda l: l.account_id in det_accounts)
+        if not det_lines:
+            return
+        normal_lines = term_lines - det_lines
+        if normal_lines:
+            main = max(normal_lines, key=lambda l: abs(l.balance))
+            self.with_context(dynamic_unlink=True).write({'line_ids': [
+                (1, main.id, {
+                    'balance': main.balance
+                    + sum(det_lines.mapped('balance')),
+                    'amount_currency': main.amount_currency
+                    + sum(det_lines.mapped('amount_currency')),
+                })] + [(2, line.id) for line in det_lines]})
+        else:
+            det_lines.write({
+                'account_id':
+                    self._l10n_pe_standard_counterpart_account().id})
+
     def _l10n_pe_apply_detraction_split(self):
         """Divide la línea por cobrar/pagar del propio asiento: neto en la
         cuenta del tercero y detracción en la cuenta configurada. No se
-        crea un segundo asiento."""
+        crea un segundo asiento. Se ejecuta siempre tras
+        ``_l10n_pe_normalize_detraction_terms``."""
         self.ensure_one()
         account = self._l10n_pe_detraction_split_account()
         det_amount = self.l10n_pe_detraction_amount  # soles, positivo
@@ -118,9 +162,8 @@ class AccountMove(models.Model):
             return
         term_lines = self.line_ids.filtered(
             lambda l: l.display_type == 'payment_term')
-        if not term_lines or any(
-                l.account_id == account for l in term_lines):
-            return  # sin términos o ya repartido (re-publicación)
+        if not term_lines:
+            return
         main = max(term_lines, key=lambda l: abs(l.balance))
         if abs(main.balance) <= det_amount:
             return  # término menor a la detracción (multi-cuota atípica)

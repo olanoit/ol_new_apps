@@ -141,12 +141,14 @@ class TestDetraction(TransactionCase):
     # ------------------------------------------------------------------
     def _enable_split(self):
         Account = self.env['account.account'].with_company(self.company)
-        receivable = Account.create({
-            'code': '121901', 'name': 'Detracciones por cobrar Test',
-            'account_type': 'asset_receivable', 'reconcile': True})
-        payable = Account.create({
-            'code': '424901', 'name': 'Detracciones por pagar Test',
-            'account_type': 'liability_payable', 'reconcile': True})
+        receivable = Account.search(
+            [('code', '=', '121901')], limit=1) or Account.create({
+                'code': '121901', 'name': 'Detracciones por cobrar Test',
+                'account_type': 'asset_receivable', 'reconcile': True})
+        payable = Account.search(
+            [('code', '=', '424901')], limit=1) or Account.create({
+                'code': '424901', 'name': 'Detracciones por pagar Test',
+                'account_type': 'liability_payable', 'reconcile': True})
         self.company.write({
             'l10n_pe_detraction_split': True,
             'l10n_pe_detraction_receivable_account_id': receivable.id,
@@ -198,6 +200,43 @@ class TestDetraction(TransactionCase):
         term_lines = move.line_ids.filtered(
             lambda l: l.display_type == 'payment_term')
         self.assertEqual(len(term_lines), 1)
+
+    def test_split_lifecycle_draft_edit_repost(self):
+        """Publicar → borrador → cambiar monto → republicar: el reparto se
+        recalcula y el asiento queda balanceado (la sincronización de
+        términos en borrador puede reutilizar la línea de detracción)."""
+        receivable, _payable = self._enable_split()
+        move = self._invoice('out_invoice', 1000.0)
+        move.action_post()
+        for price, det_expected in ((2000.0, 240.0), (500.0, 0.0),
+                                    (3000.0, 425.0)):
+            move.button_draft()
+            move.invoice_line_ids.write({'price_unit': price})
+            move.action_post()
+            term_lines = move.line_ids.filtered(
+                lambda l: l.display_type == 'payment_term')
+            det_lines = term_lines.filtered(
+                lambda l: l.account_id == receivable)
+            total = move.amount_total
+            self.assertEqual(sum(move.line_ids.mapped('balance')), 0.0,
+                             'asiento desbalanceado con precio %s' % price)
+            if det_expected:
+                det = round(total * 0.12)
+                self.assertEqual(len(term_lines), 2)
+                self.assertEqual(det_lines.balance, det)
+                self.assertEqual((term_lines - det_lines).balance,
+                                 total - det)
+            else:
+                self.assertEqual(len(term_lines), 1)
+                self.assertFalse(det_lines)
+                self.assertNotEqual(term_lines.account_id, receivable)
+        # re-publicación sin cambios: reparto estable
+        move.button_draft()
+        move.action_post()
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        self.assertEqual(len(term_lines), 2)
+        self.assertEqual(sum(move.line_ids.mapped('balance')), 0.0)
 
     def test_split_not_applied_below_minimum(self):
         self._enable_split()
