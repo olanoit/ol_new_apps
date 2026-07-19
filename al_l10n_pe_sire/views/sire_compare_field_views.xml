@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sire_compare_field_list" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.compare.field.list</field>
+        <field name="model">l10n_pe.sire.compare.field</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="book_type"/>
+                <field name="name"/>
+                <field name="field_name"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sire_compare_field_search" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.compare.field.search</field>
+        <field name="model">l10n_pe.sire.compare.field</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="filter_rce" string="RCE — Compras" domain="[('book_type', '=', 'rce')]"/>
+                <filter name="filter_rvie" string="RVIE — Ventas" domain="[('book_type', '=', 'rvie')]"/>
+                <separator/>
+                <filter name="filter_inactive" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_book" string="Registro" context="{'group_by': 'book_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sire_compare_field" model="ir.actions.act_window">
+        <field name="name">SIRE: campos de comparación</field>
+        <field name="res_model">l10n_pe.sire.compare.field</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_book': 1, 'active_test': False}</field>
+    </record>
+
+</odoo>

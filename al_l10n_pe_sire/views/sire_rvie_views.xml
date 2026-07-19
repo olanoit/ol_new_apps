@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sire_rvie_list" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rvie.list</field>
+        <field name="model">l10n_pe.sire.rvie</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="year"/>
+                <field name="month"/>
+                <field name="ticket_number" optional="hide"/>
+                <field name="ticket_state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('requested', 'downloaded')"
+                       decoration-warning="state in ('sire_loaded', 'system_loaded')"
+                       decoration-primary="state == 'compared'"
+                       decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sire_rvie_form" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rvie.form</field>
+        <field name="model">l10n_pe.sire.rvie</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_request_proposal" string="Solicitar propuesta"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft' or download_manual"/>
+                    <button name="action_request_proposal" string="Confirmar TXT manual"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft' or not download_manual"/>
+                    <button name="action_check_ticket" string="Consultar ticket"
+                            type="object" invisible="state != 'requested'"/>
+                    <button name="action_download_proposal" string="Descargar propuesta"
+                            type="object" class="btn-primary"
+                            invisible="state != 'requested' or ticket_state != '06'"/>
+                    <button name="action_load_sire" string="Desplegar SIRE"
+                            type="object" class="btn-primary"
+                            invisible="state != 'downloaded'"/>
+                    <button name="action_load_system" string="Desplegar sistema"
+                            type="object" class="btn-primary"
+                            invisible="state != 'sire_loaded'"/>
+                    <button name="action_compare" string="Comparar"
+                            type="object" class="btn-primary"
+                            invisible="state != 'system_loaded'"/>
+                    <button name="action_export_xlsx" string="Descargar XLSX"
+                            type="object" invisible="state not in ('compared', 'done')"/>
+                    <button name="action_export_replacement" string="TXT de reemplazo"
+                            type="object" invisible="state not in ('compared', 'done')"/>
+                    <button name="action_done" string="Marcar realizado"
+                            type="object" invisible="state != 'compared'"/>
+                    <button name="action_reset" string="Reiniciar"
+                            type="object" invisible="state in ('draft', 'done')"
+                            confirm="Se eliminarán las líneas desplegadas. ¿Continuar?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Periodo">
+                            <field name="year" readonly="state != 'draft'"/>
+                            <field name="month" readonly="state != 'draft'"/>
+                            <field name="company_id" readonly="state != 'draft'"
+                                   groups="base.group_multi_company"/>
+                            <field name="download_manual" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Propuesta SUNAT">
+                            <field name="ticket_number" readonly="1"/>
+                            <field name="ticket_state" invisible="download_manual"/>
+                            <field name="ticket_filename" invisible="download_manual"/>
+                            <field name="proposal_filename" invisible="1"/>
+                            <field name="proposal_file" filename="proposal_filename"
+                                   readonly="state not in ('draft', 'downloaded')"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="SIRE" name="sire_lines">
+                            <field name="sire_line_ids" readonly="1">
+                                <list>
+                                    <field name="car_sunat" optional="hide"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="tipo_cp"/>
+                                    <field name="serie_cp"/>
+                                    <field name="nro_cp"/>
+                                    <field name="nro_doc_identidad"/>
+                                    <field name="razon_social" optional="show"/>
+                                    <field name="bi_gravada" sum="Total"/>
+                                    <field name="igv_ipm" sum="Total"/>
+                                    <field name="mto_exonerado" optional="show"/>
+                                    <field name="mto_inafecto" optional="show"/>
+                                    <field name="valor_exportacion" optional="hide"/>
+                                    <field name="dscto_bi" optional="hide"/>
+                                    <field name="dscto_igv" optional="hide"/>
+                                    <field name="isc" optional="hide"/>
+                                    <field name="icbper" optional="hide"/>
+                                    <field name="otros_tributos" optional="hide"/>
+                                    <field name="valor_gratuitas" optional="hide"/>
+                                    <field name="total_cp" sum="Total"/>
+                                    <field name="moneda" optional="show"/>
+                                    <field name="tipo_cambio" optional="hide"/>
+                                    <field name="estado_cp" optional="show"/>
+                                    <field name="incal" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sistema" name="system_lines">
+                            <field name="system_line_ids" readonly="1">
+                                <list>
+                                    <field name="move_id"/>
+                                    <field name="car_sunat" optional="hide"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="tipo_cp"/>
+                                    <field name="serie_cp"/>
+                                    <field name="nro_cp"/>
+                                    <field name="nro_doc_identidad"/>
+                                    <field name="razon_social" optional="show"/>
+                                    <field name="bi_gravada" sum="Total"/>
+                                    <field name="igv_ipm" sum="Total"/>
+                                    <field name="mto_exonerado" optional="show"/>
+                                    <field name="mto_inafecto" optional="show"/>
+                                    <field name="total_cp" sum="Total"/>
+                                    <field name="moneda" optional="show"/>
+                                    <field name="tipo_cambio" optional="hide"/>
+                                    <field name="estado_cp" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Diferencias" name="diff_lines"
+                              invisible="state not in ('compared', 'done')">
+                            <field name="diff_line_ids" readonly="1">
+                                <list decoration-danger="compare_state == '2'"
+                                      decoration-warning="compare_state == '3'"
+                                      decoration-info="compare_state == '1'">
+                                    <field name="compare_state" widget="badge"/>
+                                    <field name="type_line"/>
+                                    <field name="move_id" optional="show"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="tipo_cp"/>
+                                    <field name="serie_cp"/>
+                                    <field name="nro_cp"/>
+                                    <field name="nro_doc_identidad" optional="show"/>
+                                    <field name="total_cp"/>
+                                    <field name="diff_detail"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sire_rvie_search" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rvie.search</field>
+        <field name="model">l10n_pe.sire.rvie</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="year"/>
+                <filter name="filter_pending" string="Pendientes"
+                        domain="[('state', 'not in', ('done',))]"/>
+                <filter name="filter_done" string="Realizados"
+                        domain="[('state', '=', 'done')]"/>
+                <group>
+                    <filter name="group_year" string="Año" context="{'group_by': 'year'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sire_rvie" model="ir.actions.act_window">
+        <field name="name">Ventas (RVIE)</field>
+        <field name="res_model">l10n_pe.sire.rvie</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree un periodo del Registro de Ventas e Ingresos Electrónico</p>
+            <p>Descargue la propuesta de SUNAT, compárela con las facturas de cliente
+               registradas y genere el TXT de reemplazo o el XLSX de trabajo.</p>
+        </field>
+    </record>
+
+</odoo>

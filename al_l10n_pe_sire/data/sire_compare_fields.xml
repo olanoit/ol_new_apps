@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- RCE — Registro de Compras -->
+    <record id="compare_rce_fecha_emision" model="l10n_pe.sire.compare.field">
+        <field name="name">Fecha de emisión</field>
+        <field name="field_name">fecha_emision</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="compare_rce_tipo_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo CP/Doc.</field>
+        <field name="field_name">tipo_cp</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="compare_rce_serie_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Serie del CDP</field>
+        <field name="field_name">serie_cp</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="compare_rce_nro_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Nro CP</field>
+        <field name="field_name">nro_cp</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="compare_rce_tipo_doc_identidad" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo Doc Identidad</field>
+        <field name="field_name">tipo_doc_identidad</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="compare_rce_nro_doc_identidad" model="l10n_pe.sire.compare.field">
+        <field name="name">Nro Doc Identidad</field>
+        <field name="field_name">nro_doc_identidad</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="compare_rce_bi_gravada_dg" model="l10n_pe.sire.compare.field">
+        <field name="name">BI Gravado DG</field>
+        <field name="field_name">bi_gravada_dg</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="compare_rce_igv_dg" model="l10n_pe.sire.compare.field">
+        <field name="name">IGV/IPM DG</field>
+        <field name="field_name">igv_dg</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">80</field>
+    </record>
+    <record id="compare_rce_valor_adq_ng" model="l10n_pe.sire.compare.field">
+        <field name="name">Valor Adq. NG</field>
+        <field name="field_name">valor_adq_ng</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">90</field>
+    </record>
+    <record id="compare_rce_isc" model="l10n_pe.sire.compare.field">
+        <field name="name">ISC</field>
+        <field name="field_name">isc</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="compare_rce_icbper" model="l10n_pe.sire.compare.field">
+        <field name="name">ICBPER</field>
+        <field name="field_name">icbper</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">110</field>
+    </record>
+    <record id="compare_rce_otros_tributos" model="l10n_pe.sire.compare.field">
+        <field name="name">Otros Trib/Cargos</field>
+        <field name="field_name">otros_tributos</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">120</field>
+    </record>
+    <record id="compare_rce_total_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Total CP</field>
+        <field name="field_name">total_cp</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">130</field>
+    </record>
+    <record id="compare_rce_moneda" model="l10n_pe.sire.compare.field">
+        <field name="name">Moneda</field>
+        <field name="field_name">moneda</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">140</field>
+    </record>
+    <record id="compare_rce_estado_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Estado CP</field>
+        <field name="field_name">estado_cp</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">150</field>
+    </record>
+    <record id="compare_rce_detraccion" model="l10n_pe.sire.compare.field">
+        <field name="name">Detracción</field>
+        <field name="field_name">detraccion</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">160</field>
+    </record>
+    <record id="compare_rce_tipo_cambio" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo de cambio</field>
+        <field name="field_name">tipo_cambio</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">170</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rce_fecha_vencimiento" model="l10n_pe.sire.compare.field">
+        <field name="name">Fecha Vcto/Pago</field>
+        <field name="field_name">fecha_vencimiento</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">180</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rce_razon_social" model="l10n_pe.sire.compare.field">
+        <field name="name">Razón social</field>
+        <field name="field_name">razon_social</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">190</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rce_clasif_bienes" model="l10n_pe.sire.compare.field">
+        <field name="name">Clasif de Bss y Sss</field>
+        <field name="field_name">clasif_bienes</field>
+        <field name="book_type">rce</field>
+        <field name="sequence">200</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- RVIE — Registro de Ventas e Ingresos -->
+    <record id="compare_rvie_fecha_emision" model="l10n_pe.sire.compare.field">
+        <field name="name">Fecha de emisión</field>
+        <field name="field_name">fecha_emision</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="compare_rvie_tipo_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo CP/Doc.</field>
+        <field name="field_name">tipo_cp</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="compare_rvie_serie_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Serie del CDP</field>
+        <field name="field_name">serie_cp</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="compare_rvie_nro_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Nro CP</field>
+        <field name="field_name">nro_cp</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="compare_rvie_tipo_doc_identidad" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo Doc Identidad</field>
+        <field name="field_name">tipo_doc_identidad</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="compare_rvie_nro_doc_identidad" model="l10n_pe.sire.compare.field">
+        <field name="name">Nro Doc Identidad</field>
+        <field name="field_name">nro_doc_identidad</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="compare_rvie_valor_exportacion" model="l10n_pe.sire.compare.field">
+        <field name="name">Valor Facturado Exportación</field>
+        <field name="field_name">valor_exportacion</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="compare_rvie_bi_gravada" model="l10n_pe.sire.compare.field">
+        <field name="name">BI Gravada</field>
+        <field name="field_name">bi_gravada</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">80</field>
+    </record>
+    <record id="compare_rvie_dscto_bi" model="l10n_pe.sire.compare.field">
+        <field name="name">Dscto BI</field>
+        <field name="field_name">dscto_bi</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">90</field>
+    </record>
+    <record id="compare_rvie_igv_ipm" model="l10n_pe.sire.compare.field">
+        <field name="name">IGV/IPM</field>
+        <field name="field_name">igv_ipm</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="compare_rvie_dscto_igv" model="l10n_pe.sire.compare.field">
+        <field name="name">Dscto IGV/IPM</field>
+        <field name="field_name">dscto_igv</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">110</field>
+    </record>
+    <record id="compare_rvie_mto_exonerado" model="l10n_pe.sire.compare.field">
+        <field name="name">Mto Exonerado</field>
+        <field name="field_name">mto_exonerado</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">120</field>
+    </record>
+    <record id="compare_rvie_mto_inafecto" model="l10n_pe.sire.compare.field">
+        <field name="name">Mto Inafecto</field>
+        <field name="field_name">mto_inafecto</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">130</field>
+    </record>
+    <record id="compare_rvie_isc" model="l10n_pe.sire.compare.field">
+        <field name="name">ISC</field>
+        <field name="field_name">isc</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">140</field>
+    </record>
+    <record id="compare_rvie_icbper" model="l10n_pe.sire.compare.field">
+        <field name="name">ICBPER</field>
+        <field name="field_name">icbper</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">150</field>
+    </record>
+    <record id="compare_rvie_otros_tributos" model="l10n_pe.sire.compare.field">
+        <field name="name">Otros Trib/Cargos</field>
+        <field name="field_name">otros_tributos</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">160</field>
+    </record>
+    <record id="compare_rvie_total_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Total CP</field>
+        <field name="field_name">total_cp</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">170</field>
+    </record>
+    <record id="compare_rvie_moneda" model="l10n_pe.sire.compare.field">
+        <field name="name">Moneda</field>
+        <field name="field_name">moneda</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">180</field>
+    </record>
+    <record id="compare_rvie_estado_cp" model="l10n_pe.sire.compare.field">
+        <field name="name">Estado CP</field>
+        <field name="field_name">estado_cp</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">190</field>
+    </record>
+    <record id="compare_rvie_tipo_cambio" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo de cambio</field>
+        <field name="field_name">tipo_cambio</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">200</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rvie_fecha_vencimiento" model="l10n_pe.sire.compare.field">
+        <field name="name">Fecha Vcto/Pago</field>
+        <field name="field_name">fecha_vencimiento</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">210</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rvie_razon_social" model="l10n_pe.sire.compare.field">
+        <field name="name">Razón social</field>
+        <field name="field_name">razon_social</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">220</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rvie_valor_gratuitas" model="l10n_pe.sire.compare.field">
+        <field name="name">Valor Op. Gratuitas</field>
+        <field name="field_name">valor_gratuitas</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">230</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="compare_rvie_tipo_operacion" model="l10n_pe.sire.compare.field">
+        <field name="name">Tipo Operación</field>
+        <field name="field_name">tipo_operacion</field>
+        <field name="book_type">rvie</field>
+        <field name="sequence">240</field>
+        <field name="active" eval="False"/>
+    </record>
+
+</odoo>
