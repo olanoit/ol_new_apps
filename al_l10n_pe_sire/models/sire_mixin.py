@@ -43,7 +43,7 @@ class L10nPeSireMixin(models.AbstractModel):
     _inherit = 'l10n_pe.sire.api'
     _description = 'Periodo SIRE'
 
-    name = fields.Char(compute='_compute_name', store=True)
+    name = fields.Char(string='Nombre', compute='_compute_name', store=True)
     year = fields.Integer(
         string='Año', required=True, tracking=True, copy=False,
         default=lambda self: fields.Date.context_today(self).year)
@@ -56,6 +56,7 @@ class L10nPeSireMixin(models.AbstractModel):
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
     state = fields.Selection(
+        string='Estado',
         selection=[
             ('draft', 'Borrador'),
             ('requested', 'Propuesta solicitada'),

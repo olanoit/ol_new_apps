@@ -19,8 +19,8 @@ class L10nPeSireCompareField(models.Model):
     book_type = fields.Selection(
         selection=[('rce', 'RCE — Compras'), ('rvie', 'RVIE — Ventas')],
         string='Registro', required=True)
-    sequence = fields.Integer(default=10)
-    active = fields.Boolean(default=True)
+    sequence = fields.Integer(string='Secuencia', default=10)
+    active = fields.Boolean(string='Activo', default=True)
 
     _field_book_uniq = models.Constraint(
         'unique (book_type, field_name)',
