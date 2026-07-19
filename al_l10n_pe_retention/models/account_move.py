@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 # Boletas de venta (código 03): sin derecho a crédito fiscal → exceptuadas
 EXCLUDED_DOCUMENT_CODES = ('03',)
@@ -47,3 +48,34 @@ class AccountMove(models.Model):
                     abs(move.amount_total_signed)
                     * company.l10n_pe_retention_rate / 100.0)
                 if applies else 0.0)
+
+    def _post(self, soft=True):
+        """Inyecta el impuesto de retención nativo en las líneas de la
+        factura que aplica: no altera el total (los impuestos
+        ``is_withholding_tax_on_payment`` se excluyen del cálculo) y hace
+        que el wizard de pago proponga la retención del 3% de cada pago."""
+        for move in self:
+            company = move.company_id
+            if (move.country_code != 'PE'
+                    or move.move_type != 'in_invoice'
+                    or not company.l10n_pe_retention_agent):
+                continue
+            tax = company.l10n_pe_retention_tax_id
+            product_lines = move.invoice_line_ids.filtered(
+                lambda l: l.display_type == 'product')
+            if move.l10n_pe_retention_applies:
+                if not tax:
+                    raise UserError(self.env._(
+                        'La compañía es agente de retención y la factura '
+                        '%(move)s está sujeta a retención, pero falta '
+                        'configurar el «Impuesto de retención IGV» en '
+                        'Ajustes ▸ Perú.', move=move.display_name))
+                missing = product_lines.filtered(
+                    lambda l: tax not in l.tax_ids)
+                if missing:
+                    missing.write({'tax_ids': [(4, tax.id)]})
+            elif tax:
+                extra = product_lines.filtered(lambda l: tax in l.tax_ids)
+                if extra:
+                    extra.write({'tax_ids': [(3, tax.id)]})
+        return super()._post(soft=soft)

@@ -30,6 +30,21 @@
                         </div>
                     </div>
                 </setting>
+                <setting string="Retenciones sufridas (clientes agentes)"
+                         help="Cuenta 40114 y diario del asiento de las retenciones que nos efectúan los clientes agentes de retención.">
+                    <div class="content-group">
+                        <div class="row">
+                            <label for="l10n_pe_retention_received_account_id"
+                                   class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_retention_received_account_id"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_retention_received_journal_id"
+                                   class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_retention_received_journal_id"/>
+                        </div>
+                    </div>
+                </setting>
             </xpath>
         </field>
     </record>

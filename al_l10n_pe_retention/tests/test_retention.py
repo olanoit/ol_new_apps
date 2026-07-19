@@ -85,6 +85,152 @@ class TestRetentionApplies(TransactionCase):
         })
         self.assertFalse(move.l10n_pe_retention_applies)
 
+    # ------------------------------------------------------------------
+    # Fase 1: retención en el pago (marco nativo)
+    # ------------------------------------------------------------------
+    def _setup_retention_tax(self):
+        Account = self.env['account.account'].with_company(self.company)
+        account = Account.search([('code', '=', '401141')], limit=1) or \
+            Account.create({'code': '401141',
+                            'name': 'IGV Retenciones por pagar Test',
+                            'account_type': 'liability_current'})
+        sequence = self.env['ir.sequence'].search(
+            [('code', '=', 'l10n_pe.cre.test')], limit=1) or \
+            self.env['ir.sequence'].create({
+                'name': 'CRE Test', 'code': 'l10n_pe.cre.test',
+                'prefix': 'R001-', 'padding': 8,
+                'company_id': self.company.id})
+        tax = self.env['account.tax'].search(
+            [('company_id', '=', self.company.id),
+             ('name', '=', 'Retención IGV 3% Test')], limit=1)
+        if not tax:
+            tax = self.env['account.tax'].create({
+                'name': 'Retención IGV 3% Test', 'amount': -3.0,
+                'amount_type': 'percent', 'type_tax_use': 'purchase',
+                'is_withholding_tax_on_payment': True,
+                'withholding_sequence_id': sequence.id,
+                'company_id': self.company.id})
+            tax.invoice_repartition_line_ids.filtered(
+                lambda l: l.repartition_type == 'tax'
+            ).account_id = account
+            tax.refund_repartition_line_ids.filtered(
+                lambda l: l.repartition_type == 'tax'
+            ).account_id = account
+        self.company.l10n_pe_retention_tax_id = tax
+        return tax, account
+
+    def _register_payment(self, bill, amount=None):
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move', active_ids=bill.ids).create({})
+        if amount is not None:
+            wizard.amount = amount
+        return wizard
+
+    def test_payment_full_retention(self):
+        tax, _account = self._setup_retention_tax()
+        bill = self._bill(1000.0)  # total 1180
+        bill.action_post()
+        # el impuesto se inyectó sin alterar el total
+        self.assertIn(tax, bill.invoice_line_ids.tax_ids)
+        self.assertEqual(bill.amount_total, 1180.0)
+        wizard = self._register_payment(bill)
+        self.assertEqual(len(wizard.withholding_line_ids), 1)
+        # 3% del pago completo
+        self.assertAlmostEqual(
+            wizard.withholding_line_ids.amount, 35.40, 2)
+        payments = wizard._create_payments()
+        self.assertAlmostEqual(
+            payments._l10n_pe_retention_lines().amount, 35.40, 2)
+        self.assertTrue(payments.l10n_pe_retention_number)
+        self.assertTrue(
+            payments.l10n_pe_retention_number.startswith('R001-'))
+
+    def test_payment_partial_retention(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill, amount=590.0)  # 50%
+        # 3% de cada pago parcial (590 × 3% = 17.70)
+        self.assertAlmostEqual(
+            wizard.withholding_line_ids.amount, 17.70, 2)
+
+    def test_post_without_tax_raises(self):
+        from odoo.exceptions import UserError
+        self.company.l10n_pe_retention_tax_id = False
+        bill = self._bill(1000.0)
+        with self.assertRaises(UserError):
+            bill.action_post()
+
+    def test_no_tax_injected_below_minimum(self):
+        tax, _account = self._setup_retention_tax()
+        bill = self._bill(500.0)
+        bill.action_post()
+        self.assertNotIn(tax, bill.invoice_line_ids.tax_ids)
+
+    # ------------------------------------------------------------------
+    # Fase 2: retenciones sufridas (ventas)
+    # ------------------------------------------------------------------
+    def test_retention_received(self):
+        Account = self.env['account.account'].with_company(self.company)
+        account = Account.search([('code', '=', '401142')], limit=1) or \
+            Account.create({'code': '401142',
+                            'name': 'IGV Retenciones sufridas Test',
+                            'account_type': 'asset_current',
+                            'reconcile': False})
+        self.company.l10n_pe_retention_received_account_id = account
+        acc_inc = Account.search([('account_type', '=', 'income')], limit=1)
+        journal_sale = self.env['account.journal'].create({
+            'name': 'RET Ventas Test', 'code': 'RETV', 'type': 'sale',
+            'company_id': self.company.id,
+            'l10n_latam_use_documents': False})
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.partner.id,
+            'journal_id': journal_sale.id,
+            'invoice_date': date(2025, 6, 10),
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Venta', 'quantity': 1, 'price_unit': 2000.0,
+                'account_id': acc_inc.id,
+                'tax_ids': [(6, 0, self.env['account.tax'].search(
+                    [('company_id', '=', self.company.id),
+                     ('type_tax_use', '=', 'sale'),
+                     ('amount', '=', 18.0)], limit=1).ids)]})],
+        })
+        invoice.action_post()
+        residual_before = invoice.amount_residual
+        received = self.env['l10n_pe.retention.received'].create({
+            'name': 'R002-00000077', 'date': date(2025, 6, 20),
+            'partner_id': self.partner.id, 'move_id': invoice.id,
+            'amount': 70.80})
+        received.action_post()
+        self.assertEqual(received.state, 'posted')
+        self.assertTrue(received.entry_id)
+        self.assertEqual(received.entry_id.state, 'posted')
+        self.assertAlmostEqual(
+            invoice.amount_residual, residual_before - 70.80, 2)
+        debit_line = received.entry_id.line_ids.filtered(
+            lambda l: l.debit > 0)
+        self.assertEqual(debit_line.account_id, account)
+
+    # ------------------------------------------------------------------
+    # Fase 4: resumen 626
+    # ------------------------------------------------------------------
+    def test_summary_626(self):
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        wizard = self._register_payment(bill)
+        wizard.payment_date = date(2025, 6, 15)
+        wizard._create_payments()
+        summary = self.env['l10n_pe.retention.summary.wizard'].create({
+            'year': 2025, 'month': '06'})
+        summary.action_export()
+        import base64
+        content = base64.b64decode(summary.file_data).decode()
+        row = next(l.split('|') for l in content.split('\r\n')
+                   if self.partner.vat in l)
+        self.assertEqual(len(row), 7)
+        self.assertEqual(row[6], '35.40')
+
     def test_not_applies_with_detraction(self):
         if 'l10n_pe.detraction.type' not in self.env:
             self.skipTest('al_l10n_pe_detraction no instalado')

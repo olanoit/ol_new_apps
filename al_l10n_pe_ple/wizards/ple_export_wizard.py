@@ -769,7 +769,8 @@ class L10nPePleExportWizard(models.TransientModel):
             row += [self._ple_date(move.l10n_pe_detraction_date),  # 24
                     self._ple_text(move.l10n_pe_detraction_number,
                                    24),                          # 25 constancia
-                    '',                                          # 26 retención
+                    '1' if getattr(move, 'l10n_pe_retention_applies',
+                                   False) else '',               # 26 retención
                     '',                                          # 27 clasificación
                     '', '', '',                                  # 28-30 errores
                     '',                                          # 31 medio de pago

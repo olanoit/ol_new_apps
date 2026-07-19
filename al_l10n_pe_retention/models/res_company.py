@@ -26,6 +26,15 @@ class ResCompany(models.Model):
         help='Impuesto negativo de retención en el pago (marco nativo): '
              'su cuenta debe ser «IGV – Retenciones por pagar» (4011x) y '
              'su secuencia numera los comprobantes de retención.')
+    l10n_pe_retention_received_account_id = fields.Many2one(
+        'account.account', string='Cuenta de retenciones sufridas',
+        check_company=True,
+        help='Cuenta 40114 «IGV – Régimen de retenciones» donde se '
+             'acumula el crédito por retenciones que nos efectúan los '
+             'clientes agentes.')
+    l10n_pe_retention_received_journal_id = fields.Many2one(
+        'account.journal', string='Diario de retenciones sufridas',
+        check_company=True, domain=[('type', '=', 'general')])
 
 
 class ResConfigSettings(models.TransientModel):
@@ -39,3 +48,9 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.l10n_pe_retention_min_amount', readonly=False)
     l10n_pe_retention_tax_id = fields.Many2one(
         related='company_id.l10n_pe_retention_tax_id', readonly=False)
+    l10n_pe_retention_received_account_id = fields.Many2one(
+        related='company_id.l10n_pe_retention_received_account_id',
+        readonly=False)
+    l10n_pe_retention_received_journal_id = fields.Many2one(
+        related='company_id.l10n_pe_retention_received_journal_id',
+        readonly=False)

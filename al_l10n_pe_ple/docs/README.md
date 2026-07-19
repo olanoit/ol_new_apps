@@ -19,6 +19,7 @@ configura y cómo se genera. La referencia técnica campo a campo está en
 | Albaranes marcados → Libro 9 | [consignaciones_libro_9.md](consignaciones_libro_9.md) |
 | Ajustes ▸ Perú → formatos simplificados | [simplificados.md](simplificados.md) |
 | Perú ▸ Configuración ▸ **Detracciones (SPOT)** + pestaña Detracción en facturas | [detracciones.md](../../al_l10n_pe_detraction/docs/detracciones.md) |
+| Perú ▸ **Retenciones IGV** (efectuadas / sufridas / resumen 626) | [retenciones.md](../../al_l10n_pe_retention/docs/retenciones.md) |
 
 ## Conceptos comunes
 

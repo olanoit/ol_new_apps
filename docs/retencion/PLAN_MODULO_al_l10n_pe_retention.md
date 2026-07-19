@@ -67,12 +67,12 @@ al_l10n_pe_retention/
 
 | Fase | Contenido | Entregable |
 |---|---|---|
-| **0** | Config + aplicabilidad: campos de compañía/ajustes Perú (agente, tasa, mínimo, impuesto, cuenta), flags de partner, cómputo `l10n_pe_retention_applies` en factura con TODAS las excepciones SUNAT (incl. detracción vía `al_l10n_pe_detraction` si está instalado), indicador visual | Módulo instala; tests de aplicabilidad |
-| **1** | Retención en el pago (compras): inyectar la línea de retención nativa al registrar pagos de facturas que aplican (3 % de **cada pago**, redondeo), numeración con secuencia; validar excepciones al vuelo | Pago con retención asentado y numerado; tests de pagos parciales |
-| **2** | Comprobante de Retención (PDF formato SUNAT, basado en v17) + envío por correo + registro «Retenciones sufridas» (ventas: cliente agente nos retiene → asiento a 40114 conciliado) | PDF + flujo ventas; tests |
-| **3** | **CRE XML UBL** (plantillas v18 como referencia, infraestructura `l10n_pe_edi`) y estado de envío | XML válido; tests |
-| **4** | Reportes: TXT del **Registro del Régimen de Retenciones**, resumen para F. 626, marca de retención en PLE 8.1/8.3 (campo 26/34) | TXT/consultas; docs |
-| **5** | Datos demo + validación integral en `ol_pe_v19` (`pe.cfg`), guía funcional en la app Perú, commit | 100 % validaciones |
+| **0** ✅ 2026-07-19 | Config + aplicabilidad: campos de compañía/ajustes Perú (agente, tasa, mínimo, impuesto, cuenta), flags de partner, cómputo `l10n_pe_retention_applies` en factura con TODAS las excepciones SUNAT (incl. detracción vía `al_l10n_pe_detraction` si está instalado), indicador visual | Módulo instala; tests de aplicabilidad |
+| **1** ✅ 2026-07-19 | Retención en el pago (compras): inyectar la línea de retención nativa al registrar pagos de facturas que aplican (3 % de **cada pago**, redondeo), numeración con secuencia; validar excepciones al vuelo | Pago con retención asentado y numerado; tests de pagos parciales |
+| **2** ✅ 2026-07-19 (retenciones sufridas; PDF/email del comprobante pendiente) | Comprobante de Retención (PDF formato SUNAT, basado en v17) + envío por correo + registro «Retenciones sufridas» (ventas: cliente agente nos retiene → asiento a 40114 conciliado) | PDF + flujo ventas; tests |
+| **3** ✅ 2026-07-19 (XML base sin firma/envío OSE) | **CRE XML UBL** (plantillas v18 como referencia, infraestructura `l10n_pe_edi`) y estado de envío | XML válido; tests |
+| **4** ✅ 2026-07-19 (marca 8.3 + resumen 626; PDF y 8.1 EE pendientes) | Reportes: TXT del **Registro del Régimen de Retenciones**, resumen para F. 626, marca de retención en PLE 8.1/8.3 (campo 26/34) | TXT/consultas; docs |
+| **5** ✅ 2026-07-19 | Datos demo + validación integral en `ol_pe_v19` (`pe.cfg`), guía funcional en la app Perú, commit | 100 % validaciones |
 
 ## 5. Decisiones de diseño
 

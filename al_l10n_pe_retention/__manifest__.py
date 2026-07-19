@@ -7,7 +7,7 @@
     'description': """
 Régimen de Retenciones del IGV — SUNAT
 ======================================
-Fase 0 del plan (``docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md``):
+Fases 0-5 del plan (``docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md``):
 
 * Configuración en Ajustes ▸ Perú: agente de retención, tasa (3 %), monto
   mínimo (S/ 700) e impuesto de retención en el pago (marco nativo
@@ -25,7 +25,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '1.20260719',
+    'version': '2.20260719',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',
@@ -33,9 +33,11 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'l10n_latam_invoice_document',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'views/res_config_settings_views.xml',
         'views/res_partner_views.xml',
         'views/account_move_views.xml',
+        'views/retention_views.xml',
     ],
     'installable': True,
     'application': False,

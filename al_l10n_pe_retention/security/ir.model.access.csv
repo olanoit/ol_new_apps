@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_retention_received_user,l10n_pe.retention.received user,model_l10n_pe_retention_received,account.group_account_user,1,1,1,1
+access_retention_received_read,l10n_pe.retention.received readonly,model_l10n_pe_retention_received,account.group_account_readonly,1,0,0,0
+access_retention_summary_wizard,l10n_pe.retention.summary.wizard,model_l10n_pe_retention_summary_wizard,account.group_account_user,1,1,1,1
