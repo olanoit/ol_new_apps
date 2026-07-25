@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_fortnightly_view_search" model="ir.ui.view">
+        <field name="name">hr.fortnightly.search</field>
+        <field name="model">hr.fortnightly</field>
+        <field name="arch" type="xml">
+            <search string="Adelantos quincenales">
+                <field name="name" string="Planilla"/>
+                <filter string="Borrador" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmado" name="filter_verify" domain="[('state', '=', 'verify')]"/>
+                <filter string="Exportado" name="filter_exported" domain="[('state', '=', 'exported')]"/>
+                <separator/>
+                <filter string="Estado" name="group_by_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_fortnightly_view_list" model="ir.ui.view">
+        <field name="name">hr.fortnightly.list</field>
+        <field name="model">hr.fortnightly</field>
+        <field name="arch" type="xml">
+            <list string="Adelanto quincenal" sample="1">
+                <field name="name"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="payslip_count" optional="show" string="Cant. de boletas"/>
+                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_fortnightly_view_form" model="ir.ui.view">
+        <field name="name">hr.fortnightly.form</field>
+        <field name="model">hr.fortnightly</field>
+        <field name="arch" type="xml">
+            <form string="Adelanto quincenal">
+                <header>
+                    <button name="generate_payslips" string="Generar quincena" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'verify'"
+                            confirm="Volver a borrador este adelanto de quincena eliminará todas las nóminas que existen actualmente. ¿Está seguro de que desea hacer esto?"/>
+                    <button name="recompute_payslips" string="Recalcular" type="object" invisible="state != 'verify'"/>
+                    <button name="import_advances_ade_quin" string="Importar adelantos" type="object" invisible="state != 'verify'"/>
+                    <button name="import_loans_ade_quin" string="Importar préstamos" type="object" invisible="state != 'verify'"/>
+                    <button name="export_quincena" string="Exportar quincena" type="object" class="oe_highlight" invisible="state != 'verify'"
+                            confirm="¿Está seguro de que desea exportar el neto quincenal a su respectivo lote de nóminas?"/>
+                    <button name="reopen_payroll" string="Reabrir quincena" type="object" invisible="state != 'exported'"
+                            groups="hr_payroll.group_hr_payroll_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_payslips" class="oe_stat_button" icon="fa-book" type="object" help="Boletas generadas" invisible="payslip_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="payslip_count"/></span>
+                                <span class="o_stat_text">Quincenas</span>
+                            </div>
+                        </button>
+                    </div>
+                    <label for="name" string="Planilla"/>
+                    <h1>
+                        <field name="name" readonly="state != 'draft'" placeholder="Quincena 01-2026"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <label for="date_start" string="Periodo"/>
+                            <div class="o_row">
+                                <field name="date_start" class="oe_inline" readonly="state != 'draft'"/> -
+                                <field name="date_end" class="oe_inline" readonly="state != 'draft'"/>
+                            </div>
+                            <field name="payslip_run_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Empleados" name="employees">
+                            <field name="slip_ids" readonly="state not in ('draft', 'verify')">
+                                <list create="0">
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="name" optional="hide"/>
+                                    <field name="employee_id"/>
+                                    <field name="basic_wage" sum="Básico" optional="show"/>
+                                    <field name="gross_wage" sum="Bruto" optional="show"/>
+                                    <field name="worker_contributions" sum="Aportes trabajador" optional="show"/>
+                                    <field name="net_discounts" sum="Descuentos netos" optional="hide"/>
+                                    <field name="net_wage" sum="Neto" optional="show"/>
+                                    <field name="state" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_fortnightly" model="ir.actions.act_window">
+        <field name="name">Adelantos quincenales</field>
+        <field name="res_model">hr.fortnightly</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="hr_fortnightly_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea tu primer adelanto quincenal del mes
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_fortnightly"
+        action="action_hr_fortnightly"
+        parent="menu_hr_pe_benefits_root"
+        sequence="65"/>
+
+</odoo>

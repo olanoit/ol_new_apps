@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_utilities_view_form" model="ir.ui.view">
+        <field name="name">hr.utilities.form</field>
+        <field name="model">hr.utilities</field>
+        <field name="arch" type="xml">
+            <form string="Utilidades">
+                <header>
+                    <button name="calculate" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="compute_utilities_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="export_utilities" string="Exportar utilidades" type="object" class="oe_highlight" invisible="state != 'draft'"
+                            confirm="¿Está seguro de que desea exportar los montos de utilidades a su respectivo lote de nóminas?"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_utili" class="oe_stat_button" icon="fa-book" type="object" help="Liquidaciones de utilidades" invisible="utili_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="utili_count"/></span>
+                                <span class="o_stat_text">Liquidaciones</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="year" readonly="state == 'exported'"/>
+                            <field name="annual_rent" readonly="state == 'exported'"/>
+                            <field name="percentage" readonly="state == 'exported'"/>
+                            <field name="distribution" readonly="1" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
+                            <field name="sum_salary_year" readonly="1" force_save="1"/>
+                            <field name="sum_number_of_days_year" readonly="1" force_save="1"/>
+                            <field name="factor_salary" readonly="1" force_save="1"/>
+                            <field name="factor_number_of_days" readonly="1" force_save="1"/>
+                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Trabajadores" name="employees">
+                            <field name="utilities_line_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_utilities_line_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_utilities_line_view_form'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_utilities_view_list" model="ir.ui.view">
+        <field name="name">hr.utilities.list</field>
+        <field name="model">hr.utilities</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="show"/>
+                <field name="year" optional="show"/>
+                <field name="annual_rent" optional="show"/>
+                <field name="percentage" optional="show"/>
+                <field name="distribution" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_utilities_line_view_form" model="ir.ui.view">
+        <field name="name">hr.utilities.line.form</field>
+        <field name="model">hr.utilities.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="compute_utilitie_line" string="Recalcular" type="object" context="{'line_form': True}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="preserve_record"/>
+                            <field name="employee_document" readonly="1"/>
+                            <field name="employee" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="version_id" readonly="1"/>
+                            <field name="admission_date" readonly="1"/>
+                            <field name="distribution_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="salary"/>
+                            <field name="number_of_days"/>
+                            <field name="for_salary" readonly="1" force_save="1"/>
+                            <field name="for_number_of_days" readonly="1" force_save="1"/>
+                            <field name="total_utilities" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_utilities_line_view_list" model="ir.ui.view">
+        <field name="name">hr.utilities.line.list</field>
+        <field name="model">hr.utilities.line</field>
+        <field name="arch" type="xml">
+            <list edit="0" create="0" delete="0">
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="employee_document" optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="admission_date" optional="hide"/>
+                <field name="distribution_id" optional="hide"/>
+                <field name="salary" sum="Sueldos" optional="show"/>
+                <field name="number_of_days" sum="Días laborados" optional="show"/>
+                <field name="for_salary" sum="Por sueldos" optional="show"/>
+                <field name="for_number_of_days" sum="Por días laborados" optional="show"/>
+                <field name="total_utilities" sum="Total utilidades" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_utilities" model="ir.actions.act_window">
+        <field name="name">Utilidades</field>
+        <field name="res_model">hr.utilities</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primer reparto de utilidades (D.L. 892)
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_utilities"
+        action="action_hr_utilities"
+        parent="menu_hr_pe_benefits_root"
+        sequence="50"/>
+
+</odoo>

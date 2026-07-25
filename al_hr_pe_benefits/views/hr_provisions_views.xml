@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Popups de conceptos adicionales por línea -->
+    <record id="hr_provisiones_cts_line_concepts_view_form" model="ir.ui.view">
+        <field name="name">hr.provisiones.cts.line.concepts.form</field>
+        <field name="model">hr.provisiones.cts.line</field>
+        <field name="arch" type="xml">
+            <form string="Conceptos adicionales">
+                <group>
+                    <group>
+                        <field name="employee_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="total_cts" readonly="1"/>
+                    </group>
+                </group>
+                <field name="concepto_ids">
+                    <list editable="bottom">
+                        <field name="concepto" required="1"/>
+                        <field name="monto" required="1" sum="Monto"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_provisiones_grati_line_concepts_view_form" model="ir.ui.view">
+        <field name="name">hr.provisiones.grati.line.concepts.form</field>
+        <field name="model">hr.provisiones.grati.line</field>
+        <field name="arch" type="xml">
+            <form string="Conceptos adicionales">
+                <group>
+                    <group>
+                        <field name="employee_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="total_grati" readonly="1"/>
+                    </group>
+                </group>
+                <field name="concepto_ids">
+                    <list editable="bottom">
+                        <field name="concepto" required="1"/>
+                        <field name="monto" required="1" sum="Monto"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_provisiones_vaca_line_concepts_view_form" model="ir.ui.view">
+        <field name="name">hr.provisiones.vaca.line.concepts.form</field>
+        <field name="model">hr.provisiones.vaca.line</field>
+        <field name="arch" type="xml">
+            <form string="Conceptos adicionales">
+                <group>
+                    <group>
+                        <field name="employee_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="total_vaca" readonly="1"/>
+                    </group>
+                </group>
+                <field name="concepto_ids">
+                    <list editable="bottom">
+                        <field name="concepto" required="1"/>
+                        <field name="monto" required="1" sum="Monto"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <!-- Provisión mensual -->
+    <record id="hr_provisiones_view_form" model="ir.ui.view">
+        <field name="name">hr.provisiones.form</field>
+        <field name="model">hr.provisiones</field>
+        <field name="arch" type="xml">
+            <form string="Provisiones">
+                <header>
+                    <button name="actualizar" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="compute_acumulado" string="Obtener acumulado" type="object" invisible="state != 'draft'"/>
+                    <button name="close_provisiones" string="Cerrar" type="object" invisible="state != 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'done'" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="payslip_run_id" readonly="state == 'done'"/>
+                            <field name="gratificacion_id" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" readonly="state == 'done'" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Gratificaciones" name="gratifications">
+                            <field name="grati_lines" readonly="state == 'done'">
+                                <list editable="bottom" create="0">
+                                    <field name="nro_doc" optional="show"/>
+                                    <field name="employee_id"/>
+                                    <field name="version_id" optional="hide"/>
+                                    <field name="fecha_ingreso"/>
+                                    <field name="distribution_id" optional="hide"/>
+                                    <field name="basico" sum="Rem. básica"/>
+                                    <field name="asignacion" sum="Asignación familiar"/>
+                                    <field name="commission" sum="Comisión" optional="show"/>
+                                    <field name="bonus" sum="Bonificación" optional="show"/>
+                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
+                                    <field name="tasa" optional="hide"/>
+                                    <field name="provisiones_grati" sum="Provisión gratificación" optional="show"/>
+                                    <field name="boni_grati" sum="Provisión bono" optional="show"/>
+                                    <field name="total" sum="Total" optional="show"/>
+                                    <field name="total_grati" sum="Otros adicionales" optional="hide"/>
+                                    <button name="action_open_concepts" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="CTS" name="cts">
+                            <field name="cts_lines" readonly="state == 'done'">
+                                <list editable="bottom" create="0">
+                                    <field name="nro_doc" optional="show"/>
+                                    <field name="employee_id"/>
+                                    <field name="version_id" optional="hide"/>
+                                    <field name="fecha_ingreso"/>
+                                    <field name="distribution_id" optional="hide"/>
+                                    <field name="basico" sum="Rem. básica"/>
+                                    <field name="asignacion" sum="Asignación familiar"/>
+                                    <field name="commission" sum="Comisión" optional="show"/>
+                                    <field name="bonus" sum="Bonificación" optional="show"/>
+                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
+                                    <field name="un_sexto_grati" sum="1/6 gratificación" optional="show"/>
+                                    <field name="provisiones_cts" sum="Provisión CTS" optional="show"/>
+                                    <field name="total_cts" sum="Otros adicionales" optional="hide"/>
+                                    <button name="action_open_concepts" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Vacaciones" name="vacations">
+                            <field name="vaca_lines" readonly="state == 'done'">
+                                <list editable="bottom" create="0">
+                                    <field name="nro_doc" optional="show"/>
+                                    <field name="employee_id"/>
+                                    <field name="version_id" optional="hide"/>
+                                    <field name="fecha_ingreso"/>
+                                    <field name="distribution_id" optional="hide"/>
+                                    <field name="basico" sum="Rem. básica"/>
+                                    <field name="asignacion" sum="Asignación familiar"/>
+                                    <field name="commission" sum="Comisión" optional="show"/>
+                                    <field name="bonus" sum="Bonificación" optional="show"/>
+                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
+                                    <field name="provisiones_vaca" sum="Provisión vacaciones" optional="show"/>
+                                    <field name="total_vaca" sum="Otros adicionales" optional="hide"/>
+                                    <button name="action_open_concepts" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_provisiones_view_list" model="ir.ui.view">
+        <field name="name">hr.provisiones.list</field>
+        <field name="model">hr.provisiones</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="payslip_run_id"/>
+                <field name="gratificacion_id" optional="hide"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_provisiones" model="ir.actions.act_window">
+        <field name="name">Provisiones</field>
+        <field name="res_model">hr.provisiones</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primera provisión mensual de beneficios sociales
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_provisiones"
+        action="action_hr_provisiones"
+        parent="al_hr_pe_benefits.menu_hr_pe_benefits_root"
+        sequence="40"/>
+
+</odoo>

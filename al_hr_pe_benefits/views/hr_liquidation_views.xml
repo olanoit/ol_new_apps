@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Línea de vacaciones truncas -->
+    <record id="hr_liquidation_vacation_line_view_form" model="ir.ui.view">
+        <field name="name">hr.liquidation.vacation.line.form</field>
+        <field name="model">hr.liquidation.vacation.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="compute_vacation_line" string="Calcular" type="object" context="{'line_form': True}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="preserve_record"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="last_name" readonly="1"/>
+                            <field name="m_last_name" readonly="1"/>
+                            <field name="names" readonly="1"/>
+                            <field name="version_id" readonly="1"/>
+                            <field name="admission_date" readonly="1"/>
+                            <field name="compute_date" readonly="1"/>
+                            <field name="cessation_date" readonly="1"/>
+                            <field name="membership_id" readonly="1"/>
+                            <field name="distribution_id" readonly="1"/>
+                            <field name="months"/>
+                            <field name="days"/>
+                            <field name="lacks"/>
+                        </group>
+                        <group>
+                            <field name="wage" readonly="1"/>
+                            <field name="household_allowance" readonly="1"/>
+                            <field name="commission"/>
+                            <field name="bonus"/>
+                            <field name="extra_hours"/>
+                            <field name="computable_remuneration" readonly="1"/>
+                            <field name="amount_per_month" readonly="1"/>
+                            <field name="amount_per_day" readonly="1"/>
+                            <field name="vacation_per_month" readonly="1"/>
+                            <field name="vacation_per_day" readonly="1"/>
+                            <field name="amount_per_lack" readonly="1"/>
+                            <field name="truncated_vacation" readonly="1"/>
+                            <field name="advanced_vacation"/>
+                            <field name="accrued_vacation"/>
+                            <field name="total_vacation" readonly="1"/>
+                            <field name="onp" readonly="1"/>
+                            <field name="afp_jub" readonly="1"/>
+                            <field name="afp_si" readonly="1"/>
+                            <field name="afp_mixed_com" readonly="1"/>
+                            <field name="afp_fixed_com" readonly="1"/>
+                            <field name="total" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_liquidation_vacation_line_view_list" model="ir.ui.view">
+        <field name="name">hr.liquidation.vacation.line.list</field>
+        <field name="model">hr.liquidation.vacation.line</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0">
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="identification_id" string="Nro. doc." optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="admission_date" optional="show"/>
+                <field name="compute_date" optional="hide"/>
+                <field name="cessation_date" optional="hide"/>
+                <field name="membership_id" optional="hide"/>
+                <field name="distribution_id" optional="hide"/>
+                <field name="months" optional="show"/>
+                <field name="days" optional="show"/>
+                <field name="lacks" optional="hide"/>
+                <field name="wage" sum="Sueldo" optional="show"/>
+                <field name="household_allowance" string="Asig. familiar" sum="Asignación familiar" optional="show"/>
+                <field name="commission" sum="Comisión" optional="hide"/>
+                <field name="bonus" sum="Bonificación" optional="hide"/>
+                <field name="extra_hours" sum="Horas extras" optional="hide"/>
+                <field name="computable_remuneration" string="Rem. computable" sum="Remuneración computable" optional="show"/>
+                <field name="amount_per_month" sum="Monto por mes" optional="hide"/>
+                <field name="amount_per_day" sum="Monto por día" optional="hide"/>
+                <field name="vacation_per_month" sum="Vac. por meses" optional="hide"/>
+                <field name="vacation_per_day" sum="Vac. por días" optional="hide"/>
+                <field name="amount_per_lack" sum="Monto por faltas" optional="hide"/>
+                <field name="truncated_vacation" sum="Vac. truncas" optional="hide"/>
+                <field name="advanced_vacation" sum="Vac. adelantadas" optional="hide"/>
+                <field name="accrued_vacation" sum="Vac. devengadas" optional="hide"/>
+                <field name="total_vacation" sum="Total vacaciones" optional="show" force_save="1"/>
+                <field name="onp" sum="ONP" optional="show" force_save="1"/>
+                <field name="afp_jub" sum="AFP jubilación" optional="show" force_save="1"/>
+                <field name="afp_si" sum="AFP seguro" optional="show" force_save="1"/>
+                <field name="afp_mixed_com" sum="AFP com. mixta" optional="hide" force_save="1"/>
+                <field name="afp_fixed_com" sum="AFP com. flujo" optional="show" force_save="1"/>
+                <field name="total" sum="Neto total" optional="show" force_save="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Conceptos extra -->
+    <record id="hr_liquidation_extra_concepts_view_list" model="ir.ui.view">
+        <field name="name">hr.liquidation.extra_concepts.list</field>
+        <field name="model">hr.liquidation.extra_concepts</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" create="0" delete="0">
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="identification_id" readonly="1" optional="show"/>
+                <field name="employee_id"/>
+                <field name="admission_date" readonly="1" optional="show"/>
+                <field name="cessation_date" readonly="1" optional="show"/>
+                <field name="income" sum="Ingresos"/>
+                <field name="expenses" sum="Descuentos"/>
+                <button name="get_concepts_view" string="Agregar conceptos" type="object" class="oe_highlight"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_extra_concept_view_form" model="ir.ui.view">
+        <field name="name">hr.liquidation.extra_concepts.form.popup</field>
+        <field name="model">hr.liquidation.extra_concepts</field>
+        <field name="arch" type="xml">
+            <form string="Conceptos adicionales">
+                <group>
+                    <group>
+                        <field name="employee_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="income" readonly="1"/>
+                        <field name="expenses" readonly="1"/>
+                    </group>
+                </group>
+                <field name="conceptos_lines">
+                    <list editable="bottom">
+                        <field name="name_input_id" options="{'no_create': True}" required="1"/>
+                        <field name="amount" sum="Monto"/>
+                        <field name="type"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <!-- Liquidación de cese -->
+    <record id="hr_liquidation_view_form" model="ir.ui.view">
+        <field name="name">hr.liquidation.form</field>
+        <field name="model">hr.liquidation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="get_liquidation" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="compute_liquidation_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="export_liquidation" string="Exportar liquidación" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de la liquidación a su respectivo lote de nóminas?"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="get_liquidation_employees" class="oe_stat_button" icon="fa-users" type="object" help="Empleados a liquidar" invisible="employee_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="employee_count"/></span>
+                                <span class="o_stat_text">Empleados</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="year" readonly="state == 'exported'"/>
+                            <field name="with_bonus" readonly="state == 'exported'"/>
+                            <field name="months_and_days" readonly="state == 'exported'"/>
+                            <field name="exchange_type" readonly="state == 'exported'"/>
+                        </group>
+                        <group>
+                            <field name="gratification_type" readonly="1" force_save="1"/>
+                            <field name="cts_type" readonly="1" force_save="1"/>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
+                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Gratificación" name="gratification">
+                            <field name="gratification_line_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_form'}"/>
+                        </page>
+                        <page string="CTS" name="cts">
+                            <field name="cts_line_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_cts_line_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_cts_line_view_form'}"/>
+                        </page>
+                        <page string="Vacaciones" name="vacation">
+                            <field name="vacation_line_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_liquidation_vacation_line_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_liquidation_vacation_line_view_form'}"/>
+                        </page>
+                        <page string="Conceptos extra" name="extra_concepts">
+                            <field name="liq_ext_concept_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_liquidation_extra_concepts_view_list'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_liquidation_view_list" model="ir.ui.view">
+        <field name="name">hr.liquidation.list</field>
+        <field name="model">hr.liquidation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="show"/>
+                <field name="year" optional="show"/>
+                <field name="payslip_run_id" optional="show"/>
+                <field name="gratification_type" optional="show"/>
+                <field name="cts_type" optional="show"/>
+                <field name="with_bonus" optional="hide"/>
+                <field name="months_and_days" optional="hide"/>
+                <field name="exchange_type" optional="hide"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_liquidation" model="ir.actions.act_window">
+        <field name="name">Liquidación de cese</field>
+        <field name="res_model">hr.liquidation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primera liquidación de cese
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_liquidation"
+        action="action_hr_liquidation"
+        parent="al_hr_pe_benefits.menu_hr_pe_benefits_root"
+        sequence="3"/>
+
+</odoo>

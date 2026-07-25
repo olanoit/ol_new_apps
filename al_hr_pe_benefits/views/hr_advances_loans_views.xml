@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================= Adelantos ================= -->
+    <record id="hr_advance_view_form" model="ir.ui.view">
+        <field name="name">hr.advance.form</field>
+        <field name="model">hr.advance</field>
+        <field name="arch" type="xml">
+            <form string="Adelantos">
+                <header>
+                    <button name="set_not_payed" string="Cambiar a no pagado" type="object" invisible="state != 'paid out'"
+                            confirm="¿Está seguro de que desea cambiar el estado de este adelanto a no pagado?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="employee_id" required="1" readonly="state == 'paid out'"/>
+                            <field name="amount" required="1" readonly="state == 'paid out'"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="advance_type_id" required="1" readonly="state == 'paid out'"/>
+                            <field name="date" required="1" readonly="state == 'paid out'"/>
+                            <field name="discount_date" required="1" readonly="state == 'paid out'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group name="notes_group" string="Observaciones">
+                        <field name="observations" nolabel="1" colspan="2" placeholder="Escriba notas sobre este adelanto..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_advance_view_list" model="ir.ui.view">
+        <field name="name">hr.advance.list</field>
+        <field name="model">hr.advance</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="employee_id"/>
+                <field name="advance_type_id" optional="show"/>
+                <field name="amount" sum="Total" optional="show"/>
+                <field name="date" optional="show"/>
+                <field name="discount_date" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_advance_view_search" model="ir.ui.view">
+        <field name="name">hr.advance.search</field>
+        <field name="model">hr.advance</field>
+        <field name="arch" type="xml">
+            <search string="Adelantos">
+                <field name="employee_id"/>
+                <field name="advance_type_id"/>
+                <separator/>
+                <filter string="Fecha de adelanto" name="filter_date" date="date"/>
+                <filter string="No pagados" name="filter_not_payed" domain="[('state', '=', 'not payed')]"/>
+                <filter string="Pagados" name="filter_paid_out" domain="[('state', '=', 'paid out')]"/>
+                <separator/>
+                <filter string="Archivados" name="filter_inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Tipo de adelanto" name="group_by_advance_type_id" context="{'group_by': 'advance_type_id'}"/>
+                <filter string="Fecha de descuento" name="group_by_discount_date" context="{'group_by': 'discount_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_advance" model="ir.actions.act_window">
+        <field name="name">Adelantos</field>
+        <field name="res_model">hr.advance</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registra aquí el primer adelanto al trabajador
+            </p>
+        </field>
+    </record>
+
+    <!-- Tipos de adelanto -->
+    <record id="hr_advance_type_view_form" model="ir.ui.view">
+        <field name="name">hr.advance.type.form</field>
+        <field name="model">hr.advance.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de adelanto">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="input_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_advance_type_view_list" model="ir.ui.view">
+        <field name="name">hr.advance.type.list</field>
+        <field name="model">hr.advance.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="input_id"/>
+                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_advance_type" model="ir.actions.act_window">
+        <field name="name">Tipos de adelanto</field>
+        <field name="res_model">hr.advance.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================= Préstamos ================= -->
+    <record id="hr_loan_view_form" model="ir.ui.view">
+        <field name="name">hr.loan.form</field>
+        <field name="model">hr.loan</field>
+        <field name="arch" type="xml">
+            <form string="Préstamos">
+                <header>
+                    <button name="get_fees" type="object" string="Generar cuotas" class="oe_highlight"/>
+                    <button name="refresh_fees" type="object" string="Recalcular"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="employee_id" required="1"/>
+                            <field name="date" required="1"/>
+                            <field name="amount" required="1"/>
+                            <field name="saldo_final"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="loan_type_id" required="1"/>
+                            <field name="fees_number" required="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="fee"/>
+                            <field name="amount" sum="Total" readonly="validation == 'paid out'"/>
+                            <field name="date" readonly="validation == 'paid out'"/>
+                            <field name="debt" readonly="validation == 'paid out'"/>
+                            <field name="loan_type_id" readonly="validation == 'paid out'"/>
+                            <field name="validation" readonly="1"/>
+                            <button name="set_not_payed" type="object" invisible="validation != 'paid out'"
+                                    icon="fa-rotate-left" string="Cambiar a no pagado" help="Cambiar a no pagado"
+                                    confirm="¿Está seguro de que desea cambiar el estado de esta cuota a no pagada?"/>
+                        </list>
+                    </field>
+                    <group name="notes_group" string="Observaciones">
+                        <field name="observations" nolabel="1" colspan="2" placeholder="Escriba notas sobre este préstamo..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_loan_view_list" model="ir.ui.view">
+        <field name="name">hr.loan.list</field>
+        <field name="model">hr.loan</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="amount == saldo_final">
+                <field name="employee_id"/>
+                <field name="amount" optional="show"/>
+                <field name="saldo_final" optional="show"/>
+                <field name="date" optional="show"/>
+                <field name="fees_number" optional="show"/>
+                <field name="loan_type_id" optional="show"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_loan_view_search" model="ir.ui.view">
+        <field name="name">hr.loan.search</field>
+        <field name="model">hr.loan</field>
+        <field name="arch" type="xml">
+            <search string="Préstamos">
+                <field name="employee_id"/>
+                <field name="loan_type_id"/>
+                <separator/>
+                <filter string="Fecha de préstamo" name="filter_date" date="date"/>
+                <separator/>
+                <filter string="Archivados" name="filter_inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Tipo de préstamo" name="group_by_loan_type_id" context="{'group_by': 'loan_type_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_loan" model="ir.actions.act_window">
+        <field name="name">Préstamos</field>
+        <field name="res_model">hr.loan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registra aquí el primer préstamo al trabajador
+            </p>
+        </field>
+    </record>
+
+    <!-- Tipos de préstamo -->
+    <record id="hr_loan_type_view_form" model="ir.ui.view">
+        <field name="name">hr.loan.type.form</field>
+        <field name="model">hr.loan.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de préstamo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="input_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_loan_type_view_list" model="ir.ui.view">
+        <field name="name">hr.loan.type.list</field>
+        <field name="model">hr.loan.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="input_id"/>
+                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_loan_type" model="ir.actions.act_window">
+        <field name="name">Tipos de préstamo</field>
+        <field name="res_model">hr.loan.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Botones de importación en el menú del kanban del lote (el form
+         nativo v19 es un diálogo de creación sin header). -->
+    <record id="hr_payslip_run_view_kanban_inherit_advances_loans" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.inherit.advances.loans</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='menu']" position="inside">
+                <button name="import_advances_by_lot" type="object"
+                        class="btn btn-secondary" string="Importar adelantos"
+                        invisible="state != '01_ready'"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="import_loans_by_lot" type="object"
+                        class="btn btn-secondary" string="Importar préstamos"
+                        invisible="state != '01_ready'"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_hr_advances_loans"
+        name="Adelantos y préstamos"
+        parent="menu_hr_pe_benefits_root"
+        sequence="60"/>
+    <menuitem id="menu_hr_advance"
+        action="action_hr_advance"
+        parent="menu_hr_advances_loans"
+        sequence="1"/>
+    <menuitem id="menu_hr_loan"
+        action="action_hr_loan"
+        parent="menu_hr_advances_loans"
+        sequence="2"/>
+    <menuitem id="menu_hr_advance_type"
+        action="action_hr_advance_type"
+        parent="menu_hr_advances_loans"
+        sequence="10"
+        groups="hr_payroll.group_hr_payroll_manager"/>
+    <menuitem id="menu_hr_loan_type"
+        action="action_hr_loan_type"
+        parent="menu_hr_advances_loans"
+        sequence="11"
+        groups="hr_payroll.group_hr_payroll_manager"/>
+
+</odoo>

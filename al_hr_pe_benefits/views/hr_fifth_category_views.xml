@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Pestaña Quinta categoría en los Parámetros Principales -->
+    <record id="hr_main_parameter_view_form_fifth" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form.fifth</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="inherit_id" ref="al_hr_pe.hr_main_parameter_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Quinta categoría" name="fifth_category">
+                    <group>
+                        <group string="Reglas salariales">
+                            <field name="fifth_afect_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
+                            <field name="fifth_extr_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
+                            <field name="proy_afect_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
+                            <field name="gratification_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
+                        </group>
+                        <group string="Inputs de la boleta">
+                            <field name="fifth_category_input_id"
+                                   options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                            <field name="ret_extraordinary_input_id"
+                                   options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        </group>
+                    </group>
+                    <button name="generate_tramos" type="object" class="btn-primary"
+                            string="Generar tramos"
+                            confirm="Se reemplazarán los tramos actuales con la UIT del año en curso. ¿Continuar?"/>
+                    <field name="rate_limit_ids" nolabel="1">
+                        <list editable="bottom" create="0" delete="0">
+                            <field name="range" required="1"/>
+                            <field name="limit" required="1"/>
+                            <field name="rate" required="1"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Línea de trabajadores afectos a quinta categoría -->
+    <record id="hr_fifth_category_line_view_form" model="ir.ui.view">
+        <field name="name">hr.fifth.category.line.form</field>
+        <field name="model">hr.fifth.category.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="compute_fifth_line" string="Calcular" type="object"
+                            context="{'line_form': True}" class="oe_edit_only"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="slip_id" readonly="1" invisible="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="monthly_rem" readonly="1"/>
+                            <field name="edit_proy" widget="boolean_toggle"/>
+                            <field name="contrac_proy_rem" readonly="not edit_proy"/>
+                            <field name="proy_rem" readonly="1"/>
+                            <field name="grat_july" readonly="not edit_proy"/>
+                            <field name="grat_december" readonly="not edit_proy"/>
+                            <field name="other_emp_proy_rem"/>
+                            <field name="past_rem" readonly="1"/>
+                            <field name="total_proy" readonly="1"/>
+                            <field name="seven_uit" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="net_rent" readonly="1"/>
+                            <field name="tax_proy" readonly="1"/>
+                            <field name="past_months_ret" readonly="1"/>
+                            <field name="other_emp_ret"/>
+                            <field name="annual_ret" readonly="1"/>
+                            <field name="monthly_rent" readonly="1"/>
+                            <field name="ext_rem"/>
+                            <field name="total_net_rent" readonly="1"/>
+                            <field name="ext_ret" readonly="not edit_proy"/>
+                            <field name="monthly_ret" readonly="1"/>
+                            <field name="saldo_ret" readonly="1"/>
+                            <field name="previous_line_id" invisible="not previous_line_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_fifth_category_line_view_list" model="ir.ui.view">
+        <field name="name">hr.fifth.category.line.list</field>
+        <field name="model">hr.fifth.category.line</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="1">
+                <field name="identification_id" string="Nro. doc." optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="monthly_rem" sum="Rem. mes" optional="show"/>
+                <field name="contrac_proy_rem" sum="Rem. base proy." optional="hide"/>
+                <field name="proy_rem" sum="Total rem. proy." optional="hide"/>
+                <field name="grat_july" sum="Grat. julio" optional="hide"/>
+                <field name="grat_december" sum="Grat. diciembre" optional="hide"/>
+                <field name="other_emp_proy_rem" sum="Rem. otros emp." optional="hide"/>
+                <field name="past_rem" sum="Rem. meses ant." optional="hide"/>
+                <field name="total_proy" sum="Rem. bruta anual" optional="show"/>
+                <field name="seven_uit" sum="Deducción 7 UIT" optional="show"/>
+                <field name="net_rent" sum="Rem. neta anual" optional="show"/>
+                <field name="tax_proy" sum="Imp. anual proy." optional="show"/>
+                <field name="past_months_ret" sum="Ret. meses ant." optional="hide"/>
+                <field name="other_emp_ret" sum="Ret. otros emp." optional="hide"/>
+                <field name="annual_ret" sum="Renta anual" optional="show"/>
+                <field name="monthly_rent" sum="Renta mensual" optional="show"/>
+                <field name="ext_rem" sum="Rem. ext." optional="hide"/>
+                <field name="total_net_rent" sum="Rem. neta + ext." optional="show"/>
+                <field name="ext_ret" sum="Ret. ext." optional="hide"/>
+                <field name="monthly_ret" sum="Ret. mensual" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Línea de trabajadores excluidos de quinta categoría -->
+    <record id="hr_fifth_category_line_excluidos_view_form" model="ir.ui.view">
+        <field name="name">hr.fifth.category.line.excluidos.form</field>
+        <field name="model">hr.fifth.category.line.excluidos</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="slip_id" readonly="1" invisible="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="monthly_rem" readonly="1"/>
+                            <field name="contrac_proy_rem" readonly="1"/>
+                            <field name="proy_rem" readonly="1"/>
+                            <field name="grat_july" readonly="1"/>
+                            <field name="grat_december" readonly="1"/>
+                            <field name="total_proy" readonly="1"/>
+                            <field name="seven_uit" readonly="1"/>
+                            <field name="net_rent" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_fifth_category_line_excluidos_view_list" model="ir.ui.view">
+        <field name="name">hr.fifth.category.line.excluidos.list</field>
+        <field name="model">hr.fifth.category.line.excluidos</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="1">
+                <field name="identification_id" string="Nro. doc." optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="monthly_rem" sum="Rem. mes" optional="show"/>
+                <field name="contrac_proy_rem" sum="Rem. base proy." optional="show"/>
+                <field name="proy_rem" sum="Total rem. proy." optional="show"/>
+                <field name="grat_july" sum="Grat. julio" optional="hide"/>
+                <field name="grat_december" sum="Grat. diciembre" optional="hide"/>
+                <field name="total_proy" sum="Rem. bruta anual" optional="show"/>
+                <field name="seven_uit" sum="Deducción 7 UIT" optional="show"/>
+                <field name="net_rent" sum="Rem. neta anual" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Quinta categoría (cabecera) -->
+    <record id="hr_fifth_category_view_form" model="ir.ui.view">
+        <field name="name">hr.fifth.category.form</field>
+        <field name="model">hr.fifth.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="generate_fifth" string="Generar quinta" type="object"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="get_employees_excluidos" string="Agregar empleados" type="object"
+                            class="oe_highlight" invisible="state != 'verify'"/>
+                    <button name="recompute_fifth" string="Recalcular quinta" type="object"
+                            class="oe_highlight" invisible="state != 'verify'"/>
+                    <button name="export_fifth" string="Exportar quinta" type="object"
+                            class="oe_highlight" invisible="state != 'verify'"
+                            confirm="¿Está seguro de que desea exportar los montos de quinta categoría a su respectivo lote de nóminas?"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object"
+                            invisible="state != 'verify'"
+                            confirm="¿Está seguro de que desea eliminar todas las líneas existentes para generar la quinta nuevamente?"/>
+                    <button name="turn_verify" string="Volver a proceso" type="object"
+                            invisible="state != 'exported'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Actual">
+                            <field name="name" invisible="1"/>
+                            <field name="payslip_run_id" readonly="state == 'exported'"
+                                   options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                            <field name="middle_month_number"/>
+                            <field name="company_id" readonly="state == 'exported'"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Anterior" invisible="not previous_fifth_category_id">
+                            <field name="previous_fifth_category_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Afectos a quinta" name="afectos">
+                            <field name="line_ids" readonly="state == 'exported'"
+                                   context="{'list_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_view_list',
+                                             'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_view_form'}"/>
+                        </page>
+                        <page string="Excluidos de quinta" name="excluidos">
+                            <field name="line_excluidos_ids"
+                                   context="{'list_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_list',
+                                             'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_form'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_fifth_category_view_list" model="ir.ui.view">
+        <field name="name">hr.fifth.category.list</field>
+        <field name="model">hr.fifth.category</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="show"/>
+                <field name="payslip_run_id" optional="show"/>
+                <field name="middle_month_number" optional="hide"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Wizard de empleados excluidos -->
+    <record id="view_hr_employee_excluidos_wizard" model="ir.ui.view">
+        <field name="name">hr.employee.excluidos.wizard.form</field>
+        <field name="model">hr.employee.excluidos.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="fifth_category_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="employees" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button name="insert" string="Agregar" type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_fifth_category" model="ir.actions.act_window">
+        <field name="name">Renta de 5ta categoría</field>
+        <field name="res_model">hr.fifth.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primera liquidación de renta de 5ta categoría
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_fifth_category"
+        action="action_hr_fifth_category"
+        parent="al_hr_pe_benefits.menu_hr_pe_benefits_root"
+        sequence="40"/>
+
+</odoo>

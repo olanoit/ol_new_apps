@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_gratification_line_detalle_list" model="ir.ui.view">
+        <field name="name">hr.gratification.line.detalle.list</field>
+        <field name="model">hr.gratification.line.detalle</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="periodo_id" optional="show"/>
+                <field name="wage" sum="Básico" optional="show"/>
+                <field name="household_allowance" sum="Asignación familiar" optional="show"/>
+                <field name="commission" sum="Comisiones" optional="show"/>
+                <field name="extra_hours" sum="Horas extras" optional="show"/>
+                <field name="others_income" sum="Bonificaciones" optional="show"/>
+                <field name="total" sum="Total" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_gratification_line_view_form" model="ir.ui.view">
+        <field name="name">hr.gratification.line.form</field>
+        <field name="model">hr.gratification.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="compute_grati_line" string="Calcular" type="object" context="{'line_form': True}"/>
+                    <button name="view_detail_grat" string="Detalle histórico" type="object"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="preserve_record"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="last_name" readonly="1"/>
+                            <field name="m_last_name" readonly="1"/>
+                            <field name="names" readonly="1"/>
+                            <field name="version_id" readonly="1"/>
+                            <field name="admission_date" readonly="1"/>
+                            <field name="compute_date" readonly="1" invisible="not cessation_date"/>
+                            <field name="cessation_date" readonly="1" invisible="not cessation_date"/>
+                            <field name="labor_regime" readonly="1"/>
+                            <field name="social_insurance_id" readonly="1"/>
+                            <field name="distribution_id" readonly="1"/>
+                            <field name="months"/>
+                            <field name="days"/>
+                            <field name="lacks"/>
+                        </group>
+                        <group>
+                            <field name="wage" readonly="1"/>
+                            <field name="household_allowance" readonly="1"/>
+                            <field name="commission"/>
+                            <field name="bonus"/>
+                            <field name="extra_hours"/>
+                            <field name="computable_remuneration" readonly="1"/>
+                            <field name="amount_per_month" readonly="1"/>
+                            <field name="amount_per_day" readonly="1"/>
+                            <field name="grat_per_month" readonly="1"/>
+                            <field name="grat_per_day" readonly="1"/>
+                            <field name="amount_per_lack" readonly="1"/>
+                            <field name="total_grat" readonly="1"/>
+                            <field name="bonus_essalud" readonly="1"/>
+                            <field name="total" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_gratification_line_view_list" model="ir.ui.view">
+        <field name="name">hr.gratification.line.list</field>
+        <field name="model">hr.gratification.line</field>
+        <field name="arch" type="xml">
+            <list edit="0" create="0" delete="0">
+                <button name="view_detail_grat" icon="fa-eye" type="object" title="Detalle histórico"/>
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="identification_id" string="Nro. doc." optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="admission_date" optional="show"/>
+                <field name="compute_date" optional="hide"/>
+                <field name="cessation_date" optional="hide"/>
+                <field name="labor_regime" optional="hide"/>
+                <field name="social_insurance_id" optional="hide"/>
+                <field name="distribution_id" optional="hide"/>
+                <field name="months" optional="show"/>
+                <field name="days" optional="show"/>
+                <field name="lacks" optional="hide"/>
+                <field name="wage" sum="Sueldo" optional="show"/>
+                <field name="household_allowance" string="Asig. familiar" sum="Asignación familiar" optional="show"/>
+                <field name="commission" sum="Comisión" optional="hide"/>
+                <field name="bonus" sum="Bonificación" optional="hide"/>
+                <field name="extra_hours" sum="Horas extras" optional="hide"/>
+                <field name="computable_remuneration" string="Rem. computable" sum="Remuneración computable" optional="show"/>
+                <field name="amount_per_month" sum="Monto por mes" optional="hide"/>
+                <field name="amount_per_day" sum="Monto por día" optional="hide"/>
+                <field name="grat_per_month" sum="Grat. por meses" optional="hide"/>
+                <field name="grat_per_day" sum="Grat. por días" optional="hide"/>
+                <field name="amount_per_lack" sum="Monto por faltas" optional="hide"/>
+                <field name="total_grat" sum="Total gratificación" optional="show"/>
+                <field name="bonus_essalud" sum="Bono extraordinario" optional="show"/>
+                <field name="total" sum="Total a pagar" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_gratification_view_form" model="ir.ui.view">
+        <field name="name">hr.gratification.form</field>
+        <field name="model">hr.gratification</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="get_gratification" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="compute_grati_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="export_gratification" string="Exportar gratificación" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de gratificación a su respectivo lote de nóminas?"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_grati" class="oe_stat_button" icon="fa-book" type="object" help="Boletas de gratificación" invisible="grati_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="grati_count"/></span>
+                                <span class="o_stat_text">Boletas</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="year" readonly="state == 'exported'"/>
+                            <field name="with_bonus" readonly="state == 'exported'"/>
+                            <field name="months_and_days" readonly="state == 'exported'"/>
+                        </group>
+                        <group>
+                            <field name="type" readonly="state == 'exported'"/>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
+                            <field name="deposit_date" readonly="state == 'exported'"/>
+                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Empleados" name="employees">
+                            <field name="line_ids" readonly="state == 'exported'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_form'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_gratification_view_list" model="ir.ui.view">
+        <field name="name">hr.gratification.list</field>
+        <field name="model">hr.gratification</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="show"/>
+                <field name="year" optional="show"/>
+                <field name="type" optional="show"/>
+                <field name="with_bonus" optional="show"/>
+                <field name="deposit_date" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_gratification" model="ir.actions.act_window">
+        <field name="name">Gratificación</field>
+        <field name="res_model">hr.gratification</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primera gratificación semestral
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_gratification"
+        action="action_hr_gratification"
+        parent="menu_hr_pe_benefits_root"
+        sequence="1"/>
+
+</odoo>

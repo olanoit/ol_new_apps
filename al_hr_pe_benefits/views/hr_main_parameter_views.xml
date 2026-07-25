@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Pestaña de configuración del motor de beneficios sociales en los
+         Parámetros Principales del núcleo (al_hr_pe). -->
+    <record id="hr_main_parameter_view_form_benefits" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form.benefits</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="inherit_id" ref="al_hr_pe.hr_main_parameter_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Beneficios sociales" name="benefits">
+                    <group>
+                        <group string="Gratificación">
+                            <field name="gratification_input_id"/>
+                            <field name="bonus_nine_input_id"/>
+                        </group>
+                        <group string="CTS">
+                            <field name="cts_input_id"/>
+                            <field name="employee_in_charge_id"/>
+                            <field name="medical_rest_wd_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Reglas para promedios">
+                            <field name="basic_sr_id"/>
+                            <field name="household_allowance_sr_id"/>
+                            <field name="extra_hours_sr_id"/>
+                            <field name="commission_sr_ids" widget="many2many_tags"/>
+                            <field name="bonus_sr_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Días (work entries)">
+                            <field name="working_wd_ids" widget="many2many_tags"/>
+                            <field name="lack_wd_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Liquidación de cese (inputs truncos)">
+                            <field name="truncated_gratification_input_id"/>
+                            <field name="truncated_bonus_nine_input_id"/>
+                            <field name="truncated_cts_input_id"/>
+                            <field name="vacation_input_id"/>
+                            <field name="truncated_vacation_input_id"/>
+                        </group>
+                        <group string="Subsidios EsSalud">
+                            <field name="vacation_sr_id"/>
+                            <field name="otros_sr_ids" widget="many2many_tags"/>
+                            <field name="lack_sr_ids" widget="many2many_tags"/>
+                            <field name="maternidad_input_id"/>
+                            <field name="enfermedad_input_id"/>
+                        </group>
+                        <group string="Utilidades (D.L. 892)">
+                            <field name="rule_total_income"/>
+                            <field name="wd_dtrab" widget="many2many_tags"/>
+                            <field name="wd_falt" widget="many2many_tags"/>
+                            <field name="hr_input_for_results"/>
+                        </group>
+                        <group string="Adelantos y préstamos especiales">
+                            <field name="grat_advance_id"/>
+                            <field name="cts_advance_id"/>
+                            <field name="liqui_advance_id"/>
+                            <field name="vaca_advance_id"/>
+                            <field name="quin_advance_id"/>
+                            <field name="grat_loan_id"/>
+                            <field name="cts_loan_id"/>
+                            <field name="liqui_loan_id"/>
+                            <field name="vaca_loan_id"/>
+                            <field name="quin_loan_id"/>
+                        </group>
+                        <group string="Quincena">
+                            <field name="fortnightly_input_id"/>
+                            <field name="net_fortnightly_sr_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

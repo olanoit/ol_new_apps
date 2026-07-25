@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Transaccionales: aislamiento estricto por compañía.
+             Las líneas y detalles heredan company_id (related store)
+             del header, así que la regla opera también sobre ellas. -->
+        <record id="hr_cts_company_rule" model="ir.rule">
+            <field name="name">CTS: multicompañía</field>
+            <field name="model_id" ref="model_hr_cts"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_cts_line_company_rule" model="ir.rule">
+            <field name="name">Línea de CTS: multicompañía</field>
+            <field name="model_id" ref="model_hr_cts_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_cts_line_detalle_company_rule" model="ir.rule">
+            <field name="name">Detalle de línea de CTS: multicompañía</field>
+            <field name="model_id" ref="model_hr_cts_line_detalle"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_gratification_company_rule" model="ir.rule">
+            <field name="name">Gratificación: multicompañía</field>
+            <field name="model_id" ref="model_hr_gratification"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_gratification_line_company_rule" model="ir.rule">
+            <field name="name">Línea de gratificación: multicompañía</field>
+            <field name="model_id" ref="model_hr_gratification_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_gratification_line_detalle_company_rule" model="ir.rule">
+            <field name="name">Detalle de línea de gratificación: multicompañía</field>
+            <field name="model_id" ref="model_hr_gratification_line_detalle"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_vacation_rest_company_rule" model="ir.rule">
+            <field name="name">Saldos de vacaciones: multicompañía</field>
+            <field name="model_id" ref="model_hr_vacation_rest"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_accrual_vacation_company_rule" model="ir.rule">
+            <field name="name">Devengue de vacaciones: multicompañía</field>
+            <field name="model_id" ref="model_hr_accrual_vacation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_vacation_company_rule" model="ir.rule">
+            <field name="name">Liquidación vacacional: multicompañía</field>
+            <field name="model_id" ref="model_hr_vacation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_vacation_line_company_rule" model="ir.rule">
+            <field name="name">Línea de liquidación vacacional: multicompañía</field>
+            <field name="model_id" ref="model_hr_vacation_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_fifth_category_company_rule" model="ir.rule">
+            <field name="name">Renta de 5ta: multicompañía</field>
+            <field name="model_id" ref="model_hr_fifth_category"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_fifth_category_line_company_rule" model="ir.rule">
+            <field name="name">Línea de renta de 5ta: multicompañía</field>
+            <field name="model_id" ref="model_hr_fifth_category_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_fifth_category_line_excluidos_company_rule" model="ir.rule">
+            <field name="name">Línea de excluidos de 5ta: multicompañía</field>
+            <field name="model_id" ref="model_hr_fifth_category_line_excluidos"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_rate_limit_company_rule" model="ir.rule">
+            <field name="name">Tramos de 5ta: multicompañía</field>
+            <field name="model_id" ref="model_hr_rate_limit"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_leave_vacation_line_company_rule" model="ir.rule">
+            <field name="name">Detalle de periodo de vacaciones: multicompañía</field>
+            <field name="model_id" ref="model_hr_leave_vacation_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_liquidation_company_rule" model="ir.rule">
+            <field name="name">Liquidación de cese: multicompañía</field>
+            <field name="model_id" ref="model_hr_liquidation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_liquidation_vacation_line_company_rule" model="ir.rule">
+            <field name="name">Línea vacacional de liquidación: multicompañía</field>
+            <field name="model_id" ref="model_hr_liquidation_vacation_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_liquidation_extra_concepts_company_rule" model="ir.rule">
+            <field name="name">Conceptos extra de liquidación: multicompañía</field>
+            <field name="model_id" ref="model_hr_liquidation_extra_concepts"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_extra_concept_line_company_rule" model="ir.rule">
+            <field name="name">Línea de concepto extra: multicompañía</field>
+            <field name="model_id" ref="model_hr_extra_concept_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_provisiones_company_rule" model="ir.rule">
+            <field name="name">Provisiones: multicompañía</field>
+            <field name="model_id" ref="model_hr_provisiones"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_provisiones_cts_line_company_rule" model="ir.rule">
+            <field name="name">Provisión CTS: multicompañía</field>
+            <field name="model_id" ref="model_hr_provisiones_cts_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_provisiones_grati_line_company_rule" model="ir.rule">
+            <field name="name">Provisión gratificación: multicompañía</field>
+            <field name="model_id" ref="model_hr_provisiones_grati_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_provisiones_vaca_line_company_rule" model="ir.rule">
+            <field name="name">Provisión vacaciones: multicompañía</field>
+            <field name="model_id" ref="model_hr_provisiones_vaca_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_provisiones_concepto_company_rule" model="ir.rule">
+            <field name="name">Concepto de provisión: multicompañía</field>
+            <field name="model_id" ref="model_hr_provisiones_concepto"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_subsidies_lot_company_rule" model="ir.rule">
+            <field name="name">Lote de subsidios: multicompañía</field>
+            <field name="model_id" ref="model_hr_subsidies_lot"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_subsidies_company_rule" model="ir.rule">
+            <field name="name">Subsidio: multicompañía</field>
+            <field name="model_id" ref="model_hr_subsidies"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_subsidies_line_company_rule" model="ir.rule">
+            <field name="name">Línea de subsidio: multicompañía</field>
+            <field name="model_id" ref="model_hr_subsidies_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_subsidies_total_company_rule" model="ir.rule">
+            <field name="name">Total de subsidio: multicompañía</field>
+            <field name="model_id" ref="model_hr_subsidies_total"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_subsidies_periodo_company_rule" model="ir.rule">
+            <field name="name">Periodo de subsidio: multicompañía</field>
+            <field name="model_id" ref="model_hr_subsidies_periodo"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_utilities_company_rule" model="ir.rule">
+            <field name="name">Utilidades: multicompañía</field>
+            <field name="model_id" ref="model_hr_utilities"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_utilities_line_company_rule" model="ir.rule">
+            <field name="name">Línea de utilidades: multicompañía</field>
+            <field name="model_id" ref="model_hr_utilities_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_advance_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de adelanto: multicompañía</field>
+            <field name="model_id" ref="model_hr_advance_type"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_advance_company_rule" model="ir.rule">
+            <field name="name">Adelanto: multicompañía</field>
+            <field name="model_id" ref="model_hr_advance"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_loan_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de préstamo: multicompañía</field>
+            <field name="model_id" ref="model_hr_loan_type"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_loan_company_rule" model="ir.rule">
+            <field name="name">Préstamo: multicompañía</field>
+            <field name="model_id" ref="model_hr_loan"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_loan_line_company_rule" model="ir.rule">
+            <field name="name">Cuota de préstamo: multicompañía</field>
+            <field name="model_id" ref="model_hr_loan_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_fortnightly_company_rule" model="ir.rule">
+            <field name="name">Quincena: multicompañía</field>
+            <field name="model_id" ref="model_hr_fortnightly"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

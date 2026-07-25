@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Récord vacacional: hr.vacation.rest                          -->
+    <!-- ============================================================ -->
+    <record id="hr_vacation_rest_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.rest.form.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.rest</field>
+        <field name="arch" type="xml">
+            <form string="Saldo de vacaciones">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="identification_id"/>
+                            <field name="year"/>
+                            <field name="internal_motive"/>
+                            <field name="motive"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="date_aplication"/>
+                            <field name="date_from"/>
+                            <field name="date_end"/>
+                            <field name="days"/>
+                            <field name="days_rest"/>
+                            <field name="amount"/>
+                            <field name="amount_rest"/>
+                            <field name="is_saldo_final"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_rest_view_list" model="ir.ui.view">
+        <field name="name">hr.vacation.rest.list.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.rest</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="year" optional="show"/>
+                <field name="identification_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="date_aplication" optional="show"/>
+                <field name="date_from" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="internal_motive" optional="hide"/>
+                <field name="motive" optional="show"/>
+                <field name="days"/>
+                <field name="days_rest"/>
+                <field name="amount" optional="show"/>
+                <field name="amount_rest" optional="show"/>
+                <field name="is_saldo_final" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_vacation_rest_view_list_resumen" model="ir.ui.view">
+        <field name="name">hr.vacation.rest.list.resumen.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.rest</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="year" optional="show"/>
+                <field name="identification_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="days_rest"/>
+                <field name="amount_rest" optional="show"/>
+                <field name="is_saldo_final" optional="hide"/>
+                <field name="date_aplication" optional="hide"/>
+                <field name="internal_motive" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+                <button name="view_detail" icon="fa-eye" string="Ver detalle" type="object"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_vacation_rest_view_search" model="ir.ui.view">
+        <field name="name">hr.vacation.rest.search.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.rest</field>
+        <field name="arch" type="xml">
+            <search string="Saldos de vacaciones">
+                <field name="employee_id"/>
+                <field name="identification_id"/>
+                <field name="year"/>
+                <separator/>
+                <filter string="Saldo final" name="saldo_final" domain="[('is_saldo_final', '=', True)]"/>
+                    <filter string="Empleado" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Año" name="group_year" context="{'group_by': 'year'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation_rest" model="ir.actions.act_window">
+        <field name="name">Saldos de vacaciones</field>
+        <field name="res_model">hr.vacation.rest</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="hr_vacation_rest_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aún no hay saldos de vacaciones: calcúlalos desde el asistente de récord vacacional.
+            </p>
+        </field>
+    </record>
+
+    <!-- Asistente de recálculo del récord vacacional -->
+    <record id="hr_vacation_rest_wizard_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.rest.wizard.form.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.rest.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Récord vacacional">
+                <group>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="show_all"/>
+                    <field name="employee_ids" widget="many2many_tags" invisible="show_all"/>
+                </group>
+                <footer>
+                    <button name="generate_vacation_report" string="Calcular saldos" type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation_rest_wizard" model="ir.actions.act_window">
+        <field name="name">Récord vacacional</field>
+        <field name="res_model">hr.vacation.rest.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Devengue de vacaciones en la boleta -->
+    <record id="hr_payslip_view_form_inherit_accrual_vacation" model="ir.ui.view">
+        <field name="name">hr.payslip.form.accrual.vacation.al.hr.pe.benefits</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Devengue de vacaciones" name="accrued_vacations">
+                    <field name="accrual_vacation_ids">
+                        <list editable="bottom">
+                            <field name="periodo_id" required="1"/>
+                            <field name="motive" optional="show"/>
+                            <field name="date_aplication" optional="show"/>
+                            <field name="request_date_from" optional="show"/>
+                            <field name="request_date_to" optional="show"/>
+                            <field name="days" required="1"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Liquidación vacacional: hr.vacation                          -->
+    <!-- ============================================================ -->
+    <record id="hr_vacation_line_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.line.form.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.line</field>
+        <field name="arch" type="xml">
+            <form string="Línea de liquidación vacacional">
+                <header>
+                    <button name="compute_vacation_line" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="preserve_record"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="version_id" readonly="1"/>
+                            <field name="identification_id"/>
+                            <field name="last_name"/>
+                            <field name="m_last_name"/>
+                            <field name="names"/>
+                            <field name="vacation_kind"/>
+                            <field name="admission_date" readonly="1"/>
+                            <field name="compute_date" readonly="1"/>
+                            <field name="compute_date_ini" readonly="1"/>
+                            <field name="compute_date_fin" readonly="1"/>
+                            <field name="membership_id"/>
+                            <field name="months"/>
+                            <field name="days"/>
+                            <field name="lacks"/>
+                            <field name="record_days" readonly="1"/>
+                            <field name="total_days" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="wage" readonly="1"/>
+                            <field name="household_allowance" readonly="1"/>
+                            <field name="commission"/>
+                            <field name="bonus"/>
+                            <field name="extra_hours"/>
+                            <field name="computable_remuneration" readonly="1"/>
+                            <field name="accrued_vacation"/>
+                            <field name="total_vacation" readonly="1"/>
+                            <field name="onp" readonly="1"/>
+                            <field name="afp_jub" readonly="1"/>
+                            <field name="afp_si" readonly="1"/>
+                            <field name="afp_mixed_com" readonly="1"/>
+                            <field name="afp_fixed_com" readonly="1"/>
+                            <field name="neto_total" readonly="1"/>
+                            <field name="quinta"/>
+                            <field name="total" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_line_view_list" model="ir.ui.view">
+        <field name="name">hr.vacation.line.list.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.line</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0">
+                <button name="view_detail_vac" icon="fa-eye" type="object" title="Ver detalle"/>
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="identification_id" string="Nro. doc." optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="vacation_kind" optional="show"/>
+                <field name="admission_date" optional="hide"/>
+                <field name="compute_date" optional="hide"/>
+                <field name="compute_date_ini" optional="hide"/>
+                <field name="compute_date_fin" optional="hide"/>
+                <field name="membership_id" optional="hide"/>
+                <field name="months" optional="hide"/>
+                <field name="days" optional="hide"/>
+                <field name="record_days" optional="hide"/>
+                <field name="total_days" optional="hide"/>
+                <field name="wage" sum="Total sueldo" optional="show"/>
+                <field name="household_allowance" string="Asig. familiar" sum="Total asignación" optional="show"/>
+                <field name="commission" sum="Total comisión" optional="hide"/>
+                <field name="bonus" sum="Total bonificación" optional="hide"/>
+                <field name="extra_hours" sum="Total horas extras" optional="hide"/>
+                <field name="computable_remuneration" string="Rem. computable" sum="Total computable" optional="show"/>
+                <field name="accrued_vacation" optional="show"/>
+                <field name="total_vacation" sum="Total vacaciones" optional="show" force_save="1"/>
+                <field name="onp" sum="Total ONP" optional="show" force_save="1"/>
+                <field name="afp_jub" sum="Total AFP JUB" optional="show" force_save="1"/>
+                <field name="afp_si" sum="Total AFP SI" optional="show" force_save="1"/>
+                <field name="afp_mixed_com" sum="Total com. mixta" optional="hide" force_save="1"/>
+                <field name="afp_fixed_com" sum="Total com. fija" optional="show" force_save="1"/>
+                <field name="neto_total" sum="Total neto" optional="show" force_save="1"/>
+                <field name="quinta" sum="Total quinta" optional="hide" force_save="1"/>
+                <field name="total" sum="Total a pagar" optional="show" force_save="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_leave_vacation_line_view_list" model="ir.ui.view">
+        <field name="name">hr.leave.vacation.line.list.al.hr.pe.benefits</field>
+        <field name="model">hr.leave.vacation.line</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="periodo_id" optional="show"/>
+                <field name="wage" sum="Total básico" optional="show"/>
+                <field name="household_allowance" sum="Total asignación" optional="show"/>
+                <field name="commission" sum="Total comisiones" optional="show"/>
+                <field name="extra_hours" sum="Total horas extras" optional="show"/>
+                <field name="others_income" sum="Total bonificaciones" optional="show"/>
+                <field name="total" sum="Total base" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_vacation_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.form.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation</field>
+        <field name="arch" type="xml">
+            <form string="Liquidación vacacional">
+                <header>
+                    <button name="get_vacation" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="compute_vaca_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="compute_fifth" string="Importar quinta" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="export_vacation" string="Exportar vacaciones" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de vacaciones a su lote de nóminas?"/>
+                    <button name="get_excel_vacation" string="Descargar Excel" type="object" class="oe_highlight"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="year" readonly="state == 'exported'"/>
+                        </group>
+                        <group>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
+                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Empleados" name="employees">
+                            <field name="line_ids" readonly="state == 'exported'"
+                                   context="{'list_view_ref': 'al_hr_pe_benefits.hr_vacation_line_view_list',
+                                             'form_view_ref': 'al_hr_pe_benefits.hr_vacation_line_view_form'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_view_list" model="ir.ui.view">
+        <field name="name">hr.vacation.list.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="year" optional="show"/>
+                <field name="payslip_run_id"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation" model="ir.actions.act_window">
+        <field name="name">Liquidación vacacional</field>
+        <field name="res_model">hr.vacation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea tu primera liquidación vacacional aquí.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menús (cuelgan de la raíz de beneficios sociales)            -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_hr_pe_benefits_vacation"
+              name="Vacaciones"
+              parent="al_hr_pe_benefits.menu_hr_pe_benefits_root"
+              sequence="30"
+              groups="hr_payroll.group_hr_payroll_user"/>
+    <menuitem id="menu_hr_pe_benefits_vacation_liquidation"
+              action="action_hr_vacation"
+              parent="menu_hr_pe_benefits_vacation"
+              sequence="1"/>
+    <menuitem id="menu_hr_pe_benefits_vacation_rest_wizard"
+              action="action_hr_vacation_rest_wizard"
+              parent="menu_hr_pe_benefits_vacation"
+              sequence="2"/>
+    <menuitem id="menu_hr_pe_benefits_vacation_rest"
+              action="action_hr_vacation_rest"
+              parent="menu_hr_pe_benefits_vacation"
+              sequence="3"/>
+
+</odoo>

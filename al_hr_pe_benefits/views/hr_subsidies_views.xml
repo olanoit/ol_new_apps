@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Lote de subsidios -->
+    <record id="hr_subsidies_lot_view_form" model="ir.ui.view">
+        <field name="name">hr.subsidies.lot.form</field>
+        <field name="model">hr.subsidies.lot</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="get_subsidies" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="turn_done" string="Cerrar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_subsidies" class="oe_stat_button" icon="fa-book" type="object" help="Subsidios" invisible="subsidies_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="subsidies_count"/></span>
+                                <span class="o_stat_text">Subsidios</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="periodo_id" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Empleados" name="employees">
+                            <field name="line_ids" readonly="state == 'done'"
+                                context="{'list_view_ref': 'al_hr_pe_benefits.hr_subsidies_view_list',
+                                          'form_view_ref': 'al_hr_pe_benefits.hr_subsidies_view_form'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_subsidies_lot_view_list" model="ir.ui.view">
+        <field name="name">hr.subsidies.lot.list</field>
+        <field name="model">hr.subsidies.lot</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="periodo_id"/>
+                <field name="state" optional="show"/>
+                <field name="subsidies_count" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Subsidio por empleado -->
+    <record id="hr_subsidies_view_form" model="ir.ui.view">
+        <field name="name">hr.subsidies.form</field>
+        <field name="model">hr.subsidies</field>
+        <field name="arch" type="xml">
+            <form string="Subsidios">
+                <header>
+                    <button name="get_information" type="object" string="Traer información" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="get_calculation" type="object" string="Calcular subsidio" invisible="state != 'close'" class="oe_highlight"/>
+                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'close'"
+                            confirm="Se eliminarán todas las líneas calculadas. ¿Está seguro de que desea hacer esto?"/>
+                    <field name="state" widget="statusbar" readonly="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1" readonly="state == 'close'" options="{'no_create': True}"/>
+                            <field name="suspension_id" readonly="state == 'close'" options="{'no_create': True}"/>
+                            <label for="date_start" string="Fechas de contingencia"/>
+                            <div name="dates_contingencia">
+                                <field name="date_start" class="oe_inline"/> - <field name="date_end" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="type" readonly="state == 'close'" required="1"/>
+                            <field name="is_compute_20_days" invisible="type == 'maternity'" readonly="state == 'close'"/>
+                            <field name="preserve_record"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="subsidies_line_ids" invisible="state != 'close'">
+                        <list editable="top">
+                            <field name="periodo_id" optional="show"/>
+                            <field name="wage" sum="Básico" optional="show"/>
+                            <field name="vacation" sum="Vacaciones" optional="show"/>
+                            <field name="household_allowance" sum="Asignación familiar" optional="show"/>
+                            <field name="commission" sum="Comisiones" optional="show"/>
+                            <field name="extra_hours" sum="Horas extras" optional="show"/>
+                            <field name="others_income" sum="Otros ingresos" optional="show"/>
+                            <field name="lacks" sum="Inasistencias" optional="show"/>
+                            <field name="total" sum="Total" optional="show"/>
+                        </list>
+                    </field>
+                    <group string="Cálculo de subsidio total" invisible="state != 'close'">
+                        <field name="subsidies_total_ids" nolabel="1" colspan="2">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="total_rem" optional="show"/>
+                                <field name="sub_dia" optional="show"/>
+                                <field name="days_total" optional="show"/>
+                                <field name="days" optional="show"/>
+                                <field name="total_sub" optional="show"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Cálculo de subsidio por periodos" invisible="state != 'close'">
+                        <field name="subsidies_periodo_ids" nolabel="1" colspan="2">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="periodo_id" optional="show"/>
+                                <field name="days" sum="Días" optional="show"/>
+                                <field name="sub_dia" optional="show"/>
+                                <field name="total_sub" sum="Total subsidio" optional="show"/>
+                                <field name="validation" readonly="1" optional="show"/>
+                                <button name="set_not_payed" type="object" icon="fa-rotate-left"
+                                        invisible="validation != 'paid out'" string="Cambiar a no pagado"
+                                        help="Cambiar a no pagado"
+                                        confirm="¿Está seguro de que desea cambiar el estado de este subsidio a no pagado?"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_subsidies_view_list" model="ir.ui.view">
+        <field name="name">hr.subsidies.list</field>
+        <field name="model">hr.subsidies</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="employee_id"/>
+                <field name="type" optional="show"/>
+                <field name="suspension_id" optional="show"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_subsidies_view_search" model="ir.ui.view">
+        <field name="name">hr.subsidies.search</field>
+        <field name="model">hr.subsidies</field>
+        <field name="arch" type="xml">
+            <search string="Subsidios">
+                <field name="employee_id"/>
+                <field name="date_start"/>
+                <separator/>
+                <filter string="Fecha de inicio" name="filter_date_start" date="date_start"/>
+                <filter string="Borrador" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Hecho" name="filter_close" domain="[('state', '=', 'close')]"/>
+                <separator/>
+                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Estado" name="group_by_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_subsidies_lot" model="ir.actions.act_window">
+        <field name="name">Subsidios</field>
+        <field name="res_model">hr.subsidies.lot</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primer lote de subsidios
+            </p>
+        </field>
+    </record>
+
+    <!-- Botón de importación en el menú del kanban del lote (el form
+         nativo v19 es un diálogo de creación sin header). -->
+    <record id="hr_payslip_run_view_kanban_inherit_subsidies" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.inherit.subsidies</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='menu']" position="inside">
+                <button name="import_subsidies_by_lot" type="object"
+                        class="btn btn-secondary" string="Importar subsidios"
+                        invisible="state != '01_ready'"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_subsidies"
+        action="action_hr_subsidies_lot"
+        parent="menu_hr_pe_benefits_root"
+        sequence="40"/>
+
+</odoo>
