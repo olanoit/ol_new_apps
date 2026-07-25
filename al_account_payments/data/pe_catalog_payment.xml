@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Catálogo 1 SUNAT: medios de pago (v18 usaba registros sin id;
+             en v19 se les asigna id explícito para poder referenciarlos). -->
+        <record id="pe_catalog_payment_001" model="pe.catalog.payment">
+            <field name="code">001</field>
+            <field name="name">DEPÓSITO EN CUENTA</field>
+            <field name="pse_code">1</field>
+        </record>
+        <record id="pe_catalog_payment_002" model="pe.catalog.payment">
+            <field name="code">002</field>
+            <field name="name">GIRO</field>
+            <field name="pse_code">2</field>
+        </record>
+        <record id="pe_catalog_payment_003" model="pe.catalog.payment">
+            <field name="code">003</field>
+            <field name="name">TRANSFERENCIA DE FONDOS</field>
+            <field name="pse_code">3</field>
+            <field name="is_detraction" eval="True"/>
+        </record>
+        <record id="pe_catalog_payment_004" model="pe.catalog.payment">
+            <field name="code">004</field>
+            <field name="name">ORDEN DE PAGO</field>
+            <field name="pse_code">4</field>
+        </record>
+        <record id="pe_catalog_payment_005" model="pe.catalog.payment">
+            <field name="code">005</field>
+            <field name="name">TARJETA DE DÉBITO</field>
+            <field name="pse_code">5</field>
+        </record>
+        <record id="pe_catalog_payment_006" model="pe.catalog.payment">
+            <field name="code">006</field>
+            <field name="name">TARJETA DE CRÉDITO</field>
+            <field name="pse_code">6</field>
+        </record>
+        <record id="pe_catalog_payment_007" model="pe.catalog.payment">
+            <field name="code">007</field>
+            <field name="name">CHEQUES NO NEGOCIABLES</field>
+            <field name="pse_code">7</field>
+        </record>
+        <record id="pe_catalog_payment_008" model="pe.catalog.payment">
+            <field name="code">008</field>
+            <field name="name">EFECTIVO, POR OPERACIONES EN LAS QUE NO EXISTE OBLIGACIÓN DE UTILIZAR MEDIOS DE PAGO</field>
+            <field name="pse_code">8</field>
+        </record>
+        <record id="pe_catalog_payment_009" model="pe.catalog.payment">
+            <field name="code">009</field>
+            <field name="name">EFECTIVO, EN LOS DEMÁS CASOS</field>
+            <field name="pse_code">9</field>
+        </record>
+        <record id="pe_catalog_payment_010" model="pe.catalog.payment">
+            <field name="code">010</field>
+            <field name="name">MEDIOS DE PAGO DE COMERCIO EXTERIOR</field>
+            <field name="pse_code">10</field>
+        </record>
+        <record id="pe_catalog_payment_011" model="pe.catalog.payment">
+            <field name="code">011</field>
+            <field name="name">LETRAS DE CAMBIO</field>
+            <field name="pse_code">11</field>
+        </record>
+        <record id="pe_catalog_payment_101" model="pe.catalog.payment">
+            <field name="code">101</field>
+            <field name="name">TRANSFERENCIAS - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_102" model="pe.catalog.payment">
+            <field name="code">102</field>
+            <field name="name">CHEQUES BANCARIOS - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_103" model="pe.catalog.payment">
+            <field name="code">103</field>
+            <field name="name">ORDEN DE PAGO SIMPLE - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_104" model="pe.catalog.payment">
+            <field name="code">104</field>
+            <field name="name">ORDEN DE PAGO DOCUMENTARIO - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_105" model="pe.catalog.payment">
+            <field name="code">105</field>
+            <field name="name">REMESA SIMPLE - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_106" model="pe.catalog.payment">
+            <field name="code">106</field>
+            <field name="name">REMESA DOCUMENTARIA - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_107" model="pe.catalog.payment">
+            <field name="code">107</field>
+            <field name="name">CARTA DE CRÉDITO SIMPLE - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_108" model="pe.catalog.payment">
+            <field name="code">108</field>
+            <field name="name">CARTA DE CRÉDITO DOCUMENTARIO - COMERCIO EXTERIOR</field>
+        </record>
+        <record id="pe_catalog_payment_999" model="pe.catalog.payment">
+            <field name="code">999</field>
+            <field name="name">OTROS MEDIOS DE PAGO (ESPECIFICAR)</field>
+        </record>
+    </data>
+</odoo>

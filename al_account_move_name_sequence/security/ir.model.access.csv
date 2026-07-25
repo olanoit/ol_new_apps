@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_edi_invoice_series_user,edi.invoice.series user,model_edi_invoice_series,base.group_user,1,0,0,0
+access_edi_invoice_series_manager,edi.invoice.series manager,model_edi_invoice_series,account.group_account_manager,1,1,1,1

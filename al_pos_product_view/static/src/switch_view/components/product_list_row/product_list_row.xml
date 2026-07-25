@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_pos_product_view.ProductListRow">
+        <article tabindex="0"
+                 role="button"
+                 class="pos-product-list-row d-flex align-items-center w-100 px-2 py-2 mb-1 rounded-3 bg-view border cursor-pointer"
+                 t-on-click.stop="props.onClick"
+                 t-on-keypress="(ev) => ev.code === 'Space' ? props.onClick(ev) : null"
+                 t-att-data-product-id="props.product.id"
+                 t-att-aria-label="addLabel">
+
+            <!-- Miniatura (solo si la config del TPV tiene activadas las imágenes). -->
+            <div t-if="props.imageUrl"
+                 class="pos-product-list-row__img flex-shrink-0 me-2 rounded-2 overflow-hidden">
+                <img class="w-100 h-100 object-fit-cover pe-none"
+                     t-att-src="props.imageUrl"
+                     t-att-alt="props.name"
+                     draggable="false"/>
+            </div>
+
+            <!-- Nombre + SKU/código de barras/etiquetas -->
+            <div class="pos-product-list-row__info flex-grow-1 overflow-hidden me-2">
+                <div class="pos-product-list-row__name fw-bold text-truncate" t-esc="props.name"/>
+                <small t-if="sku or barcode or productTags.length" class="pos-product-list-row__meta text-muted d-flex flex-wrap align-items-center gap-2">
+                    <span t-if="sku" class="pos-product-list-row__sku text-truncate">
+                        <i class="fa fa-tag me-1"/>
+                        <t t-esc="sku"/>
+                    </span>
+                    <span t-if="barcode" class="pos-product-list-row__barcode text-truncate">
+                        <i class="fa fa-barcode me-1"/>
+                        <t t-esc="barcode"/>
+                    </span>
+                    <span t-foreach="productTags" t-as="tag" t-key="tag.id"
+                          class="pos-product-list-row__tag d-inline-flex align-items-center">
+                        <span class="pos-product-list-row__tag-dot rounded-circle d-inline-block me-1 flex-shrink-0"
+                              t-att-style="tagDotStyle(tag)"/>
+                        <span class="pos-product-list-row__tag-name text-truncate" t-esc="tag.name"/>
+                    </span>
+                </small>
+            </div>
+
+            <!-- Stock disponible (solo productos almacenables). -->
+            <span t-if="showStock"
+                  t-attf-class="pos-product-list-row__stock badge rounded-pill me-2 {{ outOfStock ? 'text-bg-danger' : 'text-bg-success' }}"
+                  t-esc="uom ? stockQty + ' ' + uom : stockQty"/>
+
+            <!-- Badge de cantidad en carrito (replica el comportamiento de la tarjeta). -->
+            <span t-if="props.productCartQty"
+                  class="pos-product-list-row__qty badge bg-black text-white fs-6 me-2"
+                  t-esc="props.productCartQty"/>
+
+            <!-- Precio -->
+            <div class="pos-product-list-row__price fw-bolder text-end me-2"
+                 t-esc="props.priceLabel"/>
+
+            <!-- Botón de información -->
+            <button type="button"
+                    class="pos-product-list-row__info-btn btn btn-sm btn-light rounded-circle"
+                    t-on-click="onInfoClick"
+                    t-att-title="infoLabel"
+                    t-att-aria-label="infoLabel">
+                <i class="fa fa-info"/>
+            </button>
+        </article>
+    </t>
+
+</templates>

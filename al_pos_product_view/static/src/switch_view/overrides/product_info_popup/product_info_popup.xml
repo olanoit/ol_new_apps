@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Reorganiza el ProductInfoPopup nativo en tres áreas:
+
+        1. BANNER SUPERIOR (nuevo, justo tras la cabecera, antes de la
+           Descripción) — solo stock por almacén. Movido arriba porque es lo
+           primero que un cajero necesita ver de un vistazo.
+
+        2. Justo después del banner (posición nueva, v1.4.0) — Productos
+           opcionales (grilla de tarjetas) y luego "Información General".
+           Aquí también inserta el módulo de integración Yapp los Productos
+           bioequivalentes, ANTES de los Productos opcionales (ver el xpath
+           de ese módulo), así que el orden final tras el Inventario es:
+           Productos bioequivalentes → Productos opcionales → Información
+           General. Un cajero que acaba de revisar el stock puede ver de
+           inmediato las opciones de reemplazo/upsell antes de los detalles
+           descriptivos/monetarios.
+
+        3. Descripción + Reabastecimiento (nativos, intactos) siguen
+           fluyendo con normalidad DESPUÉS del bloque anterior, hasta el pie.
+
+        "Información General" es un único panel con estilo de formulario de
+        backend (filas planas etiqueta:valor, sin borde de tarjeta) que
+        fusiona lo que antes eran CUATRO bloques separados: Categorización,
+        Identificación, Finanzas y Pedido. El panel ocupa todo el ancho del
+        popup y se divide en dos columnas internas del 50% cada una (CSS
+        grid, `repeat(2, 1fr)`) — izquierda: Categorización +
+        Identificación (datos descriptivos); derecha: Finanzas + Pedido
+        (datos monetarios).
+
+        Nota de implementación: los nodos nativos `.section-inventory`,
+        `.section-optional-product` y `.financials-order` se vacían con
+        `position="replace"` en su lugar ORIGINAL (para no duplicar su
+        contenido); Productos opcionales + Información General se
+        reconstruyen en un xpath aparte anclado con `position="after"` en
+        `.pos-info-banner` (el nodo creado por el xpath 1, aún presente en
+        el arch — su propio `t-if` solo afecta a si ÉL se renderiza, no a
+        si lo hacen los hermanos anclados a él). Anclarse a un nodo creado
+        antes en ESTE archivo solo funciona porque este motor aplica los
+        xpaths de un mismo `t-inherit` secuencialmente, cada uno viendo el
+        resultado de los anteriores — no se generaliza a xpaths de OTRAS
+        plantillas/módulos (ver el comentario del propio módulo de
+        integración Yapp sobre por qué se ancla al div de Productos
+        opcionales en vez de al banner).
+
+        Todos los campos referenciados aquí ya se envían al frontend del
+        TPV vía `product.template._load_pos_data_fields` (Categorización/
+        Identificación) o vienen del payload del RPC `get_product_info_pos`
+        (Inventario/Finanzas/Pedido, igual que el nativo) — no hizo falta
+        trabajo extra de backend para esta reorganización. Los Productos
+        opcionales salen de `props.productTemplate.pos_optional_product_ids`
+        (el campo relacional del cliente, no el dict `optional_products`
+        del RPC) — ver el comentario sobre ese bloque para el porqué.
+    -->
+    <t t-name="al_pos_product_view.ProductInfoPopup"
+       t-inherit="point_of_sale.ProductInfoPopup"
+       t-inherit-mode="extension">
+
+        <!-- ===== 1. Banner superior: stock por almacén ===== -->
+        <xpath expr="//div[hasclass('section-public-description')]" position="before">
+            <div class="pos-info-banner rounded-3 p-3 mb-3 text-start"
+                 t-if="props.info?.productInfo?.warehouses?.length > 0">
+                <span class="pos-info-panel__title">
+                    <i class="fa fa-cubes me-1"/>
+                    Inventario
+                    <t t-if="pos.session.update_stock_at_closing">(al momento de apertura)</t>
+                </span>
+                <div class="d-flex flex-wrap gap-2">
+                    <span t-foreach="props.info.productInfo.warehouses" t-as="warehouse" t-key="warehouse.name"
+                          class="pos-info-banner__stock-chip badge rounded-pill text-bg-light border">
+                        <t t-esc="warehouse.name"/>:
+                        <b><t t-esc="warehouse.free_qty"/> <t t-esc="warehouse.uom"/></b>
+                        <span class="text-muted">(<t t-esc="warehouse.forecasted_quantity"/> previsto)</span>
+                    </span>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Quita el Inventario nativo de su antigua posición a mitad del popup (reconstruido en el banner de arriba). -->
+        <xpath expr="//div[hasclass('section-inventory')]" position="replace"/>
+
+        <!-- Quita los Productos opcionales nativos de su antigua posición (reconstruidos abajo, tras Información General). -->
+        <xpath expr="//div[hasclass('section-optional-product')]" position="replace"/>
+
+        <!-- Quita Finanzas+Pedido nativos de su antigua posición al final del popup (reconstruidos abajo, justo tras el banner). -->
+        <xpath expr="//div[hasclass('financials-order')]" position="replace"/>
+
+        <!-- ===== 2. Productos opcionales y luego "Información General" (dos columnas) — justo tras el banner ===== -->
+        <xpath expr="//div[hasclass('pos-info-banner')]" position="after">
+
+            <!--
+                Productos opcionales, mostrados ANTES de "Información
+                General" (v1.4.0: subidos justo tras el banner, junto con
+                Información General — antes eran el último bloque previo al
+                pie). Salen de `props.productTemplate.pos_optional_product_ids`
+                (campo relacional del cliente) en lugar de
+                `props.info.productInfo.optional_products` (los dicts pelados
+                {id, name, list_price} del RPC): el TPV base resuelve los
+                campos many2many de los modelos cargados en registros
+                reactivos completos, y `_load_pos_data_search_read` garantiza
+                que los productos opcionales de cada producto formen parte
+                del conjunto cargado en el cliente — así `.getImageUrl()` /
+                `.list_price` están disponibles localmente, sin RPC extra.
+                El clic mantiene el comportamiento nativo (`searchProduct`:
+                filtra el catálogo y cierra el popup; NO añade el producto
+                al pedido).
+            -->
+            <div class="mt-3"
+                 t-if="props.productTemplate.pos_optional_product_ids and props.productTemplate.pos_optional_product_ids.length">
+                <h3 class="pos-info-panel__title">
+                    <i class="fa fa-plus-circle me-1"/>
+                    Productos opcionales
+                </h3>
+                <div class="pos-info-optional-grid d-flex flex-wrap gap-2">
+                    <article t-foreach="props.productTemplate.pos_optional_product_ids" t-as="optional" t-key="optional.id"
+                             tabindex="0"
+                             role="button"
+                             class="pos-info-optional-card rounded-3 overflow-hidden border cursor-pointer"
+                             t-on-click="() => this.searchProduct(optional.name)">
+                        <div t-if="pos.config.show_product_images" class="pos-info-optional-card__img ratio ratio-4x3">
+                            <img class="w-100 h-100 object-fit-cover pe-none"
+                                 t-att-src="optional.getImageUrl()"
+                                 t-att-alt="optional.name"
+                                 draggable="false"/>
+                        </div>
+                        <div class="pos-info-optional-card__name px-2 pt-1 text-truncate" t-esc="optional.name"/>
+                        <div class="pos-info-optional-card__price px-2 pb-2 fw-bold"
+                             t-esc="getDisplayPrice(optional)"/>
+                    </article>
+                </div>
+            </div>
+
+            <div class="pos-info-general mt-3 text-start"
+                 t-if="props.productTemplate">
+                <h3 class="pos-info-panel__title">
+                    <i class="fa fa-list-alt me-1"/>
+                    Información General
+                </h3>
+                <div class="pos-info-general__columns d-grid gap-3"
+                     style="grid-template-columns: repeat(2, 1fr);">
+
+                    <!-- Columna izquierda: Categorización + Identificación (datos descriptivos). -->
+                    <div class="pos-info-general__col">
+                        <div class="pos-info-grid d-grid gap-2"
+                             style="grid-template-columns: max-content 1fr;">
+
+                            <t t-if="props.productTemplate.categ_id">
+                                <label class="fw-bold text-muted">Categoría interna:</label>
+                                <span t-esc="props.productTemplate.categ_id.display_name || props.productTemplate.categ_id.name"/>
+                            </t>
+                            <t t-if="props.productTemplate.pos_categ_ids and props.productTemplate.pos_categ_ids.length">
+                                <label class="fw-bold text-muted">Categorías del TPV:</label>
+                                <span class="d-flex flex-wrap gap-1">
+                                    <span t-foreach="props.productTemplate.pos_categ_ids" t-as="cat" t-key="cat.id"
+                                          class="badge rounded-pill bg-secondary"
+                                          t-esc="cat.name"/>
+                                </span>
+                            </t>
+                            <t t-if="props.productTemplate.product_tag_ids and props.productTemplate.product_tag_ids.length">
+                                <label class="fw-bold text-muted">Etiquetas:</label>
+                                <span class="d-flex flex-wrap gap-1">
+                                    <!-- `color` es un Char HEX (p.ej. "#3C3C3C"), renderizado como
+                                         punto inline — misma convención que los chips de las filas. -->
+                                    <span t-foreach="props.productTemplate.product_tag_ids" t-as="ingredient" t-key="ingredient.id"
+                                          class="badge rounded-pill pos-info-tag-badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                                        <span class="rounded-circle d-inline-block"
+                                              t-attf-style="width: 0.6em; height: 0.6em; background-color: {{ ingredient.color or '#3C3C3C' }};"/>
+                                        <t t-esc="ingredient.name"/>
+                                    </span>
+                                </span>
+                            </t>
+                            <t t-if="props.productTemplate.default_code">
+                                <label class="fw-bold text-muted">SKU:</label>
+                                <span class="font-monospace" t-esc="props.productTemplate.default_code"/>
+                            </t>
+                            <t t-if="props.productTemplate.barcode">
+                                <label class="fw-bold text-muted">Código de barras:</label>
+                                <span class="font-monospace">
+                                    <i class="fa fa-barcode me-1 text-muted"/>
+                                    <t t-esc="props.productTemplate.barcode"/>
+                                </span>
+                            </t>
+                            <t t-if="props.productTemplate.uom_id">
+                                <label class="fw-bold text-muted">Unidad de medida:</label>
+                                <span t-esc="props.productTemplate.uom_id.name"/>
+                            </t>
+                            <t t-if="props.productTemplate.type">
+                                <label class="fw-bold text-muted">Tipo:</label>
+                                <span>
+                                    <t t-if="props.productTemplate.type === 'service'">Servicio</t>
+                                    <t t-elif="props.productTemplate.type === 'consu' and props.productTemplate.is_storable">Almacenable</t>
+                                    <t t-elif="props.productTemplate.type === 'consu'">Consumible</t>
+                                    <t t-else=""><t t-esc="props.productTemplate.type"/></t>
+                                </span>
+                            </t>
+                            <t t-if="props.productTemplate.to_weight">
+                                <label class="fw-bold text-muted">Se vende por:</label>
+                                <span>
+                                    <i class="fa fa-balance-scale me-1 text-muted"/>
+                                    Peso
+                                </span>
+                            </t>
+                            <t t-if="props.productTemplate.tracking and props.productTemplate.tracking !== 'none'">
+                                <label class="fw-bold text-muted">Trazabilidad:</label>
+                                <span class="text-capitalize" t-esc="props.productTemplate.tracking"/>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha: Finanzas + Pedido (datos monetarios). -->
+                    <div class="pos-info-general__col">
+                        <div class="pos-info-grid d-grid gap-2"
+                             style="grid-template-columns: max-content 1fr;">
+
+                            <label class="fw-bold text-muted">Precio sin impuestos:</label>
+                            <span t-esc="env.utils.formatCurrency(props.info.productInfo.all_prices.price_without_tax)"/>
+                            <label class="fw-bold text-muted"><t t-esc="vatLabel"/></label>
+                            <span>
+                                <t t-esc="props.info.taxAmount"/>
+                                (<t t-esc="props.info.taxName"/>)
+                            </span>
+                            <label class="fw-bold text-muted">Precio con impuestos:</label>
+                            <span t-esc="env.utils.formatCurrency(props.info.productInfo.all_prices.price_with_tax)"/>
+                            <t t-if="_hasMarginsCostsAccessRights()">
+                                <label class="fw-bold text-muted">Costo:</label>
+                                <span t-esc="props.info.costCurrency"/>
+                                <label class="fw-bold text-muted">Margen:</label>
+                                <span><t t-esc="props.info.marginCurrency"/> (<t t-esc="props.info.marginPercent"/>%)</span>
+                            </t>
+                            <t t-foreach="props.info.productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
+                                <label class="fw-bold text-muted" t-esc="pricelist.name"/>
+                                <span t-esc="env.utils.formatCurrency(pricelist.price)"/>
+                            </t>
+
+                            <label class="fw-bold text-muted">Precio total sin impuestos:</label>
+                            <span t-esc="props.info.orderPriceWithoutTaxCurrency"/>
+                            <label class="fw-bold text-muted"><t t-esc="totalVatLabel"/></label>
+                            <span t-esc="props.info.orderTaxTotalCurrency"/>
+                            <label class="fw-bold text-muted">Precio total con impuestos:</label>
+                            <span t-esc="props.info.orderPriceWithTaxCurrency"/>
+                            <t t-if="_hasMarginsCostsAccessRights()">
+                                <label class="fw-bold text-muted">Costo total:</label>
+                                <span t-esc="props.info.orderCostCurrency"/>
+                                <label class="fw-bold text-muted">Margen total:</label>
+                                <span><t t-esc="props.info.orderMarginCurrency"/> (<t t-esc="props.info.orderMarginPercent"/>%)</span>
+                            </t>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </xpath>
+
+    </t>
+
+</templates>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menú: Punto de venta → Productos → Etiquetas de producto. Reutiliza
+         la acción estándar del core (product.product_tag_action); desde ahí
+         se gestionan nombre, color y "Mostrar en la barra de filtros". -->
+    <menuitem id="menu_pos_product_tags"
+        name="Etiquetas de producto"
+        parent="point_of_sale.pos_config_menu_catalog"
+        action="product.product_tag_action"
+        sequence="18"/>
+
+    <record id="product_tag_form_view_inherit_pos_filter" model="ir.ui.view">
+        <field name="name">product.tag.form.inherit.pos.filter</field>
+        <field name="model">product.tag</field>
+        <field name="inherit_id" ref="product.product_tag_form_view"/>
+        <field name="arch" type="xml">
+            <field name="color" position="after">
+                <field name="show_in_pos_filter"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- La lista con edición masiva: (des)marcar muchas etiquetas de golpe
+         es exactamente el flujo para el que existe este campo. -->
+    <record id="product_tag_tree_view_inherit_pos_filter" model="ir.ui.view">
+        <field name="name">product.tag.list.inherit.pos.filter</field>
+        <field name="model">product.tag</field>
+        <field name="inherit_id" ref="product.product_tag_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="show_in_pos_filter" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

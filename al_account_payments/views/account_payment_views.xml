@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Formulario de pago: medio de pago SUNAT y nro. de operación banco -->
+    <record id="view_account_payment_form" model="ir.ui.view">
+        <field name="name">account.payment.form.al.payments</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <!-- En v19 hay tres variantes de partner_bank_id en group2; se
+                 ancla al grupo para insertar al final de la columna. -->
+            <xpath expr="//group[@name='group2']" position="inside">
+                <field name="pe_payment_method_id" readonly="state != 'draft'"
+                       options="{'no_quick_create': True}"/>
+                <field name="bank_operation_number" readonly="state != 'draft'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

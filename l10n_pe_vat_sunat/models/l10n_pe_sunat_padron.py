@@ -44,11 +44,10 @@ class L10nPeSunatPadron(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        ('uniq_kind_vat',
-         'unique(kind, vat)',
-         'Ya existe una entrada para este RUC en este padrón.'),
-    ]
+    # v19: _sql_constraints ya no se soporta (no-op silencioso).
+    _uniq_kind_vat = models.Constraint(
+        'UNIQUE(kind, vat)',
+        'Ya existe una entrada para este RUC en este padrón.')
 
     # ------------------------------------------------------------------ #
     # Acciones (botón Run Manually en el cron)                            #

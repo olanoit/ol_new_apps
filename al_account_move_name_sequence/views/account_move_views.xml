@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_inherit_edi_series" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.al.edi.series</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Serie CPE en la MISMA fila que el tipo de documento: se
+                 envuelve el campo latam (con sus atributos originales
+                 intactos) en un div flex. El nodo del campo sigue
+                 existiendo en el árbol, así que otras herencias que lo
+                 anclen por nombre no se rompen. El xpath usa @domain para
+                 distinguir la instancia visible de los campos invisibles
+                 que latam añade al inicio del form. -->
+            <xpath expr="//field[@name='l10n_latam_document_type_id'][@domain]"
+                   position="replace">
+                <label for="l10n_latam_document_type_id"
+                       invisible="not l10n_latam_use_documents"/>
+                <div class="d-flex gap-2 flex-wrap align-items-center"
+                     invisible="not l10n_latam_use_documents">
+                    <field name="l10n_latam_document_type_id" class="oe_inline"
+                        readonly="posted_before"
+                        required="partner_id and l10n_latam_use_documents"
+                        domain="[('id', 'in', l10n_latam_available_document_type_ids)]"
+                        options="{'no_open': True, 'no_create': True}"/>
+                    <field name="journal_edi_series_ids" invisible="1"/>
+                    <field name="edi_series_id" class="oe_inline"
+                        invisible="not journal_edi_series_ids or state != 'draft'"
+                        readonly="state != 'draft'"
+                        placeholder="Serie CPE"
+                        options="{'no_create': True, 'no_open': True}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_pos_order_filter_inherit_al_pos_vendedor" model="ir.ui.view">
+        <field name="name">pos.order.list.select.inherit.al.pos.vendedor</field>
+        <field name="model">pos.order</field>
+        <field name="priority">5</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="seller_id" string="Vendedor"/>
+            </xpath>
+
+            <xpath expr="//group[last()]" position="inside">
+                <filter string="Vendedor" domain="[]" name="main_seller_id"
+                        context="{'seller_id':'seller_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_pos_order_tree_inherit_al_pos_vendedor" model="ir.ui.view">
+        <field name="name">view.pos.order.tree.inherit.al.pos.vendedor</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="seller_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_order_form_inherit_al_pos_vendedor" model="ir.ui.view">
+        <field name="name">view.pos.order.form.inherit.al.pos.vendedor</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="seller_id" readonly="True"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

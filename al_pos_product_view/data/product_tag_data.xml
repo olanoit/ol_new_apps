@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Etiquetas por defecto para probar el filtro del TPV.
+         noupdate: el usuario puede renombrarlas/ocultarlas sin que una
+         actualización del módulo se las pise. -->
+    <data noupdate="1">
+
+        <record id="product_tag_bebidas" model="product.tag">
+            <field name="name">Bebidas</field>
+            <field name="color">#1f77b4</field>
+            <field name="show_in_pos_filter" eval="True"/>
+        </record>
+
+        <record id="product_tag_textil" model="product.tag">
+            <field name="name">Textil</field>
+            <field name="color">#9467bd</field>
+            <field name="show_in_pos_filter" eval="True"/>
+        </record>
+
+        <record id="product_tag_abarrotes" model="product.tag">
+            <field name="name">Abarrotes</field>
+            <field name="color">#2ca02c</field>
+            <field name="show_in_pos_filter" eval="True"/>
+        </record>
+
+        <record id="product_tag_servicios" model="product.tag">
+            <field name="name">Servicios</field>
+            <field name="color">#ff7f0e</field>
+            <field name="show_in_pos_filter" eval="True"/>
+        </record>
+
+        <record id="product_tag_promocion" model="product.tag">
+            <field name="name">Promoción</field>
+            <field name="color">#d62728</field>
+            <field name="show_in_pos_filter" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

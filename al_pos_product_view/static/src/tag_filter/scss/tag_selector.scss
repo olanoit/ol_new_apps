@@ -1,0 +1,57 @@
+// `.rightpane` (core del TPV: la columna flex del ProductScreen) no tiene
+// `overflow` ni `min-width: 0` propios. Al computar su ancho preferido, el
+// navegador recorre todo el árbol descendiente — el `overflow: hidden` del
+// wrapper nieto solo protege el layout final recortado, no este cómputo de
+// ancho preferido — así que una fila de chips sin envolver (o cualquier
+// contenido que se niegue a encoger) burbujea su ancho completo hacia
+// arriba y congela `.rightpane` en ese ancho. `min-width: 0` corta la
+// cadena en su origen.
+.rightpane {
+    min-width: 0;
+}
+
+// Fila de chips del filtro por etiquetas (sobre el catálogo del TPV).
+.alpv-tag-selector {
+    // El panel derecho es una COLUMNA flex con `overflow: hidden`; cuando la
+    // lista de productos lo desborda, cada hermano con `flex-shrink: 1` por
+    // defecto se aplasta — la fila de chips colapsaba a una franja. El core
+    // protege igual a su CategorySelector (`flex-shrink: 0`).
+    flex-shrink: 0;
+
+    // Sin esto, el `min-width: auto` implícito del flex item deja que el
+    // contenido dicte su ancho preferido; Safari móvil resuelve esa
+    // combinación sin aplicar `flex-wrap` y los chips desbordan en una sola
+    // línea arrastrando todo el panel. Chrome/Firefox no lo sufren.
+    min-width: 0;
+
+    // Los chips envuelven en varias líneas; con muchísimas etiquetas la fila
+    // deja de crecer a ~2.5 líneas y hace scroll vertical en vez de
+    // estrujar la grilla de productos.
+    max-height: 6rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+
+    .alpv-tag-chip {
+        white-space: nowrap;
+        max-width: 14rem;
+
+        // El span del nombre es un flex item: sin `min-width: 0` su
+        // `min-width: auto` implícito bloquea el encogimiento y los nombres
+        // largos desbordarían el chip en vez de elipsarse.
+        > span:last-child {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__dot {
+            width: 0.65em;
+            height: 0.65em;
+            flex-shrink: 0;
+        }
+
+        &.active .alpv-tag-chip__dot {
+            outline: 1px solid rgba(255, 255, 255, 0.8);
+        }
+    }
+}

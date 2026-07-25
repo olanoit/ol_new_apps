@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_cpe_a4" model="report.paperformat">
+        <field name="name">Comprobantes: A4 SUNAT</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="paperformat_cpe_ticket" model="report.paperformat">
+        <field name="name">Comprobantes: Ticket 80mm</field>
+        <field name="format">custom</field>
+        <!-- Altura acotada: con 297mm el rollo térmico alimentaba ~2/3 de
+             página en blanco tras el contenido. Un ticket típico ocupa
+             ~110-150mm; si el contenido excede, simplemente continúa en la
+             página siguiente del rollo. -->
+        <field name="page_height">160</field>
+        <field name="page_width">80</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">1</field>
+        <field name="margin_left">1</field>
+        <field name="margin_right">1</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+</odoo>

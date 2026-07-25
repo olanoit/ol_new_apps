@@ -11,11 +11,10 @@ from odoo import api, models
 class ResCity(models.Model):
     _inherit = 'res.city'
 
-    _sql_constraints = [
-        ('unique_city_id',
-         'unique(name, country_id, state_id)',
-         'Ya existe una ciudad con ese nombre en ese departamento.'),
-    ]
+    # v19: _sql_constraints ya no se soporta (no-op silencioso).
+    _unique_city_id = models.Constraint(
+        'UNIQUE(name, country_id, state_id)',
+        'Ya existe una ciudad con ese nombre en ese departamento.')
 
     @api.depends('name', 'state_id.name')
     def _compute_display_name(self):

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="edi_invoice_series_form" model="ir.ui.view">
+        <field name="name">edi.invoice.series.form</field>
+        <field name="model">edi.invoice.series</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish" string="Publicar" type="object"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="Inhabilitar" type="object"
+                            invisible="state != 'publish'"/>
+                    <button name="action_draft" string="Volver a borrador" type="object"
+                            invisible="state != 'canceled'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="invoice_count" widget="statinfo"
+                                   string="Comprobantes"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <!-- Solo editable en borrador: una serie publicada ya
+                             tiene secuencias con numeración emitida y una
+                             inhabilitada es histórica. -->
+                        <field name="l10n_latam_document_type_id" widget="radio"
+                               class="oe_edit_only" options="{'horizontal': true}"
+                               readonly="state != 'draft'"/>
+                        <h1>
+                            <field name="name" placeholder="F001 o B001"
+                                   readonly="state != 'draft'"/>
+                        </h1>
+                        <field name="edi_type_code" invisible="1"/>
+                    </div>
+                    <group>
+                        <group string="Series rectificativas">
+                            <field name="name_nc" readonly="state != 'draft'"/>
+                            <field name="name_nd" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Secuencias" groups="base.group_no_one">
+                            <field name="invoice_seq_id"/>
+                            <field name="credit_note_seq_id"/>
+                            <field name="debit_note_seq_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="edi_invoice_series_list" model="ir.ui.view">
+        <field name="name">edi.invoice.series.list</field>
+        <field name="model">edi.invoice.series</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="l10n_latam_document_type_id"/>
+                <field name="name_nc"/>
+                <field name="name_nd"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'publish'"
+                       decoration-muted="state == 'canceled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="edi_invoice_series_action" model="ir.actions.act_window">
+        <field name="name">Series CPE</field>
+        <field name="res_model">edi.invoice.series</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree su primera serie de comprobante</p>
+            <p>Cada serie (F001, B001…) agrupa el comprobante y sus series
+               rectificativas de NC/ND. Al publicarla se crean sus secuencias
+               sin huecos y queda disponible para asignar en los diarios.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_edi_invoice_series"
+        name="Series CPE"
+        parent="account.menu_finance_configuration"
+        action="edi_invoice_series_action"
+        sequence="25"/>
+
+</odoo>

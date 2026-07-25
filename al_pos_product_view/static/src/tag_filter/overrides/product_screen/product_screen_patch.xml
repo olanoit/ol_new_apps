@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Inserta la fila de chips de etiquetas justo debajo del selector de
+        categorías.
+
+        Deliberadamente NO condicionada a `pos.productsToDisplay.length` (a
+        diferencia del CategorySelector nativo): si el filtro vacía el
+        catálogo, los chips deben seguir visibles para poder deseleccionar.
+
+        Oculta en pantallas pequeñas (`ui.isSmall`): la fila compite por
+        espacio vertical con el catálogo y en un móvil no sobra.
+
+        Nota de ubicación: el nodo queda entre <CategorySelector/> y
+        <BarcodeVideoScanner/>. El `t-elif` nativo del <div> de productos
+        encadena con su hermano INMEDIATO anterior (BarcodeVideoScanner),
+        así que insertar aquí no rompe esa cadena condicional.
+    -->
+    <t t-name="al_pos_product_view.ProductScreenTagFilter"
+       t-inherit="point_of_sale.ProductScreen"
+       t-inherit-mode="extension">
+
+        <xpath expr="//CategorySelector" position="after">
+            <PosTagSelector t-if="pos.config.iface_filter_products_by_tag and !ui.isSmall"/>
+        </xpath>
+
+    </t>
+
+</templates>

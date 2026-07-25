@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_delivery_guide_report" model="ir.ui.view">
+        <field name="name">stock.picking.form.delivery.guide.report</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="l10n_pe_edi_stock.view_picking_edi_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="after">
+                <button name="action_print_guia_remision"
+                        icon="fa-print"
+                        string="Guía de remisión"
+                        invisible="state != 'done' or not l10n_pe_edi_ticket_number"
+                        type="object" groups="base.group_user" data-hotkey="p"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

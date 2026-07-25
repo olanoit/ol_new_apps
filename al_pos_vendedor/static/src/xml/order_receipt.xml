@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+      <t t-name="al_pos_vendedor.ReceiptHeader" t-inherit="point_of_sale.ReceiptHeader"
+         t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt-customer')]" position="after">
+            <div class="pos-receipt-customer mt-1 text-start" t-if="order.seller_id">
+                <strong>Vendedor:</strong> <t t-esc="order.seller_id.name"/>
+            </div>
+
+        </xpath>
+    </t>
+
+</templates>
+

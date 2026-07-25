@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <record id="paperformat_guia_remision" model="report.paperformat">
+            <field name="name">Guía de remisión: A4 SUNAT</field>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- Patrón estándar Odoo: template contenedor + template _document
+             por registro (mismo esquema que account.report_invoice). Todo el
+             estilo vive en static/src/css/report_guia.css (bundles
+             web.report_assets_common / _pdf), con el mismo lenguaje visual
+             que los comprobantes de al_l10n_pe_invoice. -->
+        <template id="report_guia_remision_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-call="al_l10n_pe_delivery_guide_report.report_guia_remision_page" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_guia_remision_page">
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
+            <!-- La clase "article" es obligatoria: _prepare_html() solo envuelve
+                 en web.minimal_layout (charset UTF-8 + CSS) los divs .article. -->
+            <div class="article gre-a4"
+                 t-att-data-oe-model="o and o._name"
+                 t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+
+                <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento -->
+                <table class="gre-header">
+                    <tr>
+                        <td class="gre-header-logo">
+                            <img t-if="o.company_id.logo"
+                                 t-att-src="image_data_uri(o.company_id.logo)" alt="Logo"/>
+                        </td>
+                        <td class="gre-header-company">
+                            <div class="gre-company-name">
+                                <span t-field="o.company_id.name"/>
+                            </div>
+                            <div class="gre-company-info">
+                                <div t-if="o.company_id.street">
+                                    <span t-field="o.company_id.street"/>
+                                    <t t-if="o.company_id.partner_id.l10n_pe_district">
+                                        - <span t-field="o.company_id.partner_id.l10n_pe_district.name"/>
+                                    </t>
+                                    <t t-if="o.company_id.city">
+                                        - <span t-field="o.company_id.city"/>
+                                    </t>
+                                </div>
+                                <div>
+                                    <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
+                                    <span t-if="o.company_id.phone and o.company_id.email"> · </span>
+                                    <span t-if="o.company_id.email" t-field="o.company_id.email"/>
+                                </div>
+                                <div t-if="o.company_id.website">
+                                    <span t-field="o.company_id.website"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="gre-doc-box">
+                            <div class="gre-doc-box-inner">
+                                <div class="gre-doc-ruc">RUC: <span t-field="o.company_id.vat"/></div>
+                                <div class="gre-doc-type">
+                                    Guía de remisión electrónica remitente
+                                </div>
+                                <div class="gre-doc-number">
+                                    N° <span t-esc="o.l10n_latam_document_number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- INFORMACIÓN DEL TRASLADO -->
+                <div class="gre-box">
+                    <div class="gre-section-title">Información del traslado</div>
+                    <table class="gre-info">
+                        <tr>
+                            <td class="gre-label">Fecha y hora de emisión:</td>
+                            <td>
+                                <span t-if="o.date_done" t-field="o.date_done"
+                                      t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
+                                <span t-else="" t-field="o.scheduled_date"
+                                      t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
+                            </td>
+                            <td class="gre-label">Modalidad de traslado:</td>
+                            <td>
+                                <t t-if="o.l10n_pe_edi_transport_type == '01'">Transporte público</t>
+                                <t t-else="">Transporte privado</t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="gre-label">
+                                <t t-if="o.l10n_pe_edi_transport_type == '01'">
+                                    Fecha de entrega al transportista:
+                                </t>
+                                <t t-else="">
+                                    Fecha de inicio de traslado:
+                                </t>
+                            </td>
+                            <td>
+                                <span t-field="o.l10n_pe_edi_departure_start_date"
+                                      t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                            </td>
+                            <td class="gre-label">Peso bruto total (KGM):</td>
+                            <td><span t-field="o.weight"/></td>
+                        </tr>
+                        <tr>
+                            <td class="gre-label">Motivo de traslado:</td>
+                            <td><span t-field="o.l10n_pe_edi_reason_for_transfer"/></td>
+                            <td class="gre-label">Observaciones:</td>
+                            <td><span t-field="o.l10n_pe_edi_observation"/></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- REMITENTE Y DESTINATARIO -->
+                <div class="gre-box">
+                    <table class="gre-cols">
+                        <tr>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Datos del remitente</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Razón social:</td>
+                                        <td><span t-field="o.location_id.warehouse_id.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">RUC:</td>
+                                        <td><span t-field="o.location_id.warehouse_id.partner_id.vat"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Dirección:</td>
+                                        <td><span t-field="o.location_id.warehouse_id.partner_id.contact_address"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Datos del destinatario</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Razón social:</td>
+                                        <td><span t-field="o.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">
+                                            <span t-out="o.partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
+                                        </td>
+                                        <td><span t-field="o.partner_id.vat"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Dirección:</td>
+                                        <td>
+                                            <span t-field="o.partner_id.street"/>
+                                            <t t-if="o.partner_id.l10n_pe_district">
+                                                - <span t-field="o.partner_id.l10n_pe_district.name"/>
+                                                - <span t-field="o.partner_id.l10n_pe_district.city_id.state_id.name"/>
+                                                - <span t-field="o.partner_id.l10n_pe_district.city_id.country_id.name"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- DETALLE DE LOS BIENES -->
+                <t t-set="grouped_lines" t-value="o._get_grouped_move_lines()"/>
+                <table class="gre-lines">
+                    <thead>
+                        <tr>
+                            <th style="width: 4%;">N°</th>
+                            <th style="width: 10%;">Código</th>
+                            <th style="width: 32%;">Descripción</th>
+                            <th style="width: 16%;">Series/Lotes</th>
+                            <th style="width: 10%;">Unidad</th>
+                            <th style="width: 10%;">Cantidad</th>
+                            <th style="width: 13%;">Bien normalizado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="grouped_lines" t-as="line">
+                            <td><span t-out="line_index + 1"/></td>
+                            <td><span t-esc="line['product'].barcode or line['product'].default_code"/></td>
+                            <td class="gre-desc"><span t-field="line['product'].name"/></td>
+                            <td>
+                                <t t-if="line['lots']">
+                                    <div class="gre-lot" t-foreach="list(line['lots'])" t-as="lot_name"
+                                         t-esc="lot_name"/>
+                                </t>
+                                <t t-else="">-</t>
+                            </td>
+                            <td><span t-field="line['uom'].name"/></td>
+                            <td><span t-esc="'{0:,.2f}'.format(line['quantity'])"/></td>
+                            <td>No</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- DATOS DEL TRANSPORTE -->
+                <div class="gre-box" t-if="o.l10n_pe_edi_transport_type == '01'">
+                    <div class="gre-section-title">Datos del transportista</div>
+                    <table class="gre-info">
+                        <tr>
+                            <td class="gre-label">Razón social:</td>
+                            <td><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
+                            <td class="gre-label">RUC:</td>
+                            <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                        </tr>
+                        <tr>
+                            <td class="gre-label">N° registro MTC:</td>
+                            <td colspan="3">
+                                <span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_mtc_number"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="gre-box" t-if="o.l10n_pe_edi_transport_type == '02'">
+                    <table class="gre-cols">
+                        <tr>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Datos del conductor</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Conductor:</td>
+                                        <td><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Licencia:</td>
+                                        <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Datos del vehículo</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Placa:</td>
+                                        <td><span t-field="o.l10n_pe_edi_vehicle_id.license_plate"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Marca/Modelo:</td>
+                                        <td><span t-field="o.l10n_pe_edi_vehicle_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Categoría M1 o L:</td>
+                                        <td>
+                                            <t t-if="o.l10n_pe_edi_vehicle_id.is_m1l">Sí</t>
+                                            <t t-else="">No</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- INFORMACIÓN LEGAL + QR OFICIAL (el QR solo existe cuando
+                     el documento ya fue enviado a SUNAT; sin QR la información
+                     legal ocupa todo el ancho) -->
+                <t t-set="qr_url" t-value="o._l10n_pe_edi_get_qr()"/>
+                <t t-set="qr_url" t-value="qr_url and qr_url.strip()"/>
+                <div class="gre-box gre-footer-box">
+                    <table>
+                        <tr>
+                            <td t-attf-class="gre-footer-info{{ '' if qr_url else ' gre-footer-info-full' }}">
+                                <strong>Información adicional:</strong><br/>
+                                • Representación impresa de la Guía de Remisión Electrónica Remitente.<br/>
+                                • Este documento ha sido generado electrónicamente y tiene validez legal.<br/>
+                                • Consulte el estado del documento en www.sunat.gob.pe.
+                            </td>
+                            <td class="gre-footer-qr" t-if="qr_url">
+                                <div class="gre-qr-title">CÓDIGO QR</div>
+                                <img alt="QR SUNAT"
+                                     t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=110&amp;height=110' % quote_plus(qr_url)"/>
+                                <div class="gre-qr-caption">Escanee para verificar</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- PIE DE CONTACTO -->
+                <div class="gre-contact-footer">
+                    Emitido el:
+                    <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                </div>
+            </div>
+        </template>
+
+        <record id="action_report_guia_remision" model="ir.actions.report">
+            <field name="name">Guía de remisión</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">al_l10n_pe_delivery_guide_report.report_guia_remision_document</field>
+            <field name="report_file">al_l10n_pe_delivery_guide_report.report_guia_remision_document</field>
+            <field name="print_report_name">'GUIA_REMISION - %s - %s' % (
+                object.partner_id.name or '', object.name)</field>
+            <field name="paperformat_id" ref="al_l10n_pe_delivery_guide_report.paperformat_guia_remision"/>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

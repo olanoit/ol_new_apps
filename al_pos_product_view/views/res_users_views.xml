@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ajustes > Usuarios y compañías > Usuarios (formulario de admin). -->
+    <record id="view_users_form_al_pos_product_view" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.al.pos.product.view</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='other_preferences']" position="inside">
+                <field name="pos_product_view_mode" invisible="share"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Menú del avatar > Mis preferencias (formulario de autoservicio). -->
+    <record id="view_users_form_simple_modif_al_pos_product_view" model="ir.ui.view">
+        <field name="name">res.users.form.simple.modif.inherit.al.pos.product.view</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='other_preferences']" position="inside">
+                <field name="pos_product_view_mode"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

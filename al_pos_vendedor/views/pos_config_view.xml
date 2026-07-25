@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="pos_config_view_form_inherit_al_pos_vendedor" model="ir.ui.view">
+        <field name="name">pos.config.view.form.inherit.al.pos.vendedor</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Buscar el primer o_settings_container dentro de la página Configuration -->
+            <xpath expr="//page[@name='configuration']//div[hasclass('o_settings_container')]" position="inside">
+                <setting
+                        string="Vendedores autorizados"
+                        help="Seleccione los empleados a quienes podrá ser asignada una venta"
+                        id="authorized_sellers_setting"
+                >
+                    <field name="authorized_seller" readonly="has_active_session"/>
+                    <div class="content-group mt16" invisible="not authorized_seller">
+                        <label for="seller_ids" string="Vendedores: "/>
+                        <field name="seller_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
+                    </div>
+                </setting>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

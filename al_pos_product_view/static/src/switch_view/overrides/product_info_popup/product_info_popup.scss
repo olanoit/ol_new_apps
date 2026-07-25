@@ -1,0 +1,115 @@
+// =====================================================================
+// ProductInfoPopup enriquecido — estilos del layout reorganizado de
+// al_pos_product_view: un banner superior (stock por almacén), un panel
+// unificado "Información General" a dos columnas (Categorización +
+// Identificación a la izquierda, Finanzas + Pedido a la derecha) y los
+// Productos opcionales (grilla de tarjetas) después — todo al final,
+// antes del pie.
+// =====================================================================
+
+// --- Banner superior: stock por almacén ---------------------------------
+.pos-info-banner {
+    background-color: $o-view-background-color;
+    border: 1px solid $o-gray-200;
+}
+
+.pos-info-banner__stock-chip {
+    font-weight: 500;
+
+    b {
+        margin: 0 0.2rem;
+    }
+}
+
+// --- Panel "Información General": dos columnas internas -----------------
+// El panel en sí ocupa todo el ancho del popup (sin max-width ni
+// restricción de alineado) — las dos columnas de abajo reparten ese 100%
+// por igual, 50/50.
+.pos-info-general__columns {
+    // CSS grid real (misma técnica que el `.financials-order` nativo) para
+    // que las dos columnas estén SIEMPRE lado a lado — un enfoque con
+    // flex-wrap aquí colapsaba antes a una sola columna centrada cada vez
+    // que el ancho renderizado del popup hacía envolver los items flex.
+    // Las columnas de grid solo encogen, no envuelven, así que eso no
+    // puede pasar. Colapsa a una sola columna de forma deliberada (no
+    // implícita) por debajo del breakpoint sm.
+    > .pos-info-general__col {
+        min-width: 0; // evita que valores largos revienten la pista del grid
+    }
+}
+
+.pos-info-panel__title {
+    // Deliberadamente más pequeño que el `.section-title` nativo (un `<h3>`
+    // pelado, ~1.75rem vía Bootstrap): a ese tamaño domina un panel que por
+    // lo demás son solo filas compactas etiqueta:valor.
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $o-gray-600;
+    margin-bottom: 0.75rem;
+
+    .fa {
+        color: $primary;
+    }
+}
+
+.pos-info-grid {
+    // El `grid-template-columns: max-content 1fr;` inline se fija en el XML
+    // para el layout a dos columnas "etiqueta : valor", estilo formulario
+    // de backend: sin borde de tarjeta, solo tipografía y espaciado de filas.
+    align-items: baseline;
+
+    label {
+        margin-bottom: 0;
+        white-space: nowrap;
+        font-size: 0.85rem;
+    }
+
+    > span {
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+}
+
+.pos-info-tag-badge {
+    // Los badges de color usan la paleta o_colorlist de Odoo cuando la
+    // etiqueta tiene color; el borde pequeño ayuda a que el caso de
+    // respaldo "sin color" destaque contra el fondo del popup.
+    padding: 0.35em 0.7em;
+    font-weight: 500;
+}
+
+// --- Grilla de tarjetas de productos opcionales (tras "Información General") ---
+.pos-info-optional-card {
+    width: 6.5rem;
+    background-color: $o-view-background-color;
+    border-color: $o-gray-200 !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        border-color: $primary !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    &__img {
+        background-color: $o-gray-100;
+    }
+
+    &__name {
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+
+    &__price {
+        font-size: 0.85rem;
+    }
+}
+
+// --- Responsive: apila "Información General" en una sola columna en
+// popups estrechos (deliberado, no un flex-wrap accidental). ------------
+@media (max-width: 575.98px) {
+    .pos-info-general__columns {
+        grid-template-columns: 1fr;
+    }
+}

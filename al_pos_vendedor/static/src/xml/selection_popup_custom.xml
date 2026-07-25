@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_pos_vendedor.SelectionPopupCustom" owl="1">
+        <Dialog title="props.title" footer="false" size="'sm'">
+
+            <div class="alv-popup">
+
+                <!-- Buscador -->
+                <div class="alv-search-wrap">
+                    <i class="fa fa-search alv-search-icon"/>
+                    <input class="alv-search-input"
+                           type="text"
+                           placeholder="Buscar..."
+                           autocomplete="off"
+                           t-model="state.inputValue"
+                           t-ref="input"
+                           t-on-input="searchLabel"/>
+                    <button t-if="state.inputValue"
+                            class="alv-search-clear"
+                            t-on-click="() => { state.inputValue = ''; searchLabel(); }">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+
+                <!-- Banner vendedor actual (solo si hay selección) -->
+                <t t-if="currentSelection">
+                    <div class="alv-current-banner">
+                        <div class="alv-current-info">
+                            <div class="alv-current-avatar"
+                                 t-att-style="'background:' + this.getAvatarColor(currentSelection.label)">
+                                <t t-esc="this.getInitials(currentSelection.label)"/>
+                            </div>
+                            <div class="alv-current-text">
+                                <span class="alv-current-label">Vendedor actual</span>
+                                <span class="alv-current-name" t-esc="currentSelection.label"/>
+                            </div>
+                        </div>
+                        <button class="alv-deselect-btn" t-on-click="clearSelection">
+                            <i class="fa fa-times me-1"/>Quitar
+                        </button>
+                    </div>
+                </t>
+
+                <!-- Grid de vendedores -->
+                <div class="alv-grid">
+
+                    <t t-if="state.filteredList.length === 0">
+                        <div class="alv-empty">
+                            <i class="fa fa-user-times alv-empty-icon"/>
+                            <span>Sin resultados</span>
+                        </div>
+                    </t>
+
+                    <t t-foreach="state.filteredList" t-as="item" t-key="item.id">
+                        <button class="alv-card"
+                                t-att-class="item.isSelected ? 'alv-card--selected' : ''"
+                                t-on-click="() => this.selectItem(item)">
+
+                            <!-- Marcar/quitar como vendedor predeterminado de la sesión -->
+                            <span t-if="allowDefault"
+                                  class="alv-star"
+                                  t-att-class="state.defaultId === item.id ? 'alv-star--on' : ''"
+                                  t-att-title="state.defaultId === item.id ? 'Vendedor predeterminado de la sesión' : 'Fijar como predeterminado de la sesión'"
+                                  t-on-click="(ev) => this.toggleDefault(item, ev)">
+                                <i t-att-class="state.defaultId === item.id ? 'fa fa-star' : 'fa fa-star-o'"/>
+                            </span>
+
+                            <!-- Avatar -->
+                            <div class="alv-avatar"
+                                 t-att-style="'background:' + this.getAvatarColor(item.label)">
+                                <t t-esc="this.getInitials(item.label)"/>
+                                <i t-if="item.isSelected" class="fa fa-check alv-avatar-check"/>
+                            </div>
+
+                            <!-- Nombre -->
+                            <span class="alv-card-name" t-esc="item.label"/>
+
+                        </button>
+                    </t>
+
+                </div>
+
+                <!-- Ayuda: estrella = predeterminado de la sesión -->
+                <div t-if="allowDefault" class="alv-default-hint">
+                    <i class="fa fa-star alv-default-hint-icon"/>
+                    <span>Toca la estrella para fijar el vendedor predeterminado de la sesión (se aplicará automáticamente a las ventas nuevas).</span>
+                </div>
+
+                <!-- Pie: cantidad + cancelar -->
+                <div class="alv-footer">
+                    <span class="alv-count">
+                        <t t-esc="state.filteredList.length"/>
+                        <t t-if="state.filteredList.length === 1"> vendedor</t>
+                        <t t-else=""> vendedores</t>
+                    </span>
+                    <button class="alv-cancel" t-on-click="cancel">
+                        <i class="fa fa-times-circle me-1"/>Cancelar
+                    </button>
+                </div>
+
+            </div>
+        </Dialog>
+    </t>
+
+</templates>

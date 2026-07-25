@@ -1,0 +1,150 @@
+// =====================================================================
+// Conmutador de vista de productos del TPV — estilos del modo lista.
+//
+// Las variables (p.ej. $border-color, $primary, $o-view-background-color)
+// se heredan del bundle de assets del TPV y resuelven al tema activo.
+// =====================================================================
+
+// --- Botón conmutador --------------------------------------------------
+.pos-view-switch {
+    // Misma flex-column del panel derecho que CategorySelector /
+    // PosTagSelector (ver tag_selector.scss): un hermano sin `min-width: 0`
+    // puede estirarse más ancho que el viewport si el contenido de otro
+    // hermano desborda en vez de envolver, llevándose fuera de pantalla el
+    // botón conmutador alineado a la derecha de esta fila.
+    min-width: 0;
+
+    &__btn {
+        --btn-border-color: #{$border-color};
+        border: $border-width solid var(--btn-border-color);
+
+        &:hover {
+            background-color: $o-view-background-color;
+            border-color: $primary;
+            color: $primary;
+        }
+    }
+}
+
+// --- Contenedor de la lista de productos -------------------------------
+.product-list--rows {
+    display: flex;
+    flex-direction: column;
+}
+
+// --- Fila individual de producto ---------------------------------------
+.pos-product-list-row {
+    --row-border-color: #{$o-gray-200};
+    border-color: var(--row-border-color) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-height: 3.5rem;
+
+    &:hover {
+        border-color: $primary !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    &:active {
+        background-color: rgba($primary, 0.08);
+    }
+
+    &__img {
+        width: 3rem;
+        height: 3rem;
+        background-color: $o-gray-100;
+    }
+
+    &__info {
+        min-width: 0; // permite text-truncate dentro de hijos flex
+    }
+
+    &__name {
+        font-size: 0.95rem;
+        line-height: 1.2;
+    }
+
+    &__meta {
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+
+    &__sku,
+    &__barcode {
+        max-width: 100%;
+    }
+
+    // Las etiquetas comparten la fila meta con SKU/código de barras. Cada
+    // una tiene el ancho limitado (los nombres largos llevan puntos
+    // suspensivos) para no empujar las columnas de precio/stock; la fila
+    // meta ya envuelve (`flex-wrap`), así que las etiquetas extra fluyen a
+    // la línea siguiente en vez de recortarse.
+    &__tag {
+        max-width: 9rem;
+    }
+
+    // `text-truncate` solo no basta en un item flex: su `min-width: auto`
+    // implícito le impide encoger por debajo del ancho completo del texto,
+    // que es justo lo que empujaba las columnas vecinas y recortaba nombres.
+    &__tag-name {
+        min-width: 0;
+    }
+
+    &__tag-dot {
+        width: 0.6em;
+        height: 0.6em;
+    }
+
+    &__stock {
+        min-width: 3.5rem;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    &__price {
+        min-width: 5rem;
+        white-space: nowrap;
+    }
+
+    &__qty {
+        min-width: 2rem;
+        text-align: center;
+    }
+
+    &__info-btn {
+        width: 2rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+
+        &:hover {
+            background-color: $primary;
+            color: #fff;
+        }
+    }
+
+    // --- Ajustes responsive --------------------------------------------
+    @media (max-width: 575.98px) {
+        &__img {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        // El badge de stock es el dato menos crítico en una fila de tamaño
+        // móvil; se quita antes de que cualquier otra cosa quede apretada.
+        &__stock {
+            display: none;
+        }
+
+        &__price {
+            min-width: 4rem;
+            font-size: 0.9rem;
+        }
+
+        &__info-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+    }
+}

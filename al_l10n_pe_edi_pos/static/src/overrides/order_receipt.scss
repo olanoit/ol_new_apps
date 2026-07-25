@@ -1,0 +1,201 @@
+/* Recibo CPE del TPV (al_l10n_pe_edi_pos) — mismo lenguaje visual que
+   el ticket 80mm de al_l10n_pe_invoice: blanco y negro, reglas
+   continuas para el detalle y discontinuas entre secciones (vernáculo
+   de impresora térmica; sin rellenos grises). Prefijo .alpe- para no
+   tocar clases nativas del POS. Sin font-size en .pos-receipt para
+   heredar el tamaño nativo de impresión. */
+
+.pos-receipt {
+    .alpe-center {
+        text-align: center;
+    }
+
+    .alpe-header {
+        img {
+            max-width: 45%;
+            display: block;
+            margin: 0 auto 4px auto;
+        }
+    }
+
+    .alpe-doc {
+        text-align: center;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+        padding: 4px 0;
+        margin: 6px 0;
+    }
+
+    .alpe-info {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0;
+        text-align: left;
+
+        li {
+            margin-bottom: 1px;
+        }
+    }
+
+    .alpe-lines {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 6px 0;
+        font-size: 90%;
+
+        th {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 3px 2px;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 3px 2px;
+            vertical-align: top;
+            word-break: break-word;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 1px dashed #000;
+            padding-bottom: 5px;
+        }
+    }
+
+    .alpe-num {
+        text-align: right !important;
+        white-space: nowrap;
+    }
+
+    .alpe-ctr {
+        text-align: center !important;
+    }
+
+    .alpe-discount {
+        font-size: 90%;
+        padding-left: 1em;
+    }
+
+    .alpe-totals {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 95%;
+
+        td {
+            padding: 1px 3px;
+        }
+
+        .alpe-label {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .alpe-total-row td {
+            border-top: 1px solid #000;
+            font-weight: bold;
+            font-size: 110%;
+            padding-top: 3px;
+        }
+    }
+
+    .alpe-words {
+        border-top: 1px dashed #000;
+        border-bottom: 1px dashed #000;
+        padding: 3px 0;
+        margin: 5px 0;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 85%;
+        text-align: left;
+    }
+
+    .alpe-qr {
+        text-align: center;
+        margin-top: 8px;
+
+        img {
+            width: 110px;
+            height: 110px;
+        }
+    }
+
+    .alpe-footer {
+        text-align: center;
+        margin-top: 8px;
+        padding-top: 5px;
+        border-top: 1px dashed #000;
+        font-size: 90%;
+    }
+}
+
+/* Diálogo selector de tipo de comprobante */
+.alpe-doctype-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.alpe-doctype-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+
+    &:hover {
+        border-color: #714b67;
+        background: #f8f5f7;
+    }
+
+    &.alpe-selected {
+        border: 2px solid #714b67;
+        background: #f3ecf1;
+    }
+
+    .alpe-doctype-label {
+        font-weight: 600;
+    }
+
+    .alpe-doctype-hint {
+        font-size: 80%;
+        margin-top: 2px;
+    }
+
+    .alpe-check {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        color: #714b67;
+    }
+}
+
+/* Estrella de "serie fija" en las tarjetas del selector */
+.alpe-doctype-card .alpe-star {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    background: transparent;
+    border: none;
+    line-height: 1;
+}
+
+/* Modal único: tres tarjetas de tipo + chips de serie */
+.alpe-doctype-grid--three {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.alpe-serie-chip {
+    white-space: nowrap;
+
+    .fa-star,
+    .fa-star-o {
+        cursor: pointer;
+    }
+}

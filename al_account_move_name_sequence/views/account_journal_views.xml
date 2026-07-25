@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_journal_form_inherit_name_sequence" model="ir.ui.view">
+        <field name="name">account.journal.form.inherit.al.name.sequence</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <!-- Grupo propio, con título, tras el grupo contable estándar:
+                 el consultor funcional ve toda la configuración de la
+                 numeración CPE junta y con instrucciones. Todo es OPCIONAL:
+                 con la casilla desmarcada el diario numera de forma nativa.
+                 Con "Usa documentos" (latam) SOLO aplican las Series CPE;
+                 las secuencias simples se ocultan porque no se consideran. -->
+            <xpath expr="//field[@name='refund_sequence']/.." position="after">
+                <group string="Numeración por secuencia — CPE Perú (opcional)"
+                       name="al_name_sequence"
+                       invisible="type not in ['sale', 'purchase', 'general']">
+                    <field name="l10n_latam_use_documents" invisible="1"/>
+                    <div class="text-muted" colspan="2">
+                        Sin activar, el diario numera de forma nativa. Al
+                        activar, cada comprobante publicado toma su número de
+                        una secuencia sin huecos:
+                        <ul class="mb-0">
+                            <li>Diario <b>con «Usa documentos»</b>: asigne
+                                <b>Series CPE</b> (serie + NC/ND rectificativas;
+                                se gestionan en Contabilidad → Configuración →
+                                Series CPE). Es la única modalidad considerada.</li>
+                            <li>Diario <b>sin documentos latam</b>: use los
+                                <b>prefijos simples</b> de abajo (una serie por
+                                diario).</li>
+                        </ul>
+                    </div>
+                    <field name="use_name_sequence"/>
+                    <field name="edi_series_ids" widget="many2many_tags"
+                           invisible="not use_name_sequence or not l10n_latam_use_documents"/>
+                    <field name="name_sequence_prefix"
+                           invisible="not use_name_sequence or l10n_latam_use_documents"
+                           placeholder="F001-"/>
+                    <label for="name_sequence_id"
+                           invisible="not use_name_sequence or l10n_latam_use_documents"/>
+                    <div class="d-flex gap-2"
+                         invisible="not use_name_sequence or l10n_latam_use_documents">
+                        <field name="name_sequence_id" class="oe_inline"/>
+                        <button name="action_al_generate_name_sequence" type="object"
+                                string="Generar" class="btn btn-link p-0"
+                                icon="fa-magic"
+                                invisible="name_sequence_id"
+                                help="Crea la secuencia en la compañía del diario con el prefijo indicado (relleno 8, sin huecos)."/>
+                    </div>
+                    <field name="refund_name_sequence_prefix"
+                           invisible="not use_name_sequence or l10n_latam_use_documents or type not in ['sale', 'purchase']"
+                           placeholder="FC01-"/>
+                    <label for="refund_name_sequence_id"
+                           invisible="not use_name_sequence or l10n_latam_use_documents or type not in ['sale', 'purchase']"/>
+                    <div class="d-flex gap-2"
+                         invisible="not use_name_sequence or l10n_latam_use_documents or type not in ['sale', 'purchase']">
+                        <field name="refund_name_sequence_id" class="oe_inline"/>
+                        <button name="action_al_generate_refund_name_sequence" type="object"
+                                string="Generar" class="btn btn-link p-0"
+                                icon="fa-magic"
+                                invisible="refund_name_sequence_id"
+                                help="Crea la secuencia de notas de crédito con el prefijo NC indicado."/>
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

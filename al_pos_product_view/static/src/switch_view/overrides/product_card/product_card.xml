@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Añade un botón circular de "información" superpuesto en la esquina de
+        cada tarjeta de la cuadrícula. Oculto en las tarjetas renderizadas
+        dentro del popup del configurador de combos, donde apilar otro modal
+        sería confuso.
+    -->
+    <t t-name="al_pos_product_view.ProductCardInfoBtn"
+       t-inherit="point_of_sale.ProductCard"
+       t-inherit-mode="extension">
+
+        <xpath expr="//article" position="inside">
+            <!--
+                Posicionado arriba a la derecha. El badge nativo
+                `comboExtraPrice` también vive arriba a la derecha, así que
+                ocultamos el botón de información en las tarjetas de combo
+                que muestran la píldora de precio extra para evitar que se
+                superpongan.
+            -->
+            <button t-if="!props.isComboPopup and !props.comboExtraPrice"
+                    type="button"
+                    class="pos-card-info-btn btn btn-light rounded-circle position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                    t-on-click="onInfoClick"
+                    t-att-title="infoLabel"
+                    t-att-aria-label="infoLabel">
+                <i class="fa fa-info"/>
+            </button>
+        </xpath>
+
+    </t>
+
+</templates>

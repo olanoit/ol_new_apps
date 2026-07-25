@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_pos_product_view.PosTagSelector">
+        <!--
+            flex-wrap (NO overflow-x-auto): con scroll horizontal los chips
+            que no caben quedan cortados en el borde sin pista visible en una
+            pantalla táctil. Envolver mantiene todos los chips visibles;
+            .alpv-tag-selector limita la altura y hace scroll vertical si hay
+            MUCHAS etiquetas (ver scss).
+
+            La fila (icono + botón de recarga) se renderiza incluso sin
+            etiquetas disponibles: recién asignadas las primeras etiquetas en
+            el backend, el botón de recarga es justo lo que las trae sin
+            recargar el TPV.
+        -->
+        <div class="alpv-tag-selector d-flex flex-wrap align-items-center gap-1 px-2 pb-2">
+            <i class="fa fa-tags text-muted flex-shrink-0 me-1" role="img" aria-label="Etiquetas" title="Etiquetas"/>
+            <button t-foreach="availableTags" t-as="tag" t-key="tag.id"
+                    type="button"
+                    class="alpv-tag-chip btn btn-sm rounded-pill border d-flex align-items-center gap-1"
+                    t-att-class="pos.isPosTagSelected(tag.id) ? 'btn-primary active' : 'btn-light'"
+                    t-on-click="() => pos.togglePosTag(tag.id)">
+                <span class="alpv-tag-chip__dot rounded-circle d-inline-block"
+                      t-att-style="dotStyle(tag)"/>
+                <span t-esc="tag.name"/>
+            </button>
+            <button t-if="pos.selectedPosTagIds.length"
+                    type="button"
+                    class="btn btn-sm btn-link text-muted flex-shrink-0 text-decoration-none"
+                    t-on-click="() => pos.clearPosTagFilter()">
+                <i class="fa fa-times me-1"/>Limpiar
+            </button>
+            <button type="button"
+                    class="alpv-tag-refresh btn btn-sm btn-light border rounded-pill flex-shrink-0"
+                    t-att-disabled="state.refreshing"
+                    t-att-title="refreshLabel"
+                    t-att-aria-label="refreshLabel"
+                    t-on-click="onRefreshTags">
+                <i t-attf-class="fa fa-refresh {{ state.refreshing ? 'fa-spin' : '' }}"/>
+            </button>
+        </div>
+    </t>
+
+</templates>

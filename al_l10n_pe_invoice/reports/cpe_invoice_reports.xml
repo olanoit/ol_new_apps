@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <!-- Patrón estándar Odoo: template contenedor + template _document
+             por registro (mismo esquema que account.report_invoice). Todo el
+             estilo vive en static/src/css/report_cpe.css (bundles
+             web.report_assets_common / _pdf). -->
+        <template id="report_cpe_invoice_a4_main">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-call="al_l10n_pe_invoice.report_cpe_invoice_a4_document" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_cpe_invoice_a4_document">
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
+            <!-- QR oficial SUNAT: el core lo extrae del XML firmado (incluye
+                 el hash de la firma); vacío si aún no se generó el XML. -->
+            <t t-set="extra_edi_vals" t-value="o._l10n_pe_edi_get_extra_report_values()"/>
+            <div class="article cpe-a4"
+                 t-att-data-oe-model="o and o._name"
+                 t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+
+                <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento -->
+                <table class="cpe-header">
+                    <tr>
+                        <td class="cpe-header-logo">
+                            <img t-if="o.company_id.logo"
+                                 t-att-src="image_data_uri(o.company_id.logo)" alt="Logo"/>
+                        </td>
+                        <td class="cpe-header-company">
+                            <div class="cpe-company-name">
+                                <span t-field="o.company_id.name"/>
+                            </div>
+                            <div class="cpe-company-info">
+                                <div t-if="o.company_id.street">
+                                    <span t-field="o.company_id.partner_id.contact_address"/>
+                                </div>
+                                <div>
+                                    <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
+                                    <span t-if="o.company_id.phone and o.company_id.email"> · </span>
+                                    <span t-if="o.company_id.email" t-field="o.company_id.email"/>
+                                </div>
+                                <div t-if="o.company_id.website">
+                                    <span t-field="o.company_id.website"/>
+                                </div>
+                                <div t-if="o.company_id.company_eslogan_pdf">
+                                    <em><span t-field="o.company_id.company_eslogan_pdf"/></em>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="cpe-doc-box">
+                            <div class="cpe-doc-box-inner">
+                                <div class="cpe-doc-ruc">RUC: <span t-field="o.company_id.vat"/></div>
+                                <div class="cpe-doc-type">
+                                    <span t-out="o.l10n_latam_document_type_id.report_name"/>
+                                </div>
+                                <div class="cpe-doc-number">
+                                    <!-- l10n_latam_document_number = serie-correlativo sin el
+                                         prefijo del tipo ("B001-203"); name lo antepone
+                                         ("B B001-203") y quitarle el espacio duplicaba la letra -->
+                                    <span t-out="o.l10n_latam_document_number or o.name"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- CLIENTE Y FECHAS -->
+                <div class="cpe-box">
+                    <table class="cpe-partner">
+                        <tr>
+                            <td style="width: 58%;">
+                                <table>
+                                    <tr>
+                                        <td class="cpe-label">Señor(es):</td>
+                                        <td><span t-field="o.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cpe-label">
+                                            <span t-out="o.partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
+                                        </td>
+                                        <td><span t-field="o.partner_id.vat"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cpe-label">Dirección:</td>
+                                        <td><span t-field="o.partner_id.contact_address"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cpe-label">Forma de pago:</td>
+                                        <td><t t-if="o.is_credit">CRÉDITO</t><t t-else="">CONTADO</t></td>
+                                    </tr>
+                                    <tr t-if="o.sale_id">
+                                        <td class="cpe-label">Pedido de venta:</td>
+                                        <td><span t-field="o.sale_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="o.sale_id.external_purchase">
+                                        <td class="cpe-label">O/C externa:</td>
+                                        <td><span t-field="o.sale_id.external_purchase"/></td>
+                                    </tr>
+                                    <tr t-if="o.invoice_user_id">
+                                        <td class="cpe-label">Vendedor:</td>
+                                        <td><span t-field="o.invoice_user_id.name"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="width: 42%;">
+                                <table>
+                                    <tr>
+                                        <td class="cpe-label">Fecha de emisión:</td>
+                                        <td><span t-field="o.invoice_date"
+                                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                                    </tr>
+                                    <tr t-if="o.invoice_date_due">
+                                        <td class="cpe-label">Fecha de vencimiento:</td>
+                                        <td><span t-field="o.invoice_date_due"
+                                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                                    </tr>
+                                    <tr t-if="o.invoice_payment_term_id">
+                                        <td class="cpe-label">Condición:</td>
+                                        <td><span t-field="o.invoice_payment_term_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cpe-label">Moneda:</td>
+                                        <td><span t-out="'DÓLARES AMERICANOS' if o.currency_id.name == 'USD' else 'SOLES'"/></td>
+                                    </tr>
+                                    <t t-if="o.currency_id != o.company_currency_id">
+                                        <t t-set="day_rate"
+                                           t-value="o.currency_id.rate_ids.filtered(lambda r: r.name == o.invoice_date)[:1]"/>
+                                        <tr t-if="day_rate">
+                                            <td class="cpe-label">Tipo de cambio:</td>
+                                            <td>
+                                                <span t-out="o.company_currency_id.symbol"/>
+                                                <span t-out="day_rate.rate_sale"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- DETALLE DE LÍNEAS -->
+                <t t-set="lines"
+                   t-value="o.invoice_line_ids.filtered(lambda l: l.display_type not in ('line_section', 'line_note'))"/>
+                <t t-set="has_discount" t-value="any(l.discount for l in lines)"/>
+                <table class="cpe-lines">
+                    <thead>
+                        <tr>
+                            <th style="width: 4%;">Ítem</th>
+                            <th style="width: 10%;">Código</th>
+                            <th>Descripción</th>
+                            <th style="width: 8%;">Cant.</th>
+                            <th style="width: 8%;">Unidad</th>
+                            <th style="width: 11%;">P. Unit</th>
+                            <th style="width: 7%;" t-if="has_discount">Desc. %</th>
+                            <th style="width: 12%;">Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="lines" t-as="line">
+                            <td class="cpe-ctr"><span t-out="line_index + 1"/></td>
+                            <td class="cpe-ctr"><span t-field="line.product_id.default_code"/></td>
+                            <td><span t-field="line.name"/></td>
+                            <td class="cpe-ctr"><span t-field="line.quantity"/></td>
+                            <td class="cpe-ctr"><span t-field="line.product_uom_id.name"/></td>
+                            <td class="cpe-num">
+                                <span t-out="line.price_unit"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                            <td class="cpe-ctr" t-if="has_discount"><span t-out="line.discount"/></td>
+                            <td class="cpe-num">
+                                <span t-out="line.price_subtotal"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- MONTO EN LETRAS / GLOSA + TOTALES SUNAT -->
+                <div class="cpe-totals-section">
+                    <table>
+                        <tr>
+                            <td style="width: 62%; vertical-align: top; padding-right: 12px;">
+                                <div class="cpe-words-box">
+                                    <strong>SON:</strong>
+                                    <span class="text-uppercase" t-out="o._l10n_pe_edi_amount_to_text()"/>
+                                </div>
+                                <div class="cpe-gloss" t-if="o.l10n_pe_gloss">
+                                    <strong>Glosa:</strong> <span t-field="o.l10n_pe_gloss"/>
+                                </div>
+                                <div class="cpe-gloss" t-if="o.l10n_pe_edi_legend_value">
+                                    <span t-field="o.l10n_pe_edi_legend_value"/>
+                                </div>
+                            </td>
+                            <td style="width: 38%; vertical-align: top;">
+                                <table class="cpe-totals">
+                                    <tr t-if="o.l10n_pe_edi_amount_base">
+                                        <td class="cpe-label">Op. gravadas</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_base"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_exonerated">
+                                        <td class="cpe-label">Op. exoneradas</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_exonerated"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_unaffected">
+                                        <td class="cpe-label">Op. inafectas</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_unaffected"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="has_discount">
+                                        <td class="cpe-label">Descuento</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.get_amount_discount()"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_isc">
+                                        <td class="cpe-label">ISC</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_isc"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cpe-label">IGV (18%)</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_igv"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_icbper">
+                                        <td class="cpe-label">ICBPER</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_icbper"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="cpe-total-row">
+                                        <td class="cpe-label">IMPORTE TOTAL</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.amount_total"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- DETRACCIÓN (al_l10n_pe_detraction) -->
+                <div class="cpe-note" t-if="o.l10n_pe_detraction_applies">
+                    <div class="cpe-section-title">Información de la detracción — SPOT</div>
+                    <t t-set="national_bank_account" t-value="o._l10n_pe_get_national_bank_account_number()"/>
+                    <table class="cpe-partner">
+                        <tr>
+                            <td class="cpe-label">Bien o servicio:</td>
+                            <td><span t-field="o.l10n_pe_detraction_type_id.display_name"/></td>
+                            <td class="cpe-label">Porcentaje:</td>
+                            <td><span t-out="o.l10n_pe_detraction_percent"/>%</td>
+                        </tr>
+                        <tr>
+                            <td class="cpe-label" t-if="national_bank_account">Cta. Banco de la Nación:</td>
+                            <td t-if="national_bank_account"><span t-out="national_bank_account"/></td>
+                            <td class="cpe-label">Monto detracción:</td>
+                            <td>
+                                <span t-field="o.l10n_pe_detraction_amount"
+                                      t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- CRÉDITO / CUOTAS -->
+                <div class="cpe-note" t-if="o.is_credit">
+                    <div class="cpe-section-title">Información del crédito</div>
+                    <t t-set="dues" t-value="o.get_data_dues()"/>
+                    <table class="cpe-lines" style="width: 60%;">
+                        <thead>
+                            <tr>
+                                <th>N° Cuota</th>
+                                <th>Fec. Venc.</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="dues" t-as="due">
+                                <td class="cpe-ctr"><span t-out="due.get('nro')"/></td>
+                                <td class="cpe-ctr"><span t-out="due.get('date')"/></td>
+                                <td class="cpe-num">
+                                    <span t-out="due.get('amount')"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- INFORMACIÓN LEGAL + QR OFICIAL (el QR solo existe cuando
+                     el XML firmado ya fue generado; sin QR la información
+                     legal ocupa todo el ancho) -->
+                <t t-set="qr_str" t-value="extra_edi_vals.get('qr_str')"/>
+                <div class="cpe-box cpe-footer-box">
+                    <table>
+                        <tr>
+                            <td t-attf-class="cpe-footer-info{{ '' if qr_str else ' cpe-footer-info-full' }}">
+                                <strong>Información adicional:</strong><br/>
+                                • Representación impresa de la
+                                <span t-out="o.l10n_latam_document_type_id.report_name"/>.<br/>
+                                • Este documento ha sido generado electrónicamente y tiene validez legal.<br/>
+                                • Consulte el estado del documento en www.sunat.gob.pe.
+                            </td>
+                            <td class="cpe-footer-qr" t-if="qr_str">
+                                <div class="cpe-qr-title">CÓDIGO QR</div>
+                                <img alt="QR SUNAT"
+                                     t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=%s' % ('QR', quote_plus(qr_str), 110, 110, 0)"/>
+                                <div class="cpe-qr-caption">Escanee para verificar</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- FIRMAS (opcional por compañía) -->
+                <table class="cpe-signatures" t-if="o.company_id.active_fep_signatures">
+                    <tr>
+                        <td>
+                            <div class="cpe-muted" style="margin-bottom: 26px;">
+                                <t t-if="o.state == 'posted' and o.payment_state in ('paid', 'in_payment')">
+                                    CANCELADO / CANJEADO
+                                </t>
+                                <t t-else="">PENDIENTE DE PAGO</t>
+                            </div>
+                            <div class="cpe-signature-line"/>
+                            <strong>Firma y sello del responsable</strong>
+                            <div class="cpe-muted">
+                                <span t-field="o.company_id.city"/>,
+                                <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="margin-bottom: 26px;">&#160;</div>
+                            <div class="cpe-signature-line"/>
+                            <strong>Recibido conforme</strong>
+                            <div class="cpe-muted">Nombre: ______________________</div>
+                            <div class="cpe-muted">DNI/RUC: ______________________</div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- CUENTAS BANCARIAS -->
+                <div class="cpe-section" t-if="o.company_id.partner_id.bank_ids">
+                    <div class="cpe-section-title">Cuentas bancarias</div>
+                    <table class="cpe-banks">
+                        <thead>
+                            <tr>
+                                <th style="width: 6%;">Ítem</th>
+                                <th style="width: 40%;">Banco</th>
+                                <th style="width: 14%;">Moneda</th>
+                                <th style="width: 40%;">N° de cuenta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.company_id.partner_id.bank_ids" t-as="bank">
+                                <td><span t-out="bank_index + 1"/></td>
+                                <td style="text-align: left;"><span t-field="bank.bank_id.name"/></td>
+                                <td><span t-field="bank.currency_id.name"/></td>
+                                <td><span t-field="bank.acc_number"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PIE DE CONTACTO -->
+                <div class="cpe-contact-footer">
+                    <span t-field="o.company_id.phone"/> ·
+                    <span t-field="o.company_id.email"/> ·
+                    <span t-field="o.company_id.website"/><br/>
+                    Emitido el:
+                    <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                </div>
+            </div>
+        </template>
+
+        <record id="report_cpe_invoice_a4" model="ir.actions.report">
+            <field name="name">CPE A4</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">al_l10n_pe_invoice.report_cpe_invoice_a4_main</field>
+            <field name="report_file">al_l10n_pe_invoice.report_cpe_invoice_a4_main</field>
+            <field name="print_report_name">(object._get_report_base_filename_custom())</field>
+            <field name="paperformat_id" ref="al_l10n_pe_invoice.paperformat_cpe_a4"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

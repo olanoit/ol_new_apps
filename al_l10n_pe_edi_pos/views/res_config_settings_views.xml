@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.l10n.pe.edi.pos</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_accounting_section']" position="inside">
+                <setting id="al_l10n_pe_edi_pos_journals"
+                         string="Comprobantes electrónicos (Perú)"
+                         help="Diarios donde se crean las boletas y facturas electrónicas emitidas desde este TPV. Con ambos configurados, toda venta se factura con el tipo elegido en caja (boleta por defecto).">
+                    <div class="content-group mt16">
+                        <div class="row">
+                            <label string="Diario de boletas" for="pos_l10n_pe_boleta_journal_id"
+                                   class="col-lg-4 o_light_label"/>
+                            <field name="pos_l10n_pe_boleta_journal_id"/>
+                        </div>
+                        <div class="row">
+                            <label string="Diario de facturas" for="pos_l10n_pe_factura_journal_id"
+                                   class="col-lg-4 o_light_label"/>
+                            <field name="pos_l10n_pe_factura_journal_id"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

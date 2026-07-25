@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pe_catalog_payment_form" model="ir.ui.view">
+        <field name="name">pe.catalog.payment.form</field>
+        <field name="model">pe.catalog.payment</field>
+        <field name="arch" type="xml">
+            <form string="Catálogo de medios de pago">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="pse_code"/>
+                            <field name="is_detraction"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pe_catalog_payment_list" model="ir.ui.view">
+        <field name="name">pe.catalog.payment.list</field>
+        <field name="model">pe.catalog.payment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code" optional="show"/>
+                <field name="name" optional="show"/>
+                <field name="pse_code" optional="hide"/>
+                <field name="is_detraction" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pe_catalog_payment_form" model="ir.actions.act_window">
+        <field name="name">Medios de pago</field>
+        <field name="res_model">pe.catalog.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_pe_catalog_payment_list"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea aquí tu primer medio de pago del catálogo SUNAT
+            </p>
+        </field>
+    </record>
+
+</odoo>

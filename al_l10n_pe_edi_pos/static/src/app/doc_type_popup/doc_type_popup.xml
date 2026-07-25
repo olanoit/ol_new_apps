@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_l10n_pe_edi_pos.DocTypePopup">
+        <Dialog title="props.title" footer="false" size="'md'">
+            <!-- Tipo: Recibo / Boleta / Factura -->
+            <div class="alpe-doctype-grid alpe-doctype-grid--three">
+                <t t-foreach="types" t-as="docType" t-key="docType.code">
+                    <button class="alpe-doctype-card btn"
+                            t-att-class="{ 'alpe-selected': state.type === docType.code }"
+                            t-on-click="() => this.selectType(docType.code)">
+                        <i t-att-class="'fa fa-2x mb-2 ' + docType.icon" role="img"/>
+                        <div class="alpe-doctype-label" t-esc="docType.label"/>
+                        <div class="alpe-doctype-hint text-muted" t-esc="docType.hint"/>
+                        <i t-if="state.type === docType.code"
+                           class="fa fa-check-circle alpe-check" role="img"/>
+                    </button>
+                </t>
+            </div>
+
+            <!-- Serie del tipo elegido, en el mismo modal -->
+            <div t-if="state.type !== 'recibo' and seriesForType.length" class="mt-3">
+                <div class="fw-bold mb-2">Serie del comprobante</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <button t-foreach="seriesForType" t-as="serie" t-key="serie.id"
+                            class="alpe-serie-chip btn btn-sm rounded-pill border d-flex align-items-center gap-2"
+                            t-att-class="state.serieId === serie.id ? 'btn-primary' : 'btn-light'"
+                            t-on-click="() => this.selectSerie(serie)">
+                        <span t-esc="serie.name"/>
+                        <i t-att-class="'fa ' + (state.fixedIds[state.type] === serie.id ? 'fa-star text-warning' : 'fa-star-o')"
+                           t-att-title="state.fixedIds[state.type] === serie.id ? 'Quitar serie fija' : 'Fijar como serie de esta caja'"
+                           role="img"
+                           t-on-click="(ev) => this.toggleFixed(serie, ev)"/>
+                    </button>
+                </div>
+                <div class="text-muted mt-1" style="font-size: 85%;">
+                    <i class="fa fa-star text-warning me-1"/>La serie fija se
+                    aplica sola en cada venta de esta caja.
+                </div>
+            </div>
+
+            <!-- Switch de emisión a SUNAT, debajo de la serie -->
+            <div t-if="state.type !== 'recibo'" class="form-check form-switch mt-3">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="alpe-send-switch" t-model="state.send"/>
+                <label class="form-check-label" for="alpe-send-switch">
+                    Emitir a SUNAT
+                    <span class="fw-bold" t-esc="state.send ? 'Sí' : 'No'"/>
+                </label>
+                <div t-if="!state.send" class="text-muted" style="font-size: 85%;">
+                    El comprobante se genera pero queda retenido: otro
+                    usuario lo emite a SUNAT desde el backend.
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button class="btn btn-secondary" t-on-click="cancel">Cancelar</button>
+                <button class="btn btn-primary" t-att-disabled="!canConfirm"
+                        t-on-click="confirm">Confirmar</button>
+            </div>
+        </Dialog>
+    </t>
+
+</templates>

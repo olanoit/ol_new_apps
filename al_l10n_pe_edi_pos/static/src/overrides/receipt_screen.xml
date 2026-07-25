@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- El aviso "EDI Processing Issue" de l10n_pe_edi_pos (EE) se muestra
+         cuando la orden se factura y aún no hay datos EDI — pero con
+         «Emitir a SUNAT: No» esa ausencia es deliberada (la emisión la
+         libera otro usuario desde el backend), no un error. Se añade la
+         condición a su t-if. La dependencia de l10n_pe_edi_pos en el
+         manifest garantiza que este xpath se aplica después del suyo. -->
+    <t t-name="al_l10n_pe_edi_pos.ReceiptScreen"
+       t-inherit="point_of_sale.ReceiptScreen" t-inherit-mode="extension">
+        <xpath expr="//t[@t-if=&quot;currentOrder.company.country_id?.code === 'PE' and this.currentOrder.to_invoice and Object.keys(this.currentOrder.l10n_pe_edi_data).length === 0&quot;]"
+               position="attributes">
+            <attribute name="t-if">currentOrder.company.country_id?.code === 'PE' and this.currentOrder.to_invoice and Object.keys(this.currentOrder.l10n_pe_edi_data).length === 0 and currentOrder.l10n_pe_edi_send !== false</attribute>
+        </xpath>
+    </t>
+
+</templates>

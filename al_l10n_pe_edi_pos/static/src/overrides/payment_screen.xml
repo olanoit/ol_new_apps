@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_l10n_pe_edi_pos.PaymentScreenButtons"
+       t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('partner-button')]" position="after">
+            <!-- Botón ÚNICO del comprobante: abre el modal con las 3
+                 opciones (Recibo / Boleta / Factura) y la serie. -->
+            <button class="button alpe-doctype-button btn btn-secondary btn-lg w-100 w-md-50 lh-lg text-truncate"
+                    t-if="peShowDocTypeButton"
+                    t-on-click="() => this.peSelectDocType()">
+                <i class="fa fa-file-text-o me-2" role="img" aria-label="Comprobante"/>
+                <span t-esc="peDocTypeButtonLabel"/>
+            </button>
+        </xpath>
+        <!-- El toggle nativo Recibo/Factura vive dentro del modal: con el
+             flujo CPE activo se oculta para que solo exista un botón. -->
+        <xpath expr="//button[hasclass('js_invoice')]" position="attributes">
+            <attribute name="t-if">!peShowDocTypeButton</attribute>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_pos_product_view.ProductScreenSwitchView"
+       t-inherit="point_of_sale.ProductScreen"
+       t-inherit-mode="extension">
+
+        <!--
+            Añade el botón conmutador arriba del panel del catálogo, justo
+            después del selector de categorías. El icono cambia según la
+            vista activa.
+        -->
+        <xpath expr="//CategorySelector" position="after">
+            <!--
+                Envuelto en una sub-barra con su propio margen inferior y un
+                borde sutil para que el botón conmutador quede visualmente
+                separado de la lista de productos / filas que siguen.
+            -->
+            <div class="pos-view-switch d-flex justify-content-end align-items-center px-2 py-2 mb-2 mb-md-3 border-bottom"
+                 t-if="!pos.scanning">
+                <button type="button"
+                        class="btn btn-sm btn-light pos-view-switch__btn d-flex align-items-center gap-2"
+                        t-on-click="toggleProductView"
+                        t-att-title="switchViewLabel"
+                        t-att-aria-label="switchViewLabel">
+                    <i t-attf-class="fa fa-fw {{ state.viewMode === 'list' ? 'fa-th-large' : 'fa-list' }}"/>
+                    <span class="d-none d-md-inline">
+                        <t t-if="state.viewMode === 'list'">Cuadrícula</t>
+                        <t t-else="">Lista</t>
+                    </span>
+                </button>
+            </div>
+        </xpath>
+
+        <!--
+            Conmuta la clase de layout de cuadrícula en el contenedor de la
+            lista de productos.
+
+            IMPORTANTE: DEBEMOS sobrescribir el atributo `class` estático
+            para quitar `d-grid`. Las utilidades de Bootstrap aplican
+            `display: grid !important`, así que si `d-grid` sobrevive en la
+            clase estática pisa nuestra regla flex y la vista de lista se
+            renderiza rota.
+
+            También cambiamos de `t-attf-class` (plantilla de cadena) a
+            `t-att-class` (sintaxis de objeto) para que la clase dinámica
+            solo esté presente en el modo activo (más limpio y sin
+            duplicación).
+        -->
+        <xpath expr="//div[hasclass('product-list')]" position="attributes">
+            <attribute name="class">product-list gap-1 gap-lg-2 px-2 pt-0 pb-2</attribute>
+            <attribute name="t-att-class">{ 'd-grid': state.viewMode !== 'list', 'product-list--rows': state.viewMode === 'list' }</attribute>
+        </xpath>
+
+        <!--
+            Oculta el ProductCard nativo cuando la vista de lista está activa.
+            Mantenemos el mismo bucle `t-foreach` porque solo cambiamos el
+            renderizado, no los datos.
+        -->
+        <xpath expr="//ProductCard" position="attributes">
+            <attribute name="t-if">state.viewMode !== 'list'</attribute>
+        </xpath>
+
+        <!--
+            Renderiza un ProductListRow por producto cuando la vista de lista
+            está activa. El clic añade el producto al pedido (mismo handler
+            que la tarjeta de cuadrícula); el botón de información abre el
+            ProductInfoPopup nativo.
+        -->
+        <xpath expr="//ProductCard" position="after">
+            <ProductListRow
+                t-if="state.viewMode === 'list'"
+                t-foreach="productCateg[1]" t-as="product" t-key="'list-' + product.id"
+                product="product"
+                name="getProductName(product)"
+                priceLabel="getProductListPrice(product)"
+                imageUrl="pos.config.show_product_images and this.getProductImage(product)"
+                productCartQty="this.state.quantityByProductTmplId[product.id]"
+                onClick="() => this.addProductToOrder(product)"
+                onInfoClick="() => this.pos.onProductInfoClick(product)"/>
+        </xpath>
+
+    </t>
+
+</templates>
