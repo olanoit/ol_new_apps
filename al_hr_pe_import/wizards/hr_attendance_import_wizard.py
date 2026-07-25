@@ -56,7 +56,7 @@ class AlImportHrAttendanceWizard(models.TransientModel):
         }
 
     def _template_headers(self):
-        return ['EMPLEADO (nombre exacto)', 'ENTRADA (check_in)',
+        return ['EMPLEADO (nombre exacto o documento)', 'ENTRADA (check_in)',
                 'SALIDA (check_out)']
 
     def _template_example_rows(self):
@@ -107,16 +107,33 @@ class AlImportHrAttendanceWizard(models.TransientModel):
         return dt.astimezone(pytz.utc).replace(tzinfo=None)
 
     def _find_employee(self, name):
-        """Busca ``hr.employee`` por nombre dentro de la compañía del
-        asistente. Devuelve el recordset (puede tener 0, 1 o varios). El
-        multicompañía se respeta filtrando por ``company_id``."""
-        normalized = ' '.join((name or '').split())
+        """Busca ``hr.employee`` por nombre y, si no hay coincidencia, por
+        documento de identidad.
+
+        Los relojes biométricos suelen exportar el DNI en vez del nombre,
+        así que la columna EMPLEADO admite ambos. Devuelve el recordset
+        (puede tener 0, 1 o varios). El multicompañía se respeta
+        filtrando por ``company_id``.
+        """
+        # openpyxl entrega los documentos numéricos como número, no como
+        # texto: se normaliza antes de tratarlo como cadena.
+        normalized = ' '.join(str(name or '').split())
         if not normalized:
             return self.env['hr.employee']
-        return self.env['hr.employee'].sudo().search([
+        Employee = self.env['hr.employee'].sudo()
+        empleados = Employee.search([
             ('name', '=ilike', normalized),
             ('company_id', '=', self.company_id.id),
         ])
+        if not empleados:
+            # El documento vive en hr.version, no en hr.employee.
+            documento = self._clean_code(normalized)
+            versiones = self.env['hr.version'].sudo().search([
+                ('identification_id', '=', documento),
+                ('company_id', '=', self.company_id.id),
+            ])
+            empleados = versiones.employee_id
+        return empleados
 
     # --------------------------------------------------------------------- #
     # Procesamiento de una fila                                             #

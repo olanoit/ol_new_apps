@@ -48,6 +48,7 @@
                             <field name="company_id"
                                    options="{'no_create': True}"
                                    groups="base.group_multi_company"/>
+                            <field name="sanitize_v18"/>
                             <field name="update_existing"/>
                             <field name="use_batching"/>
                             <field name="batch_size"
@@ -65,6 +66,11 @@
                         <em>condición = Expresión Python</em>. Si la regla ya
                         existe (mismo código + estructura) se actualiza cuando
                         "Actualizar existentes" está marcado.
+                        Con <em>Adaptar código v18 → v19</em> el asistente
+                        traduce <code>contract</code> → <code>version</code> y
+                        <code>payslip.wage</code> → <code>version.wage</code>, y
+                        descarta la condición por defecto de Odoo que los
+                        exports de la v18 arrastran en todas las filas.
                     </div>
 
                 </sheet>
@@ -75,9 +81,13 @@
                     <button name="action_run_import" type="object"
                             string="Importar" class="btn-primary"
                             invisible="state != 'configure'"/>
-                    <button name="action_download_template" type="object"
-                            string="Descargar plantilla" class="btn-secondary"
-                            icon="fa-download"/>
+                    <!-- Enlace HTTP (no un boton object): descargar la
+                         plantilla no debe exigir guardar el asistente. -->
+                    <a class="btn btn-secondary" role="button"
+                       href="/al_hr_pe_import/template/al.import.hr.salary.rule.wizard"
+                       target="_blank">
+                        <i class="fa fa-download me-1"/>Descargar plantilla
+                    </a>
                     <button string="Cerrar" class="btn-secondary"
                             special="cancel"/>
                 </footer>

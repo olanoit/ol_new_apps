@@ -22,6 +22,7 @@ boleta del empleado dentro del lote. Clave funcional: boleta + input
 import logging
 
 from odoo import fields, models
+from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 
@@ -37,15 +38,23 @@ class AlImportPayslipInputWizard(models.TransientModel):
     _target_model = 'hr.payslip'
     _sheet_keyword = 'input'
 
+    # Sin required a nivel de modelo: impediría guardar el asistente en el
+    # paso 1 (subida de archivo / descarga de plantilla). La vista lo exige
+    # en el paso "Configurar" y _validate_config() lo confirma al importar.
     payslip_run_id = fields.Many2one(
         'hr.payslip.run',
         string='Lote de boletas',
-        required=True,
         check_company=True,
         domain="[('company_id', '=', company_id)]",
         help='Lote destino: cada fila del Excel se aplica a la boleta '
              'del empleado dentro de este lote.',
     )
+
+    def _validate_config(self):
+        super()._validate_config()
+        if not self.payslip_run_id:
+            raise UserError(self.env._('Seleccione el lote de boletas.'))
+        return True
 
     # --------------------------------------------------------------------- #
     # Mapeo de columnas / plantilla                                          #

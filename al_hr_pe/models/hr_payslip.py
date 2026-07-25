@@ -170,6 +170,25 @@ class HrPayslip(models.Model):
                 by_cat.get(categ['employer'], 0.0))
 
 
+class HrPayslipWorkedDays(models.Model):
+    _inherit = 'hr.payslip.worked_days'
+
+    rate = fields.Float(
+        string='Sobretasa (%)',
+        compute='_compute_rate',
+        help='Sobretasa del concepto en porcentaje: 25 para las horas '
+             'extra al 25 %, 100 para el trabajo en día de descanso. '
+             'Se deriva del factor nativo del tipo de entrada de '
+             'trabajo (``amount_rate``: 1.25 → 25 %). Las reglas '
+             'salariales de la v18 leen este campo directamente.')
+
+    @api.depends('work_entry_type_id.amount_rate')
+    def _compute_rate(self):
+        for line in self:
+            factor = line.work_entry_type_id.amount_rate or 1.0
+            line.rate = (factor - 1.0) * 100.0
+
+
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
 

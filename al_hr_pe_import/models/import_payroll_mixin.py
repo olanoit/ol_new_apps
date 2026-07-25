@@ -265,6 +265,16 @@ class ImportPayrollMixin(models.AbstractModel):
         """
         return rows
 
+    def _validate_config(self):
+        """Valida la configuración del asistente antes de importar.
+
+        Aquí van los campos que la vista exige en el paso "Configurar"
+        pero que NO pueden ser ``required`` a nivel de modelo (lo serían
+        también en el paso 1, impidiendo subir el archivo o descargar la
+        plantilla). Los hijos hacen ``super()`` y lanzan ``UserError``.
+        """
+        return True
+
     # ====================================================================== #
     # Validaciones y onchange                                                 #
     # ====================================================================== #
@@ -456,6 +466,7 @@ class ImportPayrollMixin(models.AbstractModel):
         polling y muestre la barra de progreso.
         """
         self.ensure_one()
+        self._validate_config()
         if not self.sheet_id:
             raise UserError(self.env._('Seleccione una hoja del archivo.'))
         if not self._target_model:

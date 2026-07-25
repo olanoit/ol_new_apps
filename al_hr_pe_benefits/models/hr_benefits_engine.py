@@ -157,6 +157,38 @@ class HrMainParameter(models.Model):
     net_fortnightly_sr_id = fields.Many2one(
         'hr.salary.rule', string='R.S. neto quincenal')
 
+    # --- Criterio de cálculo de la quincena (reglas *_AQ) ---
+    # Las reglas de quincena consultan estos campos: sin ellos, toda
+    # regla *_AQ revienta al calcularse.
+    fortnightly_type = fields.Selection(
+        selection=[
+            ('percentage', 'Porcentaje del sueldo'),
+            ('days', 'Días efectivamente trabajados'),
+        ],
+        string='Modo de cálculo de la quincena',
+        default='percentage',
+        help='"Porcentaje del sueldo": el adelanto quincenal es una '
+             'fracción fija de la remuneración (tasa de abajo). '
+             '"Días efectivamente trabajados": se liquida la primera '
+             'quincena con los días realmente laborados.')
+    tasa = fields.Float(
+        string='Tasa de la quincena',
+        default=0.5,
+        digits=(3, 4),
+        help='Fracción del sueldo que se adelanta cuando el modo es '
+             '"Porcentaje del sueldo" (0.5 = 50 %).')
+    compute_af = fields.Boolean(
+        string='Pagar asignación familiar en la quincena',
+        default=False,
+        help='Si está marcado, la asignación familiar se adelanta '
+             'proporcionalmente en la boleta de quincena.')
+    compute_afiliacion = fields.Boolean(
+        string='Descontar aportes previsionales en la quincena',
+        default=False,
+        help='Si está marcado, AFP/ONP se descuentan ya en la quincena; '
+             'lo habitual es descontarlos íntegros en la boleta '
+             'mensual.')
+
     def check_gratification_values(self):
         self.ensure_one()
         if not (self.gratification_input_id and self.bonus_sr_ids

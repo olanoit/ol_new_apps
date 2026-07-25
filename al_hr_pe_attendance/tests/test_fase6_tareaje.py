@@ -173,6 +173,66 @@ class TestTareajeFlow(TransactionCase):
             'date_end': date(2026, 1, 31),
         })
 
+    def _calendario_nocturno(self):
+        """Turno 22:00 → 06:00 tal y como se modela en Odoo: un tramo
+        que cierra a las 24:00 y otro que abre a las 00:00 del mismo día
+        de la semana (hour_to no puede pasar de 24)."""
+        return self.env['resource.calendar'].create({
+            'name': 'Nocturno test',
+            'tz': 'America/Lima',
+            'hours_per_day': 8.0,
+            'attendance_ids': [(5, 0, 0)] + [
+                (0, 0, {'name': 'Noche %s' % dia, 'dayofweek': str(dia),
+                        'hour_from': desde, 'hour_to': hasta,
+                        'day_period': periodo})
+                for dia in range(0, 5)
+                for desde, hasta, periodo in [(22.0, 24.0, 'afternoon'),
+                                              (0.0, 6.0, 'morning')]
+            ],
+        })
+
+    def test_schedule_cross_midnight(self):
+        """El turno nocturno se lee continuo, no como 00:00-24:00.
+
+        Regresión: con los tramos ordenados por hora, el turno parecía
+        empezar a medianoche y terminar a las 24:00 con 16 h de
+        refrigerio, y todos los días caían como marcación incompleta.
+        """
+        tareaje = self._create_tareaje('Tareaje Nocturno')
+        calendario = self._calendario_nocturno()
+        # 2026-01-05 es lunes.
+        entrada, salida, refrigerio = tareaje._get_day_schedule(
+            calendario, date(2026, 1, 5))
+        self.assertAlmostEqual(entrada, 22.0, places=2)
+        self.assertAlmostEqual(salida, 30.0, places=2)
+        self.assertAlmostEqual(refrigerio, 0.0, places=2)
+
+        # Y con ese horario el día se clasifica como jornada nocturna.
+        valores = tareaje._classify_day(
+            22.0, 6.0, sched_in=entrada, sched_out=salida,
+            break_hours=refrigerio)
+        self.assertAlmostEqual(valores['htn'], 8.0, places=2)
+        self.assertAlmostEqual(valores['incos'], 0.0, places=2)
+
+    def test_schedule_diurno_con_refrigerio(self):
+        """El turno partido normal sigue calculando su refrigerio."""
+        tareaje = self._create_tareaje('Tareaje Diurno')
+        calendario = self.env['resource.calendar'].create({
+            'name': 'Diurno test',
+            'attendance_ids': [(5, 0, 0)] + [
+                (0, 0, {'name': 'Lunes %s' % periodo, 'dayofweek': '0',
+                        'hour_from': desde, 'hour_to': hasta,
+                        'day_period': periodo})
+                for desde, hasta, periodo in [(8.0, 13.0, 'morning'),
+                                              (14.0, 17.0, 'afternoon')]
+            ],
+        })
+        entrada, salida, refrigerio = tareaje._get_day_schedule(
+            calendario, date(2026, 1, 5))
+        self.assertAlmostEqual(entrada, 8.0, places=2)
+        self.assertAlmostEqual(salida, 17.0, places=2)
+        self.assertAlmostEqual(refrigerio, 1.0, places=2)
+
     def test_defaults(self):
         tareaje = self._create_tareaje()
         self.assertEqual(tareaje.company_id, self.env.company)

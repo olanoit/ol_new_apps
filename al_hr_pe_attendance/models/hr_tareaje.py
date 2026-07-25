@@ -61,6 +61,11 @@ from odoo.addons.al_hr_pe.tools import custom_round
 #: descanso/feriado laborado no tiene turno programado.
 LEGAL_WORKDAY_HOURS = 8.0
 
+#: Frontera para reconocer un turno que cruza la medianoche: los tramos
+#: que terminan antes de esta hora se consideran la madrugada del turno
+#: iniciado la víspera, y los que empiezan después, su parte nocturna.
+NIGHT_SPLIT_HOUR = 12.0
+
 #: Claves de clasificación que produce ``_classify_day``.
 TAREAJE_KEYS = ('dlab', 'dlabn', 'htd', 'htn', 'dom', 'fer', 'fal',
                 'tar', 'he25', 'he35', 'he100', 'incos')
@@ -599,10 +604,27 @@ class HrTareajeManager(models.Model):
         if not segments:
             return None
         segments = segments.sorted('hour_from')
+        tramos = [(seg.hour_from, seg.hour_to) for seg in segments]
+
+        # Turno nocturno: Odoo no admite hour_to > 24, así que un turno
+        # que cruza la medianoche se modela con un tramo que cierra a las
+        # 24:00 y otro que abre a las 00:00 del mismo día de la semana
+        # (p. ej. 22:00-24:00 + 00:00-06:00). Se reordena como un único
+        # turno continuo 22:00 → 30:00; sin esto, el turno se leería
+        # como 00:00-24:00 con 16 h de "refrigerio" y el día quedaría
+        # descartado como marcación incompleta.
+        if len(tramos) > 1 and tramos[0][0] == 0.0 and tramos[-1][1] == 24.0:
+            madrugada = [t for t in tramos if t[1] <= NIGHT_SPLIT_HOUR]
+            noche = [t for t in tramos if t[0] >= NIGHT_SPLIT_HOUR]
+            if madrugada and noche and len(madrugada) + len(noche) == len(
+                    tramos):
+                tramos = noche + [(desde + 24.0, hasta + 24.0)
+                                  for desde, hasta in madrugada]
+
         break_hours = sum(
-            max(0.0, segments[i + 1].hour_from - segments[i].hour_to)
-            for i in range(len(segments) - 1))
-        return (segments[0].hour_from, segments[-1].hour_to, break_hours)
+            max(0.0, tramos[i + 1][0] - tramos[i][1])
+            for i in range(len(tramos) - 1))
+        return (tramos[0][0], tramos[-1][1], break_hours)
 
     def _get_public_holidays(self):
         """Feriados (D.Leg. 713 arts. 5-9): descansos globales de los

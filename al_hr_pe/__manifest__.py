@@ -28,7 +28,7 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '4.20260722',
+    'version': '5.20260722',
     'license': 'LGPL-3',
     'depends': [
         'hr_payroll',

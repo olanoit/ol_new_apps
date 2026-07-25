@@ -91,18 +91,21 @@
         <record id="wd_HE25" model="hr.work.entry.type">
             <field name="code">HE25</field>
             <field name="name">HORAS EXTRAS 25%</field>
+            <field name="amount_rate">1.25</field>
             <field name="sequence">25</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_HE35" model="hr.work.entry.type">
             <field name="code">HE35</field>
             <field name="name">HORAS EXTRAS 35%</field>
+            <field name="amount_rate">1.35</field>
             <field name="sequence">26</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_HE100" model="hr.work.entry.type">
             <field name="code">HE100</field>
             <field name="name">HORAS EXTRAS 100%</field>
+            <field name="amount_rate">2.0</field>
             <field name="sequence">27</field>
             <field name="country_id" ref="base.pe"/>
         </record>

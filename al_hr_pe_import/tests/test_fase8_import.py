@@ -268,6 +268,96 @@ class TestFase8Import(TransactionCase):
         self.assertEqual(counts2['updated'], 1)
         self.assertEqual(regla.name, 'Bono renombrado F8')
 
+    def test_05b_saneo_codigo_v18(self):
+        """El export de v18 se adapta al localdict de v19.
+
+        Los exports reales traen (a) la condición por defecto de Odoo en
+        TODAS las filas aunque la regla sea "Siempre verdadero" y (b)
+        código que usa ``contract``/``payslip.wage``, inexistentes en v19.
+        """
+        struct = self.env['hr.payroll.structure'].create({
+            'name': 'Estructura saneo F8',
+            'type_id': self.structure.type_id.id,
+        })
+        boilerplate = (
+            "\n# Available variables:\n#--------------------\n"
+            "# payslip: hr.payslip object\n\n"
+            "result = rules['NET']['total'] > categories['NET'] * 0.10")
+        codigo_v18 = (
+            "if contract.wage_type == 'hourly':\n"
+            "    result = payslip.wage / contract.resource_calendar_id"
+            ".hours_per_day\n"
+            "else:\n"
+            "    result = payslip.wage / 30")
+        contenido = {
+            'REGLAS': [
+                ['CATEGORÍA', 'COMPAÑÍA', 'CÓDIGO', 'NOMBRE', 'SECUENCIA',
+                 'CÓDIGO PYTHON', 'CONDICIÓN PYTHON'],
+                ['ING', '', 'F8V18', 'Regla exportada de v18', 10,
+                 codigo_v18, boilerplate],
+            ],
+        }
+        wizard = self.env['al.import.hr.salary.rule.wizard'].create({
+            'file_data': _xlsx(contenido),
+            'file_name': 'reglas_v18.xlsx',
+            'company_id': self.company.id,
+            'struct_id': struct.id,
+        })
+        wizard.action_load_file()
+        _res, counts, log, created_ids = self._correr(wizard)
+        self.assertEqual(counts['created'], 1)
+
+        regla = self.env['hr.salary.rule'].browse(created_ids[0])
+        self.assertEqual(regla.condition_select, 'none',
+                         'la condición por defecto debe descartarse')
+        self.assertNotIn('contract', regla.amount_python_compute)
+        self.assertNotIn('payslip.wage', regla.amount_python_compute)
+        self.assertIn('version.wage', regla.amount_python_compute)
+        self.assertIn('version.resource_calendar_id',
+                      regla.amount_python_compute)
+        self.assertIn('adaptado v19', '\n'.join(log))
+
+        # El código adaptado es Python válido y evaluable.
+        compile(regla.amount_python_compute, '<regla F8V18>', 'exec')
+
+        # Sin saneo, el código entra literal y la condición se respeta.
+        wizard2 = self.env['al.import.hr.salary.rule.wizard'].create({
+            'file_data': _xlsx(contenido),
+            'file_name': 'reglas_v18.xlsx',
+            'company_id': self.company.id,
+            'struct_id': struct.id,
+            'sanitize_v18': False,
+        })
+        wizard2.action_load_file()
+        self._correr(wizard2)
+        self.assertEqual(regla.condition_select, 'python')
+        self.assertIn('contract', regla.amount_python_compute)
+
+    def test_02b_asistencias_por_documento(self):
+        """Los relojes biométricos exportan el DNI, no el nombre."""
+        contenido = {
+            'ASISTENCIAS': [
+                ['EMPLEADO', 'ENTRADA', 'SALIDA'],
+                # DNI numérico tal y como lo entrega openpyxl.
+                [46271883, '2026-04-02 08:00:00', '2026-04-02 17:00:00'],
+                ['99999999', '2026-04-03 08:00:00', '2026-04-03 17:00:00'],
+            ],
+        }
+        wizard = self.env['al.import.hr.attendance.wizard'].create({
+            'file_data': _xlsx(contenido),
+            'file_name': 'asistencias.xlsx',
+            'company_id': self.company.id,
+            'tz': 'America/Lima',
+        })
+        wizard.action_load_file()
+        _res, counts, _log, created_ids = self._correr(wizard)
+        self.assertEqual(counts['created'], 1,
+                         'el DNI debe identificar al empleado')
+        self.assertEqual(counts['error'], 1,
+                         'un documento inexistente sigue siendo error')
+        marca = self.env['hr.attendance'].browse(created_ids[0])
+        self.assertEqual(marca.employee_id, self.employee)
+
     # ------------------------------------------------------------------
     # Récord vacacional: saldo inicial que se reemplaza, no se acumula
     # ------------------------------------------------------------------

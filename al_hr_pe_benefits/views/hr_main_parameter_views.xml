@@ -66,6 +66,11 @@
                         <group string="Quincena">
                             <field name="fortnightly_input_id"/>
                             <field name="net_fortnightly_sr_id"/>
+                            <field name="fortnightly_type"/>
+                            <field name="tasa"
+                                   invisible="fortnightly_type != 'percentage'"/>
+                            <field name="compute_af"/>
+                            <field name="compute_afiliacion"/>
                         </group>
                     </group>
                 </page>
