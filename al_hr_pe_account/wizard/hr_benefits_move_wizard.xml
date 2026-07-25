@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wizard único de generación de asientos de BBSS (v18: 4 wizards
+         byte-idénticos de CTS / gratificación / liquidación /
+         provisiones). -->
+    <record id="hr_benefits_move_wizard_view_form" model="ir.ui.view">
+        <field name="name">hr.benefits.move.wizard.form</field>
+        <field name="model">hr.benefits.move.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar asiento contable de BBSS">
+                <group>
+                    <group>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="difference"/>
+                    </group>
+                    <group>
+                        <field name="account_id"
+                               invisible="difference == 0"
+                               required="difference > 0"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Generar" name="generate_move"
+                            type="object" class="oe_highlight"/>
+                    <button string="Cancelar" class="oe_link"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

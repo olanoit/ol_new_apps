@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- CTS: botones de provisión/asiento y campo del asiento        -->
+    <!-- ============================================================ -->
+    <record id="hr_cts_view_form_inherit_account" model="ir.ui.view">
+        <field name="name">hr.cts.form.inherit.account</field>
+        <field name="model">hr.cts</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_cts_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='compute_cts_line_all']" position="after">
+                <button name="compute_provision_cts" string="Obtener provisiones"
+                        type="object" invisible="state != 'draft'"
+                        help="Trae de hr.provisiones el acumulado provisionado del semestre para conciliarlo en el asiento."/>
+            </xpath>
+            <xpath expr="//button[@name='export_cts']" position="after">
+                <button name="get_move_wizard" string="Generar asiento"
+                        type="object"
+                        invisible="state != 'exported' or account_move_id"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_asiento" class="oe_stat_button"
+                        icon="fa-book" type="object" string="Asiento"
+                        invisible="not account_move_id"/>
+            </xpath>
+            <field name="deposit_date" position="after">
+                <field name="account_move_id" readonly="1"
+                       invisible="state == 'draft' and not account_move_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="hr_cts_line_view_list_inherit_account" model="ir.ui.view">
+        <field name="name">hr.cts.line.list.inherit.account</field>
+        <field name="model">hr.cts.line</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_cts_line_view_list"/>
+        <field name="arch" type="xml">
+            <field name="cts_soles" position="after">
+                <field name="prov_acumulado" sum="Prov. acumulada" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Gratificación                                                -->
+    <!-- ============================================================ -->
+    <record id="hr_gratification_view_form_inherit_account" model="ir.ui.view">
+        <field name="name">hr.gratification.form.inherit.account</field>
+        <field name="model">hr.gratification</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_gratification_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='compute_grati_line_all']" position="after">
+                <button name="compute_provision_grati" string="Obtener provisiones"
+                        type="object" invisible="state != 'draft'"
+                        help="Trae de hr.provisiones el acumulado provisionado del semestre para conciliarlo en el asiento."/>
+            </xpath>
+            <xpath expr="//button[@name='export_gratification']" position="after">
+                <button name="get_move_wizard" string="Generar asiento"
+                        type="object"
+                        invisible="state != 'exported' or account_move_id"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_asiento" class="oe_stat_button"
+                        icon="fa-book" type="object" string="Asiento"
+                        invisible="not account_move_id"/>
+            </xpath>
+            <field name="deposit_date" position="after">
+                <field name="account_move_id" readonly="1"
+                       invisible="state == 'draft' and not account_move_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="hr_gratification_line_view_list_inherit_account" model="ir.ui.view">
+        <field name="name">hr.gratification.line.list.inherit.account</field>
+        <field name="model">hr.gratification.line</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_gratification_line_view_list"/>
+        <field name="arch" type="xml">
+            <field name="total" position="after">
+                <field name="prov_acumulado" sum="Prov. acumulada" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Liquidación de cese: asientos por cesado                     -->
+    <!-- ============================================================ -->
+    <record id="hr_liquidation_view_form_inherit_account" model="ir.ui.view">
+        <field name="name">hr.liquidation.form.inherit.account</field>
+        <field name="model">hr.liquidation</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_liquidation_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='compute_liquidation_all']" position="after">
+                <button name="compute_provision_liqui" string="Obtener provisiones"
+                        type="object" invisible="state != 'draft'"
+                        help="Trae de hr.provisiones el acumulado provisionado por cesado (CTS, gratificación y vacaciones) para conciliarlo en el asiento."/>
+            </xpath>
+            <xpath expr="//button[@name='get_liquidation_employees']" position="after">
+                <button name="action_open_asiento" class="oe_stat_button"
+                        icon="fa-book" type="object"
+                        invisible="move_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="move_count"/></span>
+                        <span class="o_stat_text">Asientos</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='extra_concepts']" position="after">
+                <page string="Asientos contables" name="benefits_moves">
+                    <field name="liq_move_ids">
+                        <list create="0" edit="1">
+                            <field name="identification_id" string="Nro. doc." optional="show"/>
+                            <field name="employee_id"/>
+                            <field name="version_id" optional="hide"/>
+                            <field name="admission_date" optional="show"/>
+                            <field name="cessation_date" optional="show"/>
+                            <field name="preserve_record" string="No R." optional="show"/>
+                            <field name="account_move_id" optional="show"/>
+                            <button name="get_liquidation_move_wizard" type="object"
+                                    icon="fa-book" title="Generar asiento"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_liquidation_vacation_line_view_list_inherit_account" model="ir.ui.view">
+        <field name="name">hr.liquidation.vacation.line.list.inherit.account</field>
+        <field name="model">hr.liquidation.vacation.line</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_liquidation_vacation_line_view_list"/>
+        <field name="arch" type="xml">
+            <field name="total" position="after">
+                <field name="prov_acumulado" sum="Prov. acumulada" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Provisión mensual                                            -->
+    <!-- ============================================================ -->
+    <record id="hr_provisiones_view_form_inherit_account" model="ir.ui.view">
+        <field name="name">hr.provisiones.form.inherit.account</field>
+        <field name="model">hr.provisiones</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_provisiones_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='compute_acumulado']" position="after">
+                <button name="get_move_wizard" string="Generar asiento"
+                        type="object"
+                        invisible="state != 'draft' or account_move_id"/>
+                <button name="action_open_asiento" string="Ver asiento"
+                        type="object" invisible="not account_move_id"/>
+            </xpath>
+            <field name="gratificacion_id" position="after">
+                <field name="account_move_id" readonly="1"
+                       invisible="not account_move_id"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Parámetros Principales: cuentas de BBSS por compañía         -->
+    <!-- ============================================================ -->
+    <record id="hr_main_parameter_view_form_benefits_account" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form.benefits.account</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_main_parameter_view_form_benefits"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='benefits']" position="after">
+                <page string="Contabilidad BBSS" name="benefits_accounts">
+                    <group>
+                        <group string="CTS">
+                            <field name="cts_debe_account_id"/>
+                            <field name="cts_haber_account_id"/>
+                            <field name="cts_payable_account_id"/>
+                        </group>
+                        <group string="Gratificación">
+                            <field name="grati_debe_account_id"/>
+                            <field name="grati_haber_account_id"/>
+                            <field name="grati_payable_account_id"/>
+                            <field name="boni_debe_account_id"/>
+                            <field name="boni_haber_account_id"/>
+                        </group>
+                        <group string="Vacaciones">
+                            <field name="vaca_debe_account_id"/>
+                            <field name="vaca_haber_account_id"/>
+                        </group>
+                        <group string="Liquidación de cese">
+                            <field name="liquidation_payable_account_id"/>
+                            <field name="liq_concept_in_account_id"/>
+                            <field name="liq_concept_out_account_id"/>
+                        </group>
+                        <group string="Provisiones y ajustes">
+                            <field name="detallar_provision"/>
+                            <field name="benefits_adjust_account_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

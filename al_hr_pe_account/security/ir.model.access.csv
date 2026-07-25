@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payslip_run_move_wizard_manager,hr.payslip.run.move.wizard manager,model_hr_payslip_run_move_wizard,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_payslip_run_move_wizard_line_manager,hr.payslip.run.move.wizard.line manager,model_hr_payslip_run_move_wizard_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_liquidation_move_user,hr.liquidation.move user,model_hr_liquidation_move,hr_payroll.group_hr_payroll_user,1,0,0,0
+access_hr_liquidation_move_manager,hr.liquidation.move manager,model_hr_liquidation_move,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_benefits_move_wizard_manager,hr.benefits.move.wizard manager,model_hr_benefits_move_wizard,hr_payroll.group_hr_payroll_manager,1,1,1,1
