@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!--
+        Activa la variante de list view definida en JS
+        (hr_salary_rule_import_list) que añade el botón "Importar desde
+        Excel" en la lista de reglas salariales.
+    -->
+    <record id="view_hr_salary_rule_list_inherit_import" model="ir.ui.view">
+        <field name="name">hr.salary.rule.list.inherit.al.import</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="hr_payroll.hr_salary_rule_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="js_class">hr_salary_rule_import_list</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_hr_pe_import.ImportPayrollProgressWidget">
+
+        <!-- Ocupa todo el ancho disponible del diálogo y centra el contenido -->
+        <div class="w-100 d-flex flex-column align-items-center justify-content-center py-5 px-4"
+             style="min-height: 360px;">
+
+            <div class="w-100" style="max-width: 640px;">
+
+                <!-- ── Icono + título de estado ── -->
+                <div class="text-center mb-4">
+                    <t t-if="state.status === 'pending'">
+                        <i class="fa fa-hourglass-half mb-3 text-muted" style="font-size: 2.8rem;"/>
+                        <h5 class="fw-semibold text-muted mb-1">Preparando importación</h5>
+                        <small class="text-muted">Espere un momento...</small>
+                    </t>
+                    <t t-elif="state.status === 'running'">
+                        <i class="fa fa-spinner fa-spin mb-3 text-primary" style="font-size: 2.8rem;"/>
+                        <h5 class="fw-semibold text-primary mb-1">Importando registros</h5>
+                        <small class="text-muted" t-esc="state.message"/>
+                    </t>
+                    <t t-elif="state.status === 'done'">
+                        <i class="fa fa-check-circle mb-3 text-success" style="font-size: 2.8rem;"/>
+                        <h5 class="fw-semibold text-success mb-1">¡Importación completada!</h5>
+                        <small class="text-muted" t-esc="state.message"/>
+                    </t>
+                    <t t-elif="state.status === 'error'">
+                        <i class="fa fa-times-circle mb-3 text-danger" style="font-size: 2.8rem;"/>
+                        <h5 class="fw-semibold text-danger mb-1">Error en la importación</h5>
+                        <small class="text-muted" t-esc="state.message"/>
+                    </t>
+                </div>
+
+                <!-- ── Barra de progreso ── -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">Progreso</small>
+                        <small class="fw-semibold text-muted">
+                            <t t-esc="state.current"/>
+                            <span class="text-muted fw-normal"> de </span>
+                            <t t-esc="state.total"/>
+                            <span class="ms-1 text-muted fw-normal">(<t t-esc="state.percent"/>%)</span>
+                        </small>
+                    </div>
+                    <div class="progress w-100" style="height: 12px; border-radius: 6px; background:#e9ecef;">
+                        <div class="progress-bar"
+                             t-att-class="{
+                                 'progress-bar-striped progress-bar-animated': state.status === 'running',
+                                 'bg-success':   state.status === 'done',
+                                 'bg-danger':    state.status === 'error',
+                                 'bg-secondary': state.status === 'pending',
+                                 'bg-primary':   state.status === 'running',
+                             }"
+                             role="progressbar"
+                             t-att-style="'width:' + state.percent + '%; border-radius:6px; transition:width .5s ease;'"
+                             t-att-aria-valuenow="state.percent"
+                             aria-valuemin="0"
+                             aria-valuemax="100"/>
+                    </div>
+                </div>
+
+                <!-- ── Tarjetas de estadísticas (2 filas de 3) ── -->
+                <div class="row g-2 mb-4">
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#f8f9fa; border:1px solid #dee2e6;">
+                            <div class="fs-3 fw-bold text-secondary lh-1 mb-1" t-esc="state.total"/>
+                            <small class="text-uppercase text-muted" style="font-size:.68rem; letter-spacing:.05em;">Total</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#e8f0fe; border:1px solid #c2d4fb;">
+                            <div class="fs-3 fw-bold text-primary lh-1 mb-1" t-esc="state.current"/>
+                            <small class="text-uppercase text-primary" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Procesados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#e6f4ea; border:1px solid #a8d5b0;">
+                            <div class="fs-3 fw-bold text-success lh-1 mb-1" t-esc="state.created"/>
+                            <small class="text-uppercase text-success" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Creados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#e3f2fd; border:1px solid #90caf9;">
+                            <div class="fs-3 fw-bold text-info lh-1 mb-1" t-esc="state.updated"/>
+                            <small class="text-uppercase text-info" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Actualizados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#fff8e1; border:1px solid #ffe082;">
+                            <div class="fs-3 fw-bold text-warning lh-1 mb-1" t-esc="state.skipped"/>
+                            <small class="text-uppercase text-warning" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Omitidos</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center rounded-3 py-3 h-100"
+                             style="background:#ffebee; border:1px solid #ef9a9a;">
+                            <div class="fs-3 fw-bold text-danger lh-1 mb-1" t-esc="state.errors"/>
+                            <small class="text-uppercase text-danger" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Errores</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Detalle de error ── -->
+                <t t-if="state.status === 'error' and state.error_detail">
+                    <div class="alert alert-danger d-flex align-items-start gap-2 py-2 px-3 mb-4"
+                         style="font-size:.85rem;">
+                        <i class="fa fa-exclamation-triangle mt-1 flex-shrink-0"/>
+                        <div class="w-100">
+                            <strong class="d-block mb-1">Detalle del error</strong>
+                            <code style="white-space:pre-wrap; word-break:break-all;"
+                                  t-esc="state.error_detail"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- ── Botones ── -->
+                <t t-if="state.status === 'done' or state.status === 'error'">
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <t t-if="state.has_report">
+                            <button class="btn btn-outline-success px-4" t-on-click="() => this.onDownloadReport()">
+                                <i class="fa fa-file-excel-o me-2"/>Descargar reporte
+                            </button>
+                        </t>
+                        <t t-if="state.has_records">
+                            <button class="btn btn-outline-secondary px-4" t-on-click="() => this.onViewRecords()">
+                                <i class="fa fa-list-alt me-2"/>Ver registros
+                            </button>
+                        </t>
+                        <button class="btn btn-primary px-5" t-on-click="() => this.onClose()">
+                            <i class="fa fa-check me-2"/>Listo
+                        </button>
+                    </div>
+                </t>
+
+            </div>
+        </div>
+
+    </t>
+
+</templates>

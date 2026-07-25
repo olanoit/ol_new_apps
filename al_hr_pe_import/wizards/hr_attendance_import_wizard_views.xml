@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_al_import_hr_attendance_wizard_form" model="ir.ui.view">
+        <field name="name">al.import.hr.attendance.wizard.form</field>
+        <field name="model">al.import.hr.attendance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar Asistencias">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="upload,configure,done"/>
+                </header>
+                <sheet>
+                    <!-- Paso 1: cargar archivo -->
+                    <group invisible="state != 'upload'">
+                        <field name="file_data" filename="file_name"
+                               required="state == 'upload'"
+                               widget="binary"
+                               options="{'accepted_file_extensions': '.xlsx,.xlsm'}"/>
+                        <field name="file_name" invisible="1"/>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="state != 'upload'">
+                        Suba el Excel de asistencias. Solo se aceptan archivos
+                        <strong>.xlsx</strong>. Las columnas esperadas son
+                        <strong>empleado</strong>, <strong>check_in</strong> y
+                        <strong>check_out</strong>. Use
+                        <em>Descargar plantilla</em> para obtener el modelo y
+                        <em>Analizar archivo</em> para listar las hojas del libro.
+                    </div>
+
+                    <!-- Paso 2: configurar y ejecutar -->
+                    <group invisible="state != 'configure'">
+                        <group string="Origen">
+                            <field name="file_name" readonly="1"/>
+                            <field name="wizard_model_name" invisible="1"/>
+                            <field name="sheet_id"
+                                   required="state == 'configure'"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="sheet_names_csv" readonly="1" invisible="1"/>
+                            <field name="header_row"/>
+                            <field name="start_row"/>
+                        </group>
+                        <group string="Opciones">
+                            <field name="company_id"
+                                   options="{'no_create': True}"
+                                   groups="base.group_multi_company"/>
+                            <field name="tz"/>
+                            <field name="update_existing"/>
+                            <field name="use_batching"/>
+                            <field name="batch_size"
+                                   invisible="not use_batching"
+                                   required="use_batching"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'configure'">
+                        <strong>Importante:</strong> el empleado se busca por su
+                        <em>nombre</em> exacto dentro de la compañía seleccionada.
+                        Las fechas se interpretan en la <em>zona horaria</em>
+                        indicada y se convierten a UTC. Si la asistencia ya existe
+                        (mismo empleado y misma entrada), se actualiza la salida
+                        cuando "Actualizar existentes" está marcado.
+                    </div>
+
+                </sheet>
+                <footer>
+                    <button name="action_load_file" type="object"
+                            string="Analizar archivo" class="btn-primary"
+                            invisible="state != 'upload'"/>
+                    <button name="action_run_import" type="object"
+                            string="Importar" class="btn-primary"
+                            invisible="state != 'configure'"/>
+                    <button name="action_download_template" type="object"
+                            string="Descargar plantilla" class="btn-secondary"
+                            icon="fa-download"/>
+                    <button string="Cerrar" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_al_import_hr_attendance_wizard" model="ir.actions.act_window">
+        <field name="name">Importar Asistencias desde Excel</field>
+        <field name="res_model">al.import.hr.attendance.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[(4, ref('hr_attendance.group_hr_attendance_officer')), (4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+</odoo>

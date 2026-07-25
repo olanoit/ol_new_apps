@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form que embebe el widget OWL. Sin <sheet> para que el modal no
+         meta márgenes extra y el widget ocupe el ancho completo. -->
+    <record id="view_al_import_payroll_progress_form" model="ir.ui.view">
+        <field name="name">al.import.payroll.progress.form</field>
+        <field name="model">al.import.payroll.progress</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false" delete="false">
+                <widget name="al_import_payroll_progress_widget"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Lista para revisar historial de importaciones -->
+    <record id="view_al_import_payroll_progress_list" model="ir.ui.view">
+        <field name="name">al.import.payroll.progress.list</field>
+        <field name="model">al.import.payroll.progress</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false"
+                  decoration-danger="status == 'error'"
+                  decoration-success="status == 'done'"
+                  decoration-info="status == 'running'"
+                  decoration-muted="status == 'pending'">
+                <field name="create_date" string="Fecha"/>
+                <field name="target_model"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="status" widget="badge"
+                       decoration-info="status == 'running'"
+                       decoration-success="status == 'done'"
+                       decoration-danger="status == 'error'"
+                       decoration-muted="status == 'pending'"/>
+                <field name="total"/>
+                <field name="current"/>
+                <field name="created"/>
+                <field name="updated"/>
+                <field name="skipped"/>
+                <field name="errors"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Búsqueda del historial (v19: separator + filtros sueltos, sin
+         <group expand string>) -->
+    <record id="view_al_import_payroll_progress_search" model="ir.ui.view">
+        <field name="name">al.import.payroll.progress.search</field>
+        <field name="model">al.import.payroll.progress</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="target_model"/>
+                <field name="wizard_model"/>
+                <separator/>
+                <filter name="filter_done" string="Completadas"
+                        domain="[('status', '=', 'done')]"/>
+                <filter name="filter_error" string="Con error"
+                        domain="[('status', '=', 'error')]"/>
+                <filter name="filter_running" string="En proceso"
+                        domain="[('status', 'in', ('pending', 'running'))]"/>
+                <separator/>
+                <filter name="group_by_target" string="Modelo destino"
+                        context="{'group_by': 'target_model'}"/>
+                <filter name="group_by_status" string="Estado"
+                        context="{'group_by': 'status'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_al_import_payroll_progress" model="ir.actions.act_window">
+        <field name="name">Historial de Importaciones</field>
+        <field name="res_model">al.import.payroll.progress</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_al_import_payroll_progress_search"/>
+        <field name="context">{'create': False}</field>
+        <field name="group_ids" eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+</odoo>

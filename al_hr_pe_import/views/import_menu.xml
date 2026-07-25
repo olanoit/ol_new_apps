@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menú operativo de importaciones bajo la raíz de Nómina (v19:
+         hr_work_entry_enterprise.menu_hr_payroll_root) -->
+    <menuitem id="menu_al_hr_pe_import_root"
+              name="Importaciones Excel"
+              parent="hr_work_entry_enterprise.menu_hr_payroll_root"
+              sequence="85"
+              groups="hr_payroll.group_hr_payroll_user"/>
+
+    <menuitem id="menu_al_import_hr_attendance"
+              name="Asistencias"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_hr_attendance_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_al_import_payslip_input"
+              name="Inputs de boletas (novedades)"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_payslip_input_wizard"
+              sequence="20"/>
+
+    <menuitem id="menu_al_import_vacation_rest"
+              name="Récord vacacional (saldos)"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_vacation_rest_wizard"
+              sequence="30"/>
+
+    <menuitem id="menu_al_import_hr_advance"
+              name="Adelantos"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_hr_advance_wizard"
+              sequence="40"/>
+
+    <menuitem id="menu_al_import_hr_version"
+              name="Datos PE de versiones"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_hr_version_wizard"
+              sequence="50"
+              groups="hr_payroll.group_hr_payroll_manager"/>
+
+    <menuitem id="menu_al_import_hr_salary_rule"
+              name="Reglas salariales"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_hr_salary_rule_wizard"
+              sequence="60"
+              groups="hr_payroll.group_hr_payroll_manager"/>
+
+    <menuitem id="menu_al_import_payroll_progress"
+              name="Historial de importaciones"
+              parent="menu_al_hr_pe_import_root"
+              action="action_al_import_payroll_progress"
+              sequence="90"/>
+
+</odoo>

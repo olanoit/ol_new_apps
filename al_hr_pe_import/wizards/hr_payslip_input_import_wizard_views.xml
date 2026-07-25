@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_al_import_payslip_input_wizard_form" model="ir.ui.view">
+        <field name="name">al.import.payslip.input.wizard.form</field>
+        <field name="model">al.import.payslip.input.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar Inputs de Boletas">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="upload,configure,done"/>
+                </header>
+                <sheet>
+                    <!-- Paso 1: cargar archivo -->
+                    <group invisible="state != 'upload'">
+                        <field name="company_id" invisible="1"/>
+                        <field name="payslip_run_id"
+                               required="1"
+                               options="{'no_create': True}"/>
+                        <field name="file_data" filename="file_name"
+                               required="state == 'upload'"
+                               widget="binary"
+                               options="{'accepted_file_extensions': '.xlsx,.xlsm'}"/>
+                        <field name="file_name" invisible="1"/>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="state != 'upload'">
+                        Suba el Excel de novedades. Columnas esperadas:
+                        <strong>Nro documento</strong>,
+                        <strong>Código de input</strong> y
+                        <strong>Monto</strong>. Cada fila se aplica a la boleta
+                        del empleado dentro del lote seleccionado.
+                    </div>
+
+                    <!-- Paso 2: configurar y ejecutar -->
+                    <group invisible="state != 'configure'">
+                        <group string="Origen">
+                            <field name="file_name" readonly="1"/>
+                            <field name="wizard_model_name" invisible="1"/>
+                            <field name="sheet_id"
+                                   required="state == 'configure'"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="sheet_names_csv" readonly="1" invisible="1"/>
+                            <field name="header_row"/>
+                            <field name="start_row"/>
+                        </group>
+                        <group string="Opciones">
+                            <field name="payslip_run_id" readonly="1"/>
+                            <field name="company_id"
+                                   options="{'no_create': True}"
+                                   groups="base.group_multi_company"/>
+                            <field name="update_existing"/>
+                            <field name="use_batching"/>
+                            <field name="batch_size"
+                                   invisible="not use_batching"
+                                   required="use_batching"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'configure'">
+                        <strong>Importante:</strong> el empleado se localiza por
+                        su <em>número de documento</em> (versión vigente) y el
+                        input por su <em>código</em>. Solo se escriben boletas
+                        en borrador o por verificar; el input debe estar
+                        permitido en la estructura salarial de la boleta. El
+                        monto se redondea con criterio SUNAT.
+                    </div>
+
+                </sheet>
+                <footer>
+                    <button name="action_load_file" type="object"
+                            string="Analizar archivo" class="btn-primary"
+                            invisible="state != 'upload'"/>
+                    <button name="action_run_import" type="object"
+                            string="Importar" class="btn-primary"
+                            invisible="state != 'configure'"/>
+                    <button name="action_download_template" type="object"
+                            string="Descargar plantilla" class="btn-secondary"
+                            icon="fa-download"/>
+                    <button string="Cerrar" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_al_import_payslip_input_wizard" model="ir.actions.act_window">
+        <field name="name">Importar Inputs de Boletas desde Excel</field>
+        <field name="res_model">al.import.payslip.input.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+</odoo>

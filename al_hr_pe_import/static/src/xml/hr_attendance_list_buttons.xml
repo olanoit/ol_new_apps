@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        v19: web.ListView.Buttons es una plantilla vacía; el controller la
+        t-call-ea en el slot layout-buttons. Por eso este template es
+        standalone (en v18 se heredaba con xpath sobre .o_list_buttons).
+    -->
+    <t t-name="al_hr_pe_import.HrAttendanceListView.Buttons">
+        <button type="button"
+                class="btn btn-secondary o_al_import_payroll_btn"
+                t-on-click="() => this.onClickImportPayroll()">
+            <i class="fa fa-file-excel-o me-1" role="img"
+               aria-label="Excel" title="Excel"/>
+            Importar desde Excel
+        </button>
+    </t>
+
+</templates>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!--
+        Activa la variante de list view definida en JS
+        (hr_attendance_import_list) que añade el botón "Importar desde
+        Excel" mediante OWL. Extiende attendance_list_view (la variante
+        propia de hr_attendance) para no perder su Renderer/Model.
+    -->
+    <record id="view_attendance_tree_inherit_import" model="ir.ui.view">
+        <field name="name">hr.attendance.list.inherit.al.import</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="js_class">hr_attendance_import_list</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
