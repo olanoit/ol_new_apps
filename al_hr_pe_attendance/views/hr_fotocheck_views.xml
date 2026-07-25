@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_fotocheck_config_list" model="ir.ui.view">
+        <field name="name">hr.fotocheck.config.list</field>
+        <field name="model">hr.fotocheck.config</field>
+        <field name="arch" type="xml">
+            <list string="Configuraciones de fotocheck">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_fotocheck_config_form" model="ir.ui.view">
+        <field name="name">hr.fotocheck.config.form</field>
+        <field name="model">hr.fotocheck.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuración de fotocheck">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <field name="active" invisible="1"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Certificaciones (franja superior)">
+                            <field name="logo_cert_1" widget="image" class="oe_avatar"/>
+                            <field name="logo_cert_2" widget="image" class="oe_avatar"/>
+                            <field name="logo_cert_3" widget="image" class="oe_avatar"/>
+                            <field name="logo_cert_4" widget="image" class="oe_avatar"/>
+                            <field name="logo_cert_5" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Carné">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="fondo_front" widget="image" class="oe_avatar"/>
+                            <field name="backimg" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_fotocheck_config" model="ir.actions.act_window">
+        <field name="name">Configuración de fotocheck</field>
+        <field name="res_model">hr.fotocheck.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure el fotocheck de su compañía</p>
+            <p>Logos de certificaciones, fondo del anverso e imagen del
+               reverso del carné del personal.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_fotocheck_config"
+        action="action_hr_fotocheck_config"
+        parent="menu_hr_pe_attendance_root"
+        sequence="90"
+        groups="hr_payroll.group_hr_payroll_manager"/>
+
+</odoo>

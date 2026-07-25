@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_pe_hr_attendance_monitor_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.attendance.monitor.list</field>
+        <field name="model">l10n_pe.hr.attendance.monitor</field>
+        <field name="arch" type="xml">
+            <list string="Monitor de asistencia" create="0" delete="0" edit="0">
+                <field name="work_location_id" optional="hide"/>
+                <field name="identification_type_id" optional="hide"/>
+                <field name="identification_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="fecha"/>
+                <field name="dia_semana"/>
+                <field name="role_id" optional="show"/>
+                <field name="hora_ing" widget="float_time"/>
+                <field name="hora_sal" widget="float_time"/>
+                <field name="duration_asis" widget="float_time"/>
+                <field name="mar_hora_ing" widget="float_time"/>
+                <field name="mar_hora_sal" widget="float_time"/>
+                <field name="mar_duration_asis" widget="float_time"/>
+                <field name="marc_count" optional="hide"/>
+                <field name="slot_id" optional="hide"/>
+                <field name="cycle_assignment_id" optional="hide"/>
+                <field name="work_entry_type_id" optional="hide"/>
+                <field name="state" widget="badge"
+                    decoration-success="state in ('ok', 'descansotrab', 'feriadotrab')"
+                    decoration-warning="state in ('descanso', 'feriado')"
+                    decoration-danger="state == 'no_ok'"
+                    decoration-info="state in ('vacaciones', 'justificada')"/>
+                <field name="leave_id" optional="hide"/>
+                <button name="action_set_justificante" string="Reg. ausencia"
+                    type="object" class="oe_highlight"
+                    invisible="state != 'no_ok' or leave_id"/>
+                <button name="action_show_leave" string="Ver ausencia"
+                    type="object"
+                    invisible="not leave_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_hr_attendance_monitor_search" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.attendance.monitor.search</field>
+        <field name="model">l10n_pe.hr.attendance.monitor</field>
+        <field name="arch" type="xml">
+            <search string="Monitor de asistencia">
+                <field name="employee_id"/>
+                <field name="identification_id"/>
+                <field name="work_location_id"/>
+                <field name="fecha"/>
+                <filter name="filter_today" string="Hoy"
+                    domain="[('fecha', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_faltas" string="Faltas"
+                    domain="[('state', '=', 'no_ok')]"/>
+                <filter name="filter_trabajado_extra" string="Descanso/feriado trabajado"
+                    domain="[('state', 'in', ('descansotrab', 'feriadotrab'))]"/>
+                <separator/>
+                <filter name="group_fecha" string="Fecha"
+                    context="{'group_by': 'fecha'}"/>
+                <filter name="group_employee" string="Empleado"
+                    context="{'group_by': 'employee_id'}"/>
+                <filter name="group_work_location" string="Establecimiento"
+                    context="{'group_by': 'work_location_id'}"/>
+                <filter name="group_state" string="Estado"
+                    context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_hr_attendance_monitor" model="ir.actions.act_window">
+        <field name="name">Monitor de asistencia</field>
+        <field name="res_model">l10n_pe.hr.attendance.monitor</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_filter_today': 1, 'search_default_group_employee': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin días planificados que monitorear</p>
+            <p>Publique turnos en el planning (o asigne ciclos atípicos)
+               para comparar lo planificado contra las marcaciones reales.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_l10n_pe_hr_attendance_monitor"
+        action="action_l10n_pe_hr_attendance_monitor"
+        parent="menu_hr_pe_attendance_root"
+        sequence="30"/>
+
+    <!-- Bandera «Es vacaciones (Perú)» en el tipo de ausencia -->
+    <record id="edit_holiday_status_form_inherit_l10n_pe" model="ir.ui.view">
+        <field name="name">hr.leave.type.form.inherit.l10n.pe</field>
+        <field name="model">hr.leave.type</field>
+        <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+        <field name="arch" type="xml">
+            <field name="time_type" position="after">
+                <field name="l10n_pe_is_vacation"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

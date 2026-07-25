@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Catálogo global-or-own -->
+        <record id="l10n_pe_hr_shift_cycle_company_rule" model="ir.rule">
+            <field name="name">Ciclos de turno: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_shift_cycle"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+
+        <!-- Transaccionales: aislamiento estricto -->
+        <record id="l10n_pe_hr_shift_cycle_assignment_company_rule" model="ir.rule">
+            <field name="name">Asignación de ciclo: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_shift_cycle_assignment"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_hr_attendance_monitor_company_rule" model="ir.rule">
+            <field name="name">Monitor de asistencia: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_attendance_monitor"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_fotocheck_config_company_rule" model="ir.rule">
+            <field name="name">Configuración de fotocheck: multicompañía</field>
+            <field name="model_id" ref="model_hr_fotocheck_config"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_tareaje_manager_company_rule" model="ir.rule">
+            <field name="name">Tareaje: multicompañía</field>
+            <field name="model_id" ref="model_hr_tareaje_manager"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_tareaje_manager_line_company_rule" model="ir.rule">
+            <field name="name">Línea de tareaje: multicompañía</field>
+            <field name="model_id" ref="model_hr_tareaje_manager_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_tareaje_manager_line_attendance_company_rule" model="ir.rule">
+            <field name="name">Detalle diario de tareaje: multicompañía</field>
+            <field name="model_id" ref="model_hr_tareaje_manager_line_attendance"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

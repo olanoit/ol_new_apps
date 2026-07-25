@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Fotocheck PE: reporte propio (NO reemplaza al badge nativo
+         hr.print_employee_badge, que el v18 pisaba por completo).
+         Anverso: fondo configurable + logos de certificaciones +
+         foto + nombre descompuesto (al_hr_pe) + código de barras.
+         Reverso: imagen a página completa de la configuración. -->
+    <record id="action_report_hr_employee_fotocheck" model="ir.actions.report">
+        <field name="name">Fotocheck (Perú)</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_hr_pe_attendance.report_hr_employee_fotocheck</field>
+        <field name="report_file">al_hr_pe_attendance.report_hr_employee_fotocheck</field>
+        <field name="paperformat_id" ref="hr.paperformat_hr_employee_badge"/>
+        <field name="print_report_name">'Fotocheck - %s' % (object.name or '').replace('/', '')</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_hr_employee_fotocheck">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="employee">
+                <!-- Gotcha QWeb-PDF v19: el div raíz por registro debe
+                     llevar la clase «article» para que _prepare_html lo
+                     envuelva en web.minimal_layout (CSS + charset). -->
+                <div class="article fotocheck-pe"
+                     t-att-data-oe-model="employee and 'hr.employee'"
+                     t-att-data-oe-id="employee and employee.id"
+                     t-att-data-oe-lang="employee and employee.env.lang">
+                    <t t-set="conf"
+                       t-value="employee.env['hr.fotocheck.config'].sudo()._get_for_company(employee.company_id)"/>
+                    <t t-set="nombres" t-value="employee.names or employee.name or ''"/>
+                    <t t-set="apellidos"
+                       t-value="' '.join(p for p in ((employee.last_name or '').strip(), (employee.m_last_name or '').strip()) if p)"/>
+                    <!-- reset anti-bordes fantasma wkhtmltopdf/BS5 -->
+                    <style>
+                        .fotocheck-pe table, .fotocheck-pe tr,
+                        .fotocheck-pe td, .fotocheck-pe th { border: none; }
+                    </style>
+
+                    <!-- ==================== Anverso ==================== -->
+                    <div t-attf-style="width: 346px; height: 215px; overflow: hidden; page-break-inside: avoid; border: 1px solid #c9c9c9; border-radius: 6px; margin: 5px; {{ 'background-image: url(%s); background-size: cover; background-position: center;' % image_data_uri(conf.fondo_front) if conf and conf.fondo_front else '' }}">
+                        <!-- franja superior: logo de la compañía + certificaciones -->
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: left; padding: 4px 0 0 6px;">
+                                    <img t-if="employee.company_id.logo"
+                                         t-att-src="image_data_uri(employee.company_id.logo)"
+                                         style="max-height: 30px; max-width: 110px;"
+                                         alt="Logo compañía"/>
+                                </td>
+                                <td style="text-align: right; padding: 4px 6px 0 0;">
+                                    <t t-if="conf">
+                                        <t t-foreach="['logo_cert_1', 'logo_cert_2', 'logo_cert_3', 'logo_cert_4', 'logo_cert_5']" t-as="cert_field">
+                                            <img t-if="conf[cert_field]"
+                                                 t-att-src="image_data_uri(conf[cert_field])"
+                                                 style="max-height: 23px; max-width: 23px; margin-left: 4px;"
+                                                 alt="Certificación"/>
+                                        </t>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- cuerpo: foto + identidad -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 4px;">
+                            <tr>
+                                <td style="width: 115px; text-align: center; vertical-align: top; padding-left: 12px;">
+                                    <img t-if="employee.avatar_1920"
+                                         t-att-src="image_data_uri(employee.avatar_1920)"
+                                         style="height: 128px; width: 100px; object-fit: cover;"
+                                         alt="Foto del trabajador"/>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                                    <div t-attf-style="font-weight: bold; font-size: {{ '15px' if len(nombres) &lt;= 14 else '12px' }};">
+                                        <t t-out="nombres"/>
+                                    </div>
+                                    <div t-attf-style="font-weight: bold; font-size: {{ '15px' if len(apellidos) &lt;= 14 else '12px' }};">
+                                        <t t-out="apellidos"/>
+                                    </div>
+                                    <div t-if="employee.barcode"
+                                         t-field="employee.barcode"
+                                         t-options="{'widget': 'barcode', 'width': 600, 'height': 120, 'img_style': 'max-height: 26px; max-width: 175px;', 'img_align': 'center'}"
+                                         style="margin-top: 6px; text-align: center;"/>
+                                    <div t-if="employee.barcode" style="font-size: 10px;">
+                                        <t t-out="employee.barcode"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- puesto -->
+                        <div t-if="employee.job_id"
+                             t-attf-style="text-align: center; font-weight: bold; margin-top: 4px; font-size: {{ '13px' if len(employee.job_id.name or '') &lt;= 24 else '9px' }};">
+                            <t t-out="employee.job_id.name"/>
+                        </div>
+                    </div>
+
+                    <!-- ==================== Reverso ==================== -->
+                    <div t-if="conf and conf.backimg"
+                         style="width: 346px; height: 215px; overflow: hidden; page-break-inside: avoid; border-radius: 6px; margin: 5px;">
+                        <img t-att-src="image_data_uri(conf.backimg)"
+                             style="width: 346px; height: 215px;"
+                             alt="Reverso del fotocheck"/>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

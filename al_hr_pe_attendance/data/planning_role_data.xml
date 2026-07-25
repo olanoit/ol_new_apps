@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Roles de planificación semilla: sustituyen al catálogo v18
+         attendance.activity (data/hr_attendance_activity.xml). El rol
+         nativo hace de «tipo de turno»; noupdate para que el usuario
+         pueda renombrarlos o recolorearlos sin perder cambios. -->
+    <data noupdate="1">
+
+        <record id="planning_role_turno_manana" model="planning.role">
+            <field name="name">Turno Mañana</field>
+            <field name="l10n_pe_shift_kind">manana</field>
+            <field name="color">4</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="planning_role_turno_tarde" model="planning.role">
+            <field name="name">Turno Tarde</field>
+            <field name="l10n_pe_shift_kind">tarde</field>
+            <field name="color">10</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <record id="planning_role_turno_noche" model="planning.role">
+            <field name="name">Turno Noche</field>
+            <field name="l10n_pe_shift_kind">noche</field>
+            <field name="color">5</field>
+            <field name="sequence">5</field>
+        </record>
+
+    </data>
+</odoo>

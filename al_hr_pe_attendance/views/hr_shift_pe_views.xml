@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== Ciclos atípicos ==================== -->
+    <record id="view_l10n_pe_hr_shift_cycle_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.shift.cycle.list</field>
+        <field name="model">l10n_pe.hr.shift.cycle</field>
+        <field name="arch" type="xml">
+            <list string="Ciclos atípicos">
+                <field name="name"/>
+                <field name="days_work"/>
+                <field name="days_rest"/>
+                <field name="hours_per_day" widget="float_time"/>
+                <field name="cycle_days"/>
+                <field name="avg_weekly_hours" widget="float_time"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_hr_shift_cycle_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.shift.cycle.form</field>
+        <field name="model">l10n_pe.hr.shift.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Ciclo atípico">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <field name="active" invisible="1"/>
+                        <h1><field name="name" placeholder="p. ej. Atípico 14×7 — 12 horas"/></h1>
+                    </div>
+                    <group>
+                        <group string="Ciclo">
+                            <field name="days_work"/>
+                            <field name="days_rest"/>
+                            <field name="hours_per_day" widget="float_time"/>
+                        </group>
+                        <group string="Control legal">
+                            <field name="cycle_days"/>
+                            <field name="avg_weekly_hours" widget="float_time"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                placeholder="Global (todas las compañías)"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        Jornada atípica/acumulativa: promedio semanal del ciclo ≤ 48 h
+                        (D.S. 007-2002-TR art. 4; D.S. 008-2002-TR art. 9) y máximo
+                        12 h diarias (STC 4635-2004-AA/TC).
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_hr_shift_cycle" model="ir.actions.act_window">
+        <field name="name">Ciclos atípicos</field>
+        <field name="res_model">l10n_pe.hr.shift.cycle</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Defina un ciclo de jornada atípica</p>
+            <p>N días de trabajo por M de descanso (p. ej. 14×7 minero),
+               con validación de los topes legales.</p>
+        </field>
+    </record>
+
+    <!-- ==================== Asignaciones de ciclo ==================== -->
+    <record id="view_l10n_pe_hr_shift_cycle_assignment_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.shift.cycle.assignment.list</field>
+        <field name="model">l10n_pe.hr.shift.cycle.assignment</field>
+        <field name="arch" type="xml">
+            <list string="Asignaciones de ciclo atípico">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <field name="template_id"/>
+                <field name="date_start"/>
+                <field name="cycles_count"/>
+                <field name="date_end"/>
+                <field name="slot_count"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_hr_shift_cycle_assignment_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.shift.cycle.assignment.form</field>
+        <field name="model">l10n_pe.hr.shift.cycle.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Asignación de ciclo atípico">
+                <header>
+                    <button name="action_generate_slots" type="object"
+                        string="Generar turnos" class="btn-primary"
+                        invisible="slot_count &gt; 0"
+                        help="Crea en borrador los planning.slot de los días de trabajo; publíquelos desde el planning."/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_slots" type="object"
+                            class="oe_stat_button" icon="fa-calendar"
+                            invisible="slot_count == 0">
+                            <field name="slot_count" widget="statinfo" string="Turnos"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Trabajador y ciclo">
+                            <field name="employee_id"/>
+                            <field name="cycle_id"/>
+                            <field name="template_id"/>
+                        </group>
+                        <group string="Periodo">
+                            <field name="date_start"/>
+                            <field name="cycles_count"/>
+                            <field name="date_end"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_hr_shift_cycle_assignment_search" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.shift.cycle.assignment.search</field>
+        <field name="model">l10n_pe.hr.shift.cycle.assignment</field>
+        <field name="arch" type="xml">
+            <search string="Asignaciones de ciclo atípico">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <filter name="filter_current" string="Vigentes"
+                    domain="[('date_start', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                             ('date_end', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="group_employee" string="Trabajador"
+                    context="{'group_by': 'employee_id'}"/>
+                <filter name="group_cycle" string="Ciclo"
+                    context="{'group_by': 'cycle_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_hr_shift_cycle_assignment" model="ir.actions.act_window">
+        <field name="name">Asignaciones de ciclo</field>
+        <field name="res_model">l10n_pe.hr.shift.cycle.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Asigne un ciclo atípico a un trabajador</p>
+            <p>Los días de trabajo se generan como turnos del planning
+               nativo; los descansos los reconstruye el monitor de asistencia.</p>
+        </field>
+    </record>
+
+    <!-- ==================== Capa PE en vistas nativas ==================== -->
+    <record id="planning_role_view_form_inherit_l10n_pe" model="ir.ui.view">
+        <field name="name">planning.role.form.inherit.l10n.pe</field>
+        <field name="model">planning.role</field>
+        <field name="inherit_id" ref="planning.planning_role_view_form"/>
+        <field name="arch" type="xml">
+            <field name="color" position="after">
+                <field name="l10n_pe_shift_kind"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="planning_role_view_tree_inherit_l10n_pe" model="ir.ui.view">
+        <field name="name">planning.role.list.inherit.l10n.pe</field>
+        <field name="model">planning.role</field>
+        <field name="inherit_id" ref="planning.planning_role_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="color" position="after">
+                <field name="l10n_pe_shift_kind" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="planning_slot_template_view_tree_inherit_l10n_pe" model="ir.ui.view">
+        <field name="name">planning.slot.template.list.inherit.l10n.pe</field>
+        <field name="model">planning.slot.template</field>
+        <field name="inherit_id" ref="planning.planning_slot_template_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="role_id" position="after">
+                <field name="l10n_pe_is_night" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="planning_view_form_inherit_l10n_pe" model="ir.ui.view">
+        <field name="name">planning.slot.form.inherit.l10n.pe</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="planning.planning_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group name="l10n_pe" string="Perú"
+                    groups="planning.group_planning_manager">
+                    <group>
+                        <field name="l10n_pe_cycle_assignment_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="l10n_pe_replaced_employee_id"/>
+                        <field name="l10n_pe_replacement_reason"
+                            required="l10n_pe_replaced_employee_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ==================== Menús ==================== -->
+    <!-- Menú raíz de la capa de asistencia PE bajo Nómina; lo
+         referencian también los otros archivos de vistas del módulo y
+         el tareaje (otro archivo de la Fase 6). -->
+    <menuitem id="menu_hr_pe_attendance_root"
+        name="Asistencia PE"
+        parent="hr_work_entry_enterprise.menu_hr_payroll_root"
+        sequence="60"
+        groups="hr_payroll.group_hr_payroll_user,planning.group_planning_user"/>
+
+    <menuitem id="menu_l10n_pe_hr_shift_cycle_assignment"
+        action="action_l10n_pe_hr_shift_cycle_assignment"
+        parent="menu_hr_pe_attendance_root"
+        sequence="10"/>
+    <menuitem id="menu_l10n_pe_hr_shift_cycle"
+        action="action_l10n_pe_hr_shift_cycle"
+        parent="menu_hr_pe_attendance_root"
+        sequence="80"/>
+
+</odoo>

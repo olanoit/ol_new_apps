@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Detalle diario del tareaje                                   -->
+    <!-- ============================================================ -->
+    <record id="hr_tareaje_manager_line_attendance_view_list" model="ir.ui.view">
+        <field name="name">hr.tareaje.manager.line.attendance.list</field>
+        <field name="model">hr.tareaje.manager.line.attendance</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="employee_id" optional="hide"/>
+                <field name="fecha" optional="show"/>
+                <field name="day_name" optional="show"/>
+                <field name="horario" optional="show"/>
+                <field name="mar_hora_ing" optional="show" widget="float_time"/>
+                <field name="mar_hora_sal" optional="show" widget="float_time"/>
+                <field name="worked_hours" optional="show" widget="float_time"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'ok'"
+                    decoration-warning="state in ('descanso', 'feriado', 'descanso_trab', 'feriado_trab')"
+                    decoration-danger="state in ('falta', 'incompleto')"
+                    decoration-info="state == 'ausencia'"/>
+                <field name="incos" optional="hide" sum="Total"/>
+                <field name="dlab" optional="show" sum="Total"/>
+                <field name="dlabn" optional="hide" sum="Total"/>
+                <field name="htd" optional="hide" sum="Total" widget="float_time"/>
+                <field name="htn" optional="hide" sum="Total" widget="float_time"/>
+                <field name="dom" optional="show" sum="Total"/>
+                <field name="fer" optional="hide" sum="Total"/>
+                <field name="fal" optional="show" sum="Total"/>
+                <field name="tar" optional="show" sum="Total" widget="float_time"/>
+                <field name="he25" optional="show" sum="Total" widget="float_time"/>
+                <field name="he35" optional="show" sum="Total" widget="float_time"/>
+                <field name="he100" optional="hide" sum="Total" widget="float_time"/>
+                <field name="hours_compensate" optional="show" sum="Total" widget="float_time"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Tareaje                                                       -->
+    <!-- ============================================================ -->
+    <record id="hr_tareaje_manager_view_form" model="ir.ui.view">
+        <field name="name">hr.tareaje.manager.form</field>
+        <field name="model">hr.tareaje.manager</field>
+        <field name="arch" type="xml">
+            <form string="Tareaje">
+                <header>
+                    <button name="action_generate" string="Procesar" type="object"
+                        class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="set_close" string="Aplicar al periodo" type="object"
+                        class="oe_highlight" invisible="state != 'draft'"
+                        confirm="Al aplicar, las boletas del periodo leerán este tareaje al refrescar sus días trabajados. ¿Continuar?"/>
+                    <button name="set_reopen" string="Reabrir" type="object"
+                        invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar" readonly="1"/>
+                </header>
+                <sheet>
+                    <label for="name"/>
+                    <h2>
+                        <field name="name" required="1" readonly="state == 'done'"
+                            placeholder="p. ej. Tareaje enero 2026"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <label for="date_start" string="Periodo"/>
+                            <div class="o_row">
+                                <field name="date_start" class="oe_inline" readonly="state == 'done'"/> -
+                                <field name="date_end" class="oe_inline" readonly="state == 'done'"/>
+                            </div>
+                            <field name="time_tolerancia" widget="float_time" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="is_compute_he" readonly="state == 'done'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detalle del tareaje" name="lines">
+                            <field name="tareaje_line_ids" readonly="state == 'done'">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="incos" optional="hide" sum="Total"/>
+                                    <field name="dlab" optional="show" sum="Total"/>
+                                    <field name="dlabn" optional="hide" sum="Total"/>
+                                    <field name="htd" optional="hide" sum="Total" widget="float_time"/>
+                                    <field name="htn" optional="hide" sum="Total" widget="float_time"/>
+                                    <field name="dom" optional="show" sum="Total"/>
+                                    <field name="fer" optional="hide" sum="Total"/>
+                                    <field name="fal" optional="show" sum="Total"/>
+                                    <field name="tar" optional="show" sum="Total" widget="float_time"/>
+                                    <field name="he25" optional="show" sum="Total" widget="float_time"/>
+                                    <field name="he35" optional="show" sum="Total" widget="float_time"/>
+                                    <field name="he100" optional="hide" sum="Total" widget="float_time"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                    <button name="view_detail" icon="fa-eye" title="Ver detalle diario" type="object"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_tareaje_manager_view_list" model="ir.ui.view">
+        <field name="name">hr.tareaje.manager.list</field>
+        <field name="model">hr.tareaje.manager</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="time_tolerancia" optional="show" widget="float_time"/>
+                <field name="is_compute_he" optional="show"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_tareaje_manager_view_search" model="ir.ui.view">
+        <field name="name">hr.tareaje.manager.search</field>
+        <field name="model">hr.tareaje.manager</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="filter_draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_done" string="Aplicado" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_tareaje_manager_action" model="ir.actions.act_window">
+        <field name="name">Tareaje</field>
+        <field name="res_model">hr.tareaje.manager</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="hr_tareaje_manager_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Cree un tareaje del periodo
+            </p>
+            <p>
+                Procese las marcaciones del periodo, revise la clasificación
+                (nocturnidad, horas extras, dominicales y feriados) y
+                aplíquela a las boletas.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_tareaje_manager"
+        name="Tareaje"
+        parent="al_hr_pe_attendance.menu_hr_pe_attendance_root"
+        action="hr_tareaje_manager_action"
+        sequence="30"/>
+
+    <!-- ============================================================ -->
+    <!-- Parámetros principales: pestaña Tareaje                       -->
+    <!-- ============================================================ -->
+    <record id="hr_main_parameter_view_form_inherit_tareaje" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form.inherit.tareaje</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="inherit_id" ref="al_hr_pe.hr_main_parameter_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Tareaje" name="tareaje">
+                    <group>
+                        <group string="Jornada y sobretiempo">
+                            <field name="tareaje_night_from" widget="float_time"/>
+                            <field name="tareaje_night_to" widget="float_time"/>
+                            <field name="tareaje_he25_hours" widget="float_time"/>
+                            <field name="tareaje_late_tolerance" widget="float_time"/>
+                            <field name="tareaje_round_minutes"/>
+                        </group>
+                        <group string="Tipos de work entry destino">
+                            <field name="tareaje_wet_dlab_id"/>
+                            <field name="tareaje_wet_noct_id"/>
+                            <field name="tareaje_wet_dom_id"/>
+                            <field name="tareaje_wet_fer_id"/>
+                            <field name="tareaje_wet_fal_id"/>
+                            <field name="tareaje_wet_tar_id"/>
+                            <field name="tareaje_wet_he25_id"/>
+                            <field name="tareaje_wet_he35_id"/>
+                            <field name="tareaje_wet_he100_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- hr.version: sujeto a horas extras                             -->
+    <!-- ============================================================ -->
+    <record id="hr_version_list_view_inherit_tareaje" model="ir.ui.view">
+        <field name="name">hr.version.list.inherit.tareaje</field>
+        <field name="model">hr.version</field>
+        <field name="inherit_id" ref="hr.hr_version_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="l10n_pe_is_overtime" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
