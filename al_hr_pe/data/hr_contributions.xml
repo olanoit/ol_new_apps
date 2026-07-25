@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record model="hr.contributions" id="contribution_SVLEY">
+            <field name="name">Póliza de Seguro - D. Leg. 688</field>
+            <field name="code">SVLEY</field>
+            <field name="type">percentage</field>
+            <field name="tasa">0.0053</field>
+            <field name="amount">0.00</field>
+        </record>
+    </data>
+</odoo>

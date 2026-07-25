@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_payslip_view_form_inherit_pe" model="ir.ui.view">
+        <field name="name">hr.payslip.form.inherit.al.hr.pe</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <field name="struct_id" position="after">
+                <field name="periodo_id"/>
+            </field>
+            <xpath expr="//notebook" position="inside"><!-- pestaña PE -->
+                <page string="Perú" name="l10n_pe">
+                    <group>
+                        <group string="Snapshot del cálculo">
+                            <field name="rmv"/>
+                            <field name="family_allowance"/>
+                            <field name="membership_id"/>
+                            <field name="l10n_pe_retirement_fund"/>
+                            <field name="l10n_pe_commission"/>
+                            <field name="l10n_pe_prima_insurance"/>
+                            <field name="l10n_pe_insurable_remuneration"/>
+                        </group>
+                        <group string="Totales PLAME">
+                            <field name="worker_contributions"/>
+                            <field name="net_discounts"/>
+                            <field name="employer_contributions"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_payslip_run_view_form_inherit_pe" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.inherit.al.hr.pe</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <field name="date_end" position="after">
+                <field name="periodo_id"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Exportadores PLAME en el menú del kanban del lote (el form
+         nativo v19 es un diálogo de creación sin header). -->
+    <record id="hr_payslip_run_view_kanban_inherit_pe" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.inherit.al.hr.pe</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='menu']" position="inside">
+                <button name="export_plame" type="object"
+                        class="btn btn-secondary" string="PLAME (.rem)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="export_plame_hours" type="object"
+                        class="btn btn-secondary" string="PLAME horas (.jor)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="export_plame_suspencion" type="object"
+                        class="btn btn-secondary" string="PLAME suspensiones (.snl)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="export_plame_other_conditions" type="object"
+                        class="btn btn-secondary" string="PLAME condiciones (.toc)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="afp_net" type="object"
+                        class="btn btn-secondary" string="AFPNet (.xlsx)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Suspensiones T21 -->
+    <record id="hr_work_suspension_view_list" model="ir.ui.view">
+        <field name="name">hr.work.suspension.list</field>
+        <field name="model">hr.work.suspension</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="periodo_id"/>
+                <field name="employee_id"/>
+                <field name="suspension_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="days"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_work_suspension_action" model="ir.actions.act_window">
+        <field name="name">Suspensiones (T21)</field>
+        <field name="res_model">hr.work.suspension</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_hr_pe_work_suspension" name="Suspensiones de labores"
+        parent="menu_hr_pe_root" action="hr_work_suspension_action" sequence="15"/>
+
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Lista de versiones: columnas PE opcionales para verificar el
+         versionado (histórico de cambios de régimen/CUSPP por fecha). -->
+    <record id="hr_version_list_view_inherit_pe" model="ir.ui.view">
+        <field name="name">hr.version.list.inherit.al.hr.pe</field>
+        <field name="model">hr.version</field>
+        <field name="inherit_id" ref="hr.hr_version_list_view"/>
+        <field name="arch" type="xml">
+            <field name="wage" position="after">
+                <field name="l10n_pe_labor_regime" optional="show"/>
+                <field name="membership_id" optional="show"/>
+                <field name="worker_type_id" optional="hide"/>
+                <field name="situation_id" optional="hide"/>
+                <field name="social_insurance_id" optional="hide"/>
+                <field name="l10n_pe_cuspp" optional="hide"/>
+                <field name="l10n_pe_commission_type" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

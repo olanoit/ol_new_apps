@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Valores históricos de la UIT (Unidad Impositiva Tributaria) -->
+        <record model="l10n_pe.hr.uit" id="uit_2024">
+            <field name="year">2024</field>
+            <field name="amount">5150</field>
+        </record>
+        <record model="l10n_pe.hr.uit" id="uit_2025">
+            <field name="year">2025</field>
+            <field name="amount">5350</field>
+        </record>
+        <record model="l10n_pe.hr.uit" id="uit_2026">
+            <field name="year">2026</field>
+            <field name="amount">5350</field>
+        </record>
+    </data>
+</odoo>

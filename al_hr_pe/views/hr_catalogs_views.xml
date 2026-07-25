@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vistas genéricas de catálogos PLAME (lista editable: son tablas
+         de códigos; el form nativo generado basta para el resto). -->
+    <record id="hr_worker_type_view_list" model="ir.ui.view">
+        <field name="name">hr.worker.type.list</field>
+        <field name="model">hr.worker.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_situation_view_list" model="ir.ui.view">
+        <field name="name">hr.situation.list</field>
+        <field name="model">hr.situation</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_reasons_leave_view_list" model="ir.ui.view">
+        <field name="name">hr.reasons.leave.list</field>
+        <field name="model">hr.reasons.leave</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_suspension_type_view_list" model="ir.ui.view">
+        <field name="name">hr.suspension.type.list</field>
+        <field name="model">hr.suspension.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_membership_view_list" model="ir.ui.view">
+        <field name="name">hr.membership.list</field>
+        <field name="model">hr.membership</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="is_afp"/>
+                <field name="fixed_commision"/>
+                <field name="mixed_commision"/>
+                <field name="prima_insurance"/>
+                <field name="retirement_fund"/>
+                <field name="insurable_remuneration"/>
+                <field name="account_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_membership_view_form" model="ir.ui.view">
+        <field name="name">hr.membership.form</field>
+        <field name="model">hr.membership</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="AFP / ONP"/></h1>
+                    </div>
+                    <group>
+                        <group string="Tasas (%)">
+                            <field name="is_afp"/>
+                            <field name="retirement_fund"/>
+                            <field name="fixed_commision"/>
+                            <field name="mixed_commision"/>
+                            <field name="prima_insurance"/>
+                            <field name="insurable_remuneration"/>
+                        </group>
+                        <group string="Configuración">
+                            <field name="account_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_social_insurance_view_list" model="ir.ui.view">
+        <field name="name">hr.social.insurance.list</field>
+        <field name="model">hr.social.insurance</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="percent"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_contributions_view_list" model="ir.ui.view">
+        <field name="name">hr.contributions.list</field>
+        <field name="model">hr.contributions</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="tasa"/>
+                <field name="amount"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_hr_uit_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.uit.list</field>
+        <field name="model">l10n_pe.hr.uit</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="year"/>
+                <field name="amount"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acciones -->
+    <record id="hr_worker_type_action" model="ir.actions.act_window">
+        <field name="name">Tipos de trabajador (T08)</field>
+        <field name="res_model">hr.worker.type</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="hr_situation_action" model="ir.actions.act_window">
+        <field name="name">Situaciones (T15)</field>
+        <field name="res_model">hr.situation</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="hr_reasons_leave_action" model="ir.actions.act_window">
+        <field name="name">Motivos de baja (T17)</field>
+        <field name="res_model">hr.reasons.leave</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="hr_suspension_type_action" model="ir.actions.act_window">
+        <field name="name">Tipos de suspensión (T21)</field>
+        <field name="res_model">hr.suspension.type</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="hr_membership_action" model="ir.actions.act_window">
+        <field name="name">Afiliaciones (AFP/ONP)</field>
+        <field name="res_model">hr.membership</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="hr_social_insurance_action" model="ir.actions.act_window">
+        <field name="name">Seguros sociales</field>
+        <field name="res_model">hr.social.insurance</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="hr_contributions_action" model="ir.actions.act_window">
+        <field name="name">Aportes/Contribuciones</field>
+        <field name="res_model">hr.contributions</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="l10n_pe_hr_uit_action" model="ir.actions.act_window">
+        <field name="name">UIT por año</field>
+        <field name="res_model">l10n_pe.hr.uit</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

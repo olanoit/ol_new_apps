@@ -1,0 +1,24 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_worker_type_user,hr.worker.type user,model_hr_worker_type,base.group_user,1,0,0,0
+access_hr_worker_type_manager,hr.worker.type manager,model_hr_worker_type,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_situation_user,hr.situation user,model_hr_situation,base.group_user,1,0,0,0
+access_hr_situation_manager,hr.situation manager,model_hr_situation,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_reasons_leave_user,hr.reasons.leave user,model_hr_reasons_leave,base.group_user,1,0,0,0
+access_hr_reasons_leave_manager,hr.reasons.leave manager,model_hr_reasons_leave,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_suspension_type_user,hr.suspension.type user,model_hr_suspension_type,base.group_user,1,0,0,0
+access_hr_suspension_type_manager,hr.suspension.type manager,model_hr_suspension_type,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_social_insurance_user,hr.social.insurance user,model_hr_social_insurance,base.group_user,1,0,0,0
+access_hr_social_insurance_manager,hr.social.insurance manager,model_hr_social_insurance,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_contributions_user,hr.contributions user,model_hr_contributions,base.group_user,1,0,0,0
+access_hr_contributions_manager,hr.contributions manager,model_hr_contributions,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_membership_user,hr.membership user,model_hr_membership,base.group_user,1,0,0,0
+access_hr_membership_manager,hr.membership manager,model_hr_membership,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_l10n_pe_hr_uit_user,l10n_pe.hr.uit user,model_l10n_pe_hr_uit,base.group_user,1,0,0,0
+access_l10n_pe_hr_uit_manager,l10n_pe.hr.uit manager,model_l10n_pe_hr_uit,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_period_user,hr.period user,model_hr_period,base.group_user,1,0,0,0
+access_hr_period_manager,hr.period manager,model_hr_period,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_period_generator,hr.period.generator,model_hr_period_generator,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_main_parameter_user,hr.main.parameter user,model_hr_main_parameter,hr_payroll.group_hr_payroll_user,1,0,0,0
+access_hr_main_parameter_manager,hr.main.parameter manager,model_hr_main_parameter,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_work_suspension_user,hr.work.suspension user,model_hr_work_suspension,hr_payroll.group_hr_payroll_user,1,0,0,0
+access_hr_work_suspension_manager,hr.work.suspension manager,model_hr_work_suspension,hr_payroll.group_hr_payroll_manager,1,1,1,1

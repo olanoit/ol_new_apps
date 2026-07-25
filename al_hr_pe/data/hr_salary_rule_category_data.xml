@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Categorías de reglas salariales PE (port de hr_fields v18).
+             v19 eliminó `sequence` y `type` de hr.salary.rule.category:
+             se omiten. Se añade country_id (el dominio de category_id en
+             hr.salary.rule exige país igual al de la estructura o vacío). -->
+        <record id="ING" model="hr.salary.rule.category">
+            <field name="name">INGRESOS</field>
+            <field name="code">ING</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="APOR_TRA" model="hr.salary.rule.category">
+            <field name="name">APORTES TRABAJADOR</field>
+            <field name="code">APOR_TRA</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="DES_NET" model="hr.salary.rule.category">
+            <field name="name">DESCUENTOS AL NETO</field>
+            <field name="code">DES_NET</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="DES_AFE" model="hr.salary.rule.category">
+            <field name="name">DESCUENTOS AFECTOS</field>
+            <field name="code">DES_AFE</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="POR" model="hr.salary.rule.category">
+            <field name="name">PORCENTAJES</field>
+            <field name="code">POR</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="SUB" model="hr.salary.rule.category">
+            <field name="name">SUBTOTALES</field>
+            <field name="code">SUB</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+        <record id="APOR_EMP" model="hr.salary.rule.category">
+            <field name="name">APORTES EMPLEADOR</field>
+            <field name="code">APOR_EMP</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+    </data>
+</odoo>

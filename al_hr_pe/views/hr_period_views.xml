@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_period_view_list" model="ir.ui.view">
+        <field name="name">hr.period.list</field>
+        <field name="model">hr.period</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="year" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_period_view_form" model="ir.ui.view">
+        <field name="name">hr.period.form</field>
+        <field name="model">hr.period</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_period_generator_view_form" model="ir.ui.view">
+        <field name="name">hr.period.generator.form</field>
+        <field name="model">hr.period.generator</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="year"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </group>
+                <footer>
+                    <button name="action_generate" string="Generar periodos"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_period_action" model="ir.actions.act_window">
+        <field name="name">Periodos de nómina</field>
+        <field name="res_model">hr.period</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="hr_period_generator_action" model="ir.actions.act_window">
+        <field name="name">Generar periodos</field>
+        <field name="res_model">hr.period.generator</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

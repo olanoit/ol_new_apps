@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+            Extensión de los tipos de identificación nativos (l10n_pe / l10n_latam_base)
+            con los códigos de planilla: SUNAT (T-PLAME) y AFPNet.
+            Reemplaza al modelo hr.type.document de la versión 18.
+        -->
+
+        <!-- DNI: código SUNAT 1, código AFP 0 -->
+        <record id="l10n_pe.it_DNI" model="l10n_latam.identification.type">
+            <field name="l10n_pe_hr_sunat_code">1</field>
+            <field name="l10n_pe_hr_afp_code">0</field>
+        </record>
+
+        <!-- Carné de extranjería (nativo: l10n_latam_base.it_fid, código vat 4): SUNAT 4, AFP 1 -->
+        <record id="l10n_latam_base.it_fid" model="l10n_latam.identification.type">
+            <field name="l10n_pe_hr_sunat_code">4</field>
+            <field name="l10n_pe_hr_afp_code">1</field>
+        </record>
+
+        <!-- RUC: código SUNAT 6, sin código AFP -->
+        <record id="l10n_pe.it_RUC" model="l10n_latam.identification.type">
+            <field name="l10n_pe_hr_sunat_code">6</field>
+        </record>
+
+        <!-- Pasaporte (nativo: l10n_latam_base.it_pass, código vat 7): SUNAT 7, AFP 4 -->
+        <record id="l10n_latam_base.it_pass" model="l10n_latam.identification.type">
+            <field name="l10n_pe_hr_sunat_code">7</field>
+            <field name="l10n_pe_hr_afp_code">4</field>
+        </record>
+
+        <!-- Permiso Temporal de Permanencia (nativo: l10n_pe.it_PTP): AFP 6, sin código SUNAT de planilla (NE en v18) -->
+        <record id="l10n_pe.it_PTP" model="l10n_latam.identification.type">
+            <field name="l10n_pe_hr_afp_code">6</field>
+        </record>
+    </data>
+</odoo>

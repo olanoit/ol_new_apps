@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Input types PE (port de hr_fields v18). struct_ids sí existe
+             en v19 (M2M a hr.payroll.structure) y se conserva. -->
+        <record id="input_type_GRA" model="hr.payslip.input.type">
+            <field name="name">GRATIFICACIONES</field>
+            <field name="code">GRA</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_BON9" model="hr.payslip.input.type">
+            <field name="name">BONIFICACION 9%</field>
+            <field name="code">BON9</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_GRA_TRU" model="hr.payslip.input.type">
+            <field name="name">GRATIFICACIONES TRUNCAS</field>
+            <field name="code">GRA_TRU</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_BON9_TRU" model="hr.payslip.input.type">
+            <field name="name">BONIFICACION TRUNCA 9%</field>
+            <field name="code">BON9_TRU</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_COMP_VAC" model="hr.payslip.input.type">
+            <field name="name">COMPENSACION VACACIONAL</field>
+            <field name="code">COMP_VAC</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_VAC" model="hr.payslip.input.type">
+            <field name="name">VACACIONES</field>
+            <field name="code">VAC</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_VAC_TRU" model="hr.payslip.input.type">
+            <field name="name">VACACIONES TRUNCAS</field>
+            <field name="code">VAC_TRU</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_CTS" model="hr.payslip.input.type">
+            <field name="name">COMPENSACION POR TIEMPO DE SERVICIOS</field>
+            <field name="code">CTS</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_CTS_TRU" model="hr.payslip.input.type">
+            <field name="name">CTS TRUNCA</field>
+            <field name="code">CTS_TRU</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_SENF" model="hr.payslip.input.type">
+            <field name="name">SUBSIDIO POR ENFERMEDAD</field>
+            <field name="code">SENF</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_SMAR" model="hr.payslip.input.type">
+            <field name="name">SUBSIDIO POR MATERNIDAD</field>
+            <field name="code">SMAR</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_BONI_EX" model="hr.payslip.input.type">
+            <field name="name">BONIFICACION EXTRAORDINARIA</field>
+            <field name="code">BONI_EX</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_BONRER" model="hr.payslip.input.type">
+            <field name="name">BONIFICACIONES REGULARES</field>
+            <field name="code">BONRER</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_INDEM" model="hr.payslip.input.type">
+            <field name="name">INDEMNIZACION</field>
+            <field name="code">INDEM</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_COMI" model="hr.payslip.input.type">
+            <field name="name">COMISIONES</field>
+            <field name="code">COMI</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_UTIL" model="hr.payslip.input.type">
+            <field name="name">UTILIDADES</field>
+            <field name="code">UTIL</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_ADELANTO" model="hr.payslip.input.type">
+            <field name="name">ADELANTO DE REMUNERACION</field>
+            <field name="code">ADELANTO</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_ADE_QUIN" model="hr.payslip.input.type">
+            <field name="name">ADELANTO QUINCENAL</field>
+            <field name="code">ADE_QUIN</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_ADE_GRA" model="hr.payslip.input.type">
+            <field name="name">ADELANTO DE GRATIFICACION</field>
+            <field name="code">ADE_GRA</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_ADE_CTS" model="hr.payslip.input.type">
+            <field name="name">ADELANTO DE CTS</field>
+            <field name="code">ADE_CTS</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_ADE_VAC" model="hr.payslip.input.type">
+            <field name="name">ADELANTO DE VACACIONES</field>
+            <field name="code">ADE_VAC</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_PREST" model="hr.payslip.input.type">
+            <field name="name">PRESTAMOS AL PERSONAL</field>
+            <field name="code">PREST</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_QUINTA" model="hr.payslip.input.type">
+            <field name="name">QUINTA</field>
+            <field name="code">QUINTA</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_RET_JUD" model="hr.payslip.input.type">
+            <field name="name">RETENCION JUDICIAL</field>
+            <field name="code">RET_JUD</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+        <record id="input_type_DES_BBSS" model="hr.payslip.input.type">
+            <field name="name">DESCUENTOS EN BBSS</field>
+            <field name="code">DES_BBSS</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
+    </data>
+</odoo>

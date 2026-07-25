@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_employee_view_form_inherit_pe" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.al.hr.pe</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <page name="personal_information" position="inside">
+                <group string="Perú — Identificación (PLAME)" name="l10n_pe_plame">
+                    <group>
+                        <field name="last_name"/>
+                        <field name="m_last_name"/>
+                        <field name="names"/>
+                        <field name="condition"/>
+                    </group>
+                    <group>
+                        <field name="l10n_latam_identification_type_id"
+                               options="{'no_create': True, 'no_open': True}"/>
+                        <field name="identification_id" string="Número de documento"/>
+                        <field name="cts_bank_account_id"/>
+                    </group>
+                </group>
+            </page>
+        </field>
+    </record>
+
+</odoo>

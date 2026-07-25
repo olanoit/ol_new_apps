@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_main_parameter_view_form" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Generales">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="rmv"/>
+                            <field name="family_allowance"/>
+                            <field name="reprentante_legal_id"/>
+                            <field name="signature" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Reglas de referencia">
+                            <field name="net_to_pay_sr_id"/>
+                            <field name="insurable_remuneration"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Boleta" name="voucher">
+                            <group>
+                                <group string="Días (work entries)">
+                                    <field name="wd_dlab" widget="many2many_tags"/>
+                                    <field name="wd_dnlab" widget="many2many_tags"/>
+                                    <field name="wd_dsub" widget="many2many_tags"/>
+                                    <field name="wd_ext" widget="many2many_tags"/>
+                                    <field name="wd_dvac" widget="many2many_tags"/>
+                                </group>
+                                <group string="Categorías de reglas">
+                                    <field name="income_categories" widget="many2many_tags"/>
+                                    <field name="discounts_categories" widget="many2many_tags"/>
+                                    <field name="contributions_categories" widget="many2many_tags"/>
+                                    <field name="contributions_emp_categories" widget="many2many_tags"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_main_parameter_action" model="ir.actions.act_window">
+        <field name="name">Parámetros principales</field>
+        <field name="res_model">hr.main.parameter</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menú Perú bajo Nómina → Configuración -->
+    <menuitem id="menu_hr_pe_root" name="Perú"
+        parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+        sequence="60"/>
+    <menuitem id="menu_hr_pe_main_parameter" name="Parámetros principales"
+        parent="menu_hr_pe_root" action="hr_main_parameter_action" sequence="5"/>
+    <menuitem id="menu_hr_pe_period" name="Periodos"
+        parent="menu_hr_pe_root" action="hr_period_action" sequence="10"/>
+    <menuitem id="menu_hr_pe_period_generator" name="Generar periodos"
+        parent="menu_hr_pe_root" action="hr_period_generator_action" sequence="11"/>
+    <menuitem id="menu_hr_pe_membership" name="Afiliaciones (AFP/ONP)"
+        parent="menu_hr_pe_root" action="hr_membership_action" sequence="20"/>
+    <menuitem id="menu_hr_pe_social_insurance" name="Seguros sociales"
+        parent="menu_hr_pe_root" action="hr_social_insurance_action" sequence="21"/>
+    <menuitem id="menu_hr_pe_contributions" name="Aportes"
+        parent="menu_hr_pe_root" action="hr_contributions_action" sequence="22"/>
+    <menuitem id="menu_hr_pe_uit" name="UIT"
+        parent="menu_hr_pe_root" action="l10n_pe_hr_uit_action" sequence="23"/>
+    <menuitem id="menu_hr_pe_worker_type" name="Tipos de trabajador (T08)"
+        parent="menu_hr_pe_root" action="hr_worker_type_action" sequence="30"/>
+    <menuitem id="menu_hr_pe_situation" name="Situaciones (T15)"
+        parent="menu_hr_pe_root" action="hr_situation_action" sequence="31"/>
+    <menuitem id="menu_hr_pe_reasons_leave" name="Motivos de baja (T17)"
+        parent="menu_hr_pe_root" action="hr_reasons_leave_action" sequence="32"/>
+    <menuitem id="menu_hr_pe_suspension_type" name="Tipos de suspensión (T21)"
+        parent="menu_hr_pe_root" action="hr_suspension_type_action" sequence="33"/>
+
+</odoo>

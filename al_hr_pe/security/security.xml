@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Catálogos globales con override: ver globales + los propios -->
+        <record id="hr_worker_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de trabajador: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_worker_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_situation_company_rule" model="ir.rule">
+            <field name="name">Situación: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_situation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_reasons_leave_company_rule" model="ir.rule">
+            <field name="name">Motivo de baja: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_reasons_leave"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_suspension_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de suspensión: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_suspension_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_social_insurance_company_rule" model="ir.rule">
+            <field name="name">Seguro social: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_social_insurance"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_contributions_company_rule" model="ir.rule">
+            <field name="name">Aporte: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_contributions"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_membership_company_rule" model="ir.rule">
+            <field name="name">Afiliación: global o de la compañía</field>
+            <field name="model_id" ref="model_hr_membership"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Transaccionales: estrictos por compañía -->
+        <record id="hr_period_company_rule" model="ir.rule">
+            <field name="name">Periodo: multicompañía</field>
+            <field name="model_id" ref="model_hr_period"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="hr_main_parameter_company_rule" model="ir.rule">
+            <field name="name">Parámetros principales: multicompañía</field>
+            <field name="model_id" ref="model_hr_main_parameter"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_work_suspension_company_rule" model="ir.rule">
+            <field name="name">Suspensión: multicompañía</field>
+            <field name="model_id" ref="model_hr_work_suspension"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

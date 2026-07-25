@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Estructura salarial BASE (port de hr_fields v18).
+             * schedule_pay se omite: en v19 es related readonly a
+               type_id.default_schedule_pay (monthly vía MENSUAL).
+             * rule_ids=[(5,0,0)]: anula el default _get_default_rule_ids
+               que copiaría las reglas nativas (BASIC/GROSS/NET) de
+               hr_payroll.default_structure; las reglas PE se cargan en
+               hr_salary_rule_data.xml. -->
+        <record id="base_structure" model="hr.payroll.structure">
+            <field name="name">BASE</field>
+            <field name="type_id" ref="hr.structure_type_employee"/>
+            <field name="use_worked_day_lines" eval="True"/>
+            <field name="country_id" ref="base.pe"/>
+            <field name="rule_ids" eval="[(5, 0, 0)]"/>
+        </record>
+    </data>
+</odoo>

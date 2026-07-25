@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Regímenes pensionarios (AFP / ONP). Globales: el override por compañía se gestiona en el modelo. -->
+        <record model="hr.membership" id="membership_AFP_HABIAT">
+            <field name="name">AFP HABITAT</field>
+            <field name="fixed_commision">1.47</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">1.70</field>
+            <field name="retirement_fund">10</field>
+            <field name="insurable_remuneration">11981.55</field>
+            <field name="is_afp" eval="True"/>
+        </record>
+        <record model="hr.membership" id="membership_AFP_INTEGRA">
+            <field name="name">AFP INTEGRA</field>
+            <field name="fixed_commision">1.55</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">1.70</field>
+            <field name="retirement_fund">10</field>
+            <field name="insurable_remuneration">11981.55</field>
+            <field name="is_afp" eval="True"/>
+        </record>
+        <record model="hr.membership" id="membership_AFP_PRIMA">
+            <field name="name">AFP PRIMA</field>
+            <field name="fixed_commision">1.6</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">1.70</field>
+            <field name="retirement_fund">10</field>
+            <field name="insurable_remuneration">11981.55</field>
+            <field name="is_afp" eval="True"/>
+        </record>
+        <record model="hr.membership" id="membership_AFP_PROFUTURO">
+            <field name="name">AFP PROFUTURO</field>
+            <field name="fixed_commision">1.69</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">1.70</field>
+            <field name="retirement_fund">10</field>
+            <field name="insurable_remuneration">11981.55</field>
+            <field name="is_afp" eval="True"/>
+        </record>
+        <record model="hr.membership" id="membership_ONP">
+            <field name="name">ONP</field>
+            <field name="fixed_commision">0</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">0</field>
+            <field name="retirement_fund">13</field>
+            <field name="insurable_remuneration">0</field>
+            <field name="is_afp" eval="False"/>
+        </record>
+        <record model="hr.membership" id="membership_SIN_REGIMEN">
+            <field name="name">SIN RÉGIMEN</field>
+            <field name="fixed_commision">0</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">0</field>
+            <field name="retirement_fund">0</field>
+            <field name="insurable_remuneration">0</field>
+            <field name="is_afp" eval="False"/>
+        </record>
+        <record model="hr.membership" id="membership_JUB_PROFUT_TRANSITO">
+            <field name="name">JUB. PROFUTURO TRÁNSITO</field>
+            <field name="fixed_commision">0</field>
+            <field name="mixed_commision">0</field>
+            <field name="prima_insurance">0</field>
+            <field name="retirement_fund">0</field>
+            <field name="insurable_remuneration">0</field>
+            <field name="is_afp" eval="True"/>
+        </record>
+    </data>
+</odoo>
