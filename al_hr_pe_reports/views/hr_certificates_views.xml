@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================================
+         Asistentes de documentos del empleado. Se lanzan desde el menú
+         Acción de la ficha/lista de empleados (binding_model_id), sin
+         botones en el form nativo v19.
+         ============================================================= -->
+
+    <!-- Certificado de trabajo -->
+    <record id="hr_certificate_wizard_view_form" model="ir.ui.view">
+        <field name="name">hr.certificate.wizard.form</field>
+        <field name="model">hr.certificate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Certificado de trabajo">
+                <group>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="des_empl" required="1"/>
+                        <field name="city" required="1"/>
+                    </group>
+                    <group>
+                        <field name="date_ini" required="1"/>
+                        <field name="date_fin" required="1"/>
+                        <field name="company_id"
+                               groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Imprimir certificado"
+                            name="export_certificate" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_certificate_wizard_action" model="ir.actions.act_window">
+        <field name="name">Certificado de trabajo</field>
+        <field name="res_model">hr.certificate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_employee_id': active_id}</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="group_ids"
+               eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+    <!-- Carta de retiro CTS -->
+    <record id="hr_letter_wizard_view_form" model="ir.ui.view">
+        <field name="name">hr.letter.wizard.form</field>
+        <field name="model">hr.letter.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Carta de retiro CTS">
+                <group>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="des_empl" required="1"/>
+                        <field name="city" required="1"/>
+                    </group>
+                    <group>
+                        <field name="date_fin" required="1"/>
+                        <field name="company_id"
+                               groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Imprimir carta" name="export_letter"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_letter_wizard_action" model="ir.actions.act_window">
+        <field name="name">Carta de retiro CTS</field>
+        <field name="res_model">hr.letter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_employee_id': active_id}</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="group_ids"
+               eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+    <!-- Certificado de renta de 5ta categoría (multi-empleado) -->
+    <record id="hr_fifth_certificate_wizard_view_form" model="ir.ui.view">
+        <field name="name">hr.fifth.certificate.wizard.form</field>
+        <field name="model">hr.fifth.certificate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Certificado de renta de 5ta categoría">
+                <group>
+                    <group>
+                        <field name="year"/>
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <field name="company_id"
+                               groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="employee_ids" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button string="Imprimir certificados"
+                            name="action_print" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_fifth_certificate_wizard_action"
+            model="ir.actions.act_window">
+        <field name="name">Certificado de renta de 5ta</field>
+        <field name="res_model">hr.fifth.certificate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="group_ids"
+               eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+
+</odoo>

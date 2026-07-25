@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================================== -->
+    <!-- Pago masivo bancario (hr.automate.multipayment)            -->
+    <!-- ========================================================== -->
+    <record id="hr_automate_multipayment_view_form" model="ir.ui.view">
+        <field name="name">hr.automate.multipayment.form</field>
+        <field name="model">hr.automate.multipayment</field>
+        <field name="arch" type="xml">
+            <form string="Pago masivo bancario">
+                <header>
+                    <button name="action_generate_txt" string="Generar TXT banco" type="object" class="oe_highlight"/>
+                    <button name="action_load_lines" string="Recargar líneas" type="object" invisible="state != 'draft'"/>
+                    <button name="action_done" string="Finalizar" type="object" class="oe_highlight" invisible="state != 'draft'"
+                            confirm="Al finalizar se asume que el TXT ya se generó y los montos se pagaron. ¿Desea pasar a estado finalizado?"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="PM-000000"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="format_bank" invisible="1"/>
+                            <field name="journal_id" readonly="state == 'done'"/>
+                            <field name="charge_account_id"/>
+                            <field name="payment_date" readonly="state == 'done'"/>
+                            <field name="glosa" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="payslip_run_id" invisible="not payslip_run_id"/>
+                            <field name="fortnightly_id" invisible="not fortnightly_id"/>
+                            <field name="cts_id" invisible="not cts_id"/>
+                            <field name="cts_dollars" invisible="not cts_id" readonly="state == 'done'"/>
+                            <field name="gratification_id" invisible="not gratification_id"/>
+                            <field name="vacation_id" invisible="not vacation_id"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Líneas" name="lines">
+                            <field name="line_ids" readonly="state == 'done'">
+                                <list create="0" editable="bottom">
+                                    <field name="is_txt" widget="boolean_toggle"/>
+                                    <field name="identification_id" optional="show"/>
+                                    <field name="employee_id"/>
+                                    <field name="bank_account_id"/>
+                                    <field name="bank_id"/>
+                                    <field name="reference" optional="show"/>
+                                    <field name="amount" sum="amount"/>
+                                    <field name="amount_usd" sum="amount_usd" optional="hide"/>
+                                    <field name="computable_base" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Configuración del banco" name="bank_config">
+                            <div class="text-center" invisible="format_bank">
+                                <h3>El banco del diario no tiene un formato de TXT especificado</h3>
+                            </div>
+                            <group name="bbva" string="Datos BBVA" invisible="format_bank != 'bbva'">
+                                <group>
+                                    <field name="process_type"/>
+                                    <field name="owner_validation"/>
+                                </group>
+                                <group>
+                                    <field name="process_hour" invisible="process_type != 'H'"/>
+                                    <field name="alert_indicator"/>
+                                </group>
+                            </group>
+                            <group name="bcp" string="Datos BCP" invisible="format_bank != 'bcp'">
+                                <group>
+                                    <field name="subtype"/>
+                                </group>
+                                <group>
+                                    <field name="idc_flag"/>
+                                </group>
+                            </group>
+                            <group name="interbank" string="Datos Interbank" invisible="format_bank != 'interbank'">
+                                <group>
+                                    <field name="company_code"/>
+                                    <field name="service_code"/>
+                                </group>
+                                <group>
+                                    <field name="process_type_interbank"/>
+                                    <field name="person_type"/>
+                                </group>
+                            </group>
+                            <group name="scotiabank" string="Datos Scotiabank" invisible="format_bank != 'scotiabank'">
+                                <group>
+                                    <field name="charge_way"/>
+                                    <field name="payment_way"/>
+                                </group>
+                                <group>
+                                    <field name="charge_type"/>
+                                </group>
+                            </group>
+                            <group name="banbif" string="Datos BanBif" invisible="format_bank != 'banbif'">
+                                <group>
+                                    <field name="subtype_banbif"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_automate_multipayment_view_list" model="ir.ui.view">
+        <field name="name">hr.automate.multipayment.list</field>
+        <field name="model">hr.automate.multipayment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="payment_date"/>
+                <field name="glosa" optional="hide"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_automate_multipayment_view_search" model="ir.ui.view">
+        <field name="name">hr.automate.multipayment.search</field>
+        <field name="model">hr.automate.multipayment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="glosa"/>
+                <filter name="filter_draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_done" string="Finalizado" domain="[('state', '=', 'done')]"/>
+                <filter name="group_journal" string="Diario" context="{'group_by': 'journal_id'}"/>
+                <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_automate_multipayment" model="ir.actions.act_window">
+        <field name="name">Pagos masivos bancarios</field>
+        <field name="res_model">hr.automate.multipayment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Genere los TXT de pago masivo de haberes y CTS
+            </p>
+            <p>
+                Cree los registros desde el lote de nómina, la quincena,
+                el depósito CTS, la gratificación o la liquidación
+                vacacional con el botón «Generar TXT banco».
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_multipayment"
+              name="Pagos masivos bancarios"
+              action="action_hr_automate_multipayment"
+              parent="hr_work_entry_enterprise.menu_hr_payroll_root"
+              sequence="46"
+              groups="hr_payroll.group_hr_payroll_user"/>
+
+    <!-- ========================================================== -->
+    <!-- Origen: lote de nómina (kanban — el form no tiene header)  -->
+    <!-- ========================================================== -->
+    <record id="hr_payslip_run_view_kanban_multipayment" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.multipayment</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='menu']" position="inside">
+                <button name="generate_multipayments" type="object" class="btn btn-secondary" string="Generar TXT banco"/>
+                <button name="get_multipayments_view" type="object" class="btn btn-secondary" string="Pagos bancarios"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Origen: CTS                                                -->
+    <!-- ========================================================== -->
+    <record id="hr_cts_view_form_multipayment" model="ir.ui.view">
+        <field name="name">hr.cts.form.multipayment</field>
+        <field name="model">hr.cts</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_cts_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="multipayment_count" invisible="1"/>
+                <field name="txt_generated" invisible="1"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Origen: gratificación                                      -->
+    <!-- ========================================================== -->
+    <record id="hr_gratification_view_form_multipayment" model="ir.ui.view">
+        <field name="name">hr.gratification.form.multipayment</field>
+        <field name="model">hr.gratification</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_gratification_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="multipayment_count" invisible="1"/>
+                <field name="txt_generated" invisible="1"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Origen: adelanto quincenal                                 -->
+    <!-- ========================================================== -->
+    <record id="hr_fortnightly_view_form_multipayment" model="ir.ui.view">
+        <field name="name">hr.fortnightly.form.multipayment</field>
+        <field name="model">hr.fortnightly</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_fortnightly_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="multipayment_count" invisible="1"/>
+                <field name="txt_generated" invisible="1"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated or state == 'draft'"/>
+                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Origen: liquidación vacacional                             -->
+    <!-- ========================================================== -->
+    <record id="hr_vacation_view_form_multipayment" model="ir.ui.view">
+        <field name="name">hr.vacation.form.multipayment</field>
+        <field name="model">hr.vacation</field>
+        <field name="inherit_id" ref="al_hr_pe_benefits.hr_vacation_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="multipayment_count" invisible="1"/>
+                <field name="txt_generated" invisible="1"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Parámetros principales: diarios de pago masivo             -->
+    <!-- ========================================================== -->
+    <record id="hr_main_parameter_view_form_multipayment" model="ir.ui.view">
+        <field name="name">hr.main.parameter.form.multipayment</field>
+        <field name="model">hr.main.parameter</field>
+        <field name="inherit_id" ref="al_hr_pe.hr_main_parameter_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Pagos bancarios" name="multipayment">
+                    <group>
+                        <field name="journals_banks" widget="many2many_tags"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- Formato de TXT en el banco / tipo de cuenta en la cuenta   -->
+    <!-- ========================================================== -->
+    <record id="res_bank_view_form_multipayment" model="ir.ui.view">
+        <field name="name">res.bank.form.multipayment</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bic']" position="after">
+                <field name="format_bank"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_bank_view_form_multipayment" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.multipayment</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='acc_number']" position="after">
+                <field name="type_of_account"/>
+                <field name="branch_name" invisible="type_of_account not in ('0', '1')"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

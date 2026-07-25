@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- noupdate: los ajustes de redacción del cliente sobreviven a las
+         actualizaciones del módulo. -->
+    <data noupdate="1">
+
+        <!-- Port de v18 (hr_voucher): el mail.mail artesanal se sustituye
+             por esta plantilla. El PDF de la boleta se adjunta solo vía
+             report_template_ids (render automático en send_mail) y el
+             botón de confirmación usa el enlace firmado con HMAC
+             (object._get_voucher_confirm_url()), no el id pelado. -->
+        <record id="email_template_boleta_pago" model="mail.template">
+            <field name="name">Planillas PE: Boleta de pago por correo</field>
+            <field name="model_id" ref="hr_payroll.model_hr_payslip"/>
+            <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted) }}</field>
+            <field name="email_to">{{ object.employee_id.work_email }}</field>
+            <field name="reply_to">{{ user.email_formatted }}</field>
+            <field name="subject">Boleta de pago {{ object.payslip_run_id.name or object.name or '' }}</field>
+            <field name="report_template_ids"
+                   eval="[(4, ref('al_hr_pe_reports.action_report_boleta_pago'))]"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">{{ object.employee_id.lang or object.company_id.partner_id.lang }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #222;">
+    <h2 style="margin: 0 0 10px 0; font-size: 18px; line-height: 1.2; font-weight: 600; text-align: center; text-transform: uppercase;">
+        Boleta de pago de remuneraciones
+        <br/>
+        <t t-out="object.payslip_run_id.name or ''"/>
+    </h2>
+    <hr style="border: none; border-top: 1px solid #e8e7e7;"/>
+    <p>Estimado(a) <t t-out="object.employee_id.name or ''"/>:</p>
+    <p>
+        La empresa <strong t-out="object.company_id.name or ''"/> le ha
+        emitido su boleta de pago, que encontrará adjunta a este correo.
+    </p>
+    <table style="border-collapse: collapse;">
+        <tbody>
+            <tr>
+                <td style="width: 150px; padding: 2px 0;">Documento</td>
+                <td style="width: 12px;">:</td>
+                <td>Boleta de pago de remuneraciones</td>
+            </tr>
+            <tr>
+                <td style="padding: 2px 0;">Periodo</td>
+                <td>:</td>
+                <td>
+                    <t t-out="format_date(object.date_from) or ''"/> -
+                    <t t-out="format_date(object.date_to) or ''"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 2px 0;">Trabajador</td>
+                <td>:</td>
+                <td><t t-out="object.employee_id.name or ''"/></td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="margin-top: 12px;">
+        Por favor confirme la recepción de su boleta con el siguiente
+        botón:
+    </p>
+    <div style="text-align: center; padding: 16px 0;">
+        <a t-att-href="object._get_voucher_confirm_url()"
+           style="padding: 8px 16px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px;">
+            Confirmar recepción
+        </a>
+    </div>
+    <p style="font-size: 11px; color: #777;">
+        Si tiene alguna observación sobre su boleta, comuníquese con
+        Gestión Humana.
+    </p>
+</div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

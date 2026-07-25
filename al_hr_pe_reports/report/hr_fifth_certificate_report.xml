@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================================
+         Certificado de rentas y retenciones de 5ta categoría
+         (Art. 45 D.S. 122-94-EF; R.S. 010-2006/SUNAT).
+         docs = hr.fifth.certificate.wizard (uno); un certificado por
+         página para cada empleado seleccionado. Los importes salen de
+         doc._get_certificate_values(emp). Div raíz .article + reset
+         anti-bordes; la única tabla con rejilla usa border-collapse y
+         celdas 1px negro (gotchas QWeb-PDF v19).
+         ============================================================= -->
+
+    <template id="report_fifth_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="article pe-5ta"
+                     t-att-data-oe-model="doc and doc._name"
+                     t-att-data-oe-id="doc and doc.id"
+                     t-att-data-oe-lang="doc and doc.env.context.get('lang')">
+                    <style>
+                        .pe-5ta { font-size: 12px; color: #000; }
+                        .pe-5ta table, .pe-5ta td, .pe-5ta th { border: none; }
+                        .pe-5ta p { text-align: justify; margin: 0 0 12px 0; }
+                        .pe-5ta .pe-title { text-align: center; font-weight: bold;
+                            font-size: 13px; margin: 4px 0; }
+                        .pe-5ta .pe-logo { max-height: 80px; max-width: 200px; }
+                        .pe-5ta .pe-amounts { width: 100%;
+                            border-collapse: collapse; margin: 14px 0; }
+                        .pe-5ta .pe-amounts td { border: 1px solid #000;
+                            padding: 3px 8px; }
+                        .pe-5ta .pe-amounts .pe-num { text-align: right;
+                            white-space: nowrap; width: 20%; }
+                        .pe-5ta .pe-amounts .pe-sub { padding-left: 24px; }
+                        .pe-5ta .pe-signs { width: 100%; margin-top: 70px;
+                            border-collapse: collapse; }
+                        .pe-5ta .pe-signs td { width: 50%; text-align: center;
+                            vertical-align: bottom; }
+                        .pe-5ta .pe-signs img { max-width: 220px;
+                            max-height: 90px; }
+                        .pe-5ta .pe-sign-line { border-top: 1px solid #000;
+                            width: 85%; margin: 0 auto; padding-top: 4px;
+                            font-size: 11px; }
+                    </style>
+
+                    <t t-foreach="doc.employee_ids" t-as="emp">
+                        <t t-set="vals" t-value="doc._get_certificate_values(emp)"/>
+                        <div t-att-style="'page-break-after: always;' if not emp_last else ''">
+                            <img t-if="doc.company_id.logo" class="pe-logo"
+                                 t-att-src="image_data_uri(doc.company_id.logo)"
+                                 alt="Logo"/>
+
+                            <div style="margin: 18px 0;">
+                                <div class="pe-title">
+                                    CERTIFICADO DE RENTAS Y RETENCIONES POR
+                                    RENTAS DE QUINTA CATEGORÍA
+                                </div>
+                                <div class="pe-title">
+                                    (Art. 45 D.S. N° 122-94-EF del 21/09/1994)
+                                    (R.S. N° 010-2006/SUNAT del 13/01/2006)
+                                </div>
+                                <div class="pe-title" style="margin-top: 12px;">
+                                    EJERCICIO GRAVABLE <t t-esc="doc.year"/>
+                                </div>
+                            </div>
+
+                            <p>
+                                <span t-field="doc.company_id.name"/>, con RUC N°
+                                <span t-field="doc.company_id.vat"/> y domicilio
+                                fiscal en <span t-field="doc.company_id.street"/>,
+                                debidamente representada por
+                                <t t-esc="doc.main_parameter_id.reprentante_legal_id.name"/><t t-if="doc.main_parameter_id.reprentante_legal_id.function">,
+                                    en calidad de
+                                    <t t-esc="doc.main_parameter_id.reprentante_legal_id.function"/></t>,
+                                identificado con documento N°
+                                <t t-esc="doc.main_parameter_id.reprentante_legal_id.vat"/>,
+                            </p>
+
+                            <p><strong>CERTIFICA:</strong></p>
+
+                            <p>
+                                Que a <t t-esc="emp.name"/>, identificado con
+                                <t t-esc="emp.l10n_latam_identification_type_id.name or 'documento'"/>
+                                N° <t t-esc="emp.identification_id or ''"/>, con
+                                domicilio en <t t-esc="emp.private_street or ''"/>,
+                                se le ha retenido por Impuesto a la Renta de
+                                Quinta Categoría por sus funciones en el cargo de
+                                <t t-esc="emp.job_title or ''"/>, correspondiente
+                                al ejercicio <t t-esc="doc.year"/>, los importes
+                                siguientes:
+                            </p>
+
+                            <table class="pe-amounts">
+                                <tr>
+                                    <td colspan="2"><strong>1. Renta bruta</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-sub">1.1. Sueldos, asignaciones,
+                                        gratificaciones, bonificaciones,
+                                        comisiones, etc.</td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['rem_bruta']"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-sub">1.2. Ingresos percibidos de
+                                        otros empleadores</td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['other_emp_rem']"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-sub"><strong>Remuneración bruta
+                                        total</strong></td>
+                                    <td class="pe-num"><strong>S/ <t t-esc="'%.2f' % vals['rem_total']"/></strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><strong>2. Deducción sobre rentas
+                                        de quinta categoría</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-sub">Menos: 7 UIT</td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['seven_uit']"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-sub"><strong>Total renta
+                                        imponible</strong></td>
+                                    <td class="pe-num"><strong>S/ <t t-esc="'%.2f' % vals['renta_imponible']"/></strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>3. Impuesto a la renta</strong></td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['impuesto']"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>4. Total retención efectuada</strong></td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['retencion']"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Saldo por regularizar</strong></td>
+                                    <td class="pe-num">S/ <t t-esc="'%.2f' % vals['saldo']"/></td>
+                                </tr>
+                            </table>
+
+                            <p style="margin-top: 24px;">
+                                <t t-esc="doc.company_id.city"/>,
+                                <t t-esc="doc.format_date_letters(doc.date)"/>
+                            </p>
+
+                            <table class="pe-signs">
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <img t-if="doc.main_parameter_id.signature"
+                                             t-att-src="image_data_uri(doc.main_parameter_id.signature)"
+                                             alt="Firma"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="pe-sign-line">
+                                            <t t-esc="emp.name"/><br/>
+                                            <t t-esc="emp.l10n_latam_identification_type_id.name"/>
+                                            N° <t t-esc="emp.identification_id"/><br/>
+                                            <strong>Trabajador(a)</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="pe-sign-line">
+                                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.name"/><br/>
+                                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.l10n_latam_identification_type_id.name"/>
+                                            N° <t t-esc="doc.main_parameter_id.reprentante_legal_id.vat"/><br/>
+                                            <strong>Empleador</strong>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="paperformat_fifth_certificate" model="report.paperformat">
+        <field name="name">Certificado de renta de 5ta (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">20</field>
+        <field name="margin_right">20</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_fifth_certificate" model="ir.actions.report">
+        <field name="name">Certificado de renta de 5ta categoría</field>
+        <field name="model">hr.fifth.certificate.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_hr_pe_reports.report_fifth_certificate</field>
+        <field name="report_file">al_hr_pe_reports.report_fifth_certificate</field>
+        <field name="print_report_name">'Certificado 5ta %s' % (object.year)</field>
+        <field name="paperformat_id" ref="paperformat_fifth_certificate"/>
+    </record>
+
+</odoo>

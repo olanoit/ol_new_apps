@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Plantilla de ejemplo (global: company_id vacío), basada en el
+             modelo v18 «por incremento de actividades» (D.L. 728, D.S.
+             003-97-TR Art. 57), saneada de estilos de Word y con los
+             placeholders del diccionario controlado. -->
+        <record id="contract_template_incremento"
+                model="l10n_pe.hr.contract.template">
+            <field name="name">CONTRATO POR INICIO O INCREMENTO DE ACTIVIDAD</field>
+            <field name="sequence">1</field>
+            <field name="body" type="html">
+                <div style="text-align: justify;">
+                    <p style="text-align: center; font-weight: bold; text-decoration: underline;">
+                        CONTRATO DE TRABAJO SUJETO A LA MODALIDAD POR
+                        INCREMENTO DE ACTIVIDADES
+                    </p>
+                    <p>
+                        Conste por el presente documento el
+                        <strong>Contrato de Trabajo sujeto a la modalidad POR
+                        INCREMENTO DE ACTIVIDADES</strong>, que celebran de
+                        conformidad con el artículo 57° del Texto Único
+                        Ordenado del Decreto Legislativo N° 728 — Ley de
+                        Productividad y Competitividad Laboral, aprobado por
+                        Decreto Supremo N° 003-97-TR, de una parte
+                        <strong>{{nombre_empleador}}</strong>, con RUC N°
+                        {{ruc_empleador}}, domiciliada en
+                        {{direccion_empleador}}, distrito de {{distrito}},
+                        provincia de {{provincia}}, departamento de
+                        {{departamento}}, representada por su {{cargo_RL}}
+                        {{apoderado}}, identificado con DNI N°
+                        {{dni_apoderado}}, a quien en adelante se le
+                        denominará <strong>EL EMPLEADOR</strong>; y de la otra
+                        parte <strong>{{nombre_trabajador}}</strong>, de
+                        nacionalidad {{nacionalidad_trabajador}}, con
+                        {{td_trabajador}} N° {{dni_trabajador}}, de estado
+                        civil {{estado_civil_trabajador}}, con domicilio en
+                        {{direccion_trabajador}}, a quien en adelante se le
+                        denominará <strong>EL TRABAJADOR</strong>; en los
+                        términos y condiciones de las cláusulas siguientes:
+                    </p>
+                    <p>
+                        <strong>PRIMERA — OBJETO:</strong> A fin de cubrir el
+                        incremento temporal de sus actividades, EL EMPLEADOR
+                        contrata temporalmente a EL TRABAJADOR para que se
+                        desempeñe en el cargo de <strong>{{titulo_trabajo}}</strong>
+                        en el área de {{area}}, circunstancia reconocida por el
+                        artículo 57° del D.S. 003-97-TR como causa objetiva de
+                        la presente modalidad. Las funciones del cargo son:
+                        {{funciones_empleado}}
+                    </p>
+                    <p>
+                        <strong>SEGUNDA — DURACIÓN:</strong> El presente
+                        contrato tendrá una duración de {{meses}}, iniciándose
+                        el {{fecha_inicio}} y culminando el {{fecha_fin}}. El
+                        período de prueba es de {{fecha_prueba_fin}}, conforme
+                        al artículo 10° del D.S. 003-97-TR.
+                    </p>
+                    <p>
+                        <strong>TERCERA — REMUNERACIÓN:</strong> EL TRABAJADOR
+                        percibirá una remuneración mensual de S/ {{salario}}
+                        ({{salario_letras}} {{moneda}}), de la que se
+                        deducirán las aportaciones y descuentos de ley.
+                    </p>
+                    <p>
+                        <strong>CUARTA — JORNADA:</strong> La jornada laboral
+                        será de {{horas_jornada}} horas diarias, con el
+                        refrigerio y los descansos que fije EL EMPLEADOR
+                        conforme a ley.
+                    </p>
+                    <p>
+                        <strong>QUINTA — OBLIGACIONES:</strong> EL TRABAJADOR
+                        se obliga a prestar sus servicios en forma personal y
+                        subordinada, con responsabilidad, honestidad y
+                        diligencia, cumpliendo el reglamento interno, las
+                        normas de seguridad y salud en el trabajo y las
+                        directivas de EL EMPLEADOR (artículo 9° del D.S.
+                        003-97-TR).
+                    </p>
+                    <p>
+                        <strong>SEXTA — RÉGIMEN LABORAL:</strong> En todo lo no
+                        previsto rigen las disposiciones del régimen laboral
+                        de la actividad privada.
+                    </p>
+                    <p>
+                        Firmado en {{lugar_contrato}}, el {{fecha_firma}}, en
+                        dos ejemplares de igual tenor.
+                    </p>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <table style="width: 100%; margin-top: 40px;">
+                        <tr>
+                            <td style="width: 50%; text-align: center;">
+                                ______________________________<br/>
+                                <strong>EL EMPLEADOR</strong><br/>
+                                {{apoderado}}<br/>
+                                DNI N° {{dni_apoderado}}
+                            </td>
+                            <td style="width: 50%; text-align: center;">
+                                ______________________________<br/>
+                                <strong>EL TRABAJADOR</strong><br/>
+                                {{nombre_trabajador}}<br/>
+                                {{td_trabajador}} N° {{dni_trabajador}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

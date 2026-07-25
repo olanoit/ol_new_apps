@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Códigos por banco del tipo de documento (port de
+         hr_automate_multipayment/data/hr_type_document.xml v18) sobre
+         el catálogo latam nativo. SIN noupdate: los records pertenecen
+         a otros módulos (l10n_pe / l10n_latam_base) y con noupdate=1
+         los <field> no se aplicarían en la actualización (-u). -->
+    <data>
+        <!-- DNI: BBVA L / BCP 1 / Interbank 01 / BanBif 1 -->
+        <record model="l10n_latam.identification.type" id="l10n_pe.it_DNI">
+            <field name="l10n_pe_hr_bbva_code">L</field>
+            <field name="l10n_pe_hr_bcp_code">1</field>
+            <field name="l10n_pe_hr_interbank_code">01</field>
+            <field name="l10n_pe_hr_banbif_code">1</field>
+        </record>
+        <!-- RUC: BBVA R / BCP 6 / Interbank 02 -->
+        <record model="l10n_latam.identification.type" id="l10n_pe.it_RUC">
+            <field name="l10n_pe_hr_bbva_code">R</field>
+            <field name="l10n_pe_hr_bcp_code">6</field>
+            <field name="l10n_pe_hr_interbank_code">02</field>
+        </record>
+        <!-- Pasaporte: BBVA P / BCP 4 / Interbank 05 -->
+        <record model="l10n_latam.identification.type"
+                id="l10n_latam_base.it_pass">
+            <field name="l10n_pe_hr_bbva_code">P</field>
+            <field name="l10n_pe_hr_bcp_code">4</field>
+            <field name="l10n_pe_hr_interbank_code">05</field>
+        </record>
+        <!-- Carné de extranjería (foreign ID): BBVA E / BCP 3 /
+             Interbank 03 / BanBif 3 -->
+        <record model="l10n_latam.identification.type"
+                id="l10n_latam_base.it_fid">
+            <field name="l10n_pe_hr_bbva_code">E</field>
+            <field name="l10n_pe_hr_bcp_code">3</field>
+            <field name="l10n_pe_hr_interbank_code">03</field>
+            <field name="l10n_pe_hr_banbif_code">3</field>
+        </record>
+    </data>
+</odoo>
