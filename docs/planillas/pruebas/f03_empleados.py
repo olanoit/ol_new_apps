@@ -309,9 +309,16 @@ for indice, perfil in enumerate(PLANTILLA, start=1):
             'partner_id': contacto.id,
             'bank_id': banco.id,
             'company_id': principal.id,
+            # El TXT bancario exige moneda y tipo de cuenta.
+            'currency_id': principal.currency_id.id,
+            'type_of_account': '1',       # cuenta de ahorros
         })
-    if 'primary_bank_account_id' in empleado._fields:
-        empleado.primary_bank_account_id = cuenta
+    cuenta.write({'currency_id': principal.currency_id.id,
+                  'type_of_account': '1'})
+    # v19: primary_bank_account_id es CALCULADO a partir del many2many
+    # bank_account_ids (tabla employee_bank_account_rel); escribirlo
+    # directamente no persiste nada.
+    empleado.bank_account_ids = [(4, cuenta.id)]
     if 'cts_bank_account_id' in empleado._fields:
         empleado.cts_bank_account_id = cuenta
 

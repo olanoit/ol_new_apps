@@ -4,9 +4,113 @@ Generado por `f02_reglas.py`.
 
 - Solo en BASE MG (41): AAFP_AQ, ADELANTO_AQ, AF_AQ, AONP_AQ, A_JUB_AQ, BAS_AQ, BAS_M_AQ, BONIFC, BONR_AQ, BUC, COMFI_AQ, COMI_AQ, COMMIX_AQ, CONAFOV, DES_SIN, DMED_AQ, DOM, DPAT_AQ, ESC, FAL_AQ, FER_AQ, HE25_AQ, HE35_AQ, LCGH_AQ, LSGH_AQ, MOV, NETO_AQ, ONP_AQ, OTRDSC, PREST_AQ, QUINTA_AQ, SEGI_AQ, SENF_AQ, SMAR_AQ, TAR_AQ, TAT_AQ, TDESN_AQ, TDES_AQ, TINGR_AQ, TOT_EXT_AQ, VAC_AQ
 - Solo en BASE (3): NETVACA, REMAFE, VACAFE
-- Comunes (61), de los cuales 18 con código Python distinto
+- Comunes (61), de los cuales 25 con código Python distinto
 
 ## Reglas comunes con código distinto
+
+### AAFP — Ingresos Afectos AFP
+
+**BASE (migrada v19):**
+
+```python
+if version.l10n_pe_exception in ('I','O'):
+    result=0
+else:
+    result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if version.l10n_pe_exception in ('I','O'):
+	result=0
+else:
+	result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI
+```
+
+### ADE_CTS — Adelanto de CTS
+
+**BASE (migrada v19):**
+
+```python
+if inputs['ADE_CTS'].amount >0:
+    result = inputs['ADE_CTS'].amount if inputs['ADE_CTS'] else 0
+else:
+    result = (CTS-inputs['DES_BBSS'].amount) if CTS>0 else 0
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if inputs['ADE_CTS'].amount >0:
+	result = inputs['ADE_CTS'].amount if inputs['ADE_CTS'] else 0
+else:
+	result = (CTS-inputs['DES_BBSS'].amount) if CTS>0 else 0
+```
+
+### ADE_GRA — Adelanto de Gratificacion
+
+**BASE (migrada v19):**
+
+```python
+if inputs['ADE_GRA'].amount >0:
+    result = inputs['ADE_GRA'].amount if inputs['ADE_GRA'] else 0
+else:
+    result = (GRA+BON9-inputs['DES_BBSS'].amount) if (GRA+BON9)>0 else 0
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if inputs['ADE_GRA'].amount >0:
+	result = inputs['ADE_GRA'].amount if inputs['ADE_GRA'] else 0
+else:
+	result = (GRA+BON9-inputs['DES_BBSS'].amount) if (GRA+BON9)>0 else 0
+```
+
+### ADE_VAC — Adelanto de Vacaciones
+
+**BASE (migrada v19):**
+
+```python
+if inputs['ADE_VAC'].amount >0:
+    result = inputs['ADE_VAC'].amount if inputs['ADE_VAC'] else 0
+else:
+    result = 0
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if inputs['ADE_VAC'].amount >0:
+	result = inputs['ADE_VAC'].amount if inputs['ADE_VAC'] else 0
+else:
+	result = 0
+```
 
 ### AF — Asignación Familiar
 
@@ -25,6 +129,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # 1. Condición Mandatoria: El empleado debe tener hijos y no pertenecer al régimen 'fourth-fifth'
 if employee.children > 0 and version.l10n_pe_labor_regime != 'fourth-fifth':
     
@@ -83,6 +193,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Regímenes con cálculo distinto de AFP
 regimenes_excluidos = ['construccion']
 
@@ -139,6 +255,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # ----------------------------------------------------------
 # CÁLCULO PARA CONTRATOS POR HORA (corrigiendo minutos)
 # ----------------------------------------------------------
@@ -245,6 +367,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 if version.l10n_pe_commission_type == 'flow':
 	if payslip.membership_id.name == 'ONP':
 		result = 0
@@ -291,6 +419,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 if version.l10n_pe_commission_type == 'mixed':
 	if payslip.membership_id.name == 'ONP':
 		result = 0
@@ -321,6 +455,12 @@ result = inputs['CTS_TRU'].amount if inputs['CTS_TRU'] else 0
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 total_dias = (
     worked_days.get('DLAB').number_of_days if worked_days.get('DLAB') else 0.0
 )
@@ -332,6 +472,32 @@ if version.l10n_pe_labor_regime and version.l10n_pe_labor_regime.strip().lower()
     result = round(BAS * 0.15, 2)
 else:
     result = inputs['CTS_TRU'].amount if inputs.get('CTS_TRU') else 0
+```
+
+### EPS225 — Eps 2.25%
+
+**BASE (migrada v19):**
+
+```python
+if version.social_insurance_id.name == 'EPS':
+    result = AESSALUD * 0.0225
+else:
+    result = 0
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if version.social_insurance_id.name == 'EPS':
+	result = AESSALUD * 0.0225
+else:
+	result = 0
 ```
 
 ### ESSALUD — EsSalud
@@ -354,6 +520,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Si el régimen laboral no es 'construccion civil'
 if version.l10n_pe_labor_regime and version.l10n_pe_labor_regime.strip().lower() not in ('construccion',):
     if version.l10n_pe_labor_regime not in ('fourth-fifth', 'practicante'):
@@ -371,6 +543,44 @@ else:
     result = (BAS + DOM + HE100 + VATRU + BUC + BONIFC) * 0.09
 ```
 
+### FAL — Faltas
+
+**BASE (migrada v19):**
+
+```python
+if version.wage_type == 'hourly':
+    hour_fal = worked_days['FAL'].number_of_hours
+    if version.schedule_pay == 'daily':
+        result = hour_fal * (version.wage/version.resource_calendar_id.hours_per_day)
+    elif version.schedule_pay == 'weekly':
+        result = hour_fal * (version.wage/version.resource_calendar_id.full_time_required_hours)
+    else:
+        result = hour_fal * (version.wage/30/8)
+else:
+    result = worked_days['FAL'].number_of_days * (version.wage/30)
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if version.wage_type == 'hourly':
+	hour_fal = worked_days['FAL'].number_of_hours
+	if version.schedule_pay == 'daily':
+		result = hour_fal * (version.wage/version.resource_calendar_id.hours_per_day)
+	elif version.schedule_pay == 'weekly':
+		result = hour_fal * (version.wage/version.resource_calendar_id.full_time_required_hours)
+	else:
+		result = hour_fal * (version.wage/30/8)
+else:
+	result = worked_days['FAL'].number_of_days * (version.wage/30)
+```
+
 ### GRA_TRU — Gratificación Trunca
 
 **BASE (migrada v19):**
@@ -382,6 +592,12 @@ result = inputs['GRA_TRU'].amount if inputs['GRA_TRU'] else 0
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Numero de horas a considerar
 Jornal = 40
 
@@ -506,6 +722,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Lista de regímenes excluidos
 regimenes_excluidos = ['construccion']
 
@@ -550,6 +772,12 @@ else:
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Regímenes con cálculo distinto de AFP
 regimenes_excluidos = ['construccion']
 
@@ -634,6 +862,32 @@ result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+
 result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+ESC+MOV+DOM+BUC+BONIFC
 ```
 
+### VAC — Vacaciones
+
+**BASE (migrada v19):**
+
+```python
+if inputs['VAC'].amount >0:
+    result = inputs['VAC'].amount if inputs['VAC'] else 0
+else:
+    result = (worked_days['DVAC'].number_of_days) * (version.wage/30)
+```
+
+**BASE MG (cliente, saneada):**
+
+```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
+if inputs['VAC'].amount >0:
+    result = inputs['VAC'].amount if inputs['VAC'] else 0
+else:
+    result = (worked_days['DVAC'].number_of_days) * (version.wage/30)
+```
+
 ### VATRU — Vacaciones Truncas
 
 **BASE (migrada v19):**
@@ -645,6 +899,12 @@ result = inputs['VAC_TRU'].amount if inputs['VAC_TRU'] else 0
 **BASE MG (cliente, saneada):**
 
 ```python
+# Corrección aplicada en pruebas: la regla del Excel no asignaba
+# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de
+# los practicantes), lo que abortaba el cálculo de la boleta
+# completa. Debe corregirse en el Excel de origen.
+result = 0
+
 # Días laborados
 total_dias = (
     worked_days.get('DLAB').number_of_days if worked_days.get('DLAB') else 0.0

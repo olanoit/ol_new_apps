@@ -908,12 +908,30 @@ class HrAutomateMultipayment(models.Model):
         if not origin:
             return
         if field_name in ('payslip_run_id', 'fortnightly_id'):
+            # Sin parámetros configurados se mantiene el neto nativo:
+            # generar el TXT no debe exigir configuración peruana.
+            param = self.env['hr.main.parameter'].search(
+                [('company_id', '=', origin.company_id.id)], limit=1)
+            # El neto a abonar es el de la regla peruana configurada
+            # (NETO / neto quincenal). ``slip.net_wage`` es el neto
+            # NATIVO, que en la planilla peruana vale 0: lo calcula la
+            # categoría NET de Odoo, que estas estructuras no usan.
+            net_rule = param.net_fortnightly_sr_id \
+                if field_name == 'fortnightly_id' else param.net_to_pay_sr_id
             for slip in origin.slip_ids:
+                amount = slip.net_wage
+                if net_rule:
+                    amount = sum(slip.line_ids.filtered(
+                        lambda line, r=net_rule:
+                        line.salary_rule_id == r
+                        or line.code == r.code).mapped('total'))
                 yield {
                     'employee': slip.employee_id,
                     'account': self._get_wage_account(slip.employee_id),
-                    'amount': slip.net_wage,
-                    'reference': slip.number or '',
+                    'amount': amount,
+                    # v18 numeraba la boleta en ``number``; v19 eliminó
+                    # ese campo y deja solo ``name``.
+                    'reference': slip.name or '',
                 }
         elif field_name == 'gratification_id':
             for line in origin.line_ids:

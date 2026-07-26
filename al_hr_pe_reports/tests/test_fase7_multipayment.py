@@ -437,3 +437,119 @@ class TestFase7MultipaymentFormats(TransactionCase):
             make_header(cts_dollars=True), [make_line(amount=500.0)]))[0]
         self.assertEqual(usd[197], '2')
         self.assertEqual(usd[198:212], '         50000')
+
+
+@tagged('post_install', '-at_install')
+class TestFase7MultipaymentOrigen(TransactionCase):
+    """Extracción de las líneas de pago desde el lote de planilla.
+
+    Regresión: ``_iter_origin_lines`` leía ``slip.number``, campo que la
+    v18 tenía y la v19 eliminó, de modo que generar el TXT de haberes
+    desde un lote reventaba con AttributeError.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env['res.company'].create({
+            'name': 'PE TXT origen SAC',
+            'country_id': cls.env.ref('base.pe').id,
+        })
+        cls.env = cls.env(context=dict(
+            cls.env.context, allowed_company_ids=cls.company.ids))
+        cls.bank = cls.env['res.bank'].create({
+            'name': 'Banco de prueba', 'format_bank': 'bcp'})
+        cls.employee = cls.env['hr.employee'].create({
+            'names': 'Ana', 'last_name': 'Ruiz', 'm_last_name': 'Paz',
+            'company_id': cls.company.id,
+            'date_version': date(2025, 1, 1),
+            'contract_date_start': date(2025, 1, 1),
+            'wage': 3000.0,
+        })
+        partner = cls.employee.work_contact_id or cls.env['res.partner'].create(
+            {'name': cls.employee.name, 'company_id': cls.company.id})
+        cls.employee.work_contact_id = partner
+        cls.account = cls.env['res.partner.bank'].create({
+            'acc_number': '19100000001',
+            'partner_id': partner.id,
+            'bank_id': cls.bank.id,
+            'company_id': cls.company.id,
+        })
+        cls.employee.primary_bank_account_id = cls.account
+        cls.lote = cls.env['hr.payslip.run'].create({
+            'name': 'Lote TXT origen',
+            'date_start': date(2026, 4, 1),
+            'date_end': date(2026, 4, 30),
+            'company_id': cls.company.id,
+        })
+        cls.slip = cls.env['hr.payslip'].create({
+            'name': 'Boleta TXT origen',
+            'employee_id': cls.employee.id,
+            'version_id': cls.employee.version_id.id,
+            'date_from': date(2026, 4, 1),
+            'date_to': date(2026, 4, 30),
+            'payslip_run_id': cls.lote.id,
+        })
+
+    def test_neto_peruano_no_nativo(self):
+        """El abono sale de la regla NETO peruana, no de net_wage.
+
+        Regresión: ``slip.net_wage`` es el neto NATIVO (categoría NET de
+        Odoo), que las estructuras peruanas no usan, así que el TXT
+        bancario salía con importes en cero.
+        """
+        estructura = self.env['hr.payroll.structure'].create({
+            'name': 'Estructura TXT neto',
+            'type_id': self.env.ref('al_hr_pe.base_structure').type_id.id,
+        })
+        regla_neto = self.env['hr.salary.rule'].create({
+            'name': 'Neto a pagar', 'code': 'NETO',
+            'category_id': self.env.ref('al_hr_pe.ING').id,
+            'struct_id': estructura.id, 'sequence': 500,
+            'amount_select': 'fix', 'amount_fix': 1234.56,
+        })
+        self.env['hr.main.parameter'].create({
+            'company_id': self.company.id,
+            'net_to_pay_sr_id': regla_neto.id,
+        })
+        self.slip.struct_id = estructura
+        self.slip.compute_sheet()
+
+        journal = self.env['account.journal'].create({
+            'name': 'Banco neto', 'type': 'bank', 'code': 'BNET',
+            'company_id': self.company.id,
+        })
+        pago = self.env['hr.automate.multipayment'].create({
+            'company_id': self.company.id,
+            'journal_id': journal.id,
+            'payment_date': date(2026, 5, 5),
+            'payslip_run_id': self.lote.id,
+            'subtype': 'G',
+            'subtype_banbif': '4',
+        })
+        linea = list(pago._iter_origin_lines())[0]
+        self.assertAlmostEqual(linea['amount'], 1234.56, places=2)
+        self.assertNotAlmostEqual(
+            linea['amount'], self.slip.net_wage, places=2,
+            msg='debe usarse la regla peruana, no el neto nativo')
+
+    def test_lineas_origen_del_lote(self):
+        journal = self.env['account.journal'].create({
+            'name': 'Banco TXT', 'type': 'bank', 'code': 'BTXT',
+            'company_id': self.company.id, 'bank_id': self.bank.id,
+        })
+        pago = self.env['hr.automate.multipayment'].create({
+            'company_id': self.company.id,
+            'journal_id': journal.id,
+            'payment_date': date(2026, 5, 5),
+            'payslip_run_id': self.lote.id,
+            'subtype': 'G',
+            'subtype_banbif': '4',
+        })
+        lineas = list(pago._iter_origin_lines())
+        self.assertEqual(len(lineas), 1)
+        linea = lineas[0]
+        self.assertEqual(linea['employee'], self.employee)
+        self.assertEqual(linea['account'], self.account)
+        # La referencia es el nombre de la boleta (v19 no tiene number).
+        self.assertEqual(linea['reference'], self.slip.name)

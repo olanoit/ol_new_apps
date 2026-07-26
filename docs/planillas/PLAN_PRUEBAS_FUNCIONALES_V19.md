@@ -159,13 +159,14 @@ de los usuarios de rol, y elaboración del informe final de hallazgos.
 | 3 | ✅ | 13/13 | — |
 | 4 | ✅ | 11/11 | Turnos que cruzan medianoche mal leídos (todo el mes como "marcación incompleta") |
 | 5 | ✅ | 21/21 | Faltaban los parámetros de quincena y el campo `rate` de los días trabajados; 3 reglas del cliente sin rama por defecto |
-| 6 | ⬜ | | |
-| 7 | ⬜ | | |
-| 8 | ⬜ | | |
-| 9 | ⬜ | | |
+| 6 | ✅ | 24/24 | Los motores de beneficios comparan la **regla concreta** de los parámetros: con otra estructura salían vacíos |
+| 7 | ✅ | 10/10 | El Excel no trae cuentas contables: se configuran por categoría |
+| 8 | ✅ | 13/13 | El TXT bancario usaba `slip.number` (no existe en v19) y `slip.net_wage` (0 en Perú); el `.rem` de PLAME salía vacío sin códigos SUNAT |
+| 9 | ✅ | 12/12 | — |
 
-Suite automática tras los arreglos: **131 tests, 0 fallos**
-(al_hr_pe 21, benefits 13, account 5, attendance 43, reports 20, import 29).
+**145 comprobaciones funcionales en verde.**
+Suite automática tras los arreglos: **135 tests, 0 fallos**
+(al_hr_pe 21, benefits 13, account 5, attendance 43, reports 24, import 29).
 
 ## Hallazgos y arreglos
 
@@ -207,6 +208,16 @@ Suite automática tras los arreglos: **131 tests, 0 fallos**
    `amount_rate`, y los tipos PE pasan a declararlo (HE25 = 1.25,
    HE35 = 1.35, HE100 = 2.0), que es además lo correcto para el motor
    nativo.
+7. **TXT bancario con el número de boleta de la v18**
+   (`al_hr_pe_reports`). `_iter_origin_lines` leía `slip.number`, campo
+   que v19 eliminó: generar el TXT de haberes desde un lote reventaba
+   con `AttributeError`. Ahora usa `slip.name`.
+8. **TXT bancario con importes en cero** (`al_hr_pe_reports`). El abono
+   salía de `slip.net_wage`, el neto **nativo** (categoría NET de Odoo),
+   que la planilla peruana no usa: el neto lo calcula la regla `NETO`.
+   Ahora toma la regla configurada en los parámetros
+   (`net_to_pay_sr_id` / `net_fortnightly_sr_id`), con el neto nativo
+   como respaldo si no hay parámetros.
 
 ### En los datos del cliente (a corregir en origen)
 
@@ -222,3 +233,27 @@ Suite automática tras los arreglos: **131 tests, 0 fallos**
    (`informe_diferencias_reglas.md`): las del cliente añaden el régimen
    de construcción civil y conceptos propios (BUC, BONIFC, CONAFOV,
    DES_SIN, ESC, MOV, OTRDSC, DOM).
+4. **Sin cuentas contables ni códigos SUNAT**. El Excel no trae ninguna
+   de las dos cosas: las cuentas se configuran por categoría (fase 7) y
+   el concepto de la Tabla 22 se hereda de la regla homónima de `BASE`
+   (fase 2). Quedan 35 códigos sin equivalente —subtotales, bases de
+   cálculo y los conceptos propios del cliente—, que deben mapearse a
+   mano si han de aparecer en PLAME.
+
+### Configuración que v19 hace distinto (a tener en cuenta al implantar)
+
+* Toda `hr.payroll.structure` nueva nace con 8 reglas genéricas de Odoo
+  (BASIC/GROSS/NET…) que hay que retirar de una planilla peruana.
+* Los `hr.payslip.input.type` están ligados a estructuras concretas
+  (`struct_ids`): sin habilitarlos en la estructura nueva, toda novedad
+  se rechaza al importarla.
+* `primary_bank_account_id` del empleado es **calculado**: la cuenta de
+  haberes se enlaza en el many2many `bank_account_ids`.
+* `account.journal.bank_id` es un related de su cuenta bancaria; el
+  formato de banco del TXT se toma de ahí.
+* El TXT exige moneda y tipo de cuenta en cada `res.partner.bank`, y la
+  cuenta de cargo BCP debe tener 13 dígitos.
+* El estado confirmado de una boleta es `validated`, no `done`.
+* Los parámetros principales admiten **una sola regla por concepto**: si
+  se usan varias estructuras hay que decidir a cuál apuntan, o los
+  motores de beneficios descartan a los trabajadores en silencio.

@@ -157,8 +157,10 @@ CONFIG_INPUTS = {
     'fortnightly_input_id': 'ADE_QUIN',
     'hr_input_for_results': 'UTIL',
 }
-# Reglas de aportes AFP: alimentan el bloque AFP del asiento contable.
-AFP_RULES = ('AAFP', 'A_JUB', 'SEGI', 'COMI', 'COMFI', 'COMMIX')
+# Aportes que van a la cuenta de la AFP en el asiento contable. OJO:
+# AAFP es la BASE afecta (no un aporte) y COMI son las comisiones de
+# venta del trabajador (un ingreso), no la comisión de la AFP.
+AFP_RULES = ('A_JUB', 'SEGI', 'COMFI', 'COMMIX')
 TAREAJE_WET = {
     'tareaje_wet_dlab_id': 'DLAB', 'tareaje_wet_dom_id': 'DOM',
     'tareaje_wet_fer_id': 'FER', 'tareaje_wet_fal_id': 'FAL',
@@ -208,8 +210,9 @@ for compania in (principal, secundaria):
         'contributions_emp_categories': [(6, 0, category('APOR_EMP').ids)],
         'afp_rule_ids': [(6, 0, rules(AFP_RULES, base).ids)],
         # Promedios de variables del motor de beneficios
-        'commission_sr_ids': [(6, 0, rules(
-            ('COMI', 'COMFI', 'COMMIX'), base).ids)],
+        # Remuneración variable para los promedios de CTS/gratificación:
+        # solo las comisiones de venta del trabajador.
+        'commission_sr_ids': [(6, 0, rules(('COMI',), base).ids)],
         'bonus_sr_ids': [(6, 0, rules(('BONR', 'BONI_EX'), base).ids)],
         'otros_sr_ids': [(6, 0, rules(('MOV', 'ESC'), base).ids)],
         'lack_sr_ids': [(6, 0, rules(('FAL',), base).ids)],

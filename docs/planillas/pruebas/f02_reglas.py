@@ -141,6 +141,67 @@ check(len(quincena_struct.rule_ids) == 33,
       '%d reglas _AQ' % len(quincena_struct.rule_ids))
 
 # --------------------------------------------------------------------- #
+# 3b-bis. HALLAZGO: reglas sin rama por defecto                         #
+# --------------------------------------------------------------------- #
+# Varias reglas de AFP del Excel encadenan ramas por nombre de afiliación
+# (ONP, HABITAT, INTEGRA, PRIMA, PROFUTURO, JUB PROFUT TRANSITO) sin
+# rama final: con la afiliación "SIN RÉGIMEN" de los practicantes,
+# ``result`` nunca se asigna y aborta el cálculo de la boleta COMPLETA,
+# no solo de esa línea. Se detectan por no asignar result en el nivel
+# superior del código y se completan con "result = 0" (una asignación
+# previa es inocua: cualquier rama que sí asigne la sobrescribe).
+CABECERA_CORRECCION = (
+    '# Corrección aplicada en pruebas: la regla del Excel no asignaba\n'
+    '# result en todos los caminos (p. ej. afiliación "SIN RÉGIMEN" de\n'
+    '# los practicantes), lo que abortaba el cálculo de la boleta\n'
+    '# completa. Debe corregirse en el Excel de origen.\n'
+    'result = 0\n\n')
+
+
+def asigna_result_en_nivel_superior(codigo):
+    for linea in (codigo or '').splitlines():
+        if linea.startswith(('result =', 'result=')):
+            return True
+    return False
+
+
+sin_rama_defecto = []
+for regla in env['hr.salary.rule'].search([
+        ('struct_id', 'in', (mg | quincena_struct).ids)]):
+    codigo = regla.amount_python_compute or ''
+    if 'result' in codigo and not asigna_result_en_nivel_superior(codigo):
+        regla.amount_python_compute = CABECERA_CORRECCION + codigo
+        sin_rama_defecto.append(regla.code)
+check(True, 'Reglas del Excel sin rama por defecto, completadas',
+      ', '.join(sorted(sin_rama_defecto)) or 'ninguna')
+
+# --------------------------------------------------------------------- #
+# 3b-ter. Código SUNAT de PLAME                                         #
+# --------------------------------------------------------------------- #
+# El Excel del cliente no trae el concepto remunerativo de la Tabla 22,
+# sin el cual el .rem de PLAME sale vacío. Se hereda de la regla
+# homónima de la estructura BASE migrada, que sí lo declara.
+sunat_por_codigo = {
+    regla.code: regla.sunat_code
+    for regla in env['hr.salary.rule'].search([('struct_id', '=', base.id)])
+    if regla.sunat_code}
+heredados, sin_sunat = 0, []
+for regla in env['hr.salary.rule'].search([
+        ('struct_id', 'in', (mg | quincena_struct).ids)]):
+    codigo_base = regla.code[:-3] if regla.code.endswith('_AQ') else regla.code
+    sunat = sunat_por_codigo.get(codigo_base)
+    if sunat:
+        regla.sunat_code = sunat
+        heredados += 1
+    elif not regla.sunat_code:
+        sin_sunat.append(regla.code)
+check(heredados > 40, 'Código SUNAT (Tabla 22) heredado de BASE',
+      '%d reglas con concepto PLAME, %d sin equivalente'
+      % (heredados, len(sin_sunat)))
+if sin_sunat:
+    print('  !! sin código SUNAT: %s' % ', '.join(sorted(sin_sunat)))
+
+# --------------------------------------------------------------------- #
 # 3c. Inputs habilitados en las estructuras nuevas                      #
 # --------------------------------------------------------------------- #
 # Los tipos de input peruanos nacen ligados a la estructura BASE; sin
@@ -152,6 +213,71 @@ inputs_pe.write({'struct_ids': [(4, mg.id), (4, quincena_struct.id)]})
 sin_habilitar = inputs_pe.filtered(lambda t: mg not in t.struct_ids)
 check(not sin_habilitar, 'Inputs peruanos habilitados en BASE MG',
       '%d tipos de input' % len(inputs_pe))
+
+# --------------------------------------------------------------------- #
+# 3d. Parámetros apuntando a las reglas de la estructura en uso         #
+# --------------------------------------------------------------------- #
+# Los motores de beneficios comparan la REGLA concreta configurada en
+# los parámetros (p. ej. ``param.basic_sr_id``) contra las líneas de la
+# boleta: si el parámetro apunta a la regla BAS de BASE y la boleta usa
+# la de BASE MG, el trabajador se descarta en silencio (provisiones,
+# quinta categoría y utilidades salen vacías). Los parámetros admiten
+# una sola regla por concepto, así que se apuntan a la estructura que
+# realmente se usa para calcular.
+REGLAS_PARAMETRO = {
+    'basic_sr_id': 'BAS',
+    'household_allowance_sr_id': 'AF',
+    'extra_hours_sr_id': 'HE25',
+    'vacation_sr_id': 'VAC',
+    'gratification_sr_id': 'GRA',
+    'net_to_pay_sr_id': 'NETO',
+    'rule_total_income': 'TINGR',
+    'insurable_remuneration': 'RAU',
+    'fifth_afect_sr_id': 'ROAQ',
+    'fifth_extr_sr_id': 'REAQ',
+    'proy_afect_sr_id': 'PIAQ',
+}
+CONJUNTOS_PARAMETRO = {
+    # Aportes a la cuenta de la AFP: AAFP es la base afecta y COMI son
+    # comisiones de venta (ingreso), ninguna de las dos es un aporte.
+    'afp_rule_ids': ('A_JUB', 'SEGI', 'COMFI', 'COMMIX'),
+    # Variable que promedia CTS/gratificación: comisiones de venta.
+    'commission_sr_ids': ('COMI',),
+    'bonus_sr_ids': ('BONR', 'BONI_EX'),
+    'otros_sr_ids': ('MOV', 'ESC'),
+    'lack_sr_ids': ('FAL',),
+}
+
+
+def regla_mg(code):
+    return env['hr.salary.rule'].search([
+        ('code', '=', code), ('struct_id', '=', mg.id)], limit=1)
+
+
+faltantes = []
+for parametro in env['hr.main.parameter'].search([]):
+    vals = {}
+    for campo, code in REGLAS_PARAMETRO.items():
+        encontrada = regla_mg(code)
+        if encontrada:
+            vals[campo] = encontrada.id
+        else:
+            faltantes.append(code)
+    for campo, codes in CONJUNTOS_PARAMETRO.items():
+        ids = env['hr.salary.rule'].search([
+            ('code', 'in', list(codes)), ('struct_id', '=', mg.id)]).ids
+        if ids:
+            vals[campo] = [(6, 0, ids)]
+    parametro.write(vals)
+
+principal_param = env['hr.main.parameter'].get_main_parameter(principal)
+check(principal_param.basic_sr_id.struct_id == mg,
+      'Parámetros apuntan a las reglas de BASE MG',
+      'BAS id=%s, %d reglas AFP' % (principal_param.basic_sr_id.id,
+                                    len(principal_param.afp_rule_ids)))
+if faltantes:
+    print('  !! códigos no encontrados en BASE MG: %s'
+          % ', '.join(sorted(set(faltantes))))
 
 # --------------------------------------------------------------------- #
 # 4. Calidad del código importado                                       #
