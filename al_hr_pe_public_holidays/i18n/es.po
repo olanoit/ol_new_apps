@@ -1,0 +1,82 @@
+# Translation of Peru Holidays for Odoo
+# This file contains the translation of the Peru public holiday names.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-05-25 00:00+0000\n"
+"Last-Translator: <noreply@pokutsoft.com>\n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: peru_public_holidays
+msgid "Año Nuevo"
+msgstr "Año Nuevo"
+
+#. module: peru_public_holidays
+msgid "Jueves Santo"
+msgstr "Jueves Santo"
+
+#. module: peru_public_holidays
+msgid "Viernes Santo"
+msgstr "Viernes Santo"
+
+#. module: peru_public_holidays
+msgid "Domingo de Resurrección"
+msgstr "Domingo de Resurrección"
+
+#. module: peru_public_holidays
+msgid "Día del Trabajo"
+msgstr "Día del Trabajo"
+
+#. module: peru_public_holidays
+msgid "Batalla de Arica y Día de la Bandera"
+msgstr "Batalla de Arica y Día de la Bandera"
+
+#. module: peru_public_holidays
+msgid "San Pedro y San Pablo"
+msgstr "San Pedro y San Pablo"
+
+#. module: peru_public_holidays
+msgid "Día de la Fuerza Aérea del Perú"
+msgstr "Día de la Fuerza Aérea del Perú"
+
+#. module: peru_public_holidays
+msgid "Día de la Independencia"
+msgstr "Día de la Independencia"
+
+#. module: peru_public_holidays
+msgid "Día de la Gran Parada Militar"
+msgstr "Día de la Gran Parada Militar"
+
+#. module: peru_public_holidays
+msgid "Batalla de Junín"
+msgstr "Batalla de Junín"
+
+#. module: peru_public_holidays
+msgid "Santa Rosa de Lima"
+msgstr "Santa Rosa de Lima"
+
+#. module: peru_public_holidays
+msgid "Combate de Angamos"
+msgstr "Combate de Angamos"
+
+#. module: peru_public_holidays
+msgid "Todos Los Santos"
+msgstr "Todos Los Santos"
+
+#. module: peru_public_holidays
+msgid "Inmaculada Concepción"
+msgstr "Inmaculada Concepción"
+
+#. module: peru_public_holidays
+msgid "Batalla de Ayacucho"
+msgstr "Batalla de Ayacucho"
+
+#. module: peru_public_holidays
+msgid "Navidad del Señor"
+msgstr "Navidad del Señor"

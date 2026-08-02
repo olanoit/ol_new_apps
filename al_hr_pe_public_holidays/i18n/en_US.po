@@ -1,0 +1,82 @@
+# Translation of Peru Holidays for Odoo
+# This file contains the translation of the Peru public holiday names.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-05-25 00:00+0000\n"
+"Last-Translator: <noreply@pokutsoft.com>\n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: peru_public_holidays
+msgid "Año Nuevo"
+msgstr "New Year's Day"
+
+#. module: peru_public_holidays
+msgid "Jueves Santo"
+msgstr "Maundy Thursday"
+
+#. module: peru_public_holidays
+msgid "Viernes Santo"
+msgstr "Good Friday"
+
+#. module: peru_public_holidays
+msgid "Domingo de Resurrección"
+msgstr "Easter Sunday"
+
+#. module: peru_public_holidays
+msgid "Día del Trabajo"
+msgstr "Labor Day"
+
+#. module: peru_public_holidays
+msgid "Batalla de Arica y Día de la Bandera"
+msgstr "Battle of Arica and Flag Day"
+
+#. module: peru_public_holidays
+msgid "San Pedro y San Pablo"
+msgstr "Saint Peter and Saint Paul's Day"
+
+#. module: peru_public_holidays
+msgid "Día de la Fuerza Aérea del Perú"
+msgstr "Peruvian Air Force Day"
+
+#. module: peru_public_holidays
+msgid "Día de la Independencia"
+msgstr "Independence Day"
+
+#. module: peru_public_holidays
+msgid "Día de la Gran Parada Militar"
+msgstr "Great Military Parade Day"
+
+#. module: peru_public_holidays
+msgid "Batalla de Junín"
+msgstr "Battle of Junín Day"
+
+#. module: peru_public_holidays
+msgid "Santa Rosa de Lima"
+msgstr "Rose of Lima Day"
+
+#. module: peru_public_holidays
+msgid "Combate de Angamos"
+msgstr "Battle of Angamos Day"
+
+#. module: peru_public_holidays
+msgid "Todos Los Santos"
+msgstr "All Saints' Day"
+
+#. module: peru_public_holidays
+msgid "Inmaculada Concepción"
+msgstr "Immaculate Conception"
+
+#. module: peru_public_holidays
+msgid "Batalla de Ayacucho"
+msgstr "Battle of Ayacucho Day"
+
+#. module: peru_public_holidays
+msgid "Navidad del Señor"
+msgstr "Christmas Day"

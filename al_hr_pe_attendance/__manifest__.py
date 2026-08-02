@@ -32,7 +32,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '3.20260722',
+    'version': '4.20260802',
     'license': 'LGPL-3',
     'depends': [
         'al_hr_pe',
@@ -41,6 +41,11 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
         'hr_attendance',
         'hr_payroll_attendance',
         'hr_holidays',
+        # El tareaje clasifica el día como feriado leyendo los descansos
+        # globales del calendario (`_get_public_holidays`): sin el
+        # calendario de feriados peruanos, todo feriado se contaría como
+        # jornada ordinaria y no se aplicaría la sobretasa del 100 %.
+        'al_hr_pe_public_holidays',
     ],
     'data': [
         'security/security.xml',

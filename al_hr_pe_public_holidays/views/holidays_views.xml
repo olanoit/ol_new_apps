@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pe_public_holiday_list" model="ir.ui.view">
+        <field name="name">pe.public.holiday.list</field>
+        <field name="model">pe.public.holiday</field>
+        <field name="arch" type="xml">
+            <list string="Peru Public Holidays" decoration-info="holiday_type=='religious'" decoration-warning="not is_full_day">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="holiday_type"/>
+                <field name="is_full_day"/>
+                <field name="year"/>
+                <field name="work_entry_type_id" optional="show"/>
+                <field name="leave_count" string="Calendarios" optional="show"/>
+                <header>
+                    <button name="action_apply_to_calendars" type="object"
+                            string="Aplicar a los calendarios"
+                            class="btn-primary"/>
+                </header>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pe_public_holiday_form" model="ir.ui.view">
+        <field name="name">pe.public.holiday.form</field>
+        <field name="model">pe.public.holiday</field>
+        <field name="arch" type="xml">
+            <form string="Public Holiday">
+                <header>
+                    <button name="action_apply_to_calendars" type="object" string="Apply to Calendars" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_leaves" type="object"
+                                class="oe_stat_button" icon="fa-calendar"
+                                invisible="not leave_count">
+                            <field name="leave_count" widget="statinfo"
+                                   string="Calendarios"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="holiday_type"/>
+                        </group>
+                        <group>
+                            <field name="is_full_day"/>
+                            <field name="half_day_starts_at" invisible="is_full_day"/>
+                            <field name="year" readonly="1"/>
+                            <field name="work_entry_type_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pe_public_holiday_search" model="ir.ui.view">
+        <field name="name">pe.public.holiday.search</field>
+        <field name="model">pe.public.holiday</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="year"/>
+                <filter name="upcoming" string="Upcoming" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="national" string="National" domain="[('holiday_type', '=', 'national')]"/>
+                <filter name="religious" string="Religious" domain="[('holiday_type', '=', 'religious')]"/>
+                <filter name="half_day" string="Half Day" domain="[('is_full_day', '=', False)]"/>
+                <group>
+                    <filter name="group_year" string="Year" context="{'group_by': 'year'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'holiday_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pe_public_holiday" model="ir.actions.act_window">
+        <field name="name">Peru Public Holidays</field>
+        <field name="res_model">pe.public.holiday</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_year': 1}</field>
+    </record>
+
+    <menuitem id="menu_pe_public_holiday_root"
+              name="Peru Holidays"
+              parent="hr_holidays.menu_hr_holidays_root"
+              sequence="50"/>
+
+    <menuitem id="menu_pe_public_holiday"
+              name="Holidays"
+              parent="menu_pe_public_holiday_root"
+              action="action_pe_public_holiday"
+              sequence="10"/>
+</odoo>
