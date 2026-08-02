@@ -1,0 +1,29 @@
+<odoo>
+    <!-- Vista de formulario del popup -->
+    <record id="view_account_letter_type_form" model="ir.ui.view">
+        <field name="name">l10n_pe.letter.type.wizard.form</field>
+        <field name="model">l10n_pe.letter.type.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de letra" class="oe_form_configuration_form">
+                <sheet>
+                    <group>
+                        <field name="letter_type" widget="radio"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_multi_redeemed" string="Generar"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!-- Acción de ventana emergente -->
+    <record id="action_account_letter_type_form" model="ir.actions.act_window">
+        <field name="name">Tipo de letra</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">l10n_pe.letter.type.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

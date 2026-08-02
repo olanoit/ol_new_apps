@@ -1,0 +1,26 @@
+<odoo>
+    <!-- Vista de Lista -->
+    <record id="account_configuration_list" model="ir.ui.view">
+        <field name="name">l10n_pe.letter.account.config.list</field>
+        <field name="model">l10n_pe.letter.account.config</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas de letras" editable="bottom">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="account_type" required="1"/>
+                <field name="document_type" required="1"/>
+                <field name="letter_type" required="1"/>
+                <field name="group_id" options="{'no_create': True, 'no_open': True, 'no_quick_create': True, 'no_create_edit': True}"
+                       required="1"/>
+                <field name="account_id" options="{'no_create': True, 'no_open': True, 'no_quick_create': True, 'no_create_edit': True}"
+                       required="1"/>
+                <field name="currency_id" required="1"/>
+            </list>
+        </field>
+    </record>
+    <!-- Acción de ventana -->
+    <record id="action_account_configuration" model="ir.actions.act_window">
+        <field name="name">Configuración de cuentas de letras</field>
+        <field name="res_model">l10n_pe.letter.account.config</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

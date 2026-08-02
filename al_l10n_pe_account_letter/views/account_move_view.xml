@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Herencia de formulario -->
+        <record id="view_account_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='quick_encoding_vals']" position="after">
+                    <field name="l10n_pe_letter_id" invisible="1"/>
+                    <field name="l10n_pe_letter_ids" invisible="1"/>
+                    <field name="l10n_pe_letter_redeemed_state" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//page[@id='aml_tab']//list//field[@name='partner_id']" position="after">
+                    <field name="l10n_pe_partner_vat" string="RUC" optional="show"/>
+                </xpath>
+                <xpath expr="//button[@name='button_draft']" position="after">
+                    <button name="action_open_letter"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="l10n_pe_letter_redeemed_state == 'not_redeemed' or l10n_pe_letter_id == False">
+                        <field name="l10n_pe_letter_name" widget="statinfo" string="Canje"/>
+                    </button>
+                    <button name="action_open_letters"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="l10n_pe_letter_ids == []">
+                        <field name="l10n_pe_letter_name" widget="statinfo" string="Canjes"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+        <!-- Herencia de la vista lista base de facturas (Clientes y Proveedores) -->
+        <record id="view_account_invoice_tree_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.list.inherit.letter</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='status_in_payment']" position="after">
+                    <field name="l10n_pe_letter_redeemed_state" widget="badge" optional="hide"
+                           decoration-muted="l10n_pe_letter_redeemed_state == 'not_redeemed'"
+                           decoration-success="l10n_pe_letter_redeemed_state == 'redeemed'"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- Menú: Perú ▸ Letras de cambio -->
+    <menuitem id="menu_account_letter_root" name="Letras de cambio"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_user"
+              sequence="56"/>
+
+    <!-- Clientes -->
+    <menuitem id="menu_account_letter_clientes" name="Clientes"
+              parent="menu_account_letter_root"
+              sequence="10"/>
+    <menuitem id="menu_account_letter_canje_clientes"
+              name="Canje de letras"
+              parent="menu_account_letter_clientes"
+              action="account_letter_action_clientes"
+              sequence="10"/>
+    <menuitem id="menu_account_letter_canje_masivo_clientes"
+              name="Canje de letras masiva"
+              parent="menu_account_letter_clientes"
+              action="account_massive_letter_action_clientes"
+              sequence="20"/>
+    <menuitem id="menu_account_move_letter_clientes"
+              name="Letras"
+              parent="menu_account_letter_clientes"
+              action="account_move_letter_action_clientes"
+              sequence="30"/>
+    <menuitem id="menu_account_massive_letter_history_clientes"
+              name="Historial de canje"
+              parent="menu_account_letter_clientes"
+              action="account_letter_action_historial_clientes"
+              sequence="40"/>
+
+    <!-- Proveedores -->
+    <menuitem id="menu_account_letter_proveedores" name="Proveedores"
+              parent="menu_account_letter_root"
+              sequence="20"/>
+    <menuitem id="menu_account_letter_canje_proveedores"
+              name="Canje de letras"
+              parent="menu_account_letter_proveedores"
+              action="account_letter_action_proveedores"
+              sequence="10"/>
+    <menuitem id="menu_account_letter_canje_masivo_proveedores"
+              name="Canje de letras masiva"
+              parent="menu_account_letter_proveedores"
+              action="account_massive_letter_action_proveedores"
+              sequence="20"/>
+    <menuitem id="menu_account_move_letter_proveedores"
+              name="Letras"
+              parent="menu_account_letter_proveedores"
+              action="account_move_letter_action_proveedores"
+              sequence="30"/>
+    <menuitem id="menu_account_massive_letter_history_proveedores"
+              name="Historial de canje"
+              parent="menu_account_letter_proveedores"
+              action="account_letter_action_massive_proveedores"
+              sequence="40"/>
+
+    <!-- Configuración: Perú ▸ Configuración ▸ Cuentas de letras -->
+    <menuitem id="menu_account_letter_configuracion"
+              name="Cuentas de letras"
+              parent="al_account_base.al_l10n_pe_config"
+              action="action_account_configuration"
+              groups="account.group_account_manager"
+              sequence="40"/>
+
+    <!-- ================================================================ -->
+    <!-- Mismos accesos, replicados dentro de la app Contabilidad          -->
+    <!-- (Clientes ▸ Letras / Proveedores ▸ Letras / Configuración).       -->
+    <!-- ================================================================ -->
+
+    <!-- Contabilidad ▸ Clientes ▸ Letras -->
+    <menuitem id="menu_dv_account_letter_clientes"
+              name="Letras"
+              parent="account.menu_finance_receivables"
+              sequence="20"/>
+    <menuitem id="menu_dv_account_letter_canje_clientes"
+              name="Canje de letras"
+              parent="menu_dv_account_letter_clientes"
+              action="account_letter_action_clientes"
+              sequence="20"/>
+    <menuitem id="menu_dv_account_letter_canje_masivo_clientes"
+              name="Canje de letras masiva"
+              parent="menu_dv_account_letter_clientes"
+              action="account_massive_letter_action_clientes"
+              sequence="21"/>
+    <menuitem id="menu_dv_account_move_letter_clientes"
+              name="Letras"
+              parent="menu_dv_account_letter_clientes"
+              action="account_move_letter_action_clientes"
+              sequence="22"/>
+    <menuitem id="menu_dv_account_massive_letter_history_clientes"
+              name="Historial de canje"
+              parent="menu_dv_account_letter_clientes"
+              action="account_letter_action_historial_clientes"
+              sequence="23"/>
+
+    <!-- Contabilidad ▸ Proveedores ▸ Letras -->
+    <menuitem id="menu_dv_account_letter_proveedores"
+              name="Letras"
+              parent="account.menu_finance_payables"
+              sequence="20"/>
+    <menuitem id="menu_dv_account_letter_canje_proveedores"
+              name="Canje de letras"
+              parent="menu_dv_account_letter_proveedores"
+              action="account_letter_action_proveedores"
+              sequence="20"/>
+    <menuitem id="menu_dv_account_letter_canje_masivo_proveedores"
+              name="Canje de letras masiva"
+              parent="menu_dv_account_letter_proveedores"
+              action="account_massive_letter_action_proveedores"
+              sequence="21"/>
+    <menuitem id="menu_dv_account_move_letter_proveedores"
+              name="Letras"
+              parent="menu_dv_account_letter_proveedores"
+              action="account_move_letter_action_proveedores"
+              sequence="22"/>
+    <menuitem id="menu_dv_account_massive_letter_history_proveedores"
+              name="Historial de canje"
+              parent="menu_dv_account_letter_proveedores"
+              action="account_letter_action_massive_proveedores"
+              sequence="23"/>
+
+    <!-- Contabilidad ▸ Configuración ▸ Cuentas de letras -->
+    <menuitem id="menu_dv_account_letter_configuracion"
+              name="Cuentas de letras"
+              parent="account.account_account_menu"
+              action="action_account_configuration"
+              sequence="3"/>
+</odoo>

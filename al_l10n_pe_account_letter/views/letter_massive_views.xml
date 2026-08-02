@@ -1,0 +1,235 @@
+<odoo>
+    <!-- Vista de Lista Clientes -->
+    <record model="ir.ui.view" id="_account_massive_letter_tree_clientes">
+        <field name="name">l10n_pe.letter.massive.view.list.clientes</field>
+        <field name="model">l10n_pe.letter.massive</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id" string="Socio"/>
+                <field name="glosa"/>
+                <field name="invoice_date"/>
+                <field name="payment_reference"/>
+                <field name="journal_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('checked','redeemed')"
+                       decoration-success="state == 'banked'"/>
+                <field name="letter_invoices_ids" widget="many2many_tags" string="Facturas"/>
+                <field name="related_invoice_names" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <!-- Vista Lista Proveedores -->
+    <record model="ir.ui.view" id="_account_massive_letter_tree_proveedores">
+        <field name="name">l10n_pe.letter.massive.view.list.proveedores</field>
+        <field name="model">l10n_pe.letter.massive</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id" string="Socio"/>
+                <field name="glosa"/>
+                <field name="invoice_date"/>
+                <field name="payment_reference"/>
+                <field name="journal_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('checked','redeemed')"
+                       decoration-success="state == 'banked'"/>
+                <field name="letter_invoices_ids" widget="many2many_tags" string="Facturas"/>
+                <field name="related_invoice_names" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <!-- Vista de Formulario -->
+    <record model="ir.ui.view" id="_account_massive_letter_form_clientes">
+        <field name="name">l10n_pe.letter.massive.view.form</field>
+        <field name="model">l10n_pe.letter.massive</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_checked" string="Confirmar" class="oe_highlight" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_redeemed" string="Canjear" class="oe_highlight" type="object"
+                            invisible="state != 'checked'"/>
+                    <button name="action_draft" string="Restablecer a borrador" type="object"
+                            invisible="state == 'draft'"/>
+                    <button name="%(account_refinance_invoice_action)d" type="action" string="Refinanciar"
+                            class="oe_highlight"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_related_massive_invoices"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                invisible="related_massive_invoice_count == 0">
+                            <field name="related_massive_invoice_count" widget="statinfo" string="Facturas"/>
+                        </button>
+                        <button name="action_open_account_move"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                invisible="not account_id">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_text">Asiento</span>
+                                <field name="account_id" nolabel="1" readonly="1"/>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <span class="o_form_label">Nro.canje</span>
+                        <h1>
+                            <field name="name" placeholder="Draft"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group id="header_left_group">
+                            <label for="partner_id" string="Cliente" style="font-weight:bold;"
+                                   invisible="type != 'out_invoice'"/>
+                            <label for="partner_id" string="Proveedor" style="font-weight:bold;"
+                                   invisible="type != 'in_invoice'"/>
+                            <field name="partner_id" nolabel="1"/>
+                            <field name="journal_id"/>
+                            <field name="exchange_rate"/>
+                            <field name="refinance_id" invisible="is_refinance_parent != True"
+                                   readonly="1"/>
+                            <field name="inverse_id" invisible="is_refinance_children != True"
+                                   readonly="1"/>
+                            <field name="is_refinance_parent" invisible="1"/>
+                            <field name="is_refinance_children" invisible="1"/>
+                        </group>
+                        <group id="header_right_group">
+                            <label for="invoice_date" string="Fecha canje" style="font-weight:bold;"/>
+                            <field name="invoice_date" nolabel="1"/>
+                            <field name="payment_reference"/>
+                            <field name="glosa"/>
+                            <field name="currency_id"/>
+                            <field name="account_id" invisible="1"/>
+                            <field name="type" invisible="1"/>
+                            <field name="is_massive_letter" invisible="1"/>
+                            <field name="confirmed_reference" invisible="1"/>
+                            <field name="company_currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page id="invoice_tab" name="invoice_tab" string="Facturas">
+                            <field name="letter_invoices_ids">
+                                <list editable="bottom">
+                                    <field name="domain_move_line_id" invisible="1"/>
+                                    <field name="document_type_id"/>
+                                    <field name="move_line_id"
+                                           options="{'no_create': True, 'no_open': True , 'no_create_edit': True}"
+                                           domain="[('id','in', domain_move_line_id)]"/>
+                                    <field name="partner_id" optional="hide"/>
+                                    <field name="move_id" optional="hide"/>
+                                    <field name="move_invoice_type" column_invisible="1"/>
+                                    <field name="invoice_name"/>
+                                    <field name="account_id"/>
+                                    <field name="currency_id"/>
+                                    <field name="balance"/>
+                                    <field name="amount_currency"/>
+                                    <field name="imp_div" sum="Importe total"/>
+                                    <field name="debit" sum="Débito total"/>
+                                    <field name="credit" sum="Crédito total"/>
+                                    <field name="letter_id" string="Nro. canje" optional="hide" readonly="1"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page id="letter_tab" name="letter_tab" string="Letras">
+                            <group>
+                                <group id="header_left_group">
+                                    <field name="number_letter"/>
+                                    <field name="letter_end_date"/>
+                                    <field name="range_date"/>
+                                </group>
+                                <group id="header_right_group">
+                                    <field name="type_payment"/>
+                                    <field name="partial_amount"
+                                           invisible="type_payment != 'partial'"/>
+                                    <field name="rest_amount"/>
+                                </group>
+                            </group>
+                            <button name="create_letters" string="Crear letras" type="object" class="oe_highlight"/>
+                            <field name="letter_move_ids">
+                                <list editable="bottom">
+                                    <field name="letter_user_id"/>
+                                    <field name="nro_letter"/>
+                                    <field name="currency_id"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                    <field name="bank_id"
+                                           readonly="state == 'draft' or state == 'checked'"/>
+                                    <field name="code"
+                                           readonly="state == 'draft' or state == 'checked'"/>
+                                    <field name="letter_type"
+                                           readonly="state == 'draft' or state == 'checked'"/>
+                                    <field name="account_id"/>
+                                    <field name="expiration_date"/>
+                                    <field name="imp_div" sum="Importe total"/>
+                                    <field name="adeudado" sum="Adeudado total"/>
+                                    <field name="debit" sum="Débito total"/>
+                                    <field name="credit" sum="Crédito total"/>
+                                    <field name="payment_state" widget="badge"
+                                           decoration-danger="payment_state == 'pending'"
+                                           decoration-success="payment_state == 'paid'"/>
+                                    <field name="letter_id" optional="hide" readonly="1"/>
+                                    <field name="state" column_invisible="1"/>
+                                    <field name="exchange_rate" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page id="letter_residual" name="letter_residual" string="Redondeos"
+                              invisible="not letter_residual_ids">
+                            <field name="letter_residual_ids" readonly="1">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="account_id"/>
+                                    <field name="debit"/>
+                                    <field name="credit"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page id="move_line" name="move_line" string="Apuntes contables"
+                              invisible="not account_id">
+                            <field name="account_move_line_ids" readonly="1">
+                                <list editable="bottom">
+                                    <field name="account_id"/>
+                                    <field name="name"/>
+                                    <field name="analytic_distribution"/>
+                                    <field name="date"/>
+                                    <field name="amount_currency"/>
+                                    <field name="debit" sum="Débito total" string="Debe"/>
+                                    <field name="credit" sum="Crédito total" string="Haber"/>
+                                    <field name="currency_id" optional="hide"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Acción de ventana Clientes -->
+    <record model="ir.actions.act_window" id="account_massive_letter_action_clientes">
+        <field name="name">Canje de letras masivas</field>
+        <field name="res_model">l10n_pe.letter.massive</field>
+        <field name="view_id" ref="_account_massive_letter_tree_clientes"/>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('type', '=', 'out_invoice')]</field>
+        <field name="context">{'default_type': 'out_invoice'}</field>
+    </record>
+    <!-- Acción de ventana Proveedores -->
+    <record model="ir.actions.act_window" id="account_massive_letter_action_proveedores">
+        <field name="name">Canje de letras masivas</field>
+        <field name="res_model">l10n_pe.letter.massive</field>
+        <field name="view_id" ref="_account_massive_letter_tree_proveedores"/>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('type', '=', 'in_invoice')]</field>
+        <field name="context">{'default_type': 'in_invoice'}</field>
+    </record>
+</odoo>

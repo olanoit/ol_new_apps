@@ -1,0 +1,79 @@
+<odoo>
+    <!-- Vista list de letras de clientes -->
+    <record model="ir.ui.view" id="_account_move_letter_tree_clientes">
+        <field name="name">l10n_pe.letter.line.view.list.clientes</field>
+        <field name="model">l10n_pe.letter.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="nro_letter" string="Nro.canje"/>
+                <field name="partner_id" string="Socio"/>
+                <field name="currency_id"/>
+                <field name="bank_id"/>
+                <field name="code"/>
+                <field name="letter_type"/>
+                <field name="account_id"/>
+                <field name="expiration_date"/>
+                <field name="payment_state" widget="badge"
+                       decoration-danger="payment_state == 'pending'"
+                       decoration-warning="payment_state == 'partial'"
+                       decoration-success="payment_state == 'paid'"/>
+                <field name="letter_id" string="Código de canje"/>
+                <field name="adeudado" optional="hide"/>
+                <field name="imp_div" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <!-- Vista list de letras de proveedor -->
+    <record model="ir.ui.view" id="_account_move_letter_tree_proveedores">
+        <field name="name">l10n_pe.letter.line.view.list.proveedores</field>
+        <field name="model">l10n_pe.letter.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="nro_letter" string="Nro.canje"/>
+                <field name="partner_id" string="Socio"/>
+                <field name="currency_id"/>
+                <field name="bank_id"/>
+                <field name="code"/>
+                <field name="letter_type"/>
+                <field name="account_id"/>
+                <field name="expiration_date"/>
+                <field name="payment_state" widget="badge"
+                       decoration-danger="payment_state == 'pending'"
+                       decoration-warning="payment_state == 'partial'"
+                       decoration-success="payment_state == 'paid'"/>
+                <field name="letter_id" string="Código de canje"/>
+                <field name="adeudado" optional="hide"/>
+                <field name="imp_div" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <!-- Acción de ventana de letras de clientes -->
+    <record model="ir.actions.act_window" id="account_move_letter_action_clientes">
+        <field name="name">Letras</field>
+        <field name="res_model">l10n_pe.letter.line</field>
+        <field name="view_id" ref="_account_move_letter_tree_clientes"/>
+        <field name="view_mode">list</field>
+        <field name="domain">[('move_invoice_type', '=', 'out_invoice')]</field>
+    </record>
+    <!-- Acción de ventana de letras de proveedores -->
+    <record model="ir.actions.act_window" id="account_move_letter_action_proveedores">
+        <field name="name">Letras</field>
+        <field name="res_model">l10n_pe.letter.line</field>
+        <field name="view_id" ref="_account_move_letter_tree_proveedores"/>
+        <field name="view_mode">list</field>
+        <field name="domain">[('move_invoice_type', '=', 'in_invoice')]</field>
+    </record>
+    <record model="ir.ui.view" id="account_move_letter_view_filter">
+        <field name="name">l10n_pe.letter.line.view.filter</field>
+        <field name="model">l10n_pe.letter.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="letter_name"/>
+                <field name="partner_id"/>
+                <field name="journal_id"/>
+                <field name="related_invoice_names"/>
+            </search>
+        </field>
+    </record>
+</odoo>

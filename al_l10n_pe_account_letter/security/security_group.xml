@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- Categoría de privilegios (v19: res.groups.privilege en vez de ir.module.category) -->
+    <record id="invoicing_privilege" model="res.groups.privilege">
+        <field name="name">Gestión de letras</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Usuario -->
+    <record id="app_group_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="privilege_id" ref="invoicing_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Administrador -->
+    <record id="app_group_admin" model="res.groups">
+        <field name="name">Admin</field>
+        <field name="privilege_id" ref="invoicing_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('app_group_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

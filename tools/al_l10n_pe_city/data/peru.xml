@@ -1,0 +1,2110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<record id="state_pe_01_bagua_grande" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Bagua Grande</field>
+		</record>
+		<record id="state_pe_01_cajaruro" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cajaruro</field>
+		</record>
+		<record id="state_pe_01_chachapoyas" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chachapoyas</field>
+		</record>
+		<record id="state_pe_01_condorcanqui" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Condorcanqui</field>
+		</record>
+		<record id="state_pe_01_la_peca" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">La Peca</field>
+		</record>
+		<record id="state_pe_01_provincia_de_bagua" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Bagua</field>
+		</record>
+		<record id="state_pe_01_provincia_de_bongará" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Bongará</field>
+		</record>
+		<record id="state_pe_01_provincia_de_chachapoyas" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chachapoyas</field>
+		</record>
+		<record id="state_pe_01_provincia_de_luya" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Luya</field>
+		</record>
+		<record id="state_pe_01_provincia_de_rodríguez_de_mendoza" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De RodríGuez De Mendoza</field>
+		</record>
+		<record id="state_pe_01_utcubamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_01"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Utcubamba</field>
+		</record>
+		<record id="state_pe_02_asuncion" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Asuncion</field>
+		</record>
+		<record id="state_pe_02_carás" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">CaráS</field>
+		</record>
+		<record id="state_pe_02_carhuaz" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Carhuaz</field>
+		</record>
+		<record id="state_pe_02_carlos_fermin_fitzcarrald" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Carlos Fermin Fitzcarrald</field>
+		</record>
+		<record id="state_pe_02_chimbote" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chimbote</field>
+		</record>
+		<record id="state_pe_02_coishco" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Coishco</field>
+		</record>
+		<record id="state_pe_02_huaraz" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huaraz</field>
+		</record>
+		<record id="state_pe_02_huarmey" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huarmey</field>
+		</record>
+		<record id="state_pe_02_pomabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pomabamba</field>
+		</record>
+		<record id="state_pe_02_provincia_de_aija" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Aija</field>
+		</record>
+		<record id="state_pe_02_provincia_de_antonio_raymondi" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Antonio Raymondi</field>
+		</record>
+		<record id="state_pe_02_provincia_de_bolognesi" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Bolognesi</field>
+		</record>
+		<record id="state_pe_02_provincia_de_carhuaz" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Carhuaz</field>
+		</record>
+		<record id="state_pe_02_provincia_de_casma" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Casma</field>
+		</record>
+		<record id="state_pe_02_provincia_de_corongo" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Corongo</field>
+		</record>
+		<record id="state_pe_02_provincia_de_huaraz" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huaraz</field>
+		</record>
+		<record id="state_pe_02_provincia_de_huari" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huari</field>
+		</record>
+		<record id="state_pe_02_provincia_de_huarmey" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huarmey</field>
+		</record>
+		<record id="state_pe_02_provincia_de_huaylas" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huaylas</field>
+		</record>
+		<record id="state_pe_02_provincia_de_mariscal_luzuriaga" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Mariscal Luzuriaga</field>
+		</record>
+		<record id="state_pe_02_provincia_de_pallasca" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pallasca</field>
+		</record>
+		<record id="state_pe_02_provincia_de_pomabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pomabamba</field>
+		</record>
+		<record id="state_pe_02_provincia_de_recuay" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Recuay</field>
+		</record>
+		<record id="state_pe_02_provincia_de_santa" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Santa</field>
+		</record>
+		<record id="state_pe_02_provincia_de_sihuas" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Sihuas</field>
+		</record>
+		<record id="state_pe_02_provincia_de_yungay" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Yungay</field>
+		</record>
+		<record id="state_pe_02_puerto_santa" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Puerto Santa</field>
+		</record>
+		<record id="state_pe_02_yauya" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Yauya</field>
+		</record>
+		<record id="state_pe_02_yungay" model="res.city">
+			<field name="state_id" ref="base.state_pe_02"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Yungay</field>
+		</record>
+		<record id="state_pe_03_abancay" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Abancay</field>
+		</record>
+		<record id="state_pe_03_andahuaylas" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Andahuaylas</field>
+		</record>
+		<record id="state_pe_03_provincia_de_abancay" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Abancay</field>
+		</record>
+		<record id="state_pe_03_provincia_de_andahuaylas" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Andahuaylas</field>
+		</record>
+		<record id="state_pe_03_provincia_de_antabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Antabamba</field>
+		</record>
+		<record id="state_pe_03_provincia_de_aymaraes" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Aymaraes</field>
+		</record>
+		<record id="state_pe_03_provincia_de_cotabambas" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cotabambas</field>
+		</record>
+		<record id="state_pe_03_provincia_de_grau" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Grau</field>
+		</record>
+		<record id="state_pe_03_san_jerónimo" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San JeróNimo</field>
+		</record>
+		<record id="state_pe_03_talavera" model="res.city">
+			<field name="state_id" ref="base.state_pe_03"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Talavera</field>
+		</record>
+		<record id="state_pe_04_acarí" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Acarí</field>
+		</record>
+		<record id="state_pe_04_arequipa" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Arequipa</field>
+		</record>
+		<record id="state_pe_04_camaná" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Camaná</field>
+		</record>
+		<record id="state_pe_04_ccolo" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ccolo</field>
+		</record>
+		<record id="state_pe_04_chivay" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chivay</field>
+		</record>
+		<record id="state_pe_04_cocachacra" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cocachacra</field>
+		</record>
+		<record id="state_pe_04_cotahuasi" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cotahuasi</field>
+		</record>
+		<record id="state_pe_04_huarancante" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huarancante</field>
+		</record>
+		<record id="state_pe_04_huarichancara" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huarichancara</field>
+		</record>
+		<record id="state_pe_04_jatun_orcochiri" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jatun Orcochiri</field>
+		</record>
+		<record id="state_pe_04_jayune" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jayune</field>
+		</record>
+		<record id="state_pe_04_llongasora" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Llongasora</field>
+		</record>
+		<record id="state_pe_04_lluta" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lluta</field>
+		</record>
+		<record id="state_pe_04_mollendo" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Mollendo</field>
+		</record>
+		<record id="state_pe_04_orcopampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Orcopampa</field>
+		</record>
+		<record id="state_pe_04_provincia_de_arequipa" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Arequipa</field>
+		</record>
+		<record id="state_pe_04_provincia_de_camaná" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Camaná</field>
+		</record>
+		<record id="state_pe_04_provincia_de_caravelí" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Caravelí</field>
+		</record>
+		<record id="state_pe_04_provincia_de_castilla" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Castilla</field>
+		</record>
+		<record id="state_pe_04_provincia_de_caylloma" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Caylloma</field>
+		</record>
+		<record id="state_pe_04_provincia_de_condesuyos" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Condesuyos</field>
+		</record>
+		<record id="state_pe_04_provincia_de_islay" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Islay</field>
+		</record>
+		<record id="state_pe_04_provincia_de_la_unión" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De La UnióN</field>
+		</record>
+		<record id="state_pe_04_pucara" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pucara</field>
+		</record>
+		<record id="state_pe_04_punta_de_bombón" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Punta De BombóN</field>
+		</record>
+		<record id="state_pe_04_vizcachane" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Vizcachane</field>
+		</record>
+		<record id="state_pe_04_yura" model="res.city">
+			<field name="state_id" ref="base.state_pe_04"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Yura</field>
+		</record>
+		<record id="state_pe_05_ayacucho" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ayacucho</field>
+		</record>
+		<record id="state_pe_05_ayna" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ayna</field>
+		</record>
+		<record id="state_pe_05_coracora" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Coracora</field>
+		</record>
+		<record id="state_pe_05_huanta" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huanta</field>
+		</record>
+		<record id="state_pe_05_paucar_del_sara_sara" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paucar Del Sara Sara</field>
+		</record>
+		<record id="state_pe_05_provincia_de_cangallo" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cangallo</field>
+		</record>
+		<record id="state_pe_05_provincia_de_huamanga" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huamanga</field>
+		</record>
+		<record id="state_pe_05_provincia_de_huanca_sancos" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huanca Sancos</field>
+		</record>
+		<record id="state_pe_05_provincia_de_huanta" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huanta</field>
+		</record>
+		<record id="state_pe_05_provincia_de_la_mar" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De La Mar</field>
+		</record>
+		<record id="state_pe_05_provincia_de_lucanas" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Lucanas</field>
+		</record>
+		<record id="state_pe_05_provincia_de_parinacochas" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Parinacochas</field>
+		</record>
+		<record id="state_pe_05_provincia_de_sucre" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Sucre</field>
+		</record>
+		<record id="state_pe_05_provincia_de_víctor_fajardo" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De VíCtor Fajardo</field>
+		</record>
+		<record id="state_pe_05_provincia_de_vilcas_huamán" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Vilcas HuamáN</field>
+		</record>
+		<record id="state_pe_05_puquio" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Puquio</field>
+		</record>
+		<record id="state_pe_05_san_miguel" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Miguel</field>
+		</record>
+		<record id="state_pe_05_tambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_05"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tambo</field>
+		</record>
+		<record id="state_pe_06_bambamarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Bambamarca</field>
+		</record>
+		<record id="state_pe_06_bellavista" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Bellavista</field>
+		</record>
+		<record id="state_pe_06_cajabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cajabamba</field>
+		</record>
+		<record id="state_pe_06_cajamarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cajamarca</field>
+		</record>
+		<record id="state_pe_06_celendín" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">CelendíN</field>
+		</record>
+		<record id="state_pe_06_chota" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chota</field>
+		</record>
+		<record id="state_pe_06_jaén" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">JaéN</field>
+		</record>
+		<record id="state_pe_06_provincia_de_cajabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cajabamba</field>
+		</record>
+		<record id="state_pe_06_provincia_de_cajamarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cajamarca</field>
+		</record>
+		<record id="state_pe_06_provincia_de_celendín" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De CelendíN</field>
+		</record>
+		<record id="state_pe_06_provincia_de_chota" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chota</field>
+		</record>
+		<record id="state_pe_06_provincia_de_contumazá" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Contumazá</field>
+		</record>
+		<record id="state_pe_06_provincia_de_cutervo" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cutervo</field>
+		</record>
+		<record id="state_pe_06_provincia_de_hualgayoc" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Hualgayoc</field>
+		</record>
+		<record id="state_pe_06_provincia_de_jaén" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De JaéN</field>
+		</record>
+		<record id="state_pe_06_provincia_de_san_ignacio" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De San Ignacio</field>
+		</record>
+		<record id="state_pe_06_provincia_de_san_miguel" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De San Miguel</field>
+		</record>
+		<record id="state_pe_06_provincia_de_santa_cruz" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Santa Cruz</field>
+		</record>
+		<record id="state_pe_06_san_ignacio" model="res.city">
+			<field name="state_id" ref="base.state_pe_06"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Ignacio</field>
+		</record>
+		<record id="state_pe_07_callao" model="res.city">
+			<field name="state_id" ref="base.state_pe_07"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Callao</field>
+		</record>
+		<record id="state_pe_08_anta" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Anta</field>
+		</record>
+		<record id="state_pe_08_cahuanuyo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cahuanuyo</field>
+		</record>
+		<record id="state_pe_08_calca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Calca</field>
+		</record>
+		<record id="state_pe_08_callanca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Callanca</field>
+		</record>
+		<record id="state_pe_08_ccaquiracunca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ccaquiracunca</field>
+		</record>
+		<record id="state_pe_08_ccuntuma" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ccuntuma</field>
+		</record>
+		<record id="state_pe_08_checacupe" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Checacupe</field>
+		</record>
+		<record id="state_pe_08_checca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Checca</field>
+		</record>
+		<record id="state_pe_08_chignayhua" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chignayhua</field>
+		</record>
+		<record id="state_pe_08_chinchero" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chinchero</field>
+		</record>
+		<record id="state_pe_08_combapata" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Combapata</field>
+		</record>
+		<record id="state_pe_08_conchopata" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Conchopata</field>
+		</record>
+		<record id="state_pe_08_cullcuyre" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cullcuyre</field>
+		</record>
+		<record id="state_pe_08_cusco" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cusco</field>
+		</record>
+		<record id="state_pe_08_huayna_alcalde" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huayna Alcalde</field>
+		</record>
+		<record id="state_pe_08_jayobamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jayobamba</field>
+		</record>
+		<record id="state_pe_08_langui" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Langui</field>
+		</record>
+		<record id="state_pe_08_layo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Layo</field>
+		</record>
+		<record id="state_pe_08_lima_pampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lima Pampa</field>
+		</record>
+		<record id="state_pe_08_maranganí" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Maranganí</field>
+		</record>
+		<record id="state_pe_08_maras" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Maras</field>
+		</record>
+		<record id="state_pe_08_mosoc_cancha" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Mosoc Cancha</field>
+		</record>
+		<record id="state_pe_08_mosoc_llacta" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Mosoc Llacta</field>
+		</record>
+		<record id="state_pe_08_ollantaytambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ollantaytambo</field>
+		</record>
+		<record id="state_pe_08_oropesa" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Oropesa</field>
+		</record>
+		<record id="state_pe_08_pampamarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pampamarca</field>
+		</record>
+		<record id="state_pe_08_pangoa" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pangoa</field>
+		</record>
+		<record id="state_pe_08_paucartambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paucartambo</field>
+		</record>
+		<record id="state_pe_08_pisac" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pisac</field>
+		</record>
+		<record id="state_pe_08_provincia_de_acomayo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Acomayo</field>
+		</record>
+		<record id="state_pe_08_provincia_de_anta" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Anta</field>
+		</record>
+		<record id="state_pe_08_provincia_de_calca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Calca</field>
+		</record>
+		<record id="state_pe_08_provincia_de_canas" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Canas</field>
+		</record>
+		<record id="state_pe_08_provincia_de_canchis" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Canchis</field>
+		</record>
+		<record id="state_pe_08_provincia_de_chumbivilcas" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chumbivilcas</field>
+		</record>
+		<record id="state_pe_08_provincia_de_cusco" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cusco</field>
+		</record>
+		<record id="state_pe_08_provincia_de_espinar" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Espinar</field>
+		</record>
+		<record id="state_pe_08_provincia_de_la_convención" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De La ConvencióN</field>
+		</record>
+		<record id="state_pe_08_provincia_de_paruro" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Paruro</field>
+		</record>
+		<record id="state_pe_08_provincia_de_paucartambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Paucartambo</field>
+		</record>
+		<record id="state_pe_08_provincia_de_quispicanchis" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Quispicanchis</field>
+		</record>
+		<record id="state_pe_08_provincia_de_urubamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Urubamba</field>
+		</record>
+		<record id="state_pe_08_qquea" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Qquea</field>
+		</record>
+		<record id="state_pe_08_queromarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Queromarca</field>
+		</record>
+		<record id="state_pe_08_san_pablo" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Pablo</field>
+		</record>
+		<record id="state_pe_08_santa_ana" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santa Ana</field>
+		</record>
+		<record id="state_pe_08_santo_tomas" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santo Tomas</field>
+		</record>
+		<record id="state_pe_08_sicuani" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Sicuani</field>
+		</record>
+		<record id="state_pe_08_tinta" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tinta</field>
+		</record>
+		<record id="state_pe_08_tungasuca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tungasuca</field>
+		</record>
+		<record id="state_pe_08_urcos" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Urcos</field>
+		</record>
+		<record id="state_pe_08_urubamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Urubamba</field>
+		</record>
+		<record id="state_pe_08_yanaoca" model="res.city">
+			<field name="state_id" ref="base.state_pe_08"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Yanaoca</field>
+		</record>
+		<record id="state_pe_09_huancavelica" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huancavelica</field>
+		</record>
+		<record id="state_pe_09_huaytara" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huaytara</field>
+		</record>
+		<record id="state_pe_09_pampas" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pampas</field>
+		</record>
+		<record id="state_pe_09_provincia_de_acobamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Acobamba</field>
+		</record>
+		<record id="state_pe_09_provincia_de_angaraes" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Angaraes</field>
+		</record>
+		<record id="state_pe_09_provincia_de_castrovirreyna" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Castrovirreyna</field>
+		</record>
+		<record id="state_pe_09_provincia_de_churcampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Churcampa</field>
+		</record>
+		<record id="state_pe_09_provincia_de_huancavelica" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huancavelica</field>
+		</record>
+		<record id="state_pe_09_provincia_de_tayacaja" model="res.city">
+			<field name="state_id" ref="base.state_pe_09"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tayacaja</field>
+		</record>
+		<record id="state_pe_11_chincha_alta" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chincha Alta</field>
+		</record>
+		<record id="state_pe_11_ica" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ica</field>
+		</record>
+		<record id="state_pe_11_los_aquijes" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Los Aquijes</field>
+		</record>
+		<record id="state_pe_11_minas_de_marcona" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Minas De Marcona</field>
+		</record>
+		<record id="state_pe_11_nazca" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Nazca</field>
+		</record>
+		<record id="state_pe_11_palpa" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Palpa</field>
+		</record>
+		<record id="state_pe_11_paracas" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paracas</field>
+		</record>
+		<record id="state_pe_11_pisco" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pisco</field>
+		</record>
+		<record id="state_pe_11_provincia_de_chincha" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chincha</field>
+		</record>
+		<record id="state_pe_11_provincia_de_ica" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Ica</field>
+		</record>
+		<record id="state_pe_11_provincia_de_nazca" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Nazca</field>
+		</record>
+		<record id="state_pe_11_provincia_de_palpa" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Palpa</field>
+		</record>
+		<record id="state_pe_11_provincia_de_pisco" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pisco</field>
+		</record>
+		<record id="state_pe_11_río_grande" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">RíO Grande</field>
+		</record>
+		<record id="state_pe_11_san_clemente" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Clemente</field>
+		</record>
+		<record id="state_pe_11_san_juan_bautista" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Juan Bautista</field>
+		</record>
+		<record id="state_pe_11_santiago" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santiago</field>
+		</record>
+		<record id="state_pe_11_subtanjalla" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Subtanjalla</field>
+		</record>
+		<record id="state_pe_11_villa_tupac_amaru" model="res.city">
+			<field name="state_id" ref="base.state_pe_11"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Villa Tupac Amaru</field>
+		</record>
+		<record id="state_pe_13_ascope" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ascope</field>
+		</record>
+		<record id="state_pe_13_cascas" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cascas</field>
+		</record>
+		<record id="state_pe_13_chepen" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chepen</field>
+		</record>
+		<record id="state_pe_13_chepén" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">ChepéN</field>
+		</record>
+		<record id="state_pe_13_chicama" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chicama</field>
+		</record>
+		<record id="state_pe_13_chocope" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chocope</field>
+		</record>
+		<record id="state_pe_13_gran_chimu" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Gran Chimu</field>
+		</record>
+		<record id="state_pe_13_guadalupe" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Guadalupe</field>
+		</record>
+		<record id="state_pe_13_huamachuco" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huamachuco</field>
+		</record>
+		<record id="state_pe_13_julcan" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Julcan</field>
+		</record>
+		<record id="state_pe_13_laredo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Laredo</field>
+		</record>
+		<record id="state_pe_13_moche" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Moche</field>
+		</record>
+		<record id="state_pe_13_otuzco" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Otuzco</field>
+		</record>
+		<record id="state_pe_13_pacanga" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pacanga</field>
+		</record>
+		<record id="state_pe_13_pacasmayo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pacasmayo</field>
+		</record>
+		<record id="state_pe_13_paiján" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">PaijáN</field>
+		</record>
+		<record id="state_pe_13_provincia_de_bolívar" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De BolíVar</field>
+		</record>
+		<record id="state_pe_13_provincia_de_otuzco" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Otuzco</field>
+		</record>
+		<record id="state_pe_13_provincia_de_pacasmayo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pacasmayo</field>
+		</record>
+		<record id="state_pe_13_provincia_de_pataz" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pataz</field>
+		</record>
+		<record id="state_pe_13_provincia_de_santiago_de_chuco" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Santiago De Chuco</field>
+		</record>
+		<record id="state_pe_13_provincia_de_trujillo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Trujillo</field>
+		</record>
+		<record id="state_pe_13_pueblo_nuevo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pueblo Nuevo</field>
+		</record>
+		<record id="state_pe_13_quiruvilca" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Quiruvilca</field>
+		</record>
+		<record id="state_pe_13_salaverry" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Salaverry</field>
+		</record>
+		<record id="state_pe_13_san_pedro_de_lloc" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Pedro De Lloc</field>
+		</record>
+		<record id="state_pe_13_sanchez_carrion" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Sanchez Carrion</field>
+		</record>
+		<record id="state_pe_13_santiago_de_cao" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santiago De Cao</field>
+		</record>
+		<record id="state_pe_13_santiago_de_chuco" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santiago De Chuco</field>
+		</record>
+		<record id="state_pe_13_trujillo" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Trujillo</field>
+		</record>
+		<record id="state_pe_13_viru" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Viru</field>
+		</record>
+		<record id="state_pe_13_virú" model="res.city">
+			<field name="state_id" ref="base.state_pe_13"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Virú</field>
+		</record>
+		<record id="state_pe_14_chiclayo" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chiclayo</field>
+		</record>
+		<record id="state_pe_14_chongoyape" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chongoyape</field>
+		</record>
+		<record id="state_pe_14_eten" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Eten</field>
+		</record>
+		<record id="state_pe_14_ferreñafe" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">FerreñAfe</field>
+		</record>
+		<record id="state_pe_14_jayanca" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jayanca</field>
+		</record>
+		<record id="state_pe_14_lambayeque" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lambayeque</field>
+		</record>
+		<record id="state_pe_14_mochumí" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Mochumí</field>
+		</record>
+		<record id="state_pe_14_monsefú" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Monsefú</field>
+		</record>
+		<record id="state_pe_14_mórrope" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">MóRrope</field>
+		</record>
+		<record id="state_pe_14_motupe" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Motupe</field>
+		</record>
+		<record id="state_pe_14_olmos" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Olmos</field>
+		</record>
+		<record id="state_pe_14_oyotún" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">OyotúN</field>
+		</record>
+		<record id="state_pe_14_picsi" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Picsi</field>
+		</record>
+		<record id="state_pe_14_pimentel" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pimentel</field>
+		</record>
+		<record id="state_pe_14_provincia_de_chiclayo" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chiclayo</field>
+		</record>
+		<record id="state_pe_14_provincia_de_ferreñafe" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De FerreñAfe</field>
+		</record>
+		<record id="state_pe_14_provincia_de_lambayeque" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Lambayeque</field>
+		</record>
+		<record id="state_pe_14_pueblo_nuevo" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pueblo Nuevo</field>
+		</record>
+		<record id="state_pe_14_reque" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Reque</field>
+		</record>
+		<record id="state_pe_14_san_josé" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San José</field>
+		</record>
+		<record id="state_pe_14_saña" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">SañA</field>
+		</record>
+		<record id="state_pe_14_santa_rosa" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santa Rosa</field>
+		</record>
+		<record id="state_pe_14_túcume" model="res.city">
+			<field name="state_id" ref="base.state_pe_14"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">TúCume</field>
+		</record>
+		<record id="state_pe_15_asentamiento_humano_nicolas_de_pierola" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Asentamiento Humano Nicolas De Pierola</field>
+		</record>
+		<record id="state_pe_15_barranca" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Barranca</field>
+		</record>
+		<record id="state_pe_15_caleta_de_carquín" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Caleta De CarquíN</field>
+		</record>
+		<record id="state_pe_15_chancay" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chancay</field>
+		</record>
+		<record id="state_pe_15_chilca" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chilca</field>
+		</record>
+		<record id="state_pe_15_chosica" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chosica</field>
+		</record>
+		<record id="state_pe_15_huacho" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huacho</field>
+		</record>
+		<record id="state_pe_15_hualmay" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Hualmay</field>
+		</record>
+		<record id="state_pe_15_huaral" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huaral</field>
+		</record>
+		<record id="state_pe_15_huaura" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huaura</field>
+		</record>
+		<record id="state_pe_15_imperial" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Imperial</field>
+		</record>
+		<record id="state_pe_15_independencia" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Independencia</field>
+		</record>
+		<record id="state_pe_15_lima" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lima</field>
+		</record>
+		<record id="state_pe_15_mala" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Mala</field>
+		</record>
+		<record id="state_pe_15_matucana" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Matucana</field>
+		</record>
+		<record id="state_pe_15_nuevo_imperial" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Nuevo Imperial</field>
+		</record>
+		<record id="state_pe_15_oyon" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Oyon</field>
+		</record>
+		<record id="state_pe_15_oyón" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">OyóN</field>
+		</record>
+		<record id="state_pe_15_paramonga" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paramonga</field>
+		</record>
+		<record id="state_pe_15_pativilca" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pativilca</field>
+		</record>
+		<record id="state_pe_15_provincia_de_cajatambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Cajatambo</field>
+		</record>
+		<record id="state_pe_15_provincia_de_cañete" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De CañEte</field>
+		</record>
+		<record id="state_pe_15_provincia_de_canta" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Canta</field>
+		</record>
+		<record id="state_pe_15_provincia_de_huaral" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huaral</field>
+		</record>
+		<record id="state_pe_15_provincia_de_huarochirí" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huarochirí</field>
+		</record>
+		<record id="state_pe_15_provincia_de_yauyos" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Yauyos</field>
+		</record>
+		<record id="state_pe_15_puerto_supe" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Puerto Supe</field>
+		</record>
+		<record id="state_pe_15_quilmaná" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Quilmaná</field>
+		</record>
+		<record id="state_pe_15_ricardo_palma" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ricardo Palma</field>
+		</record>
+		<record id="state_pe_15_san_bartolo" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Bartolo</field>
+		</record>
+		<record id="state_pe_15_san_isidro" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Isidro</field>
+		</record>
+		<record id="state_pe_15_san_luis" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Luis</field>
+		</record>
+		<record id="state_pe_15_san_vicente_de_cañete" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Vicente De CañEte</field>
+		</record>
+		<record id="state_pe_15_santa_maría" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santa MaríA</field>
+		</record>
+		<record id="state_pe_15_santiago_de_surco" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santiago De Surco</field>
+		</record>
+		<record id="state_pe_15_sayán" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">SayáN</field>
+		</record>
+		<record id="state_pe_15_supe" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Supe</field>
+		</record>
+		<record id="state_pe_15_urb__santo_domingo" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Urb  Santo Domingo</field>
+		</record>
+		<record id="state_pe_15_végueta" model="res.city">
+			<field name="state_id" ref="base.state_pe_15"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">VéGueta</field>
+		</record>
+		<record id="state_pe_19_iberia" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Iberia</field>
+		</record>
+		<record id="state_pe_19_provincia_de_manú" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Manú</field>
+		</record>
+		<record id="state_pe_19_provincia_de_tahuamanú" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tahuamanú</field>
+		</record>
+		<record id="state_pe_19_provincia_de_tambopata" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tambopata</field>
+		</record>
+		<record id="state_pe_19_puerto_maldonado" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Puerto Maldonado</field>
+		</record>
+		<record id="state_pe_19_salvación" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">SalvacióN</field>
+		</record>
+		<record id="state_pe_19_tambopata" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tambopata</field>
+		</record>
+		<record id="state_pe_19_ilo" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ilo</field>
+		</record>
+		<record id="state_pe_19_moquegua" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Moquegua</field>
+		</record>
+		<record id="state_pe_19_pacocha" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pacocha</field>
+		</record>
+		<record id="state_pe_19_provincia_de_general_sánchez_cerro" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De General SáNchez Cerro</field>
+		</record>
+		<record id="state_pe_19_provincia_de_ilo" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Ilo</field>
+		</record>
+		<record id="state_pe_19_provincia_de_mariscal_nieto" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Mariscal Nieto</field>
+		</record>
+		<record id="state_pe_19_torata" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Torata</field>
+		</record>
+		<record id="state_pe_19_cerro_de_pasco" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Cerro De Pasco</field>
+		</record>
+		<record id="state_pe_19_chaupimarca" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chaupimarca</field>
+		</record>
+		<record id="state_pe_19_oxapampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Oxapampa</field>
+		</record>
+		<record id="state_pe_19_paucartambo" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paucartambo</field>
+		</record>
+		<record id="state_pe_19_provincia_de_daniel_carrión" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Daniel CarrióN</field>
+		</record>
+		<record id="state_pe_19_provincia_de_oxapampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Oxapampa</field>
+		</record>
+		<record id="state_pe_19_provincia_de_pasco" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Pasco</field>
+		</record>
+		<record id="state_pe_19_tinyahuarco" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tinyahuarco</field>
+		</record>
+		<record id="state_pe_19_villa_rica" model="res.city">
+			<field name="state_id" ref="base.state_pe_19"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Villa Rica</field>
+		</record>
+		<record id="state_pe_20_ayabaca" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ayabaca</field>
+		</record>
+		<record id="state_pe_20_bernal" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Bernal</field>
+		</record>
+		<record id="state_pe_20_buenos_aires" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Buenos Aires</field>
+		</record>
+		<record id="state_pe_20_catacaos" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Catacaos</field>
+		</record>
+		<record id="state_pe_20_chulucanas" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chulucanas</field>
+		</record>
+		<record id="state_pe_20_el_alto" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">El Alto</field>
+		</record>
+		<record id="state_pe_20_huancabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huancabamba</field>
+		</record>
+		<record id="state_pe_20_la_breita" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">La Breita</field>
+		</record>
+		<record id="state_pe_20_la_huaca" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">La Huaca</field>
+		</record>
+		<record id="state_pe_20_la_unión" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">La UnióN</field>
+		</record>
+		<record id="state_pe_20_las_lomas" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Las Lomas</field>
+		</record>
+		<record id="state_pe_20_máncora" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">MáNcora</field>
+		</record>
+		<record id="state_pe_20_marcavelica" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Marcavelica</field>
+		</record>
+		<record id="state_pe_20_morropon" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Morropon</field>
+		</record>
+		<record id="state_pe_20_morropón" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">MorropóN</field>
+		</record>
+		<record id="state_pe_20_paita" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Paita</field>
+		</record>
+		<record id="state_pe_20_piura" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Piura</field>
+		</record>
+		<record id="state_pe_20_provincia_de_ayabaca" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Ayabaca</field>
+		</record>
+		<record id="state_pe_20_provincia_de_huancabamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huancabamba</field>
+		</record>
+		<record id="state_pe_20_provincia_de_paita" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Paita</field>
+		</record>
+		<record id="state_pe_20_provincia_de_piura" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Piura</field>
+		</record>
+		<record id="state_pe_20_provincia_de_sullana" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Sullana</field>
+		</record>
+		<record id="state_pe_20_provincia_de_talara" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Talara</field>
+		</record>
+		<record id="state_pe_20_querecotillo" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Querecotillo</field>
+		</record>
+		<record id="state_pe_20_salinera_colán" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Salinera ColáN</field>
+		</record>
+		<record id="state_pe_20_salitral" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Salitral</field>
+		</record>
+		<record id="state_pe_20_sechura" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Sechura</field>
+		</record>
+		<record id="state_pe_20_sullana" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Sullana</field>
+		</record>
+		<record id="state_pe_20_talara" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Talara</field>
+		</record>
+		<record id="state_pe_20_tambo_grande" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tambo Grande</field>
+		</record>
+		<record id="state_pe_20_vice" model="res.city">
+			<field name="state_id" ref="base.state_pe_20"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Vice</field>
+		</record>
+		<record id="state_pe_21_atuncolla" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Atuncolla</field>
+		</record>
+		<record id="state_pe_21_ayaviri" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ayaviri</field>
+		</record>
+		<record id="state_pe_21_azángaro" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">AzáNgaro</field>
+		</record>
+		<record id="state_pe_21_desaguadero" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Desaguadero</field>
+		</record>
+		<record id="state_pe_21_el_collao" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">El Collao</field>
+		</record>
+		<record id="state_pe_21_hacienda_huancane" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Hacienda Huancane</field>
+		</record>
+		<record id="state_pe_21_ilave" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ilave</field>
+		</record>
+		<record id="state_pe_21_juli" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Juli</field>
+		</record>
+		<record id="state_pe_21_juliaca" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Juliaca</field>
+		</record>
+		<record id="state_pe_21_la_rinconada" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">La Rinconada</field>
+		</record>
+		<record id="state_pe_21_lampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lampa</field>
+		</record>
+		<record id="state_pe_21_macusani" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Macusani</field>
+		</record>
+		<record id="state_pe_21_ñuñoa" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">ÑUñOa</field>
+		</record>
+		<record id="state_pe_21_provincia_de_azángaro" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De AzáNgaro</field>
+		</record>
+		<record id="state_pe_21_provincia_de_carabaya" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Carabaya</field>
+		</record>
+		<record id="state_pe_21_provincia_de_chucuito" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Chucuito</field>
+		</record>
+		<record id="state_pe_21_provincia_de_huancané" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huancané</field>
+		</record>
+		<record id="state_pe_21_provincia_de_lampa" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Lampa</field>
+		</record>
+		<record id="state_pe_21_provincia_de_melgar" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Melgar</field>
+		</record>
+		<record id="state_pe_21_provincia_de_puno" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Puno</field>
+		</record>
+		<record id="state_pe_21_provincia_de_sandia" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Sandia</field>
+		</record>
+		<record id="state_pe_21_puno" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Puno</field>
+		</record>
+		<record id="state_pe_21_san_antonio_de_putina" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Antonio De Putina</field>
+		</record>
+		<record id="state_pe_21_san_roman" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">San Roman</field>
+		</record>
+		<record id="state_pe_21_santa_lucía" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Santa LucíA</field>
+		</record>
+		<record id="state_pe_21_taquile" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Taquile</field>
+		</record>
+		<record id="state_pe_21_yunguyo" model="res.city">
+			<field name="state_id" ref="base.state_pe_21"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Yunguyo</field>
+		</record>
+		<record id="state_pe_22_bellavista" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Bellavista</field>
+		</record>
+		<record id="state_pe_22_chazuta" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chazuta</field>
+		</record>
+		<record id="state_pe_22_el_dorado" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">El Dorado</field>
+		</record>
+		<record id="state_pe_22_huicungo" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Huicungo</field>
+		</record>
+		<record id="state_pe_22_jepelacio" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jepelacio</field>
+		</record>
+		<record id="state_pe_22_juanjuí" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Juanjuí</field>
+		</record>
+		<record id="state_pe_22_lamas" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Lamas</field>
+		</record>
+		<record id="state_pe_22_moyobamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Moyobamba</field>
+		</record>
+		<record id="state_pe_22_picota" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Picota</field>
+		</record>
+		<record id="state_pe_22_provincia_de_huallaga" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Huallaga</field>
+		</record>
+		<record id="state_pe_22_provincia_de_lamas" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Lamas</field>
+		</record>
+		<record id="state_pe_22_provincia_de_mariscal_cáceres" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Mariscal CáCeres</field>
+		</record>
+		<record id="state_pe_22_provincia_de_moyobamba" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Moyobamba</field>
+		</record>
+		<record id="state_pe_22_provincia_de_rioja" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Rioja</field>
+		</record>
+		<record id="state_pe_22_provincia_de_san_martín" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De San MartíN</field>
+		</record>
+		<record id="state_pe_22_rioja" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Rioja</field>
+		</record>
+		<record id="state_pe_22_saposoa" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Saposoa</field>
+		</record>
+		<record id="state_pe_22_sisa" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Sisa</field>
+		</record>
+		<record id="state_pe_22_soritor" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Soritor</field>
+		</record>
+		<record id="state_pe_22_tabalosos" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tabalosos</field>
+		</record>
+		<record id="state_pe_22_tarapoto" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tarapoto</field>
+		</record>
+		<record id="state_pe_22_tocache" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tocache</field>
+		</record>
+		<record id="state_pe_22_uchiza" model="res.city">
+			<field name="state_id" ref="base.state_pe_22"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Uchiza</field>
+		</record>
+		<record id="state_pe_23_calana" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Calana</field>
+		</record>
+		<record id="state_pe_23_candarave" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Candarave</field>
+		</record>
+		<record id="state_pe_23_chipispaya" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chipispaya</field>
+		</record>
+		<record id="state_pe_23_chuquitira" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Chuquitira</field>
+		</record>
+		<record id="state_pe_23_ilabaya" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Ilabaya</field>
+		</record>
+		<record id="state_pe_23_jorge_basadre" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Jorge Basadre</field>
+		</record>
+		<record id="state_pe_23_provincia_de_tacna" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tacna</field>
+		</record>
+		<record id="state_pe_23_provincia_de_tarata" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tarata</field>
+		</record>
+		<record id="state_pe_23_pujocucho" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pujocucho</field>
+		</record>
+		<record id="state_pe_23_quilahuani" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Quilahuani</field>
+		</record>
+		<record id="state_pe_23_tacna" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tacna</field>
+		</record>
+		<record id="state_pe_23_tarata" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tarata</field>
+		</record>
+		<record id="state_pe_23_totoral" model="res.city">
+			<field name="state_id" ref="base.state_pe_23"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Totoral</field>
+		</record>
+		<record id="state_pe_24_aguas_verdes" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Aguas Verdes</field>
+		</record>
+		<record id="state_pe_24_papayal" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Papayal</field>
+		</record>
+		<record id="state_pe_24_provincia_de_contralmirante_villar" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Contralmirante Villar</field>
+		</record>
+		<record id="state_pe_24_provincia_de_tumbes" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Tumbes</field>
+		</record>
+		<record id="state_pe_24_provincia_de_zarumilla" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Zarumilla</field>
+		</record>
+		<record id="state_pe_24_tumbes" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Tumbes</field>
+		</record>
+		<record id="state_pe_24_zarumilla" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Zarumilla</field>
+		</record>
+		<record id="state_pe_24_zorritos" model="res.city">
+			<field name="state_id" ref="base.state_pe_24"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Zorritos</field>
+		</record>
+		<record id="state_pe_25_atalaya" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Atalaya</field>
+		</record>
+		<record id="state_pe_25_campoverde" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Campoverde</field>
+		</record>
+		<record id="state_pe_25_padre_abad" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Padre Abad</field>
+		</record>
+		<record id="state_pe_25_provincia_de_coronel_portillo" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Provincia De Coronel Portillo</field>
+		</record>
+		<record id="state_pe_25_pucallpa" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Pucallpa</field>
+		</record>
+		<record id="state_pe_25_purus" model="res.city">
+			<field name="state_id" ref="base.state_pe_25"></field>
+			<field name="country_id" ref="base.pe"></field>
+			<field name="name">Purus</field>
+		</record>
+	</data>
+</odoo>
