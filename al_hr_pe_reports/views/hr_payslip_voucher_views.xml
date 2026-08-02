@@ -2,18 +2,18 @@
 <odoo>
     <data>
 
-        <!-- Boleta individual: el form nativo SÍ tiene header. -->
+        <!-- Boleta individual: el form nativo SÍ tiene header.
+             NO se añade un botón de impresión: el «Imprimir» nativo ya
+             saca la boleta PE (ver `_get_pdf_reports`). Aquí solo va el
+             envío por correo, que es otra acción. -->
         <record id="view_hr_payslip_form_inherit_voucher" model="ir.ui.view">
             <field name="name">hr.payslip.form.inherit.boleta.pe</field>
             <field name="model">hr.payslip</field>
             <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="action_print_voucher" type="object"
-                            string="Boleta PE"
-                            invisible="not line_ids"/>
                     <button name="action_send_voucher_by_email" type="object"
-                            string="Enviar boleta PE"
+                            string="Enviar boleta"
                             invisible="state not in ('validated', 'paid')"/>
                 </xpath>
             </field>
@@ -44,11 +44,11 @@
                 <xpath expr="//t[@t-name='menu']" position="inside">
                     <button name="action_print_vouchers" type="object"
                             class="btn btn-secondary"
-                            string="Imprimir boletas PE"
+                            string="Imprimir boletas"
                             invisible="state not in ('02_close', '03_paid')"/>
                     <button name="action_send_vouchers_by_email" type="object"
                             class="btn btn-secondary"
-                            string="Enviar boletas PE por correo"
+                            string="Enviar boletas por correo"
                             invisible="state not in ('02_close', '03_paid')"/>
                 </xpath>
             </field>

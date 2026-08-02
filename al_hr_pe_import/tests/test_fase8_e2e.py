@@ -425,10 +425,10 @@ class TestFase8E2EMulticompania(TransactionCase):
             data = slip._get_voucher_report_data()
             # El voucher usa los parámetros de SU compañía
             self.assertEqual(data['param'], datos['param'])
-            # Totales por columna coherentes con las filas alineadas
-            ingresos = [f[0] for f in data['filas'] if f[0]]
-            descuentos = [f[1] for f in data['filas'] if f[1]]
-            aportes = [f[2] for f in data['filas'] if f[2]]
+            # Totales por columna coherentes con sus conceptos
+            ingresos = data['ingresos']
+            descuentos = data['descuentos']
+            aportes = data['aportes_empleador']
             self.assertAlmostEqual(
                 data['total_ingresos'],
                 custom_round(sum(l['importe'] for l in ingresos)),
@@ -454,19 +454,34 @@ class TestFase8E2EMulticompania(TransactionCase):
                 delta=0.1)
             self.assertTrue(data['neto_letras'].startswith('SON:'))
             self.assertGreater(data['dias_laborados'], 0)
+            # Un solo camino de impresión: el botón «Imprimir» nativo
+            # resuelve el reporte por aquí y debe dar la boleta legal PE,
+            # no la plantilla genérica de Odoo.
+            boleta = self.env.ref('al_hr_pe_reports.action_report_boleta_pago')
+            reportes = slip._get_pdf_reports()
+            self.assertEqual(list(reportes.keys()), [boleta],
+                             'El PDF del payslip PE debe ser la boleta legal')
+            self.assertEqual(slip.struct_id.report_id, boleta,
+                             'La estructura peruana debe apuntar a la boleta')
+
             # Render HTML del QWeb (el PDF es pesado para un e2e)
             html = self.env['ir.actions.report']._render_qweb_html(
                 'al_hr_pe_reports.action_report_boleta_pago', slip.ids)[0]
             texto = html.decode() if isinstance(html, bytes) else str(html)
             self.assertIn('Boleta de pago emitida conforme', texto)
+            # Bloques numerados del rediseño
+            for bloque in ('1. Datos del trabajador',
+                           '2. Días y horas del periodo',
+                           '3. Conceptos remunerativos'):
+                self.assertIn(bloque, texto,
+                              'Falta el bloque «%s» en la boleta' % bloque)
 
         # La retención judicial (SUNAT 0703) sale en la columna de
         # descuentos de la boleta de Alfa
         data_rj = self.a['boleta_ret_jud']._get_voucher_report_data()
-        descuentos_rj = [f[1] for f in data_rj['filas'] if f[1]]
         self.assertIn(
             ('0703', IMPORTE_RET_JUD),
-            [(l['codigo'], l['importe']) for l in descuentos_rj],
+            [(l['codigo'], l['importe']) for l in data_rj['descuentos']],
             'La boleta no muestra la retención judicial 0703')
 
     # ------------------------------------------------------------------

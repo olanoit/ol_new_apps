@@ -19,21 +19,30 @@
              registro (mismo esquema que la guía de remisión del proyecto).
              El estilo va inline en <style> (B/N, tipografía compacta) con
              prefijo .bpe- propio; incluye el reset anti-bordes fantasma de
-             wkhtmltopdf+BS5 y tablas en rejilla clásica collapse/1px. -->
-        <template id="report_boleta_pago_document">
+             wkhtmltopdf+BS5 y tablas en rejilla clásica collapse/1px.
+
+             El nombre lleva «l10n_pe» a propósito: el dominio nativo de
+             `hr.payroll.structure.report_id` solo ofrece plantillas cuyo
+             report_name contiene l10n_<código de país>, y `_get_pdf_reports`
+             usa el mismo criterio para no pisar otra plantilla peruana. -->
+        <template id="report_l10n_pe_boleta_pago_document">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <t t-call="al_hr_pe_reports.report_boleta_pago_page"/>
+                    <t t-call="al_hr_pe_reports.report_l10n_pe_boleta_pago_page"/>
                 </t>
             </t>
         </template>
 
-        <template id="report_boleta_pago_page">
+        <template id="report_l10n_pe_boleta_pago_page">
             <!-- La clase "article" es obligatoria: _prepare_html() solo
                  envuelve en web.minimal_layout (charset UTF-8 + CSS) los
                  divs .article; sin ella el PDF sale sin estilos y con
-                 mojibake. -->
+                 mojibake.
+                 El salto de página va por estilo condicional y no en la
+                 clase: `page-break-after: always` en el último documento
+                 deja una página en blanco al final del PDF. -->
             <div class="article bpe-a4"
+                 t-att-style="'page-break-after: always;' if not o_last else ''"
                  t-att-data-oe-model="o and o._name"
                  t-att-data-oe-id="o and o.id"
                  t-att-data-oe-lang="o and o.env.context.get('lang')">
@@ -45,7 +54,6 @@
                         color: #000;
                         max-width: 21cm;
                         margin: 0 auto;
-                        page-break-after: always;
                     }
                     .bpe-a4 table {
                         border-collapse: collapse;
@@ -60,18 +68,8 @@
                         border: none;
                     }
                     .bpe-a4 td, .bpe-a4 th { padding: 1.5px 4px; }
-                    .bpe-title {
-                        text-align: center;
-                        font-size: 12.5px;
-                        font-weight: bold;
-                        letter-spacing: 1px;
-                        margin: 4px 0 1px 0;
-                    }
-                    .bpe-subtitle {
-                        text-align: center;
-                        font-size: 8.5px;
-                        margin-bottom: 6px;
-                    }
+
+                    /* --- Encabezado --- */
                     .bpe-header td { vertical-align: top; }
                     .bpe-header-logo { width: 18%; }
                     .bpe-header-logo img { max-width: 120px; max-height: 55px; }
@@ -86,6 +84,32 @@
                     }
                     .bpe-doc-box .bpe-doc-ruc { font-weight: bold; font-size: 10.5px; }
                     .bpe-doc-box .bpe-doc-periodo { font-size: 9.5px; }
+                    .bpe-title {
+                        text-align: center;
+                        font-size: 12.5px;
+                        font-weight: bold;
+                        letter-spacing: 1px;
+                        margin: 4px 0 1px 0;
+                    }
+                    .bpe-subtitle {
+                        text-align: center;
+                        font-size: 8.5px;
+                        margin-bottom: 4px;
+                    }
+
+                    /* --- Bloques numerados --- */
+                    .bpe-block { margin-top: 5px; }
+                    .bpe-block-title {
+                        background-color: #e8e8e8;
+                        border: 1px solid #000;
+                        border-bottom: none;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        font-size: 8.5px;
+                        letter-spacing: 0.5px;
+                        padding: 2px 4px;
+                    }
+
                     /* Rejilla clásica: collapse + 1px negro, sin radius
                        (wkhtmltopdf pinta contornos difusos con radius). */
                     .bpe-grid td, .bpe-grid th { border: 1px solid #000; }
@@ -96,24 +120,55 @@
                         text-transform: uppercase;
                         font-size: 8.5px;
                     }
-                    .bpe-label { font-weight: bold; white-space: nowrap; }
+                    .bpe-label {
+                        font-weight: bold;
+                        white-space: nowrap;
+                        background-color: #fafafa;
+                        width: 12%;
+                    }
                     .bpe-num { text-align: right; white-space: nowrap; }
                     .bpe-center { text-align: center; }
-                    .bpe-section { margin-top: 6px; }
-                    .bpe-concept-code { width: 6%; font-size: 8.5px; }
-                    .bpe-concept-name { width: 17%; }
-                    .bpe-concept-amount { width: 10%; }
+
+                    /* --- Conceptos: tres bloques independientes --- */
+                    .bpe-concepts { table-layout: fixed; }
+                    .bpe-concepts > tbody > tr > td {
+                        vertical-align: top;
+                        padding: 0;
+                        width: 33.33%;
+                    }
+                    .bpe-concepts > tbody > tr > td + td { padding-left: 4px; }
+                    /* fixed: sin él cada bloque autoajusta sus columnas al
+                       texto que le tocó y los tres cuadros salen con
+                       anchos distintos. */
+                    /* height 100 % + fila de relleno: los tres cuadros
+                       cierran a la misma altura aunque tengan distinto
+                       número de conceptos. */
+                    .bpe-concepts table { table-layout: fixed; height: 100%; }
+                    .bpe-concepts .bpe-filler td { height: 100%; }
+                    .bpe-concept-code { width: 20%; font-size: 8.5px; }
+                    .bpe-concept-amount { width: 28%; }
+                    .bpe-concepts td { word-wrap: break-word; }
                     .bpe-total-row td {
                         font-weight: bold;
                         background-color: #f5f5f5;
                     }
-                    .bpe-net-box {
+                    .bpe-empty-row td { color: #fff; }
+
+                    /* --- Neto --- */
+                    .bpe-net td {
                         border: 1px solid #000;
-                        margin-top: 6px;
-                        padding: 4px 8px;
                         font-weight: bold;
+                        padding: 4px 6px;
                     }
-                    .bpe-firmas { margin-top: 34px; }
+                    .bpe-net .bpe-net-amount {
+                        width: 32%;
+                        text-align: right;
+                        font-size: 11.5px;
+                        background-color: #f5f5f5;
+                    }
+
+                    /* --- Firmas --- */
+                    .bpe-firmas { margin-top: 30px; }
                     .bpe-firmas td {
                         width: 50%;
                         text-align: center;
@@ -131,7 +186,6 @@
                     .bpe-footer-note {
                         margin-top: 8px;
                         font-size: 7.5px;
-                        color: #000;
                     }
                 </style>
 
@@ -139,7 +193,7 @@
                 <t t-set="v" t-value="o.version_id"/>
                 <t t-set="emp" t-value="o.employee_id"/>
 
-                <!-- 1. ENCABEZADO: logo | empleador | recuadro RUC/periodo -->
+                <!-- ============ ENCABEZADO ============ -->
                 <table class="bpe-header">
                     <tr>
                         <td class="bpe-header-logo">
@@ -167,9 +221,8 @@
                             <div class="bpe-doc-ruc">RUC: <span t-field="o.company_id.vat"/></div>
                             <div>BOLETA DE PAGO</div>
                             <div class="bpe-doc-periodo">
-                                Periodo:
                                 <span t-field="o.date_from" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                                -
+                                al
                                 <span t-field="o.date_to" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
                             </div>
                         </td>
@@ -182,142 +235,194 @@
                     <t t-if="o.payslip_run_id"> · Planilla: <span t-esc="o.payslip_run_id.name"/></t>
                 </div>
 
-                <!-- 2. DATOS DEL TRABAJADOR -->
-                <table class="bpe-grid bpe-section">
-                    <tr>
-                        <td class="bpe-label">Trabajador</td>
-                        <td colspan="3"><span t-esc="emp.name"/></td>
-                        <td class="bpe-label">
-                            <span t-esc="emp.l10n_latam_identification_type_id.name or 'Documento'"/>
-                        </td>
-                        <td><span t-esc="emp.identification_id"/></td>
-                    </tr>
-                    <tr>
-                        <td class="bpe-label">Fecha de ingreso</td>
-                        <td>
-                            <span t-if="d['fecha_ingreso']" t-esc="d['fecha_ingreso'].strftime('%d/%m/%Y')"/>
-                        </td>
-                        <td class="bpe-label">Fecha de cese</td>
-                        <td>
-                            <span t-if="d['fecha_cese']" t-esc="d['fecha_cese'].strftime('%d/%m/%Y')"/>
-                        </td>
-                        <td class="bpe-label">Situación</td>
-                        <td><span t-esc="d['situacion']"/></td>
-                    </tr>
-                    <tr>
-                        <td class="bpe-label">Cargo</td>
-                        <td><span t-esc="v.job_id.name or ''"/></td>
-                        <td class="bpe-label">Área</td>
-                        <td><span t-esc="v.department_id.name or ''"/></td>
-                        <td class="bpe-label">Tipo de trabajador</td>
-                        <td><span t-esc="v.worker_type_id.name or ''"/></td>
-                    </tr>
-                    <tr>
-                        <td class="bpe-label">Régimen pensionario</td>
-                        <td><span t-esc="o.membership_id.name or v.membership_id.name or ''"/></td>
-                        <td class="bpe-label">CUSPP</td>
-                        <td><span t-esc="v.l10n_pe_cuspp or ''"/></td>
-                        <td class="bpe-label">Régimen laboral</td>
-                        <td><span t-esc="d['regimen_laboral']"/></td>
-                    </tr>
-                    <tr>
-                        <td class="bpe-label">Remuneración básica</td>
-                        <td class="bpe-num">
-                            <!-- v19: wage vive en hr.version (el payslip
-                                 ya no tiene campo wage propio) -->
-                            <span t-esc="'{:,.2f}'.format(v.wage or 0.0)"/>
-                        </td>
-                        <td class="bpe-label">Condición</td>
-                        <td><span t-esc="d['condicion']"/></td>
-                        <td class="bpe-label">Otros empleadores 5ta</td>
-                        <td><t t-if="v.l10n_pe_other_employers">Sí</t><t t-else="">No</t></td>
-                    </tr>
-                </table>
+                <!-- ============ 1. TRABAJADOR ============ -->
+                <div class="bpe-block">
+                    <div class="bpe-block-title">1. Datos del trabajador</div>
+                    <table class="bpe-grid">
+                        <tr>
+                            <td class="bpe-label">Trabajador</td>
+                            <td colspan="3"><span t-esc="emp.name"/></td>
+                            <td class="bpe-label">
+                                <span t-esc="emp.l10n_latam_identification_type_id.name or 'Documento'"/>
+                            </td>
+                            <td><span t-esc="emp.identification_id"/></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-label">Fecha de ingreso</td>
+                            <td>
+                                <span t-if="d['fecha_ingreso']" t-esc="d['fecha_ingreso'].strftime('%d/%m/%Y')"/>
+                            </td>
+                            <td class="bpe-label">Fecha de cese</td>
+                            <td>
+                                <span t-if="d['fecha_cese']" t-esc="d['fecha_cese'].strftime('%d/%m/%Y')"/>
+                            </td>
+                            <td class="bpe-label">Situación</td>
+                            <td><span t-esc="d['situacion']"/></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-label">Cargo</td>
+                            <td><span t-esc="v.job_id.name or ''"/></td>
+                            <td class="bpe-label">Área</td>
+                            <td><span t-esc="v.department_id.name or ''"/></td>
+                            <td class="bpe-label">Tipo de trabajador</td>
+                            <td><span t-esc="v.worker_type_id.name or ''"/></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-label">Régimen laboral</td>
+                            <td><span t-esc="d['regimen_laboral']"/></td>
+                            <td class="bpe-label">Régimen de salud</td>
+                            <td><span t-esc="d['regimen_salud']"/></td>
+                            <td class="bpe-label">Condición</td>
+                            <td><span t-esc="d['condicion']"/></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-label">Régimen pensionario</td>
+                            <td><span t-esc="o.membership_id.name or v.membership_id.name or ''"/></td>
+                            <td class="bpe-label">CUSPP</td>
+                            <td><span t-esc="v.l10n_pe_cuspp or ''"/></td>
+                            <td class="bpe-label">Otros empleadores 5ta</td>
+                            <td><t t-if="v.l10n_pe_other_employers">Sí</t><t t-else="">No</t></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-label">Remuneración básica</td>
+                            <td class="bpe-num">
+                                <!-- v19: wage vive en hr.version (el payslip
+                                     ya no tiene campo wage propio) -->
+                                <span t-esc="'{:,.2f}'.format(v.wage or 0.0)"/>
+                            </td>
+                            <td class="bpe-label">Cuenta de abono</td>
+                            <td colspan="3"><span t-esc="d['cuenta_abono']"/></td>
+                        </tr>
+                    </table>
+                </div>
 
-                <!-- 3. DÍAS Y HORAS LABORADOS -->
-                <table class="bpe-grid bpe-section">
-                    <tr>
-                        <th>Días laborados</th>
-                        <th>Días no laborados</th>
-                        <th>Días subsidiados</th>
-                        <th>Días de vacaciones</th>
-                        <th>Horas ordinarias</th>
-                        <th>Horas sobretiempo</th>
-                    </tr>
-                    <tr>
-                        <td class="bpe-center"><span t-esc="'%g' % d['dias_laborados']"/></td>
-                        <td class="bpe-center"><span t-esc="'%g' % d['dias_no_laborados']"/></td>
-                        <td class="bpe-center"><span t-esc="'%g' % d['dias_subsidiados']"/></td>
-                        <td class="bpe-center"><span t-esc="'%g' % d['dias_vacaciones']"/></td>
-                        <td class="bpe-center"><span t-esc="d['horas_ordinarias']"/></td>
-                        <td class="bpe-center"><span t-esc="d['horas_sobretiempo']"/></td>
-                    </tr>
-                </table>
+                <!-- ============ 2. JORNADA ============ -->
+                <div class="bpe-block">
+                    <div class="bpe-block-title">2. Días y horas del periodo</div>
+                    <table class="bpe-grid">
+                        <tr>
+                            <th>Días laborados</th>
+                            <th>Días no laborados</th>
+                            <th>Días subsidiados</th>
+                            <th>Días de vacaciones</th>
+                            <th>Horas ordinarias</th>
+                            <th>Horas sobretiempo</th>
+                        </tr>
+                        <tr>
+                            <td class="bpe-center"><span t-esc="'%g' % d['dias_laborados']"/></td>
+                            <td class="bpe-center"><span t-esc="'%g' % d['dias_no_laborados']"/></td>
+                            <td class="bpe-center"><span t-esc="'%g' % d['dias_subsidiados']"/></td>
+                            <td class="bpe-center"><span t-esc="'%g' % d['dias_vacaciones']"/></td>
+                            <td class="bpe-center"><span t-esc="d['horas_ordinarias']"/></td>
+                            <td class="bpe-center"><span t-esc="d['horas_sobretiempo']"/></td>
+                        </tr>
+                    </table>
+                    <!-- Sobretiempo por sobretasa (D.S. 007-2002-TR art. 10) -->
+                    <table t-if="d['horas_extras']" class="bpe-grid">
+                        <tr>
+                            <th t-foreach="d['horas_extras']" t-as="he">
+                                <span t-esc="he['nombre']"/>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td t-foreach="d['horas_extras']" t-as="he"
+                                class="bpe-center">
+                                <span t-esc="he['horas']"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
-                <!-- 3b. SUSPENSIONES DE LABORES DEL PERIODO (T21) -->
-                <table t-if="d['suspensiones']" class="bpe-grid bpe-section">
-                    <tr>
-                        <th colspan="3">Motivo de suspensión de labores</th>
-                    </tr>
-                    <tr>
-                        <th style="width: 12%;">Tipo</th>
-                        <th>Motivo</th>
-                        <th style="width: 12%;">N° días</th>
-                    </tr>
-                    <tr t-foreach="d['suspensiones']" t-as="susp">
-                        <td class="bpe-center"><span t-esc="susp['codigo']"/></td>
-                        <td><span t-esc="susp['motivo']"/></td>
-                        <td class="bpe-center"><span t-esc="susp['dias']"/></td>
-                    </tr>
-                </table>
+                <!-- ============ 2b. SUSPENSIONES (T21) ============ -->
+                <div t-if="d['suspensiones']" class="bpe-block">
+                    <div class="bpe-block-title">
+                        2.1 Suspensión de labores
+                    </div>
+                    <table class="bpe-grid">
+                        <tr>
+                            <th style="width: 12%;">Tipo</th>
+                            <th>Motivo</th>
+                            <th style="width: 12%;">N° días</th>
+                        </tr>
+                        <tr t-foreach="d['suspensiones']" t-as="susp">
+                            <td class="bpe-center"><span t-esc="susp['codigo']"/></td>
+                            <td><span t-esc="susp['motivo']"/></td>
+                            <td class="bpe-center"><span t-esc="susp['dias']"/></td>
+                        </tr>
+                    </table>
+                </div>
 
-                <!-- 4. CONCEPTOS: ingresos | descuentos | aportes del
-                     empleador, con su código SUNAT (tabla 22 PLAME) -->
-                <table class="bpe-grid bpe-section">
-                    <tr>
-                        <th colspan="3">Ingresos</th>
-                        <th colspan="3">Descuentos</th>
-                        <th colspan="3">Aportes del empleador</th>
-                    </tr>
-                    <tr>
-                        <th class="bpe-concept-code">Cód.</th>
-                        <th class="bpe-concept-name">Concepto</th>
-                        <th class="bpe-concept-amount">S/</th>
-                        <th class="bpe-concept-code">Cód.</th>
-                        <th class="bpe-concept-name">Concepto</th>
-                        <th class="bpe-concept-amount">S/</th>
-                        <th class="bpe-concept-code">Cód.</th>
-                        <th class="bpe-concept-name">Concepto</th>
-                        <th class="bpe-concept-amount">S/</th>
-                    </tr>
-                    <tr t-foreach="d['filas']" t-as="fila">
-                        <t t-foreach="fila" t-as="celda">
-                            <t t-if="celda">
-                                <td class="bpe-concept-code"><span t-esc="celda['codigo']"/></td>
-                                <td><span t-esc="celda['nombre']"/></td>
-                                <td class="bpe-num"><span t-esc="'{:,.2f}'.format(celda['importe'])"/></td>
-                            </t>
-                            <t t-else="">
-                                <td/><td/><td/>
-                            </t>
-                        </t>
-                    </tr>
-                    <tr class="bpe-total-row">
-                        <td colspan="2">Total ingresos S/</td>
-                        <td class="bpe-num"><span t-esc="'{:,.2f}'.format(d['total_ingresos'])"/></td>
-                        <td colspan="2">Total descuentos S/</td>
-                        <td class="bpe-num"><span t-esc="'{:,.2f}'.format(d['total_descuentos'])"/></td>
-                        <td colspan="2">Total aportes S/</td>
-                        <td class="bpe-num"><span t-esc="'{:,.2f}'.format(d['total_aportes'])"/></td>
-                    </tr>
-                </table>
+                <!-- ============ 3. CONCEPTOS ============
+                     Tres bloques independientes lado a lado, cada uno con
+                     su cabecera propia. Los totales van en una segunda
+                     fila de la tabla exterior: así quedan alineados entre
+                     columnas sin depender de alturas iguales, que es lo
+                     que hacía frágil la rejilla única con zip_longest. -->
+                <div class="bpe-block">
+                    <div class="bpe-block-title">
+                        3. Conceptos remunerativos (código Tabla 22 SUNAT)
+                    </div>
+                    <table class="bpe-concepts">
+                        <tr>
+                            <t t-set="columnas" t-value="[
+                                ('Ingresos', d['ingresos']),
+                                ('Descuentos', d['descuentos']),
+                                ('Aportes del empleador', d['aportes_empleador'])]"/>
+                            <td t-foreach="columnas" t-as="columna">
+                                <table class="bpe-grid">
+                                    <tr>
+                                        <th colspan="3"><span t-esc="columna[0]"/></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="bpe-concept-code">Cód.</th>
+                                        <th>Concepto</th>
+                                        <th class="bpe-concept-amount">S/</th>
+                                    </tr>
+                                    <tr t-foreach="columna[1]" t-as="linea">
+                                        <td class="bpe-concept-code">
+                                            <span t-esc="linea['codigo']"/>
+                                        </td>
+                                        <td><span t-esc="linea['nombre']"/></td>
+                                        <td class="bpe-num">
+                                            <span t-esc="'{:,.2f}'.format(linea['importe'])"/>
+                                        </td>
+                                    </tr>
+                                    <!-- Sin conceptos la columna quedaría sin
+                                         cuerpo y el borde se descuadraría. -->
+                                    <tr t-if="not columna[1]" class="bpe-empty-row">
+                                        <td colspan="3">—</td>
+                                    </tr>
+                                    <tr class="bpe-filler">
+                                        <td colspan="3"/>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <t t-set="totales" t-value="[
+                                ('Total ingresos', d['total_ingresos']),
+                                ('Total descuentos', d['total_descuentos']),
+                                ('Total aportes', d['total_aportes'])]"/>
+                            <td t-foreach="totales" t-as="total">
+                                <table class="bpe-grid">
+                                    <tr class="bpe-total-row">
+                                        <td><span t-esc="total[0]"/> S/</td>
+                                        <td class="bpe-num bpe-concept-amount">
+                                            <span t-esc="'{:,.2f}'.format(total[1])"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
-                <!-- 5. NETO A PAGAR + IMPORTE EN LETRAS -->
-                <div class="bpe-net-box">
-                    <table>
+                <!-- ============ 4. NETO ============ -->
+                <div class="bpe-block">
+                    <table class="bpe-net">
                         <tr>
                             <td><span t-esc="d['neto_letras']"/></td>
-                            <td class="bpe-num" style="width: 30%;">
+                            <td class="bpe-net-amount">
                                 NETO A PAGAR S/
                                 <span t-esc="'{:,.2f}'.format(d['neto'])"/>
                             </td>
@@ -325,7 +430,7 @@
                     </table>
                 </div>
 
-                <!-- 6. FIRMAS: empleador (representante legal) | trabajador -->
+                <!-- ============ 5. FIRMAS ============ -->
                 <table class="bpe-firmas">
                     <tr>
                         <td>
@@ -345,6 +450,9 @@
                             </div>
                         </td>
                         <td>
+                            <!-- Mismo hueco de firma que el empleador para
+                                 que las dos líneas queden a la misma altura. -->
+                            <div class="bpe-firma-img"/>
                             <div class="bpe-firma-line">
                                 <div class="bpe-firma-name" t-esc="emp.name"/>
                                 <div t-if="emp.identification_id">
@@ -365,17 +473,19 @@
             </div>
         </template>
 
+        <!-- Sin `binding_model_id`: la boleta no debe aparecer también en
+             el menú «Imprimir». El único camino es el botón nativo
+             «Imprimir», que resuelve el reporte por `_get_pdf_reports`. -->
         <record id="action_report_boleta_pago" model="ir.actions.report">
             <field name="name">Boleta de pago (PE)</field>
             <field name="model">hr.payslip</field>
             <field name="report_type">qweb-pdf</field>
-            <field name="report_name">al_hr_pe_reports.report_boleta_pago_document</field>
-            <field name="report_file">al_hr_pe_reports.report_boleta_pago_document</field>
+            <field name="report_name">al_hr_pe_reports.report_l10n_pe_boleta_pago_document</field>
+            <field name="report_file">al_hr_pe_reports.report_l10n_pe_boleta_pago_document</field>
             <field name="print_report_name">'Boleta de pago - %s - %s' % (
                 object.employee_id.name or '', object.date_from)</field>
             <field name="paperformat_id" ref="al_hr_pe_reports.paperformat_boleta_pago"/>
-            <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
-            <field name="binding_type">report</field>
+            <field name="binding_model_id" eval="False"/>
         </record>
 
     </data>

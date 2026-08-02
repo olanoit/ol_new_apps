@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <!-- Un <record> con noupdate no tocaría las estructuras que ya
+             existen (su xmlid es de al_hr_pe, o las creó el cliente), y
+             sin noupdate pisaría la elección del usuario en cada
+             actualización. La función hace lo correcto: solo cambia las
+             que siguen con la plantilla genérica de Odoo. -->
+        <function model="hr.payroll.structure"
+                  name="_l10n_pe_sync_boleta_report"/>
+
+    </data>
+</odoo>

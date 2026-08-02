@@ -18,7 +18,7 @@ Port v18 → v19 de ``al_hr_payroll/hr_voucher`` con tres cambios de fondo
   (``odoo.tools.hmac``), verificado con ``consteq``.
 """
 import logging
-from itertools import zip_longest
+from collections import defaultdict
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
@@ -163,6 +163,19 @@ class HrPayslip(models.Model):
             wd_sum(wd_dlab, 'number_of_hours'))
         h_ext, m_ext = self._voucher_split_hours(
             wd_sum(wd_ext, 'number_of_hours'))
+        # Sobretiempo desglosado por tasa (25 % / 35 % / 100 %): el D.S.
+        # 007-2002-TR art. 10 fija sobretasas distintas y la boleta debe
+        # dejar ver cuántas horas se pagaron a cada una.
+        horas_extras = []
+        for wtype in wd_ext:
+            hours = wd_sum(wtype, 'number_of_hours')
+            if not hours:
+                continue
+            h_e, m_e = self._voucher_split_hours(hours)
+            horas_extras.append({
+                'nombre': wtype.name or '',
+                'horas': '%02d:%02d' % (h_e, m_e),
+            })
 
         # --- Conceptos por categoría (parámetros o xml ids de al_hr_pe;
         # plan §5.2: nada de códigos de regla hardcodeados) ---
@@ -222,10 +235,14 @@ class HrPayslip(models.Model):
                 'dias': days,
             } for stype, days in grouped]
 
-        # Filas del cuadro de 3 columnas (ingresos | descuentos |
-        # aportes del empleador), alineadas con zip_longest.
-        filas = list(zip_longest(ingresos, descuentos, aportes_empleador,
-                                 fillvalue=None))
+        # Cuenta de abono de haberes: dato que el trabajador contrasta
+        # con su banco y que la boleta peruana suele mostrar.
+        bank_account = employee.sudo().primary_bank_account_id
+        cuenta_abono = ''
+        if bank_account:
+            cuenta_abono = ' '.join(filter(None, [
+                bank_account.bank_id.name or '',
+                bank_account.acc_number or '']))
 
         # Etiquetas de selección (el QWeb no resuelve selections crudas)
         regimen_laboral = dict(
@@ -248,7 +265,12 @@ class HrPayslip(models.Model):
             'dias_vacaciones': dias_vacaciones,
             'horas_ordinarias': '%02d:%02d' % (h_ord, m_ord),
             'horas_sobretiempo': '%02d:%02d' % (h_ext, m_ext),
-            'filas': filas,
+            'horas_extras': horas_extras,
+            'cuenta_abono': cuenta_abono,
+            'regimen_salud': version.social_insurance_id.name or '',
+            'ingresos': ingresos,
+            'descuentos': descuentos,
+            'aportes_empleador': aportes_empleador,
             'total_ingresos': total_ingresos,
             'total_descuentos': total_descuentos,
             'total_aportes': total_aportes,
@@ -258,12 +280,36 @@ class HrPayslip(models.Model):
         }
 
     # ------------------------------------------------------------------
-    # Acciones
+    # Un solo camino de impresión
     # ------------------------------------------------------------------
-    def action_print_voucher(self):
-        """Imprime la boleta de pago PE (reporte adicional al nativo)."""
-        return self.env.ref(
-            'al_hr_pe_reports.action_report_boleta_pago').report_action(self)
+    def _get_pdf_reports(self):
+        """La boleta legal PE sustituye a la plantilla genérica de Odoo.
+
+        Odoo 19 imprime, adjunta al confirmar y envía por correo el PDF
+        que devuelve este método (``struct_id.report_id``, con la
+        plantilla genérica por defecto). En Perú el documento que se
+        entrega al trabajador es la boleta del D.S. 001-98-TR, así que
+        toda estructura que siga apuntando a una plantilla no peruana se
+        redirige aquí. Así el botón «Imprimir» nativo —el único que hay—
+        saca la boleta directamente, sin duplicar botones ni acciones.
+
+        Se respeta la configuración explícita: si la estructura apunta a
+        otra plantilla peruana (``l10n_pe`` en su ``report_name``, el
+        mismo criterio que usa el dominio nativo de ``report_id``), esa
+        manda.
+        """
+        result = super()._get_pdf_reports()
+        boleta = self.env.ref('al_hr_pe_reports.action_report_boleta_pago',
+                              raise_if_not_found=False)
+        if not boleta:
+            return result
+        remapped = defaultdict(lambda: self.env['hr.payslip'])
+        for report, payslips in result.items():
+            for payslip in payslips:
+                is_pe = payslip.company_id.country_id.code == 'PE'
+                localized = 'l10n_pe' in (report.report_name or '')
+                remapped[boleta if is_pe and not localized else report] |= payslip
+        return remapped
 
     def action_send_voucher_by_email(self):
         """Envía la boleta por correo al trabajador (individual o masivo).
@@ -340,10 +386,12 @@ class HrPayslipRun(models.Model):
         return slips
 
     def action_print_vouchers(self):
-        """Imprime en un solo PDF las boletas PE del lote."""
-        slips = self._get_voucher_slips()
-        return self.env.ref(
-            'al_hr_pe_reports.action_report_boleta_pago').report_action(slips)
+        """Imprime en un solo PDF las boletas del lote.
+
+        Pasa por la acción nativa para no abrir un segundo camino de
+        impresión: ``_get_pdf_reports`` ya devuelve la boleta PE.
+        """
+        return self._get_voucher_slips().action_print_payslip()
 
     def action_send_vouchers_by_email(self):
         """Envía por correo las boletas PE de todo el lote."""
