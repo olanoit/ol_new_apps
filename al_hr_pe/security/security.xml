@@ -57,5 +57,85 @@
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
+
+        <record id="l10n_pe_dependent_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de derechohabiente: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_dependent_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_dependent_end_reason_company_rule" model="ir.rule">
+            <field name="name">Motivo de baja de derechohabiente: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_dependent_end_reason"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_dependent_company_rule" model="ir.rule">
+            <field name="name">Derechohabiente: solo de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_dependent"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+
+        <record id="l10n_pe_dependent_proof_company_rule" model="ir.rule">
+            <field name="name">Documento que sustenta el vínculo: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_dependent_proof"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_education_level_company_rule" model="ir.rule">
+            <field name="name">Situación educativa: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_education_level"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_contract_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de contrato: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_contract_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_occupational_category_company_rule" model="ir.rule">
+            <field name="name">Categoría ocupacional: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_occupational_category"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_occupation_company_rule" model="ir.rule">
+            <field name="name">Ocupación: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_occupation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_labor_regime_company_rule" model="ir.rule">
+            <field name="name">Régimen laboral: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_labor_regime"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="l10n_pe_road_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de vía: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_road_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_zone_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de zona: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_zone_type"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="l10n_pe_edu_institution_company_rule" model="ir.rule">
+            <field name="name">Institución educativa: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_education_institution"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_edu_career_company_rule" model="ir.rule">
+            <field name="name">Carrera: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_education_career"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_fin_entity_company_rule" model="ir.rule">
+            <field name="name">Entidad financiera: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_financial_entity"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="l10n_pe_employee_education_company_rule" model="ir.rule">
+            <field name="name">Estudios concluidos: solo de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_employee_education"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

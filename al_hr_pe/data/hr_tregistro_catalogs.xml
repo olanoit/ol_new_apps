@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Generado desde el Anexo 2 de la Planilla Electrónica
+         (tablas_parametricas_actualizada-31-07-26.xlsx, SUNAT).
+         Catálogos globales: una compañía puede crear su override. -->
+    <data>
+        <record id="education_level_01" model="l10n_pe.hr.education.level">
+            <field name="code">01</field>
+            <field name="name">Sin Educación Formal</field>
+            <field name="description">Sin educación formal</field>
+        </record>
+        <record id="education_level_02" model="l10n_pe.hr.education.level">
+            <field name="code">02</field>
+            <field name="name">Especial Incompleta</field>
+            <field name="description">Educación especial incompleta</field>
+        </record>
+        <record id="education_level_03" model="l10n_pe.hr.education.level">
+            <field name="code">03</field>
+            <field name="name">Especial Completa</field>
+            <field name="description">Educación especial completa</field>
+        </record>
+        <record id="education_level_04" model="l10n_pe.hr.education.level">
+            <field name="code">04</field>
+            <field name="name">Primaria Incompleta</field>
+            <field name="description">Educación primaria incompleta</field>
+        </record>
+        <record id="education_level_05" model="l10n_pe.hr.education.level">
+            <field name="code">05</field>
+            <field name="name">Primaria Completa</field>
+            <field name="description">Educación primaria completa</field>
+        </record>
+        <record id="education_level_06" model="l10n_pe.hr.education.level">
+            <field name="code">06</field>
+            <field name="name">Secundaria Incompleta</field>
+            <field name="description">Educación secundaria incompleta</field>
+        </record>
+        <record id="education_level_07" model="l10n_pe.hr.education.level">
+            <field name="code">07</field>
+            <field name="name">Secundaria Completa</field>
+            <field name="description">Educación secundaria completa</field>
+        </record>
+        <record id="education_level_08" model="l10n_pe.hr.education.level">
+            <field name="code">08</field>
+            <field name="name">Técnica Incompleta</field>
+            <field name="description">Educación técnica incompleta (2)</field>
+        </record>
+        <record id="education_level_09" model="l10n_pe.hr.education.level">
+            <field name="code">09</field>
+            <field name="name">Técnica Completa</field>
+            <field name="description">Educación técnica completa (2)</field>
+        </record>
+        <record id="education_level_10" model="l10n_pe.hr.education.level">
+            <field name="code">10</field>
+            <field name="name">Superior Incompleta (Instit. Super)</field>
+            <field name="description">Educación superior (instituto superior, etc) incompleta (3)</field>
+        </record>
+        <record id="education_level_11" model="l10n_pe.hr.education.level">
+            <field name="code">11</field>
+            <field name="name">Superior Completa  (Instit Super)</field>
+            <field name="description">Educación superior (instituto superior, etc) completa  (3)</field>
+        </record>
+        <record id="education_level_12" model="l10n_pe.hr.education.level">
+            <field name="code">12</field>
+            <field name="name">Universitaria Incompleta</field>
+            <field name="description">Educación universitaria incompleta  (4)</field>
+        </record>
+        <record id="education_level_13" model="l10n_pe.hr.education.level">
+            <field name="code">13</field>
+            <field name="name">Universitaria Completa</field>
+            <field name="description">Educación universitaria completa (4)</field>
+        </record>
+        <record id="education_level_14" model="l10n_pe.hr.education.level">
+            <field name="code">14</field>
+            <field name="name">Grado De Bachiller</field>
+            <field name="description">Grado de bachiller</field>
+        </record>
+        <record id="education_level_15" model="l10n_pe.hr.education.level">
+            <field name="code">15</field>
+            <field name="name">Titulado</field>
+        </record>
+        <record id="education_level_16" model="l10n_pe.hr.education.level">
+            <field name="code">16</field>
+            <field name="name">Estud. Maestría Incompleta</field>
+            <field name="description">Estudios de maestría incompleta</field>
+        </record>
+        <record id="education_level_17" model="l10n_pe.hr.education.level">
+            <field name="code">17</field>
+            <field name="name">Estud. Maestría Completa</field>
+            <field name="description">Estudios de maestría completa</field>
+        </record>
+        <record id="education_level_18" model="l10n_pe.hr.education.level">
+            <field name="code">18</field>
+            <field name="name">Grado De Maestría</field>
+            <field name="description">Grado de maestría</field>
+        </record>
+        <record id="education_level_19" model="l10n_pe.hr.education.level">
+            <field name="code">19</field>
+            <field name="name">Estud. Doctorado Incompleto</field>
+            <field name="description">Estudios de doctorado incompleto</field>
+        </record>
+        <record id="education_level_20" model="l10n_pe.hr.education.level">
+            <field name="code">20</field>
+            <field name="name">Estud. Doctorado Completo</field>
+            <field name="description">Estudios de doctorado completo</field>
+        </record>
+        <record id="education_level_21" model="l10n_pe.hr.education.level">
+            <field name="code">21</field>
+            <field name="name">Grado De Doctor</field>
+            <field name="description">Grado de doctor</field>
+        </record>
+
+        <record id="contract_type_01" model="l10n_pe.hr.contract.type">
+            <field name="code">01</field>
+            <field name="name">A Plazo Indet - D.Leg. 728</field>
+            <field name="description">A plazo indeterminado - d.leg. 728</field>
+        </record>
+        <record id="contract_type_02" model="l10n_pe.hr.contract.type">
+            <field name="code">02</field>
+            <field name="name">A Tiempo Parcial</field>
+            <field name="description">A tiempo parcial</field>
+        </record>
+        <record id="contract_type_03" model="l10n_pe.hr.contract.type">
+            <field name="code">03</field>
+            <field name="name">Por Inicio O Increm De Activ</field>
+            <field name="description">Por inicio o incremento de actividad</field>
+        </record>
+        <record id="contract_type_04" model="l10n_pe.hr.contract.type">
+            <field name="code">04</field>
+            <field name="name">Por Neces Del Mercado</field>
+            <field name="description">Por necesidades del mercado</field>
+        </record>
+        <record id="contract_type_05" model="l10n_pe.hr.contract.type">
+            <field name="code">05</field>
+            <field name="name">Por Reconv Empresarial</field>
+            <field name="description">Por reconversión empresarial</field>
+        </record>
+        <record id="contract_type_06" model="l10n_pe.hr.contract.type">
+            <field name="code">06</field>
+            <field name="name">Ocasional</field>
+        </record>
+        <record id="contract_type_07" model="l10n_pe.hr.contract.type">
+            <field name="code">07</field>
+            <field name="name">De Suplencia</field>
+            <field name="description">De suplencia</field>
+        </record>
+        <record id="contract_type_08" model="l10n_pe.hr.contract.type">
+            <field name="code">08</field>
+            <field name="name">De Emergencia</field>
+            <field name="description">De emergencia</field>
+        </record>
+        <record id="contract_type_09" model="l10n_pe.hr.contract.type">
+            <field name="code">09</field>
+            <field name="name">Obra Determ O Serv Espec</field>
+            <field name="description">Para obra determinada o servicio específico</field>
+        </record>
+        <record id="contract_type_10" model="l10n_pe.hr.contract.type">
+            <field name="code">10</field>
+            <field name="name">Intermitente</field>
+        </record>
+        <record id="contract_type_11" model="l10n_pe.hr.contract.type">
+            <field name="code">11</field>
+            <field name="name">De Temporada</field>
+            <field name="description">De temporada</field>
+        </record>
+        <record id="contract_type_12" model="l10n_pe.hr.contract.type">
+            <field name="code">12</field>
+            <field name="name">De Export. No Tradic.</field>
+            <field name="description">De exportación no tradicional d.ley 22342</field>
+        </record>
+        <record id="contract_type_13" model="l10n_pe.hr.contract.type">
+            <field name="code">13</field>
+            <field name="name">De Extranjero - D.Leg. 689</field>
+            <field name="description">De extranjero - d.leg.689</field>
+        </record>
+        <record id="contract_type_14" model="l10n_pe.hr.contract.type">
+            <field name="code">14</field>
+            <field name="name">Cas  - D.Leg 1057</field>
+            <field name="description">Administrativo de servicios - d.leg 1057 (1)</field>
+        </record>
+        <record id="contract_type_15" model="l10n_pe.hr.contract.type">
+            <field name="code">15</field>
+            <field name="name">Nombrado - D.Leg. N.° 276 (1)</field>
+            <field name="description">Nombrado - d.leg. n.° 276 (1)</field>
+        </record>
+        <record id="contract_type_16" model="l10n_pe.hr.contract.type">
+            <field name="code">16</field>
+            <field name="name">Serv. Pers  - Regím. De Carrera (1)</field>
+            <field name="description">Servicios personales  - aplicables a los regím. de carrera (1)</field>
+        </record>
+        <record id="contract_type_17" model="l10n_pe.hr.contract.type">
+            <field name="code">17</field>
+            <field name="name">Gerente Público - Dl 1024</field>
+            <field name="description">Gerente público - d.leg. 1024 (1)</field>
+        </record>
+        <record id="contract_type_18" model="l10n_pe.hr.contract.type">
+            <field name="code">18</field>
+            <field name="name">A Domicilio</field>
+            <field name="description">A domicilio</field>
+        </record>
+        <record id="contract_type_19" model="l10n_pe.hr.contract.type">
+            <field name="code">19</field>
+            <field name="name">Futbolistas Profesionales</field>
+            <field name="description">Futbolistas profesionales</field>
+        </record>
+        <record id="contract_type_20" model="l10n_pe.hr.contract.type">
+            <field name="code">20</field>
+            <field name="name">Agrario - Ley 27360</field>
+            <field name="description">Agrario - ley 27360</field>
+        </record>
+        <record id="contract_type_21" model="l10n_pe.hr.contract.type">
+            <field name="code">21</field>
+            <field name="name">Migrante Andino</field>
+            <field name="description">Migrante andino decisión 545</field>
+        </record>
+        <record id="contract_type_22" model="l10n_pe.hr.contract.type">
+            <field name="code">22</field>
+            <field name="name">A Plazo Indeterminado - Ley 30057</field>
+            <field name="description">A plazo indeterminado - ley 30057</field>
+        </record>
+        <record id="contract_type_23" model="l10n_pe.hr.contract.type">
+            <field name="code">23</field>
+            <field name="name">A Plazo Fijo - Ley 30057</field>
+            <field name="description">A plazo fijo - ley 30057</field>
+        </record>
+        <record id="contract_type_24" model="l10n_pe.hr.contract.type">
+            <field name="code">24</field>
+            <field name="name">Nombrado Carreras Especiales</field>
+            <field name="description">Nombrado - carreras especiales del sector público</field>
+        </record>
+        <record id="contract_type_25" model="l10n_pe.hr.contract.type">
+            <field name="code">25</field>
+            <field name="name">Contratado Carreras Especiales</field>
+            <field name="description">Contratado - carreras especiales del sector público</field>
+        </record>
+        <record id="contract_type_99" model="l10n_pe.hr.contract.type">
+            <field name="code">99</field>
+            <field name="name">Otros No Previstos</field>
+            <field name="description">Otros no previstos</field>
+        </record>
+
+        <record id="occ_category_01" model="l10n_pe.hr.occupational.category">
+            <field name="code">01</field>
+            <field name="name">Ejecutivo</field>
+            <field name="occupation_field">executive</field>
+        </record>
+        <record id="occ_category_02" model="l10n_pe.hr.occupational.category">
+            <field name="code">02</field>
+            <field name="name">Obrero</field>
+            <field name="occupation_field">worker</field>
+        </record>
+        <record id="occ_category_03" model="l10n_pe.hr.occupational.category">
+            <field name="code">03</field>
+            <field name="name">Empleado</field>
+            <field name="occupation_field">employee</field>
+        </record>
+        <record id="occ_category_11" model="l10n_pe.hr.occupational.category">
+            <field name="code">11</field>
+            <field name="name">Funcionario</field>
+        </record>
+        <record id="occ_category_12" model="l10n_pe.hr.occupational.category">
+            <field name="code">12</field>
+            <field name="name">Profesional</field>
+        </record>
+        <record id="occ_category_13" model="l10n_pe.hr.occupational.category">
+            <field name="code">13</field>
+            <field name="name">Técnico</field>
+        </record>
+        <record id="occ_category_14" model="l10n_pe.hr.occupational.category">
+            <field name="code">14</field>
+            <field name="name">Auxiliar</field>
+        </record>
+        <record id="occ_category_21" model="l10n_pe.hr.occupational.category">
+            <field name="code">21</field>
+            <field name="name">Funcionario Público - Ley 30057</field>
+            <field name="description">Funcionario público - ley 30057</field>
+        </record>
+        <record id="occ_category_22" model="l10n_pe.hr.occupational.category">
+            <field name="code">22</field>
+            <field name="name">Directivo Público - Ley 30057</field>
+            <field name="description">Directivo público - ley 30057</field>
+        </record>
+        <record id="occ_category_23" model="l10n_pe.hr.occupational.category">
+            <field name="code">23</field>
+            <field name="name">Servidor Civil De Carrera - Ley 30057</field>
+            <field name="description">Servidor civil de carrera - ley 30057</field>
+        </record>
+        <record id="occ_category_24" model="l10n_pe.hr.occupational.category">
+            <field name="code">24</field>
+            <field name="name">Servidor De Actividades Complementarias - Ley 30057</field>
+            <field name="description">Servidor de actividades complementarias - ley 30057</field>
+        </record>
+
+        <record id="labor_regime_01" model="l10n_pe.hr.labor.regime">
+            <field name="code">01</field>
+            <field name="name">D Leg N.° 728</field>
+            <field name="description">Privado general -decreto legislativo n.° 728</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_02" model="l10n_pe.hr.labor.regime">
+            <field name="code">02</field>
+            <field name="name">D.Leg N.° 276</field>
+            <field name="description">Público general - decreto legislativo n.° 276</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_03" model="l10n_pe.hr.labor.regime">
+            <field name="code">03</field>
+            <field name="name">Profesorado Ley 24029</field>
+            <field name="description">Profesorado - ley n.° 24029</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_04" model="l10n_pe.hr.labor.regime">
+            <field name="code">04</field>
+            <field name="name">Magisterio  Ley 29062</field>
+            <field name="description">Magisterio - ley n.° 29062</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_05" model="l10n_pe.hr.labor.regime">
+            <field name="code">05</field>
+            <field name="name">Doc Univers Ley 23733</field>
+            <field name="description">Docentes universitarios - ley n.° 23733</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_06" model="l10n_pe.hr.labor.regime">
+            <field name="code">06</field>
+            <field name="name">Profes Salud Ley 23536</field>
+            <field name="description">Profesionales de la salud ley n.° 23536</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_07" model="l10n_pe.hr.labor.regime">
+            <field name="code">07</field>
+            <field name="name">Tecn Y Aux Asist Salud Ley 28561</field>
+            <field name="description">Tecnicos y auxiliares asist. de la salud - ley n.° 28561</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_08" model="l10n_pe.hr.labor.regime">
+            <field name="code">08</field>
+            <field name="name">Serum Ley 23330</field>
+            <field name="description">Serum - ley n.° 23330</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_09" model="l10n_pe.hr.labor.regime">
+            <field name="code">09</field>
+            <field name="name">Jueces Ley 29277</field>
+            <field name="description">Jueces - carrera judicial - ley n.° 29277</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_10" model="l10n_pe.hr.labor.regime">
+            <field name="code">10</field>
+            <field name="name">Fiscales D.Leg 052</field>
+            <field name="description">Fiscales - d. leg.  n.° 052</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_11" model="l10n_pe.hr.labor.regime">
+            <field name="code">11</field>
+            <field name="name">Servicio Diplom. República Ley 28091</field>
+            <field name="description">Servicio diplomático de la república - ley n.° 28091</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_12" model="l10n_pe.hr.labor.regime">
+            <field name="code">12</field>
+            <field name="name">Militares</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_13" model="l10n_pe.hr.labor.regime">
+            <field name="code">13</field>
+            <field name="name">Policias Ley 27238</field>
+            <field name="description">Policia nacional del perú - ley n.° 27238</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_14" model="l10n_pe.hr.labor.regime">
+            <field name="code">14</field>
+            <field name="name">Especial Ger. Públ D Leg 1024</field>
+            <field name="description">Especial ger. públicos decreto legislativo n.° 1024 (2)</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_15" model="l10n_pe.hr.labor.regime">
+            <field name="code">15</field>
+            <field name="name">Cas D.Leg 1057</field>
+            <field name="description">Contrato administrativo de servicios - d.leg. n.° 1057</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_16" model="l10n_pe.hr.labor.regime">
+            <field name="code">16</field>
+            <field name="name">Microempresa</field>
+            <field name="description">Microempresa d. leg. 1086 (1)</field>
+            <field name="regime_kind">micro</field>
+        </record>
+        <record id="labor_regime_17" model="l10n_pe.hr.labor.regime">
+            <field name="code">17</field>
+            <field name="name">Pequeña Empresa</field>
+            <field name="description">Pequeña empresa d. leg. 1086 (1)</field>
+            <field name="regime_kind">small</field>
+        </record>
+        <record id="labor_regime_18" model="l10n_pe.hr.labor.regime">
+            <field name="code">18</field>
+            <field name="name">Agrario</field>
+            <field name="description">Agrario ley 27360</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_19" model="l10n_pe.hr.labor.regime">
+            <field name="code">19</field>
+            <field name="name">Exportacion No Tradicional</field>
+            <field name="description">Exportacion no tradicional d. ley 22342</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_20" model="l10n_pe.hr.labor.regime">
+            <field name="code">20</field>
+            <field name="name">Mineros</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_21" model="l10n_pe.hr.labor.regime">
+            <field name="code">21</field>
+            <field name="name">Construccion Civil</field>
+            <field name="description">Construccion civil</field>
+            <field name="regime_kind">construccion</field>
+        </record>
+        <record id="labor_regime_22" model="l10n_pe.hr.labor.regime">
+            <field name="code">22</field>
+            <field name="name">Público General Servicio Civil - Ley 30057</field>
+            <field name="description">Público general servicio civil - ley 30057</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_23" model="l10n_pe.hr.labor.regime">
+            <field name="code">23</field>
+            <field name="name">Magisterio - Ley 29944</field>
+            <field name="description">Magisterio - ley 29944</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_24" model="l10n_pe.hr.labor.regime">
+            <field name="code">24</field>
+            <field name="name">Policía Nacional Del Perú - D.Leg.1149</field>
+            <field name="description">Policía nacional del perú - d.leg.1149</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_25" model="l10n_pe.hr.labor.regime">
+            <field name="code">25</field>
+            <field name="name">Servidores Penitenciarios - Ley 29709</field>
+            <field name="description">Servidores penitenciarios - ley 29709</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_26" model="l10n_pe.hr.labor.regime">
+            <field name="code">26</field>
+            <field name="name">Agrario Ley N° 31110</field>
+            <field name="description">Régimen laboral agrario ley n° 31110</field>
+            <field name="regime_kind">general</field>
+        </record>
+        <record id="labor_regime_99" model="l10n_pe.hr.labor.regime">
+            <field name="code">99</field>
+            <field name="name">Otros</field>
+            <field name="description">Otros no previstos</field>
+            <field name="regime_kind">general</field>
+        </record>
+
+        <record id="road_type_01" model="l10n_pe.hr.road.type">
+            <field name="code">01</field>
+            <field name="name">Avenida</field>
+        </record>
+
+        <record id="road_type_02" model="l10n_pe.hr.road.type">
+            <field name="code">02</field>
+            <field name="name">Jirón</field>
+        </record>
+
+        <record id="road_type_03" model="l10n_pe.hr.road.type">
+            <field name="code">03</field>
+            <field name="name">Calle</field>
+        </record>
+
+        <record id="road_type_04" model="l10n_pe.hr.road.type">
+            <field name="code">04</field>
+            <field name="name">Pasaje</field>
+        </record>
+
+        <record id="road_type_05" model="l10n_pe.hr.road.type">
+            <field name="code">05</field>
+            <field name="name">Alameda</field>
+        </record>
+
+        <record id="road_type_06" model="l10n_pe.hr.road.type">
+            <field name="code">06</field>
+            <field name="name">Malecón</field>
+        </record>
+
+        <record id="road_type_07" model="l10n_pe.hr.road.type">
+            <field name="code">07</field>
+            <field name="name">Ovalo</field>
+        </record>
+
+        <record id="road_type_08" model="l10n_pe.hr.road.type">
+            <field name="code">08</field>
+            <field name="name">Parque</field>
+        </record>
+
+        <record id="road_type_09" model="l10n_pe.hr.road.type">
+            <field name="code">09</field>
+            <field name="name">Plaza</field>
+        </record>
+
+        <record id="road_type_10" model="l10n_pe.hr.road.type">
+            <field name="code">10</field>
+            <field name="name">Carretera</field>
+        </record>
+
+        <record id="road_type_13" model="l10n_pe.hr.road.type">
+            <field name="code">13</field>
+            <field name="name">Trocha</field>
+        </record>
+
+        <record id="road_type_14" model="l10n_pe.hr.road.type">
+            <field name="code">14</field>
+            <field name="name">Camino Rural</field>
+        </record>
+
+        <record id="road_type_15" model="l10n_pe.hr.road.type">
+            <field name="code">15</field>
+            <field name="name">Bajada</field>
+        </record>
+
+        <record id="road_type_16" model="l10n_pe.hr.road.type">
+            <field name="code">16</field>
+            <field name="name">Galeria</field>
+        </record>
+
+        <record id="road_type_17" model="l10n_pe.hr.road.type">
+            <field name="code">17</field>
+            <field name="name">Prolongación</field>
+        </record>
+
+        <record id="road_type_18" model="l10n_pe.hr.road.type">
+            <field name="code">18</field>
+            <field name="name">Paseo</field>
+        </record>
+
+        <record id="road_type_19" model="l10n_pe.hr.road.type">
+            <field name="code">19</field>
+            <field name="name">Plazuela</field>
+        </record>
+
+        <record id="road_type_20" model="l10n_pe.hr.road.type">
+            <field name="code">20</field>
+            <field name="name">Portal</field>
+        </record>
+
+        <record id="road_type_21" model="l10n_pe.hr.road.type">
+            <field name="code">21</field>
+            <field name="name">Camino Afirmado</field>
+        </record>
+
+        <record id="road_type_22" model="l10n_pe.hr.road.type">
+            <field name="code">22</field>
+            <field name="name">Trocha Carrozable</field>
+        </record>
+
+        <record id="road_type_99" model="l10n_pe.hr.road.type">
+            <field name="code">99</field>
+            <field name="name">Otros</field>
+        </record>
+
+        <record id="zone_type_01" model="l10n_pe.hr.zone.type">
+            <field name="code">01</field>
+            <field name="name">Urb. Urbanización</field>
+        </record>
+
+        <record id="zone_type_02" model="l10n_pe.hr.zone.type">
+            <field name="code">02</field>
+            <field name="name">P.J. Pueblo Joven</field>
+        </record>
+
+        <record id="zone_type_03" model="l10n_pe.hr.zone.type">
+            <field name="code">03</field>
+            <field name="name">U.V. Unidad Vecinal</field>
+        </record>
+
+        <record id="zone_type_04" model="l10n_pe.hr.zone.type">
+            <field name="code">04</field>
+            <field name="name">C.H. Conjunto Habitacional</field>
+        </record>
+
+        <record id="zone_type_05" model="l10n_pe.hr.zone.type">
+            <field name="code">05</field>
+            <field name="name">A.H. Asentamiento Humano</field>
+        </record>
+
+        <record id="zone_type_06" model="l10n_pe.hr.zone.type">
+            <field name="code">06</field>
+            <field name="name">Coo. Cooperativa</field>
+        </record>
+
+        <record id="zone_type_07" model="l10n_pe.hr.zone.type">
+            <field name="code">07</field>
+            <field name="name">Res. Residencial</field>
+        </record>
+
+        <record id="zone_type_08" model="l10n_pe.hr.zone.type">
+            <field name="code">08</field>
+            <field name="name">Z.I. Zona Industrial</field>
+        </record>
+
+        <record id="zone_type_09" model="l10n_pe.hr.zone.type">
+            <field name="code">09</field>
+            <field name="name">Gru. Grupo</field>
+        </record>
+
+        <record id="zone_type_10" model="l10n_pe.hr.zone.type">
+            <field name="code">10</field>
+            <field name="name">Cas. Caserío</field>
+        </record>
+
+        <record id="zone_type_11" model="l10n_pe.hr.zone.type">
+            <field name="code">11</field>
+            <field name="name">Fnd. Fundo</field>
+        </record>
+
+        <record id="zone_type_99" model="l10n_pe.hr.zone.type">
+            <field name="code">99</field>
+            <field name="name">Otros</field>
+        </record>
+
+        <record id="fin_entity_002" model="l10n_pe.hr.financial.entity">
+            <field name="code">002</field>
+            <field name="name">Banco De Crédito Del Perú</field>
+        </record>
+
+        <record id="fin_entity_003" model="l10n_pe.hr.financial.entity">
+            <field name="code">003</field>
+            <field name="name">Interbank</field>
+        </record>
+
+        <record id="fin_entity_007" model="l10n_pe.hr.financial.entity">
+            <field name="code">007</field>
+            <field name="name">Citibank Del Perú</field>
+        </record>
+
+        <record id="fin_entity_009" model="l10n_pe.hr.financial.entity">
+            <field name="code">009</field>
+            <field name="name">Scotiabank Perú</field>
+        </record>
+
+        <record id="fin_entity_011" model="l10n_pe.hr.financial.entity">
+            <field name="code">011</field>
+            <field name="name">Bbva Banco Continental</field>
+        </record>
+
+        <record id="fin_entity_018" model="l10n_pe.hr.financial.entity">
+            <field name="code">018</field>
+            <field name="name">Banco De La Nación</field>
+        </record>
+
+        <record id="fin_entity_020" model="l10n_pe.hr.financial.entity">
+            <field name="code">020</field>
+            <field name="name">Banco Falabella</field>
+        </record>
+
+        <record id="fin_entity_023" model="l10n_pe.hr.financial.entity">
+            <field name="code">023</field>
+            <field name="name">Banco De Comercio</field>
+        </record>
+
+        <record id="fin_entity_035" model="l10n_pe.hr.financial.entity">
+            <field name="code">035</field>
+            <field name="name">Banco Pichincha</field>
+        </record>
+
+        <record id="fin_entity_038" model="l10n_pe.hr.financial.entity">
+            <field name="code">038</field>
+            <field name="name">Banco Interamericano De Finanzas</field>
+        </record>
+
+        <record id="fin_entity_043" model="l10n_pe.hr.financial.entity">
+            <field name="code">043</field>
+            <field name="name">Crediscotia Financiera</field>
+        </record>
+
+        <record id="fin_entity_053" model="l10n_pe.hr.financial.entity">
+            <field name="code">053</field>
+            <field name="name">Banco Gnb</field>
+        </record>
+
+        <record id="fin_entity_056" model="l10n_pe.hr.financial.entity">
+            <field name="code">056</field>
+            <field name="name">Santander</field>
+        </record>
+
+        <record id="fin_entity_057" model="l10n_pe.hr.financial.entity">
+            <field name="code">057</field>
+            <field name="name">Banco Azteca</field>
+        </record>
+
+        <record id="fin_entity_058" model="l10n_pe.hr.financial.entity">
+            <field name="code">058</field>
+            <field name="name">Banco Cencosud</field>
+        </record>
+
+        <record id="fin_entity_059" model="l10n_pe.hr.financial.entity">
+            <field name="code">059</field>
+            <field name="name">Banco Ripley</field>
+        </record>
+
+        <record id="fin_entity_060" model="l10n_pe.hr.financial.entity">
+            <field name="code">060</field>
+            <field name="name">Icbc Perú Bank</field>
+        </record>
+
+        <record id="fin_entity_070" model="l10n_pe.hr.financial.entity">
+            <field name="code">070</field>
+            <field name="name">Mibanco</field>
+        </record>
+
+        <record id="fin_entity_200" model="l10n_pe.hr.financial.entity">
+            <field name="code">200</field>
+            <field name="name">Financ. Credinka</field>
+        </record>
+
+        <record id="fin_entity_202" model="l10n_pe.hr.financial.entity">
+            <field name="code">202</field>
+            <field name="name">Financ. Proempresa</field>
+        </record>
+
+        <record id="fin_entity_204" model="l10n_pe.hr.financial.entity">
+            <field name="code">204</field>
+            <field name="name">Financ. Confianza</field>
+        </record>
+
+        <record id="fin_entity_206" model="l10n_pe.hr.financial.entity">
+            <field name="code">206</field>
+            <field name="name">Crediraiz</field>
+        </record>
+
+        <record id="fin_entity_208" model="l10n_pe.hr.financial.entity">
+            <field name="code">208</field>
+            <field name="name">Compartamos Financiera</field>
+        </record>
+
+        <record id="fin_entity_210" model="l10n_pe.hr.financial.entity">
+            <field name="code">210</field>
+            <field name="name">Financiera Qapaq</field>
+        </record>
+
+        <record id="fin_entity_212" model="l10n_pe.hr.financial.entity">
+            <field name="code">212</field>
+            <field name="name">Financiera Tfc S A</field>
+        </record>
+
+        <record id="fin_entity_214" model="l10n_pe.hr.financial.entity">
+            <field name="code">214</field>
+            <field name="name">Financiera Efectiva</field>
+        </record>
+
+        <record id="fin_entity_216" model="l10n_pe.hr.financial.entity">
+            <field name="code">216</field>
+            <field name="name">Amerika Financiera</field>
+        </record>
+
+        <record id="fin_entity_218" model="l10n_pe.hr.financial.entity">
+            <field name="code">218</field>
+            <field name="name">Financiera Oh!</field>
+        </record>
+
+        <record id="fin_entity_800" model="l10n_pe.hr.financial.entity">
+            <field name="code">800</field>
+            <field name="name">Caja Metropolitana De Lima</field>
+        </record>
+
+        <record id="fin_entity_802" model="l10n_pe.hr.financial.entity">
+            <field name="code">802</field>
+            <field name="name">Cmac Trujillo</field>
+        </record>
+
+        <record id="fin_entity_803" model="l10n_pe.hr.financial.entity">
+            <field name="code">803</field>
+            <field name="name">Cmac Arequipa</field>
+        </record>
+
+        <record id="fin_entity_805" model="l10n_pe.hr.financial.entity">
+            <field name="code">805</field>
+            <field name="name">Cmac Sullana</field>
+        </record>
+
+        <record id="fin_entity_806" model="l10n_pe.hr.financial.entity">
+            <field name="code">806</field>
+            <field name="name">Cmac Cusco</field>
+        </record>
+
+        <record id="fin_entity_808" model="l10n_pe.hr.financial.entity">
+            <field name="code">808</field>
+            <field name="name">Cmac Huancayo</field>
+        </record>
+
+        <record id="fin_entity_813" model="l10n_pe.hr.financial.entity">
+            <field name="code">813</field>
+            <field name="name">Cmac Tacna</field>
+        </record>
+
+        <record id="fin_entity_820" model="l10n_pe.hr.financial.entity">
+            <field name="code">820</field>
+            <field name="name">Cmac Del Santa</field>
+        </record>
+
+        <record id="fin_entity_822" model="l10n_pe.hr.financial.entity">
+            <field name="code">822</field>
+            <field name="name">Cmac Ica</field>
+        </record>
+
+        <record id="fin_entity_824" model="l10n_pe.hr.financial.entity">
+            <field name="code">824</field>
+            <field name="name">Cmac Piura</field>
+        </record>
+
+        <record id="fin_entity_826" model="l10n_pe.hr.financial.entity">
+            <field name="code">826</field>
+            <field name="name">Cmac Maynas</field>
+        </record>
+
+        <record id="fin_entity_828" model="l10n_pe.hr.financial.entity">
+            <field name="code">828</field>
+            <field name="name">Cmac Paita</field>
+        </record>
+
+        <record id="fin_entity_900" model="l10n_pe.hr.financial.entity">
+            <field name="code">900</field>
+            <field name="name">Crac Sipan</field>
+        </record>
+
+        <record id="fin_entity_902" model="l10n_pe.hr.financial.entity">
+            <field name="code">902</field>
+            <field name="name">Crac Del Centro</field>
+        </record>
+
+        <record id="fin_entity_904" model="l10n_pe.hr.financial.entity">
+            <field name="code">904</field>
+            <field name="name">Crac Incasur</field>
+        </record>
+
+        <record id="fin_entity_906" model="l10n_pe.hr.financial.entity">
+            <field name="code">906</field>
+            <field name="name">Crac Prymera</field>
+        </record>
+
+        <record id="fin_entity_908" model="l10n_pe.hr.financial.entity">
+            <field name="code">908</field>
+            <field name="name">Crac Los Andes</field>
+        </record>
+    </data>
+</odoo>

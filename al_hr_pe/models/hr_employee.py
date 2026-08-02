@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -25,6 +25,47 @@ class HrEmployee(models.Model):
         domain="[('partner_id', '=', work_contact_id)]",
         help='Cuenta de depósito de CTS; en Perú suele ser un banco '
              'distinto al de haberes.')
+    l10n_pe_dependent_ids = fields.One2many(
+        'l10n_pe.hr.dependent', 'employee_id', string='Derechohabientes')
+    l10n_pe_dependent_count = fields.Integer(
+        string='N° de derechohabientes',
+        compute='_compute_l10n_pe_dependent_count')
+
+    @api.depends('l10n_pe_dependent_ids.date_end')
+    def _compute_l10n_pe_dependent_count(self):
+        today = fields.Date.context_today(self)
+        for employee in self:
+            employee.l10n_pe_dependent_count = len(
+                employee.l10n_pe_dependent_ids.filtered(
+                    lambda d: not d.date_end or d.date_end >= today))
+
+    def _l10n_pe_has_family_allowance(self, on_date=None):
+        """¿Corresponde asignación familiar (Ley 25129) en esa fecha?
+
+        Si el trabajador tiene derechohabientes cargados, manda el dato
+        real: hijos menores de 18, o de hasta 24 que cursen estudios
+        superiores. Si todavía no se han cargado, se conserva el criterio
+        anterior (el campo nativo ``children``) para no dejar sin
+        asignación a quien la venía cobrando.
+        """
+        self.ensure_one()
+        on_date = on_date or fields.Date.context_today(self)
+        dependents = self.sudo().l10n_pe_dependent_ids
+        if dependents:
+            return any(dependent._is_family_allowance_source(on_date)
+                       for dependent in dependents)
+        return bool(self.children)
+
+    def action_open_l10n_pe_dependents(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Derechohabientes de %s', self.display_name),
+            'res_model': 'l10n_pe.hr.dependent',
+            'view_mode': 'list,form',
+            'domain': [('employee_id', '=', self.id)],
+            'context': {'default_employee_id': self.id},
+        }
 
     # identification_id vive en hr.version en v19 (en el empleado es
     # related sin columna), así que la unicidad no puede ser SQL.

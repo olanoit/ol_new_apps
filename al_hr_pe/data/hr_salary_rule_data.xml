@@ -168,8 +168,13 @@ result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
+            <!-- El derecho sale de los derechohabientes registrados (hijos
+                 menores de 18, o hasta 24 estudiando — Ley 25129); si el
+                 trabajador aún no los tiene cargados, el campo cae al
+                 criterio anterior (`children`) para no dejar sin
+                 asignación a quien ya la cobraba. -->
             <field name="amount_python_compute">
-if version.children > 0 and version.l10n_pe_labor_regime != 'fourth-fifth':
+if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'fourth-fifth':
     if worked_days['DVAC'].number_of_days ==30 or worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:
         result=0
     else:

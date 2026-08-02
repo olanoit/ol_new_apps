@@ -43,6 +43,25 @@ class HrPayslip(models.Model):
     l10n_pe_insurable_remuneration = fields.Float(
         string='Tope asegurable', compute='_compute_l10n_pe_snapshot',
         store=True, readonly=False)
+    l10n_pe_family_allowance_ok = fields.Boolean(
+        string='Tiene derecho a asignación familiar',
+        compute='_compute_l10n_pe_family_allowance_ok', store=True,
+        readonly=False,
+        help='Se deriva de los derechohabientes del trabajador a la fecha '
+             'de fin del periodo: hijos menores de 18 años, o de hasta 24 '
+             'que cursen estudios superiores (Ley 25129). Snapshot: se '
+             'puede ajustar a mano en un caso puntual.')
+
+    @api.depends('employee_id', 'date_to',
+                 'employee_id.l10n_pe_dependent_ids.date_end',
+                 'employee_id.l10n_pe_dependent_ids.birthday',
+                 'employee_id.l10n_pe_dependent_ids.is_studying')
+    def _compute_l10n_pe_family_allowance_ok(self):
+        for payslip in self:
+            employee = payslip.employee_id
+            payslip.l10n_pe_family_allowance_ok = bool(
+                employee and employee._l10n_pe_has_family_allowance(
+                    payslip.date_to))
 
     # Totales PLAME de la boleta (por categorías configuradas en data)
     worker_contributions = fields.Float(

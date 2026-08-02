@@ -56,6 +56,101 @@ class HrSuspensionType(models.Model):
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
+class L10nPeHrRoadType(models.Model):
+    """TABLA 5 — Vía (avenida, jirón, calle…)."""
+    _name = 'l10n_pe.hr.road.type'
+    _description = 'Tipo de vía (T05)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+
+class L10nPeHrZoneType(models.Model):
+    """TABLA 6 — Zona (urbanización, asentamiento humano…)."""
+    _name = 'l10n_pe.hr.zone.type'
+    _description = 'Tipo de zona (T06)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+
+class L10nPeHrEducationLevel(models.Model):
+    """TABLA 9 — Situación educativa."""
+    _name = 'l10n_pe.hr.education.level'
+    _description = 'Situación educativa (T09)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+
+class L10nPeHrContractType(models.Model):
+    """TABLA 12 — Tipo de contrato de trabajo / condición laboral."""
+    _name = 'l10n_pe.hr.contract.type'
+    _description = 'Tipo de contrato (T12)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+
+class L10nPeHrOccupationalCategory(models.Model):
+    """TABLA 24 — Categoría ocupacional del trabajador."""
+    _name = 'l10n_pe.hr.occupational.category'
+    _description = 'Categoría ocupacional (T24)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+    #: T30 habilita cada ocupación solo para ciertas categorías.
+    occupation_field = fields.Selection(
+        selection=[('executive', 'Ejecutivo'), ('employee', 'Empleado'),
+                   ('worker', 'Obrero')],
+        string='Columna en la T30',
+        help='Categoría equivalente en la tabla de ocupaciones: filtra las '
+             'ocupaciones que SUNAT admite para esta categoría.')
+
+
+class L10nPeHrOccupation(models.Model):
+    """TABLA 30 — Ocupación (sector privado).
+
+    Son ~4 600 códigos: viven en CSV, no en XML, para no inflar el módulo
+    ni el ``ir_model_data`` con un registro por ocupación en formato
+    verboso.
+    """
+    _name = 'l10n_pe.hr.occupation'
+    _description = 'Ocupación (T30)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+    for_executive = fields.Boolean(string='Ejecutivo')
+    for_employee = fields.Boolean(string='Empleado')
+    for_worker = fields.Boolean(string='Obrero')
+
+    def _l10n_pe_allowed_for(self, category):
+        """¿SUNAT admite esta ocupación para esa categoría ocupacional?
+
+        Las categorías del sector público no tienen columna en la T30, así
+        que no restringen nada.
+        """
+        self.ensure_one()
+        field = category.occupation_field
+        if not field:
+            return True
+        return bool(self['for_%s' % field])
+
+
+class L10nPeHrLaborRegime(models.Model):
+    """TABLA 33 — Régimen laboral.
+
+    ``regime_kind`` es el puente con la clasificación funcional que usa el
+    motor de beneficios (divisores de CTS, gratificación y vacaciones):
+    SUNAT distingue 27 regímenes, pero al cálculo solo le importan cinco
+    familias.
+    """
+    _name = 'l10n_pe.hr.labor.regime'
+    _description = 'Régimen laboral (T33)'
+    _inherit = ['l10n_pe.hr.catalog.mixin']
+
+    regime_kind = fields.Selection(
+        selection=[
+            ('general', 'Régimen general'),
+            ('small', 'Pequeña empresa'),
+            ('micro', 'Microempresa'),
+            ('practicante', 'Practicante'),
+            ('construccion', 'Construcción civil'),
+        ],
+        string='Familia de cálculo', default='general', required=True,
+        help='Determina los divisores de CTS, gratificación y vacaciones.')
+
+
 class HrSocialInsurance(models.Model):
     """Seguros sociales (EsSalud, EPS, SCTR) y su tasa."""
     _name = 'hr.social.insurance'

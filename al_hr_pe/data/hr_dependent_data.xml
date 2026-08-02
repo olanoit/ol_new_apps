@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Códigos del Anexo 2 de la Planilla Electrónica (SUNAT,
+         tablas_parametricas_actualizada-31-07-26.xlsx): T19 vínculo
+         familiar, T20 motivo de baja y T27 documento que sustenta el
+         vínculo. Catálogos globales; una compañía puede crear su override.
+
+         Sin `noupdate`: los códigos los fija la norma, así que una
+         actualización del módulo debe poder corregirlos. Lo propio de
+         cada compañía va en registros override, no aquí. -->
+    <data>
+
+        <!-- TABLA 19 — Vínculo familiar. Las banderas son lo que lee el
+             motor (asignación familiar, unicidad del cónyuge): el código
+             nunca se compara en Python. -->
+        <record id="dependent_type_02" model="l10n_pe.hr.dependent.type">
+            <field name="code">02</field>
+            <field name="name">Cónyuge</field>
+            <field name="description">Cónyuge del trabajador. Se acredita con acta o partida de matrimonio civil (T27 05, 06 o 07).</field>
+            <field name="is_partner" eval="True"/>
+            <field name="is_child" eval="False"/>
+            <field name="is_unborn" eval="False"/>
+            <field name="requires_disability" eval="False"/>
+        </record>
+
+        <record id="dependent_type_03" model="l10n_pe.hr.dependent.type">
+            <field name="code">03</field>
+            <field name="name">Concubina(o)</field>
+            <field name="description">Unión de hecho reconocida. Se acredita con escritura pública, resolución judicial o declaración jurada (T27 08, 09 u 11).</field>
+            <field name="is_partner" eval="True"/>
+            <field name="is_child" eval="False"/>
+            <field name="is_unborn" eval="False"/>
+            <field name="requires_disability" eval="False"/>
+        </record>
+
+        <record id="dependent_type_04" model="l10n_pe.hr.dependent.type">
+            <field name="code">04</field>
+            <field name="name">Gestante</field>
+            <field name="description">Madre gestante del hijo por nacer. Se acredita con escritura pública, sentencia de declaratoria de paternidad o testamento (T27 01, 02 o 03).</field>
+            <field name="is_partner" eval="False"/>
+            <field name="is_child" eval="False"/>
+            <field name="is_unborn" eval="True"/>
+            <field name="requires_disability" eval="False"/>
+        </record>
+
+        <record id="dependent_type_05" model="l10n_pe.hr.dependent.type">
+            <field name="code">05</field>
+            <field name="name">Hijo menor de edad</field>
+            <field name="description">Hijo menor de 18 años. Si su documento no es DNI se acredita con acta de nacimiento (T27 10).</field>
+            <field name="is_partner" eval="False"/>
+            <field name="is_child" eval="True"/>
+            <field name="is_unborn" eval="False"/>
+            <field name="requires_disability" eval="False"/>
+        </record>
+
+        <record id="dependent_type_06" model="l10n_pe.hr.dependent.type">
+            <field name="code">06</field>
+            <field name="name">Hijo mayor de edad incapacitado permanente</field>
+            <field name="description">Hijo mayor de edad con incapacidad total y permanente para el trabajo, acreditada con resolución de incapacidad (T27 04).</field>
+            <field name="is_partner" eval="False"/>
+            <field name="is_child" eval="True"/>
+            <field name="is_unborn" eval="False"/>
+            <field name="requires_disability" eval="True"/>
+        </record>
+
+        <!-- TABLA 20 — Motivo de baja como derechohabiente -->
+        <record id="dependent_end_02" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">02</field>
+            <field name="name">Fallecimiento</field>
+            <field name="description">Sustento: partida de defunción.</field>
+        </record>
+        <record id="dependent_end_03" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">03</field>
+            <field name="name">Otros motivos no previstos</field>
+        </record>
+        <record id="dependent_end_04" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">04</field>
+            <field name="name">Divorcio o disolución del vínculo matrimonial</field>
+            <field name="description">Sustento: partida de matrimonio civil con anotación marginal.</field>
+        </record>
+        <record id="dependent_end_05" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">05</field>
+            <field name="name">Fin de concubinato</field>
+            <field name="description">Sustento: declaración jurada de fin de la unión de hecho.</field>
+        </record>
+        <record id="dependent_end_06" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">06</field>
+            <field name="name">Fin de la gestación</field>
+        </record>
+        <record id="dependent_end_07" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">07</field>
+            <field name="name">Hijo adquiere mayoría de edad</field>
+        </record>
+        <record id="dependent_end_08" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">08</field>
+            <field name="name">Error en el registro</field>
+        </record>
+        <record id="dependent_end_09" model="l10n_pe.hr.dependent.end.reason">
+            <field name="code">09</field>
+            <field name="name">Derechohabiente adquiere condición de asegurado regular</field>
+        </record>
+
+        <!-- TABLA 27 — Documento que sustenta el vínculo familiar -->
+        <record id="dependent_proof_01" model="l10n_pe.hr.dependent.proof">
+            <field name="code">01</field>
+            <field name="name">Escritura pública</field>
+        </record>
+        <record id="dependent_proof_02" model="l10n_pe.hr.dependent.proof">
+            <field name="code">02</field>
+            <field name="name">Sentencia de declaratoria de paternidad</field>
+        </record>
+        <record id="dependent_proof_03" model="l10n_pe.hr.dependent.proof">
+            <field name="code">03</field>
+            <field name="name">Testamento</field>
+        </record>
+        <record id="dependent_proof_04" model="l10n_pe.hr.dependent.proof">
+            <field name="code">04</field>
+            <field name="name">Resolución de incapacidad</field>
+        </record>
+        <record id="dependent_proof_05" model="l10n_pe.hr.dependent.proof">
+            <field name="code">05</field>
+            <field name="name">Acta o partida de matrimonio civil</field>
+        </record>
+        <record id="dependent_proof_06" model="l10n_pe.hr.dependent.proof">
+            <field name="code">06</field>
+            <field name="name">Acta o partida de matrimonio inscrita en registro consular peruano</field>
+        </record>
+        <record id="dependent_proof_07" model="l10n_pe.hr.dependent.proof">
+            <field name="code">07</field>
+            <field name="name">Acta o partida de matrimonio del exterior inscrita en RENIEC o municipalidad</field>
+        </record>
+        <record id="dependent_proof_08" model="l10n_pe.hr.dependent.proof">
+            <field name="code">08</field>
+            <field name="name">Escritura pública de reconocimiento de unión de hecho (Ley 29560)</field>
+        </record>
+        <record id="dependent_proof_09" model="l10n_pe.hr.dependent.proof">
+            <field name="code">09</field>
+            <field name="name">Resolución judicial de reconocimiento de unión de hecho</field>
+        </record>
+        <record id="dependent_proof_10" model="l10n_pe.hr.dependent.proof">
+            <field name="code">10</field>
+            <field name="name">Acta de nacimiento o documento análogo que sustenta la filiación</field>
+        </record>
+        <record id="dependent_proof_11" model="l10n_pe.hr.dependent.proof">
+            <field name="code">11</field>
+            <field name="name">Declaración jurada de existencia de unión de hecho</field>
+        </record>
+
+    </data>
+</odoo>

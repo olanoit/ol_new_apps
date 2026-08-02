@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Catálogos del Anexo 2: lista editable, como el resto de tablas -->
+    <record id="view_l10n_pe_catalog_simple_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.education.level.list</field>
+        <field name="model">l10n_pe.hr.education.level</field>
+        <field name="arch" type="xml">
+            <list string="Situación educativa (T09)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_contract_type_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.contract.type.list</field>
+        <field name="model">l10n_pe.hr.contract.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de contrato (T12)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_occupational_category_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.occupational.category.list</field>
+        <field name="model">l10n_pe.hr.occupational.category</field>
+        <field name="arch" type="xml">
+            <list string="Categorías ocupacionales (T24)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="occupation_field"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_labor_regime_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.labor.regime.list</field>
+        <field name="model">l10n_pe.hr.labor.regime</field>
+        <field name="arch" type="xml">
+            <list string="Regímenes laborales (T33)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="regime_kind"/>
+                <field name="description" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_occupation_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.occupation.list</field>
+        <field name="model">l10n_pe.hr.occupation</field>
+        <field name="arch" type="xml">
+            <list string="Ocupaciones (T30)">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="for_executive" widget="boolean_toggle"/>
+                <field name="for_employee" widget="boolean_toggle"/>
+                <field name="for_worker" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pe_occupation_search" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.occupation.search</field>
+        <field name="model">l10n_pe.hr.occupation</field>
+        <field name="arch" type="xml">
+            <search string="Ocupaciones">
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="filter_executive" string="Ejecutivo"
+                        domain="[('for_executive', '=', True)]"/>
+                <filter name="filter_employee" string="Empleado"
+                        domain="[('for_employee', '=', True)]"/>
+                <filter name="filter_worker" string="Obrero"
+                        domain="[('for_worker', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_education_level" model="ir.actions.act_window">
+        <field name="name">Situación educativa (T09)</field>
+        <field name="res_model">l10n_pe.hr.education.level</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_contract_type" model="ir.actions.act_window">
+        <field name="name">Tipos de contrato (T12)</field>
+        <field name="res_model">l10n_pe.hr.contract.type</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_occupational_category" model="ir.actions.act_window">
+        <field name="name">Categorías ocupacionales (T24)</field>
+        <field name="res_model">l10n_pe.hr.occupational.category</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_labor_regime" model="ir.actions.act_window">
+        <field name="name">Regímenes laborales (T33)</field>
+        <field name="res_model">l10n_pe.hr.labor.regime</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_occupation" model="ir.actions.act_window">
+        <field name="name">Ocupaciones (T30)</field>
+        <field name="res_model">l10n_pe.hr.occupation</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_l10n_pe_education_level" name="Situación educativa (T09)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_education_level" sequence="36"/>
+    <menuitem id="menu_l10n_pe_contract_type" name="Tipos de contrato (T12)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_contract_type" sequence="37"/>
+    <menuitem id="menu_l10n_pe_occupational_category"
+              name="Categorías ocupacionales (T24)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_occupational_category" sequence="38"/>
+    <menuitem id="menu_l10n_pe_occupation" name="Ocupaciones (T30)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_occupation" sequence="39"/>
+    <menuitem id="menu_l10n_pe_labor_regime" name="Regímenes laborales (T33)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_labor_regime" sequence="40"/>
+
+    <!-- Datos del T-Registro en la ficha del trabajador.
+         En v19 `hr.employee` _inherits de `hr.version`, así que los campos
+         de la versión se editan directamente aquí; hr.version no tiene
+         formulario propio. -->
+    <record id="view_employee_form_tregistro" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.tregistro</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='payroll_information']" position="inside">
+                <separator string="T-Registro (SUNAT)"
+                           name="l10n_pe_tregistro"/>
+                    <group>
+                        <group string="Condición laboral">
+                            <field name="l10n_pe_labor_regime_id"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_labor_regime"/>
+                            <field name="l10n_pe_contract_type_id"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_occupational_category_id"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_occupation_id"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_education_level_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Jornada y remuneración">
+                            <field name="l10n_pe_pay_periodicity"/>
+                            <field name="l10n_pe_payment_type"/>
+                            <field name="l10n_pe_max_working_day"/>
+                            <field name="l10n_pe_alternative_schedule"/>
+                            <field name="l10n_pe_night_shift"/>
+                            <field name="l10n_pe_unionized"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Situación">
+                            <field name="l10n_pe_special_situation"/>
+                            <field name="l10n_pe_fifth_income"/>
+                            <field name="l10n_pe_double_taxation"/>
+                            <field name="l10n_pe_cas_vat"/>
+                        </group>
+                        <group string="Riesgo y discapacidad">
+                            <field name="l10n_pe_disability"/>
+                            <field name="l10n_pe_sctr_pension"/>
+                        </group>
+                    </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Columnas del T-Registro en el histórico de versiones -->
+    <record id="hr_version_list_view_tregistro" model="ir.ui.view">
+        <field name="name">hr.version.list.inherit.pe.tregistro</field>
+        <field name="model">hr.version</field>
+        <field name="inherit_id" ref="al_hr_pe.hr_version_list_view_inherit_pe"/>
+        <field name="arch" type="xml">
+            <field name="l10n_pe_labor_regime" position="after">
+                <field name="l10n_pe_labor_regime_id" optional="hide"/>
+                <field name="l10n_pe_contract_type_id" optional="hide"/>
+                <field name="l10n_pe_occupation_id" optional="hide"/>
+                <field name="l10n_pe_occupational_category_id" optional="hide"/>
+                <field name="l10n_pe_education_level_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Domicilio estructurado de la E04 -->
+    <record id="view_employee_form_tregistro_address" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.address</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='personal_information']" position="inside">
+                <separator string="Domicilio (T-Registro)"
+                           name="l10n_pe_address"/>
+                <group>
+                    <group string="Dirección 1">
+                        <label for="l10n_pe_road_type_id" string="Vía"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_road_type_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Tipo"/>
+                            <field name="l10n_pe_road_name"
+                                   placeholder="Nombre de la vía"/>
+                            <field name="l10n_pe_road_number"
+                                   placeholder="N°"/>
+                        </div>
+                        <label for="l10n_pe_department" string="Dpto / Int"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_department" placeholder="Dpto"/>
+                            <field name="l10n_pe_interior" placeholder="Int"/>
+                        </div>
+                        <label for="l10n_pe_block" string="Mza / Lote / Km"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_block" placeholder="Mza"/>
+                            <field name="l10n_pe_lot" placeholder="Lote"/>
+                            <field name="l10n_pe_km" placeholder="Km"/>
+                        </div>
+                        <label for="l10n_pe_block_name" string="Block / Etapa"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_block_name" placeholder="Block"/>
+                            <field name="l10n_pe_stage" placeholder="Etapa"/>
+                        </div>
+                        <label for="l10n_pe_zone_type_id" string="Zona"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_zone_type_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Tipo"/>
+                            <field name="l10n_pe_zone_name"
+                                   placeholder="Nombre de la zona"/>
+                        </div>
+                        <field name="l10n_pe_address_reference"/>
+                        <field name="l10n_pe_district_id"
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group string="Dirección 2 (opcional)">
+                        <field name="l10n_pe_health_center_indicator"/>
+                        <label for="l10n_pe_road_type2_id" string="Vía"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_road_type2_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Tipo"/>
+                            <field name="l10n_pe_road_name2"
+                                   placeholder="Nombre de la vía"/>
+                            <field name="l10n_pe_road_number2"
+                                   placeholder="N°"/>
+                        </div>
+                        <label for="l10n_pe_department2" string="Dpto / Int"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_department2" placeholder="Dpto"/>
+                            <field name="l10n_pe_interior2" placeholder="Int"/>
+                        </div>
+                        <label for="l10n_pe_block2" string="Mza / Lote / Km"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_block2" placeholder="Mza"/>
+                            <field name="l10n_pe_lot2" placeholder="Lote"/>
+                            <field name="l10n_pe_km2" placeholder="Km"/>
+                        </div>
+                        <label for="l10n_pe_zone_type2_id" string="Zona"/>
+                        <div class="o_row">
+                            <field name="l10n_pe_zone_type2_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Tipo"/>
+                            <field name="l10n_pe_zone_name2"
+                                   placeholder="Nombre de la zona"/>
+                        </div>
+                        <field name="l10n_pe_address_reference2"/>
+                        <field name="l10n_pe_district2_id"
+                               options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Documento (extranjeros)">
+                        <field name="l10n_pe_country_emitter"/>
+                        <field name="l10n_pe_nationality_code"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Catálogos de vía y zona -->
+    <record id="view_l10n_pe_road_type_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.road.type.list</field>
+        <field name="model">l10n_pe.hr.road.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de vía (T05)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_l10n_pe_zone_type_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.zone.type.list</field>
+        <field name="model">l10n_pe.hr.zone.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de zona (T06)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_l10n_pe_road_type" model="ir.actions.act_window">
+        <field name="name">Tipos de vía (T05)</field>
+        <field name="res_model">l10n_pe.hr.road.type</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_zone_type" model="ir.actions.act_window">
+        <field name="name">Tipos de zona (T06)</field>
+        <field name="res_model">l10n_pe.hr.zone.type</field>
+        <field name="view_mode">list</field>
+    </record>
+    <menuitem id="menu_l10n_pe_road_type" name="Tipos de vía (T05)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_road_type" sequence="41"/>
+    <menuitem id="menu_l10n_pe_zone_type" name="Tipos de zona (T06)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_zone_type" sequence="42"/>
+
+    <!-- Exportación de la carga masiva desde la lista de trabajadores -->
+    <record id="action_server_tregistro_alta" model="ir.actions.server">
+        <field name="name">T-Registro: generar alta (.ide/.tra/.per)</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_export_tregistro()</field>
+    </record>
+
+    <record id="action_server_tregistro_baja" model="ir.actions.server">
+        <field name="name">T-Registro: generar baja (.per)</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_export_tregistro_baja()</field>
+    </record>
+
+    <!-- E17 / E29 / E30 en la ficha del trabajador -->
+    <record id="view_employee_form_tregistro_extra" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.tregistro.extra</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="al_hr_pe.view_employee_form_tregistro"/>
+        <field name="arch" type="xml">
+            <xpath expr="//separator[@name='l10n_pe_tregistro']" position="after">
+                <group>
+                    <group string="Establecimientos (E17)">
+                        <field name="work_location_id" readonly="1"
+                               string="Lugar de trabajo principal"/>
+                        <field name="l10n_pe_extra_work_location_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group string="Cuenta de abono (E30)">
+                        <field name="primary_bank_account_id" readonly="1"/>
+                    </group>
+                </group>
+                <field name="l10n_pe_education_ids"
+                       string="Estudios concluidos (E29)">
+                    <list editable="bottom">
+                        <field name="education_level_id"
+                               options="{'no_create': True}"/>
+                        <field name="in_peru" widget="boolean_toggle"/>
+                        <field name="institution_id"
+                               options="{'no_create': True}"
+                               required="in_peru"/>
+                        <field name="career_id"
+                               options="{'no_create': True}"
+                               required="in_peru"/>
+                        <field name="graduation_year" required="in_peru"/>
+                        <field name="company_id" column_invisible="1"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Código de establecimiento en el lugar de trabajo -->
+    <record id="view_work_location_form_pe" model="ir.ui.view">
+        <field name="name">hr.work.location.form.inherit.pe</field>
+        <field name="model">hr.work.location</field>
+        <field name="inherit_id" ref="hr.hr_work_location_form_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="l10n_pe_establishment_code"
+                       placeholder="0001"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Entidad SUNAT en el banco -->
+    <record id="view_res_bank_form_pe" model="ir.ui.view">
+        <field name="name">res.bank.form.inherit.pe</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+            <field name="bic" position="after">
+                <field name="l10n_pe_financial_entity_id"
+                       options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Catálogos T34 y T36 -->
+    <record id="view_l10n_pe_financial_entity_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.financial.entity.list</field>
+        <field name="model">l10n_pe.hr.financial.entity</field>
+        <field name="arch" type="xml">
+            <list string="Entidades financieras (T36)" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_l10n_pe_edu_institution_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.education.institution.list</field>
+        <field name="model">l10n_pe.hr.education.institution</field>
+        <field name="arch" type="xml">
+            <list string="Instituciones educativas (T34)">
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_l10n_pe_financial_entity" model="ir.actions.act_window">
+        <field name="name">Entidades financieras (T36)</field>
+        <field name="res_model">l10n_pe.hr.financial.entity</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_l10n_pe_edu_institution" model="ir.actions.act_window">
+        <field name="name">Instituciones educativas (T34)</field>
+        <field name="res_model">l10n_pe.hr.education.institution</field>
+        <field name="view_mode">list</field>
+    </record>
+    <menuitem id="menu_l10n_pe_financial_entity" name="Entidades financieras (T36)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_financial_entity" sequence="43"/>
+    <menuitem id="menu_l10n_pe_edu_institution" name="Instituciones educativas (T34)"
+              parent="al_hr_pe.menu_hr_pe_root"
+              action="action_l10n_pe_edu_institution" sequence="44"/>
+
+</odoo>
