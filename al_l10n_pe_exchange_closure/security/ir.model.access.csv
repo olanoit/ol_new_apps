@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_exchange_closure_user,l10n_pe.exchange.closure user,model_l10n_pe_exchange_closure,account.group_account_user,1,1,1,0
+access_exchange_closure_manager,l10n_pe.exchange.closure manager,model_l10n_pe_exchange_closure,account.group_account_manager,1,1,1,1
+access_exchange_closure_readonly,l10n_pe.exchange.closure readonly,model_l10n_pe_exchange_closure,account.group_account_readonly,1,0,0,0
+access_exchange_closure_line_user,l10n_pe.exchange.closure.line user,model_l10n_pe_exchange_closure_line,account.group_account_user,1,1,1,1
+access_exchange_closure_line_readonly,l10n_pe.exchange.closure.line readonly,model_l10n_pe_exchange_closure_line,account.group_account_readonly,1,0,0,0

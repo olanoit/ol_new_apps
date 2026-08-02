@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_exchange_closure" name="Cierre de tipo de cambio"
+              parent="al_account_base.al_l10n_pe_root"
+              action="action_exchange_closure"
+              groups="account.group_account_user"
+              sequence="40"/>
+
+    <menuitem id="menu_account_exchange_closing" name="Cuentas del cierre de T.C."
+              parent="al_account_base.al_l10n_pe_config"
+              action="action_account_exchange_closing"
+              groups="account.group_account_manager"
+              sequence="40"/>
+
+</odoo>

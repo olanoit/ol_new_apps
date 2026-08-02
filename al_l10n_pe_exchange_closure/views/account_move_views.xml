@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_exchange_closure" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.al.exchange.closure</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Columna opcional con el T.C. usado para revaluar el apunte. -->
+            <xpath expr="//field[@name='line_ids']/list/field[@name='account_id']"
+                   position="after">
+                <field name="l10n_pe_closing_rate" optional="hide"
+                       readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

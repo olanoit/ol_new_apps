@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_exchange_closure_form" model="ir.ui.view">
+        <field name="name">l10n_pe.exchange.closure.form</field>
+        <field name="model">l10n_pe.exchange.closure</field>
+        <field name="arch" type="xml">
+            <form string="Cierre de tipo de cambio">
+                <header>
+                    <button name="action_fetch_rate" type="object"
+                            string="Traer T.C." class="btn-secondary"
+                            invisible="state not in ('draft', 'computed')"/>
+                    <button name="action_compute" type="object"
+                            string="Calcular" class="btn-primary"
+                            invisible="state not in ('draft', 'computed')"/>
+                    <button name="action_post" type="object"
+                            string="Contabilizar" class="btn-primary"
+                            invisible="state != 'computed'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancelar"
+                            invisible="state in ('draft', 'cancel')"
+                            confirm="El asiento de ajuste quedará cancelado. ¿Continuar?"/>
+                    <button name="action_draft" type="object"
+                            string="Volver a borrador"
+                            invisible="state in ('draft', 'posted')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,computed,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_move" type="object"
+                                class="oe_stat_button" icon="fa-book"
+                                invisible="not move_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Asiento</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group name="period" string="Período">
+                            <field name="month"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="year"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="date"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   options="{'no_create': True}"/>
+                            <field name="company_currency_id" invisible="1"/>
+                        </group>
+                        <group name="rate" string="Tipo de cambio">
+                            <field name="currency_id" options="{'no_create': True}"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="rate_day"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="rate_date"/>
+                            <field name="rate_purchase"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="rate_sale"
+                                   readonly="state not in ('draft', 'computed')"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="accounting" string="Contabilización">
+                            <field name="journal_id" options="{'no_create': True}"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="analytic_source"
+                                   groups="analytic.group_analytic_accounting"
+                                   readonly="state not in ('draft', 'computed')"/>
+                            <field name="analytic_distribution"
+                                   widget="analytic_distribution"
+                                   groups="analytic.group_analytic_accounting"
+                                   string="Distribución fija"
+                                   invisible="analytic_source == 'none'"
+                                   required="analytic_source == 'fixed'"
+                                   readonly="state not in ('draft', 'computed')"
+                                   help="Con «heredada» se usa solo como respaldo
+                                         para los renglones cuyos apuntes de
+                                         origen no traen analítica."/>
+                            <field name="move_id" invisible="not move_id"/>
+                        </group>
+                        <group name="totals" string="Resultado del mes">
+                            <field name="amount_gain"/>
+                            <field name="amount_loss"/>
+                            <field name="amount_net"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detalle" name="lines">
+                            <!-- Todo es de solo lectura salvo la analítica:
+                                 el contador puede corregirla antes de
+                                 contabilizar sin rehacer el cálculo. -->
+                            <field name="line_ids"
+                                   readonly="state != 'computed'">
+                                <list string="Detalle" create="false"
+                                      delete="false" editable="bottom">
+                                    <field name="account_id" readonly="1"/>
+                                    <field name="partner_id" optional="show"
+                                           readonly="1"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_currency_id"
+                                           column_invisible="1"/>
+                                    <field name="amount_currency" readonly="1"
+                                           sum="Saldo en M.E."/>
+                                    <field name="rate_type" optional="show"
+                                           readonly="1"/>
+                                    <field name="rate" readonly="1"/>
+                                    <field name="balance" readonly="1"
+                                           sum="Saldo contable"/>
+                                    <field name="balance_adjusted" readonly="1"
+                                           sum="Saldo revaluado"/>
+                                    <field name="adjustment" sum="Ajuste"
+                                           readonly="1"
+                                           decoration-danger="adjustment &lt; 0"
+                                           decoration-success="adjustment &gt; 0"/>
+                                    <field name="analytic_distribution"
+                                           widget="analytic_distribution"
+                                           groups="analytic.group_analytic_accounting"
+                                           options="{'account_field': 'account_id'}"
+                                           optional="show"/>
+                                    <button name="action_open_move_lines"
+                                            type="object" icon="fa-search"
+                                            title="Ver apuntes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Vista previa del asiento" name="preview"
+                              invisible="state != 'computed'">
+                            <field name="preview_data"
+                                   widget="grouped_view_widget" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_exchange_closure_list" model="ir.ui.view">
+        <field name="name">l10n_pe.exchange.closure.list</field>
+        <field name="model">l10n_pe.exchange.closure</field>
+        <field name="arch" type="xml">
+            <list string="Cierres de tipo de cambio"
+                  decoration-muted="state == 'cancel'"
+                  decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="currency_id"/>
+                <field name="rate_purchase"/>
+                <field name="rate_sale"/>
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="amount_gain" sum="Ganancia"/>
+                <field name="amount_loss" sum="Pérdida"/>
+                <field name="amount_net" sum="Neto"/>
+                <field name="move_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-info="state == 'computed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_exchange_closure_search" model="ir.ui.view">
+        <field name="name">l10n_pe.exchange.closure.search</field>
+        <field name="model">l10n_pe.exchange.closure</field>
+        <field name="arch" type="xml">
+            <search string="Cierres de tipo de cambio">
+                <field name="name"/>
+                <field name="move_id"/>
+                <filter name="filter_draft" string="Borrador"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_computed" string="Calculado"
+                        domain="[('state', '=', 'computed')]"/>
+                <filter name="filter_posted" string="Contabilizado"
+                        domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="filter_not_cancel" string="Vigentes"
+                        domain="[('state', '!=', 'cancel')]"/>
+                <group>
+                    <filter name="group_year" string="Año" domain="[]"
+                            context="{'group_by': 'year'}"/>
+                    <filter name="group_currency" string="Moneda" domain="[]"
+                            context="{'group_by': 'currency_id'}"/>
+                    <filter name="group_state" string="Estado" domain="[]"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_exchange_closure" model="ir.actions.act_window">
+        <field name="name">Cierre de tipo de cambio</field>
+        <field name="res_model">l10n_pe.exchange.closure</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_not_cancel': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registre el primer cierre mensual de tipo de cambio
+            </p>
+            <p>
+                Ajusta al tipo de cambio de la fecha de balance los saldos de
+                las cuentas de activo (T.C. compra) y pasivo (T.C. venta)
+                denominadas en moneda extranjera, y lleva la diferencia al
+                resultado del mes.
+            </p>
+        </field>
+    </record>
+
+</odoo>
