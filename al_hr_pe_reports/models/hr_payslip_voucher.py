@@ -107,6 +107,18 @@ class HrPayslip(models.Model):
         total_minutes = int(custom_round((hours or 0.0) * 60, 0))
         return total_minutes // 60, total_minutes % 60
 
+    def _voucher_extra_hour_types(self, param, wd_types):
+        """Conceptos que la boleta cuenta como sobretiempo.
+
+        Es un punto de extensión: cada régimen paga las extras a su
+        sobretasa —construcción civil va a 60 % y 100 %, el general a
+        25 % y 35 %— y sin esto las horas de un régimen ajeno saldrían
+        en cero aunque estén pagadas en la boleta. Si el usuario
+        configuró los conceptos en los parámetros, manda su elección.
+        """
+        return wd_types(param.wd_ext, [
+            'al_hr_pe.wd_HE25', 'al_hr_pe.wd_HE35', 'al_hr_pe.wd_HE100'])
+
     def _get_voucher_report_data(self):
         """Diccionario con todo lo que pinta el QWeb de la boleta.
 
@@ -143,8 +155,7 @@ class HrPayslip(models.Model):
         wd_dnlab = wd_types(param.wd_dnlab, ['al_hr_pe.wd_FAL'])
         wd_dsub = wd_types(param.wd_dsub,
                            ['al_hr_pe.wd_SENF', 'al_hr_pe.wd_SMAR'])
-        wd_ext = wd_types(param.wd_ext, [
-            'al_hr_pe.wd_HE25', 'al_hr_pe.wd_HE35', 'al_hr_pe.wd_HE100'])
+        wd_ext = self._voucher_extra_hour_types(param, wd_types)
         wd_dvac = wd_types(param.wd_dvac, ['al_hr_pe.wd_DVAC'])
 
         def wd_sum(types, field='number_of_days'):
@@ -200,9 +211,17 @@ class HrPayslip(models.Model):
 
         # --- Neto: regla configurada en parámetros o el net_wage nativo ---
         neto = 0.0
-        if param.net_to_pay_sr_id:
+        net_rule = param.net_to_pay_sr_id
+        if net_rule:
             net_lines = self.line_ids.filtered(
-                lambda l: l.salary_rule_id == param.net_to_pay_sr_id)
+                lambda l: l.salary_rule_id == net_rule)
+            # Cada estructura tiene su propia regla de neto, y el
+            # parámetro solo puede apuntar a una. Cuando la boleta es de
+            # otro régimen se busca por código: identifica el mismo
+            # concepto sin obligar a un parámetro por estructura.
+            if not net_lines:
+                net_lines = self.line_ids.filtered(
+                    lambda l: l.code == net_rule.code)
             neto = sum(net_lines.mapped('total'))
         if not neto:
             neto = self.net_wage
