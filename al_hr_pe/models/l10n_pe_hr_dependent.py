@@ -214,12 +214,18 @@ class L10nPeHrDependent(models.Model):
             dependent.gives_family_allowance = (
                 dependent._is_family_allowance_source(today))
 
-    def _is_family_allowance_source(self, on_date):
-        """¿Este derechohabiente da derecho a asignación familiar en esa fecha?
+    def _is_family_allowance_source(self, on_date, age_limit=None,
+                                    studying_limit=None):
+        """¿Este derechohabiente da derecho a asignación en esa fecha?
 
         Se evalúa por fecha y no una sola vez porque el derecho **caduca
-        solo**: el día que el hijo cumple 18 (o 24 si estudia) deja de
-        contar sin que nadie tenga que tocar el registro.
+        solo**: el día que el hijo cumple la edad deja de contar sin que
+        nadie tenga que tocar el registro.
+
+        Los límites son parámetros porque no todos los regímenes usan los
+        mismos: el general va a 18 —o 24 cursando estudios superiores—
+        (Ley 25129) y la asignación escolar de construcción civil tiene
+        los suyos.
         """
         self.ensure_one()
         if not self.type_id.is_child or not self.birthday:
@@ -228,8 +234,8 @@ class L10nPeHrDependent(models.Model):
             return False
         if self.date_end and self.date_end < on_date:
             return False
-        limit = (FAMILY_ALLOWANCE_AGE_STUDYING if self.is_studying
-                 else FAMILY_ALLOWANCE_AGE)
+        limit = ((studying_limit or FAMILY_ALLOWANCE_AGE_STUDYING)
+                 if self.is_studying else (age_limit or FAMILY_ALLOWANCE_AGE))
         return relativedelta(on_date, self.birthday).years < limit
 
     # ------------------------------------------------------------------

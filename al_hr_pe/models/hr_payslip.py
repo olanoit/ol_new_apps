@@ -81,11 +81,10 @@ class HrPayslip(models.Model):
             if slip.periodo_id or not slip.date_from:
                 slip.periodo_id = slip.periodo_id
                 continue
-            slip.periodo_id = Period.search([
-                ('company_id', '=', slip.company_id.id),
-                ('date_start', '<=', slip.date_from),
-                ('date_end', '>=', slip.date_from),
-            ], limit=1)
+            # El más ajustado que contenga la boleta entera: con semanas
+            # y meses conviviendo, una boleta semanal cabe en ambos.
+            slip.periodo_id = Period._get_period_for_payslip(
+                slip.company_id, slip.date_from, slip.date_to)
 
     @api.depends('version_id', 'company_id', 'date_from')
     def _compute_l10n_pe_snapshot(self):
@@ -213,6 +212,19 @@ class HrPayslipRun(models.Model):
 
     periodo_id = fields.Many2one(
         'hr.period', string='Periodo', check_company=True, index=True)
+    l10n_pe_plame_period_id = fields.Many2one(
+        'hr.period', string='Periodo PLAME',
+        compute='_compute_l10n_pe_plame_period_id', store=True,
+        help='Mes con el que se declara. La PLAME va por mes; los lotes '
+             'semanales de construcción civil se declaran en el mes del '
+             'que cuelga su periodo.')
+
+    @api.depends('periodo_id', 'periodo_id.parent_id')
+    def _compute_l10n_pe_plame_period_id(self):
+        for run in self:
+            run.l10n_pe_plame_period_id = (
+                run.periodo_id._l10n_pe_plame_period()
+                if run.periodo_id else False)
 
     def get_period(self):
         self.ensure_one()
@@ -221,3 +233,22 @@ class HrPayslipRun(models.Model):
             raise UserError(self.env._(
                 'El lote no tiene periodo asignado.'))
         return self.periodo_id
+
+    def _l10n_pe_plame_slips(self):
+        """Boletas que entran en la PLAME de este lote.
+
+        Si el lote es semanal, la declaración es del **mes entero**: se
+        toman las boletas de todas las semanas de ese mes, no solo las
+        del lote. Declarar una semana suelta dejaría fuera el resto del
+        periodo que SUNAT espera en un único envío.
+        """
+        self.ensure_one()
+        month = self.l10n_pe_plame_period_id
+        if not month or month == self.periodo_id:
+            return self.slip_ids
+        periods = month | month.child_ids
+        return self.env['hr.payslip'].search([
+            ('periodo_id', 'in', periods.ids),
+            ('company_id', '=', self.company_id.id),
+            ('state', 'in', ('validated', 'paid')),
+        ])

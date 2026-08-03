@@ -10,6 +10,8 @@
                 <field name="name"/>
                 <field name="date_start"/>
                 <field name="date_end"/>
+                <field name="period_type"/>
+                <field name="parent_id" optional="show"/>
                 <field name="year" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
@@ -30,9 +32,27 @@
                         <group>
                             <field name="date_start"/>
                             <field name="date_end"/>
+                            <field name="period_type"/>
+                            <field name="parent_id"
+                                   invisible="period_type != 'weekly'"
+                                   required="period_type == 'weekly'"
+                                   options="{'no_create': True}"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
+                    <notebook invisible="period_type != 'monthly' or not child_ids">
+                        <page string="Semanas" name="weeks">
+                            <field name="child_ids" readonly="1">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="duration_days"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>
@@ -46,6 +66,7 @@
             <form>
                 <group>
                     <field name="year"/>
+                    <field name="generate_weekly"/>
                     <field name="company_id" groups="base.group_multi_company"/>
                 </group>
                 <footer>
