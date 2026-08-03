@@ -1,0 +1,325 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
+    <h1>Retenciones del IGV</h1>
+    <p>El régimen de la R.S. 037-2002/SUNAT sobre el marco nativo de retenciones de Odoo 19: aplicabilidad con sus excepciones, retención en el pago, comprobante y resumen mensual.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">R.S. 037-2002</span>
+      <span class="alc-tag">3 % sobre el pago</span>
+      <span class="alc-tag">CRE</span>
+      <span class="alc-tag">F.V. 626</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Los dos lados del régimen</h2>
+    <p class="alc-sub">Según quién sea el agente, el módulo hace cosas distintas.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Como agente de retención (compras)</h3>
+        <p>Aplica el 3 % a las facturas de proveedor que corresponda, retiene en cada pago —parciales incluidos—, numera el comprobante y genera su XML.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Como proveedor retenido (ventas)</h3>
+        <p>Registra las retenciones que te practican y las concilia contra la factura, para que el saldo del cliente refleje lo realmente cobrado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Las excepciones, que son la parte difícil</h2>
+    <p class="alc-sub">Saber cuándo NO se retiene es más trabajo que calcular el 3 %.</p>
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>No se retiene si…</th><th>Motivo</th></tr></thead>
+        <tbody>
+          <tr><td>El importe no supera S/ 700</td><td>Monto mínimo del régimen</td></tr>
+          <tr><td>El proveedor también es agente de retención</td><td>No se retiene entre agentes</td></tr>
+          <tr><td>El proveedor es buen contribuyente</td><td>Exclusión del régimen</td></tr>
+          <tr><td>Es una boleta sin crédito fiscal</td><td>La operación no da derecho</td></tr>
+          <tr><td>La operación tiene detracción</td><td>SPOT y retención son excluyentes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Las cinco se evalúan solas al publicar la factura. La condición de agente y de buen contribuyente son marcas del contacto, así que basta con mantenerlas al día.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Se retiene sobre el pago, no sobre la factura</h2>
+    <p class="alc-sub">Es lo que más se confunde al implantarlo.</p>
+    <p>El régimen retiene <strong>cuando se paga</strong>. El asistente de pago propone el 3 % del importe que se está pagando, de modo que un pago parcial retiene su parte y no el total de la factura.</p>    <p>El impuesto se inyecta al publicar <strong>sin alterar el total</strong> de la factura, y el asiento de la retención va a su cuenta 4011x. El comprobante se numera al emitir el pago.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo se usa</h2>
+    <p class="alc-sub"></p>
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>Configurar el régimen</h3>
+      <span class="alc-where">Ajustes → Perú</span>
+    <p>Si la empresa es agente de retención, la tasa, el monto mínimo y el impuesto de retención que se usa en el pago.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Marcar los contactos</h3>
+      <span class="alc-where">Contacto → pestaña de facturación</span>
+    <p>Agente de retención y buen contribuyente. De estas dos marcas salen dos de las cinco excepciones.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Facturar y pagar</h3>
+    <p>La aplicabilidad se resuelve sola; el asistente de pago propone la retención.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Registrar las retenciones sufridas</h3>
+      <span class="alc-where">Perú → Retenciones IGV → Sufridas</span>
+    <p>Lo que otros te retienen, conciliado contra la factura.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Declarar</h3>
+      <span class="alc-where">Perú → Retenciones IGV → Resumen</span>
+    <p>Resumen mensual en TXT para el formulario virtual 626. La marca de retención viaja además al campo 26 del PLE 8.3.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_retention</strong> · versión  · LGPL-3</p>
+    <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_account_withholding_tax</strong> y <strong>l10n_latam_invoice_document</strong>. Guía funcional en <code>docs/retenciones.md</code>.</p>
+  </div>
+</footer>
+
+</section>

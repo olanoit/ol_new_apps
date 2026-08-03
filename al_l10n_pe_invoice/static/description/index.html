@@ -1,0 +1,311 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
+    <h1>Comprobantes electrónicos</h1>
+    <p>La representación impresa de la factura y la boleta peruanas, en A4 y en ticket de 80 mm, con el QR oficial extraído del XML firmado.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">A4 y ticket 80 mm</span>
+      <span class="alc-tag">QR del XML firmado</span>
+      <span class="alc-tag">Detalle tributario</span>
+      <span class="alc-tag">Cuotas de crédito</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>No es solo un reporte</h2>
+    <p class="alc-sub">La representación impresa necesita datos que la factura no tiene separados.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Detalle tributario</h3>
+        <p>IGV, ISC, IVAP, ICBPER, exoneradas e inafectas desglosadas — lo que el comprobante debe mostrar y el total no distingue.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Forma de pago</h3>
+        <p>Contado o crédito, con el cuadro de cuotas cuando corresponde.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Bloque de detracción</h3>
+        <p>Cuando la operación está sujeta al SPOT, con su código, porcentaje e importe.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Firmas y cuentas</h3>
+        <p>Bloque configurable con las cuentas bancarias de la empresa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>El QR es el del XML, no uno recalculado</h2>
+    <p class="alc-sub">Aquí es donde fallan casi todas las implementaciones.</p>
+    <p>El QR que exige SUNAT incluye el <strong>hash de la firma digital</strong>. Reconstruirlo a mano a partir de los datos de la factura produce un código que parece correcto y no lo es.</p>    <div class="alc-note">Este módulo lo <strong>extrae del XML firmado</strong> con el método nativo de la localización y lo renderiza con el generador de códigos de barras de Odoo. Sin librería externa de QR y sin campos binarios almacenados: el QR se dibuja al imprimir.</div>    <p>El monto en letras también sale del método nativo, que ya resuelve las particularidades del español peruano.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo está construido</h2>
+    <p class="alc-sub">Reutilizar el núcleo en vez de duplicarlo.</p>
+    <p>Los dos formatos siguen el esquema de plantillas de Odoo —contenedor más documento— y el estilo vive en una hoja CSS incluida en los paquetes de reportes, sin etiquetas de estilo dentro de las plantillas. Es el mismo patrón que usa el módulo de contabilidad nativo, y lo que permite que un cambio de diseño no obligue a tocar el QWeb.</p>    <p>La <strong>guía de remisión</strong> es un reporte aparte: <code>al_l10n_pe_delivery_guide_report</code>.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo se usa</h2>
+    <p class="alc-sub"></p>
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>Configurar los bloques opcionales</h3>
+      <span class="alc-where">Ajustes → Perú</span>
+    <p>Firmas y cuentas bancarias que aparecen al pie del comprobante.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Emitir la factura</h3>
+    <p>El XML se firma con la localización nativa; de ahí sale el QR.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Imprimir</h3>
+      <span class="alc-where">Factura → Imprimir</span>
+    <p>A4 para el envío habitual, ticket de 80 mm para punto de venta.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_invoice</strong> · versión  · LGPL-3</p>
+    <p style="margin:0">Requiere <strong>account</strong>, <strong>sale</strong>, <strong>l10n_pe_edi</strong>, <strong>al_account_base</strong>, <strong>al_l10n_pe_currency</strong> y <strong>al_l10n_pe_detraction</strong>. La guía de remisión va en <code>al_l10n_pe_delivery_guide_report</code>.</p>
+  </div>
+</footer>
+
+</section>
