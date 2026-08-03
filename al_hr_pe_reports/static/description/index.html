@@ -1,0 +1,341 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <h1>Documentos y bancos</h1>
+    <p>La boleta legal peruana con un solo botón de imprimir, los certificados, los contratos y los archivos de pago masivo de los cinco bancos.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">D.S. 001-98-TR</span>
+      <span class="alc-tag">Boleta QWeb</span>
+      <span class="alc-tag">Certificados</span>
+      <span class="alc-tag">BCP · BBVA · IBK · SBP · BanBif</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Lo que el trabajador recibe y lo que el banco necesita</h2>
+    <p class="alc-sub">Los papeles que exige la norma y los archivos que exigen los bancos, que no se parecen en nada entre sí.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Boleta de pago</h3>
+        <p>La del D.S. N.° 001-98-TR: tres columnas de ingresos, descuentos y aportes del empleador con su código SUNAT, días y horas del periodo, suspensiones, neto en letras y las dos firmas.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Certificados y cartas</h3>
+        <p>Certificado de trabajo, carta de disposición de CTS y certificado de rentas de 5ta categoría, en asistentes que aceptan varios empleados a la vez.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Contratos</h3>
+        <p>Plantillas por compañía que se rellenan sobre la ficha del trabajador con marcadores <code>{{…}}</code>. Incluye el régimen de prueba del art. 10 de la LPCL.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Pago masivo bancario</h3>
+        <p>Los formatos propietarios de BCP, BBVA, Interbank, Scotiabank y BanBif, para haberes y para CTS.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Un solo botón de imprimir</h2>
+    <p class="alc-sub">La boleta correcta sale sin que nadie tenga que elegirla.</p>
+    <p>Odoo permite varias plantillas de boleta y deja al usuario la elección. En una planilla peruana eso es una fuente de errores: la boleta legal es una y basta con equivocarse un mes.</p>    <p>Aquí la estructura salarial <strong>declara cuál es su boleta</strong> y el botón nativo la resuelve. Una empresa con régimen general y construcción civil imprime cada boleta con su plantilla sin cambiar de menú ni de criterio.</p>    <div class="alc-note">El mecanismo respeta una plantilla peruana ya elegida: si la estructura apunta a un reporte propio, se usa ese. Lo que evita es que salga la boleta genérica de Odoo por descuido.</div>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>El envío de la boleta por correo</h2>
+    <p class="alc-sub">Con constancia de recepción, que es lo que la norma pide poder demostrar.</p>
+    <p>La boleta se envía en PDF adjunto y el correo lleva un enlace de confirmación firmado con un token HMAC derivado del secreto de la base. Cuando el trabajador confirma, queda registrada la recepción con su fecha.</p>    <p>El token importa: sin firma, cualquiera con el enlace podría dar por recibida la boleta de otro.</p>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Los archivos de pago al banco</h2>
+    <p class="alc-sub">Formatos propietarios, de ancho fijo, sin margen de interpretación.</p>
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Banco</th><th>Qué cubre</th></tr></thead>
+        <tbody>
+          <tr><td>BCP</td><td>Haberes y CTS</td></tr>
+          <tr><td>BBVA</td><td>Haberes y CTS</td></tr>
+          <tr><td>Interbank</td><td>Haberes y CTS</td></tr>
+          <tr><td>Scotiabank</td><td>Haberes y CTS</td></tr>
+          <tr><td>BanBif</td><td>Haberes y CTS</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Se generan desde lotes de boletas, quincena, CTS, gratificaciones y vacaciones. Los formatos se portaron con <strong>paridad byte a byte</strong> respecto de la versión anterior: un archivo que el banco aceptaba lo sigue aceptando, carácter por carácter.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo se usa</h2>
+    <p class="alc-sub"></p>
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>Configurar los datos del documento</h3>
+      <span class="alc-where">Planillas → Configuración → Parámetros principales</span>
+    <p>Representante que firma, categorías de conceptos de la boleta y la regla que da el neto a pagar.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Preparar las plantillas de contrato</h3>
+      <span class="alc-where">Planillas → Configuración → Plantillas de contrato</span>
+    <p>Una por tipo de contrato y compañía, con los marcadores que se rellenan desde la ficha del trabajador.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Imprimir o enviar la boleta</h3>
+      <span class="alc-where">Boleta → Imprimir · Enviar por correo</span>
+    <p>Sale la boleta del régimen que corresponda. El envío deja constancia cuando el trabajador confirma.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Emitir certificados</h3>
+      <span class="alc-where">Ficha del empleado → asistentes</span>
+    <p>Certificado de trabajo, carta de CTS o certificado de rentas, para uno o varios empleados de una vez.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Generar el archivo del banco</h3>
+      <span class="alc-where">Planillas → Pagos masivos bancarios</span>
+    <p>Se elige el origen —lote, CTS, gratificación…—, el banco y el tipo de pago. El archivo queda como adjunto listo para subir.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px"><strong>al_hr_pe_reports</strong> · versión 4.20260802 · LGPL-3</p>
+    <p style="margin:0">Requiere <strong>al_hr_pe_benefits</strong>. La boleta es extensible: cada régimen puede declarar su variante sin tocar la del régimen general.</p>
+  </div>
+</footer>
+
+</section>

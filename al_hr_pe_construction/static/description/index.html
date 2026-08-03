@@ -1,0 +1,650 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<!-- ============ PORTADA ============ -->
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <h1>Construcción civil</h1>
+    <p>
+      El régimen que se paga por jornal diario, se calcula por semana y
+      liquida cada beneficio social en la misma planilla. Con la tabla
+      del convenio como fuente y la boleta legal que le corresponde.
+    </p>
+    <div class="alc-tags">
+      <span class="alc-tag">Convención CAPECO–FTCCP</span>
+      <span class="alc-tag">R.M. N.° 197-2025-TR</span>
+      <span class="alc-tag">CONAFOVICER</span>
+      <span class="alc-tag">96 tests</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ QUÉ ES ============ -->
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>No es el régimen general con otro sueldo</h2>
+    <p class="alc-sub">
+      Cambian la unidad de pago, la periodicidad, el origen de las cifras
+      y hasta qué beneficios se pagan y cuándo. Por eso es un módulo y no
+      una configuración.
+    </p>
+
+    <div class="alc-scroll">
+      <table>
+        <thead>
+          <tr><th></th><th>Régimen general</th><th>Construcción civil</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Unidad de pago</td><td>Sueldo mensual</td><td><strong>Jornal diario</strong> por categoría</td></tr>
+          <tr><td>Origen del importe</td><td>Contrato individual</td><td><strong>Convención colectiva</strong></td></tr>
+          <tr><td>Periodicidad</td><td>Mensual o quincenal</td><td><strong>Semanal</strong></td></tr>
+          <tr><td>CTS</td><td>Depósito semestral</td><td><strong>En cada planilla</strong> (indemnización 15 %)</td></tr>
+          <tr><td>Vacaciones</td><td>Descanso de 30 días</td><td><strong>10 % en cada planilla</strong></td></tr>
+          <tr><td>Gratificación</td><td>Un sueldo</td><td><strong>40 jornales</strong>, devengo diario</td></tr>
+          <tr><td>Sobretiempo</td><td>25 % y 35 %</td><td><strong>60 % y 100 %</strong></td></tr>
+          <tr><td>Aporte propio</td><td>—</td><td><strong>CONAFOVICER 2 %</strong></td></tr>
+          <tr><td>Vínculo</td><td>Indefinido o plazo fijo</td><td><strong>Por obra determinada</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Modelarlo con el régimen general obligaría a cargar a mano, cada
+      semana y trabajador por trabajador, importes que en realidad salen
+      de una tabla publicada.
+    </p>
+  </div>
+</section>
+
+<!-- ============ IDEA CENTRAL ============ -->
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>La idea que sostiene el módulo</h2>
+    <p class="alc-sub">
+      El jornal no se escribe a mano en ningún sitio: es un dato con
+      fecha que vive en la tabla del convenio.
+    </p>
+
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>La tabla manda</h3>
+        <p>
+          El jornal se calcula desde la tabla vigente a la fecha, según la
+          categoría. Un convenio nuevo se aplica cargando su tabla — no
+          editando trescientas fichas.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>La boleta recuerda</h3>
+        <p>
+          Al calcular, el jornal se congela en la boleta. Una boleta de
+          marzo sigue mostrando el jornal de marzo aunque en abril entre
+          el convenio siguiente.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>Lo dudoso es editable</h3>
+        <p>
+          Las bonificaciones por condiciones de trabajo van a un catálogo
+          con vigencia, no incrustadas en las reglas: se corrigen contra
+          el convenio propio sin tocar código.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAESTROS ============ -->
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Qué instala</h2>
+    <p class="alc-sub">Seis modelos, una estructura salarial y la boleta del régimen.</p>
+
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Modelo</th><th>Qué guarda</th></tr></thead>
+        <tbody>
+          <tr><td><code>…construction.category</code></td><td>Operario, oficial, peón y su porcentaje de BUC</td></tr>
+          <tr><td><code>…construction.wage.table</code></td><td>Tabla salarial de un convenio, <strong>con vigencia</strong></td></tr>
+          <tr><td><code>…construction.wage.line</code></td><td>Jornal, movilidad y BUC de cada categoría</td></tr>
+          <tr><td><code>…construction.bonus</code></td><td>Catálogo de bonificaciones: BAE y por condiciones</td></tr>
+          <tr><td><code>…construction.site</code></td><td>Obras, con las bonificaciones que activan</td></tr>
+          <tr><td><code>…hr.conafovicer</code></td><td>Liquidación mensual de la retención</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>En la ficha del trabajador</h3>
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Campo</th><th>Para qué</th></tr></thead>
+        <tbody>
+          <tr><td><code>category_id</code></td><td>Operario / oficial / peón — de aquí salen jornal y BUC</td></tr>
+          <tr><td><code>site_id</code></td><td>Obra: determina qué bonificaciones por condiciones se pagan</td></tr>
+          <tr><td><code>bae_id</code></td><td>Especialidad de alta especialización (solo operarios)</td></tr>
+          <tr><td><code>bonus_ids</code></td><td>Bonificaciones propias del puesto</td></tr>
+          <tr><td><code>sctr_health</code></td><td>Cobertura de SCTR salud</td></tr>
+          <tr><td><code>daily_wage</code></td><td>Jornal vigente — <strong>calculado</strong>, no se teclea</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PASO A PASO ============ -->
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Cómo funciona, paso a paso</h2>
+    <p class="alc-sub">
+      De la tabla del convenio al depósito del CONAFOVICER, en el orden
+      en que se hace.
+    </p>
+
+    <ol class="alc-steps">
+
+      <li class="alc-step">
+        <h3>Cargar la tabla del convenio</h3>
+        <span class="alc-where">Planillas → Construcción civil → Tablas salariales</span>
+        <p>Viene cargada la de la <strong>R.M. N.° 197-2025-TR</strong> (01/01/2026 – 31/12/2026):</p>
+        <div class="alc-scroll">
+          <table>
+            <thead><tr><th>Categoría</th><th class="alc-num">Jornal</th><th class="alc-num">Movilidad</th><th class="alc-num">BUC</th></tr></thead>
+            <tbody>
+              <tr><td>Operario</td><td class="alc-num">89.30</td><td class="alc-num">8.60</td><td class="alc-num">32 %</td></tr>
+              <tr><td>Oficial</td><td class="alc-num">69.75</td><td class="alc-num">8.60</td><td class="alc-num">30 %</td></tr>
+              <tr><td>Peón</td><td class="alc-num">62.80</td><td class="alc-num">8.60</td><td class="alc-num">30 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Cuando salga el convenio siguiente se crea una tabla nueva con su
+          vigencia. Las boletas anteriores no se mueven.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Revisar bonificaciones y crear las obras</h3>
+        <span class="alc-where">Construcción civil → Bonificaciones · Empleados → Obras</span>
+        <p>
+          El catálogo trae las cuatro especialidades BAE (8 %, 9 %, 10 % y
+          22 %) y las cuatro por condiciones de trabajo: altitud, contacto
+          con agua, riesgo bajo cota cero y altura.
+        </p>
+        <div class="alc-note">
+          <strong>Contrasta estos cuatro importes con tu convenio.</strong>
+          Provienen de fuentes secundarias, no del PDF de la FTCCP. Por eso
+          son un catálogo editable y no están escritos dentro de las reglas.
+        </div>
+        <p>
+          Cada obra lleva las bonificaciones que activa. Una obra sobre los
+          3 000 m s. n. m. lleva la de altitud, y todos sus trabajadores la
+          cobran sin marcarla uno por uno.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Configurar la compañía</h3>
+        <span class="alc-where">Ajustes → Compañías → pestaña «Construcción civil (PE)»</span>
+        <div class="alc-scroll">
+          <table>
+            <thead><tr><th>Parámetro</th><th>Por defecto</th></tr></thead>
+            <tbody>
+              <tr><td>EsSalud</td><td class="alc-num">9.00 %</td></tr>
+              <tr><td><strong>SCTR salud</strong></td><td class="alc-num">0.00 %</td></tr>
+              <tr><td><strong>SCTR pensión</strong></td><td class="alc-num">0.00 %</td></tr>
+              <tr><td>CONAFOVICER</td><td class="alc-num">2.00 %</td></tr>
+              <tr><td>Bonificación extraordinaria</td><td class="alc-num">9.00 %</td></tr>
+              <tr><td>Edad tope asignación escolar</td><td class="alc-num">18 / 21</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alc-note">
+          <strong>El SCTR viene en cero a propósito.</strong> Su tasa no la
+          fija la norma sino el contrato con la aseguradora. Sin tasa no se
+          calcula el aporte: el módulo no inventa una cifra fiscal.
+        </div>
+      </li>
+
+      <li class="alc-step">
+        <h3>Configurar al trabajador</h3>
+        <span class="alc-where">Empleados → ficha del trabajador</span>
+        <p>
+          Régimen laboral <em>Construcción civil</em>, categoría, obra y —si
+          es operario— su especialidad. El jornal aparece solo.
+        </p>
+        <p>
+          Marca la cobertura de <strong>SCTR</strong> de quienes están
+          expuestos: en una obra conviven expuestos y personal
+          administrativo, y el seguro se paga por quien corre el riesgo, no
+          por toda la planilla.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Generar los periodos semanales</h3>
+        <span class="alc-where">Planillas → Configuración → Generador de periodos</span>
+        <p>
+          Las semanas van de lunes a domingo pero <strong>se cortan al
+          terminar el mes</strong>. Una semana a caballo entre dos meses
+          obligaría a prorratear al declarar la PLAME, que va por mes;
+          cortándola, la suma de las semanas de un mes es exactamente el mes.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Calcular la planilla semanal</h3>
+        <span class="alc-where">Planillas → Boletas · estructura CONSTRUCCIÓN CIVIL</span>
+        <p>Seis días de un operario, con todo lo que este régimen paga semana a semana:</p>
+<pre><code>JOR    Jornal básico                        535.80
+DSO    Descanso semanal obligatorio          89.30
+BUC    Bonificación unificada               171.46
+MOV    Bonificación por movilidad            51.60
+INDEM  Indemnización 15% (CTS)               87.07
+VAC10  Vacaciones 10%                        53.58
+GRAT   Gratificación proporcional           119.07
+BEXT   Bonificación extraordinaria           10.72
+CONAF  CONAFOVICER 2%                       <span class="alc-c-neg">-12.50</span></code></pre>
+      </li>
+
+      <li class="alc-step">
+        <h3>Imprimir la boleta</h3>
+        <span class="alc-where">Botón «Imprimir» de la boleta</span>
+        <p>
+          Sale directamente la del régimen: habla de <strong>jornal básico,
+          categoría, obra y especialidad</strong> en vez de sueldo mensual.
+          Es una variante de la boleta legal, así que la del régimen general
+          no cambia y ambas conviven en la misma empresa.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Liquidar el CONAFOVICER</h3>
+        <span class="alc-where">Construcción civil → CONAFOVICER</span>
+        <p>
+          Se elige el mes y se calcula: consolida las boletas confirmadas de
+          todas sus semanas, agrupa por trabajador y fija el vencimiento
+          —<strong>día 15 del mes siguiente</strong>—. La exportación genera
+          el detalle en Excel que acompaña al depósito. Marcado como pagado,
+          queda bloqueado.
+        </p>
+      </li>
+
+      <li class="alc-step">
+        <h3>Declarar la PLAME</h3>
+        <span class="alc-where">Lote de boletas</span>
+        <p>
+          Los lotes semanales se declaran en <strong>su mes</strong>: el
+          módulo agrupa todas las boletas del periodo mensual. Declarar una
+          semana suelta dejaría fuera el resto del envío que SUNAT espera
+          unido.
+        </p>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
+<!-- ============ REGLAS ============ -->
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>La estructura salarial</h2>
+    <p class="alc-sub">Con su código de la tabla 22 de SUNAT entre paréntesis.</p>
+
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Código</th><th>Concepto</th><th>Cálculo</th></tr></thead>
+        <tbody>
+          <tr><td><code>JOR</code></td><td>Jornal básico (0121)</td><td>jornal × días</td></tr>
+          <tr><td><code>DSO</code></td><td>Descanso semanal obligatorio (0100)</td><td>jornal ÷ 6 × días</td></tr>
+          <tr><td><code>BUC</code></td><td>Bonificación unificada (0300)</td><td>32 % operario · 30 % oficial y peón</td></tr>
+          <tr><td><code>MOV</code></td><td>Movilidad (0904)</td><td>importe fijo × días</td></tr>
+          <tr><td><code>BAE</code></td><td>Alta especialización (0300)</td><td>% según especialidad</td></tr>
+          <tr><td><code>BALTI</code> <code>BAGUA</code> <code>BCOTA</code> <code>BALTU</code></td><td>Por condiciones de trabajo</td><td>del catálogo, por puesto u obra</td></tr>
+          <tr><td><code>HE60</code> <code>HE100</code></td><td>Horas extras (0105/0106)</td><td>valor hora × 1.6 / × 2</td></tr>
+          <tr><td><code>INDEM</code></td><td>Indemnización 15 % (0916)</td><td>15 % de jornal + extras a valor simple</td></tr>
+          <tr><td><code>VAC10</code></td><td>Vacaciones 10 % (0400)</td><td>10 % del básico percibido</td></tr>
+          <tr><td><code>GRAT</code></td><td>Gratificación proporcional (0406/0407)</td><td>40 jornales ÷ 210 o ÷ 150</td></tr>
+          <tr><td><code>BEXT</code></td><td>Bonif. extraordinaria Ley 30334 (0906)</td><td>9 % de la gratificación</td></tr>
+          <tr><td><code>AESC</code></td><td>Asignación escolar (0201)</td><td>30 jornales al año por hijo</td></tr>
+          <tr><td><code>CONAF</code></td><td>CONAFOVICER (0703)</td><td>2 % de jornal + D.S.O.</td></tr>
+          <tr><td><code>TREM</code></td><td>Remuneración computable</td><td>base afecta, enumerada</td></tr>
+          <tr><td><code>ESSALUD</code> <code>SCTRS</code> <code>SCTRP</code></td><td>Aportes del empleador</td><td>% sobre <code>TREM</code></td></tr>
+          <tr><td><code>TINGR</code> <code>TDES</code> <code>NETO</code></td><td>Totales y neto a pagar</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HALLAZGOS ============ -->
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Cuatro cosas que la tabla oficial obligó a corregir</h2>
+    <p class="alc-sub">
+      Los importes publicados del convenio se usaron como fixture de los
+      tests. Fue eso lo que sacó a la luz estos puntos.
+    </p>
+
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>El redondeo va sobre el periodo</h3>
+        <p>
+          Una sola vez sobre el importe de la semana, no multiplicando el
+          diario ya redondeado por los días. Son seis céntimos por semana
+          en el oficial — y en el operario los dos caminos coinciden por
+          casualidad, que es lo que hace el error difícil de ver.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>La base del CONAFOVICER lleva el dominical</h3>
+        <p>
+          Las fuentes secundarias dicen «2 % del jornal básico». Pero el
+          operario retiene 12.50 y el 2 % de 535.80 son 10.72. Con el
+          D.S.O. dentro, (535.80 + 89.30) × 2 % = 12.50 — y cuadra igual
+          en oficial y peón.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>El BUC está afecto, la movilidad no</h3>
+        <p>
+          Lo prueba el mismo documento: el ONP publicado del operario
+          (103.55) es el 13 % de 796.56, o sea jornal + D.S.O. + BUC. La
+          movilidad queda fuera por ser condición de trabajo.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>Las gratificaciones se devengan distinto</h3>
+        <p>
+          Fiestas Patrias en 7 meses (210 días) y Navidad en 5 (150). Por
+          eso la diaria de Navidad es mayor con el mismo jornal.
+        </p>
+      </div>
+    </div>
+
+    <h3>Y una que no se corrigió</h3>
+    <p>
+      La tabla publica <strong>911.94</strong> para el oficial cuando sus
+      propias columnas suman <strong>911.95</strong>: el descuadre es del
+      documento, que suma importes ya redondeados. Cada concepto coincide
+      uno a uno. Hay un test que lo fija para que nadie «corrija» el motor
+      persiguiendo el 911.94 y desajuste un concepto que sí está bien.
+    </p>
+  </div>
+</section>
+
+<!-- ============ LÍMITES ============ -->
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Lo que no hace</h2>
+    <p class="alc-sub">Dicho por delante, para que nadie lo descubra en producción.</p>
+
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>TXT del Banco de la Nación</h3>
+        <p>
+          Falta la especificación del formato. El pago suele hacerse con
+          formulario y el detalle en Excel, que sí se genera. No se
+          inventan formatos fiscales.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>Escalonamiento por altura</h3>
+        <p>
+          Se aplica un porcentaje único. El tramo por piso depende del
+          convenio de cada empresa y se ajusta en el catálogo.
+        </p>
+      </div>
+      <div class="alc-card">
+        <h3>Por confirmar con el cliente</h3>
+        <p>
+          Si los cuatro importes de las bonificaciones por condiciones
+          coinciden con su convenio, y si hay especialidades BAE fuera de
+          las cuatro de la tabla.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIE ============ -->
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px">
+      <strong>al_hr_pe_construction</strong> · versión 6.20260803 · LGPL-3
+    </p>
+    <p style="margin:0">
+      Requiere <strong>al_hr_pe_benefits</strong> y
+      <strong>al_hr_pe_reports</strong>. Análisis completo en
+      <code>docs/planillas/CONSTRUCCION_CIVIL_ANALISIS.md</code>.
+      96 tests validados contra la tabla oficial del convenio.
+    </p>
+  </div>
+</footer>
+
+</section>

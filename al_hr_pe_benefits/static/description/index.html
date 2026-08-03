@@ -1,0 +1,339 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <h1>Beneficios sociales</h1>
+    <p>CTS, gratificaciones, renta de 5ta, liquidación de cese, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena — sobre un único motor de remuneración computable.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">CTS</span>
+      <span class="alc-tag">Gratificaciones</span>
+      <span class="alc-tag">Renta 5ta</span>
+      <span class="alc-tag">Liquidaciones</span>
+      <span class="alc-tag">Ley 29351</span>
+      <span class="alc-tag">D.L. 892</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Todo lo que en Perú se paga fuera de la boleta</h2>
+    <p class="alc-sub">Nueve beneficios con reglas propias, plazos propios y una base de cálculo que casi nunca es «el sueldo».</p>
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Beneficio</th><th>Qué resuelve</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CTS</strong></td><td>Depósitos semestrales mayo–octubre y noviembre–abril, con reserva para quien lleva menos de un mes y descuento del exceso de descanso médico</td></tr>
+          <tr><td><strong>Gratificaciones</strong></td><td>Fiestas Patrias y Navidad, con la bonificación extraordinaria de EsSalud de la Ley 29351</td></tr>
+          <tr><td><strong>Renta de 5ta</strong></td><td>Proyección anual por tramos de UIT, reproyección del art. 40 y excluidos</td></tr>
+          <tr><td><strong>Liquidación de cese</strong></td><td>Truncos de CTS, gratificación y vacaciones más conceptos extra</td></tr>
+          <tr><td><strong>Provisiones</strong></td><td>Devengo mensual de CTS, gratificación y vacaciones</td></tr>
+          <tr><td><strong>Subsidios</strong></td><td>Enfermedad —los 20 días a cargo del empleador— y maternidad, con reparto mensual</td></tr>
+          <tr><td><strong>Utilidades</strong></td><td>Reparto del D.L. 892: mitad por días trabajados, mitad por remuneraciones</td></tr>
+          <tr><td><strong>Adelantos y préstamos</strong></td><td>Cuotas iguales a fin de mes, descontadas en la boleta</td></tr>
+          <tr><td><strong>Quincena</strong></td><td>Boletas quincenales y su descuento en la mensual</td></tr>
+          <tr><td><strong>Vacaciones</strong></td><td>Récord vacacional, descansos y adelantos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>El motor de remuneración computable</h2>
+    <p class="alc-sub">La pieza que comparten todos: qué se promedia, cuándo cuenta y cuándo no.</p>
+    <p>Casi ningún beneficio peruano se calcula sobre el sueldo. Se calcula sobre la <strong>remuneración computable</strong>, que suma lo fijo y promedia lo variable — y solo si esa variable apareció las veces suficientes en el periodo.</p>
+    <div class="alc-note"><strong>La regla de las tres apariciones.</strong> Una comisión que se pagó dos meses de seis no entra en el promedio; la que se pagó tres, sí. Está implementada una vez, en el motor, y la reutilizan la CTS, la gratificación y la liquidación de cese: si el criterio cambia, cambia en un solo sitio.</div>    <p>El motor vive en los parámetros principales de la compañía, así que dos empresas de la misma base pueden tener criterios distintos sin tocar código.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo se usa</h2>
+    <p class="alc-sub">Todos los beneficios siguen el mismo circuito, y eso es deliberado.</p>
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>Configurar el motor una vez</h3>
+      <span class="alc-where">Planillas → Configuración → Parámetros principales</span>
+    <p>Qué conceptos son fijos, cuáles variables y qué reglas entran en la remuneración computable de cada beneficio.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Crear el documento del periodo</h3>
+      <span class="alc-where">Planillas → Beneficios sociales</span>
+    <p>Un registro por semestre de CTS, por gratificación, por reparto de utilidades. Lleva su periodo y su compañía.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Calcular</h3>
+      <span class="alc-where">Botón «Calcular»</span>
+    <p>Genera el detalle trabajador por trabajador con la base, el tiempo computable y el importe. Recalcular reemplaza el detalle; no acumula.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Revisar el detalle antes de confirmar</h3>
+    <p>Cada línea muestra de dónde sale su importe. Es el momento de detectar al trabajador con un dato laboral incompleto, no después de pagar.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Confirmar y pagar</h3>
+    <p>Confirmado, el documento queda cerrado a cambios. De aquí salen el asiento contable —con <strong>Contabilización</strong>— y el archivo de pago masivo al banco —con <strong>Documentos y bancos</strong>—.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Detalles que suelen dar problemas</h2>
+    <p class="alc-sub"></p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>CTS de quien lleva poco tiempo</h3>
+        <p>Al trabajador con menos de un mes en la empresa no se le deposita: su importe se reserva y se acumula al semestre siguiente.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Exceso de descanso médico</h3>
+        <p>Los días de subsidio que superan el límite descuentan tiempo computable de la CTS. Se calcula solo, a partir de los subsidios registrados.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Reproyección del art. 40</h3>
+        <p>Cuando aparece un ingreso extraordinario, la renta de 5ta se reproyecta desde ese mes en vez de rehacer el año entero.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Quincena que no se paga dos veces</h3>
+        <p>La boleta quincenal descuenta su propio importe en la mensual, con la regla configurada en los parámetros.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px"><strong>al_hr_pe_benefits</strong> · versión 4.20260722 · LGPL-3</p>
+    <p style="margin:0">Requiere <strong>al_hr_pe</strong>. Los asientos contables los aporta <code>al_hr_pe_account</code>; los PDF y los pagos al banco, <code>al_hr_pe_reports</code>.</p>
+  </div>
+</footer>
+
+</section>

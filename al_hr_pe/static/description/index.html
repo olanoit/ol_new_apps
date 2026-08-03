@@ -1,0 +1,389 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #b45309;
+  --alc-brand-soft: #fef6ec;
+  --alc-accent: #0f766e;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2c3138 55%, #3a3128 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #edf7f6;
+  border: 1px solid #cfe8e5;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #92400e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <h1>Núcleo de la localización</h1>
+    <p>La ficha laboral peruana, los catálogos de SUNAT, las reglas salariales y los envíos al Estado. Es la base sobre la que se apoyan los demás módulos de la suite.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">PLAME</span>
+      <span class="alc-tag">AFPNet</span>
+      <span class="alc-tag">T-Registro</span>
+      <span class="alc-tag">Anexo 2 SUNAT</span>
+      <span class="alc-tag">Multicompañía</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Qué resuelve</h2>
+    <p class="alc-sub">Odoo trae un motor de nómina; lo que no trae es Perú. Este módulo pone la norma peruana debajo de ese motor.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>La ficha laboral peruana</h3>
+        <p>Régimen laboral, situación, tipo de trabajador, CUSPP, tipo de comisión AFP, seguro social, dos direcciones estructuradas y derechohabientes. Todo en <code>hr.version</code>, que en Odoo 19 absorbió al contrato.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Los catálogos de SUNAT</h3>
+        <p>Las tablas paramétricas del Anexo 2 —tipos de trabajador (T08), situaciones (T15), regímenes (T33), ocupaciones (T30), tipos de vía y zona (T05/T06)…— cargadas como datos, no escritas en el código.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Las reglas salariales</h3>
+        <p>Estructura peruana completa con su código de la tabla 22 de SUNAT: ONP, AFP con sus tres componentes, renta de 5ta, EsSalud, asignación familiar, horas extras y descuentos al neto.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Los envíos al Estado</h3>
+        <p>PLAME (.rem, .jor, .snl, .toc), AFPNet y el T-Registro con sus estructuras de carga masiva verificadas contra el instructivo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Las piezas que hay que conocer</h2>
+    <p class="alc-sub">Cuatro conceptos explican casi todo el módulo.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Parámetros principales</h3>
+        <p>Un registro por compañía donde vive la configuración: cuentas, categorías de la boleta, conceptos de días y horas, reglas de referencia. Nada de códigos escritos dentro de la lógica — se configura, no se parchea.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Periodos</h3>
+        <p>El calendario de la planilla. Mensuales por defecto; los regímenes que pagan por semana cuelgan sus periodos del mes al que se declaran, cortados en el fin de mes para que la PLAME cuadre.</p>
+      </div>
+      <div class="alc-card">
+        <h3>UIT y RMV por año</h3>
+        <p>Las cifras que mueven media localización cambian cada año. Son un registro fechado, no una constante: la boleta del año pasado sigue calculando con la UIT del año pasado.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Snapshot en la boleta</h3>
+        <p>Al calcular, la boleta fotografía lo que importa —RMV, tasas AFP, datos de la versión—. Recalcular una boleta antigua no la contamina con la norma de hoy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Cómo se pone en marcha</h2>
+    <p class="alc-sub">El orden importa: cada paso se apoya en el anterior.</p>
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>Crear los parámetros principales de la compañía</h3>
+      <span class="alc-where">Planillas → Configuración → Perú → Parámetros principales</span>
+    <p>Es el registro que consulta el resto de la suite. Sin él, la boleta y los exportadores se niegan a funcionar y lo dicen con un mensaje claro en vez de calcular mal en silencio.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Cargar UIT y remuneración mínima del año</h3>
+      <span class="alc-where">Planillas → Configuración → Perú → UIT</span>
+    <p>La UIT alimenta los tramos de la renta de 5ta y la RMV la asignación familiar. Se cargan por año fiscal.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Revisar los catálogos de SUNAT</h3>
+      <span class="alc-where">Planillas → Configuración → Perú</span>
+    <p>Vienen cargados desde el Anexo 2. Se revisan, no se rellenan: tipos de trabajador, situaciones, regímenes laborales, ocupaciones, motivos de baja, tipos de suspensión, entidades financieras e instituciones educativas.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Generar los periodos del ejercicio</h3>
+      <span class="alc-where">Planillas → Configuración → Perú → Generar periodos</span>
+    <p>Un año completo de una vez. Si hay regímenes semanales, se marca la opción y las semanas quedan colgadas de su mes.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Completar la ficha laboral de cada trabajador</h3>
+      <span class="alc-where">Empleados → ficha → pestaña peruana</span>
+    <p>Régimen laboral, situación, tipo de trabajador, afiliación pensionaria con su CUSPP, seguro social y direcciones. Estos datos son los que viajan al T-Registro y a la PLAME.</p>
+    <div class="alc-note">Los <strong>derechohabientes</strong> se registran aquí: de ellos salen la asignación familiar y las estructuras del T-Registro. El derecho se evalúa por edad y por estudios a la fecha de la boleta, no con una marca manual que nadie recuerda apagar.</div>
+      </li>
+      <li class="alc-step">
+        <h3>Calcular la planilla</h3>
+      <span class="alc-where">Planillas → Boletas</span>
+    <p>La estructura peruana calcula aportes, retenciones y descuentos con las tasas vigentes a la fecha. El resultado queda fotografiado en la boleta.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Exportar a PLAME, AFPNet y T-Registro</h3>
+      <span class="alc-where">Lote de boletas → botones de exportación</span>
+    <p>PLAME genera <code>.rem</code>, <code>.jor</code>, <code>.snl</code> y <code>.toc</code>; AFPNet su archivo de aportes. El T-Registro produce las estructuras de carga masiva en un ZIP con el nombre que exige SUNAT.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>El T-Registro</h2>
+    <p class="alc-sub">Alta y mantenimiento de trabajadores y derechohabientes sin teclear en el portal uno por uno.</p>
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Estructura</th><th>Qué declara</th></tr></thead>
+        <tbody>
+          <tr><td><code>E04</code></td><td>Datos de identificación del trabajador</td></tr>
+          <tr><td><code>E05</code></td><td>Datos laborales: régimen, situación, jornada, ocupación</td></tr>
+          <tr><td><code>E11</code></td><td>Domicilio del trabajador</td></tr>
+          <tr><td><code>E17</code></td><td>Establecimientos donde presta labores</td></tr>
+          <tr><td><code>E29</code></td><td>Formación: educación concluida</td></tr>
+          <tr><td><code>E30</code></td><td>Cuenta de abono de la remuneración</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alc-note">El formato se verificó contra el instructivo oficial y está documentado en <code>docs/planillas/TREGISTRO_ESTRUCTURAS.md</code>: separador de tuberías <strong>con tubería final</strong> —su ausencia produce el error EPR1.59—, codificación latin-1 y el nombre <code>RP_&lt;RUC&gt;.&lt;ext&gt;</code>.</div>
+    <p>Los derechohabientes se exportan además en el Excel que alimenta la macro de SUNAT. Las estructuras 13 y 24 <strong>no</strong> se generan: no hay especificación pública y no se inventan formatos fiscales.</p>
+  </div>
+</section>
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Decisiones que conviene conocer</h2>
+    <p class="alc-sub"></p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Cero códigos dentro de la lógica</h3>
+        <p>Los conceptos que la boleta necesita —qué es un día laborado, qué categoría es un ingreso— se configuran en los parámetros. Cambiar de criterio no exige tocar Python.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Multicompañía por diseño</h3>
+        <p><code>check_company</code> en todas partes, reglas de registro por compañía y parámetros propios. Dos empresas con criterios distintos conviven en la misma base.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Redondeo SUNAT</h3>
+        <p>Medio hacia arriba, sobre <code>Decimal</code> y no sobre coma flotante: 267.90 × 15 % da 40.19 y no 40.18, que es lo que sale si se confía en el binario.</p>
+      </div>
+      <div class="alc-card">
+        <h3>La versión, no el contrato</h3>
+        <p>Odoo 19 fusionó <code>hr.contract</code> en <code>hr.version</code>. Toda la ficha laboral vive ahí y el histórico es nativo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p style="margin:0 0 6px"><strong>al_hr_pe</strong> · versión 10.20260803 · LGPL-3</p>
+    <p style="margin:0">Requiere <strong>hr_payroll</strong>, <strong>hr_payroll_account</strong>, <strong>l10n_latam_base</strong> y <strong>l10n_pe</strong>. Plan de migración en <code>docs/planillas/</code>.</p>
+  </div>
+</footer>
+
+</section>
