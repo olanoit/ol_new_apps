@@ -237,6 +237,7 @@
       <span class="alc-tag">RVIE</span>
       <span class="alc-tag">RCE</span>
       <span class="alc-tag">TXT de reemplazo</span>
+      <span class="alc-tag">Carga TUS</span>
     </div>
   </div>
 </header>
@@ -306,7 +307,18 @@
       <li class="alc-step">
         <h3>Descargar el resultado</h3>
       <span class="alc-where">XLSX · TXT de reemplazo</span>
-    <p>El Excel para revisar, el TXT para subir a SUNAT si se opta por reemplazar la propuesta.</p>
+    <p>El Excel para revisar con el contador, y el TXT de reemplazo por si se prefiere subirlo a mano en SOL.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Enviar a SUNAT</h3>
+      <span class="alc-where">Aceptar propuesta · Enviar reemplazo</span>
+    <p>Si la comparación no encontró nada, se <strong>acepta la propuesta</strong>. Si el sistema es la verdad, se <strong>envía el reemplazo</strong> por la API. Los dos son excluyentes y solo se admite uno por periodo.</p>
+    <div class="alc-note"><strong>Aceptar con diferencias está bloqueado.</strong> Sería dar por buena la propuesta sabiendo que no cuadra: el botón se niega y dice cuántas líneas fallan y de qué lado.</div>
+      </li>
+      <li class="alc-step">
+        <h3>Registrar el preliminar</h3>
+      <span class="alc-where">Registrar preliminar</span>
+    <p>Último paso que admite la API. La <strong>generación del registro</strong> se completa en el portal de SUNAT: no expone servicio web para hacerla desde fuera.</p>
       </li>
     </ol>
   </div>
@@ -315,7 +327,8 @@
   <div class="alc-wrap">
     <h2>Lo que no hace</h2>
     <p class="alc-sub"></p>
-    <p>El <strong>envío del reemplazo por API</strong> todavía no está: el TXT se genera con su nombre oficial y se sube desde SUNAT Operaciones en Línea. El resto del circuito —solicitud, ticket y descarga— sí va por API.</p>
+    <p>La <strong>generación del registro</strong> se completa en el portal: SUNAT no expone un servicio web para hacerla desde fuera. Tampoco están el RCE de no domiciliados ni los ajustes posteriores.</p>
+    <p>La carga del reemplazo usa el protocolo <strong>TUS</strong> que SUNAT documenta, con los códigos del Anexo I de su manual. Los tests fijan que se envíen exactamente esos metadatos, pero no ha podido probarse contra el servicio real por falta de credenciales de producción: conviene estrenar con un periodo de prueba.</p>
   </div>
 </section>
 

@@ -43,9 +43,11 @@ carga a mano y el flujo continúa igual.
 
 - **Sí**: RVIE y RCE propuesta + comparación + exportables; credenciales por compañía;
   campos de comparación configurables; multicompañía.
-- **No (fase futura)**: envío de reemplazo/complemento vía API (procesos masivos de carga),
-  aceptación de propuesta y generación del registro desde Odoo, RCE No Domiciliados (080500),
-  ajustes posteriores. El TXT de reemplazo se genera para cargarlo manualmente en SOL.
+- **Sí (fase 6)**: **aceptación de la propuesta**, **envío del reemplazo por API** (carga
+  masiva sobre el servidor TUS de SUNAT) y **registro del preliminar**. El TXT de reemplazo
+  se sigue pudiendo descargar para cargarlo a mano en SOL.
+- **No**: la **generación del registro** (SUNAT no expone servicio: se completa en el portal),
+  RCE No Domiciliados (080500) y ajustes posteriores.
 
 ## 4. Arquitectura
 
@@ -68,7 +70,8 @@ al_l10n_pe_sire/
 └── docs/   (guía funcional)
 ```
 
-**Endpoints SUNAT** (constantes en `sire_api.py`):
+**Endpoints SUNAT** (constantes en `sire_api.py`; verificados contra los manuales
+oficiales de servicios web API SIRE Compras v22 y Ventas v22):
 
 | Función | URL |
 | --- | --- |
@@ -77,6 +80,19 @@ al_l10n_pe_sire/
 | Propuesta RCE | `GET …/libros/rce/propuesta/web/propuesta/{periodo}/exportacioncomprobantepropuesta` |
 | Estado tickets | `GET …/libros/rvierce/gestionprocesosmasivos/web/masivo/consultaestadotickets` |
 | Descarga reporte | `GET …/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte` |
+| **Aceptar propuesta RVIE** | `POST …/libros/rvie/propuesta/web/propuesta/{periodo}/aceptapropuesta` → ticket |
+| **Aceptar propuesta RCE** | `POST …/libros/rce/propuesta/web/registroslibros/{periodo}/aceptarpropuesta` → ticket |
+| **Carga de reemplazo** | `POST …/libros/rvierce/receptorpropuesta/web/propuesta/upload` (TUS 1.0.0) → ticket |
+| **Registrar preliminar RVIE** | `POST …/libros/rvierce/gestionlibro/web/registroslibros/{periodo}/registrapreliminar` |
+| **Registrar preliminar RCE** | `POST …/libros/rce/preliminar/web/registroslibros/{periodo}/registrapreliminares` |
+
+**Carga de archivos**: SUNAT expone un servidor **TUS 1.0.0** (su manual documenta el
+cliente `tus-java-client` 0.5.0). Se implementa a mano en dos peticiones —`POST` de
+creación con `Upload-Length`/`Upload-Metadata` y `PATCH` con los bytes— en vez de añadir
+una dependencia. Los metadatos van en base64 y sus códigos salen del **Anexo I** del
+manual: `codProceso` **3** para el reemplazo del RVIE y **61** para el del RCE;
+`codLibro` **140000** (RVIE) y **080000** (RCE); `codOrigenEnvio` 2 (servicio web) y
+`codTipoCorrelativo` 01.
 
 Base: `https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv`.
 
@@ -108,6 +124,7 @@ Regla RVIE: NC (07) de comprobante de periodo anterior → montos a columnas de
 | 3 | RVIE: ídem ventas | TXT 40 col parsea; factura/NC de venta generan línea correcta | ✅ |
 | 4 | Comparación configurable + diferencias + XLSX + TXT reemplazo | Estados 0-3 correctos en tests; TXT con nº de columnas oficial | ✅ |
 | 5 | Tests integrales, demo, docs y commit | Suite verde; guía funcional; `tools/sire_demo_data.py` | ✅ |
+| 6 | Envío a SUNAT: aceptar, reemplazar y registrar preliminar | Metadatos oficiales verificados en tests; 27 tests | ✅ |
 
 ## 6. Estructuras oficiales usadas
 

@@ -1,6 +1,7 @@
 import base64
 import io
 import zipfile
+from unittest.mock import patch
 
 from odoo import fields
 from odoo.exceptions import UserError
@@ -101,6 +102,19 @@ class TestSire(TransactionCase):
         cls.company = cls.env.company
         if (cls.company.vat or '') != RUC_TEST:
             cls.company.vat = RUC_TEST
+        # Un periodo es único por libro y compañía, y la base de pruebas
+        # puede traer ya el de este mes —el script de demostración crea
+        # uno—. Se limpia dentro de la transacción del test, que se
+        # revierte al terminar: la base no se toca.
+        for model in ('l10n_pe.sire.rvie', 'l10n_pe.sire.rce'):
+            existing = cls.env[model].search([
+                ('year', '=', PERIOD_YEAR),
+                ('month', '=', PERIOD_MONTH),
+                ('company_id', '=', cls.company.id),
+            ])
+            if existing:
+                existing.state = 'draft'
+                existing.unlink()
         cls.rvie = cls.env['l10n_pe.sire.rvie'].create({
             'year': PERIOD_YEAR,
             'month': PERIOD_MONTH,
@@ -371,3 +385,160 @@ class TestSire(TransactionCase):
         self.rvie.action_done()
         with self.assertRaises(UserError):
             self.rvie.unlink()
+
+    # ------------------------------------------------------------------
+    # Envío a SUNAT (aceptación, reemplazo y preliminar)
+    # ------------------------------------------------------------------
+
+    def _compared(self, record, rows=(), moves=None):
+        """Deja un periodo comparado con un lado «sistema» controlado.
+
+        La base de pruebas ya tiene comprobantes del periodo, así que el
+        sistema se fija a lo que cada caso necesita en vez de depender de
+        lo que haya cargado antes.
+        """
+        record.proposal_file = _as_proposal(list(rows))
+        record.action_load_sire()
+        moves = self.env['account.move'] if moves is None else moves
+        with patch.object(type(record), '_sire_system_moves', return_value=moves):
+            record.action_load_system()
+        record.action_compare()
+        return record
+
+    def test_accept_needs_a_comparison(self):
+        """Aceptar antes de comparar es aceptar a ciegas."""
+        with self.assertRaises(UserError):
+            self.rvie.action_accept_proposal()
+
+    def test_accept_refuses_with_differences(self):
+        """Con diferencias, aceptar daría por buena la propuesta."""
+        self._compared(self.rvie, rows=[_rvie_row()])
+        self.assertEqual(self.rvie.count_only_sire, 1)
+        with self.assertRaises(UserError) as error:
+            self.rvie.action_accept_proposal()
+        self.assertIn('reemplazo', str(error.exception))
+
+    def test_accept_sends_and_stores_the_ticket(self):
+        self._compared(self.rvie)
+        self.assertEqual(self.rvie.count_sire, 0)
+        with patch.object(
+                type(self.rvie), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rvie), '_sire_accept_proposal',
+                return_value='2026000001') as accept:
+            self.rvie.action_accept_proposal()
+        self.assertEqual(self.rvie.submission_type, 'accept')
+        self.assertEqual(self.rvie.submission_ticket, '2026000001')
+        self.assertEqual(self.rvie.state, 'submitted')
+        # El endpoint es el del RVIE, con su periodo
+        self.assertIn('/libros/rvie/propuesta/web/propuesta/%s%s/aceptapropuesta'
+                      % (PERIOD_YEAR, PERIOD_MONTH), accept.call_args[0][1])
+
+    def test_replacement_upload_carries_the_official_metadata(self):
+        invoice = self._make_invoice('out_invoice', document_number='F003-77')
+        self._compared(self.rvie, moves=invoice)
+        with patch.object(
+                type(self.rvie), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rvie), '_sire_upload',
+                return_value='2026000002') as upload:
+            self.rvie.action_send_replacement()
+        metadata = upload.call_args[0][3]
+        self.assertEqual(metadata['codLibro'], '140000', 'libro del RVIE')
+        self.assertEqual(metadata['codProceso'], '3', 'reemplazo del RVIE')
+        self.assertEqual(metadata['codOrigenEnvio'], '2', 'servicio web')
+        self.assertEqual(metadata['codTipoCorrelativo'], '01')
+        self.assertEqual(metadata['numRuc'], RUC_TEST)
+        self.assertEqual(metadata['perTributario'], '%s%s' % (PERIOD_YEAR, PERIOD_MONTH))
+        self.assertTrue(metadata['filename'].endswith('.zip'))
+        self.assertEqual(self.rvie.submission_type, 'replace')
+        self.assertEqual(self.rvie.state, 'submitted')
+
+    def test_rce_replacement_uses_its_own_codes(self):
+        invoice = self._make_invoice('in_invoice', document_number='F004-88')
+        self._compared(self.rce, moves=invoice)
+        with patch.object(
+                type(self.rce), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rce), '_sire_upload', return_value='T') as upload:
+            self.rce.action_send_replacement()
+        metadata = upload.call_args[0][3]
+        self.assertEqual(metadata['codLibro'], '080000', 'libro del RCE')
+        self.assertEqual(metadata['codProceso'], '61', 'reemplazo del RCE')
+
+    def test_only_one_submission_per_period(self):
+        self._compared(self.rvie)
+        with patch.object(
+                type(self.rvie), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rvie), '_sire_accept_proposal', return_value='T1'):
+            self.rvie.action_accept_proposal()
+            with self.assertRaises(UserError):
+                self.rvie.action_accept_proposal()
+
+    def test_reset_is_blocked_after_submitting(self):
+        """Rehacer las líneas no deshace lo declarado."""
+        self._compared(self.rvie)
+        with patch.object(
+                type(self.rvie), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rvie), '_sire_accept_proposal', return_value='T1'):
+            self.rvie.action_accept_proposal()
+        with self.assertRaises(UserError):
+            self.rvie.action_reset()
+
+    def test_preliminary_needs_a_submission(self):
+        self._compared(self.rvie)
+        with self.assertRaises(UserError):
+            self.rvie.action_register_preliminary()
+
+    def test_preliminary_closes_the_period(self):
+        self._compared(self.rce)
+        with patch.object(
+                type(self.rce), '_sire_get_token', return_value='tok'), \
+             patch.object(
+                type(self.rce), '_sire_accept_proposal', return_value='T1'), \
+             patch.object(
+                type(self.rce), '_sire_register_preliminary',
+                return_value=True) as register:
+            self.rce.action_accept_proposal()
+            self.rce.action_register_preliminary()
+        self.assertTrue(self.rce.preliminary_registered)
+        self.assertEqual(self.rce.state, 'done')
+        self.assertIn('registrapreliminares', register.call_args[0][1])
+
+    # ------------------------------------------------------------------
+    # Refactor: unicidad, resumen y codificación
+    # ------------------------------------------------------------------
+
+    def test_one_period_per_book_and_company(self):
+        with self.assertRaises(UserError):
+            self.env['l10n_pe.sire.rvie'].create({
+                'year': PERIOD_YEAR, 'month': PERIOD_MONTH,
+                'company_id': self.company.id})
+
+    def test_compare_counts_summarise_the_result(self):
+        invoice = self._make_invoice('out_invoice', document_number='F005-99')
+        self._compared(self.rvie, rows=[_rvie_row()], moves=invoice)
+        self.assertEqual(self.rvie.count_sire, 1)
+        self.assertEqual(self.rvie.count_system, 1)
+        self.assertEqual(
+            self.rvie.count_ok + self.rvie.count_diff + self.rvie.count_only_sire,
+            self.rvie.count_sire, 'cada línea de la propuesta tiene un estado')
+
+    def test_latin1_proposals_are_readable(self):
+        """SUNAT ha entregado TXT en latin-1; no debe reventar el flujo."""
+        api = self.env['l10n_pe.sire.api']
+        self.assertEqual(api._sire_decode('Ñandú S.A.C.'.encode('latin-1')),
+                         'Ñandú S.A.C.')
+        self.assertEqual(api._sire_decode('Ñandú S.A.C.'.encode('utf-8')),
+                         'Ñandú S.A.C.')
+
+    def test_tus_metadata_is_base64(self):
+        api = self.env['l10n_pe.sire.api']
+        header = api._sire_tus_metadata({'numRuc': RUC_TEST, 'codLibro': '140000'})
+        self.assertEqual(
+            header,
+            'numRuc %s,codLibro %s' % (
+                base64.b64encode(RUC_TEST.encode()).decode(),
+                base64.b64encode(b'140000').decode()))

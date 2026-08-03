@@ -31,6 +31,22 @@ class L10nPeSireRce(models.Model):
     def _sire_ple_book_code(self):
         return '080400'
 
+    def _sire_upload_book_code(self):
+        return '080000'
+
+    def _sire_replacement_process_code(self):
+        # Anexo I del manual de servicios web: 61 = reemplazo de la
+        # propuesta del RCE (el 3 es el del RVIE).
+        return '61'
+
+    def _sire_accept_endpoint(self):
+        return ('/libros/rce/propuesta/web/registroslibros/%s/aceptarpropuesta'
+                % self._sire_period())
+
+    def _sire_preliminary_endpoint(self):
+        return ('/libros/rce/preliminar/web/registroslibros/%s/registrapreliminares'
+                % self._sire_period())
+
     def _sire_proposal_endpoint(self):
         return ('/libros/rce/propuesta/web/propuesta/%s/exportacioncomprobantepropuesta'
                 % self._sire_period())

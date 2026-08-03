@@ -47,14 +47,27 @@
                     <button name="action_compare" string="Comparar"
                             type="object" class="btn-primary"
                             invisible="state != 'system_loaded'"/>
+                    <button name="action_accept_proposal" string="Aceptar propuesta"
+                            type="object" class="btn-primary"
+                            invisible="state != 'compared' or submission_ticket"
+                            confirm="Se aceptará la propuesta de SUNAT tal como está. ¿Continuar?"/>
+                    <button name="action_send_replacement" string="Enviar reemplazo"
+                            type="object"
+                            invisible="state != 'compared' or submission_ticket"
+                            confirm="Se enviará a SUNAT el reemplazo con las líneas del sistema. ¿Continuar?"/>
+                    <button name="action_check_submission" string="Consultar envío"
+                            type="object" invisible="not submission_ticket or state == 'done'"/>
+                    <button name="action_register_preliminary" string="Registrar preliminar"
+                            type="object" class="btn-primary"
+                            invisible="not submission_ticket or preliminary_registered"/>
                     <button name="action_export_xlsx" string="Descargar XLSX"
-                            type="object" invisible="state not in ('compared', 'done')"/>
+                            type="object" invisible="state not in ('compared', 'submitted', 'done')"/>
                     <button name="action_export_replacement" string="TXT de reemplazo"
-                            type="object" invisible="state not in ('compared', 'done')"/>
+                            type="object" invisible="state not in ('compared', 'submitted', 'done')"/>
                     <button name="action_done" string="Marcar realizado"
-                            type="object" invisible="state != 'compared'"/>
+                            type="object" invisible="state not in ('compared', 'submitted')"/>
                     <button name="action_reset" string="Reiniciar"
-                            type="object" invisible="state in ('draft', 'done')"
+                            type="object" invisible="state in ('draft', 'done') or submission_ticket"
                             confirm="Se eliminarán las líneas desplegadas. ¿Continuar?"/>
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -77,6 +90,23 @@
                             <field name="proposal_filename" invisible="1"/>
                             <field name="proposal_file" filename="proposal_filename"
                                    readonly="state not in ('draft', 'downloaded')"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Envío a SUNAT" invisible="not submission_ticket">
+                            <field name="submission_type" readonly="1"/>
+                            <field name="submission_ticket" readonly="1"/>
+                            <field name="submission_state" readonly="1"/>
+                            <field name="preliminary_registered" readonly="1"/>
+                        </group>
+                        <group string="Resumen de la comparación"
+                               invisible="state in ('draft', 'requested', 'downloaded')">
+                            <field name="count_sire"/>
+                            <field name="count_system"/>
+                            <field name="count_ok"/>
+                            <field name="count_diff"/>
+                            <field name="count_only_sire"/>
+                            <field name="count_only_system"/>
                         </group>
                     </group>
                     <notebook>

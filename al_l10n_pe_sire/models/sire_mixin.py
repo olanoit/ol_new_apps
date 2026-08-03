@@ -64,6 +64,7 @@ class L10nPeSireMixin(models.AbstractModel):
             ('sire_loaded', 'SIRE desplegado'),
             ('system_loaded', 'Sistema desplegado'),
             ('compared', 'Comparado'),
+            ('submitted', 'Enviado a SUNAT'),
             ('done', 'Realizado'),
         ], default='draft', tracking=True, copy=False)
     download_manual = fields.Boolean(
@@ -79,6 +80,48 @@ class L10nPeSireMixin(models.AbstractModel):
     export_file = fields.Binary(string='Archivo generado', copy=False)
     export_filename = fields.Char(copy=False)
 
+    # --- Envío a SUNAT: se acepta la propuesta o se reemplaza; nunca las
+    # dos cosas, y de ahí que compartan ticket y estado. ---
+    submission_type = fields.Selection(
+        selection=[('accept', 'Propuesta aceptada'), ('replace', 'Propuesta reemplazada')],
+        string='Envío', copy=False, readonly=True)
+    submission_ticket = fields.Char(string='Ticket del envío', copy=False, readonly=True)
+    submission_state = fields.Selection(
+        selection=TICKET_STATES, string='Estado del envío', copy=False, readonly=True)
+    preliminary_registered = fields.Boolean(
+        string='Preliminar registrado', copy=False, readonly=True,
+        help='El preliminar quedó registrado en SUNAT; la generación del '
+             'registro se completa en el portal.')
+
+    # --- Resumen de la comparación: es lo primero que se mira al abrir un
+    # periodo, y contarlo a ojo en una lista de miles de líneas no es una
+    # opción. ---
+    count_sire = fields.Integer(
+        string='Comprobantes en la propuesta', compute='_compute_compare_counts')
+    count_system = fields.Integer(
+        string='Comprobantes en el sistema', compute='_compute_compare_counts')
+    count_ok = fields.Integer(
+        string='Correctas', compute='_compute_compare_counts')
+    count_diff = fields.Integer(
+        string='No cuadran', compute='_compute_compare_counts')
+    count_only_sire = fields.Integer(
+        string='Solo en SIRE', compute='_compute_compare_counts')
+    count_only_system = fields.Integer(
+        string='Solo en el sistema', compute='_compute_compare_counts')
+
+    @api.depends('sire_line_ids.compare_state', 'system_line_ids.compare_state')
+    def _compute_compare_counts(self):
+        for record in self:
+            sire_lines = record.sire_line_ids
+            system_lines = record.system_line_ids
+            record.count_sire = len(sire_lines)
+            record.count_system = len(system_lines)
+            record.count_ok = len(sire_lines.filtered(lambda l: l.compare_state == '0'))
+            record.count_diff = len(sire_lines.filtered(lambda l: l.compare_state == '1'))
+            record.count_only_sire = len(sire_lines.filtered(lambda l: l.compare_state == '2'))
+            record.count_only_system = len(
+                system_lines.filtered(lambda l: l.compare_state == '3'))
+
     # ------------------------------------------------------------------
     # A definir por cada libro
     # ------------------------------------------------------------------
@@ -91,6 +134,22 @@ class L10nPeSireMixin(models.AbstractModel):
 
     def _sire_ple_book_code(self):
         """Código de libro del nombre de archivo oficial (080400/140400)."""
+        raise NotImplementedError()
+
+    def _sire_upload_book_code(self):
+        """Código de libro de la carga masiva (080000 RCE / 140000 RVIE)."""
+        raise NotImplementedError()
+
+    def _sire_replacement_process_code(self):
+        """Indicador de carga masiva del reemplazo (Anexo I del manual)."""
+        raise NotImplementedError()
+
+    def _sire_accept_endpoint(self):
+        """Servicio de aceptación de la propuesta."""
+        raise NotImplementedError()
+
+    def _sire_preliminary_endpoint(self):
+        """Servicio de registro del preliminar."""
         raise NotImplementedError()
 
     def _sire_proposal_endpoint(self):
@@ -136,6 +195,25 @@ class L10nPeSireMixin(models.AbstractModel):
     def _unlink_except_done(self):
         if any(record.state == 'done' for record in self):
             raise UserError(_('No puede eliminar un periodo en estado Realizado.'))
+
+    @api.constrains('year', 'month', 'company_id')
+    def _check_unique_period(self):
+        """Un periodo por libro y compañía.
+
+        Dos registros del mismo mes acaban con dos comparaciones que no
+        coinciden y nadie sabe cuál se declaró.
+        """
+        for record in self:
+            duplicate = self.search([
+                ('id', '!=', record.id),
+                ('year', '=', record.year),
+                ('month', '=', record.month),
+                ('company_id', '=', record.company_id.id),
+            ], limit=1)
+            if duplicate:
+                raise UserError(_(
+                    'Ya existe un periodo %(name)s para %(company)s.',
+                    name=record.name, company=record.company_id.display_name))
 
     @api.model
     def _sire_parse_date(self, value):
@@ -370,17 +448,36 @@ class L10nPeSireMixin(models.AbstractModel):
         return str(value_sire or '').strip() == str(value_system or '').strip()
 
     def action_compare(self):
+        """Cruza propuesta y sistema por CAR y marca cada línea.
+
+        Las escrituras van agrupadas por resultado: un periodo con varios
+        miles de comprobantes hacía dos ``write`` por línea, y eso son
+        decenas de miles de consultas para una comparación que en memoria
+        es inmediata.
+        """
         self.ensure_one()
         fields_config = self._sire_compare_fields()
         all_lines = self.sire_line_ids | self.system_line_ids
         all_lines.write({'compare_state': False, 'diff_detail': False})
+
         system_by_car = {}
+        duplicated = self.env[self.system_line_ids._name]
         for line in self.system_line_ids:
-            system_by_car.setdefault(line.car_sunat, line)
+            if line.car_sunat in system_by_car:
+                # Dos comprobantes del sistema con el mismo CAR: el
+                # segundo no tiene con qué cruzarse y hay que verlo, no
+                # descartarlo en silencio.
+                duplicated |= line
+                continue
+            system_by_car[line.car_sunat] = line
+
+        only_sire = self.env[self.sire_line_ids._name]
+        matched_ok = self.env[self.sire_line_ids._name]
+        by_diff = {}
         for sire_line in self.sire_line_ids:
             system_line = system_by_car.get(sire_line.car_sunat)
             if not system_line:
-                sire_line.compare_state = '2'
+                only_sire |= sire_line
                 continue
             differences = []
             for config in fields_config:
@@ -394,15 +491,27 @@ class L10nPeSireMixin(models.AbstractModel):
                         config.name,
                         self._sire_display_value(field, value_sire),
                         self._sire_display_value(field, value_system)))
-            values = {
-                'compare_state': '1' if differences else '0',
-                'diff_detail': '\n'.join(differences),
-            }
-            sire_line.write(values)
-            system_line.write(values)
-        for system_line in self.system_line_ids:
-            if not system_line.compare_state:
-                system_line.compare_state = '3'
+            if differences:
+                by_diff.setdefault('\n'.join(differences), []).extend(
+                    (sire_line.id, system_line.id))
+            else:
+                matched_ok |= sire_line | system_line
+
+        if matched_ok:
+            matched_ok.write({'compare_state': '0', 'diff_detail': False})
+        if only_sire:
+            only_sire.write({'compare_state': '2'})
+        for detail, ids in by_diff.items():
+            self.env[self.sire_line_ids._name].browse(ids).write({
+                'compare_state': '1', 'diff_detail': detail})
+
+        pending = self.system_line_ids.filtered(lambda l: not l.compare_state)
+        if pending:
+            pending.write({'compare_state': '3'})
+        if duplicated:
+            duplicated.write({
+                'diff_detail': _('CAR SUNAT repetido en el sistema: solo la '
+                                 'primera línea se cruzó con la propuesta.')})
         self.state = 'compared'
         return True
 
@@ -418,8 +527,12 @@ class L10nPeSireMixin(models.AbstractModel):
     # Exportables
     # ------------------------------------------------------------------
 
-    def action_export_replacement(self):
-        """TXT de importación SUNAT (reemplazo de la propuesta) en ZIP."""
+    def _sire_replacement_zip(self):
+        """(nombre del TXT, ZIP en bytes) del reemplazo de la propuesta.
+
+        Lo comparten la descarga manual y el envío por API: el archivo que
+        se sube tiene que ser exactamente el que el usuario puede revisar.
+        """
         self.ensure_one()
         if not self.system_line_ids:
             raise UserError(_('Primero despliegue las líneas del sistema.'))
@@ -431,8 +544,14 @@ class L10nPeSireMixin(models.AbstractModel):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as archive:
             archive.writestr(txt_name, content.encode('utf-8'))
+        return txt_name, buffer.getvalue()
+
+    def action_export_replacement(self):
+        """TXT de importación SUNAT (reemplazo de la propuesta) en ZIP."""
+        self.ensure_one()
+        txt_name, payload = self._sire_replacement_zip()
         self.write({
-            'export_file': base64.b64encode(buffer.getvalue()),
+            'export_file': base64.b64encode(payload),
             'export_filename': txt_name.replace('.txt', '.zip'),
         })
         return self._sire_download_export()
@@ -474,11 +593,125 @@ class L10nPeSireMixin(models.AbstractModel):
         return self._sire_download_export()
 
     # ------------------------------------------------------------------
+    # Envío a SUNAT: aceptar o reemplazar, y registrar el preliminar
+    # ------------------------------------------------------------------
+
+    def _sire_check_submittable(self):
+        self.ensure_one()
+        if self.state not in ('compared', 'submitted'):
+            raise UserError(_(
+                'Compare la propuesta con el sistema antes de enviar nada a '
+                'SUNAT: el envío decide qué queda registrado en el periodo.'))
+        if self.submission_ticket:
+            raise UserError(_(
+                'Este periodo ya tiene un envío en curso (ticket %s). '
+                'Consulte su estado antes de enviar otro.', self.submission_ticket))
+
+    def action_accept_proposal(self):
+        """Acepta la propuesta de SUNAT tal cual la entregó.
+
+        Solo tiene sentido cuando la comparación no encontró diferencias;
+        si las hay, aceptar equivale a dar por bueno lo que el sistema
+        dice que está mal, así que se avisa.
+        """
+        self.ensure_one()
+        self._sire_check_submittable()
+        if self.count_diff or self.count_only_sire or self.count_only_system:
+            raise UserError(_(
+                'La comparación encontró diferencias (%(diff)s no cuadran, '
+                '%(sire)s solo en SIRE, %(system)s solo en el sistema). '
+                'Corríjalas o envíe un reemplazo en vez de aceptar la '
+                'propuesta.',
+                diff=self.count_diff, sire=self.count_only_sire,
+                system=self.count_only_system))
+        token = self._sire_get_token(self.company_id)
+        ticket = self._sire_accept_proposal(token, self._sire_accept_endpoint())
+        self.write({
+            'submission_type': 'accept',
+            'submission_ticket': ticket,
+            'submission_state': '01',
+            'state': 'submitted',
+        })
+        self._sire_log(_('Propuesta aceptada. Ticket %s.', ticket))
+        return True
+
+    def action_send_replacement(self):
+        """Sube el TXT de reemplazo por la API en vez de a mano en SOL."""
+        self.ensure_one()
+        self._sire_check_submittable()
+        txt_name, payload = self._sire_replacement_zip()
+        zip_name = txt_name.replace('.txt', '.zip')
+        token = self._sire_get_token(self.company_id)
+        ticket = self._sire_upload(token, zip_name, payload, {
+            'filename': zip_name,
+            'filetype': 'application/zip',
+            'numRuc': self.company_id.vat,
+            'perTributario': self._sire_period(),
+            'codOrigenEnvio': '2',                      # servicio web
+            'codProceso': self._sire_replacement_process_code(),
+            'codTipoCorrelativo': '01',                 # envíos masivos
+            'nomArchivoImportacion': zip_name,
+            'codLibro': self._sire_upload_book_code(),
+        })
+        self.write({
+            'export_file': base64.b64encode(payload),
+            'export_filename': zip_name,
+            'submission_type': 'replace',
+            'submission_ticket': ticket,
+            'submission_state': '01',
+            'state': 'submitted',
+        })
+        self._sire_log(_('Reemplazo enviado (%(file)s). Ticket %(ticket)s.',
+                         file=zip_name, ticket=ticket))
+        return True
+
+    def action_check_submission(self):
+        """Estado del ticket del envío (aceptación o reemplazo)."""
+        self.ensure_one()
+        if not self.submission_ticket:
+            raise UserError(_('Este periodo no tiene ningún envío.'))
+        token = self._sire_get_token(self.company_id)
+        code, dummy = self._sire_ticket_status(
+            token, self._sire_period(), self.submission_ticket)
+        self.submission_state = code if code in dict(TICKET_STATES) else '00'
+        return True
+
+    def action_register_preliminary(self):
+        """Registra el preliminar del periodo en SUNAT.
+
+        Es el último paso que admite la API: la generación del registro
+        se completa en el portal, y SUNAT no expone un servicio para
+        hacerla desde fuera.
+        """
+        self.ensure_one()
+        if not self.submission_ticket:
+            raise UserError(_(
+                'Acepte la propuesta o envíe el reemplazo antes de registrar '
+                'el preliminar.'))
+        token = self._sire_get_token(self.company_id)
+        self._sire_register_preliminary(token, self._sire_preliminary_endpoint())
+        self.write({'preliminary_registered': True, 'state': 'done'})
+        self._sire_log(_('Preliminar registrado en SUNAT.'))
+        return True
+
+    def _sire_log(self, body):
+        """Deja constancia en el hilo del registro si el modelo lo tiene."""
+        self.ensure_one()
+        if 'message_post' in dir(self):
+            self.message_post(body=body)
+
+    # ------------------------------------------------------------------
     # Otros
     # ------------------------------------------------------------------
 
     def action_reset(self):
         self.ensure_one()
+        if self.submission_ticket:
+            raise UserError(_(
+                'El periodo ya se envió a SUNAT con el ticket %s. Rehacer las '
+                'líneas aquí no deshace ese envío y dejaría el registro '
+                'contando una cosa distinta de la declarada.',
+                self.submission_ticket))
         self.sire_line_ids = [(5, 0, 0)]
         self.system_line_ids = [(5, 0, 0)]
         self.write({

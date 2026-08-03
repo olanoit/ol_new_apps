@@ -14,13 +14,15 @@ trabajo (XLSX).
 * Carga manual del TXT exportado desde SUNAT Operaciones en Línea.
 * Comparación por CAR SUNAT con campos configurables y detalle de diferencias.
 * Exportación XLSX (hojas SIRE y Sistema) y TXT de reemplazo con nombre oficial.
+* Envío a SUNAT por API: aceptación de la propuesta, carga del reemplazo (TUS) y
+  registro del preliminar; la generación del registro se completa en el portal.
 """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '2.20260719',
+    'version': '3.20260803',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',

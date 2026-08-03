@@ -13,6 +13,11 @@ class ResCompany(models.Model):
         string='Client ID API SIRE',
         help='Credencial generada en SOL: Empresas → Credenciales de API SUNAT.')
     l10n_pe_sire_client_secret = fields.Char(string='Client Secret API SIRE')
+    # Caché del token: un periodo encadena media docena de llamadas y no
+    # tiene sentido abrir una sesión OAuth para cada una.
+    l10n_pe_sire_token = fields.Char(string='Token SIRE', copy=False)
+    l10n_pe_sire_token_expiry = fields.Datetime(
+        string='Caducidad del token SIRE', copy=False)
 
 
 class ResConfigSettings(models.TransientModel):
