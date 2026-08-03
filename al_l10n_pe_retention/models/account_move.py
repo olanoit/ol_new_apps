@@ -18,7 +18,7 @@ class AccountMove(models.Model):
     l10n_pe_retention_amount = fields.Monetary(
         string='Retención estimada',
         currency_field='company_currency_id',
-        compute='_compute_l10n_pe_retention',
+        compute='_compute_l10n_pe_retention_amount',
         help='Estimación informativa (tasa sobre el total): la retención '
              'efectiva se calcula en cada pago.')
 
@@ -45,11 +45,24 @@ class AccountMove(models.Model):
                 and not getattr(move, 'l10n_pe_detraction_applies', False)
             )
             move.l10n_pe_retention_applies = applies
+
+    @api.depends('l10n_pe_retention_applies', 'amount_total_signed',
+                 'company_id.l10n_pe_retention_rate')
+    def _compute_l10n_pe_retention_amount(self):
+        """La estimación va en su propio cómputo.
+
+        Comparte origen con la aplicabilidad pero no su almacenamiento:
+        con un único método, leer el importe —que no se almacena—
+        arrastraba un recálculo que **escribía** el booleano almacenado.
+        Odoo 19 lo avisa, y en tests el aviso es un error.
+        """
+        for move in self:
+            company = move.company_id
             move.l10n_pe_retention_amount = (
                 company.currency_id.round(
                     abs(move.amount_total_signed)
                     * company.l10n_pe_retention_rate / 100.0)
-                if applies else 0.0)
+                if move.l10n_pe_retention_applies else 0.0)
 
     def _post(self, soft=True):
         """Inyecta el impuesto de retención nativo en las líneas de la

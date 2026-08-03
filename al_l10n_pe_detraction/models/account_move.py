@@ -30,7 +30,7 @@ class AccountMove(models.Model):
     l10n_pe_detraction_net = fields.Monetary(
         string='Neto tras detracción',
         currency_field='company_currency_id',
-        compute='_compute_l10n_pe_detraction_amount',
+        compute='_compute_l10n_pe_detraction_net',
         help='Importe total en soles menos la detracción: lo que se '
              'cobra/paga a la contraparte fuera del Banco de la Nación.')
 
@@ -70,7 +70,19 @@ class AccountMove(models.Model):
                     base * move.l10n_pe_detraction_percent / 100.0,
                     precision_rounding=1.0)
             move.l10n_pe_detraction_amount = amount
-            move.l10n_pe_detraction_net = base - amount
+
+    @api.depends('amount_total_signed', 'l10n_pe_detraction_amount')
+    def _compute_l10n_pe_detraction_net(self):
+        """El neto va en su propio cómputo, y no es capricho de estilo.
+
+        Comparte fórmula con el monto pero no su almacenamiento: con un
+        único método, leer el neto —que no se almacena— arrastraba un
+        recálculo que **escribía** el monto almacenado. Odoo 19 lo avisa,
+        y en tests el aviso es un error.
+        """
+        for move in self:
+            move.l10n_pe_detraction_net = (
+                abs(move.amount_total_signed) - move.l10n_pe_detraction_amount)
 
     def _post(self, soft=True):
         # el XML UBL nativo solo emite el bloque «Detraccion» con un tipo
