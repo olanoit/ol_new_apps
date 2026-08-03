@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_site_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.site.list</field>
+        <field name="model">l10n_pe.hr.construction.site</field>
+        <field name="arch" type="xml">
+            <list string="Obras">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="district_id" optional="show"/>
+                <field name="altitude" optional="show"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="employee_count" string="Trabajadores"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_construction_site_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.site.form</field>
+        <field name="model">l10n_pe.hr.construction.site</field>
+        <field name="arch" type="xml">
+            <form string="Obra">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_employees" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="employee_count" widget="statinfo" string="Trabajadores"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre de la obra"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="address"/>
+                            <field name="district_id" options="{'no_create': True}"/>
+                            <field name="altitude"/>
+                            <field name="work_location_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Bonificaciones que activa la obra">
+                        <field name="bonus_ids" widget="many2many_tags"
+                               options="{'no_create': True}" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_construction_site" model="ir.actions.act_window">
+        <field name="name">Obras</field>
+        <field name="res_model">l10n_pe.hr.construction.site</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

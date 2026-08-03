@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_construction_root" name="Construcción civil"
+              parent="al_hr_pe.menu_hr_pe_root" sequence="50"/>
+
+    <menuitem id="menu_construction_wage_table" name="Tablas salariales"
+              parent="menu_construction_root"
+              action="action_construction_wage_table" sequence="10"/>
+    <menuitem id="menu_construction_category" name="Categorías"
+              parent="menu_construction_root"
+              action="action_construction_category" sequence="20"/>
+    <menuitem id="menu_construction_bonus" name="Bonificaciones"
+              parent="menu_construction_root"
+              action="action_construction_bonus" sequence="30"/>
+
+    <menuitem id="menu_construction_site" name="Obras"
+              parent="hr.menu_hr_employee_payroll"
+              action="action_construction_site"
+              groups="hr_payroll.group_hr_payroll_user" sequence="50"/>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Catálogos con el patrón «global con override» del resto de
+             tablas del proyecto: se ven los globales y los propios. -->
+        <record id="construction_category_company_rule" model="ir.rule">
+            <field name="name">Categoría de construcción: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_category"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="construction_wage_table_company_rule" model="ir.rule">
+            <field name="name">Tabla salarial: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_wage_table"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="construction_bonus_company_rule" model="ir.rule">
+            <field name="name">Bonificación: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_bonus"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <!-- La obra sí es de una compañía concreta. -->
+        <record id="construction_site_company_rule" model="ir.rule">
+            <field name="name">Obra: solo de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_site"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="conafovicer_company_rule" model="ir.rule">
+            <field name="name">CONAFOVICER: solo de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_conafovicer"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

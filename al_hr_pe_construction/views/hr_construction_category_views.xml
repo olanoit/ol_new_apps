@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_category_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.category.list</field>
+        <field name="model">l10n_pe.hr.construction.category</field>
+        <field name="arch" type="xml">
+            <list string="Categorías" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="buc_percent"/>
+                <field name="allows_bae" widget="boolean_toggle"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_construction_category" model="ir.actions.act_window">
+        <field name="name">Categorías de construcción</field>
+        <field name="res_model">l10n_pe.hr.construction.category</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

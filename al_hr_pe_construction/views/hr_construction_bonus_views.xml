@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_bonus_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.bonus.list</field>
+        <field name="model">l10n_pe.hr.construction.bonus</field>
+        <field name="arch" type="xml">
+            <list string="Bonificaciones" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="bonus_type"/>
+                <field name="computation"/>
+                <field name="percent" invisible="computation != 'percent'"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount" invisible="computation != 'fixed'"/>
+                <field name="category_ids" widget="many2many_tags" optional="show"/>
+                <field name="note" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_construction_bonus" model="ir.actions.act_window">
+        <field name="name">Bonificaciones de construcción</field>
+        <field name="res_model">l10n_pe.hr.construction.bonus</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las bonificaciones del convenio</p>
+            <p>
+                La BAE depende de la especialidad del operario; las de
+                condiciones de trabajo (altitud, contacto con agua, cota
+                cero, altura) dependen de la obra. Verifique los importes
+                contra su convención colectiva antes de usarlos.
+            </p>
+        </field>
+    </record>
+</odoo>

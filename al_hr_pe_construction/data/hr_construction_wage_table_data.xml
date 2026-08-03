@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: la tabla de un convenio ya cerrado no se toca. El
+         convenio siguiente se carga como un registro nuevo con su propia
+         vigencia, no editando este. -->
+    <data noupdate="1">
+
+        <record id="wage_table_2026" model="l10n_pe.hr.construction.wage.table">
+            <field name="name">Convención colectiva 2026</field>
+            <field name="resolution">R.M. N.° 197-2025-TR</field>
+            <field name="date_from">2026-01-01</field>
+            <field name="date_to">2026-12-31</field>
+            <field name="note">Tabla salarial publicada por la FTCCP. Ojo: la
+vigencia de este convenio pasó a ser de enero a diciembre; los anteriores
+corrían de junio a mayo.</field>
+        </record>
+
+        <record id="wage_line_2026_operario" model="l10n_pe.hr.construction.wage.line">
+            <field name="table_id" ref="wage_table_2026"/>
+            <field name="category_id" ref="category_operario"/>
+            <field name="daily_wage">89.30</field>
+            <field name="mobility_amount">8.60</field>
+        </record>
+        <record id="wage_line_2026_oficial" model="l10n_pe.hr.construction.wage.line">
+            <field name="table_id" ref="wage_table_2026"/>
+            <field name="category_id" ref="category_oficial"/>
+            <field name="daily_wage">69.75</field>
+            <field name="mobility_amount">8.60</field>
+        </record>
+        <record id="wage_line_2026_peon" model="l10n_pe.hr.construction.wage.line">
+            <field name="table_id" ref="wage_table_2026"/>
+            <field name="category_id" ref="category_peon"/>
+            <field name="daily_wage">62.80</field>
+            <field name="mobility_amount">8.60</field>
+        </record>
+
+    </data>
+</odoo>

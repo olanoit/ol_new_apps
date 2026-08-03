@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: son importes de convenio que el cliente ajusta contra
+         el suyo; una actualización del módulo no debe pisarlos. -->
+    <data noupdate="1">
+
+        <!-- BAE — porcentajes de la tabla de operarios especializados de
+             la R.M. N.° 197-2025-TR. -->
+        <record id="bonus_bae_equipo_mediano" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BAE08</field>
+            <field name="name">Operador de equipo mediano</field>
+            <field name="bonus_type">bae</field>
+            <field name="computation">percent</field>
+            <field name="percent">8.0</field>
+            <field name="category_ids" eval="[(4, ref('category_operario'))]"/>
+            <field name="note">R.M. N.° 197-2025-TR, tabla de operarios especializados.</field>
+            <field name="salary_rule_code">BAE</field>
+        </record>
+        <record id="bonus_bae_topografo" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BAE09</field>
+            <field name="name">Topógrafo</field>
+            <field name="bonus_type">bae</field>
+            <field name="computation">percent</field>
+            <field name="percent">9.0</field>
+            <field name="category_ids" eval="[(4, ref('category_operario'))]"/>
+            <field name="note">R.M. N.° 197-2025-TR, tabla de operarios especializados.</field>
+            <field name="salary_rule_code">BAE</field>
+        </record>
+        <record id="bonus_bae_equipo_pesado" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BAE10</field>
+            <field name="name">Operador de equipo pesado</field>
+            <field name="bonus_type">bae</field>
+            <field name="computation">percent</field>
+            <field name="percent">10.0</field>
+            <field name="category_ids" eval="[(4, ref('category_operario'))]"/>
+            <field name="note">R.M. N.° 197-2025-TR, tabla de operarios especializados.</field>
+            <field name="salary_rule_code">BAE</field>
+        </record>
+        <record id="bonus_bae_electromecanico" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BAE22</field>
+            <field name="name">Electromecánico</field>
+            <field name="bonus_type">bae</field>
+            <field name="computation">percent</field>
+            <field name="percent">22.0</field>
+            <field name="category_ids" eval="[(4, ref('category_operario'))]"/>
+            <field name="note">R.M. N.° 197-2025-TR, tabla de operarios especializados.</field>
+            <field name="salary_rule_code">BAE</field>
+        </record>
+
+        <!-- Condiciones de trabajo. Estos cuatro importes NO salen de la
+             tabla de la FTCCP sino de fuentes secundarias: verificar
+             contra el convenio de la empresa antes de usarlos. -->
+        <record id="bonus_altitud" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BALTI</field>
+            <field name="name">Bonificación por altitud</field>
+            <field name="bonus_type">condition</field>
+            <field name="computation">fixed</field>
+            <field name="amount">2.50</field>
+            <field name="note">Obra a más de 3 000 m s. n. m. Importe por verificar contra el convenio vigente.</field>
+            <field name="salary_rule_code">BALTI</field>
+        </record>
+        <record id="bonus_agua" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BAGUA</field>
+            <field name="name">Contacto con agua</field>
+            <field name="bonus_type">condition</field>
+            <field name="computation">percent</field>
+            <field name="percent">20.0</field>
+            <field name="note">Trabajo en agua o aguas servidas. Porcentaje por verificar contra el convenio vigente.</field>
+            <field name="salary_rule_code">BAGUA</field>
+        </record>
+        <record id="bonus_cota_cero" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BCOTA</field>
+            <field name="name">Riesgo bajo la cota cero</field>
+            <field name="bonus_type">condition</field>
+            <field name="computation">fixed</field>
+            <field name="amount">1.90</field>
+            <field name="note">Bajo el segundo sótano o 5 m bajo el nivel del suelo. Importe por verificar.</field>
+            <field name="salary_rule_code">BCOTA</field>
+        </record>
+        <record id="bonus_altura" model="l10n_pe.hr.construction.bonus">
+            <field name="code">BALTU</field>
+            <field name="name">Bonificación por altura</field>
+            <field name="bonus_type">condition</field>
+            <field name="computation">percent</field>
+            <field name="percent">8.0</field>
+            <field name="note">A partir del cuarto piso, escalonada. Porcentaje y escalonamiento por verificar.</field>
+            <field name="salary_rule_code">BALTU</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SIN noupdate a propósito: la estructura y sus fórmulas son lógica
+         del módulo, no datos del cliente. Un error en una fórmula de
+         nómina tiene que poder corregirse con una actualización; lo que el
+         cliente ajusta —tabla salarial e importes de bonificaciones— sí
+         va con noupdate en sus propios archivos. -->
+    <data>
+
+        <!-- Sobretiempo del régimen: 60 % las dos primeras horas del día
+             y 100 % desde la tercera (el régimen general va a 25/35, por
+             eso no se reutiliza wd_HE25). El de 100 % sí se comparte con
+             al_hr_pe. -->
+        <record id="wd_HE60" model="hr.work.entry.type">
+            <field name="name">HORAS EXTRAS 60% (CONSTRUCCIÓN)</field>
+            <field name="code">HE60</field>
+            <field name="is_extra_hours" eval="True"/>
+            <field name="country_id" ref="base.pe"/>
+        </record>
+
+        <!-- rule_ids=[(5,0,0)] anula el default que copiaría las reglas
+             nativas BASIC/GROSS/NET. -->
+        <record id="construction_structure" model="hr.payroll.structure">
+            <field name="name">CONSTRUCCIÓN CIVIL</field>
+            <field name="type_id" ref="hr.structure_type_employee"/>
+            <field name="use_worked_day_lines" eval="True"/>
+            <field name="country_id" ref="base.pe"/>
+            <field name="rule_ids" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <!-- ============ INGRESOS ============ -->
+
+        <record id="rule_JOR" model="hr.salary.rule">
+            <field name="name">Jornal básico</field>
+            <field name="code">JOR</field>
+            <field name="sunat_code">0121</field>
+            <field name="sequence">10</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_amount('jornal')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_DSO" model="hr.salary.rule">
+            <field name="name">Descanso semanal obligatorio</field>
+            <field name="code">DSO</field>
+            <field name="sunat_code">0100</field>
+            <field name="sequence">20</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Un día de descanso por cada seis trabajados: el importe
+                 del periodo entre 6, no el jornal diario redondeado. -->
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_amount('dso')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BUC" model="hr.salary.rule">
+            <field name="name">Bonificación unificada de construcción</field>
+            <field name="code">BUC</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">30</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_amount('buc')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_MOV" model="hr.salary.rule">
+            <field name="name">Bonificación por movilidad</field>
+            <field name="code">MOV</field>
+            <field name="sunat_code">0904</field>
+            <field name="sequence">40</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_amount('movilidad')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BAE" model="hr.salary.rule">
+            <field name="name">Bonificación por alta especialización</field>
+            <field name="code">BAE</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">50</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_bonus('BAE')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <!-- Bonificaciones por condiciones de trabajo. Cada regla suma
+             las del catálogo que apuntan a su código, así que añadir una
+             al convenio no exige tocar código.
+
+             Sin `condition`: una regla que no se evalúa no deja su código
+             en el localdict, y TREM revienta al sumarlo. Es el mismo
+             patrón de «zero-lines» de al_hr_pe; la boleta ya no imprime
+             las líneas en cero. -->
+        <record id="rule_BALTI" model="hr.salary.rule">
+            <field name="name">Bonificación por altitud</field>
+            <field name="code">BALTI</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">60</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_bonus('BALTI')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BAGUA" model="hr.salary.rule">
+            <field name="name">Bonificación por contacto con agua</field>
+            <field name="code">BAGUA</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">61</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_bonus('BAGUA')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BCOTA" model="hr.salary.rule">
+            <field name="name">Bonificación por riesgo bajo la cota cero</field>
+            <field name="code">BCOTA</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">62</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_bonus('BCOTA')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BALTU" model="hr.salary.rule">
+            <field name="name">Bonificación por altura</field>
+            <field name="code">BALTU</field>
+            <field name="sunat_code">0300</field>
+            <field name="sequence">63</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_bonus('BALTU')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <!-- Sobretiempo: 60 % las dos primeras horas, 100 % el resto
+             (D.S. 011-79-TR), sobre el valor hora sin redondear. -->
+        <record id="rule_HE60" model="hr.salary.rule">
+            <field name="name">Horas extras 60%</field>
+            <field name="code">HE60</field>
+            <field name="sunat_code">0105</field>
+            <field name="sequence">70</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_overtime('HE60', 1.6)
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_HE100" model="hr.salary.rule">
+            <field name="name">Horas extras 100%</field>
+            <field name="code">HE100</field>
+            <field name="sunat_code">0106</field>
+            <field name="sequence">71</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+
+        <!-- ============ BENEFICIOS PAGADOS EN LA PLANILLA ============
+             En este régimen la CTS, las vacaciones y la gratificación no
+             se provisionan ni se depositan aparte: se pagan con cada
+             planilla. -->
+
+        <record id="rule_INDEM" model="hr.salary.rule">
+            <field name="name">Indemnización 15% (CTS)</field>
+            <field name="code">INDEM</field>
+            <field name="sunat_code">0916</field>
+            <field name="sequence">100</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Base: jornal del periodo + horas extras a valor simple. -->
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_cts()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_VAC10" model="hr.salary.rule">
+            <field name="name">Vacaciones 10%</field>
+            <field name="code">VAC10</field>
+            <field name="sunat_code">0400</field>
+            <field name="sequence">110</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_amount('vacaciones')
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_GRAT" model="hr.salary.rule">
+            <field name="name">Gratificación proporcional</field>
+            <field name="code">GRAT</field>
+            <field name="sunat_code">0406</field>
+            <field name="sequence">120</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- 40 jornales al año: Fiestas Patrias se devenga en 210 días
+                 y Navidad en 150, por eso su diaria es mayor. -->
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_gratification()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_BEXT" model="hr.salary.rule">
+            <field name="name">Bonificación extraordinaria Ley 30334</field>
+            <field name="code">BEXT</field>
+            <field name="sunat_code">0906</field>
+            <field name="sequence">130</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_extra_bonus()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_AESC" model="hr.salary.rule">
+            <field name="name">Asignación escolar</field>
+            <field name="code">AESC</field>
+            <field name="sunat_code">0201</field>
+            <field name="sequence">140</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- 30 jornales al año por cada hijo con derecho; los hijos
+                 salen de los derechohabientes de al_hr_pe. -->
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_school()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <!-- ============ DESCUENTOS ============ -->
+
+        <record id="rule_CONAF" model="hr.salary.rule">
+            <field name="name">CONAFOVICER 2%</field>
+            <field name="code">CONAF</field>
+            <field name="sunat_code">0703</field>
+            <field name="sequence">150</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Base: jornal + D.S.O. La tabla del convenio lo demuestra;
+                 sobre el jornal solo, el operario retendría 10.72 y no
+                 los 12.50 que publica. -->
+            <field name="amount_python_compute">
+result = -payslip._l10n_pe_construction_conafovicer()
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <!-- ============ APORTES DEL EMPLEADOR ============
+             Van después de TREM (secuencia 190) porque se calculan sobre
+             la remuneración computable que esa regla deja lista. -->
+
+        <record id="rule_ESSALUD" model="hr.salary.rule">
+            <field name="name">EsSalud</field>
+            <field name="code">ESSALUD</field>
+            <field name="sunat_code">0804</field>
+            <field name="sequence">195</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_employer_rate(
+    'l10n_pe_construction_essalud_rate', TREM)
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_SCTRS" model="hr.salary.rule">
+            <field name="name">SCTR salud</field>
+            <field name="code">SCTRS</field>
+            <field name="sunat_code">0805</field>
+            <field name="sequence">196</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_sctr('health', TREM)
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_SCTRP" model="hr.salary.rule">
+            <field name="name">SCTR pensión</field>
+            <field name="code">SCTRP</field>
+            <field name="sunat_code">0806</field>
+            <field name="sequence">197</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_sctr('pension', TREM)
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_TREM" model="hr.salary.rule">
+            <field name="name">Total remuneración computable</field>
+            <field name="code">TREM</field>
+            <field name="sequence">190</field>
+            <field name="appears_on_payslip" eval="False"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Base afecta a ONP/AFP y EsSalud. Se enumera lo afecto en
+                 vez de sumar la categoría: los beneficios sociales
+                 (INDEM, VAC10) y la gratificación con su bonificación
+                 (Ley 30334) NO aportan, y sumar `categories['ING']` los
+                 metería dentro sin que nadie lo note. -->
+            <field name="amount_python_compute">
+result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
+          + HE60 + HE100 + AESC)
+            </field>
+            <field name="category_id" ref="al_hr_pe.SUB"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_TINGR" model="hr.salary.rule">
+            <field name="name">Total ingresos</field>
+            <field name="code">TINGR</field>
+            <field name="sequence">200</field>
+            <field name="appears_on_payslip" eval="False"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories['ING']
+            </field>
+            <field name="category_id" ref="al_hr_pe.POR"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_TDES" model="hr.salary.rule">
+            <field name="name">Total descuentos</field>
+            <field name="code">TDES</field>
+            <field name="sequence">210</field>
+            <field name="appears_on_payslip" eval="False"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Las reglas de descuento ya vienen en negativo, así que se
+                 invierte el signo para publicar un total positivo, igual
+                 que el `TDES` del régimen general. -->
+            <field name="amount_python_compute">
+result = -(categories['APOR_TRA'] + categories['DES_NET'])
+            </field>
+            <field name="category_id" ref="al_hr_pe.SUB"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_NETO" model="hr.salary.rule">
+            <field name="name">Neto a pagar</field>
+            <field name="code">NETO</field>
+            <field name="sequence">220</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Mismo código que la regla del régimen general: la boleta
+                 resuelve el neto por código cuando el parámetro apunta a
+                 la regla de otra estructura. -->
+            <field name="amount_python_compute">
+result = TINGR - TDES
+            </field>
+            <field name="category_id" ref="al_hr_pe.SUB"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+    </data>
+
+    <!-- Bloque SIN noupdate a propósito: dentro de un `<data noupdate="1">`
+         Odoo se salta el nodo entero al actualizar y la función nunca
+         correría. Rellena el enlace bonificación → regla en las bases donde
+         el registro se cargó antes de que existiera el campo; solo escribe
+         donde está vacío, así que no pisa nada. -->
+    <data>
+        <function model="l10n_pe.hr.construction.bonus"
+                  name="_l10n_pe_fill_salary_rule_codes"/>
+    </data>
+</odoo>

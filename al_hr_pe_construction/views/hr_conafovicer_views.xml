@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_conafovicer_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.conafovicer.list</field>
+        <field name="model">l10n_pe.hr.conafovicer</field>
+        <field name="arch" type="xml">
+            <list string="CONAFOVICER" decoration-muted="state == 'paid'">
+                <field name="name"/>
+                <field name="period_id"/>
+                <field name="date_due"/>
+                <field name="employee_count"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount_base" sum="Base"/>
+                <field name="amount_total" sum="Retenido"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'computed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_conafovicer_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.conafovicer.form</field>
+        <field name="model">l10n_pe.hr.conafovicer</field>
+        <field name="arch" type="xml">
+            <form string="CONAFOVICER">
+                <header>
+                    <button name="action_compute" type="object" string="Calcular"
+                            class="btn-primary" invisible="state == 'paid'"/>
+                    <button name="action_export_xlsx" type="object"
+                            string="Exportar detalle" invisible="state == 'draft'"/>
+                    <button name="action_mark_paid" type="object"
+                            string="Marcar pagado" invisible="state != 'computed'"/>
+                    <button name="action_draft" type="object"
+                            string="Volver a borrador" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="period_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="date_due"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="employee_count"/>
+                            <field name="amount_base"/>
+                            <field name="amount_total"/>
+                            <field name="payment_reference"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detalle" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list create="false" delete="false">
+                                    <field name="employee_id"/>
+                                    <field name="category_id" optional="show"/>
+                                    <field name="payslip_id" optional="show"/>
+                                    <field name="days"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="wage_amount"/>
+                                    <field name="dso_amount"/>
+                                    <field name="base" sum="Base"/>
+                                    <field name="amount" sum="Retenido"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_conafovicer" model="ir.actions.act_window">
+        <field name="name">CONAFOVICER</field>
+        <field name="res_model">l10n_pe.hr.conafovicer</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Liquide el CONAFOVICER del mes</p>
+            <p>
+                La retención se descuenta en cada planilla semanal, pero el
+                depósito en el Banco de la Nación es mensual y vence el día
+                15 del mes siguiente.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_conafovicer" name="CONAFOVICER"
+              parent="menu_construction_root"
+              action="action_conafovicer" sequence="5"/>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_wage_table_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.table.list</field>
+        <field name="model">l10n_pe.hr.construction.wage.table</field>
+        <field name="arch" type="xml">
+            <list string="Tablas salariales">
+                <field name="name"/>
+                <field name="resolution"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_wage_table_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.table.form</field>
+        <field name="model">l10n_pe.hr.construction.wage.table</field>
+        <field name="arch" type="xml">
+            <form string="Tabla salarial">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Convención colectiva 2026"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="resolution" placeholder="R.M. N.° 197-2025-TR"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   placeholder="Vacío: tabla nacional"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Jornales por categoría" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="category_id" options="{'no_create': True}"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="daily_wage"/>
+                                    <field name="mobility_amount"/>
+                                    <field name="buc_percent" optional="hide"
+                                           string="BUC % (deja vacío = el de la categoría)"/>
+                                    <field name="dso_amount" readonly="1"/>
+                                    <field name="buc_amount" readonly="1"/>
+                                    <field name="hour_value" readonly="1" optional="show"/>
+                                    <field name="overtime_60" readonly="1" optional="show"/>
+                                    <field name="overtime_100" readonly="1" optional="show"/>
+                                    <field name="cts_amount" readonly="1" optional="show"/>
+                                    <field name="vacation_amount" readonly="1" optional="show"/>
+                                    <field name="bonus_july_daily" readonly="1" optional="hide"/>
+                                    <field name="bonus_december_daily" readonly="1" optional="hide"/>
+                                    <field name="school_daily" readonly="1" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="note">
+                            <field name="note" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_wage_table" model="ir.actions.act_window">
+        <field name="name">Tablas salariales</field>
+        <field name="res_model">l10n_pe.hr.construction.wage.table</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cargue la tabla del convenio vigente</p>
+            <p>
+                El jornal de cada trabajador sale de aquí según su
+                categoría y la fecha. Cuando entre un convenio nuevo,
+                cargue otra tabla con su vigencia: no hay que editar el
+                jornal trabajador por trabajador.
+            </p>
+        </field>
+    </record>
+</odoo>

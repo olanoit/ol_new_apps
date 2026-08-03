@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- En v19 `hr.employee` _inherits de `hr.version`, así que los campos
+         de la versión se editan desde la ficha del trabajador. -->
+    <record id="view_employee_form_construction" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.construction</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='payroll_information']" position="inside">
+                <separator string="Construcción civil" name="l10n_pe_construction"
+                           invisible="not l10n_pe_is_construction"/>
+                <field name="l10n_pe_is_construction" invisible="1"/>
+                <group invisible="not l10n_pe_is_construction">
+                    <group string="Puesto">
+                        <field name="l10n_pe_construction_category_id"
+                               options="{'no_create': True}"/>
+                        <field name="l10n_pe_construction_site_id"
+                               options="{'no_create': True}"/>
+                        <field name="l10n_pe_construction_bae_id"
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group string="Remuneración del convenio">
+                        <field name="l10n_pe_daily_wage" readonly="1"/>
+                        <field name="l10n_pe_wage_line_id" readonly="1"
+                               groups="base.group_no_one"/>
+                        <field name="l10n_pe_construction_bonus_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Categorías del régimen. El BUC lo fija la convención
+             colectiva: 32 % para el operario y 30 % para oficial y peón. -->
+        <record id="category_operario" model="l10n_pe.hr.construction.category">
+            <field name="code">OPE</field>
+            <field name="name">Operario</field>
+            <field name="sequence">10</field>
+            <field name="buc_percent">32.0</field>
+            <field name="allows_bae" eval="True"/>
+        </record>
+        <record id="category_oficial" model="l10n_pe.hr.construction.category">
+            <field name="code">OFI</field>
+            <field name="name">Oficial</field>
+            <field name="sequence">20</field>
+            <field name="buc_percent">30.0</field>
+            <field name="allows_bae" eval="False"/>
+        </record>
+        <record id="category_peon" model="l10n_pe.hr.construction.category">
+            <field name="code">PEO</field>
+            <field name="name">Peón</field>
+            <field name="sequence">30</field>
+            <field name="buc_percent">30.0</field>
+            <field name="allows_bae" eval="False"/>
+        </record>
+    </data>
+</odoo>
