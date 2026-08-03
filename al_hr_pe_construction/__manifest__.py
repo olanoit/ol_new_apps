@@ -101,6 +101,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'views/hr_construction_bonus_views.xml',
         'views/hr_construction_site_views.xml',
         'views/hr_version_views.xml',
+        'views/res_company_views.xml',
         'views/menu.xml',
         'views/hr_conafovicer_views.xml',
         'report/hr_construction_voucher_report.xml',

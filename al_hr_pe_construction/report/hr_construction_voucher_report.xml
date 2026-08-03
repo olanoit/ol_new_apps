@@ -19,7 +19,7 @@
                   primary="True">
 
             <!-- Bloque 1: el sueldo mensual no aplica; manda el jornal. -->
-            <xpath expr="//td[@class='bpe-label'][text()='Remuneración básica']"
+            <xpath expr="//td[hasclass('bpe-label')][text()='Remuneración básica']"
                    position="replace">
                 <td class="bpe-label">Jornal básico</td>
             </xpath>
@@ -31,7 +31,7 @@
             <!-- Categoría y obra: son los datos que identifican el puesto
                  en este régimen, y la obra determina qué bonificaciones
                  por condiciones de trabajo se pagan. -->
-            <xpath expr="//div[@class='bpe-block'][1]//table[@class='bpe-grid']"
+            <xpath expr="(//div[hasclass('bpe-block')])[1]//table[hasclass('bpe-grid')]"
                    position="inside">
                 <tr>
                     <td class="bpe-label">Categoría</td>

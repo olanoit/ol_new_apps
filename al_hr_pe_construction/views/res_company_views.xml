@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Sin esta vista los parámetros del régimen existen pero nadie
+         puede tocarlos: el SCTR viene en cero a propósito —la tasa la
+         fija la aseguradora, no la norma— y sin un sitio donde
+         escribirla el aporte nunca se calcularía. -->
+    <record id="view_company_form_construction" model="ir.ui.view">
+        <field name="name">res.company.form.construction.pe</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Construcción civil (PE)"
+                      name="l10n_pe_construction"
+                      invisible="country_code != 'PE'">
+                    <group>
+                        <group string="Aportes del empleador">
+                            <field name="l10n_pe_construction_essalud_rate"/>
+                            <field name="l10n_pe_sctr_health_rate"/>
+                            <field name="l10n_pe_sctr_pension_rate"/>
+                        </group>
+                        <group string="CONAFOVICER">
+                            <field name="l10n_pe_conafovicer_rate"/>
+                            <field name="l10n_pe_conafovicer_account"/>
+                        </group>
+                        <group string="Beneficios">
+                            <field
+                                name="l10n_pe_construction_grat_bonus_rate"/>
+                            <field name="l10n_pe_construction_school_age"/>
+                            <field
+                                name="l10n_pe_construction_school_age_study"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
