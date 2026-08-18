@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="gantt_page" name="Gantt de Proyectos">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="s_text_block pt24 pb8">
+                    <div class="container-fluid">
+                        <h1 class="mb-1">Gantt de Proyectos</h1>
+                        <p class="text-muted small mb-0">
+                            Vista de solo lectura de los proyectos y tareas que tiene permitido ver.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- La interacción `al_project_gantt_website.gantt_page` se
+                     engancha a este elemento y monta la librería dentro. -->
+                <section class="container-fluid pb32">
+                    <div class="algantt-page">
+                        <div class="algantt-toolbar d-flex flex-wrap align-items-center gap-3 p-2 border rounded-top bg-light">
+                            <div class="algantt-projects d-flex flex-wrap align-items-center gap-1">
+                                <span class="fw-bold me-1">Proyectos:</span>
+                            </div>
+                            <div class="algantt-zoom-wrapper d-flex flex-wrap align-items-center gap-2 ms-auto">
+                                <div class="input-group input-group-sm" style="width: 200px;">
+                                    <span class="input-group-text"><i class="fa fa-search"/></span>
+                                    <input type="text" class="algantt-search form-control form-control-sm"
+                                           placeholder="Buscar tarea…"/>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="algantt-wbs btn btn-outline-secondary"
+                                            title="Mostrar el código EDT">EDT</button>
+                                    <button type="button" class="algantt-expand btn btn-outline-secondary"
+                                            title="Expandir o contraer todo"><i class="fa fa-compress"/></button>
+                                    <button type="button" class="algantt-hide-done btn btn-outline-secondary"
+                                            title="Ocultar tareas terminadas"><i class="fa fa-check-square-o"/></button>
+                                    <button type="button" class="algantt-fullscreen btn btn-outline-secondary"
+                                            title="Pantalla completa"><i class="fa fa-arrows-alt"/></button>
+                                </div>
+                                <button type="button" class="algantt-add-task btn btn-sm btn-outline-primary d-none">
+                                    <i class="fa fa-plus me-1"/>Tarea
+                                </button>
+                                <button type="button" class="algantt-critical-toggle btn btn-sm btn-outline-secondary"
+                                        title="Resalta las tareas sin holgura">
+                                    <i class="fa fa-bolt me-1"/>Ruta crítica
+                                    <span class="algantt-critical-count badge text-bg-light ms-1 d-none"/>
+                                </button>
+                                <div class="algantt-chain-wrapper form-check form-switch mb-0 d-none">
+                                    <input id="algantt_chain_web" type="checkbox" class="algantt-chain form-check-input" checked="checked"/>
+                                    <label class="form-check-label small" for="algantt_chain_web"
+                                           title="Al mover una tarea, empuja las que dependen de ella">Encadenar</label>
+                                </div>
+                                <select class="algantt-baseline form-select form-select-sm w-auto"
+                                        title="Comparar contra una línea base">
+                                    <option value="">Sin línea base</option>
+                                </select>
+                                <button type="button" class="algantt-baseline-capture btn btn-sm btn-outline-secondary"
+                                        title="Guardar una foto del plan actual">
+                                    <i class="fa fa-camera"/>
+                                </button>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="algantt-export-xlsx btn btn-outline-secondary"
+                                            title="Descargar en Excel"><i class="fa fa-file-excel-o"/></button>
+                                    <button type="button" class="algantt-export-pdf btn btn-outline-secondary"
+                                            title="Descargar en PDF"><i class="fa fa-file-pdf-o"/></button>
+                                </div>
+                                <span class="algantt-save-state small text-muted"/>
+                                <button type="button" class="algantt-filters-toggle btn btn-sm btn-outline-secondary">
+                                    <i class="fa fa-filter me-1"/>Filtros
+                                    <span class="algantt-filters-count badge text-bg-primary ms-1 d-none"/>
+                                </button>
+                                <label class="mb-0" for="algantt_zoom_web">Escala:</label>
+                                <select id="algantt_zoom_web" class="algantt-zoom form-select form-select-sm w-auto"/>
+                            </div>
+                        </div>
+
+                        <!-- Panel de filtros: los desplegables los rellena el JS
+                             con los valores que devuelve el servidor. -->
+                        <div class="algantt-filters d-none border border-top-0 p-2 bg-white">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label small mb-1" for="algantt_users_web">Personas asignadas</label>
+                                    <select id="algantt_users_web" class="algantt-filter-users form-select form-select-sm"
+                                            multiple="multiple" size="4"/>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label small mb-1" for="algantt_states_web">Estado</label>
+                                    <select id="algantt_states_web" class="algantt-filter-states form-select form-select-sm"
+                                            multiple="multiple" size="4"/>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <label class="form-label small mb-1" for="algantt_date_from_web">Desde</label>
+                                    <input id="algantt_date_from_web" type="date"
+                                           class="algantt-filter-from form-control form-control-sm"/>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <label class="form-label small mb-1" for="algantt_date_to_web">Hasta</label>
+                                    <input id="algantt_date_to_web" type="date"
+                                           class="algantt-filter-to form-control form-control-sm"/>
+                                </div>
+                                <div class="col-12 col-md-2 d-flex flex-column gap-2">
+                                    <div class="form-check mb-0">
+                                        <input id="algantt_undated_web" type="checkbox"
+                                               class="algantt-filter-undated form-check-input"/>
+                                        <label class="form-check-label small" for="algantt_undated_web">
+                                            Incluir sin fecha
+                                        </label>
+                                    </div>
+                                    <div class="d-flex gap-1">
+                                        <button type="button" class="algantt-filters-apply btn btn-sm btn-primary">Aplicar</button>
+                                        <button type="button" class="algantt-filters-clear btn btn-sm btn-link">Limpiar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="algantt-filters-error text-danger small mt-1 d-none">
+                                La fecha «desde» no puede ser posterior a la fecha «hasta».
+                            </div>
+                        </div>
+
+                        <div class="algantt-notices"/>
+
+                        <div class="algantt-body border border-top-0 rounded-bottom position-relative">
+                            <div class="algantt-loading position-absolute top-50 start-50 translate-middle text-muted">
+                                <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                            </div>
+                            <div class="algantt-container"/>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,771 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* al_project_gantt_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 23:22+0000\n"
+"PO-Revision-Date: 2026-08-17 23:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_project_gantt_base
+#: model:ir.actions.report,print_report_name:al_project_gantt_base.action_report_gantt
+msgid "'Gantt - %s' % (object.name or '')"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "<span class=\"algantt-critical-mark\"> ▲</span>"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "<span><span class=\"algantt-critical-mark\">▲</span> ruta crítica</span>"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Abrir en Odoo"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Actividad atrasada"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Actividad para hoy"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Actividad pendiente"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Actividad planificada"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__active
+msgid "Activo"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:res.groups,comment:al_project_gantt_base.group_gantt_manager
+msgid "Además, configura los colores por estado y los parámetros del Gantt."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:res.groups,name:al_project_gantt_base.group_gantt_manager
+msgid "Administrador"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_approved
+msgid "Aprobada"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.al_gantt_state_color_view_form
+msgid "Archivado"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Asignadas a"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__progress
+msgid "Avance"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Avance (%)"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Añadir…"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_changes_requested
+msgid "Cambios solicitados"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_canceled
+msgid "Cancelada"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__date_captured
+msgid "Capturada el"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__user_id
+msgid "Capturada por"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,help:al_project_gantt_base.field_al_gantt_state_color__color
+msgid "Color CSS de la barra de la tarea (hexadecimal o nombre CSS)."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,help:al_project_gantt_base.field_al_gantt_state_color__text_color
+msgid "Color CSS del texto sobre la barra."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__color
+msgid "Color de la barra"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.al_gantt_state_color_view_form
+msgid "Color del Gantt"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__text_color
+msgid "Color del texto"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.actions.act_window,name:al_project_gantt_base.al_gantt_state_color_action
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.al_gantt_state_color_view_list
+msgid "Colores del Gantt"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__company_id
+msgid "Company"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__company_id
+msgid "Compañía"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__create_uid
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__create_uid
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__create_date
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__create_date
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.actions.act_window,help:al_project_gantt_base.al_gantt_state_color_action
+msgid "Defina el color de la barra según el estado de la tarea"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Desvío (d)"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Diagrama"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: model:ir.actions.report,name:al_project_gantt_base.action_report_gantt
+msgid "Diagrama de Gantt"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_data__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_field_map__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_project_project__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_report_al_project_gantt_base_report_gantt__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Día"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Días"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_tools.js:0
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "EDT"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_data.py:0
+msgid "El Gantt de proyectos solo está disponible para usuarios internos."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_data.py:0
+msgid "El límite de tareas debe ser un número entero."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "El nombre de la tarea no puede quedar vacío."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_in_progress
+msgid "En curso"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_waiting
+msgid "En espera"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Escala: %s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__state_key
+msgid "Estado"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Etapa"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__name
+msgid "Etiqueta"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Etiquetas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Falta la librería xlsxwriter para exportar a Excel."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "Fecha no válida en %(label)s: %(value)s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Fin"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__date_end
+msgid "Fin planificado"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:res.groups.privilege,name:al_project_gantt_base.res_groups_privilege_gantt
+msgid "Gantt de Proyectos"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_al_gantt_state_color
+msgid "Gantt — color por estado de tarea"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_report_al_project_gantt_base_report_gantt
+msgid "Gantt — informe PDF"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_al_gantt_baseline
+msgid "Gantt — línea base"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_al_gantt_baseline_line
+msgid "Gantt — línea base (tarea)"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_al_gantt_field_map
+msgid "Gantt — mapeo de campos"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_al_gantt_data
+msgid "Gantt — servicio de datos"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Gantt: %(first)s y %(count)s proyecto(s) más"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Gantt: %s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Generado el %s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Holgura (h)"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+msgid "Horas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Horas asignadas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_tools.js:0
+msgid "Hoy"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_data__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_field_map__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_project_project__id
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_report_al_project_gantt_base_report_gantt__id
+msgid "ID"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Inicio"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "Inicio / Fin"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Inicio estimado: la tarea solo tiene fecha límite"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__date_start
+msgid "Inicio planificado"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "La fecha de inicio no puede ser posterior a la de fin."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "La reprogramación en cadena se detuvo tras %s movimientos."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_baseline.py:0
+msgid ""
+"Las líneas de una línea base no se pueden modificar. Capture una nueva si el"
+" plan cambió."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__write_uid
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__write_uid
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__write_date
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__write_date
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:al.gantt.state.color,name:al_project_gantt_base.state_color_done
+msgid "Lista"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/controllers/gantt_export.py:0
+msgid "Lista de proyectos no válida."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__baseline_id
+msgid "Línea base"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_baseline.py:0
+msgid "Línea base %s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__line_ids
+msgid "Líneas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Mes"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_baseline.py:0
+msgid ""
+"No hay campo de fechas configurado: no se puede capturar una línea base."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid ""
+"No se pueden guardar fechas: la instalación no tiene un campo de fecha de "
+"fin configurado para las tareas."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid ""
+"No se pueden mover las barras: la instalación no tiene un campo de fecha de "
+"inicio (lo aporta el módulo de planificación de proyectos). Solo se puede "
+"editar la fecha límite."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_data.py:0
+msgid "No tiene permiso para consultar el Gantt de proyectos."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "No tiene permiso para modificar estas tareas: %s"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__name
+msgid "Nombre"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/controllers/gantt_export.py:0
+msgid "Opciones de exportación no válidas."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Periodo"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Personas asignadas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Prioridad"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model,name:al_project_gantt_base.model_project_project
+msgid "Project"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__project_id
+msgid "Proyecto"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:res.groups,comment:al_project_gantt_base.group_gantt_user
+msgid ""
+"Puede consultar el diagrama de Gantt de los proyectos que ya tiene permitido"
+" ver."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Quitar"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "Se omitió una dependencia con tareas inexistentes."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_state_color__sequence
+msgid "Secuencia"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_baseline.py:0
+msgid "Seleccione al menos un proyecto."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Semana"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Sin asignar"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Sin etapa"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+msgid "Sin etiquetas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_lightbox.js:0
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline_line__task_id
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "Tarea"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "Tarea nueva"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_export.py:0
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_al_gantt_baseline__task_count
+msgid "Tareas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,help:al_project_gantt_base.field_project_project__gantt_task_count
+msgid ""
+"Tareas del proyecto que tienen fecha y, por tanto, se pueden dibujar en el "
+"diagrama de Gantt."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,field_description:al_project_gantt_base.field_project_project__gantt_task_count
+msgid "Tareas planificadas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "Toda tarea nueva necesita un proyecto."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-javascript
+#: code:addons/al_project_gantt_base/static/src/js/gantt_setup.js:0
+msgid "Trimestre"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.constraint,message:al_project_gantt_base.constraint_al_gantt_baseline_line_baseline_task_uniq
+msgid "Una tarea solo puede figurar una vez en la misma línea base."
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "Una tarea ya no existe y se omitió."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:res.groups,name:al_project_gantt_base.group_gantt_user
+msgid "Usuario"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,help:al_project_gantt_base.field_al_gantt_state_color__company_id
+msgid ""
+"Vacío: aplica a todas las compañías. Con valor: sobreescribe el color global"
+" para esa compañía."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.fields,help:al_project_gantt_base.field_al_gantt_state_color__state_key
+msgid "Valor técnico de project.task.state (p. ej. 01_in_progress)."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model:ir.model.constraint,message:al_project_gantt_base.constraint_al_gantt_state_color_state_company_uniq
+msgid "Ya existe un color para ese estado en esa compañía."
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "de"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "en ruta crítica"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "fecha de fin"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "fecha de inicio"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid ""
+"fila(s) ·\n"
+"                    escala"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "se muestran"
+msgstr ""
+
+#. module: al_project_gantt_base
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_base.report_gantt
+msgid "tareas"
+msgstr ""
+
+#. module: al_project_gantt_base
+#. odoo-python
+#: code:addons/al_project_gantt_base/models/gantt_write.py:0
+msgid "«%s» se solapa con su predecesora pero no tiene permiso para moverla."
+msgstr ""

@@ -29,12 +29,21 @@
                         <span>/</span>
                         <field name="year" class="oe_inline" required="range == 'month'"/>
                     </div>
-                    <field name="apis_net_token" invisible="range == 'now'"
+                    <field name="source" invisible="range == 'now'"
+                           required="range != 'now'"/>
+                    <field name="apis_net_token"
+                           invisible="range == 'now' or source != 'apis_net'"
+                           password="True"/>
+                    <field name="decolecta_token"
+                           invisible="range == 'now' or source != 'decolecta'"
                            password="True"/>
                 </group>
                 <p class="text-muted" invisible="range == 'now'">
-                    Las fechas históricas se consultan en apis.net.pe (puede
-                    requerir token). "Hoy" usa el TXT oficial de SUNAT (gratis).
+                    "Hoy" usa el TXT oficial de SUNAT (gratis). Para fechas
+                    pasadas, el BCRP publica la serie del sistema bancario SBS
+                    —la que SUNAT toma para efectos tributarios— sin token y
+                    trae todo el rango de una vez; apis.net.pe queda como
+                    alternativa.
                 </p>
                 <footer>
                     <button string="Aceptar" name="action_process" type="object"

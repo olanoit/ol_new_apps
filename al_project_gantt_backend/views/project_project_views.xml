@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_project_view_form_gantt_button" model="ir.ui.view">
+        <field name="name">project.project.form.gantt.button</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="object" name="action_open_gantt"
+                        icon="fa-bars fa-rotate-90"
+                        groups="al_project_gantt_base.group_gantt_user"
+                        invisible="is_template">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="gantt_task_count"/></span>
+                        <span class="o_stat_text">Gantt</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+
+</odoo>

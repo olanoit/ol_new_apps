@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate="1": el menú es un dato editable por el usuario desde el
+         editor del sitio; una actualización del módulo no debe rehacerlo. -->
+    <data noupdate="1">
+
+        <record id="menu_gantt_website" model="website.menu">
+            <field name="name">Gantt</field>
+            <field name="url">/gantt</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">55</field>
+        </record>
+
+    </data>
+</odoo>

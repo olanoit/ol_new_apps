@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- El módulo es específico de Perú (``countries``), así que el bloque no
+         necesita condicionarse por el país de la compañía: si está instalado,
+         la configuración aplica. -->
+    <record id="res_config_settings_view_form_currency" model="ir.ui.view">
+        <field name="name">res.config.settings.form.l10n.pe.currency</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <app name="account" position="inside">
+                <block title="Tipo de cambio (Perú)"
+                       name="l10n_pe_exchange_rate_block">
+                    <setting string="T.C. en ventas"
+                             help="Tipo de cambio que se aplica por defecto a las facturas y notas emitidas en moneda extranjera. Para el IGV la norma manda usar el de venta; puede cambiarse comprobante a comprobante.">
+                        <field name="l10n_pe_exchange_rate_type_out"/>
+                    </setting>
+                    <setting string="T.C. en compras"
+                             help="Tipo de cambio que se aplica por defecto a las facturas y notas de proveedor en moneda extranjera.">
+                        <field name="l10n_pe_exchange_rate_type_in"/>
+                    </setting>
+                </block>
+            </app>
+        </field>
+    </record>
+
+</odoo>

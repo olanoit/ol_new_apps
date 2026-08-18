@@ -181,6 +181,41 @@ DEFAULT_CONNECTIONS = [
         ],
     },
     {
+        # Decolecta consulta el RUC contra SUNAT y el DNI contra RENIEC, y
+        # publica además el tipo de cambio: el mismo token que se pone aquí lo
+        # reutiliza ``al_l10n_pe_currency`` para traer compra y venta.
+        # Respuesta plana: sin envoltorio de datos ni indicador de éxito.
+        'name': 'Decolecta',
+        'engine': 'rest_json',
+        'document_type': 'both',
+        'sequence': 25,
+        'enabled': True,
+        'base_url': 'https://api.decolecta.com',
+        'endpoint_ruc': '/v1/sunat/ruc?numero={doc}',
+        'endpoint_dni': '/v1/reniec/dni?numero={doc}',
+        'auth_type': 'bearer',
+        'data_root': '',
+        'ubigeo_path': 'ubigeo',
+        'district_path': 'distrito',
+        'province_path': 'provincia',
+        'department_path': 'departamento',
+        'mapping_ids': [
+            {'for_document': 'ruc', 'sequence': 10, 'source_path': 'razon_social', 'field': 'name'},
+            {'for_document': 'ruc', 'sequence': 20, 'source_path': 'estado', 'field': 'state'},
+            {'for_document': 'ruc', 'sequence': 30, 'source_path': 'condicion', 'field': 'sunat_condition'},
+            {'for_document': 'ruc', 'sequence': 40, 'source_path': 'direccion', 'field': 'street'},
+            {'for_document': 'ruc', 'sequence': 50, 'source_path': 'es_buen_contribuyente',
+             'field': 'is_good_taxpayer'},
+            {'for_document': 'ruc', 'sequence': 60, 'source_path': 'es_agente_retencion',
+             'field': 'is_retention_agent'},
+            # RENIEC devuelve el nombre partido; se recompone con los
+            # apellidos delante, que es el orden que usa SUNAT.
+            {'for_document': 'dni', 'sequence': 70,
+             'source_path': '{first_last_name} {second_last_name} {first_name}',
+             'field': 'name', 'transform': 'title'},
+        ],
+    },
+    {
         'name': 'SUNAT (oficial)',
         'engine': 'sunat_oficial',
         'document_type': 'ruc',

@@ -186,11 +186,13 @@
         </field>
     </record>
 
-    <!-- Menú raíz de Beneficios sociales bajo Nómina -->
+    <!-- Menú raíz de Beneficios sociales bajo Nómina. La secuencia lo
+         deja detrás de «Recibos de nómina» (70): primero se calcula la
+         planilla del mes y después se liquidan los beneficios. -->
     <menuitem id="menu_hr_pe_benefits_root"
         name="Beneficios sociales"
         parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-        sequence="70"
+        sequence="72"
         groups="hr_payroll.group_hr_payroll_user"/>
     <menuitem id="menu_hr_cts"
         action="action_hr_cts"

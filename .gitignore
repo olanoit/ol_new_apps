@@ -7,6 +7,10 @@ __pycache__/
 docs/demo_kardex_*.xlsx
 docs/demo_kardex_*.pdf
 
+# Libros de referencia exportados desde la base v18 (38 MB, regenerables con
+# docs/tecport/gen_referencia.py). Lo versionado es REFERENCIA_ESTRUCTURA.md.
+docs/tecport/referencia/
+
 # Editores / SO
 *.swp
 .DS_Store

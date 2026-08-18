@@ -3,3 +3,4 @@ access_detraction_type_read,l10n_pe.detraction.type read,model_l10n_pe_detractio
 access_detraction_type_user,l10n_pe.detraction.type user,model_l10n_pe_detraction_type,account.group_account_user,1,0,0,0
 access_detraction_type_manager,l10n_pe.detraction.type manager,model_l10n_pe_detraction_type,account.group_account_manager,1,1,1,1
 access_detraction_deposit_wizard,l10n_pe.detraction.deposit.wizard,model_l10n_pe_detraction_deposit_wizard,account.group_account_user,1,1,1,1
+access_detraction_txt_wizard,l10n_pe.detraction.txt.wizard,model_l10n_pe_detraction_txt_wizard,account.group_account_user,1,1,1,1

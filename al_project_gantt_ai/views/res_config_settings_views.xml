@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.gantt.ai</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Gantt IA" string="Gantt IA" name="al_project_gantt_ai"
+                     logo="/al_project_gantt_ai/static/description/icon.png">
+
+                    <block title="Conexión" name="al_gantt_ai_connection">
+                        <setting string="Proveedor" help="Servicio al que se envían las consultas.">
+                            <field name="al_gantt_ai_provider"/>
+                        </setting>
+
+                        <!-- El enlace cambia con el proveedor: «¿dónde saco la
+                             clave?» es la primera pregunta de quien configura
+                             esto, y tenerla a un clic evita ir a buscarla. -->
+                        <setting string="Clave de API"
+                                 help="Sin clave, el panel del asistente no aparece en el diagrama.">
+                            <field name="al_gantt_ai_api_key" password="True" placeholder="sk-…"/>
+                            <div class="mt8">
+                                <widget name="documentation_link" icon="fa-key"
+                                        label="Crear una clave en la consola de Anthropic"
+                                        path="https://console.anthropic.com/settings/keys"
+                                        invisible="al_gantt_ai_provider != 'anthropic'"/>
+                                <widget name="documentation_link" icon="fa-key"
+                                        label="Crear una clave en la plataforma de OpenAI"
+                                        path="https://platform.openai.com/api-keys"
+                                        invisible="al_gantt_ai_provider != 'openai'"/>
+                                <widget name="documentation_link" icon="fa-key"
+                                        label="Crear una clave en la plataforma de DeepSeek"
+                                        path="https://platform.deepseek.com/api_keys"
+                                        invisible="al_gantt_ai_provider != 'deepseek'"/>
+                            </div>
+                        </setting>
+
+                        <setting string="Modelo"
+                                 help="Debe admitir «function calling»: es como el asistente devuelve las propuestas.">
+                            <field name="al_gantt_ai_model" placeholder="claude-opus-5"/>
+                            <div class="mt8">
+                                <widget name="documentation_link" icon="fa-list"
+                                        label="Modelos de Anthropic"
+                                        path="https://docs.claude.com/en/docs/about-claude/models/overview"
+                                        invisible="al_gantt_ai_provider != 'anthropic'"/>
+                                <widget name="documentation_link" icon="fa-list"
+                                        label="Modelos de OpenAI"
+                                        path="https://platform.openai.com/docs/models"
+                                        invisible="al_gantt_ai_provider != 'openai'"/>
+                                <widget name="documentation_link" icon="fa-list"
+                                        label="Modelos de DeepSeek"
+                                        path="https://api-docs.deepseek.com/quick_start/pricing"
+                                        invisible="al_gantt_ai_provider != 'deepseek'"/>
+                            </div>
+                        </setting>
+
+                        <setting string="URL base" help="Solo para pasarelas compatibles.">
+                            <field name="al_gantt_ai_base_url"
+                                   placeholder="https://api.anthropic.com"/>
+                        </setting>
+                    </block>
+
+                    <block title="Comportamiento" name="al_gantt_ai_behaviour">
+                        <setting string="Esfuerzo de razonamiento"
+                                 documentation="https://docs.claude.com/en/docs/build-with-claude/extended-thinking"
+                                 help="Solo lo aplica Anthropic; con los demás proveedores se ignora.">
+                            <field name="al_gantt_ai_effort"/>
+                        </setting>
+                        <setting string="Tokens máximos de respuesta">
+                            <field name="al_gantt_ai_max_tokens"/>
+                        </setting>
+                        <setting string="Tiempo de espera">
+                            <div class="d-flex align-items-center gap-1">
+                                <field name="al_gantt_ai_timeout" class="o_input_10"/>
+                                <span>segundos</span>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Privacidad" name="al_gantt_ai_privacy">
+                        <div class="text-muted mb-3">
+                            El asistente solo recibe un resumen de las tareas que se están
+                            viendo: nombre, proyecto, fechas, estado, avance y dependencias.
+                            Nunca se envían descripciones, mensajes, adjuntos ni datos de
+                            clientes, y el asistente no puede escribir en Odoo: solo propone
+                            cambios que usted revisa y aplica.
+                        </div>
+                        <setting string="Tareas por consulta"
+                                 help="Cuantas más tareas, más contexto y más coste por pregunta.">
+                            <field name="al_gantt_ai_context_limit"/>
+                        </setting>
+                        <setting string="Enviar personas asignadas">
+                            <field name="al_gantt_ai_share_assignees"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

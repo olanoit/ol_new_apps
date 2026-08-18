@@ -468,13 +468,19 @@ class TestFase8E2EMulticompania(TransactionCase):
             html = self.env['ir.actions.report']._render_qweb_html(
                 'al_hr_pe_reports.action_report_boleta_pago', slip.ids)[0]
             texto = html.decode() if isinstance(html, bytes) else str(html)
-            self.assertIn('Boleta de pago emitida conforme', texto)
-            # Bloques numerados del rediseño
-            for bloque in ('1. Datos del trabajador',
-                           '2. Días y horas del periodo',
-                           '3. Conceptos remunerativos'):
+            self.assertIn('Emitida conforme al D.S.', texto)
+            # Secciones de la boleta. Se comprueban por su rótulo porque
+            # es lo que ve el trabajador; si se renombran hay que
+            # actualizarlo aquí a propósito.
+            for bloque in ('Trabajador',
+                           'Días y horas del periodo',
+                           'Conceptos del periodo',
+                           'Aportes del empleador'):
                 self.assertIn(bloque, texto,
                               'Falta el bloque «%s» en la boleta' % bloque)
+            # El neto es el dato que se busca primero y va en su propia
+            # banda, separado de los totales de cada columna.
+            self.assertIn('Neto a pagar', texto)
 
         # La retención judicial (SUNAT 0703) sale en la columna de
         # descuentos de la boleta de Alfa

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_pe_detraction_txt_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.detraction.txt.wizard.form</field>
+        <field name="model">l10n_pe.detraction.txt.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Depósito masivo de detracciones">
+                <group>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="mode" widget="radio"/>
+                        <field name="batch_number"/>
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <group string="Comprobantes"
+                       help="Si se deja vacío se toman todos los del periodo con detracción.">
+                    <field name="move_ids" nolabel="1" widget="many2many_tags"/>
+                </group>
+                <div invisible="not file_data">
+                    <group>
+                        <field name="file_name" invisible="1"/>
+                        <field name="file_data" filename="file_name"
+                               string="Archivo para el banco"/>
+                    </group>
+                </div>
+                <field name="excluded_html" invisible="not excluded_html"
+                       readonly="1"/>
+                <footer>
+                    <button string="Generar archivo" name="action_generate"
+                            type="object" class="btn-primary"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_detraction_txt_wizard" model="ir.actions.act_window">
+        <field name="name">Depósito masivo de detracciones</field>
+        <field name="res_model">l10n_pe.detraction.txt.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Tipo de operación SPOT en la factura -->
+    <record id="view_move_form_detraction_operation" model="ir.ui.view">
+        <field name="name">account.move.form.detraction.operation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="al_l10n_pe_detraction.view_move_form_detraction"/>
+        <field name="arch" type="xml">
+            <field name="l10n_pe_detraction_type_id" position="after">
+                <field name="l10n_pe_detraction_operation_type"
+                       invisible="not l10n_pe_detraction_applies"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Cuenta de detracciones del Banco de la Nación en el contacto -->
+    <record id="view_partner_form_detraction_account" model="ir.ui.view">
+        <field name="name">res.partner.form.detraction.account</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="l10n_pe_detraction_account"
+                       invisible="country_code != 'PE'"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Acceso a los ajustes desde la propia app, sin pasar por Ajustes ▸ buscar
+         la sección: el contexto `module` posiciona la página en esta. Mismo
+         patrón que `crm.crm_config_settings_action`; ojo, en v19 el
+         `target="inline"` de versiones antiguas ya no es un valor válido. -->
+    <record id="action_gantt_ai_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_project_gantt_ai', 'bin_size': False}</field>
+    </record>
+
+    <!-- Los ajustes los guarda `res.config.settings`, que exige administrador:
+         ofrecer el menú a un gestor del Gantt sería ofrecer algo que falla. -->
+    <menuitem id="menu_gantt_ai_settings"
+              name="Ajustes"
+              parent="al_project_gantt_backend.menu_gantt_configuration"
+              action="action_gantt_ai_settings"
+              groups="base.group_system"
+              sequence="90"/>
+
+</odoo>

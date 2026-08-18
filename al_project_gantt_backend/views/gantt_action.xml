@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_gantt_backend" model="ir.actions.client">
+        <field name="name">Gantt de Proyectos</field>
+        <field name="tag">al_project_gantt.backend</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_gantt_root"
+              name="Gantt"
+              web_icon="al_project_gantt_backend,static/description/icon.png"
+              groups="al_project_gantt_base.group_gantt_user"
+              sequence="45"/>
+
+    <menuitem id="menu_gantt_view"
+              name="Diagrama de Gantt"
+              parent="menu_gantt_root"
+              action="action_gantt_backend"
+              groups="al_project_gantt_base.group_gantt_user"
+              sequence="10"/>
+
+    <menuitem id="menu_gantt_configuration"
+              name="Configuración"
+              parent="menu_gantt_root"
+              groups="al_project_gantt_base.group_gantt_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_gantt_state_colors"
+              name="Colores por estado"
+              parent="menu_gantt_configuration"
+              action="al_project_gantt_base.al_gantt_state_color_action"
+              groups="al_project_gantt_base.group_gantt_manager"
+              sequence="10"/>
+
+</odoo>

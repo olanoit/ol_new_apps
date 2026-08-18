@@ -6,20 +6,17 @@
             <field name="name">Boleta de pago: A4 vertical</field>
             <field name="format">A4</field>
             <field name="orientation">Portrait</field>
-            <field name="margin_top">8</field>
-            <field name="margin_bottom">8</field>
-            <field name="margin_left">8</field>
-            <field name="margin_right">8</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">11</field>
+            <field name="margin_right">11</field>
             <field name="header_line" eval="False"/>
             <field name="header_spacing">0</field>
-            <field name="dpi">90</field>
+            <field name="dpi">96</field>
         </record>
 
         <!-- Patrón estándar: template contenedor + template _page por
              registro (mismo esquema que la guía de remisión del proyecto).
-             El estilo va inline en <style> (B/N, tipografía compacta) con
-             prefijo .bpe- propio; incluye el reset anti-bordes fantasma de
-             wkhtmltopdf+BS5 y tablas en rejilla clásica collapse/1px.
 
              El nombre lleva «l10n_pe» a propósito: el dominio nativo de
              `hr.payroll.structure.report_id` solo ofrece plantillas cuyo
@@ -41,163 +38,224 @@
                  El salto de página va por estilo condicional y no en la
                  clase: `page-break-after: always` en el último documento
                  deja una página en blanco al final del PDF. -->
-            <div class="article bpe-a4"
+            <div class="article bpe"
                  t-att-style="'page-break-after: always;' if not o_last else ''"
                  t-att-data-oe-model="o and o._name"
                  t-att-data-oe-id="o and o.id"
                  t-att-data-oe-lang="o and o.env.context.get('lang')">
                 <style>
-                    .bpe-a4 {
-                        font-family: 'Arial', 'Helvetica', sans-serif;
-                        font-size: 10px;
-                        line-height: 1.5;
+                    /* ==========================================================
+                       BOLETA DE PAGO — sistema visual
+
+                       El documento es un formulario legal que el trabajador
+                       revisa y firma. Manda una idea: de todo lo que hay en la
+                       hoja, lo único que se busca primero es el neto. Por eso
+                       hay un solo elemento invertido en todo el documento —la
+                       banda del neto— y el resto se mantiene deliberadamente
+                       quieto.
+
+                       Restricciones del motor: wkhtmltopdf usa un WebKit
+                       antiguo, así que nada de grid, flex ni variables CSS;
+                       todo son tablas y bordes. Sin webfonts: el carácter sale
+                       de la escala, el tracking y una monoespaciada para las
+                       cifras.
+
+                       Grises, cada uno con una única función:
+                         #111  banda del neto (y solo eso)
+                         #e9e9e9  cabecera de sección
+                         #f7f7f7  fila alterna en las tablas de conceptos
+                         #666  metadatos secundarios
+                       ========================================================== */
+
+                    .bpe {
+                        font-family: Arial, Helvetica, sans-serif;
+                        font-size: 9.5px;
+                        line-height: 1.45;
                         color: #000;
                         max-width: 21cm;
                         margin: 0 auto;
                     }
-                    .bpe-a4 table {
-                        border-collapse: collapse;
-                        width: 100%;
-                    }
+                    .bpe table { border-collapse: collapse; width: 100%; }
+
                     /* Reset anti-bordes fantasma: BS5 deja tr/td/th con
-                       border-style solid y width 0 y el WebKit de
+                       border-style solid y width 0, y el WebKit de
                        wkhtmltopdf pinta hairlines con eso. Cada bloque
                        redeclara sus bordes debajo. */
-                    .bpe-a4 table, .bpe-a4 thead, .bpe-a4 tbody,
-                    .bpe-a4 tfoot, .bpe-a4 tr, .bpe-a4 td, .bpe-a4 th {
-                        border: none;
-                    }
-                    .bpe-a4 td, .bpe-a4 th { padding: 3.5px 6px; }
+                    .bpe table, .bpe thead, .bpe tbody, .bpe tfoot,
+                    .bpe tr, .bpe td, .bpe th { border: none; }
+                    .bpe td, .bpe th { padding: 3px 6px; vertical-align: top; }
 
-                    /* --- Encabezado --- */
-                    .bpe-header td { vertical-align: top; }
-                    .bpe-header-logo { width: 18%; }
-                    .bpe-header-logo img { max-width: 120px; max-height: 55px; }
-                    .bpe-header-company { width: 54%; }
-                    .bpe-company-name { font-weight: bold; font-size: 11px; }
-                    .bpe-doc-box {
-                        width: 28%;
-                        border: 1px solid #000;
-                        text-align: center;
-                        vertical-align: middle;
-                        padding: 4px;
+                    /* Las cifras van en monoespaciada: en una boleta la
+                       columna de importes es el contenido, y así los dígitos
+                       caen unos sobre otros. */
+                    .bpe-fig {
+                        font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                        text-align: right;
+                        white-space: nowrap;
                     }
-                    .bpe-doc-box .bpe-doc-ruc { font-weight: bold; font-size: 10.5px; }
-                    .bpe-doc-box .bpe-doc-periodo { font-size: 9.5px; }
-                    .bpe-title {
-                        text-align: center;
-                        font-size: 12.5px;
+
+                    /* ---------- Cabecera ---------- */
+                    .bpe-head td { vertical-align: middle; padding: 0 0 7px 0; }
+                    .bpe-head-logo { width: 74px; }
+                    .bpe-head-logo img { max-width: 68px; max-height: 46px; }
+                    .bpe-head-org { padding-left: 10px !important; }
+                    .bpe-org-name {
+                        font-size: 13px;
                         font-weight: bold;
-                        letter-spacing: 1px;
-                        margin: 4px 0 1px 0;
+                        letter-spacing: 0.2px;
+                        line-height: 1.2;
                     }
-                    .bpe-subtitle {
-                        text-align: center;
-                        font-size: 8.5px;
-                        margin-bottom: 4px;
+                    .bpe-org-meta { color: #666; font-size: 8.5px; }
+                    .bpe-head-doc { text-align: right; white-space: nowrap; }
+                    .bpe-doc-kind {
+                        font-size: 11px;
+                        font-weight: bold;
+                        letter-spacing: 2.2px;
+                        text-transform: uppercase;
                     }
+                    .bpe-doc-period { font-size: 9px; }
+                    .bpe-doc-law { color: #666; font-size: 8px; }
 
-                    /* --- Bloques numerados --- */
-                    .bpe-block { margin-top: 9px; }
-                    .bpe-block-title {
-                        background-color: #e8e8e8;
+                    /* Filete grueso bajo la cabecera: separa la identidad del
+                       emisor del contenido del documento. */
+                    .bpe-rule { border-top: 2px solid #000; height: 0; }
+
+                    /* ---------- Secciones ---------- */
+                    .bpe-sec { margin-top: 11px; }
+                    .bpe-sec-title {
+                        font-size: 8.5px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        letter-spacing: 1.4px;
+                        background: #e9e9e9;
                         border: 1px solid #000;
                         border-bottom: none;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                        font-size: 9px;
-                        letter-spacing: 0.5px;
-                        padding: 3.5px 6px;
+                        padding: 3px 6px;
+                    }
+                    .bpe-sec-note {
+                        font-weight: normal;
+                        letter-spacing: 0;
+                        text-transform: none;
+                        color: #444;
+                        font-size: 8px;
                     }
 
-                    /* Rejilla clásica: collapse + 1px negro, sin radius
-                       (wkhtmltopdf pinta contornos difusos con radius). */
+                    /* ---------- Rejilla ---------- */
                     .bpe-grid td, .bpe-grid th { border: 1px solid #000; }
-                    .bpe-grid th, .bpe-th {
-                        background-color: #f5f5f5;
+                    .bpe-grid th {
+                        background: #e9e9e9;
                         font-weight: bold;
-                        text-align: center;
                         text-transform: uppercase;
-                        font-size: 9px;
+                        letter-spacing: 0.6px;
+                        font-size: 8px;
+                        text-align: center;
                     }
-                    .bpe-label {
-                        font-weight: bold;
+                    .bpe-k {
+                        color: #444;
+                        font-size: 8.5px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.4px;
                         white-space: nowrap;
-                        background-color: #fafafa;
-                        width: 12%;
                     }
-                    .bpe-num { text-align: right; white-space: nowrap; }
-                    .bpe-center { text-align: center; }
+                    .bpe-v { font-weight: bold; }
+                    .bpe-c { text-align: center; }
 
-                    /* --- Conceptos: tres bloques independientes --- */
-                    .bpe-concepts { table-layout: fixed; }
-                    .bpe-concepts > tbody > tr > td {
-                        vertical-align: top;
-                        padding: 0;
-                        width: 33.33%;
+                    /* ---------- Conceptos ---------- */
+                    /* Dos columnas enfrentadas: lo que suma y lo que resta.
+                       Los aportes del empleador van aparte, más abajo, porque
+                       no entran en el neto. */
+                    .bpe-cols { table-layout: fixed; }
+                    .bpe-cols > tbody > tr > td { padding: 0; width: 50%; }
+                    .bpe-cols > tbody > tr > td + td { padding-left: 9px; }
+                    .bpe-lines td { font-size: 9px; }
+                    .bpe-lines tr.bpe-alt td { background: #f7f7f7; }
+                    /* Celda de aire a la derecha de los aportes: sin ella la
+                       tabla parecía tener columnas vacías por rellenar. Va
+                       después de la zebra para ganarle en especificidad. */
+                    .bpe-grid tr td.bpe-void {
+                        border: none;
+                        background: none;
                     }
-                    .bpe-concepts > tbody > tr > td + td { padding-left: 4px; }
-                    /* fixed: sin él cada bloque autoajusta sus columnas al
-                       texto que le tocó y los tres cuadros salen con
-                       anchos distintos. */
-                    /* Sin fila de relleno: rellenar hasta una altura común
-                       dibujaba un renglón vacío de más. Los totales ya
-                       quedan alineados porque van en otra fila de la tabla
-                       exterior, así que los cuadros pueden cerrar cada uno
-                       donde termina su último concepto. */
-                    .bpe-concepts table { table-layout: fixed; }
-                    .bpe-concepts td { word-wrap: break-word; }
-                    /* Separación fija entre el cuadro de conceptos y su
-                       total: sin ella, en la columna cuyo cuadro llega
-                       justo hasta el total, el borde inferior del uno y
-                       el superior del otro se tocan y se ven como una
-                       línea doble (no colapsan: son tablas distintas). */
-                    .bpe-concepts > tbody > tr + tr > td { padding-top: 4px; }
-                    .bpe-total-row td {
-                        font-weight: bold;
-                        background-color: #f5f5f5;
+                    .bpe-code {
+                        font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                        text-align: center;
+                        color: #444;
+                        font-size: 8.5px;
                     }
-                    .bpe-empty-row td { color: #fff; }
-
-                    /* --- Neto --- */
-                    .bpe-net td {
+                    .bpe-sum td {
                         border: 1px solid #000;
+                        border-top: 2px solid #000;
                         font-weight: bold;
-                        padding: 4px 6px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        font-size: 8.5px;
                     }
-                    .bpe-net .bpe-net-amount {
-                        width: 32%;
-                        text-align: right;
-                        font-size: 11.5px;
-                        background-color: #f5f5f5;
+                    .bpe-none td {
+                        color: #666;
+                        text-align: center;
+                        font-style: italic;
                     }
 
-                    /* --- Firmas --- */
-                    .bpe-firmas { margin-top: 34px; }
-                    .bpe-firmas td {
+                    /* ---------- Neto: el único bloque invertido ---------- */
+                    .bpe-net { margin-top: 11px; }
+                    .bpe-net td {
+                        background: #111;
+                        color: #fff;
+                        border: 1px solid #111;
+                        padding: 7px 10px;
+                        vertical-align: middle;
+                    }
+                    .bpe-net-words {
+                        font-size: 9px;
+                        letter-spacing: 0.3px;
+                        text-transform: uppercase;
+                    }
+                    .bpe-net-label {
+                        font-size: 8px;
+                        letter-spacing: 1.6px;
+                        text-transform: uppercase;
+                    }
+                    .bpe-net-amount {
+                        width: 33%;
+                        text-align: right;
+                        font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                        font-size: 19px;
+                        font-weight: bold;
+                        letter-spacing: -0.4px;
+                        white-space: nowrap;
+                    }
+
+                    /* ---------- Firmas ---------- */
+                    .bpe-sign { margin-top: 40px; }
+                    .bpe-sign td {
                         width: 50%;
                         text-align: center;
-                        /* top + hueco de firma de altura fija: con
-                           `bottom` las dos rayas quedaban a distinta altura
-                           porque los bloques no tienen el mismo número de
-                           líneas debajo. */
                         vertical-align: top;
-                        padding: 0 26px;
+                        padding: 0 30px;
                     }
-                    .bpe-firma-img {
-                        height: 58px;
-                        line-height: 58px;
-                    }
-                    .bpe-firma-img img { max-height: 56px; vertical-align: bottom; }
-                    .bpe-firma-line {
+                    /* Hueco de firma de altura fija en ambas columnas: con
+                       alineación al fondo las dos rayas quedaban a distinta
+                       altura porque no tienen las mismas líneas debajo. */
+                    .bpe-sign-space { height: 54px; line-height: 54px; }
+                    .bpe-sign-space img { max-height: 52px; vertical-align: bottom; }
+                    .bpe-sign-rule {
                         border-top: 1px solid #000;
                         padding-top: 4px;
-                        font-size: 9px;
+                        font-size: 8.5px;
                     }
-                    .bpe-firma-line .bpe-firma-name { font-weight: bold; }
-                    .bpe-footer-note {
-                        margin-top: 14px;
-                        font-size: 8px;
+                    .bpe-sign-name { font-weight: bold; }
+                    .bpe-sign-role {
+                        color: #444;
+                        font-size: 7.5px;
+                        text-transform: uppercase;
+                        letter-spacing: 1.2px;
+                    }
+                    .bpe-foot {
+                        margin-top: 16px;
+                        padding-top: 5px;
+                        border-top: 1px solid #000;
+                        color: #666;
+                        font-size: 7.5px;
                     }
                 </style>
 
@@ -205,132 +263,139 @@
                 <t t-set="v" t-value="o.version_id"/>
                 <t t-set="emp" t-value="o.employee_id"/>
 
-                <!-- ============ ENCABEZADO ============ -->
-                <table class="bpe-header">
+                <!-- ==================== CABECERA ==================== -->
+                <table class="bpe-head">
                     <tr>
-                        <td class="bpe-header-logo">
+                        <td class="bpe-head-logo">
                             <img t-if="o.company_id.logo"
                                  t-att-src="image_data_uri(o.company_id.logo)"
                                  alt="Logo"/>
                         </td>
-                        <td class="bpe-header-company">
-                            <div class="bpe-company-name">
-                                <span t-field="o.company_id.name"/>
-                            </div>
-                            <div t-if="o.company_id.street">
-                                <span t-field="o.company_id.street"/>
-                                <t t-if="o.company_id.city">
-                                    - <span t-field="o.company_id.city"/>
+                        <td class="bpe-head-org">
+                            <div class="bpe-org-name"><span t-field="o.company_id.name"/></div>
+                            <div class="bpe-org-meta">
+                                RUC <span t-field="o.company_id.vat"/>
+                                <t t-if="o.company_id.street">
+                                    · <span t-field="o.company_id.street"/><t
+                                        t-if="o.company_id.city">, <span t-field="o.company_id.city"/></t>
                                 </t>
                             </div>
-                            <div t-if="o.company_id.phone or o.company_id.email">
-                                <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
-                                <span t-if="o.company_id.phone and o.company_id.email"> · </span>
-                                <span t-if="o.company_id.email" t-field="o.company_id.email"/>
-                            </div>
                         </td>
-                        <td class="bpe-doc-box">
-                            <div class="bpe-doc-ruc">RUC: <span t-field="o.company_id.vat"/></div>
-                            <div>BOLETA DE PAGO</div>
-                            <div class="bpe-doc-periodo">
+                        <td class="bpe-head-doc">
+                            <div class="bpe-doc-kind">Boleta de pago</div>
+                            <div class="bpe-doc-period">
                                 <span t-field="o.date_from" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                                al
+                                –
                                 <span t-field="o.date_to" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                            </div>
+                            <div class="bpe-doc-law">
+                                D.S. 001-98-TR<t t-if="o.payslip_run_id"> ·
+                                <span t-esc="o.payslip_run_id.name"/></t>
                             </div>
                         </td>
                     </tr>
                 </table>
+                <div class="bpe-rule"/>
 
-                <div class="bpe-title">BOLETA DE PAGO DE REMUNERACIONES</div>
-                <div class="bpe-subtitle">
-                    D.S. N° 001-98-TR
-                    <t t-if="o.payslip_run_id"> · Planilla: <span t-esc="o.payslip_run_id.name"/></t>
-                </div>
-
-                <!-- ============ 1. TRABAJADOR ============ -->
-                <div class="bpe-block">
-                    <div class="bpe-block-title">1. Datos del trabajador</div>
+                <!-- ==================== TRABAJADOR ====================
+                     Dos columnas de pares etiqueta/valor agrupadas por
+                     sentido: a la izquierda quién es y qué hace, a la
+                     derecha bajo qué régimen y cómo cobra. -->
+                <div class="bpe-sec">
+                    <div class="bpe-sec-title">Trabajador</div>
                     <table class="bpe-grid">
+                        <colgroup>
+                            <col style="width: 15%;"/><col style="width: 35%;"/>
+                            <col style="width: 16%;"/><col style="width: 34%;"/>
+                        </colgroup>
                         <tr>
-                            <td class="bpe-label">Trabajador</td>
-                            <td colspan="3"><span t-esc="emp.name"/></td>
-                            <td class="bpe-label">
+                            <td class="bpe-k">Apellidos y nombres</td>
+                            <td class="bpe-v"><span t-esc="emp.name"/></td>
+                            <td class="bpe-k">
                                 <span t-esc="emp.l10n_latam_identification_type_id.name or 'Documento'"/>
                             </td>
-                            <td><span t-esc="emp.identification_id"/></td>
+                            <td class="bpe-v"><span t-esc="emp.identification_id"/></td>
                         </tr>
                         <tr>
-                            <td class="bpe-label">Fecha de ingreso</td>
+                            <td class="bpe-k">Cargo</td>
+                            <td><span t-esc="v.job_id.name or '—'"/></td>
+                            <td class="bpe-k">Área</td>
+                            <td><span t-esc="v.department_id.name or '—'"/></td>
+                        </tr>
+                        <tr>
+                            <td class="bpe-k">Fecha de ingreso</td>
                             <td>
-                                <span t-if="d['fecha_ingreso']" t-esc="d['fecha_ingreso'].strftime('%d/%m/%Y')"/>
+                                <span t-if="d['fecha_ingreso']"
+                                      t-esc="d['fecha_ingreso'].strftime('%d/%m/%Y')"/>
+                                <t t-if="d['fecha_cese']">
+                                    · Cese <span t-esc="d['fecha_cese'].strftime('%d/%m/%Y')"/>
+                                </t>
                             </td>
-                            <td class="bpe-label">Fecha de cese</td>
-                            <td>
-                                <span t-if="d['fecha_cese']" t-esc="d['fecha_cese'].strftime('%d/%m/%Y')"/>
-                            </td>
-                            <td class="bpe-label">Situación</td>
+                            <td class="bpe-k">Situación</td>
                             <td><span t-esc="d['situacion']"/></td>
                         </tr>
                         <tr>
-                            <td class="bpe-label">Cargo</td>
-                            <td><span t-esc="v.job_id.name or ''"/></td>
-                            <td class="bpe-label">Área</td>
-                            <td><span t-esc="v.department_id.name or ''"/></td>
-                            <td class="bpe-label">Tipo de trabajador</td>
-                            <td><span t-esc="v.worker_type_id.name or ''"/></td>
-                        </tr>
-                        <tr>
-                            <td class="bpe-label">Régimen laboral</td>
+                            <td class="bpe-k">Tipo de trabajador</td>
+                            <td><span t-esc="v.worker_type_id.name or '—'"/></td>
+                            <td class="bpe-k">Régimen laboral</td>
                             <td><span t-esc="d['regimen_laboral']"/></td>
-                            <td class="bpe-label">Régimen de salud</td>
-                            <td><span t-esc="d['regimen_salud']"/></td>
-                            <td class="bpe-label">Condición</td>
-                            <td><span t-esc="d['condicion']"/></td>
                         </tr>
                         <tr>
-                            <td class="bpe-label">Régimen pensionario</td>
-                            <td><span t-esc="o.membership_id.name or v.membership_id.name or ''"/></td>
-                            <td class="bpe-label">CUSPP</td>
-                            <td><span t-esc="v.l10n_pe_cuspp or ''"/></td>
-                            <td class="bpe-label">Otros empleadores 5ta</td>
-                            <td><t t-if="v.l10n_pe_other_employers">Sí</t><t t-else="">No</t></td>
+                            <td class="bpe-k">Régimen de salud</td>
+                            <td>
+                                <span t-esc="d['regimen_salud']"/>
+                                <t t-if="d['condicion']"> · <span t-esc="d['condicion']"/></t>
+                            </td>
+                            <td class="bpe-k">Régimen pensionario</td>
+                            <td>
+                                <span t-esc="o.membership_id.name or v.membership_id.name or '—'"/>
+                                <t t-if="v.l10n_pe_cuspp">
+                                    · CUSPP <span t-esc="v.l10n_pe_cuspp"/>
+                                </t>
+                            </td>
                         </tr>
                         <tr>
-                            <td class="bpe-label">Remuneración básica</td>
-                            <td class="bpe-num">
+                            <td class="bpe-k">Remuneración básica</td>
+                            <td class="bpe-fig bpe-v">
                                 <!-- v19: wage vive en hr.version (el payslip
                                      ya no tiene campo wage propio) -->
-                                <span t-esc="'{:,.2f}'.format(v.wage or 0.0)"/>
+                                S/ <span t-esc="'{:,.2f}'.format(v.wage or 0.0)"/>
                             </td>
-                            <td class="bpe-label">Cuenta de abono</td>
-                            <td colspan="3"><span t-esc="d['cuenta_abono']"/></td>
+                            <td class="bpe-k">Cuenta de abono</td>
+                            <td>
+                                <span t-esc="d['cuenta_abono'] or '—'"/>
+                                <t t-if="v.l10n_pe_other_employers">
+                                    · Otros empleadores 5ta: Sí
+                                </t>
+                            </td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ============ 2. JORNADA ============ -->
-                <div class="bpe-block">
-                    <div class="bpe-block-title">2. Días y horas del periodo</div>
+                <!-- ==================== JORNADA ==================== -->
+                <div class="bpe-sec">
+                    <div class="bpe-sec-title">Días y horas del periodo</div>
                     <table class="bpe-grid">
                         <tr>
                             <th>Días laborados</th>
-                            <th>Días no laborados</th>
-                            <th>Días subsidiados</th>
-                            <th>Días de vacaciones</th>
+                            <th>No laborados</th>
+                            <th>Subsidiados</th>
+                            <th>Vacaciones</th>
                             <th>Horas ordinarias</th>
-                            <th>Horas sobretiempo</th>
+                            <th>Sobretiempo</th>
                         </tr>
                         <tr>
-                            <td class="bpe-center"><span t-esc="'%g' % d['dias_laborados']"/></td>
-                            <td class="bpe-center"><span t-esc="'%g' % d['dias_no_laborados']"/></td>
-                            <td class="bpe-center"><span t-esc="'%g' % d['dias_subsidiados']"/></td>
-                            <td class="bpe-center"><span t-esc="'%g' % d['dias_vacaciones']"/></td>
-                            <td class="bpe-center"><span t-esc="d['horas_ordinarias']"/></td>
-                            <td class="bpe-center"><span t-esc="d['horas_sobretiempo']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="'%g' % d['dias_laborados']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="'%g' % d['dias_no_laborados']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="'%g' % d['dias_subsidiados']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="'%g' % d['dias_vacaciones']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="d['horas_ordinarias']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="d['horas_sobretiempo']"/></td>
                         </tr>
                     </table>
                     <!-- Sobretiempo por sobretasa (D.S. 007-2002-TR art. 10) -->
-                    <table t-if="d['horas_extras']" class="bpe-grid">
+                    <table t-if="d['horas_extras']" class="bpe-grid"
+                           style="margin-top: 4px;">
                         <tr>
                             <th t-foreach="d['horas_extras']" t-as="he">
                                 <span t-esc="he['nombre']"/>
@@ -338,104 +403,91 @@
                         </tr>
                         <tr>
                             <td t-foreach="d['horas_extras']" t-as="he"
-                                class="bpe-center">
+                                class="bpe-c bpe-fig">
                                 <span t-esc="he['horas']"/>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ============ 2b. SUSPENSIONES (T21) ============ -->
-                <div t-if="d['suspensiones']" class="bpe-block">
-                    <div class="bpe-block-title">
-                        2.1 Suspensión de labores
-                    </div>
+                <!-- ==================== SUSPENSIONES (T21) ==================== -->
+                <div t-if="d['suspensiones']" class="bpe-sec">
+                    <div class="bpe-sec-title">Suspensión de labores</div>
                     <table class="bpe-grid">
                         <tr>
                             <th style="width: 12%;">Tipo</th>
                             <th>Motivo</th>
-                            <th style="width: 12%;">N° días</th>
+                            <th style="width: 12%;">Días</th>
                         </tr>
                         <tr t-foreach="d['suspensiones']" t-as="susp">
-                            <td class="bpe-center"><span t-esc="susp['codigo']"/></td>
+                            <td class="bpe-c bpe-code"><span t-esc="susp['codigo']"/></td>
                             <td><span t-esc="susp['motivo']"/></td>
-                            <td class="bpe-center"><span t-esc="susp['dias']"/></td>
+                            <td class="bpe-c bpe-fig"><span t-esc="susp['dias']"/></td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ============ 3. CONCEPTOS ============
-                     Tres bloques independientes lado a lado, cada uno con
-                     su cabecera propia. Los totales van en una segunda
-                     fila de la tabla exterior: así quedan alineados entre
-                     columnas sin depender de alturas iguales, que es lo
-                     que hacía frágil la rejilla única con zip_longest. -->
-                <div class="bpe-block">
-                    <div class="bpe-block-title">
-                        3. Conceptos remunerativos (código Tabla 22 SUNAT)
+                <!-- ==================== CONCEPTOS ====================
+                     Ingresos y descuentos enfrentados a la misma altura:
+                     son las dos mitades del cálculo del neto y se leen en
+                     paralelo. -->
+                <div class="bpe-sec">
+                    <div class="bpe-sec-title">
+                        Conceptos del periodo
+                        <span class="bpe-sec-note">— código de la tabla 22 de SUNAT</span>
                     </div>
-                    <table class="bpe-concepts">
+                    <t t-set="columnas" t-value="[
+                        ('Ingresos', d['ingresos'], d['total_ingresos']),
+                        ('Descuentos', d['descuentos'], d['total_descuentos'])]"/>
+                    <table class="bpe-cols">
                         <tr>
-                            <t t-set="columnas" t-value="[
-                                ('Ingresos', d['ingresos']),
-                                ('Descuentos', d['descuentos']),
-                                ('Aportes del empleador', d['aportes_empleador'])]"/>
-                            <td t-foreach="columnas" t-as="columna">
-                                <table class="bpe-grid">
+                            <td t-foreach="columnas" t-as="col">
+                                <table class="bpe-grid bpe-lines">
                                     <!-- Los anchos van en el colgroup: con
                                          `table-layout: fixed` las columnas se
-                                         miden por la PRIMERA fila, que aquí es
-                                         la cabecera con colspan=3, así que los
-                                         anchos puestos en los th se ignoraban y
-                                         salían tres columnas iguales. -->
+                                         miden por la PRIMERA fila, así que los
+                                         puestos en los th se ignorarían. -->
                                     <colgroup>
-                                        <col style="width: 15%;"/>
-                                        <col style="width: 57%;"/>
-                                        <col style="width: 28%;"/>
+                                        <col style="width: 13%;"/>
+                                        <col style="width: 58%;"/>
+                                        <col style="width: 29%;"/>
                                     </colgroup>
                                     <tr>
-                                        <th colspan="3"><span t-esc="columna[0]"/></th>
-                                    </tr>
-                                    <tr>
                                         <th>Cód.</th>
-                                        <th>Concepto</th>
-                                        <th>S/</th>
+                                        <th style="text-align: left;"><span t-esc="col[0]"/></th>
+                                        <th>Importe S/</th>
                                     </tr>
-                                    <tr t-foreach="columna[1]" t-as="linea">
-                                        <td class="bpe-center">
-                                            <span t-esc="linea['codigo']"/>
-                                        </td>
+                                    <tr t-foreach="col[1]" t-as="linea"
+                                        t-att-class="'bpe-alt' if linea_index % 2 else ''">
+                                        <td class="bpe-code"><span t-esc="linea['codigo']"/></td>
                                         <td><span t-esc="linea['nombre']"/></td>
-                                        <td class="bpe-num">
+                                        <td class="bpe-fig">
                                             <span t-esc="'{:,.2f}'.format(linea['importe'])"/>
                                         </td>
                                     </tr>
                                     <!-- Sin conceptos la columna quedaría sin
                                          cuerpo y el borde se descuadraría. -->
-                                    <tr t-if="not columna[1]" class="bpe-empty-row">
-                                        <td colspan="3">—</td>
+                                    <tr t-if="not col[1]" class="bpe-none">
+                                        <td colspan="3">Sin conceptos</td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
+                        <!-- Los totales van en una fila propia de la tabla
+                             exterior: así quedan a la misma altura aunque una
+                             columna tenga más conceptos que la otra, que es lo
+                             que permite compararlos de un vistazo. -->
                         <tr>
-                            <t t-set="totales" t-value="[
-                                ('Total ingresos', d['total_ingresos']),
-                                ('Total descuentos', d['total_descuentos']),
-                                ('Total aportes', d['total_aportes'])]"/>
-                            <td t-foreach="totales" t-as="total">
+                            <td t-foreach="columnas" t-as="col">
                                 <table class="bpe-grid">
-                                    <!-- 72/28 = las dos primeras columnas de
-                                         arriba más la del importe, para que el
-                                         total caiga justo bajo la columna S/. -->
                                     <colgroup>
-                                        <col style="width: 72%;"/>
-                                        <col style="width: 28%;"/>
+                                        <col style="width: 71%;"/>
+                                        <col style="width: 29%;"/>
                                     </colgroup>
-                                    <tr class="bpe-total-row">
-                                        <td><span t-esc="total[0]"/> S/</td>
-                                        <td class="bpe-num">
-                                            <span t-esc="'{:,.2f}'.format(total[1])"/>
+                                    <tr class="bpe-sum">
+                                        <td>Total <span t-esc="col[0]"/></td>
+                                        <td class="bpe-fig">
+                                            <span t-esc="'{:,.2f}'.format(col[2])"/>
                                         </td>
                                     </tr>
                                 </table>
@@ -444,58 +496,103 @@
                     </table>
                 </div>
 
-                <!-- ============ 4. NETO ============ -->
-                <div class="bpe-block">
-                    <table class="bpe-net">
-                        <tr>
-                            <td><span t-esc="d['neto_letras']"/></td>
-                            <td class="bpe-net-amount">
-                                NETO A PAGAR S/
-                                <span t-esc="'{:,.2f}'.format(d['neto'])"/>
+                <!-- ==================== NETO ====================
+                     El único bloque invertido de la hoja: es el dato que se
+                     busca primero y el que debe seguir leyéndose en una
+                     fotocopia. -->
+                <table class="bpe-net">
+                    <tr>
+                        <td>
+                            <div class="bpe-net-label">Neto a pagar</div>
+                            <div class="bpe-net-words"><span t-esc="d['neto_letras']"/></div>
+                        </td>
+                        <td class="bpe-net-amount">
+                            S/ <span t-esc="'{:,.2f}'.format(d['neto'])"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ==================== APORTES DEL EMPLEADOR ====================
+                     Después del neto y a media caja: son cargas de la empresa,
+                     no descuentos del trabajador, y ponerlos junto a los
+                     descuentos hacía pensar que restan de lo que cobra. -->
+                <div t-if="d['aportes_empleador'] or d['total_aportes']" class="bpe-sec">
+                    <div class="bpe-sec-title">
+                        Aportes del empleador
+                        <span class="bpe-sec-note">— no se descuentan del trabajador</span>
+                    </div>
+                    <!-- A ancho completo y con las columnas partidas igual que
+                         arriba: la de importes cae en la misma vertical que la
+                         de descuentos, de modo que todas las cifras de la hoja
+                         se leen en una sola columna. -->
+                    <table class="bpe-grid bpe-lines">
+                        <colgroup>
+                            <col style="width: 6.5%;"/>
+                            <col style="width: 29%;"/>
+                            <col style="width: 14.5%;"/>
+                            <col style="width: 50%;"/>
+                        </colgroup>
+                        <tr t-foreach="d['aportes_empleador']" t-as="ap"
+                            t-att-class="'bpe-alt' if ap_index % 2 else ''">
+                            <td class="bpe-code"><span t-esc="ap['codigo']"/></td>
+                            <td><span t-esc="ap['nombre']"/></td>
+                            <td class="bpe-fig">
+                                <span t-esc="'{:,.2f}'.format(ap['importe'])"/>
                             </td>
+                            <td class="bpe-void"/>
+                        </tr>
+                        <tr t-if="not d['aportes_empleador']" class="bpe-none">
+                            <td colspan="4">Sin aportes</td>
+                        </tr>
+                        <tr class="bpe-sum">
+                            <td colspan="2">Total aportes</td>
+                            <td class="bpe-fig">
+                                <span t-esc="'{:,.2f}'.format(d['total_aportes'])"/>
+                            </td>
+                            <td class="bpe-void"/>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ============ 5. FIRMAS ============ -->
-                <table class="bpe-firmas">
+                <!-- ==================== FIRMAS ==================== -->
+                <table class="bpe-sign">
                     <tr>
                         <td>
-                            <div class="bpe-firma-img">
+                            <div class="bpe-sign-space">
                                 <img t-if="d['param'].signature"
                                      t-att-src="image_data_uri(d['param'].signature)"
                                      alt="Firma del empleador"/>
                             </div>
-                            <div class="bpe-firma-line">
-                                <div class="bpe-firma-name"
+                            <div class="bpe-sign-rule">
+                                <div class="bpe-sign-name"
                                      t-esc="d['param'].reprentante_legal_id.name or o.company_id.name"/>
                                 <div t-if="d['param'].reprentante_legal_id.vat">
                                     <span t-esc="d['param'].reprentante_legal_id.l10n_latam_identification_type_id.name or 'Doc.'"/>
-                                    N° <span t-esc="d['param'].reprentante_legal_id.vat"/>
+                                    <span t-esc="d['param'].reprentante_legal_id.vat"/>
                                 </div>
-                                <div>EMPLEADOR</div>
+                                <div class="bpe-sign-role">Empleador</div>
                             </div>
                         </td>
                         <td>
-                            <!-- Mismo hueco de firma que el empleador para
-                                 que las dos líneas queden a la misma altura. -->
-                            <div class="bpe-firma-img"/>
-                            <div class="bpe-firma-line">
-                                <div class="bpe-firma-name" t-esc="emp.name"/>
+                            <!-- Mismo hueco que el empleador para que las dos
+                                 rayas queden a la misma altura. -->
+                            <div class="bpe-sign-space"/>
+                            <div class="bpe-sign-rule">
+                                <div class="bpe-sign-name" t-esc="emp.name"/>
                                 <div t-if="emp.identification_id">
                                     <span t-esc="emp.l10n_latam_identification_type_id.name or 'Doc.'"/>
-                                    N° <span t-esc="emp.identification_id"/>
+                                    <span t-esc="emp.identification_id"/>
                                 </div>
-                                <div>RECIBÍ CONFORME — TRABAJADOR</div>
+                                <div class="bpe-sign-role">Recibí conforme</div>
                             </div>
                         </td>
                     </tr>
                 </table>
 
-                <div class="bpe-footer-note">
-                    Boleta de pago emitida conforme al D.S. N° 001-98-TR.
-                    El duplicado quedará en poder del trabajador y el
-                    original firmado en poder del empleador.
+                <div class="bpe-foot">
+                    Emitida conforme al D.S. N° 001-98-TR. El duplicado queda en
+                    poder del trabajador y el original firmado en poder del
+                    empleador.
                 </div>
             </div>
         </template>

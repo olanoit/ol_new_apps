@@ -122,21 +122,21 @@
     </record>
 
     <menuitem id="menu_l10n_pe_education_level" name="Situación educativa (T09)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_education_level" sequence="36"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_education_level" sequence="9"/>
     <menuitem id="menu_l10n_pe_contract_type" name="Tipos de contrato (T12)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_contract_type" sequence="37"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_contract_type" sequence="12"/>
     <menuitem id="menu_l10n_pe_occupational_category"
               name="Categorías ocupacionales (T24)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_occupational_category" sequence="38"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_occupational_category" sequence="24"/>
     <menuitem id="menu_l10n_pe_occupation" name="Ocupaciones (T30)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_occupation" sequence="39"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_occupation" sequence="30"/>
     <menuitem id="menu_l10n_pe_labor_regime" name="Regímenes laborales (T33)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_labor_regime" sequence="40"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_labor_regime" sequence="33"/>
 
     <!-- Datos del T-Registro en la ficha del trabajador.
          En v19 `hr.employee` _inherits de `hr.version`, así que los campos
@@ -336,11 +336,11 @@
         <field name="view_mode">list</field>
     </record>
     <menuitem id="menu_l10n_pe_road_type" name="Tipos de vía (T05)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_road_type" sequence="41"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_road_type" sequence="5"/>
     <menuitem id="menu_l10n_pe_zone_type" name="Tipos de zona (T06)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_zone_type" sequence="42"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_zone_type" sequence="6"/>
 
     <!-- Exportación de la carga masiva desde la lista de trabajadores -->
     <record id="action_server_tregistro_alta" model="ir.actions.server">
@@ -462,10 +462,10 @@
         <field name="view_mode">list</field>
     </record>
     <menuitem id="menu_l10n_pe_financial_entity" name="Entidades financieras (T36)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_financial_entity" sequence="43"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_financial_entity" sequence="36"/>
     <menuitem id="menu_l10n_pe_edu_institution" name="Instituciones educativas (T34)"
-              parent="al_hr_pe.menu_hr_pe_root"
-              action="action_l10n_pe_edu_institution" sequence="44"/>
+              parent="menu_hr_pe_cfg_catalogs"
+              action="action_l10n_pe_edu_institution" sequence="34"/>
 
 </odoo>

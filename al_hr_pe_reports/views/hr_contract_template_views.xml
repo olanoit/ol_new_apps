@@ -99,9 +99,9 @@
     <!-- Configuración Perú: Nómina → Configuración → Perú -->
     <menuitem id="menu_l10n_pe_hr_contract_template"
         name="Plantillas de contrato"
-        parent="al_hr_pe.menu_hr_pe_root"
+        parent="al_hr_pe.menu_hr_pe_cfg_documents"
         action="l10n_pe_hr_contract_template_action"
-        sequence="40"/>
+        sequence="10"/>
 
     <!-- Empleado → pestaña Nómina: plantilla, período de prueba PE e
          impresión del contrato de la versión vigente. -->

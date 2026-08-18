@@ -13,6 +13,14 @@
                 <field name="l10n_pe_exchange_rate_info" nolabel="1"
                        readonly="1" class="oe_inline fst-italic text-nowrap"/>
             </xpath>
+            <!-- Elección de compra o venta: solo tiene sentido en moneda
+                 extranjera, y solo se puede cambiar antes de publicar. -->
+            <field name="invoice_date" position="after">
+                <field name="l10n_pe_exchange_rate_type"
+                       invisible="currency_id == company_currency_id
+                                  or move_type == 'entry'"
+                       readonly="state != 'draft'"/>
+            </field>
         </field>
     </record>
 </odoo>

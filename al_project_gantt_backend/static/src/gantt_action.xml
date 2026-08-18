@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_project_gantt_backend.GanttAction">
+        <!-- El raíz es flex column: sin él, `main.o_content` cuelga de
+             `o_action_manager` (display block) y no recibe altura. -->
+        <div class="o_algantt_root">
+        <Layout display="display" className="'o_algantt_action'">
+            <div class="algantt-wrapper d-flex flex-column h-100">
+
+                <div class="algantt-toolbar d-flex flex-wrap align-items-center gap-3 p-2 border-bottom">
+                    <div class="algantt-projects d-flex flex-wrap align-items-center gap-1">
+                        <span class="fw-bold me-1">Proyectos:</span>
+                        <t t-if="!state.projects.length">
+                            <span class="text-muted">Ninguno visible</span>
+                        </t>
+                        <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                            <button type="button"
+                                    class="btn btn-sm"
+                                    t-att-class="isSelected(project.id) ? 'btn-primary' : 'btn-outline-secondary'"
+                                    t-on-click="() => this.onProjectToggle(project.id)">
+                                <t t-esc="project.name"/>
+                                <span class="badge text-bg-light ms-1" t-esc="project.task_count"/>
+                            </button>
+                        </t>
+                        <button type="button" class="btn btn-sm btn-link"
+                                t-if="!state.pinnedToProject and state.projects.length > 1"
+                                t-on-click="() => this.onSelectAll()">Todos</button>
+                        <!-- Al llegar desde el botón inteligente del proyecto,
+                             la vista viene acotada: se ofrece salir de ahí. -->
+                        <button type="button" class="btn btn-sm btn-link"
+                                t-if="state.pinnedToProject"
+                                t-on-click="() => this.onShowAllProjects()">Ver todos los proyectos</button>
+                    </div>
+
+                    <div class="algantt-tools d-flex flex-wrap align-items-center gap-2 ms-auto">
+                        <div class="algantt-search input-group input-group-sm" style="width: 210px;">
+                            <span class="input-group-text"><i class="fa fa-search"/></span>
+                            <input type="text" class="form-control form-control-sm"
+                                   placeholder="Buscar tarea…"
+                                   t-att-value="state.search"
+                                   t-on-input="onSearchInput"/>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    t-if="state.search"
+                                    t-on-click="() => this.clearSearch()">×</button>
+                        </div>
+                        <span class="small text-muted" t-if="searchLabel" t-esc="searchLabel"/>
+
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    t-att-class="state.showWbs ? 'active' : ''"
+                                    title="Mostrar el código EDT (1, 1.1, 1.2…)"
+                                    t-on-click="() => this.onToggleWbs()">EDT</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    t-att-title="state.expanded ? 'Contraer todo' : 'Expandir todo'"
+                                    t-on-click="() => this.toggleExpand()">
+                                <i t-att-class="state.expanded ? 'fa fa-compress' : 'fa fa-expand'"/>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    t-att-class="state.hideDone ? 'active' : ''"
+                                    title="Ocultar tareas terminadas y canceladas"
+                                    t-on-click="() => this.onToggleHideDone()">
+                                <i class="fa fa-check-square-o"/>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    title="Pantalla completa"
+                                    t-on-click="() => this.onToggleFullscreen()">
+                                <i class="fa fa-arrows-alt"/>
+                            </button>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                t-if="state.meta.can_create"
+                                t-on-click="() => this.onAddTask()">
+                            <i class="fa fa-plus me-1"/>Tarea
+                        </button>
+
+                        <button type="button" class="btn btn-sm"
+                                t-att-class="state.criticalPath ? 'btn-danger' : 'btn-outline-secondary'"
+                                t-on-click="() => this.onToggleCriticalPath()"
+                                title="Resalta las tareas sin holgura (calculado en el servidor)">
+                            <i class="fa fa-bolt me-1"/>Ruta crítica
+                            <span class="badge text-bg-light ms-1"
+                                  t-if="criticalLabel !== null" t-esc="criticalLabel"/>
+                        </button>
+
+                        <div class="form-check form-switch mb-0" t-if="state.meta.can_reschedule_chain and state.meta.editable">
+                            <input id="algantt_chain" type="checkbox" class="form-check-input"
+                                   t-att-checked="state.rescheduleChain"
+                                   t-on-change="() => this.onToggleRescheduleChain()"/>
+                            <label class="form-check-label small" for="algantt_chain"
+                                   title="Al mover una tarea, empuja las que dependen de ella">
+                                Encadenar
+                            </label>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-1">
+                            <select class="form-select form-select-sm w-auto"
+                                    t-on-change="onBaselineChange"
+                                    title="Comparar contra una línea base">
+                                <option value="">Sin línea base</option>
+                                <t t-foreach="baselineOptions" t-as="baseline" t-key="baseline.id">
+                                    <option t-att-value="baseline.id"
+                                            t-att-selected="baseline.selected"
+                                            t-esc="baseline.name"/>
+                                </t>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    t-on-click="() => this.onCaptureBaseline()"
+                                    title="Guardar una foto del plan actual">
+                                <i class="fa fa-camera"/>
+                            </button>
+                        </div>
+
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    title="Descargar el diagrama en Excel (dos hojas: tareas y diagrama)"
+                                    t-on-click="() => this.onExportXlsx()">
+                                <i class="fa fa-file-excel-o"/>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    title="Descargar el diagrama en PDF (A3 apaisado)"
+                                    t-on-click="() => this.onExportPdf()">
+                                <i class="fa fa-file-pdf-o"/>
+                            </button>
+                        </div>
+
+                        <span class="small text-muted" t-if="state.saving">Guardando…</span>
+                        <span class="small text-success" t-elif="state.lastSavedAt">
+                            <i class="fa fa-check me-1"/><t t-esc="state.lastSavedAt"/>
+                        </span>
+
+                        <button type="button" class="btn btn-sm"
+                                t-att-class="state.showFilters ? 'btn-secondary' : 'btn-outline-secondary'"
+                                t-on-click="() => this.toggleFilters()">
+                            <i class="fa fa-filter me-1"/>Filtros
+                            <span class="badge text-bg-primary ms-1"
+                                  t-if="activeFilterCount"
+                                  t-esc="activeFilterCount"/>
+                        </button>
+                        <label class="mb-0" for="algantt_zoom">Escala:</label>
+                        <select id="algantt_zoom" class="form-select form-select-sm w-auto"
+                                t-on-change="onZoomChange">
+                            <t t-foreach="zoomLevels" t-as="level" t-key="level.key">
+                                <option t-att-value="level.key"
+                                        t-att-selected="level.key === state.zoom"
+                                        t-esc="level.label"/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="algantt-filters border-bottom p-2" t-if="state.showFilters">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small mb-1" for="algantt_users">Personas asignadas</label>
+                            <select id="algantt_users" class="form-select form-select-sm"
+                                    multiple="multiple" size="4"
+                                    t-on-change="(ev) => this.onDraftSelectChange('userIds', ev)">
+                                <t t-foreach="userOptions" t-as="option" t-key="option.id">
+                                    <option t-att-value="option.id" t-att-selected="option.selected">
+                                        <t t-esc="option.name"/> (<t t-esc="option.task_count"/>)
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small mb-1" for="algantt_states">Estado</label>
+                            <select id="algantt_states" class="form-select form-select-sm"
+                                    multiple="multiple" size="4"
+                                    t-on-change="(ev) => this.onDraftSelectChange('states', ev)">
+                                <t t-foreach="stateOptions" t-as="option" t-key="option.value">
+                                    <option t-att-value="option.value"
+                                            t-att-selected="option.selected"
+                                            t-esc="option.label"/>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small mb-1" for="algantt_date_from">Desde</label>
+                            <input id="algantt_date_from" type="date" class="form-control form-control-sm"
+                                   t-att-value="state.draft.dateFrom"
+                                   t-on-change="(ev) => this.onDraftValueChange('dateFrom', ev)"/>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small mb-1" for="algantt_date_to">Hasta</label>
+                            <input id="algantt_date_to" type="date" class="form-control form-control-sm"
+                                   t-att-value="state.draft.dateTo"
+                                   t-on-change="(ev) => this.onDraftValueChange('dateTo', ev)"/>
+                        </div>
+                        <div class="col-12 col-md-2 d-flex flex-column gap-2">
+                            <div class="form-check mb-0">
+                                <input id="algantt_undated" type="checkbox" class="form-check-input"
+                                       t-att-checked="state.draft.includeUndated"
+                                       t-on-change="(ev) => this.onDraftValueChange('includeUndated', ev)"/>
+                                <label class="form-check-label small" for="algantt_undated">
+                                    Incluir sin fecha
+                                </label>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        t-att-disabled="invalidRange"
+                                        t-on-click="() => this.applyFilters()">Aplicar</button>
+                                <button type="button" class="btn btn-sm btn-link"
+                                        t-on-click="() => this.clearFilters()">Limpiar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-danger small mt-1" t-if="invalidRange">
+                        La fecha «desde» no puede ser posterior a la fecha «hasta».
+                    </div>
+                </div>
+
+                <div class="algantt-notices px-2 pt-2"
+                     t-if="state.meta.truncated or state.meta.undated_count">
+                    <div class="alert alert-warning py-1 px-2 mb-1" t-if="state.meta.truncated">
+                        Se muestran <t t-esc="state.meta.count"/> de
+                        <t t-esc="state.meta.total"/> tareas (límite de
+                        <t t-esc="state.meta.limit"/>). Filtre por proyecto o por fechas para ver el resto.
+                    </div>
+                    <div class="alert alert-info py-1 px-2 mb-1" t-if="state.meta.undated_count">
+                        <t t-esc="state.meta.undated_count"/> tarea(s) sin fecha límite
+                        <t t-if="state.filters.includeUndated">
+                            se listan en la rejilla, sin barra en el diagrama.
+                        </t>
+                        <t t-else="">
+                            no se pueden dibujar en el diagrama; actívelas en Filtros ▸ «Incluir sin fecha».
+                        </t>
+                    </div>
+                </div>
+
+                <div class="algantt-body flex-grow-1 position-relative">
+                    <div t-if="state.loading" class="algantt-loading position-absolute top-50 start-50 translate-middle">
+                        <i class="fa fa-circle-o-notch fa-spin fa-2x text-muted"/>
+                    </div>
+                    <div t-if="!state.loading and !hasTasks"
+                         class="algantt-empty position-absolute top-50 start-50 translate-middle text-center text-muted">
+                        <i class="fa fa-tasks fa-3x mb-2 d-block"/>
+                        <p class="mb-0">No hay tareas con fechas para mostrar.</p>
+                        <p class="small mb-0" t-if="!activeFilterCount">
+                            Asigne fechas a las tareas del proyecto para verlas en el Gantt.
+                        </p>
+                        <p class="small mb-0" t-else="">
+                            Ninguna tarea cumple los filtros aplicados.
+                            <button type="button" class="btn btn-sm btn-link p-0 align-baseline"
+                                    t-on-click="() => this.clearFilters()">Limpiar filtros</button>
+                        </p>
+                    </div>
+                    <div class="algantt-container h-100 w-100" t-ref="ganttContainer"/>
+                </div>
+
+            </div>
+        </Layout>
+        </div>
+    </t>
+
+</templates>

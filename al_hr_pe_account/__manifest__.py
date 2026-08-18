@@ -28,7 +28,7 @@ Fase 5 (actual):
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '2.20260722',
+    'version': '3.20260816',
     'license': 'LGPL-3',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],
     'data': [

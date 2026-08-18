@@ -3,10 +3,11 @@
 
     <!-- Menú operativo de importaciones bajo la raíz de Nómina (v19:
          hr_work_entry_enterprise.menu_hr_payroll_root) -->
+    <!-- Al final: es una herramienta puntual, no un paso del mes. -->
     <menuitem id="menu_al_hr_pe_import_root"
-              name="Importaciones Excel"
+              name="Importar desde Excel"
               parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-              sequence="85"
+              sequence="95"
               groups="hr_payroll.group_hr_payroll_user"/>
 
     <menuitem id="menu_al_import_hr_attendance"

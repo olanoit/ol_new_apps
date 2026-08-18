@@ -206,10 +206,13 @@
     <!-- Menú raíz de la capa de asistencia PE bajo Nómina; lo
          referencian también los otros archivos de vistas del módulo y
          el tareaje (otro archivo de la Fase 6). -->
+    <!-- Sin el sufijo «PE»: dentro de la localización peruana no
+         distingue nada. La secuencia lo deja detrás de la «Entradas de
+         trabajo» nativa (60). -->
     <menuitem id="menu_hr_pe_attendance_root"
-        name="Asistencia PE"
+        name="Asistencia"
         parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-        sequence="60"
+        sequence="62"
         groups="hr_payroll.group_hr_payroll_user,planning.group_planning_user"/>
 
     <menuitem id="menu_l10n_pe_hr_shift_cycle_assignment"

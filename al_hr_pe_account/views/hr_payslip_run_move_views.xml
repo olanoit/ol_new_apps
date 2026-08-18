@@ -6,9 +6,9 @@
          acciones contables del módulo: provisiones, BBSS, etc.)
          ============================================================== -->
     <menuitem id="menu_hr_pe_account_root"
-        name="Contabilidad PE"
+        name="Contabilidad"
         parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-        sequence="90"
+        sequence="92"
         groups="hr_payroll.group_hr_payroll_manager"/>
 
     <record id="hr_payslip_run_move_wizard_action" model="ir.actions.act_window">

@@ -155,11 +155,15 @@
         </field>
     </record>
 
+    <!-- Al final del flujo, contiguo a «Contabilidad»: las dos cosas
+         ocurren después de calcular la planilla. No se cuelga del menú
+         contable porque este módulo no depende de al_hr_pe_account y
+         acoplarlos por un menú no compensa. -->
     <menuitem id="menu_hr_multipayment"
               name="Pagos masivos bancarios"
               action="action_hr_automate_multipayment"
               parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-              sequence="46"
+              sequence="91"
               groups="hr_payroll.group_hr_payroll_user"/>
 
     <!-- ========================================================== -->

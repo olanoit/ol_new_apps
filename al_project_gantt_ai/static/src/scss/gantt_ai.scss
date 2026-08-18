@@ -1,0 +1,80 @@
+// Panel del asistente: cajón sobre el lado derecho del diagrama.
+//
+// Se posiciona en absoluto dentro de `.algantt-body` (que ya es
+// `position: relative`) en lugar de convertir el cuerpo en flex row: así el
+// contenedor de la librería conserva su tamaño y no hace falta tocar nada del
+// módulo backend.
+
+.algantt-ai-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    max-width: 100%;
+    z-index: 5;
+    background: var(--bs-body-bg, #fff);
+    border-left: 1px solid var(--bs-border-color, #dee2e6);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.06);
+
+    .algantt-ai-model {
+        font-size: 0.7rem;
+        line-height: 1;
+    }
+
+    .algantt-ai-scroll {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .algantt-ai-bubble {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.5rem;
+    }
+
+    .algantt-ai-user .algantt-ai-bubble {
+        background: var(--bs-primary, #714b67);
+        color: #fff;
+        margin-left: 1.5rem;
+    }
+
+    .algantt-ai-assistant .algantt-ai-bubble {
+        background: var(--bs-tertiary-bg, #f4f4f4);
+        margin-right: 1.5rem;
+    }
+
+    .algantt-ai-bubble.algantt-ai-error {
+        background: var(--bs-danger-bg-subtle, #f8d7da);
+        color: var(--bs-danger-text-emphasis, #842029);
+    }
+
+    // Las propuestas son la parte accionable: se separan visualmente del texto.
+    .algantt-ai-proposal {
+        background: var(--bs-body-bg, #fff);
+        font-size: 0.8rem;
+
+        &.algantt-ai-picked {
+            border-color: var(--bs-primary, #714b67) !important;
+            background: var(--bs-primary-bg-subtle, #f3eef2);
+        }
+    }
+
+    .algantt-ai-reason {
+        font-size: 0.75rem;
+    }
+
+    .algantt-ai-footer textarea {
+        resize: none;
+    }
+}
+
+// En pantallas estrechas el cajón ocupa todo el ancho: media pantalla de
+// diagrama no sirve para nada.
+@media (max-width: 768px) {
+    .algantt-ai-panel {
+        width: 100%;
+    }
+}

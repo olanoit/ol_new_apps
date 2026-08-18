@@ -37,7 +37,7 @@ asientos por su complejidad y riesgo contable.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '3.20260719',
+    'version': '4.20260815',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',
@@ -52,6 +52,7 @@ asientos por su complejidad y riesgo contable.
         'views/account_move_views.xml',
         'views/res_config_settings_views.xml',
         'wizards/detraction_deposit_wizard_views.xml',
+        'wizards/detraction_txt_wizard_views.xml',
         'views/menu.xml',
     ],
     'installable': True,

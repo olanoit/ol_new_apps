@@ -1,0 +1,294 @@
+// Estilos comunes a las dos interfaces (backend y website).
+// Prefijo propio `algantt-`: nunca se estilizan clases de la librería a secas,
+// para que las dos interfaces puedan convivir en la misma instalación.
+
+// Fila de proyecto: el verde por defecto de la librería se confunde con el
+// color del estado «Aprobada».
+.gantt_task_line.algantt-project-row {
+    background-color: #4c4c4c;
+    border-color: #3a3a3a;
+    font-weight: 600;
+
+    .gantt_task_progress {
+        background-color: rgba(255, 255, 255, 0.25);
+    }
+}
+
+// Tareas cuyo inicio se calculó porque solo tenían fecha límite.
+.gantt_task_line.algantt-inferred-start {
+    opacity: 0.75;
+    border-style: dashed;
+}
+
+// Tareas cuyo padre quedó fuera del conjunto cargado.
+.gantt_task_line.algantt-orphan {
+    border-left: 3px solid #e58e2c;
+}
+
+// Ruta crítica: holgura cero. El borde, y no el relleno, para no pisar el
+// color del estado.
+.gantt_task_line.algantt-critical {
+    box-shadow: 0 0 0 2px #c0392b;
+}
+
+// Tareas que el usuario no puede modificar (permiso real del ORM).
+.gantt_task_line.algantt-locked {
+    opacity: 0.85;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.12) 0,
+        rgba(255, 255, 255, 0.12) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+// Barra fantasma de la línea base, bajo la barra real. Vive dentro del
+// contenido de la tarea (la edición MIT no permite capas propias), así que el
+// contenedor tiene que dejarla desbordar.
+.gantt_task_line .gantt_task_content {
+    overflow: visible;
+}
+
+.algantt-baseline-bar {
+    position: absolute;
+    top: 22px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+}
+
+// Desvío contra la línea base en la rejilla.
+.algantt-late {
+    color: #c0392b;
+    font-weight: 600;
+}
+
+.algantt-early {
+    color: #1a7d3d;
+}
+
+// --- Herramientas añadidas sobre la edición MIT -------------------------
+
+// Días no laborables según el calendario del proyecto (solo sombreado: no
+// altera la programación).
+.gantt_task_cell.algantt-nonworking {
+    background-color: rgba(0, 0, 0, 0.045);
+}
+
+.gantt_scale_cell.algantt-nonworking-scale {
+    color: #9aa0a6;
+}
+
+// Marca vertical del día de hoy (plugin `marker`).
+.gantt_marker.algantt-today-marker {
+    background-color: #c0392b;
+    opacity: 0.75;
+
+    .gantt_marker_content {
+        background-color: #c0392b;
+        color: #fff;
+        font-size: 11px;
+    }
+}
+
+// Menú contextual propio (la edición MIT no trae uno).
+.algantt-context-menu {
+    position: fixed;
+    z-index: 1080;
+    min-width: 210px;
+    padding: 4px 0;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    background-color: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.algantt-context-item {
+    display: block;
+    width: 100%;
+    padding: 6px 14px;
+    border: 0;
+    background: none;
+    text-align: left;
+    font-size: 13px;
+    color: #1c2024;
+
+    &:hover:not(:disabled) {
+        background-color: #f1f3f5;
+    }
+
+    &:disabled {
+        color: #9aa0a6;
+    }
+}
+
+// --- Botón «Abrir en Odoo» del formulario -------------------------------
+// La librería pinta cada botón como `<div class="…_set"><div class="nombre"/>
+// <div>etiqueta</div></div>`: el primer hijo es el icono. Se le da uno propio
+// porque los nativos vienen del CSS de la librería.
+.gantt_cal_light .algantt_open_btn_set {
+    .algantt_open_btn::before {
+        content: "\f08e"; // fa-external-link
+        font-family: FontAwesome;
+        font-size: 13px;
+        line-height: 20px;
+    }
+}
+
+// Las filas de proyecto y los hitos no son `project.task`: no hay ficha que
+// abrir. Se marca el contenedor al abrirlo en vez de rehacer los botones.
+.gantt_cal_light.algantt-lb-no-open .algantt_open_btn_set {
+    display: none;
+}
+
+// --- Formulario de tarea (lightbox) -------------------------------------
+// Los estilos de Odoo/Bootstrap ponen `display: block; width: 100%` a inputs y
+// selects, lo que rompía el «Periodo» de la librería (día, mes y año salían
+// apilados). Aquí se restaura el comportamiento en línea que espera dhtmlx.
+.gantt_cal_light {
+    select,
+    input[type="text"],
+    input[type="number"] {
+        display: inline-block;
+        width: auto;
+        height: 30px;
+        margin: 0 4px 0 0;
+        padding: 2px 6px;
+        vertical-align: middle;
+        border: 1px solid #cfd4da;
+        border-radius: 4px;
+        background-color: #fff;
+        font-size: 13px;
+        line-height: 1.3;
+        box-shadow: none;
+    }
+
+    // Los dos bloques de fecha del periodo, uno al lado del otro.
+    .gantt_section_time {
+        white-space: nowrap;
+        padding: 6px 10px;
+
+        .gantt_time_selects {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .gantt_duration {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+
+            input {
+                width: 48px;
+                text-align: center;
+            }
+        }
+    }
+
+    // Selección múltiple (responsables, etiquetas): que se vea la lista.
+    select[multiple] {
+        display: block;
+        width: calc(100% - 20px);
+        height: auto;
+        min-height: 64px;
+    }
+
+    textarea {
+        width: calc(100% - 20px);
+        font-size: 13px;
+    }
+
+    .gantt_cal_lsection {
+        font-weight: 600;
+        color: #1c2024;
+        padding: 10px 10px 4px;
+    }
+}
+
+// --- Indicador de actividades (mail.activity) ---------------------------
+.algantt-activity {
+    font-size: 13px;
+    line-height: 1;
+
+    &.algantt-activity-overdue { color: #c0392b; }
+    &.algantt-activity-today { color: #e58e2c; }
+    &.algantt-activity-planned { color: #1a7d3d; }
+}
+
+// --- Bloques propios del formulario -------------------------------------
+
+// Rango de fechas: dos campos compactos, uno al lado del otro.
+.gantt_cal_light .algantt-lb-dates {
+    display: flex;
+    gap: 16px;
+    padding: 4px 10px;
+    flex-wrap: wrap;
+}
+
+.gantt_cal_light .algantt-lb-date {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+    color: #5b6570;
+
+    input {
+        width: 210px;
+        height: 32px;
+        font-size: 13px;
+    }
+}
+
+// Valores múltiples como badges, al estilo del widget many2many de Odoo.
+.gantt_cal_light .algantt-tokens {
+    padding: 4px 10px;
+}
+
+.gantt_cal_light .algantt-token-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-height: 26px;
+    margin-bottom: 6px;
+}
+
+.gantt_cal_light .algantt-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 2px 4px 2px 10px;
+    border-radius: 999px;
+    background-color: #f1eaf0;
+    color: #5b3a52;
+    font-size: 12.5px;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.gantt_cal_light .algantt-token-remove {
+    border: 0;
+    background: none;
+    padding: 0 4px;
+    color: #8a6a80;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover { color: #5b3a52; }
+}
+
+.gantt_cal_light .algantt-token-empty {
+    color: #9aa0a6;
+    font-size: 12.5px;
+    font-style: italic;
+}
+
+.gantt_cal_light .algantt-token-add {
+    width: 210px;
+    height: 30px;
+    font-size: 13px;
+}

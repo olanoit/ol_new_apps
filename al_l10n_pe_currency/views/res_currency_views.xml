@@ -11,7 +11,8 @@
                 <field name="rate_sale" optional="show"/>
                 <field name="ref_origin" widget="badge"
                        decoration-primary="ref_origin == 'sunat'"
-                       decoration-info="ref_origin == 'apis_net'"
+                       decoration-success="ref_origin == 'bcrp'"
+                       decoration-info="ref_origin in ('apis_net', 'decolecta')"
                        decoration-warning="ref_origin == 'manual'"
                        optional="show"/>
             </field>
@@ -54,7 +55,8 @@
                 <field name="rate_sale" optional="show"/>
                 <field name="ref_origin" widget="badge"
                        decoration-primary="ref_origin == 'sunat'"
-                       decoration-info="ref_origin == 'apis_net'"
+                       decoration-success="ref_origin == 'bcrp'"
+                       decoration-info="ref_origin in ('apis_net', 'decolecta')"
                        decoration-warning="ref_origin == 'manual'"
                        optional="hide"/>
             </xpath>

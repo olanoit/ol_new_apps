@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gantt_state_color_user,al.gantt.state.color usuario,model_al_gantt_state_color,al_project_gantt_base.group_gantt_user,1,0,0,0
+access_gantt_state_color_manager,al.gantt.state.color administrador,model_al_gantt_state_color,al_project_gantt_base.group_gantt_manager,1,1,1,1
+access_gantt_baseline_user,al.gantt.baseline usuario,model_al_gantt_baseline,al_project_gantt_base.group_gantt_user,1,1,1,0
+access_gantt_baseline_manager,al.gantt.baseline administrador,model_al_gantt_baseline,al_project_gantt_base.group_gantt_manager,1,1,1,1
+access_gantt_baseline_line_user,al.gantt.baseline.line usuario,model_al_gantt_baseline_line,al_project_gantt_base.group_gantt_user,1,0,1,0
+access_gantt_baseline_line_manager,al.gantt.baseline.line administrador,model_al_gantt_baseline_line,al_project_gantt_base.group_gantt_manager,1,0,1,1

@@ -21,10 +21,28 @@ PLE_EXPECTED_FIELDS = {
     '100100': 6, '100200': 8, '100300': 13, '100400': 7,
     '120100': 19, '130100': 27,
     '140100': 35, '140200': 26,
+    # RCE (SIRE) — RS 040-2022/SUNAT, anexos 8 y 9.
+    # Ver docs/tecport/ESTRUCTURA_RCE_8_4_8_5.md
+    '080400': 41, '080500': 35,
+    # RVIE (SIRE) — RS 000112-2021/SUNAT, anexo 2. La nota 7 excluye del
+    # archivo los campos 34 a 40, de ahí los 33.
+    # Ver docs/tecport/ESTRUCTURA_RVIE_14_4.md
+    '140400': 33,
 }
 
 # Libros anuales: el nombre de archivo consigna MM=00
 PLE_ANNUAL_BOOKS = ('07', '10')
+
+# Formatos del RCE (SIRE). Su nombre de archivo lleva el indicador de
+# generación «2» (generado por el SIRE) en lugar del «1» del PLE, y el
+# código de oportunidad (posiciones 28-29) tiene su propia tabla.
+PLE_SIRE_BOOKS = ('080400', '080500')
+
+# Código de oportunidad de presentación del RCE (Tabla 13, posiciones 28-29)
+RCE_OPPORTUNITY_NON_DOMICILED = '00'   # RC no domiciliados informado
+RCE_OPPORTUNITY_ACCEPT = '01'          # cuando acepta la propuesta
+RCE_OPPORTUNITY_REPLACE = '02'         # cuando reemplaza la propuesta
+RCE_OPPORTUNITY_ADJUSTMENT = '03'      # cuando realiza ajustes posteriores
 
 # Caracteres prohibidos dentro de un campo (reglas generales del PLE)
 PLE_FORBIDDEN_CHARS = '|/\\'
@@ -60,21 +78,27 @@ class L10nPePleMixin(models.AbstractModel):
     @api.model
     def _ple_filename(self, company, book_code, year, month=0, day=0,
                       opportunity='00', operations='1', has_data=True,
-                      extension='.txt'):
-        """Nombre oficial: LE RUC(11) AAAA MM DD LLLLLL CC O I M G .txt
+                      extension='.txt', sequence=''):
+        """Nombre oficial: LE RUC(11) AAAA MM DD LLLLLL CC O I M G [NN] .txt
 
         ``month``/``day`` en 0 emiten «00» (libros anuales / distintos al
-        libro 3). ``opportunity`` (CC) solo aplica al libro 3. El 3.23
-        (notas a los EEFF) se presenta en PDF: ``extension='.pdf'``.
+        libro 3). ``opportunity`` (CC) aplica al libro 3 y, con su propia
+        tabla, a los formatos del RCE. El 3.23 (notas a los EEFF) se
+        presenta en PDF: ``extension='.pdf'``.
+
+        Para los formatos del RCE (8.4 y 8.5) el indicador de la posición 33
+        es «2» (generado por el SIRE) en lugar de «1», y ``sequence`` añade
+        el correlativo NN de los ajustes posteriores.
         """
         if book_code not in PLE_EXPECTED_FIELDS and book_code != '032300':
             raise UserError(_('Código de formato PLE desconocido: %s', book_code))
         if book_code[:2] in PLE_ANNUAL_BOOKS:
             month = 0
-        return 'LE%s%04d%02d%02d%s%s%s%s%s1%s' % (
+        generator = '2' if book_code in PLE_SIRE_BOOKS else '1'
+        return 'LE%s%04d%02d%02d%s%s%s%s%s%s%s%s' % (
             self._ple_ruc(company), year, month, day, book_code, opportunity,
             operations, '1' if has_data else '0',
-            self._ple_currency_flag(company), extension,
+            self._ple_currency_flag(company), generator, sequence, extension,
         )
 
     # ------------------------------------------------------------------

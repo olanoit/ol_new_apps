@@ -1,0 +1,277 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* al_project_gantt_website
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 15:00+0000\n"
+"PO-Revision-Date: 2026-08-17 15:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid ""
+"%(count)s tarea(s) sin fecha límite no se pueden dibujar; actívelas en "
+"Filtros ▸ «Incluir sin fecha»."
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid ""
+"%(count)s tarea(s) sin fecha límite se listan en la rejilla, sin barra en el"
+" diagrama."
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid ""
+"<i class=\"fa fa-bolt me-1\"/>Ruta crítica\n"
+"                                    <span class=\"algantt-critical-count badge text-bg-light ms-1 d-none\"/>"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid ""
+"<i class=\"fa fa-filter me-1\"/>Filtros\n"
+"                                    <span class=\"algantt-filters-count badge text-bg-primary ms-1 d-none\"/>"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "<i class=\"fa fa-plus me-1\"/>Tarea"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid ""
+"<select class=\"algantt-baseline form-select form-select-sm w-auto\" title=\"Comparar contra una línea base\">\n"
+"                                    <option value=\"\">Sin línea base</option>\n"
+"                                </select>"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "<span class=\"fw-bold me-1\">Proyectos:</span>"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Abrir en Odoo"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Al mover una tarea, empuja las que dependen de ella"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Aplicar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Buscar tarea…"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Descargar en Excel"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Descargar en PDF"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Desde"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Desindentar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "EDT"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Eliminar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Encadenar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Escala:"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Estado"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Expandir o contraer todo"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model:website.menu,name:al_project_gantt_website.menu_gantt_website
+msgid "Gantt"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Gantt de Proyectos"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Guardado"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Guardando…"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Guardar una foto del plan actual"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Hasta"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Incluir sin fecha"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Indentar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "La fecha «desde» no puede ser posterior a la fecha «hasta»."
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Limpiar"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Mostrar el código EDT"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Ninguna tarea cumple los filtros aplicados."
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Ninguno visible"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "No hay tareas con fechas para mostrar."
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "No se pudo guardar el cambio."
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Ocultar tareas terminadas"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Pantalla completa"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Personas asignadas"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Planificar actividad"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid "Resalta las tareas sin holgura"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid ""
+"Se muestran %(count)s de %(total)s tareas (límite de %(limit)s). Filtre por "
+"proyecto para ver el resto."
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Sin línea base"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Tarea nueva"
+msgstr ""
+
+#. module: al_project_gantt_website
+#. odoo-javascript
+#: code:addons/al_project_gantt_website/static/src/js/gantt_page.js:0
+msgid "Todos"
+msgstr ""
+
+#. module: al_project_gantt_website
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_website.gantt_page
+msgid ""
+"Vista de solo lectura de los proyectos y tareas que tiene permitido ver."
+msgstr ""

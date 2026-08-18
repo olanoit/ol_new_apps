@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate="1": el usuario puede recolorear sin que una actualización del
+         módulo le pise los cambios. Los seis estados de project.task en Odoo 19. -->
+    <data noupdate="1">
+
+        <record id="state_color_in_progress" model="al.gantt.state.color">
+            <field name="name">En curso</field>
+            <field name="sequence">10</field>
+            <field name="state_key">01_in_progress</field>
+            <field name="color">#714b67</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+        <record id="state_color_changes_requested" model="al.gantt.state.color">
+            <field name="name">Cambios solicitados</field>
+            <field name="sequence">20</field>
+            <field name="state_key">02_changes_requested</field>
+            <field name="color">#e58e2c</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+        <record id="state_color_approved" model="al.gantt.state.color">
+            <field name="name">Aprobada</field>
+            <field name="sequence">30</field>
+            <field name="state_key">03_approved</field>
+            <field name="color">#1a7d3d</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+        <record id="state_color_waiting" model="al.gantt.state.color">
+            <field name="name">En espera</field>
+            <field name="sequence">40</field>
+            <field name="state_key">04_waiting_normal</field>
+            <field name="color">#8f8f8f</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+        <record id="state_color_done" model="al.gantt.state.color">
+            <field name="name">Lista</field>
+            <field name="sequence">50</field>
+            <field name="state_key">1_done</field>
+            <field name="color">#2e7cbe</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+        <record id="state_color_canceled" model="al.gantt.state.color">
+            <field name="name">Cancelada</field>
+            <field name="sequence">60</field>
+            <field name="state_key">1_canceled</field>
+            <field name="color">#b02b2b</field>
+            <field name="text_color">#ffffff</field>
+        </record>
+
+    </data>
+</odoo>

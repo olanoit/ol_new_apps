@@ -1,0 +1,394 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* al_project_gantt_backend
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 15:00+0000\n"
+"PO-Revision-Date: 2026-08-17 15:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "%s coincidencias"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "). Filtre por proyecto o por fechas para ver el resto."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "1 coincidencia"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_backend.project_project_view_form_gantt_button
+msgid "<span class=\"o_stat_text\">Gantt</span>"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Abrir en Odoo"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Al mover una tarea, empuja las que dependen de ella"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Aplicar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Asigne fechas a las tareas del proyecto para verlas en el Gantt."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Añadir subtarea"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Buscar tarea…"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.ui.menu,name:al_project_gantt_backend.menu_gantt_state_colors
+msgid "Colores por estado"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Comparar contra una línea base"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.ui.menu,name:al_project_gantt_backend.menu_gantt_configuration
+msgid "Configuración"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Descargar el diagrama en Excel (dos hojas: tareas y diagrama)"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Descargar el diagrama en PDF (A3 apaisado)"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Desde"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Desindentar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.ui.menu,name:al_project_gantt_backend.menu_gantt_view
+msgid "Diagrama de Gantt"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.model.fields,field_description:al_project_gantt_backend.field_project_project__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "EDT"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Eliminar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Encadenar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Escala:"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Estado"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Filtros"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.ui.menu,name:al_project_gantt_backend.menu_gantt_root
+msgid "Gantt"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.actions.client,name:al_project_gantt_backend.action_gantt_backend
+msgid "Gantt de Proyectos"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-python
+#: code:addons/al_project_gantt_backend/models/project_project.py:0
+msgid "Gantt: %s"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Guardando…"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Guardar una foto del plan actual"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Hasta"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.model.fields,field_description:al_project_gantt_backend.field_project_project__id
+msgid "ID"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Incluir sin fecha"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Indentar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "La fecha «desde» no puede ser posterior a la fecha «hasta»."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Limpiar"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Limpiar filtros"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Línea base capturada con %s tarea(s)."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Mostrar el código EDT (1, 1.1, 1.2…)"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Ninguna tarea cumple los filtros aplicados."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Ninguno visible"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "No hay tareas con fechas para mostrar."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "No se pudo guardar el cambio."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Ocultar tareas terminadas y canceladas"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Pantalla completa"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Personas asignadas"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Planificar actividad"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#: model:ir.model,name:al_project_gantt_backend.model_project_project
+msgid "Project"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Proyectos:"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Resalta las tareas sin holgura (calculado en el servidor)"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Ruta crítica"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Se muestran"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Seleccione al menos un proyecto."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Seleccione un proyecto para capturar la línea base."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Sin línea base"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Tarea"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.js:0
+msgid "Tarea nueva"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Todos"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "Ver todos los proyectos"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "de"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid ""
+"no se pueden dibujar en el diagrama; actívelas en Filtros ▸ «Incluir sin "
+"fecha»."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "se listan en la rejilla, sin barra en el diagrama."
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "tarea(s) sin fecha límite"
+msgstr ""
+
+#. module: al_project_gantt_backend
+#. odoo-javascript
+#: code:addons/al_project_gantt_backend/static/src/gantt_action.xml:0
+msgid "tareas (límite de"
+msgstr ""

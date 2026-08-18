@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_project_gantt_ai.GanttAiPanel">
+        <aside class="algantt-ai-panel d-flex flex-column">
+
+            <header class="algantt-ai-header d-flex align-items-center gap-2 p-2 border-bottom">
+                <i class="fa fa-magic text-primary"/>
+                <div class="flex-grow-1">
+                    <div class="fw-bold small">Asistente</div>
+                    <div class="text-muted algantt-ai-model" t-esc="modelLabel"/>
+                </div>
+                <button type="button" class="btn btn-sm btn-link text-muted p-1"
+                        t-if="state.messages.length"
+                        title="Vaciar la conversación"
+                        t-on-click="() => this.clear()">
+                    <i class="fa fa-eraser"/>
+                </button>
+                <button type="button" class="btn btn-sm btn-link text-muted p-1"
+                        title="Cerrar" t-on-click="() => this.props.close()">
+                    <i class="fa fa-times"/>
+                </button>
+            </header>
+
+            <div class="algantt-ai-scroll flex-grow-1 p-2" t-ref="scroll">
+
+                <div class="algantt-ai-intro text-muted small" t-if="!state.messages.length">
+                    <p class="mb-2">
+                        Pregunte sobre las tareas que está viendo. El asistente puede
+                        <b>proponer cambios</b>, pero no los aplica: usted los revisa y decide.
+                    </p>
+                    <p class="mb-2">
+                        Se envía un resumen de las tareas visibles (nombre, fechas, estado,
+                        avance y dependencias). Nunca descripciones ni adjuntos.
+                    </p>
+                    <div class="d-flex flex-column gap-1">
+                        <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion">
+                            <button type="button" class="btn btn-sm btn-outline-secondary text-start"
+                                    t-on-click="() => this.useSuggestion(suggestion)"
+                                    t-esc="suggestion"/>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-foreach="state.messages" t-as="message" t-key="message_index">
+                    <div class="algantt-ai-message mb-2"
+                         t-att-class="message.role === 'user' ? 'algantt-ai-user' : 'algantt-ai-assistant'">
+
+                        <div class="algantt-ai-bubble"
+                             t-att-class="message.error ? 'algantt-ai-error' : ''">
+                            <t t-esc="message.text"/>
+                        </div>
+
+                        <t t-if="message.proposals and message.proposals.length">
+                            <div class="algantt-ai-proposals mt-2">
+                                <div class="small fw-bold mb-1">
+                                    <i class="fa fa-lightbulb-o me-1"/>Cambios propuestos
+                                </div>
+                                <div class="small text-muted mb-2" t-if="message.summary"
+                                     t-esc="message.summary"/>
+
+                                <t t-foreach="message.proposals" t-as="proposal" t-key="proposal.key">
+                                    <div class="algantt-ai-proposal border rounded p-2 mb-1"
+                                         t-att-class="proposal.selected ? 'algantt-ai-picked' : ''">
+                                        <label class="d-flex gap-2 mb-0">
+                                            <input type="checkbox" class="form-check-input mt-1"
+                                                   t-att-checked="proposal.selected"
+                                                   t-att-disabled="message.applied"
+                                                   t-on-change="() => this.toggleProposal(proposal)"/>
+                                            <span class="flex-grow-1">
+                                                <span class="fw-bold small d-block" t-esc="proposal.task_name"/>
+                                                <t t-foreach="proposal.labels" t-as="label" t-key="label">
+                                                    <span class="badge text-bg-light me-1 mb-1" t-esc="label"/>
+                                                </t>
+                                                <span class="d-block text-muted algantt-ai-reason"
+                                                      t-if="proposal.reason" t-esc="proposal.reason"/>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </t>
+
+                                <div class="d-flex align-items-center gap-2 mt-2" t-if="!message.applied">
+                                    <button type="button" class="btn btn-sm btn-primary"
+                                            t-att-disabled="state.loading"
+                                            t-on-click="() => this.applySelected(message)">
+                                        <i class="fa fa-check me-1"/>Aplicar
+                                        (<t t-esc="selectedCount(message)"/>)
+                                    </button>
+                                    <span class="text-muted algantt-ai-reason">
+                                        Se guardan como cualquier otro cambio del diagrama.
+                                    </span>
+                                </div>
+                                <div class="text-success small mt-2" t-else="">
+                                    <i class="fa fa-check me-1"/>Aplicado.
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-if="message.warnings and message.warnings.length">
+                            <div class="algantt-ai-warnings mt-2">
+                                <t t-foreach="message.warnings" t-as="warning" t-key="warning_index">
+                                    <div class="small text-warning-emphasis">
+                                        <i class="fa fa-exclamation-triangle me-1"/><t t-esc="warning"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <div class="text-muted small" t-if="state.loading">
+                    <i class="fa fa-circle-o-notch fa-spin me-1"/>Pensando…
+                </div>
+            </div>
+
+            <footer class="algantt-ai-footer border-top p-2">
+                <textarea class="form-control form-control-sm" rows="2"
+                          t-ref="input"
+                          placeholder="Pregunte algo sobre este cronograma…"
+                          t-att-value="state.input"
+                          t-att-disabled="state.loading"
+                          t-on-input="onInput"
+                          t-on-keydown="onKeydown"/>
+                <div class="d-flex align-items-center justify-content-between mt-1">
+                    <span class="text-muted algantt-ai-reason">Intro para enviar</span>
+                    <button type="button" class="btn btn-sm btn-primary"
+                            t-att-disabled="state.loading or !state.input.trim()"
+                            t-on-click="() => this.send()">
+                        <i class="fa fa-paper-plane me-1"/>Enviar
+                    </button>
+                </div>
+            </footer>
+
+        </aside>
+    </t>
+
+</templates>

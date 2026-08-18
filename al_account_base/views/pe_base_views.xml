@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Establecimiento anexo en el contacto -->
+    <record id="view_partner_form_pe_annex" model="ir.ui.view">
+        <field name="name">res.partner.form.pe.annex</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="l10n_pe_annex_code"
+                       invisible="country_code != 'PE'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Código SUNAT del banco en la cuenta bancaria -->
+    <record id="view_partner_bank_form_pe_code" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.pe.code</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <field name="bank_id" position="after">
+                <field name="l10n_pe_bank_code"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Naturaleza del diario y exclusión de libros -->
+    <record id="view_account_journal_form_pe" model="ir.ui.view">
+        <field name="name">account.journal.form.pe</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="type" position="after">
+                <field name="l10n_pe_journal_kind"
+                       invisible="country_code != 'PE'"/>
+                <field name="l10n_pe_exclude_from_books"
+                       invisible="country_code != 'PE'"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

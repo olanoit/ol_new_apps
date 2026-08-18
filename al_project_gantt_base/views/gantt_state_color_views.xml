@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vistas de configuración SIN menú a propósito: el módulo base no aporta
+         interfaz. Las UIs (backend/website) pueden abrir esta acción desde su
+         propio menú de configuración. -->
+    <record id="al_gantt_state_color_view_list" model="ir.ui.view">
+        <field name="name">al.gantt.state.color.list</field>
+        <field name="model">al.gantt.state.color</field>
+        <field name="arch" type="xml">
+            <list string="Colores del Gantt" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="state_key"/>
+                <field name="color" widget="color"/>
+                <field name="text_color"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="al_gantt_state_color_view_form" model="ir.ui.view">
+        <field name="name">al.gantt.state.color.form</field>
+        <field name="model">al.gantt.state.color</field>
+        <field name="arch" type="xml">
+            <form string="Color del Gantt">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="state_key"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="color" widget="color"/>
+                            <field name="text_color"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="al_gantt_state_color_action" model="ir.actions.act_window">
+        <field name="name">Colores del Gantt</field>
+        <field name="res_model">al.gantt.state.color</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Defina el color de la barra según el estado de la tarea</p>
+        </field>
+    </record>
+
+</odoo>

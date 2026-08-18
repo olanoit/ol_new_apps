@@ -5,4 +5,11 @@
               action="action_detraction_type"
               groups="account.group_account_manager"
               sequence="30"/>
+
+    <menuitem id="menu_detraction_txt_wizard"
+              name="Depósito masivo de detracciones"
+              parent="al_account_base.al_l10n_pe_root"
+              action="action_l10n_pe_detraction_txt_wizard"
+              groups="account.group_account_user"
+              sequence="35"/>
 </odoo>

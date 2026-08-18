@@ -1,0 +1,435 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #714b67;
+  --alc-brand-soft: #f6f1f5;
+  --alc-accent: #2e7cbe;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2f2a34 55%, #3d2f3a 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #d5b3cb;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #eef4fa;
+  border: 1px solid #cfe0ef;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #6b3a5e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Gestión de proyectos · Odoo 19</p>
+    <h1>Asistente de IA para el Gantt</h1>
+    <p>Pregunta a tu cronograma. El asistente lee lo que estás viendo, responde y
+       propone cambios concretos&nbsp;— que tú revisas y aplicas. Nunca escribe solo.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">Claude, OpenAI o DeepSeek</span>
+      <span class="alc-tag">Propuestas revisables</span>
+      <span class="alc-tag">Sin escritura automática</span>
+      <span class="alc-tag">Solo datos del diagrama</span>
+      <span class="alc-tag">Opcional</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Un chat que entiende tu plan</h2>
+    <p class="alc-sub">Se abre desde la propia barra del diagrama. Ve exactamente
+       las mismas tareas que tú, con los mismos permisos.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Consultar</h3>
+        <p>«¿Qué tareas van con retraso?», «¿hay solapamientos en la ruta crítica?»,
+           «¿quién está sobrecargado en abril?».</p>
+      </div>
+      <div class="alc-card">
+        <h3>Proponer</h3>
+        <p>Devuelve cambios concretos: mover fechas, reasignar personas, ajustar el
+           avance o renombrar. Cada uno con su motivo en una frase.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Revisar y aplicar</h3>
+        <p>Marcas los que quieres y pulsas <em>Aplicar</em>. Se guardan por el mismo
+           camino que arrastrar una barra, con los mismos permisos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Qué sale de tu base de datos</h2>
+    <p class="alc-sub">El asistente recibe un resumen de las tareas visibles. Ni una
+       descripción, ni un adjunto, ni un dato de cliente.</p>
+
+    <div class="alc-scroll">
+      <table>
+        <thead>
+          <tr><th>Se envía al proveedor</th><th>No se envía nunca</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nombre de la tarea y del proyecto</td><td>Descripción de la tarea</td></tr>
+          <tr><td>Fechas de inicio y fin</td><td>Mensajes y chatter</td></tr>
+          <tr><td>Estado y porcentaje de avance</td><td>Adjuntos</td></tr>
+          <tr><td>Dependencias entre tareas visibles</td><td>Cliente / contacto</td></tr>
+          <tr><td>Personas asignadas <em>(desactivable)</em></td><td>Etiquetas, horas, importes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alc-note">
+      <strong>El servidor manda.</strong> El navegador envía solo los identificadores de
+      las tareas cargadas; el servidor las relee con tu usuario, sin <code>sudo</code>.
+      Un identificador manipulado no sirve de nada: las reglas de registro de
+      <code>project</code> lo dejan fuera antes de construir el mensaje.
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>La IA no toca tus datos</h2>
+    <p class="alc-sub">Es la diferencia entre un asistente y un piloto automático.</p>
+
+    <ol class="alc-steps">
+      <li class="alc-step">
+        <h3>El modelo devuelve una propuesta estructurada</h3>
+        <p>No un texto que haya que interpretar: una lista de cambios con el
+           identificador de la tarea, los valores nuevos y el motivo.</p>
+      </li>
+      <li class="alc-step">
+        <h3>El servidor la valida entera</h3>
+        <p>Tareas fuera de la vista, tareas sin permiso de escritura, fechas mal
+           formadas, inicios posteriores al fin, avances imposibles y personas
+           inexistentes se descartan, con el aviso visible en el panel.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Tú decides cuáles se aplican</h3>
+        <p>Cada propuesta lleva su casilla. Lo que no marcas, no se guarda.</p>
+      </li>
+      <li class="alc-step">
+        <h3>Se escribe con tus permisos</h3>
+        <p>La escritura pasa por el mismo contrato que la edición manual del
+           diagrama. Si no puedes mover esa tarea a mano, tampoco se mueve así.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Configuración</h2>
+    <p class="alc-sub">Gantt ▸ Configuración ▸ Ajustes. Sin clave de API el botón del
+       asistente no aparece: instalado pero sin configurar, el diagrama queda igual
+       que estaba.</p>
+
+    <div class="alc-note">
+      <strong>Tres proveedores, un solo panel.</strong> Anthropic (Claude), OpenAI y
+      DeepSeek. Al elegir uno, los ajustes muestran el enlace a donde ese proveedor
+      crea las claves y a su lista de modelos — porque «¿de dónde saco la clave?» es
+      siempre la primera pregunta.
+    </div>
+
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Ajuste</th><th>Por defecto</th><th>Para qué sirve</th></tr></thead>
+        <tbody>
+          <tr><td>Proveedor</td><td>Anthropic (Claude)</td><td>Anthropic, OpenAI o DeepSeek</td></tr>
+          <tr><td>Clave de API</td><td>—</td><td>Se guarda en el servidor; nunca llega al navegador. Con enlace directo a donde cada proveedor la crea</td></tr>
+          <tr><td>Modelo</td><td><code>claude-opus-5</code></td><td>Identificador exacto; debe admitir <em>function calling</em></td></tr>
+          <tr><td>URL base</td><td>—</td><td>Solo para pasarelas compatibles</td></tr>
+          <tr><td>Esfuerzo de razonamiento</td><td>Medio</td><td>Cuánto piensa el modelo antes de responder</td></tr>
+          <tr><td>Tokens máximos</td><td class="alc-num">8000</td><td>Techo de la respuesta</td></tr>
+          <tr><td>Tiempo de espera</td><td class="alc-num">90&nbsp;s</td><td>Corta un proveedor que no responde</td></tr>
+          <tr><td>Tareas por consulta</td><td class="alc-num">200</td><td>Más contexto es más coste por pregunta</td></tr>
+          <tr><td>Enviar personas asignadas</td><td>Sí</td><td>Necesario para proponer reasignaciones</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Bajo el capó</h2>
+    <p class="alc-sub">Sin dependencias nuevas de pip: se despliega copiando la
+       carpeta, como cualquier addon.</p>
+
+    <h3>Propuestas por <em>tool use</em></h3>
+    <p>El modelo recibe una herramienta <code>propose_changes</code> con un esquema
+       JSON y la llama cuando quiere sugerir algo. Por eso los cambios llegan
+       estructurados en lugar de escondidos en un párrafo. El esquema es el mismo
+       para los tres proveedores; cambia solo cómo se declara.</p>
+
+    <pre><code>{
+  "task_id": 214,
+  "reason": "Se solapa con la siguiente tarea.",
+  "start":  "2026-06-01T08:00:00Z",
+  "end":    "2026-06-03T08:00:00Z"
+}</code></pre>
+
+    <h3>Errores que se entienden</h3>
+    <p>Los fallos del proveedor se traducen y se muestran dentro de la conversación,
+       no en un diálogo de error: no es un fallo de la vista, es una respuesta.</p>
+
+    <div class="alc-scroll">
+      <table>
+        <thead><tr><th>Situación</th><th>Lo que ve la persona</th></tr></thead>
+        <tbody>
+          <tr><td>Clave incorrecta</td><td>«Rechazó la clave de API. Revísela en Ajustes ▸ Gantt IA»</td></tr>
+          <tr><td>Modelo inexistente</td><td>«No reconoce el modelo …»</td></tr>
+          <tr><td>Límite de peticiones</td><td>«Ha limitado las peticiones. Espere unos segundos»</td></tr>
+          <tr><td>Servicio caído</td><td>«No está disponible ahora mismo»</td></tr>
+          <tr><td>Rechazo por políticas</td><td>Se distingue del error técnico</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Qué no hace todavía</h2>
+    <p class="alc-sub">Dicho por delante, para que nadie se lo encuentre después.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Solo backend</h3>
+        <p>La página pública del Gantt no lleva panel en esta versión.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Propone, no crea</h3>
+        <p>Fechas, avance, nombre y personas asignadas. Crear o borrar tareas y
+           cambiar dependencias se sigue haciendo a mano.</p>
+      </div>
+      <div class="alc-card">
+        <h3>La conversación no se guarda</h3>
+        <p>Vive mientras la vista esté abierta.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Sin cuota por usuario</h3>
+        <p>El coste se acota con «Tareas por consulta» y «Tokens máximos».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p><strong>Gantt de Proyectos — Asistente IA</strong> · Requiere
+       <code>al_project_gantt_backend</code>. Odoo 19 · LGPL-3.</p>
+    <p>Alta BPO · <a href="https://www.altabpo.com">altabpo.com</a></p>
+  </div>
+</footer>
+
+</section>

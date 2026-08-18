@@ -32,6 +32,9 @@ PLE_XLSX_TITLES = {
     '050400': 'PLE 5.4 Plan Contable',
     '080300': 'PLE 8.3 Compras Simplificado',
     '140200': 'PLE 14.2 Ventas Simplificado',
+    '080400': 'RCE 8.4 Compras',
+    '080500': 'RCE 8.5 No Domiciliados',
+    '140400': 'RVIE 14.4 Ventas',
 }
 
 # Encabezados de columna. Los de 5.2/5.4/8.3/14.2 reproducen textualmente
@@ -314,6 +317,85 @@ PLE_XLSX_HEADERS = {
         'Estado que identifica la oportunidad de la anotación o indicación',
     ],
 }
+
+
+# Registros del SIRE. Los nombres siguen los nemotécnicos de la RS
+# 040-2022/SUNAT (anexos 8 y 9) y de la RS 000112-2021 (anexo 2).
+# Ver docs/tecport/ESTRUCTURA_RCE_8_4_8_5.md y ESTRUCTURA_RVIE_14_4.md.
+PLE_XLSX_HEADERS.update({
+    '080400': [
+        'RUC del generador', 'Razón social del generador', 'Periodo',
+        'CAR SUNAT', 'Fecha de emisión', 'Fecha de vencimiento o pago',
+        'Tipo de comprobante', 'Serie del comprobante',
+        'Año de emisión de la DAM o DSI', 'Número del comprobante',
+        'Número final del rango',
+        'Tipo de documento de identidad del proveedor',
+        'Número de documento de identidad del proveedor',
+        'Apellidos y nombres o razón social del proveedor',
+        'Base imponible destinada a operaciones gravadas',
+        'IGV/IPM de operaciones gravadas',
+        'Base imponible destinada a operaciones gravadas y no gravadas',
+        'IGV/IPM de operaciones gravadas y no gravadas',
+        'Base imponible destinada a operaciones no gravadas',
+        'IGV/IPM de operaciones no gravadas',
+        'Valor de las adquisiciones no gravadas',
+        'ISC', 'ICBPER', 'Otros tributos y cargos',
+        'Importe total del comprobante', 'Moneda', 'Tipo de cambio',
+        'Fecha de emisión del documento modificado',
+        'Tipo del documento modificado', 'Serie del documento modificado',
+        'Código de la dependencia aduanera',
+        'Número del documento modificado',
+        'Clasificación de bienes y servicios',
+        'Identificación del contrato o proyecto',
+        'Porcentaje de participación', 'IMB',
+        'CAR del documento original o indicador de exclusión/inclusión',
+        'Detracción', 'Tipo de nota', 'Estado del comprobante',
+        'Inconsistencias',
+    ],
+    '080500': [
+        'Periodo', 'CAR SUNAT', 'Fecha de emisión', 'Tipo de comprobante',
+        'Serie del comprobante', 'Número del comprobante',
+        'Valor de las adquisiciones', 'Otros conceptos adicionales',
+        'Importe total del comprobante',
+        'Tipo del comprobante que sustenta el crédito fiscal',
+        'Serie del comprobante que sustenta el crédito fiscal',
+        'Año de emisión de la DAM o DSI',
+        'Número del comprobante que sustenta el crédito fiscal',
+        'Monto de retención del IGV', 'Moneda', 'Tipo de cambio',
+        'País de residencia del no domiciliado',
+        'Razón social del no domiciliado',
+        'Domicilio en el extranjero',
+        'Identificación del no domiciliado',
+        'Identificación del beneficiario efectivo',
+        'Razón social del beneficiario efectivo',
+        'País del beneficiario efectivo', 'Vinculación económica',
+        'Renta bruta', 'Deducción o costo de enajenación', 'Renta neta',
+        'Tasa de retención', 'Impuesto retenido',
+        'Convenio para evitar la doble imposición',
+        'Exoneración aplicada', 'Tipo de renta',
+        'Modalidad del servicio prestado',
+        'Aplicación del artículo 76 de la LIR',
+        'CAR del documento original',
+    ],
+    '140400': [
+        'RUC del generador', 'Razón social del generador', 'Periodo',
+        'CAR SUNAT', 'Fecha de emisión', 'Fecha de vencimiento o pago',
+        'Tipo de comprobante', 'Serie del comprobante',
+        'Número del comprobante', 'Número final del rango',
+        'Tipo de documento de identidad del cliente',
+        'Número de documento de identidad del cliente',
+        'Apellidos y nombres o razón social del cliente',
+        'Valor facturado de la exportación', 'Base imponible gravada',
+        'Descuento de la base imponible', 'IGV/IPM',
+        'Descuento del IGV/IPM', 'Monto exonerado', 'Monto inafecto',
+        'ISC', 'Base imponible gravada del IVAP', 'IVAP', 'ICBPER',
+        'Otros tributos', 'Importe total del comprobante', 'Moneda',
+        'Tipo de cambio', 'Fecha de emisión del documento modificado',
+        'Tipo del documento modificado', 'Serie del documento modificado',
+        'Número del documento modificado',
+        'Identificación del contrato o proyecto',
+    ],
+})
 
 
 class L10nPePleMixinXlsx(models.AbstractModel):

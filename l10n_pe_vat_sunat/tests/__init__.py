@@ -2,3 +2,4 @@
 from . import test_engine
 from . import test_connection
 from . import test_sunat_parser
+from . import test_decolecta_connection

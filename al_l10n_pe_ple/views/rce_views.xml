@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Clasificación de los bienes y servicios adquiridos (campo 33 del RCE 8.4) -->
+    <record id="view_product_template_form_rce" model="ir.ui.view">
+        <field name="name">product.template.form.rce.classification</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="account.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <field name="property_account_expense_id" position="after">
+                <field name="l10n_pe_rce_classification"
+                       invisible="parent.country_code != 'PE' and context.get('default_country_code') != 'PE'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Datos del RCE en la factura de proveedor -->
+    <record id="view_move_form_rce" model="ir.ui.view">
+        <field name="name">account.move.form.rce</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="invoice_date_due" position="after">
+                <field name="l10n_pe_rce_classification"
+                       invisible="country_code != 'PE' or move_type not in ('in_invoice', 'in_refund')"/>
+                <field name="l10n_pe_rce_status"
+                       invisible="country_code != 'PE' or move_type not in ('in_invoice', 'in_refund')"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

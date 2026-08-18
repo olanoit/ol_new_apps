@@ -1,0 +1,677 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* al_project_gantt_ai
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 21:09+0000\n"
+"PO-Revision-Date: 2026-08-17 21:09+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid ""
+"%(provider)s no reconoce el modelo «%(detail)s». Revise el nombre del modelo"
+" en los ajustes."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid ""
+"%(provider)s no respondió en %(timeout)s segundos. Vuelva a intentarlo o "
+"suba el tiempo de espera en los ajustes."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%(provider)s rechazó la petición (%(status)s): %(detail)s"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%s devolvió una respuesta que no es JSON."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%s devolvió una respuesta vacía."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%s ha limitado las peticiones (429). Espere unos segundos y reintente."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%s no está disponible ahora mismo (%s)."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "%s rechazó la clave de API. Revísela en Ajustes ▸ Gantt IA."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid ", pero no los aplica: usted los revisa y decide."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "<span>segundos</span>"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.actions.act_window,name:al_project_gantt_ai.action_gantt_ai_settings
+#: model:ir.ui.menu,name:al_project_gantt_ai.menu_gantt_ai_settings
+msgid "Ajustes"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Algunas tareas ya no son accesibles y no se enviaron."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_effort__high
+msgid "Alto"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_provider__anthropic
+msgid "Anthropic (Claude)"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Aplicado."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid ""
+"Aplicar\n"
+"                                        ("
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Asignar a: %s"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_action_ai.xml:0
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Asistente"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Avance no válido en la propuesta sobre «%s»."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Avance: %(old)s%% → %(new)s%%"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_effort__low
+msgid "Bajo"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Cambios propuestos"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Cerrar"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_api_key
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Clave de API"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Comportamiento"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Conexión"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model,name:al_project_gantt_ai.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_action_ai.xml:0
+msgid "Consultar el cronograma con el asistente de IA"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Crear una clave en la consola de Anthropic"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Crear una clave en la plataforma de DeepSeek"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Crear una clave en la plataforma de OpenAI"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Cuantas más tareas, más contexto y más coste por pregunta."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid ""
+"Debe admitir «function calling»: es como el asistente devuelve las "
+"propuestas."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_provider__deepseek
+msgid "DeepSeek"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_al_gantt_ai__display_name
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"El asistente de IA no está configurado. Un administrador debe indicar la "
+"clave de API en Ajustes ▸ Gantt IA."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "El asistente no devolvió ninguna respuesta."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid ""
+"El asistente solo recibe un resumen de las tareas que se están\n"
+"                            viendo: nombre, proyecto, fechas, estado, avance y dependencias.\n"
+"                            Nunca se envían descripciones, mensajes, adjuntos ni datos de\n"
+"                            clientes, y el asistente no puede escribir en Odoo: solo propone\n"
+"                            cambios que usted revisa y aplica."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "El proveedor rechazó la consulta por sus políticas de uso%s."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/res_config_settings.py:0
+msgid "El tiempo de espera debe estar entre 5 y 600 segundos."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Enviar"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_share_assignees
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Enviar personas asignadas"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Escriba una pregunta."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_effort
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Esfuerzo de razonamiento"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Falta indicar el modelo de IA en Ajustes ▸ Gantt IA."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Fecha de fin no válida en la propuesta sobre «%s»."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Fecha de inicio no válida en la propuesta sobre «%s»."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Fin: %(old)s → %(new)s"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Gantt IA"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model,name:al_project_gantt_ai.model_al_gantt_ai
+msgid "Gantt — asistente de IA"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_al_gantt_ai__id
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__id
+msgid "ID"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Inicio: %(old)s → %(new)s"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Intro para enviar"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "La clave de %s no tiene permiso para usar este modelo."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "La lista de tareas no es válida."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"La pregunta es demasiado larga (%(length)s caracteres, máximo %(max)s)."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/res_config_settings.py:0
+msgid "Las tareas por consulta deben estar entre 1 y 1000."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/res_config_settings.py:0
+msgid "Los tokens máximos de respuesta no pueden bajar de 512."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "Marque al menos una propuesta."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_effort__medium
+msgid "Medio"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_model
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Modelo"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Modelos de Anthropic"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Modelos de DeepSeek"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Modelos de OpenAI"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_context_limit
+msgid "Máximo de tareas visibles que se resumen y envían al proveedor."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_share_assignees
+msgid ""
+"Necesario para que el asistente pueda proponer reasignaciones. Desactívelo "
+"si no quiere que salgan nombres de empleados."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"No hay tareas visibles que enviar al asistente. Seleccione un proyecto con "
+"tareas antes de preguntar."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "No se pudo consultar al asistente."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "No se pudo contactar con %s. Revise la conexión del servidor."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Nombre: «%(old)s» → «%(new)s»"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_provider__openai
+msgid "OpenAI"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Pensando…"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields.selection,name:al_project_gantt_ai.selection__res_config_settings__al_gantt_ai_effort__auto
+msgid "Por defecto del modelo"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_model
+msgid ""
+"Por ejemplo claude-opus-5 (Anthropic), gpt-5 (OpenAI) o deepseek-chat "
+"(DeepSeek). El modelo debe admitir «function calling»: es como el asistente "
+"devuelve las propuestas. Si se deja vacío se usa el modelo por defecto del "
+"proveedor."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Pregunte algo sobre este cronograma…"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Pregunte sobre las tareas que está viendo. El asistente puede"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Privacidad"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Proveedor"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_provider
+msgid "Proveedor de IA"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "Proveedor de IA desconocido: %s"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "Reparte mejor la carga del próximo mes"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "Se aplicaron %s cambios."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "Se aplicó 1 cambio."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"Se descartaron las fechas propuestas para «%s»: el inicio queda después del "
+"fin."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Se descartó una propuesta sobre una tarea que no está en la vista."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"Se descartó una propuesta sobre «%s»: no tiene permiso para modificarla."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid ""
+"Se enviaron las primeras %(limit)s tareas de las %(total)s visibles; filtre "
+"el diagrama para preguntar por el resto."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid ""
+"Se envía un resumen de las tareas visibles (nombre, fechas, estado,\n"
+"                        avance y dependencias). Nunca descripciones ni adjuntos."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_api_key
+msgid "Se guarda en los parámetros del sistema. Nunca se envía al navegador."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Se guardan como cualquier otro cambio del diagrama."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/models/gantt_ai.py:0
+msgid "Se ignoraron personas inexistentes en la propuesta sobre «%s»."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Servicio al que se envían las consultas."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Sin clave, el panel del asistente no aparece en el diagrama."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_effort
+msgid ""
+"Solo lo aplica Anthropic, y únicamente en sus modelos recientes; con OpenAI "
+"y DeepSeek se ignora. Con «Por defecto del modelo» no se envía el parámetro."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Solo lo aplica Anthropic; con los demás proveedores se ignora."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Solo para pasarelas compatibles."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_base_url
+msgid "Solo para pasarelas o proxies compatibles. Vacío = servicio oficial."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_context_limit
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Tareas por consulta"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_max_tokens
+msgid ""
+"Techo de la respuesta. Incluye el razonamiento interno del modelo, así que "
+"conviene dejar holgura."
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Tiempo de espera"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_timeout
+msgid "Tiempo de espera (s)"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_max_tokens
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "Tokens máximos de respuesta"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model:ir.model.fields,field_description:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_base_url
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "URL base"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "Vaciar la conversación"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "claude-opus-5"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "https://api.anthropic.com"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/xml/gantt_ai_panel.xml:0
+msgid "proponer cambios"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-python
+#: code:addons/al_project_gantt_ai/services/ai_provider.py:0
+msgid "sin detalle"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
+msgid "sk-…"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "¿Hay solapamientos en la ruta crítica?"
+msgstr ""
+
+#. module: al_project_gantt_ai
+#. odoo-javascript
+#: code:addons/al_project_gantt_ai/static/src/js/gantt_ai_panel.js:0
+msgid "¿Qué tareas van con retraso?"
+msgstr ""

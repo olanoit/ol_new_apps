@@ -50,31 +50,29 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Menú Perú bajo Nómina → Configuración -->
-    <menuitem id="menu_hr_pe_root" name="Perú"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
-        sequence="60"/>
+    <!-- El menú «Perú» y sus grupos se declaran en views/menus.xml,
+         que se carga antes que este archivo. -->
     <menuitem id="menu_hr_pe_main_parameter" name="Parámetros principales"
-        parent="menu_hr_pe_root" action="hr_main_parameter_action" sequence="5"/>
+        parent="menu_hr_pe_cfg_parameters" action="hr_main_parameter_action" sequence="10"/>
     <menuitem id="menu_hr_pe_period" name="Periodos"
-        parent="menu_hr_pe_root" action="hr_period_action" sequence="10"/>
+        parent="menu_hr_pe_cfg_periods" action="hr_period_action" sequence="10"/>
     <menuitem id="menu_hr_pe_period_generator" name="Generar periodos"
-        parent="menu_hr_pe_root" action="hr_period_generator_action" sequence="11"/>
+        parent="menu_hr_pe_cfg_periods" action="hr_period_generator_action" sequence="20"/>
     <menuitem id="menu_hr_pe_membership" name="Afiliaciones (AFP/ONP)"
-        parent="menu_hr_pe_root" action="hr_membership_action" sequence="20"/>
+        parent="menu_hr_pe_cfg_social" action="hr_membership_action" sequence="10"/>
     <menuitem id="menu_hr_pe_social_insurance" name="Seguros sociales"
-        parent="menu_hr_pe_root" action="hr_social_insurance_action" sequence="21"/>
+        parent="menu_hr_pe_cfg_social" action="hr_social_insurance_action" sequence="20"/>
     <menuitem id="menu_hr_pe_contributions" name="Aportes"
-        parent="menu_hr_pe_root" action="hr_contributions_action" sequence="22"/>
+        parent="menu_hr_pe_cfg_social" action="hr_contributions_action" sequence="30"/>
     <menuitem id="menu_hr_pe_uit" name="UIT"
-        parent="menu_hr_pe_root" action="l10n_pe_hr_uit_action" sequence="23"/>
+        parent="menu_hr_pe_cfg_parameters" action="l10n_pe_hr_uit_action" sequence="20"/>
     <menuitem id="menu_hr_pe_worker_type" name="Tipos de trabajador (T08)"
-        parent="menu_hr_pe_root" action="hr_worker_type_action" sequence="30"/>
+        parent="menu_hr_pe_cfg_catalogs" action="hr_worker_type_action" sequence="8"/>
     <menuitem id="menu_hr_pe_situation" name="Situaciones (T15)"
-        parent="menu_hr_pe_root" action="hr_situation_action" sequence="31"/>
+        parent="menu_hr_pe_cfg_catalogs" action="hr_situation_action" sequence="15"/>
     <menuitem id="menu_hr_pe_reasons_leave" name="Motivos de baja (T17)"
-        parent="menu_hr_pe_root" action="hr_reasons_leave_action" sequence="32"/>
+        parent="menu_hr_pe_cfg_catalogs" action="hr_reasons_leave_action" sequence="17"/>
     <menuitem id="menu_hr_pe_suspension_type" name="Tipos de suspensión (T21)"
-        parent="menu_hr_pe_root" action="hr_suspension_type_action" sequence="33"/>
+        parent="menu_hr_pe_cfg_periods" action="hr_suspension_type_action" sequence="40"/>
 
 </odoo>

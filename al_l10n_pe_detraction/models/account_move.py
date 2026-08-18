@@ -6,9 +6,29 @@ from odoo.tools import float_round
 DETRACTION_OPERATION_TYPES = ('1001', '1002', '1003', '1004')
 DEFAULT_MIN_AMOUNT = 700.0
 
+# Tabla 5.5 del instructivo de depósito masivo del Banco de la Nación:
+# tipos de operación sujetas al sistema.
+BN_OPERATION_TYPES = [
+    ('01', '01 - Venta de bienes, prestación de servicios o contratos de '
+           'construcción gravados con el IGV'),
+    ('02', '02 - Retiro de bienes gravados con el IGV'),
+    ('03', '03 - Traslado de bienes fuera del centro de producción que no se '
+           'origina en una venta'),
+    ('04', '04 - Venta de bienes gravada con el IGV a través de la Bolsa de '
+           'Productos'),
+    ('05', '05 - Venta de bienes exonerada del IGV'),
+]
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
+
+    l10n_pe_detraction_operation_type = fields.Selection(
+        BN_OPERATION_TYPES,
+        string='Tipo de operación SPOT', default='01',
+        help='Tipo de operación sujeta al sistema (tabla 5.5 del instructivo '
+             'del Banco de la Nación). Se informa en el archivo de depósito '
+             'masivo de detracciones.')
 
     l10n_pe_detraction_applies = fields.Boolean(
         string='Sujeta a detracción',

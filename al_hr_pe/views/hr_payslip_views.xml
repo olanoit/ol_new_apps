@@ -94,6 +94,6 @@
     </record>
 
     <menuitem id="menu_hr_pe_work_suspension" name="Suspensiones de labores"
-        parent="menu_hr_pe_root" action="hr_work_suspension_action" sequence="15"/>
+        parent="menu_hr_pe_cfg_periods" action="hr_work_suspension_action" sequence="30"/>
 
 </odoo>

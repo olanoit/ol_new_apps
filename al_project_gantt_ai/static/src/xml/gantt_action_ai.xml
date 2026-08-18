@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Herencia por extensión: añade el botón y el panel a la plantilla del
+         backend sin duplicarla. Al desinstalar, la original queda intacta.
+         Los anclajes son atributos únicos (`for`, clase del contenedor), no
+         posiciones, para que la barra pueda seguir cambiando. -->
+    <t t-name="al_project_gantt_ai.GanttActionAI"
+       t-inherit="al_project_gantt_backend.GanttAction"
+       t-inherit-mode="extension">
+
+        <xpath expr="//label[@for='algantt_zoom']" position="before">
+            <button type="button" class="btn btn-sm algantt-ai-toggle"
+                    t-if="state.aiStatus.enabled"
+                    t-att-class="state.showAi ? 'btn-primary' : 'btn-outline-primary'"
+                    title="Consultar el cronograma con el asistente de IA"
+                    t-on-click="() => this.toggleAiPanel()">
+                <i class="fa fa-magic me-1"/>Asistente
+            </button>
+        </xpath>
+
+        <xpath expr="//div[hasclass('algantt-container')]" position="after">
+            <GanttAiPanel t-if="state.showAi and state.aiStatus.enabled"
+                          status="state.aiStatus"
+                          getContext.bind="aiContext"
+                          applyProposals.bind="applyAiProposals"
+                          close.bind="toggleAiPanel"/>
+        </xpath>
+
+    </t>
+
+</templates>

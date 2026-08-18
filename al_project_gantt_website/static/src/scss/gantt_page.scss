@@ -1,0 +1,23 @@
+// Maquetación propia de la página de sitio web. Los estilos de las barras son
+// comunes y viven en el módulo base (`static/src/scss/gantt_common.scss`).
+.algantt-page {
+    .algantt-body {
+        // En el frontend no hay un contenedor de alto completo del que tirar:
+        // se fija una altura de ventana, con un mínimo para pantallas bajas.
+        height: 70vh;
+        min-height: 420px;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .algantt-container {
+        // Igual que en el backend: `height: 100%` colapsaría contra un padre
+        // sin alto explícito; el posicionamiento absoluto lo evita.
+        position: absolute;
+        inset: 0;
+    }
+
+    .algantt-loading {
+        z-index: 2;
+    }
+}

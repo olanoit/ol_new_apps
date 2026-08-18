@@ -214,15 +214,15 @@
               sequence="40"/>
 
     <menuitem id="menu_l10n_pe_dependent_type" name="Tipos de derechohabiente"
-              parent="al_hr_pe.menu_hr_pe_root"
+              parent="menu_hr_pe_cfg_dependents"
               action="action_l10n_pe_dependent_type"
-              sequence="34"/>
+              sequence="10"/>
 
     <menuitem id="menu_l10n_pe_dependent_end_reason"
               name="Motivos de baja de derechohabientes"
-              parent="al_hr_pe.menu_hr_pe_root"
+              parent="menu_hr_pe_cfg_dependents"
               action="action_l10n_pe_dependent_end_reason"
-              sequence="35"/>
+              sequence="20"/>
 
     <!-- Botón en la ficha del trabajador -->
     <record id="view_employee_form_dependents" model="ir.ui.view">

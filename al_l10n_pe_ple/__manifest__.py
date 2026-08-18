@@ -5,7 +5,8 @@
                'por la localización oficial: Libro 7 (Activos Fijos), '
                '4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), '
                'complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 '
-               '(Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2).',
+               '(Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). '
+               'Corrige además el RCE 8.4 y 8.5 del SIRE.',
     'description': """
 Libros Electrónicos PLE — SUNAT Perú
 ====================================
@@ -37,16 +38,29 @@ Fase actual:
   completos): habilitados por la bandera «Libros PLE simplificados» en
   Ajustes ▸ Perú; generados desde los asientos/facturas publicados.
 
-Los formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib`` /
-``l10n_pe_reports_stock`` (1.1/1.2, libro 3, 5.1/5.3/6.1, 8.1/8.2, 12.1/13.1,
-14.1) NO se reimplementan.
+* **RCE 8.4 y 8.5 (SIRE)**: la localización oficial ya emite ambos registros,
+  pero con dos campos de más en el 8.4, nueve campos siempre vacíos y una
+  consulta SQL que falla en cuanto el dominio del informe necesita un JOIN.
+  Aquí se sustituye la extracción por el ORM y se completan los campos que
+  faltaban —clasificación de bienes y servicios (tabla 23), detracción, tipo
+  de nota y estado del comprobante (tabla 14)—, respetando la estructura
+  oficial de la RS 040-2022/SUNAT: 41 campos en el 8.4 y 35 en el 8.5.
+* **RVIE 14.4 (SIRE)**: mismo caso. La norma (RS 000112-2021, anexo 2, nota 7)
+  deja el archivo en 33 campos —los campos 34 a 40 no se incluyen—, mientras
+  que la localización oficial emite 35. Se corrige la estructura, se aplica la
+  anotación en cero de los comprobantes anulados y se llevan las notas de
+  crédito de periodos anteriores a los campos de descuento.
+
+Los demás formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib``
+/ ``l10n_pe_reports_stock`` (1.1/1.2, libro 3, 5.1/5.3/6.1, 12.1/13.1)
+NO se reimplementan.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '3.20260719',
+    'version': '4.20260815',
     'license': 'LGPL-3',
     'depends': [
         'al_account_base',
@@ -63,6 +77,7 @@ Los formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib`` /
         'views/ple_cost_views.xml',
         'views/stock_picking_views.xml',
         'views/res_config_settings_views.xml',
+        'views/rce_views.xml',
         'wizards/ple_export_wizard_views.xml',
         'views/menu.xml',
     ],

@@ -1,0 +1,326 @@
+<meta charset="utf-8"/>
+<section class="alc">
+
+<meta charset="utf-8"/>
+<section class="alc">
+
+<style>
+.alc {
+  --alc-ink: #1c2024;
+  --alc-muted: #5b6570;
+  --alc-line: #e2e5e9;
+  --alc-bg: #ffffff;
+  --alc-soft: #f7f8fa;
+  --alc-brand: #714b67;
+  --alc-brand-soft: #f6f1f5;
+  --alc-accent: #2e7cbe;
+  color: var(--alc-ink);
+  background: var(--alc-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.alc * { box-sizing: border-box; }
+.alc .alc-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Portada ---------- */
+.alc .alc-hero {
+  background: linear-gradient(160deg, #1c2024 0%, #2f2a34 55%, #3d2f3a 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+}
+.alc .alc-hero .alc-wrap { text-align: left; }
+.alc .alc-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #d5b3cb;
+  margin: 0 0 14px;
+}
+.alc .alc-hero h1 {
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.alc .alc-hero p {
+  font-size: 18px;
+  color: #c9ced5;
+  max-width: 640px;
+  margin: 0 0 28px;
+}
+.alc .alc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.alc .alc-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #e8ebee;
+}
+
+/* ---------- Secciones ---------- */
+.alc .alc-sec { padding: 56px 0; border-top: 1px solid var(--alc-line); }
+.alc .alc-sec:first-of-type { border-top: 0; }
+.alc .alc-sec.alc-alt { background: var(--alc-soft); }
+.alc h2 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  margin: 0 0 8px;
+  color: var(--alc-ink);
+}
+.alc .alc-sub {
+  font-size: 16px;
+  color: var(--alc-muted);
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+.alc h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+.alc p { margin: 0 0 14px; }
+.alc a { color: var(--alc-brand); }
+
+/* ---------- Tablas ---------- */
+.alc .alc-scroll { overflow-x: auto; margin: 0 0 18px; }
+.alc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+  background: #fff;
+}
+.alc thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--alc-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--alc-line);
+  white-space: nowrap;
+}
+.alc tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--alc-line);
+  vertical-align: top;
+}
+.alc tbody tr:last-child td { border-bottom: 0; }
+.alc .alc-num { text-align: right; font-variant-numeric: tabular-nums; }
+.alc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               monospace;
+  font-size: .88em;
+  background: var(--alc-soft);
+  border: 1px solid var(--alc-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.alc .alc-alt code { background: #fff; }
+
+/* ---------- Pasos ---------- */
+.alc .alc-steps { counter-reset: alcstep; margin: 0; padding: 0; list-style: none; }
+.alc .alc-step {
+  position: relative;
+  padding: 0 0 30px 60px;
+  border-left: 2px solid var(--alc-line);
+  margin-left: 19px;
+}
+.alc .alc-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+.alc .alc-step::before {
+  counter-increment: alcstep;
+  content: counter(alcstep);
+  position: absolute;
+  left: -20px;
+  top: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--alc-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alc .alc-step h3 { margin: 2px 0 8px; font-size: 18px; }
+.alc .alc-step .alc-where {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--alc-accent);
+  background: #eef4fa;
+  border: 1px solid #cfe0ef;
+  border-radius: 5px;
+  padding: 3px 9px;
+  margin: 0 0 10px;
+}
+
+/* ---------- Avisos ---------- */
+.alc .alc-note {
+  border-left: 3px solid var(--alc-brand);
+  background: var(--alc-brand-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.alc .alc-note strong { color: #6b3a5e; }
+
+/* ---------- Rejilla de tarjetas ---------- */
+.alc .alc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.alc .alc-card {
+  background: #fff;
+  border: 1px solid var(--alc-line);
+  border-radius: 9px;
+  padding: 20px;
+}
+.alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
+.alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
+
+/* ---------- Bloque de código ---------- */
+.alc pre {
+  background: #1c2024;
+  color: #e6e9ec;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+.alc pre code { background: none; border: 0; padding: 0; color: inherit; }
+.alc .alc-c-neg { color: #fca5a5; }
+
+/* ---------- Pie ---------- */
+.alc .alc-foot {
+  background: #1c2024;
+  color: #9aa4ae;
+  padding: 34px 0;
+  font-size: 13.5px;
+}
+.alc .alc-foot strong { color: #e6e9ec; }
+
+@media (max-width: 640px) {
+  .alc .alc-hero { padding: 44px 0 38px; }
+  .alc .alc-hero h1 { font-size: 31px; }
+  .alc .alc-hero p { font-size: 16px; }
+  .alc .alc-sec { padding: 40px 0; }
+  .alc h2 { font-size: 23px; }
+  .alc .alc-step { padding-left: 46px; }
+}
+</style>
+
+<header class="alc-hero">
+  <div class="alc-wrap">
+    <p class="alc-eyebrow">Gestión de proyectos · Odoo 19 · Módulo base</p>
+    <h1>Gantt de Proyectos — Base</h1>
+    <p>El motor de la suite: una única capa de datos para el diagrama, con la seguridad de Odoo, el mapeo de campos configurable y la librería de renderizado ya empaquetada. No tiene interfaz propia.</p>
+    <div class="alc-tags">
+      <span class="alc-tag">Contrato de datos único</span>
+      <span class="alc-tag">Ruta crítica (CPM)</span>
+      <span class="alc-tag">Línea base</span>
+      <span class="alc-tag">Escritura por lotes</span>
+      <span class="alc-tag">dhtmlxGantt MIT incluida</span>
+    </div>
+  </div>
+</header>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Para qué sirve este módulo</h2>
+    <p class="alc-sub">Es la pieza que instalan las dos interfaces, no una aplicación de usuario.</p>
+    <p>La suite tiene dos caras — una en el backend de Odoo y otra en el sitio web — y las dos leen y escriben exactamente los mismos datos. Toda esa lógica vive aquí: si mañana cambia la forma de calcular una fecha o quién puede editar una tarea, se cambia en un solo sitio.</p>
+    <div class="alc-note">
+      <strong>Instálalo junto a una interfaz.</strong> Por sí solo expone el servicio de datos y su configuración, pero no añade ningún menú. Las interfaces lo declaran como dependencia, así que normalmente no hay que instalarlo a mano.
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Qué aporta</h2>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Un único punto de datos</h3>
+        <p><code>project.project.get_gantt_data()</code> devuelve proyectos, tareas, dependencias, hitos y colores ya normalizados, en un formato neutral respecto de la librería que los dibuja.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Un único punto de escritura</h3>
+        <p><code>apply_gantt_changes()</code> recibe el conjunto de cambios del diagrama y lo traduce a operaciones del ORM, comprobando el permiso real sobre cada tarea antes de tocar nada.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Mapeo de campos configurable</h3>
+        <p>Detecta qué campos de fecha y avance existen en tu instalación y permite sobreescribirlos con un parámetro del sistema, sin tocar código.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Ruta crítica y línea base</h3>
+        <p>El camino crítico se calcula en Python con pasadas hacia delante y hacia atrás; la línea base es un modelo propio, inmutable, con el desvío en días por tarea.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Colores administrables</h3>
+        <p>El color de cada estado de tarea es un dato editable, por compañía si hace falta. Nada de colores escritos en el código.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Librería incluida</h3>
+        <p>dhtmlxGantt 10 (edición Standard, licencia MIT) empaquetada en el módulo y cargada de forma perezosa: no pesa en el arranque del webclient.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alc-sec">
+  <div class="alc-wrap">
+    <h2>Seguridad</h2>
+    <p class="alc-sub">Apoyarse en las reglas de Odoo, no reescribirlas.</p>
+    <p>Todas las lecturas se hacen con el usuario real, sin <code>sudo()</code>, de modo que la privacidad del proyecto, las reglas por compañía y los accesos de portal se aplican tal cual. Antes de escribir, cada tarea se comprueba una por una contra la ACL y las reglas de registro: lo que el usuario no puede editar en el formulario tampoco puede arrastrarlo en el diagrama.</p>
+    <p>El servicio rechaza además a los usuarios compartidos (portal y público) y exige pertenecer al grupo <strong>Gantt de Proyectos / Usuario</strong>, que reciben automáticamente los administradores de proyecto.</p>
+  </div>
+</section>
+
+<section class="alc-sec alc-alt">
+  <div class="alc-wrap">
+    <h2>Pensado para extenderse</h2>
+    <p class="alc-sub">Los puntos de extensión están documentados, no escondidos.</p>
+    <div class="alc-grid">
+      <div class="alc-card">
+        <h3>Filtros propios</h3>
+        <p>Un método define el dominio de tareas; heredarlo basta para añadir criterios sin duplicar el resto.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Campos adicionales</h3>
+        <p>La lista de campos leídos y la serialización de cada tarea son métodos separados, pensados para ampliarse.</p>
+      </div>
+      <div class="alc-card">
+        <h3>Otra librería de dibujo</h3>
+        <p>El formato de salida es neutral y la traducción vive en un adaptador JavaScript aparte: cambiar de librería no obliga a tocar Python.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="alc-foot">
+  <div class="alc-wrap">
+    <p><strong>Gantt de Proyectos — Base</strong> · Odoo 19 · Licencia LGPL-3 · Depende solo de <code>project</code></p>
+    <p>Interfaces disponibles: <strong>Backend</strong> (aplicación con menú propio y botón en el proyecto) y <strong>Website</strong> (página <code>/gantt</code> para usuarios internos).</p>
+  </div>
+</footer>
+</section>

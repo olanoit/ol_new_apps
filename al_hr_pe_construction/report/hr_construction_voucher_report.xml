@@ -18,10 +18,10 @@
                   inherit_id="al_hr_pe_reports.report_l10n_pe_boleta_pago_page"
                   primary="True">
 
-            <!-- Bloque 1: el sueldo mensual no aplica; manda el jornal. -->
-            <xpath expr="//td[hasclass('bpe-label')][text()='Remuneración básica']"
+            <!-- El sueldo mensual no aplica; manda el jornal. -->
+            <xpath expr="//td[hasclass('bpe-k')][text()='Remuneración básica']"
                    position="replace">
-                <td class="bpe-label">Jornal básico</td>
+                <td class="bpe-k">Jornal básico</td>
             </xpath>
             <xpath expr="//span[@t-esc=&quot;'{:,.2f}'.format(v.wage or 0.0)&quot;]"
                    position="replace">
@@ -31,19 +31,17 @@
             <!-- Categoría y obra: son los datos que identifican el puesto
                  en este régimen, y la obra determina qué bonificaciones
                  por condiciones de trabajo se pagan. -->
-            <xpath expr="(//div[hasclass('bpe-block')])[1]//table[hasclass('bpe-grid')]"
+            <xpath expr="(//div[hasclass('bpe-sec')])[1]//table[hasclass('bpe-grid')]"
                    position="inside">
                 <tr>
-                    <td class="bpe-label">Categoría</td>
-                    <td><span t-esc="v.l10n_pe_construction_category_id.name or ''"/></td>
-                    <td class="bpe-label">Obra</td>
-                    <td colspan="3">
-                        <span t-esc="v.l10n_pe_construction_site_id.name or ''"/>
-                    </td>
+                    <td class="bpe-k">Categoría</td>
+                    <td><span t-esc="v.l10n_pe_construction_category_id.name or '—'"/></td>
+                    <td class="bpe-k">Obra</td>
+                    <td><span t-esc="v.l10n_pe_construction_site_id.name or '—'"/></td>
                 </tr>
                 <tr t-if="v.l10n_pe_construction_bae_id">
-                    <td class="bpe-label">Especialidad</td>
-                    <td colspan="5">
+                    <td class="bpe-k">Especialidad</td>
+                    <td colspan="3">
                         <span t-esc="v.l10n_pe_construction_bae_id.name"/>
                     </td>
                 </tr>

@@ -1,0 +1,53 @@
+// Maquetación propia de la interfaz de backend. Los estilos de las barras
+// (proyecto, inicio inferido, huérfana) son comunes y viven en el módulo base
+// (`static/src/scss/gantt_common.scss`).
+
+// Raíz de la client action: el panel de control y el contenido son hermanos
+// dentro de este contenedor, que es quien reparte el alto disponible.
+.o_algantt_root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+// `o_algantt_action` la aplica Layout sobre el <main class="o_content">.
+.o_algantt_action.o_algantt_action {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .algantt-wrapper {
+        flex: 1 1 auto;
+        min-height: 0; // sin esto el hijo con flex-grow no recibe alto real
+        background-color: var(--o-view-background-color, #fff);
+    }
+
+    .algantt-toolbar {
+        flex: 0 0 auto;
+        background-color: var(--o-gray-100, #f9f9f9);
+    }
+
+    // Los bloques de altura fija no deben encogerse: sin `flex: 0 0 auto` el
+    // contenedor flex los comprime a cero para dárselo al diagrama.
+    .algantt-filters,
+    .algantt-notices {
+        flex: 0 0 auto;
+    }
+
+    .algantt-body {
+        flex: 1 1 auto;
+        min-height: 200px;
+        overflow: hidden;
+    }
+
+    .algantt-container {
+        // dhtmlxGantt necesita un alto real al inicializar. `height: 100%` no
+        // sirve: el padre resuelve su alto por flexbox (auto), así que el
+        // porcentaje colapsa al contenido. Con posicionamiento absoluto el alto
+        // sale del propio contenedor, sin depender de porcentajes en cadena.
+        position: absolute;
+        inset: 0;
+    }
+}

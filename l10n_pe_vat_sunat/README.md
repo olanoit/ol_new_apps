@@ -47,11 +47,22 @@ fallan, marca `alert_warning_vat` para que el usuario complete manualmente.
 
 1. **Configuración**: *Contactos ▸ Configuración ▸ Conexiones RUC/DNI* (o la
    pestaña "Validación RUC/DNI (PE)" en la compañía). Se siembran por defecto
-   `SUNAT (oficial)`, `apiperu.dev`, `json.pe` y `apis.net.pe`; edita
-   URL/token/mapeo o agrega nuevas.
+   `SUNAT (oficial)`, `apiperu.dev`, `json.pe`, `apis.net.pe` y `Decolecta`;
+   edita URL/token/mapeo o agrega nuevas.
 2. **Activar validación** en la compañía (`Validación de RUC` / `de DNI`).
 3. Al escribir un RUC/DNI en un contacto (o con el botón *Actualizar RUC/DNI*),
    el sistema consulta las conexiones y autocompleta los campos según el mapeo.
+
+### Decolecta
+
+Consulta el RUC contra SUNAT (`/v1/sunat/ruc`) y el DNI contra RENIEC
+(`/v1/reniec/dni`), con autenticación Bearer. Su respuesta es plana —sin
+envoltorio de datos ni indicador de éxito— y devuelve el nombre de la persona
+partido en `first_name`, `first_last_name` y `second_last_name`, que el mapeo
+recompone con los apellidos delante, como los ordena SUNAT.
+
+El **mismo token** lo reutiliza `al_l10n_pe_currency` para traer el tipo de
+cambio de compra y venta: se configura una sola vez aquí.
 
 ## Agregar una API nueva (sin código)
 

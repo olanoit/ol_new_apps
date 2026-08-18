@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Entre los catálogos SUNAT (50) y Documentos (70). -->
     <menuitem id="menu_construction_root" name="Construcción civil"
-              parent="al_hr_pe.menu_hr_pe_root" sequence="50"/>
+              parent="al_hr_pe.menu_hr_pe_root" sequence="60"/>
 
     <menuitem id="menu_construction_wage_table" name="Tablas salariales"
               parent="menu_construction_root"
