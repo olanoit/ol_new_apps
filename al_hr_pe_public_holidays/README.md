@@ -4,7 +4,7 @@ Diez años de feriados oficiales —2026 a 2035— aplicados a los calendarios
 laborales con un clic, y renovados solos cada año.
 
 > **Versión** 2.20260802 · **Depende de** `hr_holidays`, `hr_work_entry` ·
-> **Licencia** LGPL-3
+> **Licencia** OPL-1
 
 ---
 

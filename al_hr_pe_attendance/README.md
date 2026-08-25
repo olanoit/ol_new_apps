@@ -6,7 +6,7 @@ convierte las marcaciones en conceptos de la boleta.
 
 > **Versión** 4.20260802 · **Depende de** `al_hr_pe`, `planning`,
 > `hr_payroll_planning`, `hr_attendance`, `hr_payroll_attendance`,
-> `hr_holidays`, `al_hr_pe_public_holidays` · **Licencia** LGPL-3
+> `hr_holidays`, `al_hr_pe_public_holidays` · **Licencia** OPL-1
 
 ---
 

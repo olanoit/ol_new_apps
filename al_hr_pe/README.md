@@ -5,7 +5,7 @@ los envíos al Estado. Es la base sobre la que se apoya el resto de la
 suite.
 
 > **Versión** 10.20260803 · **Depende de** `hr_payroll`,
-> `hr_payroll_account`, `l10n_latam_base`, `l10n_pe` · **Licencia** LGPL-3
+> `hr_payroll_account`, `l10n_latam_base`, `l10n_pe` · **Licencia** OPL-1
 > **Plan de migración**: `docs/planillas/PLAN_MIGRACION_PLANILLAS_V19.md`
 
 ---

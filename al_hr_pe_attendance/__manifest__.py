@@ -33,7 +33,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '5.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_hr_pe',
         'planning',

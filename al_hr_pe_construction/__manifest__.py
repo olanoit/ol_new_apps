@@ -84,7 +84,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '7.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden
     # de carga es casual y los overrides de la boleta pueden perderse.

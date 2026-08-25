@@ -65,7 +65,7 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '1.20260802',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'al_l10n_pe_currency',

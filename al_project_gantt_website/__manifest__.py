@@ -26,7 +26,7 @@ y el render usa el adaptador y la configuración compartidos del módulo base.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
     'version': '10.20260818',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',
         'website',

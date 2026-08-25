@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_users_form_mcp" model="ir.ui.view">
+        <field name="name">res.users.form.mcp</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Servidor MCP" name="mcp_server">
+                    <group string="Límite de tasa">
+                        <field name="mcp_rate_limit"
+                               help="Solicitudes por minuto para este usuario a través de MCP. 0 = usar el valor predeterminado global (mcp_rate_limit en odoo.conf)."/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>

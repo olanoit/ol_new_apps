@@ -5,7 +5,7 @@ progreso en vivo y un informe de errores que dice fila por fila qué
 corregir.
 
 > **Versión** 2.20260722 · **Depende de** los cinco módulos `al_hr_pe_*` y
-> de `openpyxl` · **Licencia** LGPL-3
+> de `openpyxl` · **Licencia** OPL-1
 
 ---
 

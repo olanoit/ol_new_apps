@@ -23,7 +23,7 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '1.20260717',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['account', 'l10n_pe', 'al_account_base'],
     'data': [
         'security/ir.model.access.csv',

@@ -61,7 +61,7 @@ NO se reimplementan.
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '4.20260815',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'account_asset',

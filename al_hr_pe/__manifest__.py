@@ -29,7 +29,7 @@ cero códigos hardcodeados (ver plan §5).
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '11.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'hr_payroll',
         'hr_payroll_account',

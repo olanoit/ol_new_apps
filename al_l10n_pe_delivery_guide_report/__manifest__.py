@@ -23,7 +23,7 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     'countries': ['pe'],
     'category': 'OL-INVENTORY/Apps',
     'version': '4.20260719',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'stock',
         'l10n_pe_edi_stock',

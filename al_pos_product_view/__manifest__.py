@@ -47,7 +47,7 @@ sin dependencias externas.
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     'version': '2.20260721',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque
     # models/product_template.py usa `qty_available` directamente.

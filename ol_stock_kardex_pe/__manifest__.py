@@ -20,7 +20,7 @@ Kardex SUNAT para la localización peruana
     'author': 'OLANOIT',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://github.com/olanoit',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'l10n_pe_reports_stock',

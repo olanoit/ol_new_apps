@@ -26,7 +26,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '3.20260719',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'l10n_account_withholding_tax',

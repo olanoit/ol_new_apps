@@ -35,7 +35,7 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '6.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits'],
     'data': [
         'security/ir.model.access.csv',

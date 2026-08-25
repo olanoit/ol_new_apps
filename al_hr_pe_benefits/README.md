@@ -4,7 +4,7 @@ CTS, gratificaciones, renta de 5ta, liquidación de cese, provisiones,
 subsidios, utilidades, vacaciones, préstamos y quincena, sobre un único
 motor de remuneración computable.
 
-> **Versión** 4.20260722 · **Depende de** `al_hr_pe` · **Licencia** LGPL-3
+> **Versión** 4.20260722 · **Depende de** `al_hr_pe` · **Licencia** OPL-1
 
 ---
 

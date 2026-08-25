@@ -37,7 +37,7 @@ Versión 1: solo lectura. Los puntos de escritura están definidos en el contrat
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
     'version': '13.20260818',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'project',
     ],

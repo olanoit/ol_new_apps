@@ -5,7 +5,7 @@ diario por convención colectiva, periodicidad semanal, beneficios
 sociales pagados en cada planilla y CONAFOVICER.
 
 > **Versión** 6.20260803 · **Depende de** `al_hr_pe_benefits`,
-> `al_hr_pe_reports` · **Licencia** LGPL-3
+> `al_hr_pe_reports` · **Licencia** OPL-1
 > **Análisis completo**: `docs/planillas/CONSTRUCCION_CIVIL_ANALISIS.md`
 
 ---

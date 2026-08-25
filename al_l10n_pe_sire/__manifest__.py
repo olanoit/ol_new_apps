@@ -23,7 +23,7 @@ trabajo (XLSX).
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '3.20260803',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'l10n_pe_edi',

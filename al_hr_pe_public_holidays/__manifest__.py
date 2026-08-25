@@ -28,7 +28,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'countries': ['pe'],
     'category': 'OL-TOOLS/Apps',
     'version': '2.20260802',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada
     # de trabajo con el que la nómina computa el feriado.
     'depends': ['hr_holidays', 'hr_work_entry'],

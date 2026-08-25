@@ -46,7 +46,7 @@ y regla de registro por compañía en el historial.
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '3.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_hr_pe',
         'al_hr_pe_benefits',

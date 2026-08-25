@@ -40,7 +40,7 @@ Tipo de cambio Perú — refactor Odoo 19
     'countries': ['pe'],
     'category': 'Accounting/Localizations',
     'version': '3.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['account'],
     'external_dependencies': {'python': ['requests']},
     'data': [

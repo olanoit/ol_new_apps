@@ -37,7 +37,7 @@ se usaban en la lógica del módulo).
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '2.20260815',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'mail',
         'al_account_base',

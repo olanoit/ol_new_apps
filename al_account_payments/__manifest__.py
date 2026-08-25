@@ -27,7 +27,7 @@ dependencia muerta de ``al_account_dua``.
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '1.20260721',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'account',
         'al_account_base',

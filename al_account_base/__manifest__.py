@@ -23,7 +23,7 @@ campos sin uso.
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '2.20260815',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['account'],
     'data': [
         'views/res_company_views.xml',

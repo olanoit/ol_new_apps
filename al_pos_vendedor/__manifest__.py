@@ -32,7 +32,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     'version': '1.20260721',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'point_of_sale',
         'hr',

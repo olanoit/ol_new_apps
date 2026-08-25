@@ -25,7 +25,7 @@ Versión 1: solo lectura.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
     'version': '11.20260818',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',
         'web',

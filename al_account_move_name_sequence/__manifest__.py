@@ -32,7 +32,7 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNT/Apps',
     'version': '6.20260721',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'account',
         'l10n_latam_invoice_document',

@@ -30,7 +30,7 @@ Principios de diseño
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
     'version': '2.20260817',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',
     ],

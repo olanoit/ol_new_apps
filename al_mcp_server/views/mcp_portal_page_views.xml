@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         List view
+    ================================================================ -->
+    <record id="mcp_portal_page_list_view" model="ir.ui.view">
+        <field name="name">mcp.portal.page.list</field>
+        <field name="model">mcp.portal.page</field>
+        <field name="arch" type="xml">
+            <list string="Páginas de Portal" decoration-muted="not enabled">
+                <field name="name"/>
+                <field name="slug"/>
+                <field name="is_public" string="Público" widget="boolean_toggle"/>
+                <field name="theme"/>
+                <field name="view_count" string="Vistas"/>
+                <field name="last_viewed" string="Última visualización"/>
+                <field name="created_by" string="Propietario"/>
+                <field name="enabled" string="Activado" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Form view
+    ================================================================ -->
+    <record id="mcp_portal_page_form_view" model="ir.ui.view">
+        <field name="name">mcp.portal.page.form</field>
+        <field name="model">mcp.portal.page</field>
+        <field name="arch" type="xml">
+            <form string="Página de Portal">
+                <header>
+                    <button name="action_preview"
+                            string="Vista previa de la Página"
+                            type="object"
+                            icon="fa-external-link"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Título de la Página"/>
+                        <h1>
+                            <field name="name" placeholder="Mi Tablero"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <!-- Left column: identity + access -->
+                        <group string="Configuración">
+                            <field name="slug"
+                                   readonly="id"
+                                   help="Slug de la URL — solo lectura después de la creación."/>
+                            <field name="description"/>
+                            <field name="theme"/>
+                            <field name="is_public"/>
+                            <field name="enabled"/>
+                        </group>
+                        <!-- Right column: stats + embed -->
+                        <group string="Acceso y Estadísticas">
+                            <field name="created_by" readonly="1"/>
+                            <field name="view_count" readonly="1"/>
+                            <field name="last_viewed" readonly="1"/>
+                            <field name="page_url" readonly="1" string="URL de la Página" widget="url"/>
+                            <field name="embed_url" readonly="1" string="URL de Incrustación" widget="url"/>
+                            <div colspan="2">
+                                <field name="access_token" readonly="1" class="o_field_copy"/>
+                                <button name="action_regenerate_token"
+                                        string="Regenerar Token de Incrustación"
+                                        type="object"
+                                        class="btn btn-secondary btn-sm mt-1"
+                                        confirm="Regenerar el token invalidará todos los enlaces de incrustación existentes. ¿Continuar?"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Full-width spec editor -->
+                    <group string="Especificación de la Página (JSON)">
+                        <field name="spec"
+                               widget="ace"
+                               options="{'mode': 'js'}"
+                               nolabel="1"
+                               style="min-height: 400px;"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Search view
+    ================================================================ -->
+    <record id="mcp_portal_page_search_view" model="ir.ui.view">
+        <field name="name">mcp.portal.page.search</field>
+        <field name="model">mcp.portal.page</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Páginas de Portal">
+                <field name="name" string="Título"/>
+                <field name="slug"/>
+                <field name="created_by"/>
+                <separator/>
+                <filter string="Activado" name="enabled" domain="[('enabled','=',True)]"/>
+                <filter string="Desactivado" name="disabled" domain="[('enabled','=',False)]"/>
+                <separator/>
+                <filter string="Público" name="public" domain="[('is_public','=',True)]"/>
+                <filter string="Privado" name="private" domain="[('is_public','=',False)]"/>
+                <separator/>
+                <filter string="Mis Páginas" name="my_pages" domain="[('created_by','=',uid)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Propietario" name="group_owner" context="{'group_by': 'created_by'}"/>
+                    <filter string="Tema" name="group_theme" context="{'group_by': 'theme'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Window action
+    ================================================================ -->
+    <record id="mcp_portal_page_action" model="ir.actions.act_window">
+        <field name="name">Páginas de Portal</field>
+        <field name="res_model">mcp.portal.page</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="mcp_portal_page_search_view"/>
+        <field name="context">{'search_default_my_pages': 1, 'search_default_enabled': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Cree su primera página de portal
+            </p>
+            <p>
+                Las páginas de portal muestran datos de Odoo en vivo como tarjetas KPI, gráficos y tablas.
+                Los clientes de IA pueden crear páginas automáticamente a través de las herramientas MCP
+                <code>odoo_create_portal_page</code>.
+            </p>
+        </field>
+    </record>
+
+</odoo>

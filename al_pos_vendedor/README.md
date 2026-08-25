@@ -37,4 +37,4 @@ selección a una lista de vendedores autorizados por punto de venta.
 
 ## Licencia
 
-LGPL-3.
+OPL-1.

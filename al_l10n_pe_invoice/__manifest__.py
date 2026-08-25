@@ -41,7 +41,7 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
     'version': '6.20260719',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'account',
         'sale',

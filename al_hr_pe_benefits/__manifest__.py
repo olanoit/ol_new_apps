@@ -46,7 +46,7 @@ Fase 7.
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '5.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['al_hr_pe'],
     'data': [
         'security/ir.model.access.csv',

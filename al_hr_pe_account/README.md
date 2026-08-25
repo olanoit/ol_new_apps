@@ -4,7 +4,7 @@ El asiento de la planilla y el de cada beneficio social, con
 previsualización, ajuste por redondeo y distribución analítica opcional.
 
 > **Versión** 2.20260722 · **Depende de** `al_hr_pe_benefits`,
-> `hr_payroll_account` · **Licencia** LGPL-3
+> `hr_payroll_account` · **Licencia** OPL-1
 
 ---
 

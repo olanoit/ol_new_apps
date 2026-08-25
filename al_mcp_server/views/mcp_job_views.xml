@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         List view
+    ================================================================ -->
+    <record id="mcp_job_list_view" model="ir.ui.view">
+        <field name="name">mcp.job.list</field>
+        <field name="model">mcp.job</field>
+        <field name="arch" type="xml">
+            <list string="Trabajos Asíncronos MCP" default_order="id desc"
+                  decoration-success="state == 'done'"
+                  decoration-warning="state == 'running'"
+                  decoration-danger="state == 'failed'"
+                  decoration-muted="state in ('cancelled',)">
+                <field name="name" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="operation" optional="show"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'running'"
+                       decoration-danger="state == 'failed'"
+                       decoration-info="state == 'pending'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="progress" string="Progreso (%)" optional="show"/>
+                <field name="total_records" optional="show"/>
+                <field name="processed_records" optional="show"/>
+                <field name="duration_ms" string="Duración (ms)" optional="show"/>
+                <field name="create_date" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Form view
+    ================================================================ -->
+    <record id="mcp_job_form_view" model="ir.ui.view">
+        <field name="name">mcp.job.form</field>
+        <field name="model">mcp.job</field>
+        <field name="arch" type="xml">
+            <form string="Trabajo Asíncrono MCP">
+                <header>
+                    <button name="action_run"
+                            string="Ejecutar Ahora"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'pending'"/>
+                    <button name="action_cancel"
+                            string="Cancelar"
+                            type="object"
+                            invisible="state != 'pending'"/>
+                    <button name="action_retry"
+                            string="Reintentar"
+                            type="object"
+                            invisible="state != 'failed'"/>
+                    <button name="action_open_attachment"
+                            string="Descargar Exportación"
+                            type="object"
+                            invisible="not attachment_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,running,done,failed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Información del Trabajo">
+                            <field name="operation" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="token_id" readonly="1"/>
+                            <field name="session_id" readonly="1"/>
+                            <field name="mcp_scope" readonly="1"/>
+                        </group>
+                        <group string="Progreso">
+                            <field name="progress" widget="progressbar" readonly="1"/>
+                            <field name="total_records" readonly="1"/>
+                            <field name="processed_records" readonly="1"/>
+                            <field name="started_at" readonly="1"/>
+                            <field name="finished_at" readonly="1"/>
+                            <field name="duration_ms" readonly="1"/>
+                            <field name="attachment_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="General">
+                            <group>
+                                <field name="error_message" readonly="1"
+                                       invisible="not error_message"
+                                       widget="text"/>
+                            </group>
+                        </page>
+                        <page string="Carga Útil">
+                            <field name="payload" readonly="1" widget="code"
+                                   options="{'mode': 'js'}"/>
+                        </page>
+                        <page string="Resultado">
+                            <field name="result" readonly="1" widget="code"
+                                   options="{'mode': 'js'}"/>
+                            <field name="mcp_restrictions" readonly="1" widget="code"
+                                   options="{'mode': 'js'}" string="Instantánea de Restricciones"/>
+                        </page>
+                        <page string="Registro">
+                            <field name="message_ids" widget="mail_thread" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Search view
+    ================================================================ -->
+    <record id="mcp_job_search_view" model="ir.ui.view">
+        <field name="name">mcp.job.search</field>
+        <field name="model">mcp.job</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Trabajos">
+                <field name="name"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter name="filter_pending"
+                        string="Pendiente"
+                        domain="[('state','=','pending')]"/>
+                <filter name="filter_running"
+                        string="En ejecución"
+                        domain="[('state','=','running')]"/>
+                <filter name="filter_done"
+                        string="Hecho"
+                        domain="[('state','=','done')]"/>
+                <filter name="filter_failed"
+                        string="Fallido"
+                        domain="[('state','=','failed')]"/>
+                <filter name="filter_cancelled"
+                        string="Cancelado"
+                        domain="[('state','=','cancelled')]"/>
+                <separator/>
+                <filter name="filter_my_jobs"
+                        string="Mis Trabajos"
+                        domain="[('user_id','=',uid)]"/>
+                <separator/>
+                <filter name="filter_bulk_update"
+                        string="Actualización masiva"
+                        domain="[('operation','=','bulk_update')]"/>
+                <filter name="filter_export"
+                        string="Exportaciones"
+                        domain="[('operation','in',['export_csv','export_xlsx'])]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_operation" string="Operación" context="{'group_by': 'operation'}"/>
+                    <filter name="group_user" string="Usuario" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Action
+    ================================================================ -->
+    <record id="mcp_job_action" model="ir.actions.act_window">
+        <field name="name">Trabajos Asíncronos</field>
+        <field name="res_model">mcp.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="mcp_job_search_view"/>
+        <field name="context">{'search_default_filter_my_jobs': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aún no hay trabajos asíncronos
+            </p>
+            <p>
+                Envíe operaciones pesadas a través del protocolo MCP usando
+                <b>odoo_submit_job</b> y realice su seguimiento aquí.
+            </p>
+        </field>
+    </record>
+
+</odoo>

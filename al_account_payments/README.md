@@ -4,7 +4,7 @@ Catálogo de medios de pago de SUNAT y datos de la operación bancaria en el
 pago, para sustentar la bancarización y alimentar el comprobante
 electrónico.
 
-> **Depende de** `account`, `al_account_base` · **Licencia** LGPL-3
+> **Depende de** `account`, `al_account_base` · **Licencia** OPL-1
 
 ---
 

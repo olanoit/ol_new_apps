@@ -29,7 +29,7 @@ Fase 5 (actual):
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
     'version': '3.20260816',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],
     'data': [
         'security/ir.model.access.csv',

@@ -30,7 +30,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
     'countries': ['pe'],
     'category': 'OL-POS/Apps',
     'version': '6.20260721',
-    'license': 'LGPL-3',
+    'license': 'OPL-1',
     'depends': [
         'point_of_sale',
         'l10n_pe_pos',

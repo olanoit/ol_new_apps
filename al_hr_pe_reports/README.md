@@ -4,7 +4,7 @@ La boleta legal peruana con un solo botón de imprimir, los certificados,
 los contratos y los archivos de pago masivo de los cinco bancos.
 
 > **Versión** 4.20260802 · **Depende de** `al_hr_pe_benefits` ·
-> **Licencia** LGPL-3
+> **Licencia** OPL-1
 
 ---
 
