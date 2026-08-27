@@ -21,8 +21,8 @@ La validación se hizo en dos planos complementarios:
 | Pruebas unitarias | 619 | **708** (+89) |
 | Módulos en verde | 22 (1 en rojo, 4 sin pruebas) | **26** (+1 que exige navegador, H-08) |
 | Defectos encontrados | — | **6 corregidos**, 3 documentados |
-| Comprobaciones funcionales sobre la base real | — | **126** (109 OK · 17 avisos · 0 fallas) |
-| Pasos del flujo retención + detracción | — | **53** (50 OK · 3 avisos · 0 fallas) |
+| Comprobaciones funcionales sobre la base real | — | **128** (111 OK · 17 avisos · 0 fallas) |
+| Pasos del flujo retención + detracción | — | **52** (50 OK · 2 avisos · 0 fallas) |
 
 Ninguno de los defectos los detectaba la suite anterior porque nadie
 probaba ese camino: unos aparecieron al escribir las pruebas que
@@ -321,7 +321,7 @@ que lanzar el servidor con HTTP en un puerto libre:
 
 ## 6. Auditoría funcional sobre la base real
 
-126 comprobaciones sobre `ol_pe_v19`: **109 OK, 17 avisos, 0 fallas**.
+128 comprobaciones sobre `ol_pe_v19`: **111 OK, 17 avisos, 0 fallas**.
 
 ### Prueba de flujo de punta a punta
 
@@ -330,9 +330,9 @@ completos sobre el clon —factura, publicación, reparto del asiento,
 pago, constancia y comprobante electrónico— y el cruce entre ambos.
 Escribe en la base y termina en rollback.
 
-53 pasos: **50 OK, 3 avisos, 0 fallas**. Los avisos son configuración
-que el script siembra al vuelo para poder seguir (impuesto de retención,
-cuenta de detracciones y cuenta de pagos pendientes del método de pago).
+52 pasos: **50 OK, 2 avisos, 0 fallas**. Los avisos son configuración
+que el script siembra al vuelo para poder seguir: el impuesto de
+retención y la cuenta de detracciones por pagar.
 
 Es la prueba que destapó H-09, que ningún test unitario veía.
 Ningún módulo tiene datos maestros incompletos ni modelos que no
@@ -385,9 +385,15 @@ detracción activo, registrar el depósito emitía un segundo pago por el
 neto y daba por saldada una deuda con el proveedor que nadie había
 pagado. Corregido y con prueba de regresión.
 
+Ese recorrido dejó a la vista un hueco de configuración que la auditoría
+no miraba: **los métodos de pago no tenían cuenta de pagos pendientes**,
+y sin ella Odoo 19 deja el pago en «in_process» con el asiento vacío, no
+concilia nada y la retención de IGV no llega al mayor. Quedan asignadas
+en las dos compañías las que el propio plan peruano trae —1041003
+«Recibos pendientes» y 1041004 «Pagos pendientes»— y la auditoría lo
+comprueba a partir de ahora.
+
 **Pendiente:** completar la puesta en marcha de la base —cuenta del Banco
 de la Nación, credenciales SIRE, diario de planilla de la segunda
-compañía, volcado de los feriados a los calendarios y la cuenta de pagos
-pendientes del método de pago del diario de banco, sin la cual Odoo 19
-no genera el asiento del pago—, que son los avisos de §6 y §«flujo» y no
-defectos del código.
+compañía y volcado de los feriados a los calendarios—, que son los
+avisos de §6 y no defectos del código.

@@ -165,6 +165,24 @@ def auditar_payments():
                'Pagos con medio de pago informado',
                '%s de %s' % (len(with_method), len(payments)))
 
+    # Sin cuenta de pagos pendientes, Odoo 19 no genera el asiento del
+    # pago: se queda en «in_process» con el asiento vacío, nada se
+    # concilia y la retención de IGV nunca llega al mayor.
+    for comp in companies:
+        journals = env['account.journal'].search(
+            [('company_id', '=', comp.id), ('type', 'in', ('bank', 'cash'))])
+        sin_cuenta = []
+        for journal in journals:
+            lines = (journal.inbound_payment_method_line_ids
+                     | journal.outbound_payment_method_line_ids)
+            sin_cuenta += ['%s/%s' % (journal.code, line.name)
+                           for line in lines if not line.payment_account_id]
+        check(not sin_cuenta and bool(journals),
+              'Cuenta de pagos pendientes en los diarios de %s' % comp.name,
+              ', '.join(sin_cuenta) if sin_cuenta
+              else '%s diario(s) completos' % len(journals),
+              warn_only=True)
+
 
 # ---------------------------------------------------------------------- #
 # Cuentas destino 6→9
