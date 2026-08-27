@@ -21,8 +21,8 @@ La validación se hizo en dos planos complementarios:
 | Pruebas unitarias | 619 | **708** (+89) |
 | Módulos en verde | 22 (1 en rojo, 4 sin pruebas) | **26** (+1 que exige navegador, H-08) |
 | Defectos encontrados | — | **6 corregidos**, 3 documentados |
-| Comprobaciones funcionales sobre la base real | — | **128** (111 OK · 17 avisos · 0 fallas) |
-| Pasos del flujo retención + detracción | — | **52** (50 OK · 2 avisos · 0 fallas) |
+| Comprobaciones funcionales sobre la base real | — | **129** (112 OK · 17 avisos · 0 fallas) |
+| Pasos del flujo retención + detracción | — | **50** (50 OK · 0 avisos · 0 fallas) |
 
 Ninguno de los defectos los detectaba la suite anterior porque nadie
 probaba ese camino: unos aparecieron al escribir las pruebas que
@@ -321,7 +321,7 @@ que lanzar el servidor con HTTP en un puerto libre:
 
 ## 6. Auditoría funcional sobre la base real
 
-128 comprobaciones sobre `ol_pe_v19`: **111 OK, 17 avisos, 0 fallas**.
+129 comprobaciones sobre `ol_pe_v19`: **112 OK, 17 avisos, 0 fallas**.
 
 ### Prueba de flujo de punta a punta
 
@@ -330,9 +330,8 @@ completos sobre el clon —factura, publicación, reparto del asiento,
 pago, constancia y comprobante electrónico— y el cruce entre ambos.
 Escribe en la base y termina en rollback.
 
-52 pasos: **50 OK, 2 avisos, 0 fallas**. Los avisos son configuración
-que el script siembra al vuelo para poder seguir: el impuesto de
-retención y la cuenta de detracciones por pagar.
+50 pasos: **50 OK, sin avisos y sin fallas**. Ya no siembra nada: la
+base tiene la configuración que el recorrido necesita.
 
 Es la prueba que destapó H-09, que ningún test unitario veía.
 Ningún módulo tiene datos maestros incompletos ni modelos que no
@@ -392,6 +391,23 @@ concilia nada y la retención de IGV no llega al mayor. Quedan asignadas
 en las dos compañías las que el propio plan peruano trae —1041003
 «Recibos pendientes» y 1041004 «Pagos pendientes»— y la auditoría lo
 comprueba a partir de ahora.
+
+Con ello se completó la puesta a punto de los dos regímenes en
+`ol_pe_v19`. Servicios Andinos no tenía nada (Comercial ya venía
+configurada por los guiones demo del módulo):
+
+| Qué | Dónde |
+| --- | --- |
+| Impuesto «Retención IGV 3 %» (`is_withholding_tax_on_payment`) | cuenta **4011400** del PCGE, «IGV – Régimen de retenciones» |
+| Serie de la constancia | `R001-########`, `no_gap`, por compañía |
+| Tasa y mínimo | 3 % sobre S/ 700 |
+| Detracciones por pagar / por cobrar | **424901** y **121901**, conciliables |
+| Reparto de la detracción en el asiento | activado |
+
+Se dejó **sin activar el interruptor «agente de retención»** de Servicios
+Andinos: es la designación de SUNAT y, al marcarlo, se empieza a retener
+en toda factura de compra sobre el mínimo. La infraestructura queda
+lista; activarlo es una casilla en Ajustes ▸ Perú.
 
 **Pendiente:** completar la puesta en marcha de la base —cuenta del Banco
 de la Nación, credenciales SIRE, diario de planilla de la segunda
