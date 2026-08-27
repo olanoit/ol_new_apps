@@ -34,7 +34,7 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '6.20260816',
+    'version': '7.20260827',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits'],
     'data': [

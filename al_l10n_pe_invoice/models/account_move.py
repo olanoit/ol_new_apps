@@ -40,9 +40,17 @@ class AccountMove(models.Model):
         return f'{name_custom} {name_client}'
 
     def get_amount_discount(self):
+        """Descuento global del comprobante: líneas en negativo.
+
+        Se filtra por ``display_type in ('product', 'discount')``: en v19
+        las líneas de producto llevan ``display_type = 'product'``, así
+        que el ``not x.display_type`` heredado de v18 no casaba con
+        ninguna línea y el bloque de descuento salía siempre en cero.
+        """
         self.ensure_one()
         amount = sum(self.invoice_line_ids.filtered(
-            lambda x: not x.display_type and x.price_total < 0
+            lambda x: x.display_type in ('product', 'discount')
+            and x.price_total < 0
         ).mapped('price_total'))
         return abs(amount)
 

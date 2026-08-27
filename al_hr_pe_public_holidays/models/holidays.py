@@ -132,7 +132,16 @@ class PeruPublicHoliday(models.Model):
                     existing.write(vals)
                     updated += 1
                 else:
-                    Leaves.create(vals)
+                    leave = Leaves.create(vals)
+                    # hr_holidays (_prepare_public_holidays_values) supone
+                    # que las fechas del create vienen en el huso del
+                    # USUARIO y las reconvierte al del calendario. Como
+                    # aquí ya llegan convertidas, esa segunda pasada las
+                    # desplazaba (un feriado de Lima creado por un usuario
+                    # sin zona horaria empezaba a las 05:00 y se comía las
+                    # cinco primeras horas del día). El write no
+                    # reinterpreta nada, así que se fijan de nuevo.
+                    leave.write({"date_from": date_from, "date_to": date_to})
                     created += 1
         return {
             "type": "ir.actions.client",

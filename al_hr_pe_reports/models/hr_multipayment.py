@@ -284,7 +284,14 @@ def interbank_haberes_txt(header, lines):
 
     Rarezas v18 conservadas: el total USD de la cabecera se rellena a la
     DERECHA (``left=True``) mientras el de soles va a la izquierda; el
-    detalle deja celular/email en blanco fijo."""
+    detalle deja celular/email en blanco fijo.
+
+    Ojo con los nombres de los campos de la plantilla: Odoo 19 parchea
+    ``str.format`` (``odoo/_monkeypatches/_cpython.py``) y, si algún campo
+    contiene un atributo de la lista negra de ``safe_eval`` —el antiguo
+    ``benef_code`` contenía ``f_code``—, devuelve la plantilla SIN
+    formatear y en silencio: el banco recibía un archivo con los
+    marcadores literales."""
     total = sum(custom_round(line['amount'], 2) for line in lines)
     out = ['0104{espacios}{date}{espacios2}{count}{soles_total}{usd_total}'
            'MC001\r\n'.format(
@@ -310,13 +317,13 @@ def interbank_haberes_txt(header, lines):
         else:
             benef_name = txt_field(line['name'], 'str', 60)
         is_cci = line['acc_type'] == '3'
-        out.append('02{doc_type}{benef_code}{doc_number}{date_to}'
+        out.append('02{doc_type}{beneficiary_code}{doc_number}{date_to}'
                    '{charge_currency}{amount} {charge_type}{account_type}'
                    '{account_currency}{acc_number}{person_type}{p_doc_type}'
                    '{p_doc_num}{benef_name}{currency_cts}{amount_cts}'
                    '{filler}{cell_phone}{email}\r\n'.format(
                        doc_type=line['doc_interbank'],
-                       benef_code=txt_field(line['doc_number'], 'str', 20),
+                       beneficiary_code=txt_field(line['doc_number'], 'str', 20),
                        doc_number=' ' * 19,
                        date_to=' ' * 8,
                        charge_currency=charge_currency,
@@ -545,13 +552,13 @@ def interbank_cts_txt(header, lines):
         else:
             benef_name = txt_field(line['name'], 'str', 60)
         is_cci = line['acc_type'] == '3'
-        out.append('02{doc_type}{benef_code}{doc_number}{date_to}'
+        out.append('02{doc_type}{beneficiary_code}{doc_number}{date_to}'
                    '{charge_currency}{amount} {charge_type}{account_type}'
                    '\t\t\t\t\t\t\t{account_currency}{acc_number}'
                    '{person_type}{p_doc_type}{p_doc_num}{benef_name}'
                    '{currency_cts}{amount_cts}{espacios}\r\n'.format(
                        doc_type=line['doc_interbank'],
-                       benef_code=txt_field(line['doc_number'], 'str', 20),
+                       beneficiary_code=txt_field(line['doc_number'], 'str', 20),
                        doc_number=' ' * 19,
                        date_to=' ' * 8,
                        charge_currency=charge_currency,
