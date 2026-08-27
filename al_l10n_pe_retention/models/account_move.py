@@ -25,8 +25,8 @@ class AccountMove(models.Model):
     @api.depends('move_type', 'partner_id', 'amount_total_signed',
                  'company_id', 'l10n_latam_document_type_id',
                  'invoice_line_ids.product_id',
-                 'commercial_partner_id.l10n_pe_retention_agent',
-                 'commercial_partner_id.l10n_pe_good_contributor')
+                 'commercial_partner_id.is_retention_agent',
+                 'commercial_partner_id.is_good_taxpayer')
     def _compute_l10n_pe_retention(self):
         for move in self:
             company = move.company_id
@@ -36,8 +36,8 @@ class AccountMove(models.Model):
                 and move.move_type == 'in_invoice'
                 and abs(move.amount_total_signed)
                 > company.l10n_pe_retention_min_amount
-                and not move.commercial_partner_id.l10n_pe_retention_agent
-                and not move.commercial_partner_id.l10n_pe_good_contributor
+                and not move.commercial_partner_id.is_retention_agent
+                and not move.commercial_partner_id.is_good_taxpayer
                 and (move.l10n_latam_document_type_id.code or '01')
                 not in EXCLUDED_DOCUMENT_CODES
                 # exceptuada si la operación está sujeta a SPOT

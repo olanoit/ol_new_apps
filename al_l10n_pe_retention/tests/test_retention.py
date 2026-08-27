@@ -59,15 +59,15 @@ class TestRetentionApplies(TransactionCase):
     def test_not_applies_between_agents(self):
         agent = self.env['res.partner'].create({
             'name': 'Proveedor Agente SAC', 'vat': '20512528458',
-            'l10n_pe_retention_agent': True})
+            'is_retention_agent': True})
         bill = self._bill(1000.0, partner=agent)
         self.assertFalse(bill.l10n_pe_retention_applies)
 
     def test_not_applies_good_contributor(self):
-        self.partner.l10n_pe_good_contributor = True
+        self.partner.is_good_taxpayer = True
         bill = self._bill(1000.0)
         self.assertFalse(bill.l10n_pe_retention_applies)
-        self.partner.l10n_pe_good_contributor = False
+        self.partner.is_good_taxpayer = False
 
     def test_not_applies_company_not_agent(self):
         self.company.l10n_pe_retention_agent = False
@@ -216,9 +216,9 @@ class TestRetentionApplies(TransactionCase):
     def test_applies_recomputes_on_partner_flag(self):
         bill = self._bill(1000.0)
         self.assertTrue(bill.l10n_pe_retention_applies)
-        self.partner.l10n_pe_retention_agent = True
+        self.partner.is_retention_agent = True
         self.assertFalse(bill.l10n_pe_retention_applies)
-        self.partner.l10n_pe_retention_agent = False
+        self.partner.is_retention_agent = False
         self.assertTrue(bill.l10n_pe_retention_applies)
 
     def test_not_applies_boleta(self):

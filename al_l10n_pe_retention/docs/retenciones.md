@@ -39,8 +39,10 @@ flowchart TD
    (`R001-########`) que numera los comprobantes. El script
    [`tools/retention_demo_data.py`](../tools/retention_demo_data.py) lo
    crea como referencia.
-3. **Contactos**: marcar «Agente de retención» y/o «Buen contribuyente»
-   en los proveedores que correspondan (quedan exceptuados).
+3. **Contactos**: «Agente de retención» y «Buen contribuyente» los
+   mantiene `l10n_pe_vat_sunat` contra el padrón oficial de SUNAT; el
+   proveedor que tenga cualquiera de las dos queda exceptuado. Son
+   editables por si el padrón va por detrás de la designación.
 4. Para **retenciones sufridas**: cuenta 40114 y diario en Ajustes ▸ Perú
    ▸ «Retenciones sufridas».
 

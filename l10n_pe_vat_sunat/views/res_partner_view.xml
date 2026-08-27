@@ -48,10 +48,11 @@
 
             <!-- Alerta cuando la API falló -->
             <xpath expr="//field[@name='vat']" position="after">
-                <field name="is_good_taxpayer" readonly="1"
-                       invisible="not is_company"/>
-                <field name="is_retention_agent" readonly="1"
-                       invisible="not is_company"/>
+                <!-- Editables: el padrón los mantiene al día, pero
+                     puede ir por detrás de la designación de SUNAT y son
+                     las dos excepciones al régimen de retenciones. -->
+                <field name="is_good_taxpayer" invisible="not is_company"/>
+                <field name="is_retention_agent" invisible="not is_company"/>
             </xpath>
 
             <xpath expr="//sheet" position="before">

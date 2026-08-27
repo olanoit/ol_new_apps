@@ -29,7 +29,7 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
     'website': "https://github.com/olanoit",
     'category': 'OL-ACCOUNT/Apps',
     'countries': ['pe'],
-    'version': '5.20260815',
+    'version': '6.20260827',
     'license': 'OPL-1',
     'depends': [
         'base',
