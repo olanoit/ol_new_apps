@@ -18,15 +18,18 @@ La validación se hizo en dos planos complementarios:
 | Indicador | Antes | Después |
 | --- | ---: | ---: |
 | Módulos de localización con pruebas | 23 de 27 | **27 de 27** |
-| Pruebas unitarias | 619 | **707** (+88) |
+| Pruebas unitarias | 619 | **708** (+89) |
 | Módulos en verde | 22 (1 en rojo, 4 sin pruebas) | **26** (+1 que exige navegador, H-08) |
-| Defectos encontrados | — | **3 corregidos**, 5 documentados |
+| Defectos encontrados | — | **6 corregidos**, 3 documentados |
 | Comprobaciones funcionales sobre la base real | — | **126** (109 OK · 17 avisos · 0 fallas) |
+| Pasos del flujo retención + detracción | — | **53** (50 OK · 3 avisos · 0 fallas) |
 
-Los tres defectos corregidos no los detectaba la suite anterior porque
-nadie probaba ese camino: dos aparecieron al escribir las pruebas que
-faltaban y el tercero, el más grave, estaba tapado por un cambio de
-comportamiento del propio Odoo 19.
+Ninguno de los defectos los detectaba la suite anterior porque nadie
+probaba ese camino: unos aparecieron al escribir las pruebas que
+faltaban, otros estaban tapados por cambios de comportamiento del propio
+Odoo 19, y el último —H-09, el depósito de detracción que saldaba la
+deuda con el proveedor— solo se ve recorriendo el ciclo entero, no
+comprobando piezas sueltas.
 
 ---
 
@@ -66,7 +69,7 @@ Leyenda: **N** = pruebas ejecutadas · *(+n)* = pruebas añadidas en esta valida
 | `al_l10n_pe_city` | 7 *(+7)* | ✅ | Ubigeo: 617 ciudades, ninguna huérfana de departamento, ciudad→departamento en el contacto |
 | `al_l10n_pe_currency` | 63 | ✅ | Tipo de cambio compra/venta, fuente BCRP, elección del tipo en factura y en pago, diferencia de cambio |
 | `al_l10n_pe_account_letter` | 17 | ✅ | Letras de cambio, canje, refinanciación masiva |
-| `al_l10n_pe_detraction` | 37 | ✅ | Detracción SPOT, TXT del Banco de la Nación (longitudes y posiciones), depósito masivo |
+| `al_l10n_pe_detraction` | 38 | ✅ | Detracción SPOT, TXT del Banco de la Nación (longitudes y posiciones), depósito masivo |
 | `al_l10n_pe_retention` | 22 | ✅ | Retención de IGV en el pago y constancia |
 | `al_l10n_pe_exchange_closure` | 36 | ✅ | Ajuste por diferencia de cambio sobre saldos acumulados |
 | `al_l10n_pe_delivery_guide_report` | 11 *(+8)* | ✅ | Guía de remisión: agrupación del detalle por producto/UdM, series y lotes, peso bruto |
@@ -260,6 +263,33 @@ orden de carga de toda la suite. En particular `al_l10n_pe_retention`
 22, `l10n_pe_vat_sunat` 28, `al_l10n_pe_currency` 63,
 `al_l10n_pe_detraction` 37 y `al_l10n_pe_invoice` 19.
 
+### H-09 · Alto · Depositar la detracción saldaba la deuda con el proveedor — CORREGIDO
+
+**Dónde:** `al_l10n_pe_detraction/wizards/detraction_deposit_wizard.py`.
+
+Con el reparto activo (Ajustes ▸ Perú ▸ «Separar la detracción en el
+asiento») la factura queda con **dos** líneas de plazo: el neto en la
+cuenta del proveedor y la detracción en la suya. Odoo 19 trata varias
+líneas de plazo como **cuotas**, y `account.payment.register` invocado
+sobre el comprobante entero emite un pago por cuota.
+
+Resultado: registrar el depósito de una detracción de S/ 354 sobre una
+factura de S/ 2 360 creaba **dos** pagos —uno de 354 y otro de 2 006 que
+nadie había hecho—, dejaba la factura con residual cero y daba por
+pagada la deuda con el proveedor. En el mayor salían 2 360 de tesorería
+habiendo depositado 354 en el Banco de la Nación.
+
+El defecto solo aparece con el reparto activo, que es justamente el modo
+que usa quien opera con detracciones, y los 37 tests del módulo no lo
+veían: el que cubría el asistente comprobaba que existiese un pago por
+el importe de la detracción, no que no hubiese un segundo.
+
+**Corrección:** el depósito apunta solo a la línea de plazo de la
+detracción (`active_model='account.move.line'`) en vez de al comprobante
+completo. Sin reparto, se mantiene el comportamiento anterior.
+Verificado: un único pago de 354, la línea de la detracción conciliada y
+la del proveedor viva por 2 006.
+
 ### H-06 · Bajo · Dependencia no buscable en las letras masivas
 
 `l10n_pe.letter.massive.refinance_origin_ids` figura en el `@api.depends`
@@ -292,6 +322,19 @@ que lanzar el servidor con HTTP en un puerto libre:
 ## 6. Auditoría funcional sobre la base real
 
 126 comprobaciones sobre `ol_pe_v19`: **109 OK, 17 avisos, 0 fallas**.
+
+### Prueba de flujo de punta a punta
+
+`pruebas/flujo_retencion_detraccion.py` recorre los dos regímenes
+completos sobre el clon —factura, publicación, reparto del asiento,
+pago, constancia y comprobante electrónico— y el cruce entre ambos.
+Escribe en la base y termina en rollback.
+
+53 pasos: **50 OK, 3 avisos, 0 fallas**. Los avisos son configuración
+que el script siembra al vuelo para poder seguir (impuesto de retención,
+cuenta de detracciones y cuenta de pagos pendientes del método de pago).
+
+Es la prueba que destapó H-09, que ningún test unitario veía.
 Ningún módulo tiene datos maestros incompletos ni modelos que no
 respondan. Los avisos son tareas de puesta en marcha, no defectos:
 
@@ -336,7 +379,15 @@ se cerró el `<section>` duplicado de tres módulos Gantt—, y las dos
 excepciones al régimen de retenciones pasan a leerse del padrón SUNAT en
 lugar de depender de un marcado manual que nadie replicaba.
 
+Después se recorrió además el ciclo completo de retenciones y
+detracciones sobre el clon, lo que destapó H-09: con el reparto de la
+detracción activo, registrar el depósito emitía un segundo pago por el
+neto y daba por saldada una deuda con el proveedor que nadie había
+pagado. Corregido y con prueba de regresión.
+
 **Pendiente:** completar la puesta en marcha de la base —cuenta del Banco
 de la Nación, credenciales SIRE, diario de planilla de la segunda
-compañía y volcado de los feriados a los calendarios—, que son los
-avisos de §6 y no defectos del código.
+compañía, volcado de los feriados a los calendarios y la cuenta de pagos
+pendientes del método de pago del diario de banco, sin la cual Odoo 19
+no genera el asiento del pago—, que son los avisos de §6 y §«flujo» y no
+defectos del código.

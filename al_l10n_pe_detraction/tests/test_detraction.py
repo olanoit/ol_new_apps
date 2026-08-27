@@ -272,3 +272,58 @@ class TestDetraction(TransactionCase):
         self.assertTrue(payment)
         self.assertIn(payment.state, ('in_process', 'paid'))
         self.assertEqual(payment.payment_type, 'outbound')
+
+    def test_deposit_wizard_with_split_pays_only_detraction(self):
+        """Depositar la detracción no puede saldar la deuda con el tercero.
+
+        Con el reparto activo la factura tiene dos líneas de plazo, y
+        Odoo 19 las trata como cuotas: registrar el pago sobre el
+        comprobante entero emitía una por cuota, de modo que el depósito
+        de la detracción daba por pagado también el neto del proveedor.
+        """
+        _receivable, payable = self._enable_split()
+        move = self._invoice('in_invoice', 2000.0)
+        move.action_post()
+        detraccion = move.l10n_pe_detraction_amount
+        neto = move.l10n_pe_detraction_net
+
+        # Odoo 19 solo genera el asiento del pago —y por tanto concilia—
+        # si el método de pago tiene cuenta de pagos pendientes.
+        metodo = self.journal_bank.outbound_payment_method_line_ids[:1]
+        if metodo and not metodo.payment_account_id:
+            Account = self.env['account.account'].with_company(self.company)
+            metodo.payment_account_id = Account.search(
+                [('code', '=', '104902')], limit=1) or Account.create({
+                    'code': '104902', 'name': 'Pagos pendientes Test',
+                    'account_type': 'asset_current', 'reconcile': True})
+
+        pagos_antes = self.env['account.payment'].search_count(
+            [('company_id', '=', self.company.id)])
+        wizard = self.env['l10n_pe.detraction.deposit.wizard'].create({
+            'move_id': move.id,
+            'journal_id': self.journal_bank.id,
+            'payment_date': date(2025, 6, 15),
+            'constancy_number': '2025-000456',
+        })
+        wizard.action_confirm()
+
+        pagos_nuevos = self.env['account.payment'].search(
+            [('company_id', '=', self.company.id)],
+            order='id desc', limit=5)
+        creados = self.env['account.payment'].search_count(
+            [('company_id', '=', self.company.id)]) - pagos_antes
+        self.assertEqual(
+            creados, 1,
+            'El depósito debe emitir un único pago, no uno por cuota')
+        self.assertEqual(pagos_nuevos[0].amount, detraccion)
+
+        term_lines = move.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term')
+        linea_det = term_lines.filtered(lambda l: l.account_id == payable)
+        linea_prov = term_lines - linea_det
+        self.assertTrue(linea_det.reconciled,
+                        'La línea de la detracción queda saldada')
+        self.assertFalse(linea_prov.reconciled,
+                         'La deuda con el proveedor sigue viva')
+        self.assertAlmostEqual(abs(linea_prov.amount_residual), neto, 2)
+        self.assertAlmostEqual(move.amount_residual, neto, 2)

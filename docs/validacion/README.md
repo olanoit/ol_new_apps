@@ -10,6 +10,7 @@ peruana sobre Odoo 19 (configuración `cfg/my/pe.cfg`, base `ol_pe_v19`).
 | `ANALISIS_VALIDACION_LOCALIZACION_PE.md` | Informe de la validación: cobertura por módulo, resultado de cada suite y hallazgos. |
 | `pruebas/auditoria_localizacion_pe.py` | Auditoría **de solo lectura** sobre una base real: comprueba que lo instalado está además configurado (catálogos, series, credenciales, parámetros de nómina). |
 | `pruebas/run_tests.sh` | Lanzador de la batería de pruebas unitarias módulo a módulo, con un log por módulo y un resumen. |
+| `pruebas/flujo_retencion_detraccion.py` | Recorre de punta a punta los ciclos de retención de IGV y detracción SPOT, y el cruce entre ambos. Escribe y hace `rollback`. |
 
 ## 1. Pruebas unitarias, módulo a módulo
 
@@ -50,7 +51,24 @@ Cada línea sale como `OK` / `AVISO` / `FALLA`:
 
 El detalle queda además en `/tmp/auditoria_localizacion_pe.json`.
 
-## 3. Pruebas funcionales de planillas
+## 3. Flujo de retención y detracción
+
+Recorre los dos regímenes completos —factura, publicación, reparto del
+asiento, pago, constancia y comprobante electrónico— sobre el clon.
+Escribe en la base durante la ejecución y termina en `rollback`, pero
+conviene lanzarlo sobre el clon y no sobre la base de trabajo:
+
+```bash
+cd /home/och/odoo/ce19
+.venv/bin/python3 odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19_qa --no-http --log-level=warn \
+    < myodoo/ol_new_apps/docs/validacion/pruebas/flujo_retencion_detraccion.py
+```
+
+Lo que falte de configuración lo siembra al vuelo y lo dice como
+`AVISO`, de modo que el recorrido llega hasta el final aunque la base no
+esté puesta a punto. Es la prueba que destapó H-09.
+
+## 4. Pruebas funcionales de planillas
 
 Los guiones de la suite de nómina viven aparte, en
 `docs/planillas/pruebas/` (fases 1 a 9); siembran datos y por eso se
