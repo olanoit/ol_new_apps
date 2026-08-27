@@ -42,6 +42,18 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
         for wizard in self:
             wizard.amount = wizard.move_id.l10n_pe_detraction_amount
 
+    def _l10n_pe_detraction_term_line(self):
+        """La línea de plazo que recoge la detracción, si hubo reparto."""
+        self.ensure_one()
+        company = self.move_id.company_id
+        accounts = (company.l10n_pe_detraction_receivable_account_id
+                    | company.l10n_pe_detraction_payable_account_id)
+        if not accounts:
+            return self.env['account.move.line']
+        return self.move_id.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term'
+            and l.account_id in accounts)
+
     def action_confirm(self):
         self.ensure_one()
         move = self.move_id
@@ -51,8 +63,17 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
         if self.amount <= 0:
             raise UserError(self.env._(
                 'El monto del depósito debe ser mayor a cero.'))
+        # Con el reparto activo la factura tiene DOS líneas de plazo, y
+        # Odoo 19 las trata como cuotas: registrar el pago sobre el
+        # comprobante entero emite una por cuota, de modo que depositar la
+        # detracción saldaba también la deuda con el tercero. El depósito
+        # apunta solo a la línea de la detracción.
+        det_line = self._l10n_pe_detraction_term_line()
+        context = ({'active_model': 'account.move.line',
+                    'active_ids': det_line.ids} if det_line else
+                   {'active_model': 'account.move', 'active_ids': move.ids})
         register = self.env['account.payment.register'].with_context(
-            active_model='account.move', active_ids=move.ids,
+            **context
         ).create({
             'amount': self.amount,
             'currency_id': move.company_currency_id.id,
