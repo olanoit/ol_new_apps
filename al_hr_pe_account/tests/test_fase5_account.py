@@ -12,8 +12,11 @@ from odoo.addons.al_hr_pe_benefits.tests.test_fase3_benefits import \
     BenefitsCaseBase
 
 
-@tagged('post_install', '-at_install')
-class TestFase5Account(BenefitsCaseBase):
+class AccountCaseBase(BenefitsCaseBase):
+    """Plan de cuentas de planilla y parámetros contables del caso de
+    referencia. Lo comparten las pruebas del asiento de lote, de los
+    beneficios sociales y de los asistentes."""
+
 
     @classmethod
     def setUpClass(cls):
@@ -87,6 +90,10 @@ class TestFase5Account(BenefitsCaseBase):
             'vaca_haber_account_id': cls.acc_vaca_haber.id,
             'benefits_adjust_account_id': cls.acc_ajuste.id,
         })
+
+
+@tagged('post_install', '-at_install')
+class TestFase5Account(AccountCaseBase):
 
     def test_asiento_lote(self):
         """Asiento único del lote: gasto BAS al debe = neto + aportes
