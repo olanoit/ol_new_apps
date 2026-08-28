@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lista completa de tasas: la del formulario de moneda está filtrada
+         por esa moneda, así que no sirve para consultar el histórico. -->
+    <record id="action_l10n_pe_currency_rate" model="ir.actions.act_window">
+        <field name="name">Tipos de cambio</field>
+        <field name="res_model">res.currency.rate</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="base.view_currency_rate_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registre un tipo de cambio
+            </p><p>
+                Use «Actualizar tipo de cambio» para traer las tasas de
+                compra y venta publicadas por SUNAT o el BCRP.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_pe_exchange_rate" name="Tipo de cambio"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_user"
+              sequence="40"/>
+
+    <menuitem id="menu_pe_exchange_rate_update" name="Actualizar tipo de cambio"
+              parent="menu_pe_exchange_rate"
+              action="action_l10n_pe_exchange_rate_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_pe_exchange_rate_list" name="Tipos de cambio"
+              parent="menu_pe_exchange_rate"
+              action="action_l10n_pe_currency_rate"
+              sequence="20"/>
+</odoo>

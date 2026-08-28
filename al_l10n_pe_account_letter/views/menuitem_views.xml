@@ -62,7 +62,7 @@
               parent="al_account_base.al_l10n_pe_config"
               action="action_account_configuration"
               groups="account.group_account_manager"
-              sequence="40"/>
+              sequence="35"/>
 
     <!-- ================================================================ -->
     <!-- Mismos accesos, replicados dentro de la app Contabilidad          -->

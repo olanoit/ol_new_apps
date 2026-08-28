@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Bajo el grupo "Tipo de cambio" de al_l10n_pe_currency: el cierre
+         es la tercera pata del mismo asunto (actualizar, consultar, ajustar). -->
     <menuitem id="menu_exchange_closure" name="Cierre de tipo de cambio"
-              parent="al_account_base.al_l10n_pe_root"
+              parent="al_l10n_pe_currency.menu_pe_exchange_rate"
               action="action_exchange_closure"
               groups="account.group_account_user"
-              sequence="40"/>
+              sequence="30"/>
 
     <menuitem id="menu_account_exchange_closing" name="Cuentas del cierre de T.C."
               parent="al_account_base.al_l10n_pe_config"

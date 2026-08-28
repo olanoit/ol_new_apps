@@ -27,7 +27,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '4.20260827',
+    'version': '5.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

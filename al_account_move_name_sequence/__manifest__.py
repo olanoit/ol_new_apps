@@ -31,11 +31,12 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNT/Apps',
-    'version': '6.20260721',
+    'version': '7.20260828',
     'license': 'OPL-1',
     'depends': [
         'account',
         'l10n_latam_invoice_document',
+        'al_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',

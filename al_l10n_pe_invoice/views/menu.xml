@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Los certificados digitales solo aparecían en Contabilidad ▸
+         Configuración ▸ Peru, fuera de esta app. -->
+    <menuitem id="pe_menu_edi_certificates" name="Certificados digitales"
+              parent="al_account_base.al_l10n_pe_config"
+              action="certificate.certificate_certificate_action_view_list"
+              groups="account.group_account_manager"
+              sequence="18"/>
+</odoo>

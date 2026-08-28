@@ -9,8 +9,9 @@
 
     <!-- Perú ▸ Configuración ▸ Medios de pago -->
     <menuitem id="pe_action_pe_catalog_payment_form_menu"
+              name="Medios de pago"
               action="action_pe_catalog_payment_form"
               parent="al_account_base.al_l10n_pe_config"
-              sequence="30"/>
+              sequence="25"/>
 
 </odoo>

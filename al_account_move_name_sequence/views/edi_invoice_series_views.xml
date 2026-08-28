@@ -90,4 +90,20 @@
         action="edi_invoice_series_action"
         sequence="25"/>
 
+    <!-- Espejo en la app "Perú": las series y el catálogo de tipos de
+         documento que las respalda son configuración de la localización. -->
+    <menuitem id="pe_menu_edi_invoice_series"
+        name="Series CPE"
+        parent="al_account_base.al_l10n_pe_config"
+        action="edi_invoice_series_action"
+        groups="account.group_account_manager"
+        sequence="15"/>
+
+    <menuitem id="pe_menu_latam_document_type"
+        name="Tipos de documento"
+        parent="al_account_base.al_l10n_pe_config"
+        action="l10n_latam_invoice_document.action_document_type"
+        groups="account.group_account_manager"
+        sequence="16"/>
+
 </odoo>

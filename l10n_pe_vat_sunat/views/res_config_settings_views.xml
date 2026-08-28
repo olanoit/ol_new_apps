@@ -62,4 +62,18 @@
               sequence="1"
               action="action_l10n_pe_api_connection"/>
 
+    <menuitem name="Ajustes RUC/DNI"
+              parent="al_account_base.al_l10n_pe_config"
+              groups="base.group_system"
+              id="pe_sunat_settings"
+              sequence="51"
+              action="l10n_pe_vat_sunat_config_settings_action"/>
+
+    <menuitem name="Conexiones RUC/DNI"
+              parent="al_account_base.al_l10n_pe_config"
+              groups="base.group_system"
+              id="pe_menu_l10n_pe_api_connection"
+              sequence="52"
+              action="action_l10n_pe_api_connection"/>
+
 </odoo>

@@ -7,6 +7,7 @@
         <field name="inherit_id" ref="base.view_currency_rate_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
+                <field name="currency_id" optional="show"/>
                 <field name="rate_purchase" optional="show"/>
                 <field name="rate_sale" optional="show"/>
                 <field name="ref_origin" widget="badge"

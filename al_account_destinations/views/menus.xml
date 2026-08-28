@@ -2,7 +2,7 @@
 <odoo>
     <!-- Destinos, bajo la configuración PE (del base) y bajo el menú contable nativo -->
     <menuitem id="pe_account_destiny_categ" name="Destinos"
-              parent="al_account_base.al_l10n_pe_config" sequence="30"/>
+              parent="al_account_base.al_l10n_pe_config" sequence="20"/>
     <menuitem id="pe_account_account_destiny_menu" name="Cuentas contables"
               parent="pe_account_destiny_categ"
               action="account_account_destiny_action" sequence="10"/>

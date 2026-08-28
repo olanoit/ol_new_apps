@@ -126,7 +126,7 @@
     <menuitem id="menu_retention_root" name="Retenciones IGV"
               parent="al_account_base.al_l10n_pe_root"
               groups="account.group_account_user"
-              sequence="55"/>
+              sequence="52"/>
     <menuitem id="menu_retention_payments" name="Retenciones efectuadas"
               parent="menu_retention_root" action="action_retention_payments"
               sequence="10"/>

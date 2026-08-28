@@ -64,7 +64,7 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '1.20260802',
+    'version': '2.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

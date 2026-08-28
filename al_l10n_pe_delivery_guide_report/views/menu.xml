@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Los vehículos de la guía de remisión solo aparecían en
+         Inventario ▸ Configuración ▸ Peru, fuera de esta app. -->
+    <menuitem id="pe_menu_edi_vehicle" name="Vehículos (guías de remisión)"
+              parent="al_account_base.al_l10n_pe_config"
+              action="l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions"
+              groups="stock.group_stock_manager"
+              sequence="70"/>
+</odoo>

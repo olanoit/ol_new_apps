@@ -61,4 +61,13 @@
               groups="base.group_system"
               sequence="20"/>
 
+    <!-- Espejo en la app "Perú": el padrón es la fuente de «buen
+         contribuyente» y «agente de retención», que se usan al facturar. -->
+    <menuitem id="pe_menu_l10n_pe_sunat_padron"
+              name="Padrón SUNAT"
+              parent="al_account_base.al_l10n_pe_config"
+              action="action_l10n_pe_sunat_padron"
+              groups="base.group_system"
+              sequence="50"/>
+
 </odoo>

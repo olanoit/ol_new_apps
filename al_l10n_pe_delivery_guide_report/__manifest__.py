@@ -22,7 +22,7 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INVENTORY/Apps',
-    'version': '4.20260719',
+    'version': '5.20260828',
     'license': 'OPL-1',
     'depends': [
         'stock',
@@ -31,6 +31,7 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     ],
     'data': [
         'views/stock_picking_views.xml',
+        'views/menu.xml',
         'reports/guia_remision_reports.xml',
     ],
     'assets': {
