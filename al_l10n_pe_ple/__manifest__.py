@@ -60,7 +60,7 @@ NO se reimplementan.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '4.20260815',
+    'version': '5.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

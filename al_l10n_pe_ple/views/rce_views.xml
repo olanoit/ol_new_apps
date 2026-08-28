@@ -8,8 +8,12 @@
         <field name="inherit_id" ref="account.product_template_form_view"/>
         <field name="arch" type="xml">
             <field name="property_account_expense_id" position="after">
+                <!-- `fiscal_country_codes` es el campo que la vista de account
+                     deja disponible para esconder lo específico de un país.
+                     `parent` aquí no existe: el campo está en la página de
+                     Contabilidad del producto, no dentro de una lista. -->
                 <field name="l10n_pe_rce_classification"
-                       invisible="parent.country_code != 'PE' and context.get('default_country_code') != 'PE'"/>
+                       invisible="'PE' not in fiscal_country_codes"/>
             </field>
         </field>
     </record>
