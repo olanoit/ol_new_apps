@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- La sección va DENTRO de la app "Perú" de los ajustes, como el resto
+         de la localización. Antes declaraba su propia <app> anidada dentro
+         de la de Contabilidad: una app dentro de otra solo se dibuja cuando
+         la de fuera está seleccionada, así que la pestaña salía vacía. -->
     <record id="res_config_settings_view_form_l10n_pe_vat" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.l10n_pe_vat</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="priority" eval="60"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//block[@id='invoicing_settings']" position="after">
-
-                <app name="l10n_pe_vat_sunat" string="Contactos" key="contacts"
-                     groups="account.group_account_manager">
-                    <block title="Validación RUC/DNI (PE)"
-                           id="l10n_pe_vat_validation_block">
-                        <setting id="enable_ruc" string="Validar RUC"
-                                 help="Consultar la API al ingresar/modificar un RUC.">
-                            <field name="l10n_pe_ruc_validation"/>
-                        </setting>
-                        <setting id="enable_dni" string="Validar DNI"
-                                 help="Consultar la API al ingresar/modificar un DNI.">
-                            <field name="l10n_pe_dni_validation"/>
-                        </setting>
-                        <setting id="api_fallback" string="Fallback en cascada"
-                                 help="Desactivado: usa solo la conexión activa de mayor prioridad. Activado: si falla, prueba la siguiente.">
-                            <field name="l10n_pe_api_use_fallback"/>
-                        </setting>
-                        <setting id="api_connections" string="Conexiones de API"
-                                 help="Configura las APIs de consulta, su prioridad y el mapeo de campos.">
-                            <button name="action_open_pe_api_connections"
-                                    type="object" class="btn-link"
-                                    string="Configurar conexiones RUC/DNI"
-                                    icon="fa-arrow-right"/>
-                        </setting>
-                    </block>
-                </app>
-
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Validación RUC/DNI (PE)"
+                       id="l10n_pe_vat_validation_block">
+                    <setting id="enable_ruc" string="Validar RUC"
+                             help="Consultar la API al ingresar/modificar un RUC.">
+                        <field name="l10n_pe_ruc_validation"/>
+                    </setting>
+                    <setting id="enable_dni" string="Validar DNI"
+                             help="Consultar la API al ingresar/modificar un DNI.">
+                        <field name="l10n_pe_dni_validation"/>
+                    </setting>
+                    <setting id="api_fallback" string="Fallback en cascada"
+                             help="Desactivado: usa solo la conexión activa de mayor prioridad. Activado: si falla, prueba la siguiente.">
+                        <field name="l10n_pe_api_use_fallback"/>
+                    </setting>
+                    <setting id="api_connections" string="Conexiones de API"
+                             help="Configura las APIs de consulta, su prioridad y el mapeo de campos.">
+                        <button name="action_open_pe_api_connections"
+                                type="object" class="btn-link"
+                                string="Configurar conexiones RUC/DNI"
+                                icon="fa-arrow-right"/>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>
@@ -45,7 +45,7 @@
         <field name="view_id" ref="res_config_settings_view_form_l10n_pe_vat"/>
         <field name="view_mode">form</field>
         <field name="target">current</field>
-        <field name="context">{'module': 'contacts'}</field>
+        <field name="context">{'module': 'al_account_base'}</field>
     </record>
 
     <menuitem name="Ajustes RUC/DNI"
@@ -61,13 +61,6 @@
               id="menu_l10n_pe_api_connection"
               sequence="1"
               action="action_l10n_pe_api_connection"/>
-
-    <menuitem name="Ajustes RUC/DNI"
-              parent="al_account_base.al_l10n_pe_config"
-              groups="base.group_system"
-              id="pe_sunat_settings"
-              sequence="51"
-              action="l10n_pe_vat_sunat_config_settings_action"/>
 
     <menuitem name="Conexiones RUC/DNI"
               parent="al_account_base.al_l10n_pe_config"

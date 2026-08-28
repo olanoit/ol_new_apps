@@ -602,6 +602,11 @@ def auditar_menus():
         menu = Menu.browse(dato.res_id).exists()
         if not menu or not menu.action:
             continue
+        # Los ajustes caen todos en la misma pantalla de configuración, a la
+        # que la app llega por su propio menú "Ajustes": no son un hueco.
+        if menu.action._name == 'ir.actions.act_window' \
+                and menu.action.res_model == 'res.config.settings':
+            continue
         if app_de(menu).id == raiz.id:
             dentro.add(menu.action)
         else:

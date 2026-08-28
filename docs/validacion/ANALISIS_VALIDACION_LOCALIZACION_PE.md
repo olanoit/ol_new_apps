@@ -324,7 +324,9 @@ que lanzar el servidor con HTTP en un puerto libre:
 133 comprobaciones sobre `ol_pe_v19`: **116 OK, 17 avisos, 0 fallas**.
 
 La sección «Menús» vigila que ninguna acción fiscal quede fuera de la app
-«Perú» y que dos menús hermanos no compartan secuencia.
+«Perú» y que dos menús hermanos no compartan secuencia. Los ajustes se
+excluyen: todos desembocan en la misma pantalla, a la que la app llega
+por su propio menú «Ajustes».
 
 ### Prueba de flujo de punta a punta
 
