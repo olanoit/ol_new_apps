@@ -21,7 +21,7 @@ La validación se hizo en dos planos complementarios:
 | Pruebas unitarias | 619 | **708** (+89) |
 | Módulos en verde | 22 (1 en rojo, 4 sin pruebas) | **26** (+1 que exige navegador, H-08) |
 | Defectos encontrados | — | **6 corregidos**, 3 documentados |
-| Comprobaciones funcionales sobre la base real | — | **129** (112 OK · 17 avisos · 0 fallas) |
+| Comprobaciones funcionales sobre la base real | — | **133** (116 OK · 17 avisos · 0 fallas) |
 | Pasos del flujo retención + detracción | — | **50** (50 OK · 0 avisos · 0 fallas) |
 
 Ninguno de los defectos los detectaba la suite anterior porque nadie
@@ -321,7 +321,10 @@ que lanzar el servidor con HTTP en un puerto libre:
 
 ## 6. Auditoría funcional sobre la base real
 
-129 comprobaciones sobre `ol_pe_v19`: **112 OK, 17 avisos, 0 fallas**.
+133 comprobaciones sobre `ol_pe_v19`: **116 OK, 17 avisos, 0 fallas**.
+
+La sección «Menús» vigila que ninguna acción fiscal quede fuera de la app
+«Perú» y que dos menús hermanos no compartan secuencia.
 
 ### Prueba de flujo de punta a punta
 

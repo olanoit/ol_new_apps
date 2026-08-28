@@ -562,12 +562,74 @@ def auditar_integridad():
           ', '.join(failed.mapped('name'))[:150])
 
 
+# ---------------------------------------------------------------------- #
+# Árbol de menús de la app "Perú"
+# ---------------------------------------------------------------------- #
+#: Módulos cuyos menús deben poder alcanzarse desde la app "Perú". La
+#: nómina queda fuera a propósito: tiene su propia app y su propio árbol.
+MODULOS_FISCALES = [
+    'al_account_base', 'al_account_destinations', 'al_account_move_name_sequence',
+    'al_account_payments', 'al_l10n_pe_account_letter', 'al_l10n_pe_currency',
+    'al_l10n_pe_delivery_guide_report', 'al_l10n_pe_detraction',
+    'al_l10n_pe_edi_pos', 'al_l10n_pe_exchange_closure', 'al_l10n_pe_invoice',
+    'al_l10n_pe_ple', 'al_l10n_pe_retention', 'al_l10n_pe_sire',
+    'l10n_pe_vat_sunat', 'ol_stock_kardex_pe', 'l10n_pe', 'l10n_pe_edi',
+    'l10n_pe_edi_stock', 'l10n_pe_reports', 'l10n_pe_pos', 'l10n_pe_edi_pos',
+    'l10n_pe_reports_stock', 'l10n_latam_invoice_document',
+]
+
+
+def auditar_menus():
+    module('Menús — todo lo fiscal accesible desde la app "Perú"')
+    raiz = env.ref('al_account_base.al_l10n_pe_root', raise_if_not_found=False)
+    if not check(bool(raiz), 'Raíz de la app "Perú" publicada'):
+        return
+
+    # Sin este contexto ir.ui.menu filtra por los grupos del usuario y el
+    # recorrido devuelve un árbol vacío.
+    ctx = {'ir.ui.menu.full_list': True}
+    Menu = env['ir.ui.menu'].with_context(**ctx)
+
+    def app_de(menu):
+        while menu.parent_id:
+            menu = menu.parent_id
+        return menu
+
+    dentro, fuera = set(), {}
+    datos = env['ir.model.data'].search([('model', '=', 'ir.ui.menu'),
+                                         ('module', 'in', MODULOS_FISCALES)])
+    for dato in datos:
+        menu = Menu.browse(dato.res_id).exists()
+        if not menu or not menu.action:
+            continue
+        if app_de(menu).id == raiz.id:
+            dentro.add(menu.action)
+        else:
+            fuera.setdefault(menu.action, menu.complete_name)
+
+    huecos = {a: n for a, n in fuera.items() if a not in dentro}
+    check(not huecos, 'Sin acciones fiscales fuera de la app "Perú"',
+          ', '.join(sorted(huecos.values()))[:200])
+    check(bool(dentro), 'Acciones alcanzables desde la app',
+          '%s acciones' % len(dentro))
+
+    # Dos menús hermanos con la misma secuencia se ordenan de forma
+    # imprevisible entre actualizaciones.
+    empates = []
+    for padre in Menu.search([('id', 'child_of', raiz.id)]):
+        secuencias = Menu.search([('parent_id', '=', padre.id)]).mapped('sequence')
+        if len(secuencias) != len(set(secuencias)):
+            empates.append(padre.complete_name)
+    check(not empates, 'Sin empates de secuencia entre menús hermanos',
+          ', '.join(empates)[:200], warn_only=True)
+
+
 for fn in (auditar_account_base, auditar_name_sequence, auditar_payments,
            auditar_destinations, auditar_city, auditar_currency,
            auditar_invoice, auditar_detraction, auditar_retention,
            auditar_exchange_closure, auditar_letters, auditar_ple,
            auditar_sire, auditar_vat_sunat, auditar_kardex, auditar_pos,
-           auditar_planillas, auditar_integridad):
+           auditar_planillas, auditar_menus, auditar_integridad):
     guard(fn)
 
 
