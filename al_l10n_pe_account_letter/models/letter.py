@@ -13,7 +13,7 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
     _name = 'l10n_pe.letter.canje.wizard'
     _description = 'Asistente de canje de letras'
 
-    letter_id = fields.Many2one('l10n_pe.letter', 'Letra', required=True)
+    letter_id = fields.Many2one('l10n_pe.letter', 'Canje', required=True)
     letter_line_ids = fields.One2many('l10n_pe.letter.line', compute='_compute_letter_line_ids')
 
     @api.depends('letter_id', 'date_canje')
@@ -220,7 +220,7 @@ class L10nPeLetter(models.Model):
         compute='_compute_rest_amount',
     )
     rest_amount_adeudado = fields.Monetary(
-        string='Monto restante',
+        string='Monto adeudado',
         currency_field='currency_id',
     )
     # Campos extras
@@ -1333,7 +1333,7 @@ class L10nPeLetter(models.Model):
         return action
 
     related_invoice_count = fields.Integer(
-        string='Facturas relacionadas',
+        string='N.º de facturas relacionadas',
         compute='_compute_related_invoice_count',
         store=True
     )

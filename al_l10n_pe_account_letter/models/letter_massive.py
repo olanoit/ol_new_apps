@@ -13,7 +13,7 @@ class L10nPeLetterMassive(models.Model):
 
     letter_invoices_ids = fields.Many2many(
         'l10n_pe.letter.invoice.line',
-        string='Facturas',
+        string='Facturas del canje masivo',
     )
     letter_move_ids = fields.Many2many(
         'l10n_pe.letter.line',
@@ -24,8 +24,21 @@ class L10nPeLetterMassive(models.Model):
         'l10n_pe.letter',
         string='Canjes de origen',
         compute='_compute_massive_refinance_origin_ids',
+        search='_search_massive_refinance_origin_ids',
         readonly=True,
     )
+
+    def _search_massive_refinance_origin_ids(self, operator, value):
+        """El campo se calcula sin almacenarse, así que la búsqueda se
+        delega en el canje homónimo, que sí guarda la relación.
+
+        Sin esto Odoo no sabe qué canjes masivos rehacer cuando cambia el
+        nombre de un canje de origen, del que cuelga
+        ``refinance_origin_display``.
+        """
+        letters = self.env['l10n_pe.letter'].search(
+            [('refinance_origin_ids', operator, value)])
+        return [('id', 'in', letters.ids)]
 
     @api.depends('inverse_id', 'is_refinance_children')
     def _compute_massive_refinance_origin_ids(self):
@@ -78,7 +91,7 @@ class L10nPeLetterMassive(models.Model):
         return action
 
     related_massive_invoice_count = fields.Integer(
-        string='Facturas relacionadas',
+        string='N.º de facturas relacionadas (masivo)',
         compute='_compute_related_massive_invoice_count',
         store=True
     )

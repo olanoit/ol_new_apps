@@ -46,7 +46,7 @@ class L10nPeLetterLine(models.Model):
     company_currency_id = fields.Many2one(
         'res.currency',
         related='letter_id.company_currency_id',
-        string='Moneda',
+        string='Moneda de la compañía',
     )
     currency_id = fields.Many2one(
         'res.currency',

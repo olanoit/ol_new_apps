@@ -40,6 +40,10 @@ class AccountMove(models.Model):
         string='Tipo de T.C.',
         compute='_compute_l10n_pe_exchange_rate_type',
         store=True, readonly=False,
+        # Precomputado porque `invoice_currency_rate` (nativo) lo es y ahora
+        # depende de este campo: sin esto la tasa se calcularía al crear la
+        # factura antes de conocerse el tipo, y caería siempre en «venta».
+        precompute=True,
         help='Cuál de los dos tipos de cambio de SUNAT se aplica a este '
              'comprobante. Se propone según el criterio configurado para '
              'compras y ventas, y puede cambiarse mientras esté en borrador.')
