@@ -4,6 +4,7 @@
 Los códigos salen del Anexo 2 de la Planilla Electrónica, así que las
 pruebas comprueban contra los valores oficiales, no contra inventos.
 """
+from odoo.fields import Date
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -23,6 +24,10 @@ class TestTregistroFields(TransactionCase):
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Huamán Ríos Luis', 'company_id': cls.company.id})
         cls.version = cls.employee.version_id
+        # La versión inicial nace con `date_version` = hoy; una nueva
+        # versión con esa misma fecha reescribiría aquélla en vez de
+        # crearse, así que las pruebas fechan siempre a partir de mañana.
+        cls.next_date = Date.add(Date.today(), days=1)
 
     # ------------------------------------------------------------------
     # Catálogos oficiales
@@ -105,7 +110,7 @@ class TestTregistroFields(TransactionCase):
 
     def test_regime_syncs_on_create(self):
         version = self.employee.create_version({
-            'date_version': '2026-10-01',
+            'date_version': self.next_date,
             'l10n_pe_labor_regime_id': self.env.ref(
                 'al_hr_pe.labor_regime_21').id,   # construcción civil
         })
@@ -164,7 +169,7 @@ class TestTregistroFields(TransactionCase):
         self.version.l10n_pe_contract_type_id = self.env.ref(
             'al_hr_pe.contract_type_02')          # a tiempo parcial
         new_version = self.employee.create_version({
-            'date_version': '2026-09-01',
+            'date_version': self.next_date,
             'l10n_pe_contract_type_id': self.env.ref(
                 'al_hr_pe.contract_type_01').id,  # a plazo indeterminado
         })

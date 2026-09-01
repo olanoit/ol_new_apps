@@ -28,7 +28,7 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '11.20260816',
+    'version': '12.20260901',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
@@ -64,11 +64,13 @@ cero códigos hardcodeados (ver plan §5).
         'views/menus.xml',
         'views/hr_catalogs_views.xml',
         'views/hr_dependent_views.xml',
+        # Antes que hr_tregistro_views.xml: define la vista de lista
+        # «hr_version_list_view_inherit_pe» de la que aquél hereda.
+        'views/hr_version_views.xml',
         'views/hr_tregistro_views.xml',
         'views/hr_period_views.xml',
         'views/hr_main_parameter_views.xml',
         'views/hr_employee_views.xml',
-        'views/hr_version_views.xml',
         'views/hr_payslip_views.xml',
         # El último: reorganiza el árbol de «Configuración ▸ Perú».
         'views/menus.xml',
