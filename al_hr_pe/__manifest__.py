@@ -28,7 +28,7 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '12.20260901',
+    'version': '13.20260901',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
@@ -59,7 +59,7 @@ cero códigos hardcodeados (ver plan §5).
         'data/l10n_pe.hr.education.institution.csv',
         'data/l10n_pe.hr.education.career.csv',
         'data/hr_dependent_data.xml',
-        # Primero: define el menú «Perú» y sus grupos, de los que
+        # Antes que nada: define el menú «Perú» y sus grupos, de los que
         # cuelgan los menús declarados en los demás archivos.
         'views/menus.xml',
         'views/hr_catalogs_views.xml',
@@ -72,8 +72,6 @@ cero códigos hardcodeados (ver plan §5).
         'views/hr_main_parameter_views.xml',
         'views/hr_employee_views.xml',
         'views/hr_payslip_views.xml',
-        # El último: reorganiza el árbol de «Configuración ▸ Perú».
-        'views/menus.xml',
     ],
     'installable': True,
     'application': True,
