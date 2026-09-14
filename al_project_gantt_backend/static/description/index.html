@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,18 +223,21 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_project_gantt_backend/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Gestión de proyectos · Odoo 19</p>
+    <p class="alc-eyebrow">Gesti&#243;n de proyectos &#183; Odoo 19</p>
     <h1>Gantt de Proyectos</h1>
     <p>Planifica, arrastra y reprograma las tareas de tus proyectos en un diagrama de Gantt de verdad, dentro de Odoo y con los permisos de Odoo. Sin licencias por desarrollador y sin servicios externos.</p>
     <div class="alc-tags">
-      <span class="alc-tag">Edición con arrastrar y soltar</span>
-      <span class="alc-tag">Ruta crítica</span>
-      <span class="alc-tag">Línea base</span>
-      <span class="alc-tag">Reprogramación en cadena</span>
+      <span class="alc-tag">Edici&#243;n con arrastrar y soltar</span>
+      <span class="alc-tag">Ruta cr&#237;tica</span>
+      <span class="alc-tag">L&#237;nea base</span>
+      <span class="alc-tag">Reprogramaci&#243;n en cadena</span>
       <span class="alc-tag">Dependencias</span>
       <span class="alc-tag">Multiproyecto</span>
     </div>
@@ -245,39 +248,39 @@
   <div class="alc-wrap">
     <h2>El problema que resuelve</h2>
     <p class="alc-sub">Un plan de obra no se lee en una lista de tareas.</p>
-    <p>Las vistas de lista y kanban responden «qué hay que hacer», pero no «qué se retrasa si esta semana llueve». Para eso hace falta ver el plan completo en el tiempo, con la jerarquía por partidas, las dependencias dibujadas y la cadena de tareas que empuja la fecha de entrega.</p>
-    <p>Este módulo añade ese diagrama como una aplicación propia dentro de Odoo: se abre desde su menú o desde el botón <strong>Gantt</strong> del propio proyecto, y lo que se arrastra en pantalla se guarda en <code>project.task</code> al momento.</p>
+    <p>Las vistas de lista y kanban responden &#171;qu&#233; hay que hacer&#187;, pero no &#171;qu&#233; se retrasa si esta semana llueve&#187;. Para eso hace falta ver el plan completo en el tiempo, con la jerarqu&#237;a por partidas, las dependencias dibujadas y la cadena de tareas que empuja la fecha de entrega.</p>
+    <p>Este m&#243;dulo a&#241;ade ese diagrama como una aplicaci&#243;n propia dentro de Odoo: se abre desde su men&#250; o desde el bot&#243;n <strong>Gantt</strong> del propio proyecto, y lo que se arrastra en pantalla se guarda en <code>project.task</code> al momento.</p>
   </div>
 </section>
 
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Qué hace</h2>
+    <h2>Qu&#233; hace</h2>
     <p class="alc-sub">Planificar de verdad, no solo mirar.</p>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Edición directa</h3>
-        <p>Arrastra para mover, estira para cambiar la duración, edita el nombre, mueve el avance, crea y borra tareas, y traza dependencias arrastrando de una barra a otra. Cada cambio se guarda solo.</p>
+        <h3>Edici&#243;n directa</h3>
+        <p>Arrastra para mover, estira para cambiar la duraci&#243;n, edita el nombre, mueve el avance, crea y borra tareas, y traza dependencias arrastrando de una barra a otra. Cada cambio se guarda solo.</p>
       </div>
       <div class="alc-card">
-        <h3>Reprogramación en cadena</h3>
-        <p>Al mover una tarea, las que dependen de ella se desplazan manteniendo su duración. Nunca se adelanta trabajo: mover algo hacia atrás no comprime el plan a tus espaldas.</p>
+        <h3>Reprogramaci&#243;n en cadena</h3>
+        <p>Al mover una tarea, las que dependen de ella se desplazan manteniendo su duraci&#243;n. Nunca se adelanta trabajo: mover algo hacia atr&#225;s no comprime el plan a tus espaldas.</p>
       </div>
       <div class="alc-card">
-        <h3>Ruta crítica</h3>
-        <p>Calculada en el servidor con el método del camino crítico: resalta las tareas con holgura cero y muestra la holgura de cada una en su propia columna.</p>
+        <h3>Ruta cr&#237;tica</h3>
+        <p>Calculada en el servidor con el m&#233;todo del camino cr&#237;tico: resalta las tareas con holgura cero y muestra la holgura de cada una en su propia columna.</p>
       </div>
       <div class="alc-card">
-        <h3>Línea base</h3>
-        <p>Guarda una foto del plan y compara: barra fantasma bajo cada tarea y columna de desvío en días, en rojo si vas tarde. Las líneas base no se pueden retocar.</p>
+        <h3>L&#237;nea base</h3>
+        <p>Guarda una foto del plan y compara: barra fantasma bajo cada tarea y columna de desv&#237;o en d&#237;as, en rojo si vas tarde. Las l&#237;neas base no se pueden retocar.</p>
       </div>
       <div class="alc-card">
         <h3>Estructura del plan</h3>
-        <p>Jerarquía proyecto → tarea → subtarea con código EDT (1, 1.1, 1.2…), indentar y desindentar desde el menú contextual, e hitos tanto de <code>project.milestone</code> como tareas de duración cero.</p>
+        <p>Jerarqu&#237;a proyecto &#8594; tarea &#8594; subtarea con c&#243;digo EDT (1, 1.1, 1.2&#8230;), indentar y desindentar desde el men&#250; contextual, e hitos tanto de <code>project.milestone</code> como tareas de duraci&#243;n cero.</p>
       </div>
       <div class="alc-card">
         <h3>Encontrar lo que importa</h3>
-        <p>Búsqueda instantánea que conserva el árbol, filtros por responsable, estado y rango de fechas, ocultar tareas terminadas, escalas de día a trimestre y pantalla completa.</p>
+        <p>B&#250;squeda instant&#225;nea que conserva el &#225;rbol, filtros por responsable, estado y rango de fechas, ocultar tareas terminadas, escalas de d&#237;a a trimestre y pantalla completa.</p>
       </div>
     </div>
   </div>
@@ -285,23 +288,23 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub">Tres caminos, el mismo diagrama.</p>
     <div class="alc-steps">
       <div class="alc-step">
         <h3>Desde el proyecto</h3>
-        <span class="alc-where">Proyectos ▸ un proyecto ▸ botón Gantt</span>
-        <p>El botón muestra cuántas tareas están planificadas y abre el diagrama acotado a ese proyecto. Un clic más y ves toda la cartera.</p>
+        <span class="alc-where">Proyectos &#9656; un proyecto &#9656; bot&#243;n Gantt</span>
+        <p>El bot&#243;n muestra cu&#225;ntas tareas est&#225;n planificadas y abre el diagrama acotado a ese proyecto. Un clic m&#225;s y ves toda la cartera.</p>
       </div>
       <div class="alc-step">
-        <h3>Desde su propio menú</h3>
-        <span class="alc-where">Gantt ▸ Diagrama de Gantt</span>
-        <p>Vista multiproyecto: eliges qué proyectos comparar en la misma línea de tiempo.</p>
+        <h3>Desde su propio men&#250;</h3>
+        <span class="alc-where">Gantt &#9656; Diagrama de Gantt</span>
+        <p>Vista multiproyecto: eliges qu&#233; proyectos comparar en la misma l&#237;nea de tiempo.</p>
       </div>
       <div class="alc-step">
         <h3>Desde el sitio web</h3>
-        <span class="alc-where">/gantt · módulo opcional</span>
-        <p>La misma planificación en una página del sitio, pensada para pantallas de obra y sala de reuniones. Solo para usuarios internos autenticados.</p>
+        <span class="alc-where">/gantt &#183; m&#243;dulo opcional</span>
+        <p>La misma planificaci&#243;n en una p&#225;gina del sitio, pensada para pantallas de obra y sala de reuniones. Solo para usuarios internos autenticados.</p>
       </div>
     </div>
   </div>
@@ -312,27 +315,27 @@
     <h2>Permisos: los de Odoo, no unos aparte</h2>
     <div class="alc-note">
       <strong>Cada barra se puede arrastrar solo si el usuario puede escribir esa tarea.</strong>
-      El módulo no inventa un sistema de permisos: pregunta al ORM por cada tarea y respeta la privacidad del proyecto, las reglas por compañía y los accesos de portal. Lo que no puedes editar aparece marcado y bloqueado.
+      El m&#243;dulo no inventa un sistema de permisos: pregunta al ORM por cada tarea y respeta la privacidad del proyecto, las reglas por compa&#241;&#237;a y los accesos de portal. Lo que no puedes editar aparece marcado y bloqueado.
     </div>
-    <p>La lectura se hace siempre con el usuario real, sin <code>sudo()</code>. Y si el servidor rechaza un cambio, el diagrama se recarga: nunca se queda mostrando algo que no está guardado.</p>
+    <p>La lectura se hace siempre con el usuario real, sin <code>sudo()</code>. Y si el servidor rechaza un cambio, el diagrama se recarga: nunca se queda mostrando algo que no est&#225; guardado.</p>
   </div>
 </section>
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué necesita</h2>
+    <h2>Qu&#233; necesita</h2>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Community o Enterprise</h3>
-        <p>Depende solo de <code>project</code>. No usa la vista Gantt de Enterprise ni ningún módulo exclusivo; convive con ella sin conflicto.</p>
+        <p>Depende solo de <code>project</code>. No usa la vista Gantt de Enterprise ni ning&#250;n m&#243;dulo exclusivo; convive con ella sin conflicto.</p>
       </div>
       <div class="alc-card">
         <h3>Fechas de las tareas</h3>
-        <p>Detecta automáticamente el par de fechas que usa tu instalación. Con el módulo de planificación de proyectos aprovecha la fecha de inicio; sin él, trabaja con la fecha límite y calcula el inicio.</p>
+        <p>Detecta autom&#225;ticamente el par de fechas que usa tu instalaci&#243;n. Con el m&#243;dulo de planificaci&#243;n de proyectos aprovecha la fecha de inicio; sin &#233;l, trabaja con la fecha l&#237;mite y calcula el inicio.</p>
       </div>
       <div class="alc-card">
         <h3>Nada externo</h3>
-        <p>La librería del diagrama viene incluida (licencia MIT) y se carga solo al abrir la vista. Ni CDN, ni servicios en la nube, ni datos saliendo de tu servidor.</p>
+        <p>La librer&#237;a del diagrama viene incluida (licencia MIT) y se carga solo al abrir la vista. Ni CDN, ni servicios en la nube, ni datos saliendo de tu servidor.</p>
       </div>
     </div>
   </div>
@@ -340,24 +343,24 @@
 
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Dónde están los límites</h2>
+    <h2>D&#243;nde est&#225;n los l&#237;mites</h2>
     <p class="alc-sub">Preferimos decirlo antes de que lo descubras.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Un tipo de dependencia</h3>
-        <p>Fin–comienzo. Es lo que guarda el campo nativo de dependencias de Odoo; no hay comienzo–comienzo ni retrasos.</p>
+        <p>Fin&#8211;comienzo. Es lo que guarda el campo nativo de dependencias de Odoo; no hay comienzo&#8211;comienzo ni retrasos.</p>
       </div>
       <div class="alc-card">
         <h3>Calendario laboral: solo visual</h3>
-        <p>Los días no laborables del calendario del proyecto se sombrean, pero la reprogramación en cadena trabaja en tiempo natural, no en días hábiles.</p>
+        <p>Los d&#237;as no laborables del calendario del proyecto se sombrean, pero la reprogramaci&#243;n en cadena trabaja en tiempo natural, no en d&#237;as h&#225;biles.</p>
       </div>
       <div class="alc-card">
         <h3>Sin histograma de recursos</h3>
-        <p>Se ve quién es responsable de cada tarea, pero no hay curva de carga por persona ni nivelación de recursos.</p>
+        <p>Se ve qui&#233;n es responsable de cada tarea, pero no hay curva de carga por persona ni nivelaci&#243;n de recursos.</p>
       </div>
       <div class="alc-card">
-        <h3>Sin exportación a PDF/MSP</h3>
-        <p>A propósito: la exportación de la librería pasa por un servicio en la nube del fabricante, y eso significaría enviar tu plan a un tercero.</p>
+        <h3>Sin exportaci&#243;n a PDF/MSP</h3>
+        <p>A prop&#243;sito: la exportaci&#243;n de la librer&#237;a pasa por un servicio en la nube del fabricante, y eso significar&#237;a enviar tu plan a un tercero.</p>
       </div>
     </div>
   </div>
@@ -365,8 +368,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p><strong>Gantt de Proyectos — Backend</strong> · Odoo 19 · Licencia LGPL-3</p>
-    <p>Instala también <strong>Gantt de Proyectos — Website</strong> si quieres la misma planificación publicada en una página del sitio para usuarios internos.</p>
+    <p><strong>Gantt de Proyectos &#8212; Backend</strong> &#183; Odoo 19 &#183; Licencia LGPL-3</p>
+    <p>Instala tambi&#233;n <strong>Gantt de Proyectos &#8212; Website</strong> si quieres la misma planificaci&#243;n publicada en una p&#225;gina del sitio para usuarios internos.</p>
   </div>
 </footer>
 </section>

@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,18 +223,21 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_currency/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Contabilidad Per&#250; &#183; Odoo 19</p>
     <h1>Tipo de cambio SUNAT</h1>
-    <p>Las dos tasas que Odoo no contempla —compra y venta— traídas del TXT oficial de SUNAT, sin token y sin coste.</p>
+    <p>Las dos tasas que Odoo no contempla &#8212;compra y venta&#8212; tra&#237;das del TXT oficial de SUNAT, sin token y sin coste.</p>
     <div class="alc-tags">
       <span class="alc-tag">Compra y venta</span>
       <span class="alc-tag">TXT oficial SUNAT</span>
       <span class="alc-tag">Cron diario</span>
-      <span class="alc-tag">Histórico</span>
+      <span class="alc-tag">Hist&#243;rico</span>
     </div>
   </div>
 </header>
@@ -242,26 +245,26 @@
 <section class="alc-sec">
   <div class="alc-wrap">
     <h2>El problema</h2>
-    <p class="alc-sub">Odoo maneja una tasa por moneda y día. Perú necesita dos.</p>
-    <p>La norma peruana valoriza los activos al tipo de cambio <strong>compra</strong> y los pasivos al de <strong>venta</strong>. Con una sola tasa no se puede cumplir: el cierre de tipo de cambio, las letras y la valorización de partidas necesitan ambas.</p>    <p>Este módulo las guarda las dos en el registro de tasas, sin romper el funcionamiento nativo del que dependen el resto de módulos de Odoo.</p>
+    <p class="alc-sub">Odoo maneja una tasa por moneda y d&#237;a. Per&#250; necesita dos.</p>
+    <p>La norma peruana valoriza los activos al tipo de cambio <strong>compra</strong> y los pasivos al de <strong>venta</strong>. Con una sola tasa no se puede cumplir: el cierre de tipo de cambio, las letras y la valorizaci&#243;n de partidas necesitan ambas.</p>    <p>Este m&#243;dulo las guarda las dos en el registro de tasas, sin romper el funcionamiento nativo del que dependen el resto de m&#243;dulos de Odoo.</p>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>De dónde salen</h2>
-    <p class="alc-sub">De la fuente oficial, que además es gratuita.</p>
+    <h2>De d&#243;nde salen</h2>
+    <p class="alc-sub">De la fuente oficial, que adem&#225;s es gratuita.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>TXT oficial de SUNAT</h3>
-        <p>La fuente principal: pública, sin token y sin cuota. Un cron la consulta a diario.</p>
+        <p>La fuente principal: p&#250;blica, sin token y sin cuota. Un cron la consulta a diario.</p>
       </div>
       <div class="alc-card">
-        <h3>Fechas históricas</h3>
-        <p>Para rellenar hacia atrás se usa un servicio de consulta por fecha.</p>
+        <h3>Fechas hist&#243;ricas</h3>
+        <p>Para rellenar hacia atr&#225;s se usa un servicio de consulta por fecha.</p>
       </div>
       <div class="alc-card">
         <h3>Visible en la factura</h3>
-        <p>El comprobante en moneda extranjera muestra el tipo aplicado y su fecha — que es lo que pregunta cualquier revisión.</p>
+        <p>El comprobante en moneda extranjera muestra el tipo aplicado y su fecha &#8212; que es lo que pregunta cualquier revisi&#243;n.</p>
       </div>
     </div>
   </div>
@@ -269,7 +272,7 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_currency</strong> · versión  · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_currency</strong> &#183; versi&#243;n 6.20260901 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>account</strong>. Lo consumen el cierre de tipo de cambio, las letras y los comprobantes.</p>
   </div>
 </footer>

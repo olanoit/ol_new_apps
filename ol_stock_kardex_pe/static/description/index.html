@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/ol_stock_kardex_pe/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Inventario Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Inventario Per&#250; &#183; Odoo 19</p>
     <h1>Kardex SUNAT 13.1 y 12.1</h1>
-    <p>El Registro de Inventario Permanente en pantalla, en Excel y en PDF — con el saldo corrido calculado por la base de datos, no fila a fila.</p>
+    <p>El Registro de Inventario Permanente en pantalla, en Excel y en PDF &#8212; con el saldo corrido calculado por la base de datos, no fila a fila.</p>
     <div class="alc-tags">
       <span class="alc-tag">Formato 13.1</span>
       <span class="alc-tag">Formato 12.1</span>
@@ -241,16 +244,16 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué aporta</h2>
+    <h2>Qu&#233; aporta</h2>
     <p class="alc-sub">Enterprise genera el TXT del PLE. Lo que falta es poder verlo.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Kardex en pantalla</h3>
-        <p>Líneas con saldo corrido —cantidad, costo unitario y costo total—, agrupables por producto o almacén, con sumas por columna y salto al documento de origen.</p>
+        <p>L&#237;neas con saldo corrido &#8212;cantidad, costo unitario y costo total&#8212;, agrupables por producto o almac&#233;n, con sumas por columna y salto al documento de origen.</p>
       </div>
       <div class="alc-card">
         <h3>Formato 13.1 valorizado</h3>
-        <p>Réplica de la plantilla oficial de SUNAT: cabecera por producto con sus tablas 5 y 6, y la tabla de entradas, salidas y saldo final con totales.</p>
+        <p>R&#233;plica de la plantilla oficial de SUNAT: cabecera por producto con sus tablas 5 y 6, y la tabla de entradas, salidas y saldo final con totales.</p>
       </div>
       <div class="alc-card">
         <h3>Formato 12.1 en unidades</h3>
@@ -258,55 +261,55 @@
       </div>
       <div class="alc-card">
         <h3>Excel y PDF</h3>
-        <p>XLSX generado en memoria y PDF horizontal con una página por producto.</p>
+        <p>XLSX generado en memoria y PDF horizontal con una p&#225;gina por producto.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Por qué es rápido</h2>
-    <p class="alc-sub">El kardex no se «genera»: se consulta.</p>
-    <p>El modelo de líneas está respaldado por una <strong>vista SQL</strong>, no por una tabla. El saldo corrido lo calculan las <em>window functions</em> de PostgreSQL, tanto consolidado como por almacén, y el saldo inicial de un periodo sale de una sola consulta en vez de recorrer toda la historia del producto.</p>    <div class="alc-note">La alternativa habitual —poblar un modelo temporal en cada corrida— hace miles de inserciones para algo que la base resuelve en una consulta. Aquí no se inserta nada: por eso escala a miles de movimientos al año.</div>    <p>Para volúmenes muy grandes hay además generación en segundo plano: se encola, una tarea lo procesa y el archivo queda listo para descargar.</p>
+    <h2>Por qu&#233; es r&#225;pido</h2>
+    <p class="alc-sub">El kardex no se &#171;genera&#187;: se consulta.</p>
+    <p>El modelo de l&#237;neas est&#225; respaldado por una <strong>vista SQL</strong>, no por una tabla. El saldo corrido lo calculan las <em>window functions</em> de PostgreSQL, tanto consolidado como por almac&#233;n, y el saldo inicial de un periodo sale de una sola consulta en vez de recorrer toda la historia del producto.</p>    <div class="alc-note">La alternativa habitual &#8212;poblar un modelo temporal en cada corrida&#8212; hace miles de inserciones para algo que la base resuelve en una consulta. Aqu&#237; no se inserta nada: por eso escala a miles de movimientos al a&#241;o.</div>    <p>Para vol&#250;menes muy grandes hay adem&#225;s generaci&#243;n en segundo plano: se encola, una tarea lo procesa y el archivo queda listo para descargar.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Abrir el asistente</h3>
-      <span class="alc-where">Inventario → Informes → Kardex SUNAT · Perú → Kardex</span>
-    <p>También desde el botón <strong>Ver Kardex</strong> de un producto o de una categoría, que llega con los filtros ya puestos.</p>
+      <span class="alc-where">Inventario &#8594; Informes &#8594; Kardex SUNAT &#183; Per&#250; &#8594; Kardex</span>
+    <p>Tambi&#233;n desde el bot&#243;n <strong>Ver Kardex</strong> de un producto o de una categor&#237;a, que llega con los filtros ya puestos.</p>
       </li>
       <li class="alc-step">
         <h3>Elegir formato y periodo</h3>
-    <p>13.1 valorizado o 12.1 físico. El periodo va <strong>por mes</strong> por defecto, que es como se declara, o como rango libre de fechas.</p>
+    <p>13.1 valorizado o 12.1 f&#237;sico. El periodo va <strong>por mes</strong> por defecto, que es como se declara, o como rango libre de fechas.</p>
       </li>
       <li class="alc-step">
         <h3>Filtrar si hace falta</h3>
-    <p>Por almacén, productos o categorías.</p>
+    <p>Por almac&#233;n, productos o categor&#237;as.</p>
       </li>
       <li class="alc-step">
         <h3>Ver o exportar</h3>
-    <p>En pantalla es instantáneo. Excel, PDF o generación en segundo plano para los casos grandes.</p>
+    <p>En pantalla es instant&#225;neo. Excel, PDF o generaci&#243;n en segundo plano para los casos grandes.</p>
       </li>
     </ol>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Un límite que conviene conocer</h2>
+    <h2>Un l&#237;mite que conviene conocer</h2>
     <p class="alc-sub"></p>
-    <p>Odoo valoriza el inventario <strong>por compañía</strong>, no por almacén. En modo «por almacén» el 13.1 usa la aproximación nativa y valúa los traslados internos al costo promedio corriente del kardex. Para valores contablemente exactos, el modo consolidado — que además es el que cuadra con el TXT del PLE.</p>
+    <p>Odoo valoriza el inventario <strong>por compa&#241;&#237;a</strong>, no por almac&#233;n. En modo &#171;por almac&#233;n&#187; el 13.1 usa la aproximaci&#243;n nativa y val&#250;a los traslados internos al costo promedio corriente del kardex. Para valores contablemente exactos, el modo consolidado &#8212; que adem&#225;s es el que cuadra con el TXT del PLE.</p>
   </div>
 </section>
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>ol_stock_kardex_pe</strong> · versión 2.20260718 · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_pe_reports_stock</strong> y <strong>stock_account</strong>. Análisis de rendimiento en <code>docs/kardex/</code>.</p>
+    <p style="margin:0 0 6px"><strong>ol_stock_kardex_pe</strong> &#183; versi&#243;n 3.20260718 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_pe_reports_stock</strong> y <strong>stock_account</strong>. An&#225;lisis de rendimiento en <code>docs/kardex/</code>.</p>
   </div>
 </footer>
 

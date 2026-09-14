@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,52 +223,55 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_project_gantt_website/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Gestión de proyectos · Odoo 19 · Interfaz web</p>
-    <h1>Gantt de Proyectos — Website</h1>
-    <p>La misma planificación, en una página del sitio: <code>/gantt</code>. Para la pantalla de la sala de reuniones, el monitor de obra o el enlace que se comparte en el equipo — sin abrir el backend.</p>
+    <p class="alc-eyebrow">Gesti&#243;n de proyectos &#183; Odoo 19 &#183; Interfaz web</p>
+    <h1>Gantt de Proyectos &#8212; Website</h1>
+    <p>La misma planificaci&#243;n, en una p&#225;gina del sitio: <code>/gantt</code>. Para la pantalla de la sala de reuniones, el monitor de obra o el enlace que se comparte en el equipo &#8212; sin abrir el backend.</p>
     <div class="alc-tags">
-      <span class="alc-tag">Página /gantt</span>
+      <span class="alc-tag">P&#225;gina /gantt</span>
       <span class="alc-tag">Solo usuarios internos</span>
-      <span class="alc-tag">Edición completa</span>
-      <span class="alc-tag">Ruta crítica y línea base</span>
+      <span class="alc-tag">Edici&#243;n completa</span>
+      <span class="alc-tag">Ruta cr&#237;tica y l&#237;nea base</span>
     </div>
   </div>
 </header>
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Para qué</h2>
+    <h2>Para qu&#233;</h2>
     <p class="alc-sub">Consultar y ajustar el plan sin pasar por el backend.</p>
-    <p>Hay sitios donde el backend de Odoo estorba: una pantalla fija en obra, una reunión de avance, un portátil compartido. Esta interfaz publica el diagrama como una página del sitio web, con la misma barra de herramientas y las mismas reglas de la versión de backend.</p>
+    <p>Hay sitios donde el backend de Odoo estorba: una pantalla fija en obra, una reuni&#243;n de avance, un port&#225;til compartido. Esta interfaz publica el diagrama como una p&#225;gina del sitio web, con la misma barra de herramientas y las mismas reglas de la versi&#243;n de backend.</p>
     <div class="alc-note">
-      <strong>No es una página pública.</strong> Exige sesión iniciada y usuario interno con permiso de Gantt: un visitante anónimo va al login y un usuario de portal recibe un 403. Nada del plan se expone hacia fuera.
+      <strong>No es una p&#225;gina p&#250;blica.</strong> Exige sesi&#243;n iniciada y usuario interno con permiso de Gantt: un visitante an&#243;nimo va al login y un usuario de portal recibe un 403. Nada del plan se expone hacia fuera.
     </div>
   </div>
 </section>
 
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Qué incluye</h2>
+    <h2>Qu&#233; incluye</h2>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>El diagrama completo</h3>
-        <p>Jerarquía, dependencias, hitos, colores por estado, escalas de día a trimestre, código EDT y búsqueda instantánea.</p>
+        <p>Jerarqu&#237;a, dependencias, hitos, colores por estado, escalas de d&#237;a a trimestre, c&#243;digo EDT y b&#250;squeda instant&#225;nea.</p>
       </div>
       <div class="alc-card">
-        <h3>Edición con las mismas reglas</h3>
-        <p>Arrastrar, redimensionar, crear, borrar y enlazar tareas — siempre que el usuario tenga permiso real de escritura sobre esa tarea.</p>
+        <h3>Edici&#243;n con las mismas reglas</h3>
+        <p>Arrastrar, redimensionar, crear, borrar y enlazar tareas &#8212; siempre que el usuario tenga permiso real de escritura sobre esa tarea.</p>
       </div>
       <div class="alc-card">
-        <h3>Ruta crítica y línea base</h3>
-        <p>Los mismos cálculos del módulo base, disponibles con un clic desde la barra de herramientas.</p>
+        <h3>Ruta cr&#237;tica y l&#237;nea base</h3>
+        <p>Los mismos c&#225;lculos del m&#243;dulo base, disponibles con un clic desde la barra de herramientas.</p>
       </div>
       <div class="alc-card">
         <h3>Filtros y avisos</h3>
-        <p>Responsable, estado, rango de fechas y tareas sin fecha; con aviso explícito cuando el resultado viene recortado por el límite.</p>
+        <p>Responsable, estado, rango de fechas y tareas sin fecha; con aviso expl&#237;cito cuando el resultado viene recortado por el l&#237;mite.</p>
       </div>
     </div>
   </div>
@@ -276,22 +279,22 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se instala</h2>
+    <h2>C&#243;mo se instala</h2>
     <div class="alc-steps">
       <div class="alc-step">
-        <h3>Instala el módulo</h3>
-        <span class="alc-where">Aplicaciones ▸ Gantt de Proyectos — Website</span>
-        <p>Arrastra el módulo base y el módulo <strong>Sitio web</strong> de Odoo. Si no usas el sitio web, quédate solo con la interfaz de backend.</p>
+        <h3>Instala el m&#243;dulo</h3>
+        <span class="alc-where">Aplicaciones &#9656; Gantt de Proyectos &#8212; Website</span>
+        <p>Arrastra el m&#243;dulo base y el m&#243;dulo <strong>Sitio web</strong> de Odoo. Si no usas el sitio web, qu&#233;date solo con la interfaz de backend.</p>
       </div>
       <div class="alc-step">
         <h3>Da acceso a quien corresponda</h3>
-        <span class="alc-where">Ajustes ▸ Usuarios ▸ Gantt de Proyectos</span>
-        <p>Solo los usuarios internos con el grupo del Gantt entran en la página.</p>
+        <span class="alc-where">Ajustes &#9656; Usuarios &#9656; Gantt de Proyectos</span>
+        <p>Solo los usuarios internos con el grupo del Gantt entran en la p&#225;gina.</p>
       </div>
       <div class="alc-step">
-        <h3>Entra por el menú del sitio</h3>
-        <span class="alc-where">Menú «Gantt» · o directamente /gantt</span>
-        <p>La entrada de menú es un registro normal del sitio: puedes renombrarla o moverla desde el editor.</p>
+        <h3>Entra por el men&#250; del sitio</h3>
+        <span class="alc-where">Men&#250; &#171;Gantt&#187; &#183; o directamente /gantt</span>
+        <p>La entrada de men&#250; es un registro normal del sitio: puedes renombrarla o moverla desde el editor.</p>
       </div>
     </div>
   </div>
@@ -299,8 +302,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p><strong>Gantt de Proyectos — Website</strong> · Odoo 19 · Licencia LGPL-3</p>
-    <p>Requiere <strong>Gantt de Proyectos — Base</strong> y el módulo Sitio web. Puede convivir con la interfaz de backend sin conflicto.</p>
+    <p><strong>Gantt de Proyectos &#8212; Website</strong> &#183; Odoo 19 &#183; Licencia LGPL-3</p>
+    <p>Requiere <strong>Gantt de Proyectos &#8212; Base</strong> y el m&#243;dulo Sitio web. Puede convivir con la interfaz de backend sin conflicto.</p>
   </div>
 </footer>
 </section>

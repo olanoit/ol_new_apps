@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,17 +223,20 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_project_gantt_base/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Gestión de proyectos · Odoo 19 · Módulo base</p>
-    <h1>Gantt de Proyectos — Base</h1>
-    <p>El motor de la suite: una única capa de datos para el diagrama, con la seguridad de Odoo, el mapeo de campos configurable y la librería de renderizado ya empaquetada. No tiene interfaz propia.</p>
+    <p class="alc-eyebrow">Gesti&#243;n de proyectos &#183; Odoo 19 &#183; M&#243;dulo base</p>
+    <h1>Gantt de Proyectos &#8212; Base</h1>
+    <p>El motor de la suite: una &#250;nica capa de datos para el diagrama, con la seguridad de Odoo, el mapeo de campos configurable y la librer&#237;a de renderizado ya empaquetada. No tiene interfaz propia.</p>
     <div class="alc-tags">
-      <span class="alc-tag">Contrato de datos único</span>
-      <span class="alc-tag">Ruta crítica (CPM)</span>
-      <span class="alc-tag">Línea base</span>
+      <span class="alc-tag">Contrato de datos &#250;nico</span>
+      <span class="alc-tag">Ruta cr&#237;tica (CPM)</span>
+      <span class="alc-tag">L&#237;nea base</span>
       <span class="alc-tag">Escritura por lotes</span>
       <span class="alc-tag">dhtmlxGantt MIT incluida</span>
     </div>
@@ -242,42 +245,42 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Para qué sirve este módulo</h2>
-    <p class="alc-sub">Es la pieza que instalan las dos interfaces, no una aplicación de usuario.</p>
-    <p>La suite tiene dos caras — una en el backend de Odoo y otra en el sitio web — y las dos leen y escriben exactamente los mismos datos. Toda esa lógica vive aquí: si mañana cambia la forma de calcular una fecha o quién puede editar una tarea, se cambia en un solo sitio.</p>
+    <h2>Para qu&#233; sirve este m&#243;dulo</h2>
+    <p class="alc-sub">Es la pieza que instalan las dos interfaces, no una aplicaci&#243;n de usuario.</p>
+    <p>La suite tiene dos caras &#8212; una en el backend de Odoo y otra en el sitio web &#8212; y las dos leen y escriben exactamente los mismos datos. Toda esa l&#243;gica vive aqu&#237;: si ma&#241;ana cambia la forma de calcular una fecha o qui&#233;n puede editar una tarea, se cambia en un solo sitio.</p>
     <div class="alc-note">
-      <strong>Instálalo junto a una interfaz.</strong> Por sí solo expone el servicio de datos y su configuración, pero no añade ningún menú. Las interfaces lo declaran como dependencia, así que normalmente no hay que instalarlo a mano.
+      <strong>Inst&#225;lalo junto a una interfaz.</strong> Por s&#237; solo expone el servicio de datos y su configuraci&#243;n, pero no a&#241;ade ning&#250;n men&#250;. Las interfaces lo declaran como dependencia, as&#237; que normalmente no hay que instalarlo a mano.
     </div>
   </div>
 </section>
 
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Qué aporta</h2>
+    <h2>Qu&#233; aporta</h2>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Un único punto de datos</h3>
-        <p><code>project.project.get_gantt_data()</code> devuelve proyectos, tareas, dependencias, hitos y colores ya normalizados, en un formato neutral respecto de la librería que los dibuja.</p>
+        <h3>Un &#250;nico punto de datos</h3>
+        <p><code>project.project.get_gantt_data()</code> devuelve proyectos, tareas, dependencias, hitos y colores ya normalizados, en un formato neutral respecto de la librer&#237;a que los dibuja.</p>
       </div>
       <div class="alc-card">
-        <h3>Un único punto de escritura</h3>
+        <h3>Un &#250;nico punto de escritura</h3>
         <p><code>apply_gantt_changes()</code> recibe el conjunto de cambios del diagrama y lo traduce a operaciones del ORM, comprobando el permiso real sobre cada tarea antes de tocar nada.</p>
       </div>
       <div class="alc-card">
         <h3>Mapeo de campos configurable</h3>
-        <p>Detecta qué campos de fecha y avance existen en tu instalación y permite sobreescribirlos con un parámetro del sistema, sin tocar código.</p>
+        <p>Detecta qu&#233; campos de fecha y avance existen en tu instalaci&#243;n y permite sobreescribirlos con un par&#225;metro del sistema, sin tocar c&#243;digo.</p>
       </div>
       <div class="alc-card">
-        <h3>Ruta crítica y línea base</h3>
-        <p>El camino crítico se calcula en Python con pasadas hacia delante y hacia atrás; la línea base es un modelo propio, inmutable, con el desvío en días por tarea.</p>
+        <h3>Ruta cr&#237;tica y l&#237;nea base</h3>
+        <p>El camino cr&#237;tico se calcula en Python con pasadas hacia delante y hacia atr&#225;s; la l&#237;nea base es un modelo propio, inmutable, con el desv&#237;o en d&#237;as por tarea.</p>
       </div>
       <div class="alc-card">
         <h3>Colores administrables</h3>
-        <p>El color de cada estado de tarea es un dato editable, por compañía si hace falta. Nada de colores escritos en el código.</p>
+        <p>El color de cada estado de tarea es un dato editable, por compa&#241;&#237;a si hace falta. Nada de colores escritos en el c&#243;digo.</p>
       </div>
       <div class="alc-card">
-        <h3>Librería incluida</h3>
-        <p>dhtmlxGantt 10 (edición Standard, licencia MIT) empaquetada en el módulo y cargada de forma perezosa: no pesa en el arranque del webclient.</p>
+        <h3>Librer&#237;a incluida</h3>
+        <p>dhtmlxGantt 10 (edici&#243;n Standard, licencia MIT) empaquetada en el m&#243;dulo y cargada de forma perezosa: no pesa en el arranque del webclient.</p>
       </div>
     </div>
   </div>
@@ -287,27 +290,27 @@
   <div class="alc-wrap">
     <h2>Seguridad</h2>
     <p class="alc-sub">Apoyarse en las reglas de Odoo, no reescribirlas.</p>
-    <p>Todas las lecturas se hacen con el usuario real, sin <code>sudo()</code>, de modo que la privacidad del proyecto, las reglas por compañía y los accesos de portal se aplican tal cual. Antes de escribir, cada tarea se comprueba una por una contra la ACL y las reglas de registro: lo que el usuario no puede editar en el formulario tampoco puede arrastrarlo en el diagrama.</p>
-    <p>El servicio rechaza además a los usuarios compartidos (portal y público) y exige pertenecer al grupo <strong>Gantt de Proyectos / Usuario</strong>, que reciben automáticamente los administradores de proyecto.</p>
+    <p>Todas las lecturas se hacen con el usuario real, sin <code>sudo()</code>, de modo que la privacidad del proyecto, las reglas por compa&#241;&#237;a y los accesos de portal se aplican tal cual. Antes de escribir, cada tarea se comprueba una por una contra la ACL y las reglas de registro: lo que el usuario no puede editar en el formulario tampoco puede arrastrarlo en el diagrama.</p>
+    <p>El servicio rechaza adem&#225;s a los usuarios compartidos (portal y p&#250;blico) y exige pertenecer al grupo <strong>Gantt de Proyectos / Usuario</strong>, que reciben autom&#225;ticamente los administradores de proyecto.</p>
   </div>
 </section>
 
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
     <h2>Pensado para extenderse</h2>
-    <p class="alc-sub">Los puntos de extensión están documentados, no escondidos.</p>
+    <p class="alc-sub">Los puntos de extensi&#243;n est&#225;n documentados, no escondidos.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Filtros propios</h3>
-        <p>Un método define el dominio de tareas; heredarlo basta para añadir criterios sin duplicar el resto.</p>
+        <p>Un m&#233;todo define el dominio de tareas; heredarlo basta para a&#241;adir criterios sin duplicar el resto.</p>
       </div>
       <div class="alc-card">
         <h3>Campos adicionales</h3>
-        <p>La lista de campos leídos y la serialización de cada tarea son métodos separados, pensados para ampliarse.</p>
+        <p>La lista de campos le&#237;dos y la serializaci&#243;n de cada tarea son m&#233;todos separados, pensados para ampliarse.</p>
       </div>
       <div class="alc-card">
-        <h3>Otra librería de dibujo</h3>
-        <p>El formato de salida es neutral y la traducción vive en un adaptador JavaScript aparte: cambiar de librería no obliga a tocar Python.</p>
+        <h3>Otra librer&#237;a de dibujo</h3>
+        <p>El formato de salida es neutral y la traducci&#243;n vive en un adaptador JavaScript aparte: cambiar de librer&#237;a no obliga a tocar Python.</p>
       </div>
     </div>
   </div>
@@ -315,8 +318,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p><strong>Gantt de Proyectos — Base</strong> · Odoo 19 · Licencia LGPL-3 · Depende solo de <code>project</code></p>
-    <p>Interfaces disponibles: <strong>Backend</strong> (aplicación con menú propio y botón en el proyecto) y <strong>Website</strong> (página <code>/gantt</code> para usuarios internos).</p>
+    <p><strong>Gantt de Proyectos &#8212; Base</strong> &#183; Odoo 19 &#183; Licencia LGPL-3 &#183; Depende solo de <code>project</code></p>
+    <p>Interfaces disponibles: <strong>Backend</strong> (aplicaci&#243;n con men&#250; propio y bot&#243;n en el proyecto) y <strong>Website</strong> (p&#225;gina <code>/gantt</code> para usuarios internos).</p>
   </div>
 </footer>
 </section>

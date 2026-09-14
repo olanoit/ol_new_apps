@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_hr_pe_attendance/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Planillas Per&#250; &#183; Odoo 19</p>
     <h1>Asistencia y turnos</h1>
-    <p>Turnos peruanos sobre la planificación nativa, ciclos atípicos con validación legal, monitor de asistencia, fotocheck y el tareaje que convierte las marcaciones en conceptos de la boleta.</p>
+    <p>Turnos peruanos sobre la planificaci&#243;n nativa, ciclos at&#237;picos con validaci&#243;n legal, monitor de asistencia, fotocheck y el tareaje que convierte las marcaciones en conceptos de la boleta.</p>
     <div class="alc-tags">
       <span class="alc-tag">D.S. 004-2006-TR</span>
       <span class="alc-tag">D.S. 007-2002-TR</span>
@@ -242,24 +245,24 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>De la marcación a la boleta</h2>
+    <h2>De la marcaci&#243;n a la boleta</h2>
     <p class="alc-sub">El puente entre lo que ocurre en la puerta y lo que se paga a fin de mes.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Turnos peruanos</h3>
-        <p>Tipos de turno sobre el rol nativo de planificación, con la jornada nocturna detectada en la propia plantilla del turno.</p>
+        <p>Tipos de turno sobre el rol nativo de planificaci&#243;n, con la jornada nocturna detectada en la propia plantilla del turno.</p>
       </div>
       <div class="alc-card">
-        <h3>Ciclos atípicos N×M</h3>
-        <p>Los regímenes de campamento y mina —14×7, 20×10— con su validador legal: promedio semanal de 48 horas y tope de 12 al día.</p>
+        <h3>Ciclos at&#237;picos N&#215;M</h3>
+        <p>Los reg&#237;menes de campamento y mina &#8212;14&#215;7, 20&#215;10&#8212; con su validador legal: promedio semanal de 48 horas y tope de 12 al d&#237;a.</p>
       </div>
       <div class="alc-card">
         <h3>Monitor de asistencia</h3>
-        <p>Turno planificado frente a marcación real, respetando la zona horaria de cada recurso.</p>
+        <p>Turno planificado frente a marcaci&#243;n real, respetando la zona horaria de cada recurso.</p>
       </div>
       <div class="alc-card">
         <h3>Tareaje</h3>
-        <p>Clasifica las horas según la norma peruana y las vuelca a la boleta como conceptos de trabajo.</p>
+        <p>Clasifica las horas seg&#250;n la norma peruana y las vuelca a la boleta como conceptos de trabajo.</p>
       </div>
     </div>
   </div>
@@ -273,48 +276,48 @@
         <thead><tr><th>Concepto</th><th>Regla</th><th>Norma</th></tr></thead>
         <tbody>
           <tr><td>Nocturnidad</td><td>22:00 a 06:00</td><td>art. 8 D.S. 007-2002-TR</td></tr>
-          <tr><td>Horas extras</td><td>25 % las dos primeras, 35 % después</td><td>art. 10 D.S. 007-2002-TR</td></tr>
+          <tr><td>Horas extras</td><td>25 % las dos primeras, 35 % despu&#233;s</td><td>art. 10 D.S. 007-2002-TR</td></tr>
           <tr><td>Descanso y feriado laborado</td><td>100 %</td><td>D.Leg. 713</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alc-note">El feriado se detecta leyendo los descansos globales del calendario. Por eso el módulo <strong>exige</strong> el calendario de feriados peruanos: sin él, un 28 de julio trabajado se pagaría como una jornada ordinaria.</div>
-    <p>Los tramos y porcentajes son parámetros de compañía, no números escritos dentro del cálculo.</p>
+    <div class="alc-note">El feriado se detecta leyendo los descansos globales del calendario. Por eso el m&#243;dulo <strong>exige</strong> el calendario de feriados peruanos: sin &#233;l, un 28 de julio trabajado se pagar&#237;a como una jornada ordinaria.</div>
+    <p>Los tramos y porcentajes son par&#225;metros de compa&#241;&#237;a, no n&#250;meros escritos dentro del c&#225;lculo.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Definir los turnos</h3>
-      <span class="alc-where">Planificación → roles y plantillas</span>
+      <span class="alc-where">Planificaci&#243;n &#8594; roles y plantillas</span>
     <p>Cada turno lleva su tipo peruano; los que cruzan la noche se marcan como nocturnos en la plantilla.</p>
       </li>
       <li class="alc-step">
-        <h3>Configurar los ciclos atípicos si los hay</h3>
-      <span class="alc-where">Planillas → Asistencia PE</span>
-    <p>Se define el ciclo N×M y el validador comprueba que respeta el promedio semanal y el tope diario antes de dejar generarlo.</p>
+        <h3>Configurar los ciclos at&#237;picos si los hay</h3>
+      <span class="alc-where">Planillas &#8594; Asistencia PE</span>
+    <p>Se define el ciclo N&#215;M y el validador comprueba que respeta el promedio semanal y el tope diario antes de dejar generarlo.</p>
       </li>
       <li class="alc-step">
-        <h3>Generar la planificación</h3>
+        <h3>Generar la planificaci&#243;n</h3>
     <p>Los turnos se crean respetando la zona horaria del recurso, no la del servidor.</p>
       </li>
       <li class="alc-step">
         <h3>Revisar el monitor</h3>
-      <span class="alc-where">Planillas → Asistencia PE → Monitor</span>
-    <p>Planificado contra real, para detectar el turno sin marcación antes de calcular la planilla.</p>
+      <span class="alc-where">Planillas &#8594; Asistencia PE &#8594; Monitor</span>
+    <p>Planificado contra real, para detectar el turno sin marcaci&#243;n antes de calcular la planilla.</p>
       </li>
       <li class="alc-step">
         <h3>Procesar el tareaje</h3>
-      <span class="alc-where">Planillas → Tareaje</span>
+      <span class="alc-where">Planillas &#8594; Tareaje</span>
     <p>Clasifica las horas del periodo y las vuelca a la boleta como conceptos de trabajo, listas para que las reglas las paguen.</p>
       </li>
       <li class="alc-step">
         <h3>Imprimir fotochecks</h3>
-      <span class="alc-where">Empleados → Imprimir carné</span>
-    <p>Con la configuración de la compañía y el diseño en QWeb.</p>
+      <span class="alc-where">Empleados &#8594; Imprimir carn&#233;</span>
+    <p>Con la configuraci&#243;n de la compa&#241;&#237;a y el dise&#241;o en QWeb.</p>
       </li>
     </ol>
   </div>
@@ -322,8 +325,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_hr_pe_attendance</strong> · versión 4.20260802 · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>al_hr_pe</strong>, <strong>planning</strong>, <strong>hr_attendance</strong> y <strong>al_hr_pe_public_holidays</strong>. Se apoya en la planificación nativa en vez de clonarla.</p>
+    <p style="margin:0 0 6px"><strong>al_hr_pe_attendance</strong> &#183; versi&#243;n 5.20260816 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>al_hr_pe</strong>, <strong>planning</strong>, <strong>hr_attendance</strong> y <strong>al_hr_pe_public_holidays</strong>. Se apoya en la planificaci&#243;n nativa en vez de clonarla.</p>
   </div>
 </footer>
 

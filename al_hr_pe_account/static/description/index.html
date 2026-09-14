@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,18 +223,21 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_hr_pe_account/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
-    <h1>Contabilización</h1>
-    <p>El asiento de la planilla y el de cada beneficio social, con previsualización, ajuste por redondeo y distribución analítica opcional.</p>
+    <p class="alc-eyebrow">Planillas Per&#250; &#183; Odoo 19</p>
+    <h1>Contabilizaci&#243;n</h1>
+    <p>El asiento de la planilla y el de cada beneficio social, con previsualizaci&#243;n, ajuste por redondeo y distribuci&#243;n anal&#237;tica opcional.</p>
     <div class="alc-tags">
       <span class="alc-tag">Asiento por lote</span>
       <span class="alc-tag">Beneficios</span>
-      <span class="alc-tag">Analítica opcional</span>
-      <span class="alc-tag">Multicompañía</span>
+      <span class="alc-tag">Anal&#237;tica opcional</span>
+      <span class="alc-tag">Multicompa&#241;&#237;a</span>
     </div>
   </div>
 </header>
@@ -246,53 +249,53 @@
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Asiento de planilla por lote</h3>
-        <p>Agrupa las líneas de las boletas en cargos y abonos por la cuenta de cada regla, con el detalle por trabajador que Odoo ya soporta de forma nativa.</p>
+        <p>Agrupa las l&#237;neas de las boletas en cargos y abonos por la cuenta de cada regla, con el detalle por trabajador que Odoo ya soporta de forma nativa.</p>
       </div>
       <div class="alc-card">
-        <h3>Bloque AFP por afiliación</h3>
-        <p>Las administradoras se separan por la cuenta de su afiliación, que es configurable por compañía.</p>
+        <h3>Bloque AFP por afiliaci&#243;n</h3>
+        <p>Las administradoras se separan por la cuenta de su afiliaci&#243;n, que es configurable por compa&#241;&#237;a.</p>
       </div>
       <div class="alc-card">
         <h3>Beneficios sociales</h3>
-        <p>CTS, gratificación, liquidación de cese y provisiones generan su propio asiento.</p>
+        <p>CTS, gratificaci&#243;n, liquidaci&#243;n de cese y provisiones generan su propio asiento.</p>
       </div>
       <div class="alc-card">
-        <h3>Distribución analítica opcional</h3>
-        <p>Se activa por compañía y usa el campo nativo de Odoo, con la regla salarial teniendo prioridad sobre la ficha del trabajador.</p>
+        <h3>Distribuci&#243;n anal&#237;tica opcional</h3>
+        <p>Se activa por compa&#241;&#237;a y usa el campo nativo de Odoo, con la regla salarial teniendo prioridad sobre la ficha del trabajador.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Es opt-in, y por una razón</h2>
-    <p class="alc-sub">Contabilizar la planilla es una decisión de cada empresa.</p>
-    <p>El asiento no se genera solo al validar. Se pide, se previsualiza y se ajusta antes de crearse: el asistente muestra el asiento completo, con su descuadre por redondeo si lo hay, y permite corregirlo antes de confirmar.</p>    <div class="alc-note">El redondeo <strong>siempre</strong> aparece en planillas de cierto tamaño: son cientos de importes redondeados a dos decimales. Ocultarlo obligaría a cuadrar a mano después; mostrarlo con su cuenta de ajuste lo resuelve en el momento.</div>
+    <h2>Es opt-in, y por una raz&#243;n</h2>
+    <p class="alc-sub">Contabilizar la planilla es una decisi&#243;n de cada empresa.</p>
+    <p>El asiento no se genera solo al validar. Se pide, se previsualiza y se ajusta antes de crearse: el asistente muestra el asiento completo, con su descuadre por redondeo si lo hay, y permite corregirlo antes de confirmar.</p>    <div class="alc-note">El redondeo <strong>siempre</strong> aparece en planillas de cierto tama&#241;o: son cientos de importes redondeados a dos decimales. Ocultarlo obligar&#237;a a cuadrar a mano despu&#233;s; mostrarlo con su cuenta de ajuste lo resuelve en el momento.</div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Configurar las cuentas</h3>
-      <span class="alc-where">Planillas → Configuración → Parámetros principales → Contabilidad PE</span>
+      <span class="alc-where">Planillas &#8594; Configuraci&#243;n &#8594; Par&#225;metros principales &#8594; Contabilidad PE</span>
     <p>Cuentas de las reglas, de las afiliaciones AFP, de cada beneficio social y la de ajuste por redondeo.</p>
       </li>
       <li class="alc-step">
-        <h3>Decidir si se quiere analítica</h3>
-      <span class="alc-where">Parámetros principales</span>
-    <p>Al activarla, las líneas del asiento llevan la distribución analítica que corresponda: la de la regla salarial si la tiene, la del trabajador en otro caso.</p>
+        <h3>Decidir si se quiere anal&#237;tica</h3>
+      <span class="alc-where">Par&#225;metros principales</span>
+    <p>Al activarla, las l&#237;neas del asiento llevan la distribuci&#243;n anal&#237;tica que corresponda: la de la regla salarial si la tiene, la del trabajador en otro caso.</p>
       </li>
       <li class="alc-step">
         <h3>Generar el asiento del lote</h3>
-      <span class="alc-where">Lote de boletas → Generar asiento</span>
+      <span class="alc-where">Lote de boletas &#8594; Generar asiento</span>
     <p>Se previsualiza, se ajusta el redondeo si hace falta y se confirma. El asiento queda enlazado al lote.</p>
       </li>
       <li class="alc-step">
         <h3>Generar los asientos de beneficios</h3>
-      <span class="alc-where">Documento del beneficio → Generar asiento</span>
+      <span class="alc-where">Documento del beneficio &#8594; Generar asiento</span>
     <p>Mismo circuito para CTS, gratificaciones, liquidaciones y provisiones.</p>
       </li>
     </ol>
@@ -300,20 +303,20 @@
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Qué se hizo distinto</h2>
+    <h2>Qu&#233; se hizo distinto</h2>
     <p class="alc-sub"></p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Por ORM, no por SQL</h3>
-        <p>La versión anterior agregaba con una vista SQL y cuatro variantes. Aquí se agrupa con el ORM: multicompañía, permisos y auditoría funcionan sin nada especial.</p>
+        <p>La versi&#243;n anterior agregaba con una vista SQL y cuatro variantes. Aqu&#237; se agrupa con el ORM: multicompa&#241;&#237;a, permisos y auditor&#237;a funcionan sin nada especial.</p>
       </div>
       <div class="alc-card">
         <h3>El detalle por trabajador es nativo</h3>
-        <p>Odoo ya sabe llevar el empleado en la línea del asiento. No hacía falta un modelo propio para eso.</p>
+        <p>Odoo ya sabe llevar el empleado en la l&#237;nea del asiento. No hac&#237;a falta un modelo propio para eso.</p>
       </div>
       <div class="alc-card">
-        <h3>La analítica es la de Odoo</h3>
-        <p>Se usa el campo nativo con su reparto por porcentajes; desaparece el modelo propio de distribución que había antes.</p>
+        <h3>La anal&#237;tica es la de Odoo</h3>
+        <p>Se usa el campo nativo con su reparto por porcentajes; desaparece el modelo propio de distribuci&#243;n que hab&#237;a antes.</p>
       </div>
     </div>
   </div>
@@ -321,7 +324,7 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_hr_pe_account</strong> · versión 2.20260722 · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_hr_pe_account</strong> &#183; versi&#243;n 3.20260816 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>al_hr_pe_benefits</strong> y <strong>hr_payroll_account</strong>. Todo el circuito es opt-in: nada se contabiliza sin pedirlo.</p>
   </div>
 </footer>

@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,18 +223,21 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_invoice/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
-    <h1>Comprobantes electrónicos</h1>
-    <p>La representación impresa de la factura y la boleta peruanas, en A4 y en ticket de 80 mm, con el QR oficial extraído del XML firmado.</p>
+    <p class="alc-eyebrow">Contabilidad Per&#250; &#183; Odoo 19</p>
+    <h1>Comprobantes electr&#243;nicos</h1>
+    <p>La representaci&#243;n impresa de la factura y la boleta peruanas, en A4 y en ticket de 80 mm, con el QR oficial extra&#237;do del XML firmado.</p>
     <div class="alc-tags">
       <span class="alc-tag">A4 y ticket 80 mm</span>
       <span class="alc-tag">QR del XML firmado</span>
       <span class="alc-tag">Detalle tributario</span>
-      <span class="alc-tag">Cuotas de crédito</span>
+      <span class="alc-tag">Cuotas de cr&#233;dito</span>
     </div>
   </div>
 </header>
@@ -242,19 +245,19 @@
 <section class="alc-sec">
   <div class="alc-wrap">
     <h2>No es solo un reporte</h2>
-    <p class="alc-sub">La representación impresa necesita datos que la factura no tiene separados.</p>
+    <p class="alc-sub">La representaci&#243;n impresa necesita datos que la factura no tiene separados.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Detalle tributario</h3>
-        <p>IGV, ISC, IVAP, ICBPER, exoneradas e inafectas desglosadas — lo que el comprobante debe mostrar y el total no distingue.</p>
+        <p>IGV, ISC, IVAP, ICBPER, exoneradas e inafectas desglosadas &#8212; lo que el comprobante debe mostrar y el total no distingue.</p>
       </div>
       <div class="alc-card">
         <h3>Forma de pago</h3>
-        <p>Contado o crédito, con el cuadro de cuotas cuando corresponde.</p>
+        <p>Contado o cr&#233;dito, con el cuadro de cuotas cuando corresponde.</p>
       </div>
       <div class="alc-card">
-        <h3>Bloque de detracción</h3>
-        <p>Cuando la operación está sujeta al SPOT, con su código, porcentaje e importe.</p>
+        <h3>Bloque de detracci&#243;n</h3>
+        <p>Cuando la operaci&#243;n est&#225; sujeta al SPOT, con su c&#243;digo, porcentaje e importe.</p>
       </div>
       <div class="alc-card">
         <h3>Firmas y cuentas</h3>
@@ -266,35 +269,35 @@
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
     <h2>El QR es el del XML, no uno recalculado</h2>
-    <p class="alc-sub">Aquí es donde fallan casi todas las implementaciones.</p>
-    <p>El QR que exige SUNAT incluye el <strong>hash de la firma digital</strong>. Reconstruirlo a mano a partir de los datos de la factura produce un código que parece correcto y no lo es.</p>    <div class="alc-note">Este módulo lo <strong>extrae del XML firmado</strong> con el método nativo de la localización y lo renderiza con el generador de códigos de barras de Odoo. Sin librería externa de QR y sin campos binarios almacenados: el QR se dibuja al imprimir.</div>    <p>El monto en letras también sale del método nativo, que ya resuelve las particularidades del español peruano.</p>
+    <p class="alc-sub">Aqu&#237; es donde fallan casi todas las implementaciones.</p>
+    <p>El QR que exige SUNAT incluye el <strong>hash de la firma digital</strong>. Reconstruirlo a mano a partir de los datos de la factura produce un c&#243;digo que parece correcto y no lo es.</p>    <div class="alc-note">Este m&#243;dulo lo <strong>extrae del XML firmado</strong> con el m&#233;todo nativo de la localizaci&#243;n y lo renderiza con el generador de c&#243;digos de barras de Odoo. Sin librer&#237;a externa de QR y sin campos binarios almacenados: el QR se dibuja al imprimir.</div>    <p>El monto en letras tambi&#233;n sale del m&#233;todo nativo, que ya resuelve las particularidades del espa&#241;ol peruano.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo está construido</h2>
-    <p class="alc-sub">Reutilizar el núcleo en vez de duplicarlo.</p>
-    <p>Los dos formatos siguen el esquema de plantillas de Odoo —contenedor más documento— y el estilo vive en una hoja CSS incluida en los paquetes de reportes, sin etiquetas de estilo dentro de las plantillas. Es el mismo patrón que usa el módulo de contabilidad nativo, y lo que permite que un cambio de diseño no obligue a tocar el QWeb.</p>    <p>La <strong>guía de remisión</strong> es un reporte aparte: <code>al_l10n_pe_delivery_guide_report</code>.</p>
+    <h2>C&#243;mo est&#225; construido</h2>
+    <p class="alc-sub">Reutilizar el n&#250;cleo en vez de duplicarlo.</p>
+    <p>Los dos formatos siguen el esquema de plantillas de Odoo &#8212;contenedor m&#225;s documento&#8212; y el estilo vive en una hoja CSS incluida en los paquetes de reportes, sin etiquetas de estilo dentro de las plantillas. Es el mismo patr&#243;n que usa el m&#243;dulo de contabilidad nativo, y lo que permite que un cambio de dise&#241;o no obligue a tocar el QWeb.</p>    <p>La <strong>gu&#237;a de remisi&#243;n</strong> es un reporte aparte: <code>al_l10n_pe_delivery_guide_report</code>.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Configurar los bloques opcionales</h3>
-      <span class="alc-where">Ajustes → Perú</span>
+      <span class="alc-where">Ajustes &#8594; Per&#250;</span>
     <p>Firmas y cuentas bancarias que aparecen al pie del comprobante.</p>
       </li>
       <li class="alc-step">
         <h3>Emitir la factura</h3>
-    <p>El XML se firma con la localización nativa; de ahí sale el QR.</p>
+    <p>El XML se firma con la localizaci&#243;n nativa; de ah&#237; sale el QR.</p>
       </li>
       <li class="alc-step">
         <h3>Imprimir</h3>
-      <span class="alc-where">Factura → Imprimir</span>
-    <p>A4 para el envío habitual, ticket de 80 mm para punto de venta.</p>
+      <span class="alc-where">Factura &#8594; Imprimir</span>
+    <p>A4 para el env&#237;o habitual, ticket de 80 mm para punto de venta.</p>
       </li>
     </ol>
   </div>
@@ -302,8 +305,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_invoice</strong> · versión  · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>account</strong>, <strong>sale</strong>, <strong>l10n_pe_edi</strong>, <strong>al_account_base</strong>, <strong>al_l10n_pe_currency</strong> y <strong>al_l10n_pe_detraction</strong>. La guía de remisión va en <code>al_l10n_pe_delivery_guide_report</code>.</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_invoice</strong> &#183; versi&#243;n 9.20260828 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>account</strong>, <strong>sale</strong>, <strong>l10n_pe_edi</strong>, <strong>al_account_base</strong>, <strong>al_l10n_pe_currency</strong> y <strong>al_l10n_pe_detraction</strong>. La gu&#237;a de remisi&#243;n va en <code>al_l10n_pe_delivery_guide_report</code>.</p>
   </div>
 </footer>
 

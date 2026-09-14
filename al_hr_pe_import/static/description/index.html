@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_hr_pe_import/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Planillas Per&#250; &#183; Odoo 19</p>
     <h1>Importadores Excel</h1>
-    <p>Cargas masivas desde Excel con plantilla descargable, proceso por lotes, progreso en vivo y un informe de errores que dice fila por fila qué corregir.</p>
+    <p>Cargas masivas desde Excel con plantilla descargable, proceso por lotes, progreso en vivo y un informe de errores que dice fila por fila qu&#233; corregir.</p>
     <div class="alc-tags">
       <span class="alc-tag">openpyxl</span>
       <span class="alc-tag">Progreso en vivo</span>
@@ -241,15 +244,15 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué se puede importar</h2>
-    <p class="alc-sub">Las cargas que en una implantación real se hacen siempre, y siempre a mano.</p>
+    <h2>Qu&#233; se puede importar</h2>
+    <p class="alc-sub">Las cargas que en una implantaci&#243;n real se hacen siempre, y siempre a mano.</p>
     <div class="alc-scroll">
       <table>
-        <thead><tr><th>Plantilla</th><th>Para qué</th></tr></thead>
+        <thead><tr><th>Plantilla</th><th>Para qu&#233;</th></tr></thead>
         <tbody>
-          <tr><td><strong>Inputs de boletas</strong></td><td>Novedades del mes de un lote, por documento y código de concepto</td></tr>
-          <tr><td><strong>Datos PE de la versión</strong></td><td>Los campos peruanos de la ficha laboral, para el alta inicial</td></tr>
-          <tr><td><strong>Récord vacacional</strong></td><td>Saldos iniciales al arrancar con el sistema</td></tr>
+          <tr><td><strong>Inputs de boletas</strong></td><td>Novedades del mes de un lote, por documento y c&#243;digo de concepto</td></tr>
+          <tr><td><strong>Datos PE de la versi&#243;n</strong></td><td>Los campos peruanos de la ficha laboral, para el alta inicial</td></tr>
+          <tr><td><strong>R&#233;cord vacacional</strong></td><td>Saldos iniciales al arrancar con el sistema</td></tr>
           <tr><td><strong>Adelantos</strong></td><td>Altas masivas de adelantos</td></tr>
           <tr><td><strong>Asistencias</strong></td><td>Marcaciones con su zona horaria</td></tr>
           <tr><td><strong>Reglas salariales</strong></td><td>Carga y ajuste masivo de reglas</td></tr>
@@ -260,8 +263,8 @@
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Cómo está hecho</h2>
-    <p class="alc-sub">Un mixin que resuelve una vez lo que toda importación necesita.</p>
+    <h2>C&#243;mo est&#225; hecho</h2>
+    <p class="alc-sub">Un mixin que resuelve una vez lo que toda importaci&#243;n necesita.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>La plantilla la genera el sistema</h3>
@@ -269,28 +272,28 @@
       </div>
       <div class="alc-card">
         <h3>Proceso por lotes</h3>
-        <p>Se confirma por bloques en vez de todo al final: un archivo de diez mil filas no se pierde entero por un fallo en la última.</p>
+        <p>Se confirma por bloques en vez de todo al final: un archivo de diez mil filas no se pierde entero por un fallo en la &#250;ltima.</p>
       </div>
       <div class="alc-card">
         <h3>Progreso en vivo</h3>
-        <p>La carga corre en un hilo con su propio cursor y publica el avance con otro, así la barra se mueve de verdad mientras el proceso trabaja.</p>
+        <p>La carga corre en un hilo con su propio cursor y publica el avance con otro, as&#237; la barra se mueve de verdad mientras el proceso trabaja.</p>
       </div>
       <div class="alc-card">
         <h3>Errores con sugerencia</h3>
-        <p>Cada fila que falla se informa con su número, el motivo y qué habría que poner. El resultado se descarga como Excel.</p>
+        <p>Cada fila que falla se informa con su n&#250;mero, el motivo y qu&#233; habr&#237;a que poner. El resultado se descarga como Excel.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Abrir el importador</h3>
-      <span class="alc-where">Planillas → Importaciones Excel</span>
-    <p>Se elige qué se va a cargar: inputs, datos de versión, récord vacacional, adelantos, asistencias o reglas.</p>
+      <span class="alc-where">Planillas &#8594; Importaciones Excel</span>
+    <p>Se elige qu&#233; se va a cargar: inputs, datos de versi&#243;n, r&#233;cord vacacional, adelantos, asistencias o reglas.</p>
       </li>
       <li class="alc-step">
         <h3>Descargar la plantilla</h3>
@@ -302,8 +305,8 @@
       </li>
       <li class="alc-step">
         <h3>Revisar el informe</h3>
-      <span class="alc-where">Planillas → Historial de importaciones</span>
-    <p>Queda el registro de qué se cargó, cuándo y con qué errores. Se corrigen las filas señaladas y se vuelve a subir solo esas.</p>
+      <span class="alc-where">Planillas &#8594; Historial de importaciones</span>
+    <p>Queda el registro de qu&#233; se carg&#243;, cu&#225;ndo y con qu&#233; errores. Se corrigen las filas se&#241;aladas y se vuelve a subir solo esas.</p>
       </li>
     </ol>
   </div>
@@ -311,8 +314,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_hr_pe_import</strong> · versión 2.20260722 · LGPL-3</p>
-    <p style="margin:0">Requiere los cinco módulos <strong>al_hr_pe_*</strong> y <strong>openpyxl</strong>. Cierra la suite: sus plantillas cruzan todos los dominios.</p>
+    <p style="margin:0 0 6px"><strong>al_hr_pe_import</strong> &#183; versi&#243;n 3.20260816 &#183; OPL-1</p>
+    <p style="margin:0">Requiere los cinco m&#243;dulos <strong>al_hr_pe_*</strong> y <strong>openpyxl</strong>. Cierra la suite: sus plantillas cruzan todos los dominios.</p>
   </div>
 </footer>
 

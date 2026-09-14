@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,37 +223,40 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/l10n_pe_vat_sunat/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contactos Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Contactos Per&#250; &#183; Odoo 19</p>
     <h1>Consulta de RUC y DNI</h1>
-    <p>Rellena el contacto desde el padrón de SUNAT o RENIEC, con las APIs definidas por configuración: añadir un proveedor nuevo no es programar.</p>
+    <p>Rellena el contacto desde el padr&#243;n de SUNAT o RENIEC, con las APIs definidas por configuraci&#243;n: a&#241;adir un proveedor nuevo no es programar.</p>
     <div class="alc-tags">
       <span class="alc-tag">RUC y DNI</span>
       <span class="alc-tag">APIs configurables</span>
       <span class="alc-tag">Cascada de respaldo</span>
-      <span class="alc-tag">Padrón SUNAT</span>
+      <span class="alc-tag">Padr&#243;n SUNAT</span>
     </div>
   </div>
 </header>
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>La idea: el proveedor de datos es configuración</h2>
+    <h2>La idea: el proveedor de datos es configuraci&#243;n</h2>
     <p class="alc-sub">Las APIs peruanas de consulta aparecen, cambian de formato y desaparecen.</p>
-    <p>En vez de programar un conector por proveedor, cada compañía define sus <strong>conexiones</strong> con una prioridad, y por cada una se <strong>mapea</strong> qué atributo de la respuesta va a qué campo de Odoo.</p>    <p>Añadir una API nueva es crear un registro y su mapeo. Cuando una cambia el nombre de un campo, se corrige el mapeo — no se toca código ni se espera una versión del módulo.</p>
+    <p>En vez de programar un conector por proveedor, cada compa&#241;&#237;a define sus <strong>conexiones</strong> con una prioridad, y por cada una se <strong>mapea</strong> qu&#233; atributo de la respuesta va a qu&#233; campo de Odoo.</p>    <p>A&#241;adir una API nueva es crear un registro y su mapeo. Cuando una cambia el nombre de un campo, se corrige el mapeo &#8212; no se toca c&#243;digo ni se espera una versi&#243;n del m&#243;dulo.</p>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Cómo funciona por dentro</h2>
+    <h2>C&#243;mo funciona por dentro</h2>
     <p class="alc-sub"></p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Cascada de respaldo</h3>
-        <p>Se consulta la conexión de mayor prioridad; si no responde, la siguiente. Que un servicio esté caído no bloquea el alta de un cliente.</p>
+        <p>Se consulta la conexi&#243;n de mayor prioridad; si no responde, la siguiente. Que un servicio est&#233; ca&#237;do no bloquea el alta de un cliente.</p>
       </div>
       <div class="alc-card">
         <h3>Todo se normaliza a un diccionario</h3>
@@ -265,23 +268,23 @@
       </div>
       <div class="alc-card">
         <h3>Ubigeo resuelto</h3>
-        <p>Distrito, ciudad y departamento se resuelven según lo que devuelva cada conexión.</p>
+        <p>Distrito, ciudad y departamento se resuelven seg&#250;n lo que devuelva cada conexi&#243;n.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>El padrón</h2>
-    <p class="alc-sub">Saber si un proveedor es buen contribuyente o agente de retención cambia el cálculo de los impuestos.</p>
-    <p>El padrón de SUNAT —buenos contribuyentes y agentes de retención— se descarga y se guarda en la base con sincronización diaria. De ahí salen dos de las cinco excepciones del régimen de retenciones del IGV.</p>
+    <h2>El padr&#243;n</h2>
+    <p class="alc-sub">Saber si un proveedor es buen contribuyente o agente de retenci&#243;n cambia el c&#225;lculo de los impuestos.</p>
+    <p>El padr&#243;n de SUNAT &#8212;buenos contribuyentes y agentes de retenci&#243;n&#8212; se descarga y se guarda en la base con sincronizaci&#243;n diaria. De ah&#237; salen dos de las cinco excepciones del r&#233;gimen de retenciones del IGV.</p>
   </div>
 </section>
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>l10n_pe_vat_sunat</strong> · versión  · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>base_vat</strong>, <strong>contacts</strong>, <strong>l10n_latam_base</strong> y <strong>l10n_pe</strong>. Las marcas del padrón las consume <code>al_l10n_pe_retention</code>.</p>
+    <p style="margin:0 0 6px"><strong>l10n_pe_vat_sunat</strong> &#183; versi&#243;n 9.20260828 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>base_vat</strong>, <strong>contacts</strong>, <strong>l10n_latam_base</strong> y <strong>l10n_pe</strong>. Las marcas del padr&#243;n las consume <code>al_l10n_pe_retention</code>.</p>
   </div>
 </footer>
 

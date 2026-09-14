@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_edi_pos/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Punto de venta Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Punto de venta Per&#250; &#183; Odoo 19</p>
     <h1>Comprobantes en el TPV</h1>
-    <p>Boleta o factura desde la caja, cada una a su diario y con su serie, y un ticket que ya es la representación impresa del comprobante.</p>
+    <p>Boleta o factura desde la caja, cada una a su diario y con su serie, y un ticket que ya es la representaci&#243;n impresa del comprobante.</p>
     <div class="alc-tags">
       <span class="alc-tag">Boleta / Factura</span>
       <span class="alc-tag">Diario por tipo</span>
@@ -241,12 +244,12 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué hace</h2>
+    <h2>Qu&#233; hace</h2>
     <p class="alc-sub">La caja peruana emite comprobantes, no recibos.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Selector en el pago</h3>
-        <p>Un diálogo elige boleta o factura, con boleta por defecto. La factura exige cliente con RUC — se comprueba antes de cobrar, no después.</p>
+        <p>Un di&#225;logo elige boleta o factura, con boleta por defecto. La factura exige cliente con RUC &#8212; se comprueba antes de cobrar, no despu&#233;s.</p>
       </div>
       <div class="alc-card">
         <h3>Un diario por tipo</h3>
@@ -254,33 +257,33 @@
       </div>
       <div class="alc-card">
         <h3>Toda venta se factura</h3>
-        <p>Al cobrar, la orden se marca para facturar automáticamente: siempre sale un comprobante electrónico.</p>
+        <p>Al cobrar, la orden se marca para facturar autom&#225;ticamente: siempre sale un comprobante electr&#243;nico.</p>
       </div>
       <div class="alc-card">
         <h3>Ticket con formato de comprobante</h3>
-        <p>El recibo replica el ticket de 80 mm: RUC, tipo y número de documento, desglose del IGV, importe en letras y el QR de la R.S. 018-2005/SUNAT.</p>
+        <p>El recibo replica el ticket de 80 mm: RUC, tipo y n&#250;mero de documento, desglose del IGV, importe en letras y el QR de la R.S. 018-2005/SUNAT.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Cómo se configura</h2>
+    <h2>C&#243;mo se configura</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Preparar las series</h3>
-      <span class="alc-where">Contabilidad → Diarios</span>
+      <span class="alc-where">Contabilidad &#8594; Diarios</span>
     <p>Un diario para boletas y otro para facturas, cada uno con su secuencia y prefijo de serie.</p>
       </li>
       <li class="alc-step">
         <h3>Asignarlos al punto de venta</h3>
-      <span class="alc-where">Punto de venta → Configuración</span>
+      <span class="alc-where">Punto de venta &#8594; Configuraci&#243;n</span>
     <p>El diario de boletas y el de facturas de esa caja. Dos cajas pueden tener series distintas.</p>
       </li>
       <li class="alc-step">
         <h3>Vender</h3>
-    <p>El cajero elige el tipo al cobrar; el resto es automático.</p>
+    <p>El cajero elige el tipo al cobrar; el resto es autom&#225;tico.</p>
       </li>
     </ol>
   </div>
@@ -288,7 +291,7 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_edi_pos</strong> · versión  · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_edi_pos</strong> &#183; versi&#243;n 6.20260721 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>point_of_sale</strong>, <strong>l10n_pe_pos</strong>, <strong>l10n_pe_edi</strong>, <strong>al_l10n_pe_invoice</strong> y <strong>al_account_move_name_sequence</strong>. Portado a la arquitectura OWL y el modelo de datos de Odoo 19.</p>
   </div>
 </footer>

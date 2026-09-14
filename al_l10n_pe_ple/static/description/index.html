@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_ple/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
-    <h1>Libros electrónicos PLE</h1>
-    <p>Los libros del PLE que la localización oficial no genera: activos fijos, retenciones del art. 34, consignaciones, costos, complementos del libro 3 y los formatos simplificados.</p>
+    <p class="alc-eyebrow">Contabilidad Per&#250; &#183; Odoo 19</p>
+    <h1>Libros electr&#243;nicos PLE</h1>
+    <p>Los libros del PLE que la localizaci&#243;n oficial no genera: activos fijos, retenciones del art. 34, consignaciones, costos, complementos del libro 3 y los formatos simplificados.</p>
     <div class="alc-tags">
       <span class="alc-tag">Libro 7</span>
       <span class="alc-tag">Libro 10</span>
@@ -242,19 +245,19 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué cubre y qué no</h2>
+    <h2>Qu&#233; cubre y qu&#233; no</h2>
     <p class="alc-sub">La regla es simple: lo que ya genera Odoo no se reimplementa.</p>
-    <p>La localización oficial —Community más Enterprise— cubre los formatos 1.1/1.2, el libro 3, 5.1/5.3/6.1, 8.1/8.2, 12.1/13.1 y 14.1. Este módulo <strong>no los toca</strong>: añade los que faltan y enlaza a los nativos desde el mismo menú, para que el contador no tenga que saber cuál viene de dónde.</p>    <div class="alc-scroll">
+    <p>La localizaci&#243;n oficial &#8212;Community m&#225;s Enterprise&#8212; cubre los formatos 1.1/1.2, el libro 3, 5.1/5.3/6.1, 8.1/8.2, 12.1/13.1 y 14.1. Este m&#243;dulo <strong>no los toca</strong>: a&#241;ade los que faltan y enlaza a los nativos desde el mismo men&#250;, para que el contador no tenga que saber cu&#225;l viene de d&#243;nde.</p>    <div class="alc-scroll">
       <table>
-        <thead><tr><th>Formato</th><th>Libro</th><th>Cómo se alimenta</th></tr></thead>
+        <thead><tr><th>Formato</th><th>Libro</th><th>C&#243;mo se alimenta</th></tr></thead>
         <tbody>
-          <tr><td><code>7.1</code> <code>7.3</code> <code>7.4</code></td><td>Activos fijos</td><td>Desde <code>account.asset</code>, con los datos SUNAT en su pestaña</td></tr>
+          <tr><td><code>7.1</code> <code>7.3</code> <code>7.4</code></td><td>Activos fijos</td><td>Desde <code>account.asset</code>, con los datos SUNAT en su pesta&#241;a</td></tr>
           <tr><td><code>4.1</code></td><td>Retenciones art. 34 LIR</td><td>Captura mensual editable e importable</td></tr>
-          <tr><td><code>9.1</code> <code>9.2</code></td><td>Consignaciones</td><td>Albaranes marcados como consignación, con saldo inicial</td></tr>
+          <tr><td><code>9.1</code> <code>9.2</code></td><td>Consignaciones</td><td>Albaranes marcados como consignaci&#243;n, con saldo inicial</td></tr>
           <tr><td><code>3.8</code> <code>3.19</code></td><td>Inversiones y patrimonio</td><td>Captura por rubro</td></tr>
-          <tr><td><code>3.9</code></td><td>Intangibles</td><td>Automático desde los activos de cuenta 34</td></tr>
+          <tr><td><code>3.9</code></td><td>Intangibles</td><td>Autom&#225;tico desde los activos de cuenta 34</td></tr>
           <tr><td><code>3.23</code></td><td>Notas a los EEFF</td><td>PDF incluido en el ZIP con su nombre oficial</td></tr>
-          <tr><td><code>10.1</code>–<code>10.4</code></td><td>Costos (anual)</td><td>Captura editable, sin exigir el módulo de producción</td></tr>
+          <tr><td><code>10.1</code>&#8211;<code>10.4</code></td><td>Costos (anual)</td><td>Captura editable, sin exigir el m&#243;dulo de producci&#243;n</td></tr>
           <tr><td><code>5.2</code> <code>5.4</code> <code>8.3</code> <code>14.2</code></td><td>Simplificados</td><td>Desde asientos y comprobantes publicados</td></tr>
         </tbody>
       </table>
@@ -264,55 +267,55 @@
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
     <h2>El motor que comparten todos</h2>
-    <p class="alc-sub">Un formato del PLE se rechaza por un campo de más o de menos.</p>
+    <p class="alc-sub">Un formato del PLE se rechaza por un campo de m&#225;s o de menos.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Nombre de archivo oficial</h3>
-        <p>Los 33 caracteres exactos que exige SUNAT, con su ejercicio, periodo, indicadores y código de libro.</p>
+        <p>Los 33 caracteres exactos que exige SUNAT, con su ejercicio, periodo, indicadores y c&#243;digo de libro.</p>
       </div>
       <div class="alc-card">
-        <h3>Serialización idéntica a la nativa</h3>
-        <p>Campos separados por tuberías, CRLF y UTF-8 — la misma que usan los reportes de Enterprise, para que los dos orígenes produzcan archivos indistinguibles.</p>
+        <h3>Serializaci&#243;n id&#233;ntica a la nativa</h3>
+        <p>Campos separados por tuber&#237;as, CRLF y UTF-8 &#8212; la misma que usan los reportes de Enterprise, para que los dos or&#237;genes produzcan archivos indistinguibles.</p>
       </div>
       <div class="alc-card">
-        <h3>Validación por Anexo 2</h3>
-        <p>Se comprueba el número exacto de campos de cada formato antes de escribir. Un archivo mal formado se detecta aquí y no en el validador de SUNAT.</p>
+        <h3>Validaci&#243;n por Anexo 2</h3>
+        <p>Se comprueba el n&#250;mero exacto de campos de cada formato antes de escribir. Un archivo mal formado se detecta aqu&#237; y no en el validador de SUNAT.</p>
       </div>
       <div class="alc-card">
-        <h3>Excel de revisión</h3>
-        <p>Junto a cada TXT, un Excel con los mismos datos, los encabezados oficiales y la numeración de columnas. Es lo que se revisa; el TXT es lo que se sube.</p>
+        <h3>Excel de revisi&#243;n</h3>
+        <p>Junto a cada TXT, un Excel con los mismos datos, los encabezados oficiales y la numeraci&#243;n de columnas. Es lo que se revisa; el TXT es lo que se sube.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
         <h3>Completar los datos SUNAT de los activos</h3>
-      <span class="alc-where">Contabilidad → Activos → pestaña PLE SUNAT</span>
-    <p>Código, tablas 13/18/19/20, marca, modelo, placa, moneda extranjera y datos de leasing. Sin esto el libro 7 sale incompleto.</p>
+      <span class="alc-where">Contabilidad &#8594; Activos &#8594; pesta&#241;a PLE SUNAT</span>
+    <p>C&#243;digo, tablas 13/18/19/20, marca, modelo, placa, moneda extranjera y datos de leasing. Sin esto el libro 7 sale incompleto.</p>
       </li>
       <li class="alc-step">
         <h3>Capturar lo que Odoo no puede saber</h3>
-      <span class="alc-where">Perú → Libros PLE</span>
-    <p>Retenciones 4.1, inversiones 3.8, patrimonio 3.19 y costos del libro 10 se capturan en listas editables e importables: son datos que no viven en ningún otro sitio del sistema.</p>
+      <span class="alc-where">Per&#250; &#8594; Libros PLE</span>
+    <p>Retenciones 4.1, inversiones 3.8, patrimonio 3.19 y costos del libro 10 se capturan en listas editables e importables: son datos que no viven en ning&#250;n otro sitio del sistema.</p>
       </li>
       <li class="alc-step">
         <h3>Marcar las consignaciones</h3>
-      <span class="alc-where">Inventario → albarán</span>
-    <p>La casilla de consignación del libro 9, con su clase.</p>
+      <span class="alc-where">Inventario &#8594; albar&#225;n</span>
+    <p>La casilla de consignaci&#243;n del libro 9, con su clase.</p>
       </li>
       <li class="alc-step">
         <h3>Elegir si se usan los formatos simplificados</h3>
-      <span class="alc-where">Ajustes → Perú</span>
+      <span class="alc-where">Ajustes &#8594; Per&#250;</span>
     <p>Una bandera. Los simplificados son <strong>excluyentes</strong> con sus equivalentes completos: se declara una cosa o la otra, nunca las dos.</p>
       </li>
       <li class="alc-step">
         <h3>Exportar</h3>
-      <span class="alc-where">Perú → Libros PLE → asistente</span>
+      <span class="alc-where">Per&#250; &#8594; Libros PLE &#8594; asistente</span>
     <p>Ejercicio, indicador de operaciones y formatos. Sale un TXT, o un ZIP si se piden varios.</p>
       </li>
     </ol>
@@ -321,7 +324,7 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_ple</strong> · versión 3.20260719 · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_ple</strong> &#183; versi&#243;n 6.20260828 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>account_asset</strong> y los reportes peruanos de Enterprise. Plan y mapa de cobertura en <code>docs/ple/</code>.</p>
   </div>
 </footer>

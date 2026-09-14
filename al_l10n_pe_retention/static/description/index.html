@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_retention/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Contabilidad Per&#250; &#183; Odoo 19</p>
     <h1>Retenciones del IGV</h1>
-    <p>El régimen de la R.S. 037-2002/SUNAT sobre el marco nativo de retenciones de Odoo 19: aplicabilidad con sus excepciones, retención en el pago, comprobante y resumen mensual.</p>
+    <p>El r&#233;gimen de la R.S. 037-2002/SUNAT sobre el marco nativo de retenciones de Odoo 19: aplicabilidad con sus excepciones, retenci&#243;n en el pago, comprobante y resumen mensual.</p>
     <div class="alc-tags">
       <span class="alc-tag">R.S. 037-2002</span>
       <span class="alc-tag">3 % sobre el pago</span>
@@ -241,12 +244,12 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Los dos lados del régimen</h2>
-    <p class="alc-sub">Según quién sea el agente, el módulo hace cosas distintas.</p>
+    <h2>Los dos lados del r&#233;gimen</h2>
+    <p class="alc-sub">Seg&#250;n qui&#233;n sea el agente, el m&#243;dulo hace cosas distintas.</p>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Como agente de retención (compras)</h3>
-        <p>Aplica el 3 % a las facturas de proveedor que corresponda, retiene en cada pago —parciales incluidos—, numera el comprobante y genera su XML.</p>
+        <h3>Como agente de retenci&#243;n (compras)</h3>
+        <p>Aplica el 3 % a las facturas de proveedor que corresponda, retiene en cada pago &#8212;parciales incluidos&#8212;, numera el comprobante y genera su XML.</p>
       </div>
       <div class="alc-card">
         <h3>Como proveedor retenido (ventas)</h3>
@@ -257,58 +260,58 @@
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Las excepciones, que son la parte difícil</h2>
-    <p class="alc-sub">Saber cuándo NO se retiene es más trabajo que calcular el 3 %.</p>
+    <h2>Las excepciones, que son la parte dif&#237;cil</h2>
+    <p class="alc-sub">Saber cu&#225;ndo NO se retiene es m&#225;s trabajo que calcular el 3 %.</p>
     <div class="alc-scroll">
       <table>
-        <thead><tr><th>No se retiene si…</th><th>Motivo</th></tr></thead>
+        <thead><tr><th>No se retiene si&#8230;</th><th>Motivo</th></tr></thead>
         <tbody>
-          <tr><td>El importe no supera S/ 700</td><td>Monto mínimo del régimen</td></tr>
-          <tr><td>El proveedor también es agente de retención</td><td>No se retiene entre agentes</td></tr>
-          <tr><td>El proveedor es buen contribuyente</td><td>Exclusión del régimen</td></tr>
-          <tr><td>Es una boleta sin crédito fiscal</td><td>La operación no da derecho</td></tr>
-          <tr><td>La operación tiene detracción</td><td>SPOT y retención son excluyentes</td></tr>
+          <tr><td>El importe no supera S/ 700</td><td>Monto m&#237;nimo del r&#233;gimen</td></tr>
+          <tr><td>El proveedor tambi&#233;n es agente de retenci&#243;n</td><td>No se retiene entre agentes</td></tr>
+          <tr><td>El proveedor es buen contribuyente</td><td>Exclusi&#243;n del r&#233;gimen</td></tr>
+          <tr><td>Es una boleta sin cr&#233;dito fiscal</td><td>La operaci&#243;n no da derecho</td></tr>
+          <tr><td>La operaci&#243;n tiene detracci&#243;n</td><td>SPOT y retenci&#243;n son excluyentes</td></tr>
         </tbody>
       </table>
     </div>
-    <p>Las cinco se evalúan solas al publicar la factura. La condición de agente y de buen contribuyente son marcas del contacto que el padrón de SUNAT mantiene al día.</p>
+    <p>Las cinco se eval&#250;an solas al publicar la factura. La condici&#243;n de agente y de buen contribuyente son marcas del contacto que el padr&#243;n de SUNAT mantiene al d&#237;a.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
     <h2>Se retiene sobre el pago, no sobre la factura</h2>
-    <p class="alc-sub">Es lo que más se confunde al implantarlo.</p>
-    <p>El régimen retiene <strong>cuando se paga</strong>. El asistente de pago propone el 3 % del importe que se está pagando, de modo que un pago parcial retiene su parte y no el total de la factura.</p>    <p>El impuesto se inyecta al publicar <strong>sin alterar el total</strong> de la factura, y el asiento de la retención va a su cuenta 4011x. El comprobante se numera al emitir el pago.</p>
+    <p class="alc-sub">Es lo que m&#225;s se confunde al implantarlo.</p>
+    <p>El r&#233;gimen retiene <strong>cuando se paga</strong>. El asistente de pago propone el 3 % del importe que se est&#225; pagando, de modo que un pago parcial retiene su parte y no el total de la factura.</p>    <p>El impuesto se inyecta al publicar <strong>sin alterar el total</strong> de la factura, y el asiento de la retenci&#243;n va a su cuenta 4011x. El comprobante se numera al emitir el pago.</p>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
-        <h3>Configurar el régimen</h3>
-      <span class="alc-where">Ajustes → Perú</span>
-    <p>Si la empresa es agente de retención, la tasa, el monto mínimo y el impuesto de retención que se usa en el pago.</p>
+        <h3>Configurar el r&#233;gimen</h3>
+      <span class="alc-where">Ajustes &#8594; Per&#250;</span>
+    <p>Si la empresa es agente de retenci&#243;n, la tasa, el monto m&#237;nimo y el impuesto de retenci&#243;n que se usa en el pago.</p>
       </li>
       <li class="alc-step">
         <h3>Marcar los contactos</h3>
-      <span class="alc-where">Contacto → junto al RUC</span>
-    <p>Agente de retención y buen contribuyente. De estas dos marcas salen dos de las cinco excepciones, y las mantiene al día el padrón oficial de SUNAT.</p>
+      <span class="alc-where">Contacto &#8594; junto al RUC</span>
+    <p>Agente de retenci&#243;n y buen contribuyente. De estas dos marcas salen dos de las cinco excepciones, y las mantiene al d&#237;a el padr&#243;n oficial de SUNAT.</p>
       </li>
       <li class="alc-step">
         <h3>Facturar y pagar</h3>
-    <p>La aplicabilidad se resuelve sola; el asistente de pago propone la retención.</p>
+    <p>La aplicabilidad se resuelve sola; el asistente de pago propone la retenci&#243;n.</p>
       </li>
       <li class="alc-step">
         <h3>Registrar las retenciones sufridas</h3>
-      <span class="alc-where">Perú → Retenciones IGV → Sufridas</span>
+      <span class="alc-where">Per&#250; &#8594; Retenciones IGV &#8594; Sufridas</span>
     <p>Lo que otros te retienen, conciliado contra la factura.</p>
       </li>
       <li class="alc-step">
         <h3>Declarar</h3>
-      <span class="alc-where">Perú → Retenciones IGV → Resumen</span>
-    <p>Resumen mensual en TXT para el formulario virtual 626. La marca de retención viaja además al campo 26 del PLE 8.3.</p>
+      <span class="alc-where">Per&#250; &#8594; Retenciones IGV &#8594; Resumen</span>
+    <p>Resumen mensual en TXT para el formulario virtual 626. La marca de retenci&#243;n viaja adem&#225;s al campo 26 del PLE 8.3.</p>
       </li>
     </ol>
   </div>
@@ -316,8 +319,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_retention</strong> · versión  · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_account_withholding_tax</strong> y <strong>l10n_latam_invoice_document</strong>. Guía funcional en <code>docs/retenciones.md</code>.</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_retention</strong> &#183; versi&#243;n 6.20260828 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_account_withholding_tax</strong> y <strong>l10n_latam_invoice_document</strong>. Gu&#237;a funcional en <code>docs/retenciones.md</code>.</p>
   </div>
 </footer>
 

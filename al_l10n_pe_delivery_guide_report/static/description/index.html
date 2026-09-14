@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,13 +223,16 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_delivery_guide_report/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Logística Perú · Odoo 19</p>
-    <h1>Guía de remisión</h1>
-    <p>La representación impresa de la Guía de Remisión Electrónica Remitente, con su detalle de bienes, los datos del transporte y el QR de SUNAT.</p>
+    <p class="alc-eyebrow">Log&#237;stica Per&#250; &#183; Odoo 19</p>
+    <h1>Gu&#237;a de remisi&#243;n</h1>
+    <p>La representaci&#243;n impresa de la Gu&#237;a de Remisi&#243;n Electr&#243;nica Remitente, con su detalle de bienes, los datos del transporte y el QR de SUNAT.</p>
     <div class="alc-tags">
       <span class="alc-tag">GRE Remitente</span>
       <span class="alc-tag">QR de SUNAT</span>
@@ -240,12 +243,12 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué imprime</h2>
-    <p class="alc-sub">El reporte de entrega estándar de Odoo no sirve como guía de remisión.</p>
+    <h2>Qu&#233; imprime</h2>
+    <p class="alc-sub">El reporte de entrega est&#225;ndar de Odoo no sirve como gu&#237;a de remisi&#243;n.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>Datos del traslado</h3>
-        <p>Motivo, fecha de inicio, puntos de partida y llegada — lo que identifica el movimiento ante una fiscalización en carretera.</p>
+        <p>Motivo, fecha de inicio, puntos de partida y llegada &#8212; lo que identifica el movimiento ante una fiscalizaci&#243;n en carretera.</p>
       </div>
       <div class="alc-card">
         <h3>Remitente y destinatario</h3>
@@ -257,22 +260,22 @@
       </div>
       <div class="alc-card">
         <h3>Transporte y QR</h3>
-        <p>Transportista, vehículo y conductor, más el QR que emite la localización nativa.</p>
+        <p>Transportista, veh&#237;culo y conductor, m&#225;s el QR que emite la localizaci&#243;n nativa.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
-    <h2>Por qué es un módulo aparte</h2>
+    <h2>Por qu&#233; es un m&#243;dulo aparte</h2>
     <p class="alc-sub">Para que no arrastre lo que no necesita.</p>
-    <p>Podría vivir dentro del módulo de comprobantes, pero entonces quien solo quiere imprimir guías tendría que instalar el reporte de facturas, y al revés. Separarlos hace que cada uno se instale por su cuenta.</p>    <div class="alc-note">El QR <strong>no se recalcula</strong>: lo trae la localización nativa de guías de Odoo 19. El módulo de la versión anterior tenía su propio método para obtenerlo; ya no hace falta y se descartó.</div>
+    <p>Podr&#237;a vivir dentro del m&#243;dulo de comprobantes, pero entonces quien solo quiere imprimir gu&#237;as tendr&#237;a que instalar el reporte de facturas, y al rev&#233;s. Separarlos hace que cada uno se instale por su cuenta.</p>    <div class="alc-note">El QR <strong>no se recalcula</strong>: lo trae la localizaci&#243;n nativa de gu&#237;as de Odoo 19. El m&#243;dulo de la versi&#243;n anterior ten&#237;a su propio m&#233;todo para obtenerlo; ya no hace falta y se descart&#243;.</div>
   </div>
 </section>
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_delivery_guide_report</strong> · versión  · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_delivery_guide_report</strong> &#183; versi&#243;n 6.20260828 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>stock</strong>, <strong>l10n_pe_edi_stock</strong> y <strong>al_account_base</strong>. La factura y el ticket van en <code>al_l10n_pe_invoice</code>.</p>
   </div>
 </footer>

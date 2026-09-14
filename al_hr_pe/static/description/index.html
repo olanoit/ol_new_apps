@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,42 +223,45 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_hr_pe/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Planillas Perú · Odoo 19</p>
-    <h1>Núcleo de la localización</h1>
-    <p>La ficha laboral peruana, los catálogos de SUNAT, las reglas salariales y los envíos al Estado. Es la base sobre la que se apoyan los demás módulos de la suite.</p>
+    <p class="alc-eyebrow">Planillas Per&#250; &#183; Odoo 19</p>
+    <h1>N&#250;cleo de la localizaci&#243;n</h1>
+    <p>La ficha laboral peruana, los cat&#225;logos de SUNAT, las reglas salariales y los env&#237;os al Estado. Es la base sobre la que se apoyan los dem&#225;s m&#243;dulos de la suite.</p>
     <div class="alc-tags">
       <span class="alc-tag">PLAME</span>
       <span class="alc-tag">AFPNet</span>
       <span class="alc-tag">T-Registro</span>
       <span class="alc-tag">Anexo 2 SUNAT</span>
-      <span class="alc-tag">Multicompañía</span>
+      <span class="alc-tag">Multicompa&#241;&#237;a</span>
     </div>
   </div>
 </header>
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué resuelve</h2>
-    <p class="alc-sub">Odoo trae un motor de nómina; lo que no trae es Perú. Este módulo pone la norma peruana debajo de ese motor.</p>
+    <h2>Qu&#233; resuelve</h2>
+    <p class="alc-sub">Odoo trae un motor de n&#243;mina; lo que no trae es Per&#250;. Este m&#243;dulo pone la norma peruana debajo de ese motor.</p>
     <div class="alc-grid">
       <div class="alc-card">
         <h3>La ficha laboral peruana</h3>
-        <p>Régimen laboral, situación, tipo de trabajador, CUSPP, tipo de comisión AFP, seguro social, dos direcciones estructuradas y derechohabientes. Todo en <code>hr.version</code>, que en Odoo 19 absorbió al contrato.</p>
+        <p>R&#233;gimen laboral, situaci&#243;n, tipo de trabajador, CUSPP, tipo de comisi&#243;n AFP, seguro social, dos direcciones estructuradas y derechohabientes. Todo en <code>hr.version</code>, que en Odoo 19 absorbi&#243; al contrato.</p>
       </div>
       <div class="alc-card">
-        <h3>Los catálogos de SUNAT</h3>
-        <p>Las tablas paramétricas del Anexo 2 —tipos de trabajador (T08), situaciones (T15), regímenes (T33), ocupaciones (T30), tipos de vía y zona (T05/T06)…— cargadas como datos, no escritas en el código.</p>
+        <h3>Los cat&#225;logos de SUNAT</h3>
+        <p>Las tablas param&#233;tricas del Anexo 2 &#8212;tipos de trabajador (T08), situaciones (T15), reg&#237;menes (T33), ocupaciones (T30), tipos de v&#237;a y zona (T05/T06)&#8230;&#8212; cargadas como datos, no escritas en el c&#243;digo.</p>
       </div>
       <div class="alc-card">
         <h3>Las reglas salariales</h3>
-        <p>Estructura peruana completa con su código de la tabla 22 de SUNAT: ONP, AFP con sus tres componentes, renta de 5ta, EsSalud, asignación familiar, horas extras y descuentos al neto.</p>
+        <p>Estructura peruana completa con su c&#243;digo de la tabla 22 de SUNAT: ONP, AFP con sus tres componentes, renta de 5ta, EsSalud, asignaci&#243;n familiar, horas extras y descuentos al neto.</p>
       </div>
       <div class="alc-card">
-        <h3>Los envíos al Estado</h3>
+        <h3>Los env&#237;os al Estado</h3>
         <p>PLAME (.rem, .jor, .snl, .toc), AFPNet y el T-Registro con sus estructuras de carga masiva verificadas contra el instructivo.</p>
       </div>
     </div>
@@ -267,66 +270,66 @@
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
     <h2>Las piezas que hay que conocer</h2>
-    <p class="alc-sub">Cuatro conceptos explican casi todo el módulo.</p>
+    <p class="alc-sub">Cuatro conceptos explican casi todo el m&#243;dulo.</p>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Parámetros principales</h3>
-        <p>Un registro por compañía donde vive la configuración: cuentas, categorías de la boleta, conceptos de días y horas, reglas de referencia. Nada de códigos escritos dentro de la lógica — se configura, no se parchea.</p>
+        <h3>Par&#225;metros principales</h3>
+        <p>Un registro por compa&#241;&#237;a donde vive la configuraci&#243;n: cuentas, categor&#237;as de la boleta, conceptos de d&#237;as y horas, reglas de referencia. Nada de c&#243;digos escritos dentro de la l&#243;gica &#8212; se configura, no se parchea.</p>
       </div>
       <div class="alc-card">
         <h3>Periodos</h3>
-        <p>El calendario de la planilla. Mensuales por defecto; los regímenes que pagan por semana cuelgan sus periodos del mes al que se declaran, cortados en el fin de mes para que la PLAME cuadre.</p>
+        <p>El calendario de la planilla. Mensuales por defecto; los reg&#237;menes que pagan por semana cuelgan sus periodos del mes al que se declaran, cortados en el fin de mes para que la PLAME cuadre.</p>
       </div>
       <div class="alc-card">
-        <h3>UIT y RMV por año</h3>
-        <p>Las cifras que mueven media localización cambian cada año. Son un registro fechado, no una constante: la boleta del año pasado sigue calculando con la UIT del año pasado.</p>
+        <h3>UIT y RMV por a&#241;o</h3>
+        <p>Las cifras que mueven media localizaci&#243;n cambian cada a&#241;o. Son un registro fechado, no una constante: la boleta del a&#241;o pasado sigue calculando con la UIT del a&#241;o pasado.</p>
       </div>
       <div class="alc-card">
         <h3>Snapshot en la boleta</h3>
-        <p>Al calcular, la boleta fotografía lo que importa —RMV, tasas AFP, datos de la versión—. Recalcular una boleta antigua no la contamina con la norma de hoy.</p>
+        <p>Al calcular, la boleta fotograf&#237;a lo que importa &#8212;RMV, tasas AFP, datos de la versi&#243;n&#8212;. Recalcular una boleta antigua no la contamina con la norma de hoy.</p>
       </div>
     </div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se pone en marcha</h2>
+    <h2>C&#243;mo se pone en marcha</h2>
     <p class="alc-sub">El orden importa: cada paso se apoya en el anterior.</p>
     <ol class="alc-steps">
       <li class="alc-step">
-        <h3>Crear los parámetros principales de la compañía</h3>
-      <span class="alc-where">Planillas → Configuración → Perú → Parámetros principales</span>
-    <p>Es el registro que consulta el resto de la suite. Sin él, la boleta y los exportadores se niegan a funcionar y lo dicen con un mensaje claro en vez de calcular mal en silencio.</p>
+        <h3>Crear los par&#225;metros principales de la compa&#241;&#237;a</h3>
+      <span class="alc-where">Planillas &#8594; Configuraci&#243;n &#8594; Per&#250; &#8594; Par&#225;metros principales</span>
+    <p>Es el registro que consulta el resto de la suite. Sin &#233;l, la boleta y los exportadores se niegan a funcionar y lo dicen con un mensaje claro en vez de calcular mal en silencio.</p>
       </li>
       <li class="alc-step">
-        <h3>Cargar UIT y remuneración mínima del año</h3>
-      <span class="alc-where">Planillas → Configuración → Perú → UIT</span>
-    <p>La UIT alimenta los tramos de la renta de 5ta y la RMV la asignación familiar. Se cargan por año fiscal.</p>
+        <h3>Cargar UIT y remuneraci&#243;n m&#237;nima del a&#241;o</h3>
+      <span class="alc-where">Planillas &#8594; Configuraci&#243;n &#8594; Per&#250; &#8594; UIT</span>
+    <p>La UIT alimenta los tramos de la renta de 5ta y la RMV la asignaci&#243;n familiar. Se cargan por a&#241;o fiscal.</p>
       </li>
       <li class="alc-step">
-        <h3>Revisar los catálogos de SUNAT</h3>
-      <span class="alc-where">Planillas → Configuración → Perú</span>
-    <p>Vienen cargados desde el Anexo 2. Se revisan, no se rellenan: tipos de trabajador, situaciones, regímenes laborales, ocupaciones, motivos de baja, tipos de suspensión, entidades financieras e instituciones educativas.</p>
+        <h3>Revisar los cat&#225;logos de SUNAT</h3>
+      <span class="alc-where">Planillas &#8594; Configuraci&#243;n &#8594; Per&#250;</span>
+    <p>Vienen cargados desde el Anexo 2. Se revisan, no se rellenan: tipos de trabajador, situaciones, reg&#237;menes laborales, ocupaciones, motivos de baja, tipos de suspensi&#243;n, entidades financieras e instituciones educativas.</p>
       </li>
       <li class="alc-step">
         <h3>Generar los periodos del ejercicio</h3>
-      <span class="alc-where">Planillas → Configuración → Perú → Generar periodos</span>
-    <p>Un año completo de una vez. Si hay regímenes semanales, se marca la opción y las semanas quedan colgadas de su mes.</p>
+      <span class="alc-where">Planillas &#8594; Configuraci&#243;n &#8594; Per&#250; &#8594; Generar periodos</span>
+    <p>Un a&#241;o completo de una vez. Si hay reg&#237;menes semanales, se marca la opci&#243;n y las semanas quedan colgadas de su mes.</p>
       </li>
       <li class="alc-step">
         <h3>Completar la ficha laboral de cada trabajador</h3>
-      <span class="alc-where">Empleados → ficha → pestaña peruana</span>
-    <p>Régimen laboral, situación, tipo de trabajador, afiliación pensionaria con su CUSPP, seguro social y direcciones. Estos datos son los que viajan al T-Registro y a la PLAME.</p>
-    <div class="alc-note">Los <strong>derechohabientes</strong> se registran aquí: de ellos salen la asignación familiar y las estructuras del T-Registro. El derecho se evalúa por edad y por estudios a la fecha de la boleta, no con una marca manual que nadie recuerda apagar.</div>
+      <span class="alc-where">Empleados &#8594; ficha &#8594; pesta&#241;a peruana</span>
+    <p>R&#233;gimen laboral, situaci&#243;n, tipo de trabajador, afiliaci&#243;n pensionaria con su CUSPP, seguro social y direcciones. Estos datos son los que viajan al T-Registro y a la PLAME.</p>
+    <div class="alc-note">Los <strong>derechohabientes</strong> se registran aqu&#237;: de ellos salen la asignaci&#243;n familiar y las estructuras del T-Registro. El derecho se eval&#250;a por edad y por estudios a la fecha de la boleta, no con una marca manual que nadie recuerda apagar.</div>
       </li>
       <li class="alc-step">
         <h3>Calcular la planilla</h3>
-      <span class="alc-where">Planillas → Boletas</span>
+      <span class="alc-where">Planillas &#8594; Boletas</span>
     <p>La estructura peruana calcula aportes, retenciones y descuentos con las tasas vigentes a la fecha. El resultado queda fotografiado en la boleta.</p>
       </li>
       <li class="alc-step">
         <h3>Exportar a PLAME, AFPNet y T-Registro</h3>
-      <span class="alc-where">Lote de boletas → botones de exportación</span>
+      <span class="alc-where">Lote de boletas &#8594; botones de exportaci&#243;n</span>
     <p>PLAME genera <code>.rem</code>, <code>.jor</code>, <code>.snl</code> y <code>.toc</code>; AFPNet su archivo de aportes. El T-Registro produce las estructuras de carga masiva en un ZIP con el nombre que exige SUNAT.</p>
       </li>
     </ol>
@@ -338,19 +341,19 @@
     <p class="alc-sub">Alta y mantenimiento de trabajadores y derechohabientes sin teclear en el portal uno por uno.</p>
     <div class="alc-scroll">
       <table>
-        <thead><tr><th>Estructura</th><th>Qué declara</th></tr></thead>
+        <thead><tr><th>Estructura</th><th>Qu&#233; declara</th></tr></thead>
         <tbody>
-          <tr><td><code>E04</code></td><td>Datos de identificación del trabajador</td></tr>
-          <tr><td><code>E05</code></td><td>Datos laborales: régimen, situación, jornada, ocupación</td></tr>
+          <tr><td><code>E04</code></td><td>Datos de identificaci&#243;n del trabajador</td></tr>
+          <tr><td><code>E05</code></td><td>Datos laborales: r&#233;gimen, situaci&#243;n, jornada, ocupaci&#243;n</td></tr>
           <tr><td><code>E11</code></td><td>Domicilio del trabajador</td></tr>
           <tr><td><code>E17</code></td><td>Establecimientos donde presta labores</td></tr>
-          <tr><td><code>E29</code></td><td>Formación: educación concluida</td></tr>
-          <tr><td><code>E30</code></td><td>Cuenta de abono de la remuneración</td></tr>
+          <tr><td><code>E29</code></td><td>Formaci&#243;n: educaci&#243;n concluida</td></tr>
+          <tr><td><code>E30</code></td><td>Cuenta de abono de la remuneraci&#243;n</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alc-note">El formato se verificó contra el instructivo oficial y está documentado en <code>docs/planillas/TREGISTRO_ESTRUCTURAS.md</code>: separador de tuberías <strong>con tubería final</strong> —su ausencia produce el error EPR1.59—, codificación latin-1 y el nombre <code>RP_&lt;RUC&gt;.&lt;ext&gt;</code>.</div>
-    <p>Los derechohabientes se exportan además en el Excel que alimenta la macro de SUNAT. Las estructuras 13 y 24 <strong>no</strong> se generan: no hay especificación pública y no se inventan formatos fiscales.</p>
+    <div class="alc-note">El formato se verific&#243; contra el instructivo oficial y est&#225; documentado en <code>docs/planillas/TREGISTRO_ESTRUCTURAS.md</code>: separador de tuber&#237;as <strong>con tuber&#237;a final</strong> &#8212;su ausencia produce el error EPR1.59&#8212;, codificaci&#243;n latin-1 y el nombre <code>RP_&lt;RUC&gt;.&lt;ext&gt;</code>.</div>
+    <p>Los derechohabientes se exportan adem&#225;s en el Excel que alimenta la macro de SUNAT. Las estructuras 13 y 24 <strong>no</strong> se generan: no hay especificaci&#243;n p&#250;blica y no se inventan formatos fiscales.</p>
   </div>
 </section>
 <section class="alc-sec">
@@ -359,20 +362,20 @@
     <p class="alc-sub"></p>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Cero códigos dentro de la lógica</h3>
-        <p>Los conceptos que la boleta necesita —qué es un día laborado, qué categoría es un ingreso— se configuran en los parámetros. Cambiar de criterio no exige tocar Python.</p>
+        <h3>Cero c&#243;digos dentro de la l&#243;gica</h3>
+        <p>Los conceptos que la boleta necesita &#8212;qu&#233; es un d&#237;a laborado, qu&#233; categor&#237;a es un ingreso&#8212; se configuran en los par&#225;metros. Cambiar de criterio no exige tocar Python.</p>
       </div>
       <div class="alc-card">
-        <h3>Multicompañía por diseño</h3>
-        <p><code>check_company</code> en todas partes, reglas de registro por compañía y parámetros propios. Dos empresas con criterios distintos conviven en la misma base.</p>
+        <h3>Multicompa&#241;&#237;a por dise&#241;o</h3>
+        <p><code>check_company</code> en todas partes, reglas de registro por compa&#241;&#237;a y par&#225;metros propios. Dos empresas con criterios distintos conviven en la misma base.</p>
       </div>
       <div class="alc-card">
         <h3>Redondeo SUNAT</h3>
-        <p>Medio hacia arriba, sobre <code>Decimal</code> y no sobre coma flotante: 267.90 × 15 % da 40.19 y no 40.18, que es lo que sale si se confía en el binario.</p>
+        <p>Medio hacia arriba, sobre <code>Decimal</code> y no sobre coma flotante: 267.90 &#215; 15 % da 40.19 y no 40.18, que es lo que sale si se conf&#237;a en el binario.</p>
       </div>
       <div class="alc-card">
-        <h3>La versión, no el contrato</h3>
-        <p>Odoo 19 fusionó <code>hr.contract</code> en <code>hr.version</code>. Toda la ficha laboral vive ahí y el histórico es nativo.</p>
+        <h3>La versi&#243;n, no el contrato</h3>
+        <p>Odoo 19 fusion&#243; <code>hr.contract</code> en <code>hr.version</code>. Toda la ficha laboral vive ah&#237; y el hist&#243;rico es nativo.</p>
       </div>
     </div>
   </div>
@@ -380,8 +383,8 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_hr_pe</strong> · versión 10.20260803 · LGPL-3</p>
-    <p style="margin:0">Requiere <strong>hr_payroll</strong>, <strong>hr_payroll_account</strong>, <strong>l10n_latam_base</strong> y <strong>l10n_pe</strong>. Plan de migración en <code>docs/planillas/</code>.</p>
+    <p style="margin:0 0 6px"><strong>al_hr_pe</strong> &#183; versi&#243;n 13.20260901 &#183; OPL-1</p>
+    <p style="margin:0">Requiere <strong>hr_payroll</strong>, <strong>hr_payroll_account</strong>, <strong>l10n_latam_base</strong> y <strong>l10n_pe</strong>. Plan de migraci&#243;n en <code>docs/planillas/</code>.</p>
   </div>
 </footer>
 

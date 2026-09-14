@@ -191,7 +191,7 @@
 .alc .alc-card h3 { margin: 0 0 8px; font-size: 16px; }
 .alc .alc-card p { margin: 0; font-size: 14px; color: var(--alc-muted); }
 
-/* ---------- Bloque de código ---------- */
+/* ---------- Bloque de c\F3 digo ---------- */
 .alc pre {
   background: #1c2024;
   color: #e6e9ec;
@@ -223,15 +223,18 @@
   .alc h2 { font-size: 23px; }
   .alc .alc-step { padding-left: 46px; }
 }
+.al-ficha-link { display: none; }
 </style>
+
+<p class="al-ficha-link" style="margin:0 0 16px;padding:10px 14px;border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;"><a href="/al_l10n_pe_detraction/static/description/index.html" target="_blank" rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a> &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a nueva.</p>
 
 <header class="alc-hero">
   <div class="alc-wrap">
-    <p class="alc-eyebrow">Contabilidad Perú · Odoo 19</p>
+    <p class="alc-eyebrow">Contabilidad Per&#250; &#183; Odoo 19</p>
     <h1>Detracciones (SPOT)</h1>
-    <p>El sistema de pago de obligaciones tributarias completo: catálogo 54 administrable, cálculo en la factura, depósito al Banco de la Nación y constancia para el PLE.</p>
+    <p>El sistema de pago de obligaciones tributarias completo: cat&#225;logo 54 administrable, c&#225;lculo en la factura, dep&#243;sito al Banco de la Naci&#243;n y constancia para el PLE.</p>
     <div class="alc-tags">
-      <span class="alc-tag">Catálogo 54</span>
+      <span class="alc-tag">Cat&#225;logo 54</span>
       <span class="alc-tag">Redondeo a soles enteros</span>
       <span class="alc-tag">Constancia</span>
       <span class="alc-tag">PLE 8.1</span>
@@ -241,24 +244,24 @@
 
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Qué añade a lo nativo</h2>
-    <p class="alc-sub">Odoo ya emite el XML con el bloque de detracción. Lo que falta es todo lo demás.</p>
+    <h2>Qu&#233; a&#241;ade a lo nativo</h2>
+    <p class="alc-sub">Odoo ya emite el XML con el bloque de detracci&#243;n. Lo que falta es todo lo dem&#225;s.</p>
     <div class="alc-grid">
       <div class="alc-card">
-        <h3>Catálogo 54 administrable</h3>
-        <p>Porcentaje y monto mínimo por código, editable. Se sincroniza con los campos nativos del producto que alimentan el XML, así que corregir un porcentaje se hace en un sitio.</p>
+        <h3>Cat&#225;logo 54 administrable</h3>
+        <p>Porcentaje y monto m&#237;nimo por c&#243;digo, editable. Se sincroniza con los campos nativos del producto que alimentan el XML, as&#237; que corregir un porcentaje se hace en un sitio.</p>
       </div>
       <div class="alc-card">
-        <h3>Cálculo en la factura</h3>
-        <p>Detecta el código dominante, verifica el monto mínimo, calcula la detracción y el neto a cobrar o pagar. En ventas y en compras.</p>
+        <h3>C&#225;lculo en la factura</h3>
+        <p>Detecta el c&#243;digo dominante, verifica el monto m&#237;nimo, calcula la detracci&#243;n y el neto a cobrar o pagar. En ventas y en compras.</p>
       </div>
       <div class="alc-card">
-        <h3>Tipo de operación EDI</h3>
-        <p>Al publicar una venta afecta fija el 1001 si no se eligió otro valor de la familia 100x. Un olvido menos.</p>
+        <h3>Tipo de operaci&#243;n EDI</h3>
+        <p>Al publicar una venta afecta fija el 1001 si no se eligi&#243; otro valor de la familia 100x. Un olvido menos.</p>
       </div>
       <div class="alc-card">
-        <h3>Depósito y constancia</h3>
-        <p>Registra el pago —depósito propio en compras, cobro en ventas— y llena la constancia que alimenta los campos 32 y 33 del PLE 8.1.</p>
+        <h3>Dep&#243;sito y constancia</h3>
+        <p>Registra el pago &#8212;dep&#243;sito propio en compras, cobro en ventas&#8212; y llena la constancia que alimenta los campos 32 y 33 del PLE 8.1.</p>
       </div>
     </div>
   </div>
@@ -266,33 +269,33 @@
 <section class="alc-sec alc-alt">
   <div class="alc-wrap">
     <h2>Detalles que importan</h2>
-    <p class="alc-sub">La detracción tiene reglas propias que no se parecen a las de un impuesto.</p>
-    <p><strong>Se redondea a soles enteros.</strong> No a dos decimales: es una regla de SUNAT y afecta al importe que se deposita.</p>    <p><strong>El monto mínimo es por código.</strong> El general son S/ 700, pero hay códigos con su propio umbral; por eso vive en el catálogo y no en una constante.</p>    <div class="alc-note">Del módulo de la versión anterior se adoptó el catálogo <strong>corrigiendo los porcentajes de los códigos 027, 030 y 040</strong> al 4 % oficial. Lo que no se portó es el cronograma de pagos con rebalanceo manual de asientos: demasiado riesgo contable para lo que aportaba.</div>
+    <p class="alc-sub">La detracci&#243;n tiene reglas propias que no se parecen a las de un impuesto.</p>
+    <p><strong>Se redondea a soles enteros.</strong> No a dos decimales: es una regla de SUNAT y afecta al importe que se deposita.</p>    <p><strong>El monto m&#237;nimo es por c&#243;digo.</strong> El general son S/ 700, pero hay c&#243;digos con su propio umbral; por eso vive en el cat&#225;logo y no en una constante.</p>    <div class="alc-note">Del m&#243;dulo de la versi&#243;n anterior se adopt&#243; el cat&#225;logo <strong>corrigiendo los porcentajes de los c&#243;digos 027, 030 y 040</strong> al 4 % oficial. Lo que no se port&#243; es el cronograma de pagos con rebalanceo manual de asientos: demasiado riesgo contable para lo que aportaba.</div>
   </div>
 </section>
 <section class="alc-sec">
   <div class="alc-wrap">
-    <h2>Cómo se usa</h2>
+    <h2>C&#243;mo se usa</h2>
     <p class="alc-sub"></p>
     <ol class="alc-steps">
       <li class="alc-step">
-        <h3>Revisar el catálogo</h3>
-      <span class="alc-where">Perú → Detracciones → Tipos</span>
-    <p>Viene cargado con el catálogo 54. Se ajustan porcentajes y mínimos si SUNAT los mueve.</p>
+        <h3>Revisar el cat&#225;logo</h3>
+      <span class="alc-where">Per&#250; &#8594; Detracciones &#8594; Tipos</span>
+    <p>Viene cargado con el cat&#225;logo 54. Se ajustan porcentajes y m&#237;nimos si SUNAT los mueve.</p>
       </li>
       <li class="alc-step">
         <h3>Marcar los productos o servicios</h3>
-      <span class="alc-where">Producto → pestaña de facturación</span>
-    <p>Con su código de detracción. De ahí sale el porcentaje que usan la factura y el XML.</p>
+      <span class="alc-where">Producto &#8594; pesta&#241;a de facturaci&#243;n</span>
+    <p>Con su c&#243;digo de detracci&#243;n. De ah&#237; sale el porcentaje que usan la factura y el XML.</p>
       </li>
       <li class="alc-step">
         <h3>Facturar</h3>
-    <p>La detracción se calcula sola y el neto a pagar aparece en la factura.</p>
+    <p>La detracci&#243;n se calcula sola y el neto a pagar aparece en la factura.</p>
       </li>
       <li class="alc-step">
-        <h3>Registrar el depósito</h3>
-      <span class="alc-where">Factura → asistente de detracción</span>
-    <p>En compras, el depósito propio al Banco de la Nación; en ventas, el cobro de lo que depositó el cliente. Se anota el número y la fecha de la constancia.</p>
+        <h3>Registrar el dep&#243;sito</h3>
+      <span class="alc-where">Factura &#8594; asistente de detracci&#243;n</span>
+    <p>En compras, el dep&#243;sito propio al Banco de la Naci&#243;n; en ventas, el cobro de lo que deposit&#243; el cliente. Se anota el n&#250;mero y la fecha de la constancia.</p>
       </li>
     </ol>
   </div>
@@ -300,7 +303,7 @@
 
 <footer class="alc-foot">
   <div class="alc-wrap">
-    <p style="margin:0 0 6px"><strong>al_l10n_pe_detraction</strong> · versión  · LGPL-3</p>
+    <p style="margin:0 0 6px"><strong>al_l10n_pe_detraction</strong> &#183; versi&#243;n 6.20260827 &#183; OPL-1</p>
     <p style="margin:0">Requiere <strong>al_account_base</strong>, <strong>l10n_pe_edi</strong> y <strong>l10n_pe_reports</strong>. La constancia alimenta los campos 32-33 del PLE 8.1.</p>
   </div>
 </footer>
