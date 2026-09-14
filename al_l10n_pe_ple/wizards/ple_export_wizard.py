@@ -173,69 +173,10 @@ class L10nPePleExportWizard(models.TransientModel):
         }
 
     # ------------------------------------------------------------------
-    # Datos comunes del Libro 7
+    # Periodo de los libros anuales (7 y 10)
     # ------------------------------------------------------------------
     def _period_71(self):
         return '%04d0000' % self.year
-
-    def _date_range(self):
-        return date(self.year, 1, 1), date(self.year, 12, 31)
-
-    def _get_assets(self, extra_domain=None):
-        """Activos raíz vigentes durante el ejercicio (excluye modelos,
-        borradores, cancelados y los hijos por aumento de valor, que se
-        agregan al padre)."""
-        date_from, date_to = self._date_range()
-        domain = [
-            ('company_id', '=', self.company_id.id),
-            ('state', 'in', ('open', 'paused', 'close')),
-            ('parent_id', '=', False),
-            ('acquisition_date', '<=', date_to),
-            '|', ('disposal_date', '=', False),
-            ('disposal_date', '>=', date_from),
-        ]
-        return self.env['account.asset'].search(
-            domain + (extra_domain or []), order='acquisition_date, id')
-
-    def _depreciation_sums(self, assets, date_from=None, date_to=None):
-        """{asset_raíz: (dep. acumulada anterior, dep. del ejercicio)} sobre
-        asientos de depreciación publicados (incluye los de sus hijos)."""
-        default_from, default_to = self._date_range()
-        date_from = date_from or default_from
-        date_to = date_to or default_to
-        all_assets = assets | assets.mapped('children_ids')
-        result = {asset.id: [0.0, 0.0] for asset in assets}
-        root_of = {asset.id: asset.id for asset in assets}
-        for child in assets.mapped('children_ids'):
-            root_of[child.id] = child.parent_id.id
-        moves = self.env['account.move'].search_read(
-            [('asset_id', 'in', all_assets.ids),
-             ('state', '=', 'posted'),
-             ('date', '<=', date_to)],
-            ['asset_id', 'date', 'amount_total'])
-        for move in moves:
-            root = root_of.get(move['asset_id'][0])
-            if root is None:
-                continue
-            index = 1 if move['date'] >= date_from else 0
-            result[root][index] += move['amount_total']
-        for asset in assets:
-            # depreciación importada de sistemas previos = acumulada anterior
-            result[asset.id][0] += asset.already_depreciated_amount_import
-        return result
-
-    def _asset_code(self, asset):
-        return self._ple_text(
-            asset.l10n_pe_ple_code, 24, default='AF%06d' % asset.id)
-
-    def _require(self, assets, field_name, label):
-        missing = assets.filtered(lambda a: not a[field_name])
-        if missing:
-            raise UserError(_(
-                'Los siguientes activos no tienen configurado «%(label)s» '
-                '(pestaña PLE SUNAT): %(assets)s',
-                label=label,
-                assets=', '.join(missing.mapped('display_name')[:20])))
 
     def _build_files(self, book_code, lines, file_name, month='00'):
         """TXT oficial + XLSX opcional (formato de revisión v18)."""
@@ -306,135 +247,21 @@ class L10nPePleExportWizard(models.TransientModel):
             month='%02d' % self.balance_date.month)
 
     # ------------------------------------------------------------------
-    # 7.1 — Activos fijos revaluados y no revaluados (37 campos)
+    # Libro 7 — 7.1 / 7.3 / 7.4 (datos en l10n_pe.ple.asset.book)
     # ------------------------------------------------------------------
+    def _export_asset_book(self, book_code):
+        lines = self.env['l10n_pe.ple.asset.book']._asset_lines(
+            book_code, self.company_id, self.year)
+        return self._make_file(book_code, lines)
+
     def _export_71(self):
-        date_from, date_to = self._date_range()
-        assets = self._get_assets()
-        self._require(assets, 'l10n_pe_asset_type', 'Tipo de activo (T18)')
-        dep_sums = self._depreciation_sums(assets)
-        lines = []
-        for asset in assets:
-            initial = additions = improvements = retirement = 0.0
-            children = asset.children_ids.filtered(
-                lambda c: c.state in ('open', 'paused', 'close'))
-            prior_children = sum(
-                c.original_value for c in children
-                if (c.acquisition_date or date_from) < date_from)
-            year_children = sum(
-                c.original_value for c in children
-                if date_from <= (c.acquisition_date or date_from) <= date_to)
-            if asset.acquisition_date < date_from:
-                initial = asset.original_value + prior_children
-            else:
-                additions = asset.original_value
-                improvements += prior_children
-            improvements += year_children
-            if asset.disposal_date and date_from <= asset.disposal_date <= date_to:
-                retirement = asset.original_value
-            prev_dep, year_dep = dep_sums[asset.id]
-            lines.append([
-                self._period_71(),                                    # 1
-                asset.id,                                             # 2 CUO
-                'M%d' % asset.id,                                     # 3
-                self._ple_text(asset.l10n_pe_ple_catalog, 1, '9'),    # 4
-                self._asset_code(asset),                              # 5
-                '',                                                   # 6 UNSPSC (op)
-                '',                                                   # 7 (op)
-                self._ple_text(asset.l10n_pe_asset_type, 1),          # 8
-                self._ple_text(asset.account_asset_id.code, 24),      # 9
-                self._ple_text(asset.l10n_pe_asset_status, 1, '1'),   # 10
-                self._ple_text(asset.name, 40),                       # 11
-                self._ple_text(asset.l10n_pe_brand, 20, '-'),         # 12
-                self._ple_text(asset.l10n_pe_model, 20, '-'),         # 13
-                self._ple_text(asset.l10n_pe_plate, 30, '-'),         # 14
-                self._ple_amount(initial),                            # 15
-                self._ple_amount(additions),                          # 16
-                self._ple_amount(improvements),                       # 17
-                self._ple_amount(retirement),                         # 18
-                self._ple_amount(0.0),                                # 19 otros ajustes
-                self._ple_amount(0.0),                                # 20 reval. voluntaria
-                self._ple_amount(0.0),                                # 21 reval. reorganización
-                self._ple_amount(0.0),                                # 22 otras reval.
-                self._ple_amount(0.0),                                # 23 ajuste inflación
-                self._ple_date(asset.acquisition_date),               # 24
-                self._ple_date(asset.prorata_date
-                               or asset.acquisition_date),            # 25
-                self._ple_text(asset.l10n_pe_depre_method, 1, '9'),   # 26
-                self._ple_text(asset.l10n_pe_depre_auth_doc, 20, '-'),  # 27
-                self._ple_amount(asset.l10n_pe_depre_rate),           # 28
-                self._ple_amount(prev_dep),                           # 29
-                self._ple_amount(year_dep),                           # 30
-                self._ple_amount(0.0),                                # 31 dep. retiros
-                self._ple_amount(0.0),                                # 32 dep. otros ajustes
-                self._ple_amount(0.0),                                # 33 dep. reval. voluntaria
-                self._ple_amount(0.0),                                # 34 dep. reval. reorg.
-                self._ple_amount(0.0),                                # 35 dep. otras reval.
-                self._ple_amount(0.0),                                # 36 ajuste inflación dep.
-                '1',                                                  # 37 estado
-            ])
-        return self._make_file('070100', lines)
+        return self._export_asset_book('070100')
 
-    # ------------------------------------------------------------------
-    # 7.3 — Diferencia de cambio (15 campos)
-    # ------------------------------------------------------------------
     def _export_73(self):
-        date_from, date_to = self._date_range()
-        assets = self._get_assets(
-            [('l10n_pe_fx_currency_id', '!=', False)])
-        self._require(assets, 'l10n_pe_fx_amount', 'Valor adquisición en ME')
-        self._require(assets, 'l10n_pe_fx_rate', 'TC a fecha de adquisición')
-        dep_sums = self._depreciation_sums(assets)
-        pen = self.company_id.currency_id
-        lines = []
-        for asset in assets:
-            close_rate = self.env['res.currency']._get_conversion_rate(
-                asset.l10n_pe_fx_currency_id, pen, self.company_id, date_to)
-            mn_value = asset.original_value
-            fx_adjust = asset.l10n_pe_fx_amount * close_rate - mn_value
-            lines.append([
-                self._period_71(),                                    # 1
-                asset.id,                                             # 2 CUO
-                'M%d' % asset.id,                                     # 3
-                self._ple_text(asset.l10n_pe_ple_catalog, 1, '9'),    # 4
-                self._asset_code(asset),                              # 5
-                self._ple_date(asset.acquisition_date),               # 6
-                self._ple_amount(asset.l10n_pe_fx_amount),            # 7
-                self._ple_rate(asset.l10n_pe_fx_rate),                # 8
-                self._ple_amount(mn_value),                           # 9
-                self._ple_rate(close_rate),                           # 10
-                self._ple_amount(fx_adjust),                          # 11
-                self._ple_amount(dep_sums[asset.id][1]),              # 12
-                self._ple_amount(0.0),                                # 13
-                self._ple_amount(0.0),                                # 14
-                '1',                                                  # 15 estado
-            ])
-        return self._make_file('070300', lines)
+        return self._export_asset_book('070300')
 
-    # ------------------------------------------------------------------
-    # 7.4 — Arrendamiento financiero (11 campos)
-    # ------------------------------------------------------------------
     def _export_74(self):
-        assets = self._get_assets([('l10n_pe_is_leasing', '=', True)])
-        self._require(assets, 'l10n_pe_leasing_contract', 'Nº contrato leasing')
-        self._require(assets, 'l10n_pe_leasing_date', 'Fecha del contrato')
-        lines = []
-        for asset in assets:
-            lines.append([
-                self._period_71(),                                    # 1
-                asset.id,                                             # 2 CUO
-                'M%d' % asset.id,                                     # 3
-                self._ple_text(asset.l10n_pe_ple_catalog, 1, '9'),    # 4
-                self._ple_text(asset.l10n_pe_leasing_contract, 20),   # 5
-                self._ple_date(asset.l10n_pe_leasing_date),           # 6
-                self._asset_code(asset),                              # 7
-                self._ple_date(asset.l10n_pe_leasing_start
-                               or asset.acquisition_date),            # 8
-                asset.l10n_pe_leasing_installments or 0,              # 9
-                self._ple_amount(asset.l10n_pe_leasing_total),        # 10
-                '1',                                                  # 11 estado
-            ])
-        return self._make_file('070400', lines)
+        return self._export_asset_book('070400')
 
     # ------------------------------------------------------------------
     # 4.1 — Retenciones Art. 34 inc. e) y f) LIR (10 campos)
@@ -905,10 +732,11 @@ class L10nPePleExportWizard(models.TransientModel):
             '|', ('disposal_date', '=', False),
             ('disposal_date', '>', self.balance_date),
         ], order='acquisition_date, id')
-        dep_sums = self._depreciation_sums(assets, date_to=self.balance_date)
+        dep_sums = self.env['l10n_pe.ple.asset.book']._asset_depreciation_sums(
+            assets, date(self.balance_date.year, 1, 1), self.balance_date)
         lines = []
         for asset in assets:
-            total_dep = sum(dep_sums[asset.id])
+            total_dep = sum(dep_sums[asset.id].values())
             lines.append([
                 self._period_lib(),                          # 1
                 asset.id,                                    # 2 CUO

@@ -22,6 +22,8 @@ Fase actual:
 * **Libro 7 — Registro de Activos Fijos**: formatos 7.1 (revaluados y no
   revaluados), 7.3 (diferencia de cambio) y 7.4 (arrendamiento financiero),
   con datos SUNAT capturados en la ficha del activo (``account.asset``).
+  Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** con las
+  columnas del formato físico y botones TXT 7.1/7.3/7.4 y XLSX.
 * **PLE 4.1 — Retenciones Art. 34 e)/f) LIR**: captura mensual editable e
   importable (sin nómina peruana en Odoo).
 * **PLE 9.1/9.2 — Registro de Consignaciones**: albaranes marcados como
@@ -60,7 +62,7 @@ NO se reimplementan.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '5.20260828',
+    'version': '6.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -80,6 +82,7 @@ NO se reimplementan.
         'views/rce_views.xml',
         'wizards/ple_export_wizard_views.xml',
         'views/menu.xml',
+        'data/ple_asset_report.xml',
     ],
     'installable': True,
     'application': False,

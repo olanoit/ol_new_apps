@@ -2,7 +2,11 @@
 
 # Libro 7 — Registro de Activos Fijos (PLE)
 
-Generado por `al_l10n_pe_ple` desde **Perú ▸ Libros PLE**. Libro **anual**
+Generado por `al_l10n_pe_ple` desde **Perú ▸ Libros PLE** — informe en
+pantalla **Activos fijos (Libro 7)** (`account.report`
+`al_l10n_pe_ple.ple_asset_7_1_report`, handler
+`l10n_pe.ple.asset.report.handler`, con botones TXT 7.1/7.3/7.4 y XLSX) o
+asistente **Exportar PLE**. Ambos leen de `l10n_pe.ple.asset.book`. Libro **anual**
 (el nombre de archivo consigna `MM=00`); fuente de datos: `account.asset`
 (módulo EE `account_asset`) más los campos SUNAT de la pestaña **PLE SUNAT**
 de la ficha del activo.
@@ -55,16 +59,18 @@ En cada activo (pestaña **PLE SUNAT**):
 | 15 | Saldo inicial | `original_value` (+ mejoras previas) si adquirido antes del ejercicio |
 | 16 | Adquisiciones | `original_value` si adquirido en el ejercicio |
 | 17 | Mejoras | activos hijos (aumentos de valor) del ejercicio |
-| 18 | Retiros/bajas | `original_value` si `disposal_date` cae en el ejercicio |
+| 18 | Retiros/bajas | −(15+16+17) si `disposal_date` cae en el ejercicio (negativo) |
 | 19–23 | Ajustes / revaluaciones | `0.00` (no gestionado en Odoo) |
 | 24 | Fecha de adquisición | `acquisition_date` |
 | 25 | Fecha inicio de uso | `prorata_date` (o adquisición) |
 | 26 | Método depreciación (T20) | `l10n_pe_depre_method` |
 | 27 | Doc. autorización cambio método | `l10n_pe_depre_auth_doc` (def. `-`) |
 | 28 | % depreciación | `l10n_pe_depre_rate` |
-| 29 | Deprec. acumulada ejercicio anterior | asientos de depreciación publicados con fecha < 01/01 + `already_depreciated_amount_import` |
-| 30 | Deprec. del ejercicio | asientos de depreciación publicados del ejercicio |
-| 31–36 | Deprec. de retiros/ajustes/revaluaciones | `0.00` (ver limitaciones) |
+| 29 | Deprec. acumulada ejercicio anterior | `depreciation_value` de asientos publicados de depreciación (o manuales vinculados) con fecha < 01/01 + `already_depreciated_amount_import` |
+| 30 | Deprec. del ejercicio | ídem, dentro del ejercicio (excluye asientos de baja/venta) |
+| 31 | Deprec. de retiros/bajas | −(29+30+32) si el activo se dio de baja en el ejercicio |
+| 32 | Deprec. otros ajustes | revaluaciones negativas del ejercicio |
+| 33–36 | Deprec. de revaluaciones / inflación | `0.00` |
 | 37 | Estado de operación | `1` |
 
 ## Mapeo 7.3 (15 campos)
@@ -93,8 +99,6 @@ de necesitarse, corregir el TXT manualmente antes de validar en el PLE.
 
 - Revaluaciones, ajustes por inflación y sus depreciaciones (campos 19–23 y
   31–36) se emiten `0.00`: Odoo no modela revaluación de activos.
-- La depreciación asociada a retiros/bajas (campo 31) se emite `0.00`; el
-  asiento de baja de Odoo ajusta el gasto pero no se desglosa aquí.
 - Activos totalmente depreciados y no dados de baja siguen apareciendo
   (correcto según SUNAT).
 - Verificación final: cargar el TXT en el validador del PLE de SUNAT.

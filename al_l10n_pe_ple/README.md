@@ -33,6 +33,9 @@ Datos de demostración y validación integral: [`tools/ple_demo_data.py`](tools/
 
   Los datos SUNAT (código, tablas 13/18/19/20, marca/modelo/placa, ME/TC,
   leasing) se capturan en la pestaña **PLE SUNAT** de la ficha del activo.
+  Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** (Perú ▸ Libros
+  PLE ▸ Activos fijos, y Contabilidad ▸ Revisión ▸ Inventario) con las columnas
+  del formato físico, PDF/XLSX nativos y botones TXT 7.1/7.3/7.4 y XLSX 7.1.
   Documentación: [`docs/ple/reportes/libro_7.md`](../docs/ple/reportes/libro_7.md).
 - **Libro 4 — PLE 4.1 Retenciones Art. 34 LIR** (mensual): captura en
   **Perú ▸ Libros PLE ▸ Retenciones 4.1** (sin nómina PE, lista editable e

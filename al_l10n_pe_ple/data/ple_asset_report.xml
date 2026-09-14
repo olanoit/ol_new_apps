@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Libro 7 en pantalla: columnas del formato físico 7.1 y botones
+         TXT/XLSX con el archivo legal (ver models/ple_asset_report.py). -->
+    <record id="ple_asset_7_1_report" model="account.report">
+        <field name="name">Fixed Assets Register (PLE 7.1)</field>
+        <field name="name@es_419">Registro de Activos Fijos (PLE 7.1)</field>
+        <field name="country_id" ref="base.pe"/>
+        <field name="availability_condition">country</field>
+        <field name="filter_date_range" eval="False"/>
+        <field name="default_opening_date_filter">previous_year</field>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_unfold_all" eval="False"/>
+        <field name="filter_journals" eval="False"/>
+        <field name="filter_show_draft" eval="False"/>
+        <field name="custom_handler_model_id" ref="model_l10n_pe_ple_asset_report_handler"/>
+        <field name="column_ids">
+            <!-- Identificación -->
+            <record id="ple_asset_7_1_col_asset_type" model="account.report.column">
+                <field name="name">Tipo (T18)</field>
+                <field name="expression_label">asset_type</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="ple_asset_7_1_col_brand" model="account.report.column">
+                <field name="name">Marca</field>
+                <field name="expression_label">brand</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="ple_asset_7_1_col_model" model="account.report.column">
+                <field name="name">Modelo</field>
+                <field name="expression_label">model</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="ple_asset_7_1_col_plate" model="account.report.column">
+                <field name="name">Serie / placa</field>
+                <field name="expression_label">plate</field>
+                <field name="figure_type">string</field>
+            </record>
+            <!-- Valor del activo -->
+            <record id="ple_asset_7_1_col_initial" model="account.report.column">
+                <field name="name">Saldo inicial</field>
+                <field name="expression_label">initial</field>
+            </record>
+            <record id="ple_asset_7_1_col_additions" model="account.report.column">
+                <field name="name">Adquisiciones</field>
+                <field name="expression_label">additions</field>
+            </record>
+            <record id="ple_asset_7_1_col_improvements" model="account.report.column">
+                <field name="name">Mejoras</field>
+                <field name="expression_label">improvements</field>
+            </record>
+            <record id="ple_asset_7_1_col_retirements" model="account.report.column">
+                <field name="name">Retiros y bajas</field>
+                <field name="expression_label">retirements</field>
+            </record>
+            <record id="ple_asset_7_1_col_other_adjust" model="account.report.column">
+                <field name="name">Otros ajustes</field>
+                <field name="expression_label">other_adjust</field>
+            </record>
+            <record id="ple_asset_7_1_col_historical_value" model="account.report.column">
+                <field name="name">Valor histórico al 31.12</field>
+                <field name="expression_label">historical_value</field>
+            </record>
+            <record id="ple_asset_7_1_col_inflation_adjust" model="account.report.column">
+                <field name="name">Ajuste por inflación</field>
+                <field name="expression_label">inflation_adjust</field>
+            </record>
+            <record id="ple_asset_7_1_col_adjusted_value" model="account.report.column">
+                <field name="name">Valor ajustado al 31.12</field>
+                <field name="expression_label">adjusted_value</field>
+            </record>
+            <!-- Uso y método -->
+            <record id="ple_asset_7_1_col_acquisition_date" model="account.report.column">
+                <field name="name">Fecha adquisición</field>
+                <field name="expression_label">acquisition_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="ple_asset_7_1_col_start_date" model="account.report.column">
+                <field name="name">Inicio de uso</field>
+                <field name="expression_label">start_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="ple_asset_7_1_col_method" model="account.report.column">
+                <field name="name">Método (T20)</field>
+                <field name="expression_label">method</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="ple_asset_7_1_col_auth_doc" model="account.report.column">
+                <field name="name">Doc. autorización</field>
+                <field name="expression_label">auth_doc</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="ple_asset_7_1_col_rate" model="account.report.column">
+                <field name="name">% depreciación</field>
+                <field name="expression_label">rate</field>
+                <field name="figure_type">float</field>
+            </record>
+            <!-- Depreciación -->
+            <record id="ple_asset_7_1_col_dep_prior" model="account.report.column">
+                <field name="name">Acumulada al cierre anterior</field>
+                <field name="expression_label">dep_prior</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_year" model="account.report.column">
+                <field name="name">Del ejercicio</field>
+                <field name="expression_label">dep_year</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_retirements" model="account.report.column">
+                <field name="name">De retiros y bajas</field>
+                <field name="expression_label">dep_retirements</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_other" model="account.report.column">
+                <field name="name">Otros ajustes</field>
+                <field name="expression_label">dep_other</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_historical" model="account.report.column">
+                <field name="name">Acumulada histórica</field>
+                <field name="expression_label">dep_historical</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_inflation" model="account.report.column">
+                <field name="name">Ajuste por inflación</field>
+                <field name="expression_label">dep_inflation</field>
+            </record>
+            <record id="ple_asset_7_1_col_dep_adjusted" model="account.report.column">
+                <field name="name">Acumulada ajustada</field>
+                <field name="expression_label">dep_adjusted</field>
+            </record>
+        </field>
+    </record>
+
+    <record id="action_report_ple_asset_7_1" model="ir.actions.client">
+        <field name="name">Registro de Activos Fijos (PLE 7.1)</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('ple_asset_7_1_report')}"/>
+    </record>
+
+    <!-- App Perú ▸ Libros PLE -->
+    <menuitem id="menu_ple_asset_7_1" name="Activos fijos (Libro 7)"
+              parent="menu_ple_root"
+              action="action_report_ple_asset_7_1"
+              sequence="15"/>
+
+    <!-- Ubicación nativa: junto al Programa de depreciación -->
+    <menuitem id="menu_ple_asset_7_1_accounting" name="Registro de Activos Fijos (PLE 7.1)"
+              parent="account_reports.account_audit_inventory_entries_menu"
+              action="action_report_ple_asset_7_1"
+              groups="account.group_account_readonly"
+              sequence="25"/>
+</odoo>

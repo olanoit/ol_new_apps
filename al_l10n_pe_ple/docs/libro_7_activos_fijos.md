@@ -29,12 +29,35 @@ En **Contabilidad ▸ Activos**, abrir cada activo → pestaña **PLE SUNAT**:
    total.
 
 La depreciación proviene de los **asientos de depreciación publicados** del
-activo (los que genera el propio módulo de Activos): campo 29 = acumulada
-al cierre del ejercicio anterior (incluye el importe importado de sistemas
-previos), campo 30 = depreciación del ejercicio.
+activo (los que genera el propio módulo de Activos, o asientos manuales
+vinculados al activo): campo 29 = acumulada al cierre del ejercicio anterior
+(incluye el importe importado de sistemas previos), campo 30 = depreciación
+del ejercicio. Los asientos de **baja o venta no cuentan como depreciación**;
+las revaluaciones negativas van a «otros ajustes» (campo 32).
+
+Si el activo se da de baja en el ejercicio, sale del registro completo:
+campo 18 (retiros) = −(saldo inicial + adquisiciones + mejoras) y campo 31
+= −(depreciación acumulada), de modo que el valor y la depreciación
+históricos quedan en cero.
+
+## Revisión en pantalla
+
+Perú ▸ Libros PLE ▸ **Activos fijos (Libro 7)** (también en Contabilidad ▸
+Revisión ▸ Inventario, junto al Programa de depreciación). Elegir la fecha
+de cierre: el ejercicio es el de esa fecha (por defecto, el año anterior).
+
+- Un renglón por activo, agrupado por cuenta contable con subtotales y
+  total general; columnas del **formato físico 7.1** (identificación, valor
+  del activo, uso y método, depreciación).
+- Menú contextual del activo ▸ **Abrir activo** para corregir datos PLE.
+- Botones **PDF** y **XLSX** (formato físico) y **TXT 7.1**, **XLSX 7.1**
+  (revisión de campos), **TXT 7.3** y **TXT 7.4**: el mismo archivo legal que
+  genera el asistente, con los mismos datos.
+- La columna «Tipo (T18)» vacía delata los activos que harán fallar el TXT.
 
 ## Generación
 
+Desde la pantalla anterior (botones TXT), o bien
 Perú ▸ Libros PLE ▸ **Exportar PLE** → indicar **Ejercicio** → marcar
 **7.1** (y 7.3/7.4 si aplican) → **Generar**. El mes del nombre de archivo
 sale como `00` (libro anual).
