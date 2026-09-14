@@ -231,7 +231,7 @@
                                 <field name="invoice_line_ids"
                                        readonly="state in ('redeemed','banked')">
                                     <list editable="bottom">
-                                        <field name="domain_move_line_id" invisible="1"/>
+                                        <field name="domain_move_line_id" column_invisible="1"/>
                                         <field name="document_type_id"/>
                                         <field name="date_em"/>
                                         <field name="move_line_id"

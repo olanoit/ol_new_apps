@@ -117,7 +117,7 @@
                         <page id="invoice_tab" name="invoice_tab" string="Facturas">
                             <field name="letter_invoices_ids">
                                 <list editable="bottom">
-                                    <field name="domain_move_line_id" invisible="1"/>
+                                    <field name="domain_move_line_id" column_invisible="1"/>
                                     <field name="document_type_id"/>
                                     <field name="move_line_id"
                                            options="{'no_create': True, 'no_open': True , 'no_create_edit': True}"
