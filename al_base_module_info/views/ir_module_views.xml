@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_view_kanban_ficha" model="ir.ui.view">
+        <field name="name">ir.module.module.kanban.ficha</field>
+        <field name="model">ir.module.module</field>
+        <field name="inherit_id" ref="base.module_view_kanban"/>
+        <field name="arch" type="xml">
+            <field name="website" position="after">
+                <field name="al_ficha_url"/>
+            </field>
+
+            <!-- Menú de la tarjeta: la ficha, antes de «Más información».
+                 No se ancla a «Información del módulo»: base_import_module
+                 reescribe ese elemento (type="open" pasa a type="object"). -->
+            <xpath expr="//t[@t-name='menu']/a[@target='_blank'][contains(@class, 'o-hidden-ios')]" position="before">
+                <a t-if="record.al_ficha_url.raw_value" role="menuitem"
+                   class="dropdown-item" t-att-href="record.al_ficha_url.raw_value"
+                   target="_blank">Ver la ficha completa del módulo</a>
+            </xpath>
+
+            <!-- Pie de la tarjeta: la ficha sustituye a «Más información»
+                 (web del autor) y a «Información del módulo». -->
+            <xpath expr="//footer/a[@target='_blank'][contains(@class, 'o-hidden-ios')]" position="attributes">
+                <attribute name="invisible">website in (False, '') or al_ficha_url</attribute>
+            </xpath>
+            <xpath expr="//footer/a[@id='module_info']" position="attributes">
+                <attribute name="invisible">website != '' or al_ficha_url</attribute>
+            </xpath>
+            <xpath expr="//footer/a[@id='module_info']" position="after">
+                <a t-att-href="record.al_ficha_url.raw_value" target="_blank"
+                   class="btn btn-sm btn-secondary float-end o-hidden-ios" role="button"
+                   invisible="not al_ficha_url">Ver la ficha completa del módulo</a>
+            </xpath>
+        </field>
+    </record>
+</odoo>
