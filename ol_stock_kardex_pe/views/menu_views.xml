@@ -26,7 +26,7 @@
               name="Kardex (12.1 / 13.1)"
               parent="al_account_base.al_l10n_pe_root"
               groups="stock.group_stock_user"
-              sequence="60"/>
+              sequence="70"/>
 
     <menuitem id="menu_l10n_pe_kardex_peru_wizard"
               name="Generar Kardex"

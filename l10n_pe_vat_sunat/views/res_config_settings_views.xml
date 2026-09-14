@@ -63,10 +63,10 @@
               action="action_l10n_pe_api_connection"/>
 
     <menuitem name="Conexiones RUC/DNI"
-              parent="al_account_base.al_l10n_pe_config"
+              parent="al_account_base.al_l10n_pe_config_sunat"
               groups="base.group_system"
               id="pe_menu_l10n_pe_api_connection"
-              sequence="52"
+              sequence="20"
               action="action_l10n_pe_api_connection"/>
 
 </odoo>

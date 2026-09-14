@@ -40,7 +40,7 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '8.20260828',
+    'version': '9.20260828',
     'license': 'OPL-1',
     'depends': [
         'account',

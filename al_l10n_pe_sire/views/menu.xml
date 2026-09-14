@@ -4,7 +4,7 @@
     <menuitem id="menu_sire_root" name="SIRE"
               parent="al_account_base.al_l10n_pe_root"
               groups="account.group_account_readonly"
-              sequence="55"/>
+              sequence="50"/>
 
     <menuitem id="menu_sire_rvie" name="Ventas (RVIE)"
               parent="menu_sire_root" action="action_sire_rvie" sequence="10"/>
@@ -13,9 +13,9 @@
               parent="menu_sire_root" action="action_sire_rce" sequence="20"/>
 
     <menuitem id="menu_sire_compare_field" name="SIRE: campos de comparación"
-              parent="al_account_base.al_l10n_pe_config"
+              parent="al_account_base.al_l10n_pe_config_tax"
               action="action_sire_compare_field"
               groups="account.group_account_manager"
-              sequence="60"/>
+              sequence="30"/>
 
 </odoo>

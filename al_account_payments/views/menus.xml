@@ -11,7 +11,7 @@
     <menuitem id="pe_action_pe_catalog_payment_form_menu"
               name="Medios de pago"
               action="action_pe_catalog_payment_form"
-              parent="al_account_base.al_l10n_pe_config"
-              sequence="25"/>
+              parent="al_account_base.al_l10n_pe_config_tax"
+              sequence="20"/>
 
 </odoo>

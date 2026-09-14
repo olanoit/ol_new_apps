@@ -20,7 +20,7 @@
     <menuitem id="menu_pe_exchange_rate" name="Tipo de cambio"
               parent="al_account_base.al_l10n_pe_root"
               groups="account.group_account_user"
-              sequence="40"/>
+              sequence="10"/>
 
     <menuitem id="menu_pe_exchange_rate_update" name="Actualizar tipo de cambio"
               parent="menu_pe_exchange_rate"

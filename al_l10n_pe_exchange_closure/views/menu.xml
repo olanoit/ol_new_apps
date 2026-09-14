@@ -10,9 +10,9 @@
               sequence="30"/>
 
     <menuitem id="menu_account_exchange_closing" name="Cuentas del cierre de T.C."
-              parent="al_account_base.al_l10n_pe_config"
+              parent="al_account_base.al_l10n_pe_config_accounts"
               action="action_account_exchange_closing"
               groups="account.group_account_manager"
-              sequence="40"/>
+              sequence="30"/>
 
 </odoo>

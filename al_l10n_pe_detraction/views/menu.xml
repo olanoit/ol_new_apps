@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_detraction_type" name="Detracciones (SPOT)"
-              parent="al_account_base.al_l10n_pe_config"
+              parent="al_account_base.al_l10n_pe_config_tax"
               action="action_detraction_type"
               groups="account.group_account_manager"
+              sequence="10"/>
+
+    <!-- Perú ▸ Detracciones: grupo propio para no abrir la app con una
+         acción suelta en el primer nivel. -->
+    <menuitem id="menu_detraction_root" name="Detracciones"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_user"
               sequence="30"/>
 
     <menuitem id="menu_detraction_txt_wizard"
-              name="Depósito masivo de detracciones"
-              parent="al_account_base.al_l10n_pe_root"
+              name="Depósito masivo (Banco de la Nación)"
+              parent="menu_detraction_root"
               action="action_l10n_pe_detraction_txt_wizard"
-              groups="account.group_account_user"
-              sequence="35"/>
+              sequence="10"/>
 </odoo>

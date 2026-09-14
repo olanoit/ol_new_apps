@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Menú raíz "Perú" y configuración (extensible por otros módulos AL) -->
+    <!-- Menú raíz "Perú" y configuración (extensible por otros módulos AL).
+
+         Orden del primer nivel (cada módulo fija su secuencia en su propio
+         archivo de menús):
+           10 Tipo de cambio      (al_l10n_pe_currency)
+           20 Letras de cambio    (al_l10n_pe_account_letter)
+           30 Detracciones        (al_l10n_pe_detraction)
+           40 Retenciones IGV     (al_l10n_pe_retention)
+           50 SIRE                (al_l10n_pe_sire)
+           60 Libros PLE          (al_l10n_pe_ple)
+           70 Kardex              (ol_stock_kardex_pe)
+          100 Configuración       (este archivo)
+    -->
     <menuitem id="al_l10n_pe_root" name="Perú"
               web_icon="al_account_base,static/description/icon.png"
               sequence="-100"/>
@@ -8,9 +20,44 @@
     <menuitem id="al_l10n_pe_config" name="Configuración"
               parent="al_l10n_pe_root" sequence="100"/>
 
+    <!-- Secciones de Configuración: contenedores compartidos. Cada módulo
+         cuelga sus menús de la sección que le corresponde. -->
+    <menuitem id="al_l10n_pe_config_accounting" name="Contabilidad"
+              parent="al_l10n_pe_config" sequence="10"/>
+    <menuitem id="al_l10n_pe_config_edi" name="Comprobantes electrónicos"
+              parent="al_l10n_pe_config" sequence="20"/>
+    <menuitem id="al_l10n_pe_config_tax" name="Tributos SUNAT"
+              parent="al_l10n_pe_config" sequence="30"/>
+    <menuitem id="al_l10n_pe_config_accounts" name="Cuentas de la localización"
+              parent="al_l10n_pe_config" sequence="40"/>
+    <menuitem id="al_l10n_pe_config_sunat" name="Consultas RUC / DNI"
+              parent="al_l10n_pe_config" sequence="50"/>
+
+    <!-- Contabilidad: atajos a la configuración contable nativa -->
     <menuitem id="pe_menu_action_accounts" name="Plan contable"
-              parent="al_l10n_pe_config" action="account.action_account_form"
+              parent="al_l10n_pe_config_accounting" action="account.action_account_form"
               groups="account.group_account_readonly" sequence="10"/>
+    <menuitem id="pe_menu_action_journals" name="Diarios"
+              parent="al_l10n_pe_config_accounting" action="account.action_account_journal_form"
+              groups="account.group_account_manager" sequence="20"/>
+    <menuitem id="pe_menu_action_taxes" name="Impuestos"
+              parent="al_l10n_pe_config_accounting" action="account.action_tax_form"
+              groups="account.group_account_manager" sequence="30"/>
+    <menuitem id="pe_menu_action_fiscal_positions" name="Posiciones fiscales"
+              parent="al_l10n_pe_config_accounting" action="account.action_account_fiscal_position_form"
+              groups="account.group_account_manager" sequence="40"/>
+    <menuitem id="pe_menu_action_payment_terms" name="Términos de pago"
+              parent="al_l10n_pe_config_accounting" action="account.action_payment_term_form"
+              groups="account.group_account_manager" sequence="50"/>
+    <menuitem id="pe_menu_action_currencies" name="Monedas"
+              parent="al_l10n_pe_config_accounting" action="base.action_currency_form"
+              groups="account.group_account_manager" sequence="60"/>
+    <menuitem id="pe_menu_action_bank_accounts" name="Cuentas bancarias"
+              parent="al_l10n_pe_config_accounting" action="base.action_res_partner_bank_account_form"
+              groups="account.group_account_manager" sequence="70"/>
+    <menuitem id="pe_menu_action_analytic_accounts" name="Cuentas analíticas"
+              parent="al_l10n_pe_config_accounting" action="analytic.action_account_analytic_account_form"
+              groups="analytic.group_analytic_accounting" sequence="80"/>
 
     <!-- Ajustes: abre la app "Perú" de la pantalla de configuración -->
     <record id="action_pe_settings" model="ir.actions.act_window">

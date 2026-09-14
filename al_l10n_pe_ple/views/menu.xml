@@ -3,7 +3,7 @@
     <menuitem id="menu_ple_root" name="Libros PLE"
               parent="al_account_base.al_l10n_pe_root"
               groups="account.group_account_user"
-              sequence="50"/>
+              sequence="60"/>
 
     <!-- Acción de aterrizaje de la app "Perú": sin ella, Odoo abre la
          primera hoja del menú (el wizard Exportar PLE, target=new), que

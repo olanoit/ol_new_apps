@@ -94,16 +94,16 @@
          documento que las respalda son configuración de la localización. -->
     <menuitem id="pe_menu_edi_invoice_series"
         name="Series CPE"
-        parent="al_account_base.al_l10n_pe_config"
+        parent="al_account_base.al_l10n_pe_config_edi"
         action="edi_invoice_series_action"
         groups="account.group_account_manager"
-        sequence="15"/>
+        sequence="10"/>
 
     <menuitem id="pe_menu_latam_document_type"
         name="Tipos de documento"
-        parent="al_account_base.al_l10n_pe_config"
+        parent="al_account_base.al_l10n_pe_config_edi"
         action="l10n_latam_invoice_document.action_document_type"
         groups="account.group_account_manager"
-        sequence="16"/>
+        sequence="20"/>
 
 </odoo>

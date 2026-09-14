@@ -4,7 +4,7 @@
     <menuitem id="menu_account_letter_root" name="Letras de cambio"
               parent="al_account_base.al_l10n_pe_root"
               groups="account.group_account_user"
-              sequence="56"/>
+              sequence="20"/>
 
     <!-- Clientes -->
     <menuitem id="menu_account_letter_clientes" name="Clientes"
@@ -59,10 +59,10 @@
     <!-- Configuración: Perú ▸ Configuración ▸ Cuentas de letras -->
     <menuitem id="menu_account_letter_configuracion"
               name="Cuentas de letras"
-              parent="al_account_base.al_l10n_pe_config"
+              parent="al_account_base.al_l10n_pe_config_accounts"
               action="action_account_configuration"
               groups="account.group_account_manager"
-              sequence="35"/>
+              sequence="20"/>
 
     <!-- ================================================================ -->
     <!-- Mismos accesos, replicados dentro de la app Contabilidad          -->
