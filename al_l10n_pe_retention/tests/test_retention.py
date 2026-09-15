@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -257,10 +258,24 @@ class TestRetentionApplies(TransactionCase):
         wizard._create_payments()
         summary = self.env['l10n_pe.retention.summary.wizard'].create({
             'year': 2025, 'month': '07'})
-        summary.action_export()
-        import base64
-        content = base64.b64decode(summary.file_data or b'').decode()
-        self.assertNotIn(str(date(2025, 6, 15)), content)
+        # Un mes sin retenciones avisa en vez de devolver un archivo vacío
+        # que el formulario no llega a mostrar.
+        with self.assertRaises(UserError):
+            summary.action_export()
+        self.assertFalse(summary.file_data)
+
+    def test_summary_requires_retention_tax(self):
+        self.company.l10n_pe_retention_tax_id = False
+        summary = self.env['l10n_pe.retention.summary.wizard'].create({
+            'year': 2025, 'month': '06'})
+        with self.assertRaises(UserError):
+            summary.action_export()
+
+    def test_summary_defaults_to_previous_month(self):
+        from odoo.addons.al_l10n_pe_retention.wizards.retention_summary_wizard \
+            import _previous_month
+        self.assertEqual(_previous_month(date(2026, 9, 14)), (2026, 8))
+        self.assertEqual(_previous_month(date(2026, 1, 5)), (2025, 12))
 
     def test_retention_received_reset_draft(self):
         self.test_retention_received()
@@ -335,6 +350,8 @@ class TestRetentionApplies(TransactionCase):
                    if self.partner.vat in l)
         self.assertEqual(len(row), 7)
         self.assertEqual(row[6], '35.40')
+        self.assertEqual(summary.retention_count, 1)
+        self.assertAlmostEqual(summary.retention_total, 35.40, 2)
 
     def test_not_applies_with_detraction(self):
         if 'l10n_pe.detraction.type' not in self.env:

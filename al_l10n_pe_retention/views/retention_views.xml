@@ -76,10 +76,12 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="year"/>
+                    <field name="year" options="{'enable_formatting': false}"/>
                     <field name="month"/>
                 </group>
                 <group invisible="not file_data" string="Archivo generado">
+                    <field name="retention_count"/>
+                    <field name="retention_total"/>
                     <field name="file_name" invisible="1"/>
                     <field name="file_data" filename="file_name"
                            readonly="1" widget="binary"/>
