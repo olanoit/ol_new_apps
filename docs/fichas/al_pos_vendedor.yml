@@ -1,0 +1,219 @@
+titulo: Vendedor por orden en el TPV
+subtitulo: >-
+  Cada venta del Punto de Venta queda asignada al empleado que la atendió: el
+  cajero lo elige en la pantalla de pago entre los vendedores autorizados de su
+  caja, y el análisis de órdenes suma las ventas por vendedor.
+categoria: Punto de venta · Ventas
+etiquetas: [Vendedor por orden, Lista por caja, Pantalla de pago, Predeterminado por sesión, Análisis por vendedor]
+portada: screenshots/04-selector.png
+
+destacados_intro: >-
+  Pensado para tiendas donde quien cobra no es quien vende: la comisión y el
+  seguimiento comercial necesitan saber a quién pertenece cada venta.
+destacados:
+  - icono: "✓"
+    titulo: Vendedores autorizados por caja
+    texto: >-
+      Cada punto de venta tiene su propia lista de empleados que pueden recibir
+      una venta. Solo ellos aparecen en el selector.
+  - icono: "$"
+    titulo: Selector en la pantalla de pago
+    texto: >-
+      Botón **Vendedor** junto al del cliente: tarjetas con iniciales, búsqueda
+      en vivo y opción de quitar la selección.
+  - icono: "!"
+    titulo: Obligatorio al validar
+    texto: >-
+      Si falta el vendedor, el selector se abre solo al pulsar **Validar**; la
+      venta no se cierra sin uno.
+  - icono: "★"
+    titulo: Predeterminado de la sesión
+    texto: >-
+      Una estrella fija al vendedor del turno: todas las órdenes nuevas de esa
+      sesión lo traen asignado.
+  - icono: "Σ"
+    titulo: Ventas por vendedor
+    texto: >-
+      Columna **Vendedor** en la lista de órdenes y dimensión **Vendedor** en el
+      análisis de órdenes del TPV.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo registra en cada orden del TPV al **cajero** (el usuario o empleado
+    que tiene la sesión abierta), pero no a quien atendió al cliente. En una
+    tienda con vendedores de piso y una sola caja, todas las ventas quedan a
+    nombre del cajero y las comisiones se calculan en hojas aparte.
+
+
+    Este módulo añade a la orden el campo **Vendedor** (un empleado), lo pide en
+    la pantalla de pago y lo lleva al análisis de ventas, sin cambiar la forma
+    de cobrar.
+  nota: >-
+    **No exige «Iniciar sesión como empleado».** Los vendedores de la lista se
+    cargan en el TPV aunque esa opción esté desactivada o aunque no tengan
+    acceso a la caja: vender no es lo mismo que cobrar.
+
+pasos_intro: >-
+  Recorrido con el punto de venta de demostración «DEMO TPV Vendedores» y seis
+  vendedores autorizados.
+pasos:
+  - titulo: Autorizar a los vendedores de la caja
+    ruta: Punto de venta ▸ Configuración ▸ Punto de venta
+    texto: >-
+      Abra el punto de venta, active **Vendedores autorizados** en la pestaña
+      **Configuración** y elija en **Vendedores** a los empleados que pueden
+      recibir ventas (solo empleados de la misma compañía).
+    puntos:
+      - La casilla solo se puede cambiar con la sesión cerrada; la lista de vendedores sí se edita con la sesión abierta.
+      - Los cambios llegan a la caja al recargar la interfaz del TPV.
+    imagen: screenshots/01-configuracion.png
+
+  - titulo: El botón Vendedor en la pantalla de pago
+    ruta: TPV ▸ Pago
+    texto: >-
+      Con la opción activa, la pantalla de pago muestra el botón **Vendedor**
+      junto al del cliente. Mientras no haya uno asignado dice «Vendedor»; al
+      elegirlo pasa a mostrar su nombre.
+    imagen: screenshots/02-pantalla-pago.png
+    pie: "Venta de 2 gaseosas y 1 libro por S/ 33,26, todavía sin vendedor."
+
+  - titulo: Validar sin vendedor no cierra la venta
+    ruta: TPV ▸ Pago ▸ Validar
+    texto: >-
+      Si el cajero pulsa **Validar** sin vendedor, el selector se abre solo. Si
+      lo cierra sin elegir, aparece el aviso **Vendedor requerido** y la venta
+      sigue abierta.
+    imagen: screenshots/03-vendedor-requerido.png
+
+  - titulo: Elegir al vendedor y fijar el del turno
+    ruta: TPV ▸ Pago ▸ Vendedor
+    texto: >-
+      El diálogo **Seleccionar vendedor** lista a los vendedores autorizados en
+      orden alfabético, con buscador y contador. Un toque en la tarjeta asigna
+      el vendedor a la venta y cierra el diálogo.
+    puntos:
+      - "La **estrella** marca al vendedor predeterminado de la sesión sin cerrar el diálogo: las órdenes nuevas lo traen ya asignado."
+      - Volver a tocar la estrella lo desmarca.
+    imagen: screenshots/04-selector.png
+
+  - titulo: Cambiar o quitar el vendedor asignado
+    ruta: TPV ▸ Pago ▸ Vendedor
+    texto: >-
+      Con un vendedor ya asignado, el diálogo lo muestra arriba como **Vendedor
+      actual** y marca su tarjeta. **Quitar** (o tocar de nuevo su tarjeta)
+      deja la venta sin vendedor; **Cancelar** no cambia nada.
+    imagen: screenshots/05-vendedor-actual.png
+
+  - titulo: Órdenes agrupadas por vendedor
+    ruta: Punto de venta ▸ Órdenes ▸ Órdenes
+    texto: >-
+      La lista de órdenes gana la columna **Vendedor** y el formulario de la
+      orden lo muestra junto al cliente (solo lectura). Para agrupar, use
+      **Agrupar por ▸ Grupo personalizado ▸ Vendedor**; el buscador también
+      acepta el nombre del vendedor.
+    imagen: screenshots/06-ordenes-por-vendedor.png
+
+  - titulo: Análisis de órdenes por vendedor
+    ruta: Punto de venta ▸ Reportes ▸ Órdenes
+    texto: >-
+      El análisis de órdenes del TPV incluye la dimensión **Vendedor**: en la
+      tabla dinámica se ven órdenes, cantidad de producto y precio total de cada
+      uno, con los filtros de fecha, punto de venta o sesión de siempre.
+    imagen: screenshots/07-analisis.png
+    pie: "«Ninguno» agrupa las órdenes anteriores a activar la opción o de cajas sin vendedores autorizados."
+
+funcionalidades:
+  - grupo: Configuración
+    items:
+      - Opción **Vendedores autorizados** y lista de vendedores por punto de venta.
+      - Vendedores limitados a empleados de la compañía del punto de venta.
+      - Carga de los vendedores en el TPV aunque no usen «Iniciar sesión como empleado».
+  - grupo: En la caja
+    items:
+      - Botón **Vendedor** en la pantalla de pago, con el nombre del asignado.
+      - Diálogo con tarjetas, iniciales en color, buscador y contador de vendedores.
+      - Apertura automática del selector al validar una venta sin vendedor.
+      - Aviso **Vendedor requerido** si se cierra el selector sin elegir.
+      - Banner **Vendedor actual** con acción **Quitar**.
+      - Vendedor predeterminado por sesión con la estrella; se conserva al recargar el navegador mientras la sesión siga abierta.
+      - Línea «Vendedor:» en el recibo estándar del TPV.
+  - grupo: Seguimiento
+    items:
+      - Campo **Vendedor** en la orden del TPV (lista, formulario y búsqueda).
+      - Dimensión **Vendedor** en el análisis de órdenes para agrupar y filtrar.
+
+ejemplos:
+  - titulo: Tres ventas, tres vendedores
+    texto: >-
+      Ventas validadas en la sesión de demostración. El cajero es el mismo en
+      las tres; el vendedor cambia en cada una.
+    tabla:
+      - [Orden, Productos, Vendedor, Total]
+      - [DEMO TPV Vendedores - 000001, "2 Gaseosa 500ml + 1 Libro educativo", Quispe Mamani Juan Carlos, "S/ 33,26"]
+      - [DEMO TPV Vendedores - 000002, "3 Bolsa plástica + 4 Gaseosa 500ml", Flores Huamán María Elena, "S/ 18,73"]
+      - [DEMO TPV Vendedores - 000003, "2 Libro educativo", Torres Quiroz Ana Lucía, "S/ 50,00"]
+    nota: >-
+      En el análisis de órdenes cada vendedor suma su propia venta: 1 orden y
+      su total, sin fórmulas ni exportaciones.
+
+  - titulo: Cuándo se pide el vendedor
+    tabla:
+      - [Situación en la caja, Qué pasa al validar]
+      - [Opción desactivada en el punto de venta, No hay botón Vendedor y la venta se valida como siempre]
+      - [Opción activa y vendedor asignado, La venta se valida con ese vendedor]
+      - [Opción activa y sin vendedor, Se abre el selector; al elegir se puede validar]
+      - [Opción activa y se cierra el selector sin elegir, "Aviso «Vendedor requerido»; la venta sigue abierta"]
+      - [Vendedor predeterminado de la sesión, Las órdenes nuevas ya lo traen asignado]
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (arrastra Empleados y la integración de empleados con el TPV).
+  - Cree los empleados que venden, en la compañía del punto de venta.
+  - "En **Punto de venta ▸ Configuración ▸ Punto de venta**, con la sesión cerrada, active **Vendedores autorizados** y elija los vendedores."
+  - Abra (o recargue) la sesión del TPV para que la caja reciba la lista.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. No requiere activar «Iniciar sesión como
+  empleado» en el punto de venta.
+
+faq:
+  - pregunta: ¿Cuál es la diferencia entre cajero y vendedor?
+    respuesta: >-
+      El cajero es quien tiene abierta la sesión y cobra; Odoo lo guarda solo.
+      El vendedor es el empleado al que se le atribuye la venta y lo elige el
+      cajero en la pantalla de pago.
+  - pregunta: ¿Por qué no aparece un empleado en el selector?
+    respuesta: >-
+      Debe estar en la lista **Vendedores** del punto de venta, pertenecer a la
+      misma compañía y estar activo. Tras cambiar la lista, recargue la interfaz
+      del TPV.
+  - pregunta: ¿El vendedor predeterminado se comparte entre cajas o dispositivos?
+    respuesta: >-
+      No. Se guarda en el navegador del dispositivo y solo para la sesión
+      abierta: al abrir una sesión nueva hay que volver a fijarlo.
+  - pregunta: ¿Puedo cambiar el vendedor de una orden ya validada?
+    respuesta: >-
+      No desde el módulo: en el formulario de la orden el campo es de solo
+      lectura, para que el análisis refleje lo que se registró en caja.
+  - pregunta: ¿El vendedor sale en el ticket?
+    respuesta: >-
+      En el recibo estándar del TPV, sí: añade la línea «Vendedor:» bajo el
+      cliente. Si usa un diseño de ticket propio (por ejemplo, el de boleta y
+      factura electrónica del TPV), ese diseño debe incluir el campo.
+  - pregunta: ¿Por qué el filtro «Vendedor» de la lista de órdenes no filtra nada?
+    respuesta: >-
+      Esa entrada no agrupa ni filtra en esta versión. Para agrupar use
+      **Agrupar por ▸ Grupo personalizado ▸ Vendedor**, o escriba el nombre del
+      vendedor en el buscador.
+
+novedades:
+  - fecha: 27/08/2026
+    cambios:
+      - Pruebas automáticas de la lista de vendedores, la carga en el TPV y el análisis por vendedor.
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 25/07/2026
+    cambios:
+      - "Migración a Odoo 19: selector en la pantalla de pago, apertura automática al validar, vendedor predeterminado por sesión, vendedor en el recibo y en el análisis de órdenes."
+
+relacionados: [al_pos_product_view, al_l10n_pe_edi_pos]

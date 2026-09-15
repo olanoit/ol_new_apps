@@ -1,0 +1,166 @@
+titulo: Gantt de proyectos en el sitio web
+subtitulo: >-
+  El mismo diagrama de Gantt en una página del sitio web, `/gantt`, para
+  pantallas de obra, salas de reunión o enlaces internos. Solo para usuarios
+  internos con acceso al Gantt, con las mismas reglas de edición que el backend.
+categoria: Proyectos · Planificación
+etiquetas: [Página /gantt, Solo usuarios internos, Pantallas de obra, Mismas herramientas, Excel y PDF]
+portada: screenshots/01-pagina.png
+
+destacados_intro: >-
+  Pensado para ver el plan fuera del backend de Odoo, sin renunciar a los
+  permisos ni a las herramientas del diagrama.
+destacados:
+  - icono: "🌐"
+    titulo: Una página del sitio
+    texto: >-
+      El menú **Gantt** del sitio web abre el diagrama a lo ancho de la página,
+      con la cabecera y el pie de su tema.
+  - icono: "🔒"
+    titulo: Nada público
+    texto: >-
+      Pide iniciar sesión y rechaza con «403» a usuarios de portal y a internos
+      sin el grupo del Gantt. Los datos se protegen igual.
+  - icono: "="
+    titulo: Mismo diagrama que el backend
+    texto: >-
+      Proyectos, jerarquía, dependencias, hitos, filtros, EDT, ruta crítica,
+      línea base y encadenado: la lógica es la del módulo base.
+  - icono: "↔"
+    titulo: Editable con permisos reales
+    texto: >-
+      Arrastre, formulario de tarea y dependencias guardan con los permisos de
+      Proyecto; quien solo puede leer ve el plan en modo consulta.
+  - icono: "⇩"
+    titulo: Excel y PDF
+    texto: >-
+      Los mismos botones de exportación, generados en su servidor con lo que
+      está en pantalla.
+
+contexto:
+  titulo: Para qué sirve
+  texto: >-
+    El backend de Odoo no es cómodo en una pantalla de pared o en una tablet de
+    obra, y no todo el que necesita mirar el plan trabaja dentro de la
+    aplicación de Proyecto.
+
+
+    Este módulo publica el diagrama en `/gantt`, dentro del sitio web, con las
+    mismas herramientas que la aplicación Gantt del backend. Puede instalarse
+    junto a ella o por separado.
+  nota: >-
+    **No es una página de portal.** Clientes y usuarios de portal no pueden
+    abrirla aunque tengan el enlace: solo entran usuarios internos con el grupo
+    **Gantt de Proyectos**. Cada uno ve y edita según sus permisos de Proyecto.
+
+pasos_intro: >-
+  Recorrido con los proyectos de demostración «[DEMO Gantt]» en el sitio web de
+  la base.
+pasos:
+  - titulo: Abrir la página del Gantt
+    ruta: Sitio web ▸ menú Gantt (/gantt)
+    texto: >-
+      Al instalar se añade **Gantt** al menú principal del sitio (editable desde
+      el editor). La página muestra la barra de proyectos, las herramientas y el
+      diagrama, con un alto del 70 % de la ventana.
+    puntos:
+      - Un visitante sin sesión es enviado a iniciar sesión y vuelve a `/gantt`.
+      - "El botón **Tarea** solo aparece si el usuario puede crear tareas."
+    imagen: screenshots/01-pagina.png
+
+  - titulo: Filtrar lo que se ve
+    ruta: /gantt ▸ Filtros
+    texto: >-
+      El panel **Filtros** ofrece **Personas asignadas**, **Estado**, **Desde /
+      Hasta** e **Incluir sin fecha**, con las mismas validaciones que el
+      backend. El botón indica cuántos filtros están activos.
+    imagen: screenshots/02-filtros.png
+
+  - titulo: Buscar una tarea al instante
+    ruta: /gantt ▸ Buscar tarea…
+    texto: >-
+      La búsqueda filtra mientras se escribe y conserva los niveles superiores
+      de cada resultado para no perder el contexto del árbol.
+    imagen: screenshots/03-busqueda.png
+    pie: "«Obra» encuentra «Obra gruesa» y «Entrega de obra», dentro del Edificio A."
+
+  - titulo: Acciones con clic derecho
+    ruta: /gantt ▸ clic derecho en una tarea
+    texto: >-
+      **Abrir en Odoo** y **Planificar actividad** abren la ficha de la tarea en
+      una pestaña nueva del backend; **Indentar**, **Desindentar** y
+      **Eliminar** actúan en la página y se guardan al momento.
+    imagen: screenshots/04-menu-contextual.png
+
+funcionalidades:
+  - grupo: Página
+    items:
+      - "Ruta `/gantt` con menú **Gantt** en el sitio web, fuera del mapa del sitio."
+      - Diagrama con alto del 70 % de la ventana (mínimo 420 px) dentro del tema del sitio.
+      - Texto de guardado («Guardando…», «Guardado») en la barra de herramientas.
+  - grupo: Acceso
+    items:
+      - Inicio de sesión obligatorio.
+      - "Error 403 para usuarios de portal, públicos o internos sin el grupo del Gantt."
+      - Los endpoints de datos, cambios y línea base aplican las mismas comprobaciones.
+  - grupo: Mismas herramientas que el backend
+    items:
+      - Selección de proyectos, escalas Día, Semana, Mes y Trimestre, filtros y búsqueda.
+      - Código EDT, expandir y contraer, ocultar terminadas y pantalla completa.
+      - Ruta crítica, líneas base (captura y comparación) y encadenado de sucesoras.
+      - Edición con arrastre, formulario de tarea y dependencias según permisos.
+      - Exportación a Excel y PDF.
+
+ejemplos:
+  - titulo: Quién puede abrir /gantt
+    tabla:
+      - [Usuario, Página /gantt, Datos del diagrama]
+      - [Visitante sin sesión, Redirige a iniciar sesión, "No"]
+      - [Usuario de portal, Error 403, "No"]
+      - [Interno sin el grupo Gantt de Proyectos, Error 403, "No"]
+      - [Interno con el grupo, Página, "Sí, según sus permisos de Proyecto"]
+
+  - titulo: Diferencias con la aplicación del backend
+    tabla:
+      - [Aspecto, Backend, Sitio web]
+      - [Dónde, "Gantt ▸ Diagrama de Gantt", "/gantt"]
+      - [Abrir en Odoo, Misma pestaña, Pestaña nueva]
+      - [Añadir subtarea en el menú contextual, Sí, "No (use el signo + de la fila)"]
+      - [Aviso de guardado, Notificación de Odoo, Texto en la barra]
+      - [Asistente de IA, "Sí, con al_project_gantt_ai", "No"]
+
+configuracion:
+  - "Instale **Gantt de Proyectos — Website** desde Aplicaciones; instala **Sitio web** y el módulo base si faltan."
+  - "Asigne **Gantt de Proyectos: Usuario** a quienes deban ver la página (los administradores de Proyecto ya lo tienen)."
+  - "Opcional: mueva o renombre el menú **Gantt** desde el editor del sitio web."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. El bloque del diagrama no se edita con
+  el editor del sitio web: lo dibuja la propia página.
+
+faq:
+  - pregunta: ¿Puedo compartir la página con un cliente?
+    respuesta: >-
+      No. La página es solo para usuarios internos con el grupo del Gantt; un
+      usuario de portal recibe un error 403.
+  - pregunta: ¿Hace falta instalar también la aplicación del backend?
+    respuesta: >-
+      No. Las dos interfaces son independientes y comparten el módulo base;
+      pueden convivir.
+  - pregunta: ¿Por qué dice «Vista de solo lectura» si puedo mover barras?
+    respuesta: >-
+      Es el texto fijo del encabezado de la página. La edición depende de los
+      permisos de cada usuario sobre las tareas.
+  - pregunta: ¿Se puede usar el asistente de IA en la página?
+    respuesta: >-
+      No en esta versión: el asistente solo está en la aplicación Gantt del
+      backend.
+
+novedades:
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 18/08/2026
+    cambios:
+      - "Primera versión: página /gantt restringida a usuarios internos, con filtros, edición, ruta crítica, línea base, herramientas de vista, menú contextual y exportación."
+
+relacionados: [al_project_gantt_base, al_project_gantt_backend, al_project_gantt_ai]

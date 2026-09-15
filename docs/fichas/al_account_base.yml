@@ -1,0 +1,208 @@
+titulo: Base de Contabilidad Perú
+subtitulo: >-
+  El punto de partida de la localización contable peruana: la app **Perú** con
+  su menú y sus Ajustes, la glosa de los asientos y los datos SUNAT que piden
+  los libros electrónicos en diarios, cuentas bancarias y contactos.
+categoria: Localización Perú · Contabilidad
+etiquetas: [App Perú, Glosa del asiento, Naturaleza del diario, Código SUNAT del banco, Establecimiento anexo, Módulo base]
+portada: screenshots/01-menu-configuracion.png
+
+destacados_intro: >-
+  Un módulo liviano, sin lógica de negocio propia, del que dependen los demás
+  módulos de la suite para Perú. Lo que aporta se ve en cuanto se instala.
+destacados:
+  - icono: "PE"
+    titulo: App Perú
+    texto: >-
+      Menú raíz **Perú** con una rama **Configuración** ordenada en secciones
+      donde cada módulo de la localización cuelga sus menús.
+  - icono: "⚙"
+    titulo: Ajustes en un solo lugar
+    texto: >-
+      Añade la aplicación **Perú** a Ajustes: detracciones, retenciones,
+      destinos, consulta de RUC/DNI y demás bloques de la suite aparecen juntos.
+  - icono: "G"
+    titulo: Glosa del asiento
+    texto: >-
+      Campo **Glosa** en la cabecera del asiento y, como columna opcional, en
+      cada apunte contable. La usan el Libro Diario y el comprobante impreso.
+  - icono: "▤"
+    titulo: Naturaleza del diario
+    texto: >-
+      Marque los diarios de **Apertura** y **Cierre** y excluya de los libros
+      electrónicos los diarios auxiliares que no representan operaciones.
+  - icono: "02"
+    titulo: Datos SUNAT validados
+    texto: >-
+      Código SUNAT del banco (tabla 3 del PLE, dos dígitos) y establecimiento
+      anexo del contacto (cuatro dígitos), con validación que rechaza formatos
+      erróneos en lugar de truncarlos.
+  - icono: "↺"
+    titulo: Restablecer a borrador
+    texto: >-
+      El botón **Restablecer a borrador** se muestra siempre en los asientos
+      publicados y cancelados.
+
+contexto:
+  titulo: Por qué un módulo base
+  texto: >-
+    Los libros electrónicos de SUNAT (PLE) piden datos que Odoo no trae de
+    serie: una **glosa** que describa cada asiento, la distinción entre los
+    asientos de **apertura, cierre y movimiento**, el **código SUNAT de la
+    entidad financiera** de cada cuenta bancaria o el **establecimiento
+    anexo** del RUC.
+
+
+    Además, una localización repartida en muchos módulos necesita un sitio
+    común donde encontrarlos. Este módulo reúne ambas cosas: los campos
+    compartidos y la app **Perú**, con su menú y su página de Ajustes, sobre la
+    que se montan detracciones, retenciones, SIRE, libros PLE, letras, tipo de
+    cambio y el resto de la suite.
+  nota: >-
+    **Liviano a propósito.** Solo depende de `account` y no contiene reglas
+    de negocio: cada módulo de la localización añade las suyas sobre esta
+    base. Reemplaza a una versión anterior que arrastraba catálogos,
+    controladores y campos sin uso.
+
+pasos_intro: >-
+  Lo que aporta el módulo, con los datos de demostración de la compañía
+  Comercial Demo Perú S.A.C.
+pasos:
+  - titulo: La app Perú y su configuración
+    ruta: Perú ▸ Configuración
+    texto: >-
+      El menú **Configuración** se organiza en secciones compartidas. Este
+      módulo trae la de **Contabilidad**, con atajos a la configuración contable
+      nativa; las demás las llenan los módulos que tenga instalados.
+    puntos:
+      - "**Ajustes** abre directamente la página Perú de Ajustes (solo administradores)."
+      - "**Contabilidad**: Plan contable, Diarios, Impuestos, Posiciones fiscales, Términos de pago, Monedas, Cuentas bancarias y Cuentas analíticas, con los mismos permisos que en Contabilidad."
+      - "**Comprobantes electrónicos**, **Tributos SUNAT**, **Cuentas de la localización** y **Consultas RUC / DNI**: secciones donde cuelgan sus menús los demás módulos."
+    imagen: screenshots/01-menu-configuracion.png
+    pie: Menú Configuración de la app Perú con los módulos de la suite instalados.
+
+  - titulo: Ajustes de la localización juntos
+    ruta: Perú ▸ Configuración ▸ Ajustes
+    texto: >-
+      La aplicación **Perú** de Ajustes es un contenedor: el bloque
+      **Contabilidad (PE)** y los que añaden los demás módulos (validación de
+      RUC/DNI, detracciones, retenciones…) aparecen en la misma página.
+    imagen: screenshots/02-ajustes-peru.png
+
+  - titulo: Glosa en el asiento y en cada apunte
+    ruta: Contabilidad ▸ Contabilidad ▸ Asientos contables
+    texto: >-
+      El campo **Glosa** aparece junto a la referencia del asiento. En la
+      pestaña **Apuntes contables** la columna **Glosa** es opcional: actívela
+      desde el selector de columnas para describir cada línea.
+    puntos:
+      - La glosa no se copia al duplicar el asiento.
+      - "El Libro Diario simplificado (formato 5.2 de `al_l10n_pe_ple`) usa la glosa de la línea; si falta, su etiqueta."
+    imagen: screenshots/03-asiento-glosa.png
+    pie: "Provisión de alquiler de S/ 3.500,00 con glosa en la cabecera y en las dos líneas."
+
+  - titulo: Naturaleza del diario
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
+    texto: >-
+      En los diarios de compañías peruanas aparecen **Naturaleza del diario**
+      (Movimiento, Apertura o Cierre; por defecto Movimiento) y **Excluir de
+      los libros electrónicos**.
+    puntos:
+      - Los asientos de apertura y cierre no son operaciones del periodo; la naturaleza deja constancia de ello en el diario.
+      - "Los diarios excluidos quedan fuera, por ejemplo, del Registro de Compras que genera `al_l10n_pe_ple`."
+    imagen: screenshots/04-diario.png
+
+  - titulo: Código SUNAT del banco
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Cuentas bancarias
+    texto: >-
+      Cada cuenta bancaria admite el **Código SUNAT del banco** según la tabla 3
+      del Anexo 2 del PLE, obligatorio en el Libro Caja y Bancos (formato 1.2).
+      Debe tener exactamente dos dígitos.
+    imagen: screenshots/05-cuenta-bancaria.png
+    pie: Cuenta en el Banco de Crédito del Perú con el código 02.
+
+funcionalidades:
+  - grupo: Menú y ajustes
+    items:
+      - Menú raíz **Perú** con icono propio y rama **Configuración** en cinco secciones.
+      - Sección **Contabilidad** con atajos a la configuración contable nativa y sus permisos.
+      - Aplicación **Perú** en Ajustes, con el bloque **Contabilidad (PE)** para los demás módulos.
+      - Página **Contabilidad PE** en el formulario de la compañía, donde otros módulos agregan sus grupos.
+  - grupo: Asientos contables
+    items:
+      - "**Glosa** en la cabecera del asiento, junto a la referencia."
+      - "**Glosa** por apunte contable, como columna opcional."
+      - "Botón **Restablecer a borrador** visible en asientos publicados y cancelados."
+      - "Utilidad `l10n_pe_is_pe()` para saber si un comprobante es de una compañía peruana."
+  - grupo: Datos para los libros electrónicos
+    items:
+      - "**Naturaleza del diario**: Movimiento, Apertura o Cierre."
+      - "**Excluir de los libros electrónicos** por diario."
+      - "**Código SUNAT del banco** en la cuenta bancaria, validado a dos dígitos."
+      - "**Establecimiento anexo** en el contacto peruano, validado a cuatro dígitos (principal = 0000)."
+
+ejemplos:
+  - titulo: Validación de los códigos SUNAT
+    texto: >-
+      Los códigos no se recortan: un valor mal escrito se rechaza con un
+      mensaje, porque truncarlo lo convertiría en otro código válido y el libro
+      saldría mal sin que nadie lo advierta.
+    tabla:
+      - [Campo, Valor ingresado, Resultado]
+      - [Código SUNAT del banco, "02", Aceptado]
+      - [Código SUNAT del banco, "123", Rechazado (debe tener dos dígitos)]
+      - [Código SUNAT del banco, "0A", Rechazado (solo dígitos)]
+      - [Establecimiento anexo, "0000", Aceptado (establecimiento principal)]
+      - [Establecimiento anexo, "00123", Rechazado (debe tener cuatro dígitos)]
+    nota: Los espacios al inicio o al final no cuentan para la validación.
+
+  - titulo: Qué glosa llega al Libro Diario simplificado
+    tabla:
+      - [Glosa del apunte, Etiqueta del apunte, Texto en el libro 5.2]
+      - [Alquiler setiembre 2026, Alquiler local Miraflores, Alquiler setiembre 2026]
+      - [(vacía), Alquiler local Miraflores, Alquiler local Miraflores]
+    nota: "Si faltan las dos, se usa la glosa del asiento o, en su defecto, su referencia."
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; normalmente llega como dependencia de otro módulo de la suite.
+  - Abra la app **Perú** y revise **Configuración ▸ Ajustes** para configurar los módulos instalados.
+  - "Marque en **Configuración ▸ Contabilidad ▸ Diarios** los diarios de apertura y cierre y los que no deben ir a los libros electrónicos."
+  - "Complete el **Código SUNAT del banco** de las cuentas bancarias de la compañía antes de generar el Libro Caja y Bancos."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. No requiere datos adicionales.
+
+faq:
+  - pregunta: No veo la columna Glosa en los apuntes del asiento
+    respuesta: >-
+      Es una columna opcional. En la pestaña **Apuntes contables**, pulse el
+      selector de columnas (a la derecha de la cabecera) y active **Glosa**.
+  - pregunta: ¿Por qué no aparecen Naturaleza del diario ni Establecimiento anexo?
+    respuesta: >-
+      Solo se muestran cuando el diario pertenece a una compañía de Perú o el
+      contacto tiene país Perú.
+  - pregunta: El menú Ajustes no aparece en Perú ▸ Configuración
+    respuesta: >-
+      Está reservado a los administradores del sistema, igual que la
+      aplicación Ajustes de Odoo.
+  - pregunta: ¿Tengo que instalarlo aparte?
+    respuesta: >-
+      No es necesario: los módulos de la suite para Perú lo declaran como
+      dependencia y se instala con ellos.
+
+novedades:
+  - version: 3.20260815
+    fecha: 14/09/2026
+    cambios:
+      - "Configuración de la app Perú en cinco secciones, con la nueva sección **Contabilidad** de atajos a la configuración nativa."
+      - "Orden del primer nivel de la app: Tipo de cambio, Letras de cambio, Detracciones, Retenciones IGV, SIRE, Libros PLE, Kardex y Configuración."
+  - version: 2.20260815
+    fecha: 18/08/2026
+    cambios:
+      - Naturaleza del diario y exclusión de los libros electrónicos.
+      - Código SUNAT del banco y establecimiento anexo, con validación de formato.
+  - version: 1.20260717
+    fecha: 19/07/2026
+    cambios:
+      - Glosa en asientos y apuntes, menú raíz Perú y aplicación Perú en Ajustes.
+
+relacionados: [al_l10n_pe_ple, al_account_destinations, al_account_payments, al_account_move_name_sequence, al_l10n_pe_retention, al_l10n_pe_detraction]

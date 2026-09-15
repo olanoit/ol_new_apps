@@ -1,0 +1,280 @@
+titulo: Detracciones (SPOT)
+subtitulo: >-
+  El Sistema de Pago de Obligaciones Tributarias de punta a punta: catálogo
+  54 administrable, cálculo en facturas de venta y compra, reparto en el
+  asiento, registro del depósito con su constancia y archivo de depósito
+  masivo para el Banco de la Nación.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Catálogo 54, Redondeo a soles, Constancia de depósito, Depósito masivo BN, Reparto 121x / 424x, PLE 8.1 y 8.3]
+portada: screenshots/03-factura-venta.png
+
+destacados_intro: >-
+  La localización nativa ya emite el bloque de detracción en el XML a partir
+  del porcentaje del producto. Este módulo añade todo lo que hace falta para
+  operar el régimen en el día a día.
+destacados:
+  - icono: "54"
+    titulo: Catálogo 54 administrable
+    texto: >-
+      26 códigos precargados con porcentaje y monto mínimo propios (S/ 700,
+      S/ 400 en transporte, ½ UIT en el Anexo 1). Cambiar un porcentaje y
+      actualizar los productos vinculados es un botón.
+  - icono: "S/"
+    titulo: Cálculo en la factura
+    texto: >-
+      Código dominante (mayor %), verificación del mínimo sobre el total con
+      IGV en soles, monto redondeado a soles enteros y neto a cobrar o pagar.
+  - icono: "1001"
+    titulo: Tipo de operación automático
+    texto: >-
+      Al publicar una venta afecta se fija el tipo de operación 1001 si no se
+      eligió otro de la familia 100x, requisito para que el XML lleve el
+      bloque de detracción.
+  - icono: "⇄"
+    titulo: Reparto en el mismo asiento
+    texto: >-
+      Opcional: la cuenta por cobrar o pagar se divide en neto y detracción
+      (121x / 424x) dentro del asiento de la factura, sin crear un segundo
+      asiento.
+  - icono: "✓"
+    titulo: Depósito y constancia
+    texto: >-
+      Un asistente registra el pago de la detracción y guarda el número y la
+      fecha de la constancia, que salen en los PLE 8.1 y 8.3.
+  - icono: "BN"
+    titulo: Depósito masivo
+    texto: >-
+      Genera el archivo de ancho fijo del Banco de la Nación para pagar muchas
+      detracciones a la vez, con la lista de comprobantes excluidos y el
+      motivo.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En las operaciones del Anexo de detracciones (catálogo 54 de SUNAT, R.S.
+    183-2004/SUNAT y modificatorias) el comprador descuenta un porcentaje del
+    importe total y lo deposita en la cuenta del proveedor en el **Banco de
+    la Nación**; el proveedor cobra el neto. Aplica, en general, a
+    operaciones mayores a **S/ 700**.
+
+
+    Sin apoyo en el sistema hay que buscar el porcentaje de cada servicio,
+    comprobar el mínimo, redondear a mano, separar lo que se paga al
+    proveedor de lo que va al banco, anotar la constancia en algún sitio para
+    el Registro de Compras y armar el archivo del depósito masivo campo por
+    campo.
+  nota: >-
+    **Se redondea a soles enteros.** No a dos decimales: es la regla de SUNAT
+    y el mismo criterio que usa el XML nativo. Una detracción del 12 % sobre
+    S/ 3.540,00 es S/ 425, no S/ 424,80.
+
+pasos_intro: >-
+  Recorrido con los datos de demostración «DEMO SPOT» y «DEMO SPLIT», de la
+  configuración al archivo para el banco.
+pasos:
+  - titulo: Revisar el catálogo 54
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT)
+    texto: >-
+      El catálogo llega cargado con código, descripción, **Porcentaje (%)**,
+      **Monto mínimo (S/)** y cuántos productos usan cada tipo. En la ficha de
+      un tipo, **Actualizar productos vinculados** reaplica el porcentaje
+      vigente cuando SUNAT lo cambia.
+    puntos:
+      - Los códigos del Anexo 1 traen como mínimo ½ UIT; actualícelo con la UIT de cada año.
+      - Un monto mínimo de 0 significa que la detracción aplica a cualquier importe.
+    imagen: screenshots/01-catalogo.png
+
+  - titulo: Asignar el tipo de detracción al producto
+    ruta: Contabilidad ▸ Clientes ▸ Productos
+    texto: >-
+      Elija **Tipo de detracción (SPOT)** en la ficha del producto: el
+      **Código de detracción** y el **Porcentaje de detracción** nativos, los
+      que usa la factura electrónica, se completan solos.
+    imagen: screenshots/02-producto.png
+
+  - titulo: La factura calcula la detracción
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ pestaña Detracción
+    texto: >-
+      Si el total supera el mínimo del código, aparece la pestaña
+      **Detracción** con el tipo, el **Tipo de operación SPOT** (tabla 5.5 del
+      Banco de la Nación), el porcentaje, el **Monto de detracción** y el
+      **Neto tras detracción**. Funciona igual en facturas de proveedor.
+    puntos:
+      - Con varios productos afectos se toma el código de mayor porcentaje.
+      - En borrador el tipo y el porcentaje se pueden corregir a mano.
+    imagen: screenshots/03-factura-venta.png
+    pie: "Venta de S/ 5.900,00 con código 037 al 12 %: detracción S/ 708,00 y neto S/ 5.192,00."
+
+  - titulo: Reparto de la detracción en el asiento
+    ruta: Factura ▸ pestaña Apuntes contables
+    texto: >-
+      Con la opción de reparto activa, al publicar la línea por cobrar se
+      divide: el neto queda en la cuenta del cliente y la detracción en la
+      cuenta de detracciones por cobrar, con la etiqueta **Detracción SPOT**
+      y su código. Total, residual e importes de la factura no cambian.
+    puntos:
+      - Si la factura vuelve a borrador y cambia el importe, al republicar el reparto se rehace.
+      - Si el total cae por debajo del mínimo, el reparto desaparece.
+    imagen: screenshots/04-reparto-asiento.png
+    pie: "Factura de S/ 3.540,00: S/ 3.115,00 en 1213000 y S/ 425,00 en 121901 Detracciones por cobrar."
+
+  - titulo: Registrar el depósito y la constancia
+    ruta: Factura ▸ pestaña Detracción ▸ Registrar depósito
+    texto: >-
+      El asistente propone el monto de la detracción; elija el **Diario del
+      depósito** e indique la **Fecha de la constancia** y el **Nº de
+      constancia**. Al **Registrar** se crea el pago parcial conciliado con la
+      factura y la constancia queda guardada en ella.
+    puntos:
+      - "Compras: el depósito propio en la cuenta del proveedor en el Banco de la Nación."
+      - "Ventas: el cobro de la detracción que el cliente depositó en su cuenta del Banco de la Nación."
+      - Con reparto activo, el pago se aplica solo a la línea de la detracción y la deuda con el tercero sigue pendiente.
+    imagen: screenshots/05-registrar-deposito.png
+
+  - titulo: Generar el depósito masivo del Banco de la Nación
+    ruta: Perú ▸ Detracciones ▸ Depósito masivo (Banco de la Nación)
+    texto: >-
+      Elija la **Modalidad** (como adquiriente o como proveedor), el **Nº de
+      lote** con formato AANNNN y el periodo. Si no selecciona comprobantes,
+      toma todos los publicados con detracción del periodo. **Generar
+      archivo** entrega el TXT y lista los comprobantes que no pudieron
+      incluirse con su motivo.
+    puntos:
+      - El archivo se valida antes de entregarse; el banco rechaza el lote completo si una línea no mide lo que debe.
+      - Cada contacto necesita su **Cuenta de detracciones** (11 dígitos) en la ficha.
+    imagen: screenshots/06-deposito-masivo.png
+    pie: "Julio de 2026: tres facturas de proveedor en el archivo y una excluida por no tener cuenta del Banco de la Nación."
+
+  - titulo: Activar el reparto contable (opcional)
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Detracciones (SPOT)
+    texto: >-
+      Marque **Separar detracción en el asiento** y elija la **Cuenta
+      detracciones por cobrar** (tipo por cobrar) y la **Cuenta detracciones
+      por pagar** (tipo por pagar). Desactivada, el total queda en la cuenta
+      del cliente o proveedor, como en Odoo estándar.
+    imagen: screenshots/07-ajustes.png
+
+funcionalidades:
+  - grupo: Catálogo y productos
+    items:
+      - Catálogo 54 con código único, porcentaje entre 0 y 100, monto mínimo y notas.
+      - Botón para actualizar los productos vinculados y acceso a su lista.
+      - Sincronización del código y el porcentaje nativos del producto al asignar el tipo.
+  - grupo: Facturas de venta y compra
+    items:
+      - Detección del código dominante y verificación del mínimo sobre el total con IGV en soles.
+      - Monto redondeado a soles enteros y neto tras detracción.
+      - Tipo de operación EDI 1001 automático al publicar una venta afecta.
+      - "Tipo de operación SPOT de la tabla 5.5 del Banco de la Nación."
+      - "Filtros **Con detracción** y **Detracción sin constancia** en las listas de facturas."
+  - grupo: Contabilidad
+    items:
+      - Reparto opcional neto / detracción dentro del mismo asiento, estable al volver a borrador y republicar.
+      - Aviso al publicar si el reparto está activo y faltan las cuentas.
+      - Registro del depósito como pago parcial conciliado, solo sobre la línea de la detracción.
+  - grupo: Declaración y banco
+    items:
+      - Número y fecha de constancia en la factura, usados por el PLE 8.1 y el PLE 8.3.
+      - Archivo de depósito masivo del Banco de la Nación en las modalidades adquiriente y proveedor.
+      - Validación de longitudes del archivo y detalle de comprobantes excluidos.
+      - Cuenta de detracciones del Banco de la Nación en la ficha del contacto.
+
+ejemplos_intro: Cifras de los datos de demostración, redondeadas a soles enteros como exige SUNAT.
+ejemplos:
+  - titulo: Cálculo en cuatro facturas
+    tabla:
+      - [Factura, Código, Total con IGV, "%", Detracción, Neto]
+      - [Venta DPSV/2026/00002, "037", "S/ 5.900,00", "12", "S/ 708,00", "S/ 5.192,00"]
+      - [Venta DPSV/2026/00008, "037", "S/ 3.540,00", "12", "S/ 425,00", "S/ 3.115,00"]
+      - [Compra DPSC/2026/07/0002, "037", "S/ 2.360,00", "12", "S/ 283,00", "S/ 2.077,00"]
+      - [Compra DPSC/2026/07/0003, "019", "S/ 3.540,00", "10", "S/ 354,00", "S/ 3.186,00"]
+    nota: "3.540,00 × 12 % = 424,80, que se redondea a S/ 425; 2.360,00 × 12 % = 283,20, que queda en S/ 283."
+
+  - titulo: Asiento con reparto de la venta DPSV/2026/00008
+    tabla:
+      - [Cuenta, Debe, Haber]
+      - [1213000 Facturas por cobrar, "S/ 3.115,00", ""]
+      - [121901 Detracciones por cobrar, "S/ 425,00", ""]
+      - [4011100 IGV, "", "S/ 540,00"]
+      - [7011100 Mercaderías, "", "S/ 3.000,00"]
+    nota: El asiento cuadra en S/ 3.540,00; cada línea por cobrar se concilia por separado.
+
+  - titulo: Archivo de depósito masivo
+    texto: >-
+      Cabecera de 68 caracteres (indicador `*` de adquiriente, RUC, razón
+      social, lote e importe total sin punto decimal) y una línea de 107
+      caracteres por depósito: RUC del proveedor, código del bien o servicio,
+      cuenta del Banco de la Nación, importe, tipo de operación, periodo y
+      comprobante. El nombre del archivo es `D` + RUC + lote.
+    codigo: |
+      *20512528458Comercial Demo Perú S.A.C.         260001000000000092000
+      620512528458                                            019000876543210000000000354000120260701000300000000
+      620512528458                                            037000876543210000000000283000120260701000400000000
+      620131312955                                            037000123456780000000000283000120260701000200000000
+    nota: "Total del lote: S/ 354 + S/ 283 + S/ 283 = S/ 920,00."
+
+configuracion_intro: >-
+  El módulo trae scripts de datos de demostración (`tools/`) que crean el
+  escenario «DEMO SPOT» y validan el flujo completo.
+configuracion:
+  - Instale el módulo desde Aplicaciones; el catálogo 54 se carga solo.
+  - Asigne el **Tipo de detracción (SPOT)** a los productos y servicios afectos.
+  - "Ventas: registre la cuenta de detracciones del **Banco de la Nación** en las cuentas bancarias de la compañía; la usa el XML."
+  - Cree un diario de banco que represente la cuenta de detracciones para registrar los cobros.
+  - "Depósito masivo: complete la **Cuenta de detracciones** de cada proveedor en su ficha de contacto."
+  - "Opcional: active el reparto en **Perú ▸ Configuración ▸ Ajustes ▸ Detracciones (SPOT)** con sus dos cuentas."
+requisitos_nota: >-
+  Requiere Odoo Enterprise: la constancia usa los campos de detracción de
+  `l10n_pe_reports`, los mismos que alimentan el PLE 8.1.
+
+faq:
+  - pregunta: No aparece la pestaña Detracción en la factura, ¿por qué?
+    respuesta: >-
+      Ningún producto de la factura tiene tipo de detracción, o el total con
+      IGV en soles no supera el monto mínimo del código.
+  - pregunta: Al publicar sale un aviso sobre la cuenta de detracciones.
+    respuesta: >-
+      La opción de separar la detracción en el asiento está activa y falta la
+      cuenta por cobrar o por pagar. Configúrela en Ajustes o desactive la
+      opción.
+  - pregunta: ¿El depósito crea un asiento contable?
+    respuesta: >-
+      Crea un pago estándar de Odoo 19 conciliado con la factura; como en el
+      resto de pagos, el asiento de banco nace al conciliar el extracto.
+  - pregunta: ¿Por qué un comprobante no entra en el depósito masivo?
+    respuesta: >-
+      El asistente lo lista con su motivo: sin tipo de detracción, monto cero,
+      contacto sin RUC, sin cuenta de detracciones del Banco de la Nación o sin
+      fecha de emisión.
+  - pregunta: SUNAT cambió un porcentaje, ¿qué hago?
+    respuesta: >-
+      Edite el tipo en el catálogo y pulse **Actualizar productos
+      vinculados**. Las facturas en borrador recalculan al editar sus líneas.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "La app Perú agrupa las detracciones en su propio menú: **Perú ▸ Detracciones**; el catálogo pasa a **Configuración ▸ Tributos SUNAT**."
+  - version: 5.20260827
+    fecha: 27/08/2026
+    cambios:
+      - Con el reparto activo, registrar el depósito ya no da por pagada la deuda con el proveedor.
+  - version: 4.20260815
+    fecha: 18/08/2026
+    cambios:
+      - Depósito masivo de detracciones para el Banco de la Nación, cuenta de detracciones en el contacto y tipo de operación SPOT en la factura.
+  - version: 3.20260719
+    fecha: 19/07/2026
+    cambios:
+      - Bloque propio **Detracciones (SPOT)** en los Ajustes de Perú.
+  - version: 2.20260719
+    fecha: 19/07/2026
+    cambios:
+      - Reparto opcional de la detracción dentro del asiento de la factura.
+      - Constancia de detracción en el PLE 8.3.
+  - version: 1.20260719
+    fecha: 19/07/2026
+    cambios:
+      - "Primera versión: catálogo 54, cálculo en facturas, tipo de operación 1001 y registro del depósito con constancia."
+
+relacionados: [al_l10n_pe_retention, al_l10n_pe_invoice, al_l10n_pe_ple, al_account_payments, al_account_base]

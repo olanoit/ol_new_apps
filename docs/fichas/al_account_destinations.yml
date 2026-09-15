@@ -1,0 +1,217 @@
+titulo: Cuentas destino (dinámica 6↔9)
+subtitulo: >-
+  El asiento de destino del Plan Contable General Empresarial, automático: al
+  publicar un comprobante, el gasto por naturaleza (clase 6) se refleja en las
+  cuentas por función (clase 9), o al revés, contra la cuenta de carga 79.
+categoria: Localización Perú · Contabilidad
+etiquetas: [PCGE, Clase 6 y 9, Cuenta de carga 79, Asiento automático, Diario GA, Porcentajes por cuenta]
+portada: screenshots/05-asiento-destino.png
+
+destacados_intro: >-
+  Configure una vez el reparto de cada cuenta y olvídese del asiento de destino
+  mensual: sale solo, cuadrado y enlazado con el comprobante que lo originó.
+destacados:
+  - icono: "6↔9"
+    titulo: Dos sentidos
+    texto: >-
+      La compañía elige si los destinos van de la clase 6 a la 9 o de la 9 a la
+      6. Solo las cuentas de la clase de origen trabajan con destinos.
+  - icono: "%"
+    titulo: Reparto por porcentajes
+    texto: >-
+      Cada cuenta reparte su importe entre varias cuentas destino. Los
+      porcentajes deben sumar 100 % y cada uno ser mayor que cero.
+  - icono: "GA"
+    titulo: Asiento automático
+    texto: >-
+      Al publicar el comprobante se genera y publica el asiento de destino en el
+      diario **Gastos Automáticos** (GA), que se crea solo si no existe.
+  - icono: "="
+    titulo: Cuadrado por diseño
+    texto: >-
+      La cuenta de carga recibe el total y el redondeo se asigna a la última
+      cuenta destino: el asiento nunca queda descuadrado.
+  - icono: "↺"
+    titulo: Sigue al original
+    texto: >-
+      Si el comprobante vuelve a borrador o se cancela, el asiento de destino
+      hace lo mismo; al publicarlo de nuevo se regenera.
+  - icono: "▤"
+    titulo: Vista consolidada
+    texto: >-
+      Todos los destinos de todas las cuentas en una lista editable, agrupada
+      por cuenta principal e importable.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En el PCGE los gastos se registran **por naturaleza** en la clase 6 y, para
+    conocer el costo por función, se trasladan a las cuentas **de destino** de
+    la clase 9 (costo de producción, gastos administrativos, gastos de ventas…)
+    usando como contrapartida la **cuenta de carga 79** (Cargas imputables a
+    cuentas de costos y gastos).
+
+
+    Hacerlo a mano obliga a un asiento extra por cada gasto o a uno masivo a
+    fin de mes, con el riesgo de olvidar comprobantes, repartir con porcentajes
+    distintos o dejar el asiento descuadrado por redondeos. Este módulo lo
+    genera en el momento de publicar, con la regla definida en la propia cuenta.
+  nota: >-
+    **Atención al activar un sentido.** Toda cuenta de la clase de origen
+    (6 en 6→9, 9 en 9→6) sin cuentas destino impide publicar comprobantes que
+    la usen, con un aviso que indica la cuenta. Configure sus destinos o marque
+    **Desactivar destinos** en las cuentas que no deban repartirse.
+
+pasos_intro: >-
+  Recorrido con los datos de demostración. La compañía de ejemplo trabaja con
+  el sentido **9 → 6**; el funcionamiento en 6 → 9 es idéntico cambiando la
+  clase de las cuentas.
+pasos:
+  - titulo: Elegir el sentido de la dinámica
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Contabilidad (PE)
+    texto: >-
+      En **Cuentas destino (dinámica 6↔9)** elija **Destino de cuenta clase 6
+      a 9** o **Destino de cuenta clase 9 a 6**. El mismo dato está en la ficha
+      de la compañía, pestaña **Contabilidad PE**, grupo **Destinos**.
+    puntos:
+      - El valor por defecto de una compañía nueva es **9 a 6**.
+      - El sentido es por compañía; cada una puede trabajar distinto.
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: Configurar los destinos de la cuenta
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Plan contable
+    texto: >-
+      Las cuentas de la clase de origen muestran la pestaña **Configuración de
+      destinos**. Añada las cuentas destino (solo se ofrecen las de la clase
+      opuesta) con su porcentaje, y la **Cuenta de carga** (solo cuentas 78 o
+      79).
+    puntos:
+      - Si los porcentajes no suman 100 %, al guardar se indica la suma actual.
+      - "**Desactivar destinos** excluye la cuenta del reparto aunque tenga destinos configurados."
+      - Al duplicar una cuenta se copian también sus destinos.
+    imagen: screenshots/02-cuenta-destinos.png
+    pie: "Cuenta 941200 repartida 60 % a energía eléctrica y 40 % a internet, contra la 7910000."
+
+  - titulo: Revisar todos los destinos juntos
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta
+    texto: >-
+      La lista **Destinos de cuentas contables** reúne las líneas de todas las
+      cuentas, agrupadas por cuenta principal con el total de porcentajes de
+      cada grupo. Es editable en línea y admite **Importar** registros.
+    imagen: screenshots/03-destinos-por-cuenta.png
+
+  - titulo: Publicar el comprobante
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas
+    texto: >-
+      Al publicar una factura, un asiento o cualquier comprobante de una
+      compañía peruana con líneas en cuentas que trabajan con destinos, se crea
+      el asiento de destino. En la factura, pestaña **Otra información**, el
+      grupo **Destinos** enlaza con él.
+    imagen: screenshots/04-origen.png
+    pie: "Factura F001-00000877: base S/ 500,00 en la cuenta 941200 e IGV S/ 90,00."
+
+  - titulo: El asiento de destino
+    ruta: Asiento de destino (diario Gastos Automáticos)
+    texto: >-
+      El asiento, con referencia **Destino:** y el número del comprobante,
+      reparte la base entre las cuentas destino y abona la cuenta de carga por
+      el total. Solo se reparten las líneas de cuentas con destinos: el IGV y la
+      cuenta por pagar no intervienen.
+    imagen: screenshots/05-asiento-destino.png
+    pie: "S/ 500,00 → S/ 300,00 (60 %) y S/ 200,00 (40 %), contra S/ 500,00 en la 7910000."
+
+funcionalidades:
+  - grupo: Configuración
+    items:
+      - Sentido de la dinámica por compañía (6 → 9 o 9 → 6), en Ajustes y en la ficha de la compañía.
+      - Pestaña **Configuración de destinos** solo en las cuentas de la clase de origen.
+      - Cuentas destino filtradas a la clase opuesta y cuenta de carga filtrada a 78/79.
+      - Validación de porcentajes mayores que cero y suma de 100 % (tolerancia de ±0,01 %).
+      - Casilla **Desactivar destinos** por cuenta.
+      - Columna opcional **Incluye destino** en la lista del plan contable.
+  - grupo: Asiento de destino
+    items:
+      - Generado y publicado al publicar el comprobante, en el diario GA (se crea si falta).
+      - Una línea por cuenta destino más la contrapartida en la cuenta de carga, con el contacto del comprobante.
+      - Redondeo asignado a la última línea para que el asiento cuadre siempre.
+      - "Débito y crédito respetados: una línea al haber genera un destino al haber."
+      - Vuelve a borrador o se cancela junto con el comprobante y se regenera al volver a publicar.
+      - Los propios asientos de destino no generan nuevos destinos.
+  - grupo: Consulta
+    items:
+      - Lista consolidada de destinos agrupada por cuenta principal, editable e importable.
+      - Menú en la app Perú y en Contabilidad ▸ Configuración.
+      - Enlace del comprobante a su asiento de destino en la pestaña Otra información de las facturas.
+
+ejemplos:
+  - titulo: Sentido 6 → 9 con tres destinos
+    texto: >-
+      Cuenta **635100 Alquileres locales** configurada al 50 % en gastos de
+      administración, 30 % en gastos de ventas y 20 % en costos de producción,
+      con cuenta de carga **791100**. Un asiento con S/ 3.000,00 en esa cuenta
+      genera:
+    tabla:
+      - [Cuenta, Debe, Haber]
+      - [942100 Gastos de administración (9), "S/ 1.500,00", ""]
+      - [951100 Gastos de ventas (9), "S/ 900,00", ""]
+      - [921100 Costos de producción (9), "S/ 600,00", ""]
+      - [791100 Cargas imputables a cuentas de costos (79), "", "S/ 3.000,00"]
+    nota: Es el asiento GA/2026/07/0002 de los datos de demostración.
+
+  - titulo: El redondeo va a la última línea
+    texto: >-
+      Tres destinos al 33,3333 % sobre S/ 100,00: las dos primeras líneas se
+      redondean a S/ 33,33 y la última recibe el remanente exacto.
+    tabla:
+      - [Destino, Porcentaje, Importe]
+      - [Primera cuenta, "33,3333 %", "S/ 33,33"]
+      - [Segunda cuenta, "33,3333 %", "S/ 33,33"]
+      - [Tercera cuenta, "33,3333 %", "S/ 33,34"]
+      - [Cuenta de carga, "", "S/ 100,00"]
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere la localización peruana).
+  - "Elija el sentido en **Perú ▸ Configuración ▸ Ajustes ▸ Contabilidad (PE)**."
+  - "Revise el plan contable: configure destinos y cuenta de carga en cada cuenta de la clase de origen, o marque **Desactivar destinos**."
+  - "Compruebe el reparto en **Perú ▸ Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta**: cada grupo debe sumar 100 %."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Solo actúa sobre comprobantes de
+  compañías con país Perú.
+
+faq:
+  - pregunta: Al publicar dice que la cuenta trabaja con destinos pero no tiene cuentas de destino configuradas
+    respuesta: >-
+      Con el sentido elegido, esa cuenta es de la clase de origen. Configure sus
+      destinos y su cuenta de carga, o marque **Desactivar destinos** si no debe
+      repartirse.
+  - pregunta: No veo la pestaña Configuración de destinos en la cuenta
+    respuesta: >-
+      Solo aparece en las cuentas de la clase de origen: clase 6 con el sentido
+      6 → 9, clase 9 con el sentido 9 → 6. Revise el sentido en Ajustes.
+  - pregunta: ¿Qué pasa si corrijo el comprobante?
+    respuesta: >-
+      Al pasarlo a borrador, el asiento de destino también vuelve a borrador;
+      al publicarlo de nuevo, se reemplazan sus líneas con el reparto vigente y
+      se publica otra vez.
+  - pregunta: ¿Puedo cambiar los porcentajes a mitad de año?
+    respuesta: >-
+      Sí. Los asientos ya publicados no cambian; el nuevo reparto se aplica a
+      los comprobantes que se publiquen desde entonces.
+
+novedades:
+  - version: 3.20260828
+    fecha: 14/09/2026
+    cambios:
+      - "El menú de la app Perú pasa a **Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta**."
+  - version: 2.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Acceso a los destinos desde la app Perú.
+  - version: 1.20260717
+    fecha: 19/07/2026
+    cambios:
+      - Asiento de destino automático en el diario GA, en los dos sentidos.
+      - Configuración por cuenta con porcentajes que suman 100 % y cuenta de carga.
+      - Vista consolidada de destinos con importación.
+
+relacionados: [al_account_base, al_l10n_pe_ple, al_account_move_name_sequence]

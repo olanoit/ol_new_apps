@@ -1,0 +1,256 @@
+titulo: Letras de cambio y canje
+subtitulo: >-
+  Canjea facturas pendientes de clientes y proveedores por letras de cambio,
+  genera las letras con sus vencimientos, contabiliza el canje, las envía a
+  cobranza libre o descuento y refinancia lo que quede pendiente.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Canje de facturas, Letras de cambio, Cobranza libre, Descuento, Refinanciación, Clientes y proveedores]
+portada: screenshots/04-canje-letras.png
+
+destacados_intro: >-
+  Todo el ciclo de la letra dentro de Odoo, con su asiento y su conciliación en
+  cada paso.
+destacados:
+  - icono: "⇄"
+    titulo: Canje de facturas por letras
+    texto: >-
+      Reúne facturas, boletas y notas de débito pendientes de un socio y las
+      reemplaza por letras: el asiento abona la factura, carga las letras y la
+      deja conciliada.
+  - icono: "N×"
+    titulo: Letras generadas en un clic
+    texto: >-
+      Indique cantidad, primer vencimiento y días entre letras; el importe
+      total o parcial se reparte solo. El céntimo sobrante va a redondeo.
+  - icono: "🏦"
+    titulo: Cobranza libre o descuento
+    texto: >-
+      Envíe todas las letras o una sola al banco con su código: el asiento
+      reclasifica la letra a la cuenta configurada para ese tipo.
+  - icono: "↻"
+    titulo: Refinanciación
+    texto: >-
+      Lo adeudado de un canje, o de varios del mismo socio, pasa a un canje
+      nuevo con otra fecha, sin perder el rastro de los canjes de origen.
+  - icono: "#"
+    titulo: Cuentas por tipo de letra
+    texto: >-
+      Por cobrar o por pagar, en cartera, cobranza libre, descuento o
+      protestada, y por moneda: cada combinación con su cuenta.
+  - icono: "✓"
+    titulo: Trazabilidad en la factura
+    texto: >-
+      Las facturas muestran su **Estado de canje** y un acceso al canje; el
+      canje, sus facturas, pagos y asiento.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En Perú es habitual financiar ventas y compras canjeando las facturas por
+    **letras de cambio** con vencimientos escalonados, que luego se llevan al
+    banco en **cobranza libre** o en **descuento**, y que a veces hay que
+    **renovar**.
+
+
+    Sin un módulo, cada paso es un asiento manual: cancelar la factura contra
+    la cuenta de letras, repartir importes, reclasificar al enviarlas al banco
+    y controlar qué letra sigue pendiente. Aquí cada canje es un documento con
+    estados, que genera y concilia esos asientos.
+  nota: >-
+    **Tipo de documento Letra.** El módulo añade los tipos de documento `99`
+    Letra y `00` Apertura. Los canjes se numeran **CLC** (clientes) y **CLP**
+    (proveedores) con una secuencia propia.
+
+pasos_intro: >-
+  Recorrido con el cliente «DEMO LETRA Cliente SAC»: una factura de
+  S/ 1.180,00 canjeada por tres letras a 30 días.
+pasos:
+  - titulo: Configurar las cuentas de letras
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Cuentas de letras
+    texto: >-
+      Registre una cuenta por cada combinación de **Tipo de cuenta** (por
+      cobrar / por pagar), **Tipo de letra** y **Moneda**. No se admite la
+      misma combinación dos veces en una compañía.
+    puntos:
+      - "Tipos de letra: En cartera, Cobranza libre, Descuento y Protestada."
+      - Los diarios del canje son los que tienen «letra» y «cobrar» (o «pagar») en el nombre, p. ej. **Letras por Cobrar**.
+      - Para los redondeos se usan las cuentas llamadas **Redondeo** de gasto y de otros ingresos.
+    imagen: screenshots/01-cuentas-letras.png
+
+  - titulo: Crear el canje
+    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Canje de letras
+    texto: >-
+      Cada canje indica socio, diario, fecha de canje (no futura), referencia y
+      estado. La lista muestra las facturas incluidas y los mismos accesos
+      existen para **Proveedores**.
+    imagen: screenshots/02-canjes.png
+
+  - titulo: Añadir las facturas y confirmar
+    ruta: Canje ▸ Facturas
+    texto: >-
+      En **Facturas** añada los apuntes pendientes del socio: tipo de documento,
+      fecha de emisión, cuenta, total, saldo e importe. **Confirmar** pasa el
+      canje a **Comprobado**.
+    imagen: screenshots/03-canje-facturas.png
+    pie: "CLC00088: factura DLTV/2026/00002 de S/ 1.180,00, ya canjeada."
+
+  - titulo: Generar las letras
+    ruta: Canje ▸ Letras ▸ Crear letras
+    texto: >-
+      Indique **Cantidad de letras**, **Fecha de venc. letra** y **Rango de
+      días**, y si el **Pago** es total o parcial. **Crear letras** reparte el
+      importe y escalona los vencimientos. Cada letra necesita su número
+      antes de canjear.
+    puntos:
+      - "**Monto restante** muestra lo que falta cubrir con letras."
+      - "El **Estado de pago** de cada letra sale de su importe adeudado: No pagado, Pago parcial o Pagado."
+    imagen: screenshots/04-canje-letras.png
+    pie: "Tres letras de S/ 393,33 con vencimientos 10/08, 09/09 y 09/10."
+
+  - titulo: Canjear y revisar el asiento
+    ruta: Canje ▸ Canjear ▸ Apuntes contables
+    texto: >-
+      **Canjear** publica el asiento en el diario del canje: abona la cuenta de
+      la factura, carga una línea por letra con su vencimiento y lleva la
+      diferencia de redondeo a la cuenta **Redondeo**. La factura queda
+      conciliada y marcada como **Canjeado**.
+    imagen: screenshots/05-canje-apuntes.png
+
+  - titulo: Enviar letras a cobranza libre o descuento
+    ruta: Canje ▸ Canje
+    texto: >-
+      El asistente pregunta si se envían **Todas las letras** o una **Por
+      letra**, el **Tipo de letra** (cobranza libre o descuento), la fecha, el
+      banco y el código. Al confirmar se crea el asiento que pasa la letra a la
+      cuenta de ese tipo y se concilia con el asiento del canje.
+    puntos:
+      - Cuando todas las letras tienen banco, código y tipo, el canje pasa a **Bancarizado**.
+      - "**Refinanciar** crea un canje nuevo en borrador con lo adeudado; desde la lista, la acción **Refinanciación masiva** junta varios canjes del mismo socio, diario y moneda."
+    imagen: screenshots/06-asistente-canje.png
+
+  - titulo: Seguir las letras
+    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Letras
+    texto: >-
+      Todas las letras de clientes con socio, banco, código, tipo, cuenta,
+      vencimiento, estado de pago y canje de origen, con búsqueda por socio,
+      diario o factura relacionada.
+    imagen: screenshots/07-letras.png
+
+  - titulo: Ver el estado de canje en las facturas
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    texto: >-
+      La columna opcional **Estado de canje** distingue las facturas ya
+      canjeadas. Desde la factura, el botón **Canje** abre el canje que la
+      canceló.
+    imagen: screenshots/08-facturas-canjeadas.png
+
+funcionalidades:
+  - grupo: Canje
+    items:
+      - Canjes de clientes y de proveedores, numerados CLC / CLP.
+      - "Estados Borrador, Comprobado, Canjeado, Bancarizado y Cancelado, con historial."
+      - Facturas, boletas, notas de débito, liquidaciones y aperturas como documentos de origen.
+      - Generación de N letras por importe total o parcial, con vencimientos escalonados.
+      - Asiento de canje con conciliación de las facturas y línea de redondeo.
+      - Tipo de cambio del canje tomado de las tasas SUNAT registradas.
+  - grupo: Letras en el banco
+    items:
+      - Canje de todas las letras o de una sola a cobranza libre o descuento.
+      - Banco y código por letra; paso automático a Bancarizado.
+      - Cuenta contable por tipo de cuenta, tipo de letra, moneda y compañía.
+  - grupo: Refinanciación y masivos
+    items:
+      - Refinanciación individual con fecha nueva y canje de origen enlazado.
+      - Refinanciación masiva de varios canjes del mismo socio, diario, moneda y compañía.
+      - Canje masivo (botón **Método**) que consolida canjes ya canjeados de un socio.
+      - Vinculación de asientos por referencia para canjes importados o migrados.
+  - grupo: Consulta
+    items:
+      - Listas de letras e historial de canjes masivos por clientes y proveedores.
+      - Filtros de vencidas, por vencer y canjes de hoy, anteriores o futuros.
+      - Estado de canje y acceso al canje desde la factura.
+      - Menús en la app Perú y en Contabilidad ▸ Clientes / Proveedores ▸ Letras.
+
+ejemplos:
+  - titulo: Factura de S/ 1.180,00 en tres letras
+    texto: >-
+      Canje CLC00088 del 10/07/2026, pago total, 3 letras, primer vencimiento
+      10/08/2026 y rango de 30 días. 1.180,00 ÷ 3 = 393,33 por letra:
+    tabla:
+      - [Letra, Vencimiento, Importe, Estado]
+      - [LET-CLI-001, 10/08/2026, "S/ 393,33", "Pagado (enviada a cobranza libre)"]
+      - [LET-CLI-002, 09/09/2026, "S/ 393,33", No pagado]
+      - [LET-CLI-003, 09/10/2026, "S/ 393,33", No pagado]
+    nota: "Las tres letras suman S/ 1.179,99: el céntimo restante va a la cuenta 659901 Redondeo."
+
+  - titulo: Asiento del canje (diario Letras por Cobrar)
+    tabla:
+      - [Cuenta, Etiqueta, Debe, Haber]
+      - [1213000 Por cobrar – en cobranza, DLTV/2026/00002, "—", "1.180,00"]
+      - [1211000 Por cobrar – no emitidas, LET-CLI-001, "393,33", "—"]
+      - [1211000 Por cobrar – no emitidas, LET-CLI-002, "393,33", "—"]
+      - [1211000 Por cobrar – no emitidas, LET-CLI-003, "393,33", "—"]
+      - [659901 Redondeo, Redondeo, "0,01", "—"]
+      - [Total, "", "1.180,00", "1.180,00"]
+
+  - titulo: Qué canjes de la demostración cubren cada caso
+    tabla:
+      - [Canje, Caso, Estado]
+      - [CLC00088, Canje de una factura en 3 letras y cobranza libre de la primera, Canjeado]
+      - [CLC00089, Refinanciación de CLC00088, Borrador]
+      - [CLC00093, Canje masivo que consolida CLC00090 y CLC00092, Canjeado]
+      - [CLP00094, "Proveedor: factura de S/ 2.360,00 en 2 letras de S/ 1.180,00", Canjeado]
+
+configuracion_intro: >-
+  El módulo trae un script de datos de demostración que crea cuentas, diarios,
+  socios y un recorrido completo para validar la instalación.
+configuracion:
+  - Instale el módulo desde Aplicaciones.
+  - "En **Perú ▸ Configuración ▸ Cuentas de la localización ▸ Cuentas de letras** registre las cuentas por tipo de cuenta, tipo de letra y moneda."
+  - Cree diarios generales cuyo nombre contenga «letra» y «cobrar» (clientes) o «letra» y «pagar» (proveedores).
+  - Cree las cuentas **Redondeo** de tipo gasto y de tipo otros ingresos.
+  - Asigne a los usuarios el grupo de **Gestión de letras** que corresponda.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Usa el tipo de cambio compra/venta del
+  módulo de tipo de cambio Perú para los canjes en moneda extranjera.
+
+faq:
+  - pregunta: No me aparece ningún diario al crear el canje.
+    respuesta: >-
+      El campo solo ofrece diarios cuyo nombre contiene «letra» y «cobrar»
+      (clientes) o «letra» y «pagar» (proveedores). Renombre o cree el diario.
+  - pregunta: Al enviar a cobranza libre dice que no hay cuenta configurada.
+    respuesta: >-
+      Falta la fila en **Cuentas de letras** para ese tipo de cuenta, tipo de
+      letra y moneda del canje.
+  - pregunta: ¿Puedo canjear solo una parte de la deuda?
+    respuesta: >-
+      Sí. En **Letras** elija **Pago** parcial e indique el importe; las letras
+      se generan por ese monto y el resto sigue pendiente.
+  - pregunta: El cliente no pagará la segunda letra a tiempo, ¿qué hago?
+    respuesta: >-
+      Use **Refinanciar** con la fecha nueva: se crea un canje en borrador con
+      lo adeudado como documento de origen, para generar letras nuevas.
+  - pregunta: ¿Por qué no puedo poner fecha de mañana al canje?
+    respuesta: >-
+      La fecha de canje no puede ser futura, y el vencimiento de las letras
+      debe ser igual o posterior a la fecha de canje.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "Corrección: en las facturas del canje ya no aparece una columna vacía."
+  - version: 4.20260901
+    fecha: 01/09/2026
+    cambios:
+      - Etiquetas de campos desambiguadas en filtros, agrupaciones y exportaciones.
+  - version: 3.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Letras de cambio como menú propio de la app Perú y cuentas de letras en su configuración.
+  - version: 1.20260731
+    fecha: 02/08/2026
+    cambios:
+      - "Primera versión en Odoo 19: canje, letras masivas, cobranza libre y descuento, refinanciación individual y masiva, canje masivo y vinculación por referencia."
+
+relacionados: [al_l10n_pe_currency, al_account_base, l10n_pe_vat_sunat]

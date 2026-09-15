@@ -1,0 +1,192 @@
+titulo: Gantt de Proyectos — núcleo común
+subtitulo: >-
+  La base de la suite Gantt: lectura y escritura de tareas con los permisos de
+  Proyecto, ruta crítica, líneas base, colores por estado, exportación a Excel
+  y PDF y la librería de diagrama que comparten el backend y el sitio web.
+categoria: Proyectos · Planificación
+etiquetas: [Base de la suite, Permisos de Proyecto, Ruta crítica, Línea base, Excel y PDF, Librería MIT incluida]
+portada: screenshots/04-informe-pdf.png
+
+destacados_intro: >-
+  Módulo técnico sin menú propio: se instala solo al elegir una interfaz y es
+  lo que hace que las dos pinten, calculen y guarden exactamente lo mismo.
+destacados:
+  - icono: "⇄"
+    titulo: Un solo punto de datos
+    texto: >-
+      Proyectos, tareas, dependencias e hitos se leen y se escriben en un único
+      sitio, con un formato independiente de la librería de dibujo.
+  - icono: "🔒"
+    titulo: Permisos de Proyecto
+    texto: >-
+      Todo se lee sin privilegios especiales: mandan las reglas de Proyecto
+      (seguidores, portal, multicompañía). La escritura se comprueba tarea por
+      tarea.
+  - icono: "⚡"
+    titulo: Ruta crítica en el servidor
+    texto: >-
+      Holgura total por tarea con el método del camino crítico, que la edición
+      libre de la librería no incluye.
+  - icono: "◫"
+    titulo: Líneas base inmutables
+    texto: >-
+      Fotos de fechas y avance que no se pueden editar, con el desvío en días de
+      cada tarea.
+  - icono: "▦"
+    titulo: Excel y PDF propios
+    texto: >-
+      Los dos archivos se componen en su servidor desde la misma tabla, sin
+      enviar la planificación a servicios externos.
+  - icono: "MIT"
+    titulo: Librería incluida
+    texto: >-
+      dhtmlxGantt 10.0.1 (licencia MIT) va dentro del módulo y solo se descarga
+      al abrir el diagrama: no pesa en el resto de Odoo.
+
+contexto:
+  titulo: Por qué un módulo base
+  texto: >-
+    La suite ofrece el Gantt en dos sitios —el backend y una página del sitio
+    web— y un asistente de IA opcional. Si cada interfaz consultara y guardara
+    las tareas por su cuenta, acabarían mostrando cifras distintas o saltándose
+    permisos.
+
+
+    Este módulo concentra la lógica: qué campos de fecha usar, qué tareas ve y
+    puede mover cada usuario, cómo se reprograman las sucesoras, la ruta
+    crítica, las líneas base, los colores y los informes. Las interfaces solo
+    dibujan.
+  nota: >-
+    **Se adapta a su edición.** Detecta si existen fechas de planificación
+    (Enterprise) o solo fecha límite (Community). Sin fecha de inicio, la calcula
+    hacia atrás desde el fin con una duración por defecto de 8 horas.
+
+pasos_intro: >-
+  Lo que aporta el módulo base, visto desde la aplicación Gantt con los
+  proyectos de demostración «[DEMO Gantt]».
+pasos:
+  - titulo: Colores de barra por estado
+    ruta: Gantt ▸ Configuración ▸ Colores por estado
+    texto: >-
+      Una línea por estado de la tarea con su **Color de la barra** y **Color
+      del texto**. Se instalan los seis estados de Odoo 19 y se pueden
+      recolorear, reordenar, archivar o definir por compañía. Los usuarios del
+      Gantt los leen; solo el administrador del Gantt los cambia.
+    imagen: screenshots/01-colores.png
+
+  - titulo: Dos niveles de acceso
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Usuarios ▸ Permisos de acceso
+    texto: >-
+      En la sección **Servicios**, **Gantt de Proyectos** ofrece **Usuario**
+      (consulta y edita según sus permisos de Proyecto) y **Administrador**
+      (además configura colores). Ambos son solo para usuarios internos; los
+      administradores de Proyecto reciben el acceso al instalar.
+    imagen: screenshots/02-permisos.png
+
+  - titulo: El diagrama que dibujan las interfaces
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Escala Día
+    texto: >-
+      La configuración compartida de la librería define columnas, escalas,
+      tooltip, código EDT, búsqueda y sombreado de días no laborables según el
+      calendario de trabajo del proyecto: en la escala Día, sábados y domingos
+      aparecen en gris.
+    imagen: screenshots/03-escala-dia.png
+
+  - titulo: Informe PDF del diagrama
+    ruta: Gantt ▸ Diagrama de Gantt ▸ botón PDF
+    texto: >-
+      El informe **Diagrama de Gantt** (A3 apaisado) dibuja EDT, tarea indentada,
+      fechas y una barra por periodo con el color del estado, más la leyenda y
+      la marca de ruta crítica. El Excel sale de la misma tabla, con las hojas
+      **Tareas** y **Diagrama**.
+    puntos:
+      - La escala es la que está en pantalla y se agranda sola si el plan no cabe en 60 columnas.
+      - "El informe también está en **Imprimir** del proyecto."
+    imagen: screenshots/04-informe-pdf.png
+
+funcionalidades:
+  - grupo: Datos
+    items:
+      - Lectura normalizada de proyectos, tareas, dependencias, hitos y actividades pendientes.
+      - Detección automática de los campos de inicio, fin y avance, con sobreescritura por parámetro.
+      - "Tareas sin fecha de fin contadas siempre; opcionalmente listadas sin barra."
+      - Tareas cuyo padre queda fuera del filtro mostradas como raíz, sin desaparecer.
+      - Límite de tareas por consulta (2.000 por defecto, máximo 20.000) con aviso explícito de truncado.
+      - Valores de filtros (personas, estados, etapas, prioridades, etiquetas) servidos a las interfaces.
+  - grupo: Escritura
+    items:
+      - "Cambios de fechas, nombre, avance, padre, etapa, personas, prioridad, horas y etiquetas; alta y baja de tareas y dependencias."
+      - Permiso de escritura y borrado comprobado tarea por tarea con las reglas de Proyecto.
+      - Reprogramación en cadena de sucesoras conservando la duración, con tope de 500 movimientos.
+      - Ciclos de dependencias rechazados por la validación estándar de Proyecto.
+  - grupo: Análisis
+    items:
+      - Ruta crítica con holgura total por tarea y resumen del plan.
+      - Líneas base inmutables con desvío en días por tarea.
+      - Calendario laboral y feriados del proyecto para sombrear el diagrama.
+  - grupo: Configuración y salida
+    items:
+      - Colores por estado por compañía o globales.
+      - Grupos «Usuario» y «Administrador» de Gantt de Proyectos.
+      - Exportación a Excel y PDF generada en el servidor.
+      - Librería dhtmlxGantt 10.0.1 (MIT) cargada solo al abrir el diagrama.
+
+ejemplos:
+  - titulo: Qué campos de fecha usa
+    tabla:
+      - [Concepto, Campo usado, Si no existe]
+      - [Inicio, "Fecha de planificación (Enterprise)", "Se calcula desde el fin menos 8 horas"]
+      - [Fin, Fecha límite, "La tarea no se dibuja y se cuenta como «sin fecha»"]
+      - [Avance, "Avance (con Partes de horas)", "Se deriva del estado: cerrada = 100 %"]
+    nota: >-
+      Para forzar otros campos, cree el parámetro del sistema `al_gantt.field_map`
+      con un JSON, por ejemplo `{"date_start": "x_fecha_inicio"}`. Un campo
+      inexistente se ignora y se mantiene la detección automática.
+
+  - titulo: Parámetros del sistema
+    tabla:
+      - [Parámetro, Por defecto, Para qué]
+      - [al_gantt.task_limit, "2000", "Tareas por consulta (tope 20000)"]
+      - [al_gantt.default_duration_hours, "8", Duración supuesta de una tarea sin inicio]
+      - [al_gantt.field_map, "(vacío)", Sobreescribir los campos de fecha y avance]
+
+configuracion:
+  - "No hace falta instalarlo a mano: se instala con **Gantt de Proyectos — Backend** o **— Website**."
+  - "Revise los accesos en la ficha del usuario (**Gantt de Proyectos: Usuario / Administrador**)."
+  - Ajuste los colores por estado desde el menú de configuración de la aplicación Gantt.
+  - "Opcional: cree los parámetros `al_gantt.task_limit`, `al_gantt.default_duration_hours` o `al_gantt.field_map` en **Ajustes ▸ Técnico ▸ Parámetros del sistema**."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. No necesita librerías de Python ni de
+  JavaScript adicionales: la librería de diagrama viene incluida.
+
+faq:
+  - pregunta: ¿Instalar solo este módulo muestra algo?
+    respuesta: >-
+      No hay menú propio. Aporta los colores, los grupos y el informe, y queda
+      listo para que una interfaz (backend o sitio web) dibuje el diagrama.
+  - pregunta: ¿Un usuario de portal puede ver el Gantt?
+    respuesta: >-
+      No. Los datos se niegan a usuarios de portal o públicos y a los internos
+      sin el grupo del Gantt.
+  - pregunta: ¿Por qué no se usa la exportación de la propia librería?
+    respuesta: >-
+      La exportación a PDF y Excel de dhtmlxGantt envía el plan a un servicio
+      del fabricante. Aquí ambos archivos se generan en su servidor.
+  - pregunta: ¿Qué pasa si mis tareas no tienen fecha de inicio?
+    respuesta: >-
+      Se dibujan igual: el inicio se calcula hacia atrás desde la fecha límite
+      con la duración por defecto y se marca como inferido.
+  - pregunta: ¿Se puede desactivar la escritura?
+    respuesta: >-
+      Sí, con los permisos de Proyecto: quien solo puede leer una tarea la ve
+      bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
+
+novedades:
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 18/08/2026
+    cambios:
+      - "Primera versión: contrato de datos y de escritura, mapeo de campos, colores por estado, seguridad, ruta crítica, líneas base, calendario laboral, exportación a Excel y PDF y librería dhtmlxGantt 10.0.1."
+
+relacionados: [al_project_gantt_backend, al_project_gantt_website, al_project_gantt_ai]

@@ -1,0 +1,133 @@
+titulo: Ficha completa del módulo en Aplicaciones
+subtitulo: >-
+  Un acceso directo, en la tarjeta de cada módulo de la suite, a su ficha
+  completa: la descripción con su diseño, capturas y ejemplos, en una pestaña
+  nueva.
+categoria: Base · Aplicaciones
+etiquetas: [Aplicaciones, Ficha del módulo, Kanban, Sin configuración]
+portada: screenshots/01-aplicaciones.png
+
+destacados_intro: >-
+  Un cambio pequeño en la pantalla de Aplicaciones que ahorra buscar la
+  documentación de cada módulo.
+destacados:
+  - icono: "↗"
+    titulo: Botón en la tarjeta
+    texto: >-
+      En los módulos con ficha, el botón de la tarjeta pasa a ser **Ver la ficha
+      completa del módulo** y la abre en una pestaña nueva.
+  - icono: "⋮"
+    titulo: También en el menú
+    texto: >-
+      El menú de la tarjeta suma la misma opción, antes de **Más información**,
+      que sigue llevando a la web del autor.
+  - icono: "="
+    titulo: Odoo no cambia
+    texto: >-
+      Los módulos sin ficha, incluidos los de Odoo, conservan sus botones de
+      siempre.
+  - icono: "0"
+    titulo: Sin configuración
+    texto: >-
+      Solo depende de `base`. Se instala y funciona; no añade menús, ajustes ni
+      datos.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La descripción de un módulo (`static/description/index.html`) se ve en su
+    formulario de Aplicaciones, pero allí Odoo la sanea: descarta las hojas de
+    estilo, los gráficos vectoriales y cualquier cosa que considere insegura.
+    La misma ficha, abierta directamente, se ve completa.
+
+
+    Sin este módulo, llegar a la ficha completa obliga a abrir el formulario
+    del módulo y buscar el enlace, o a conocer la dirección. Con él, está a un
+    clic desde la tarjeta del kanban.
+  nota: >-
+    **Qué cuenta como ficha.** Solo los módulos cuya descripción lleva la marca
+    `al-ficha-link`, que el generador de fichas de la suite añade junto al
+    enlace. La descripción genérica que traen muchos módulos de Odoo no la
+    tiene y no recibe el botón.
+
+pasos_intro: >-
+  Todo ocurre en Aplicaciones; basta con tener el módulo instalado.
+pasos:
+  - titulo: Tarjetas con y sin ficha
+    ruta: Aplicaciones
+    texto: >-
+      Quite el filtro **Aplicaciones** para ver todos los módulos. Las tarjetas
+      de la suite muestran **Ver la ficha completa del módulo**; las de Odoo y
+      las de módulos sin ficha mantienen **Más información** o **Información
+      del módulo**.
+    imagen: screenshots/01-aplicaciones.png
+    pie: Búsqueda «Perú» en Aplicaciones.
+
+  - titulo: La opción en el menú de la tarjeta
+    ruta: Aplicaciones ▸ ⋮ (menú de la tarjeta)
+    texto: >-
+      El menú de la tarjeta añade **Ver la ficha completa del módulo** entre
+      **Información del módulo** y **Más información**.
+    imagen: screenshots/02-menu-tarjeta.png
+
+  - titulo: La ficha completa, en una pestaña nueva
+    ruta: Aplicaciones ▸ Ver la ficha completa del módulo
+    texto: >-
+      Se abre la página `/<módulo>/static/description/index.html` con todo su
+      diseño: portada, destacados, recorrido con capturas, ejemplos, preguntas
+      frecuentes y novedades.
+    imagen: screenshots/03-ficha-completa.png
+    pie: Ficha completa del módulo de retenciones del IGV.
+
+  - titulo: Y la versión dentro de Aplicaciones
+    ruta: Aplicaciones ▸ Información del módulo
+    texto: >-
+      El formulario del módulo sigue mostrando la descripción saneada. Las
+      fichas de la suite traen además, al principio, su propio enlace **Ver la
+      ficha completa del módulo**.
+    imagen: screenshots/04-ficha-en-aplicaciones.png
+
+funcionalidades:
+  - Botón **Ver la ficha completa del módulo** en el pie de la tarjeta, en lugar de **Más información** e **Información del módulo**.
+  - Opción **Ver la ficha completa del módulo** en el menú de la tarjeta; **Más información** se conserva.
+  - La ficha se abre en una pestaña nueva.
+  - Detección por la marca `al-ficha-link` en `static/description/index.html`, con caché para no leer el archivo en cada tarjeta.
+  - Los módulos sin ficha o fuera de las rutas de módulos no cambian.
+  - Compatible con la importación de módulos, que reescribe la opción **Información del módulo**.
+
+ejemplos:
+  - titulo: Qué botón muestra cada tarjeta
+    tabla:
+      - [Módulo, "¿Tiene ficha?", Botón del pie de la tarjeta]
+      - [PE - Base Contabilidad (AL), Sí, Ver la ficha completa del módulo]
+      - [Perú - Contabilidad (Odoo), No (con web del autor), Más información]
+      - [EDI para Perú (Odoo), No (sin web del autor), Información del módulo]
+
+configuracion:
+  - Instale el módulo desde Aplicaciones.
+  - "Para que un módulo nuevo de la suite ofrezca su ficha, genere su descripción con el generador de fichas (`docs/fichas/generar_fichas.py`), que añade el enlace y la marca."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. La caché de la ficha se renueva al
+  reiniciar el servidor: una ficha recién generada puede tardar en ofrecer el
+  botón hasta entonces.
+
+faq:
+  - pregunta: Generé la ficha de un módulo y su tarjeta no muestra el botón
+    respuesta: >-
+      Compruebe que el `index.html` lleva la marca `al-ficha-link` (la añade el
+      generador). La detección se guarda en caché por módulo: reinicie el
+      servidor para que se vuelva a leer.
+  - pregunta: ¿Dónde quedó «Más información» en los módulos con ficha?
+    respuesta: >-
+      En el menú de la tarjeta (⋮), junto a la nueva opción.
+  - pregunta: ¿Cambia algo en los módulos de Odoo?
+    respuesta: >-
+      No. Sus descripciones no llevan la marca, así que sus tarjetas se ven
+      como siempre.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - Primera versión: ficha completa desde la tarjeta y desde el menú de la tarjeta en Aplicaciones.
+
+relacionados: [al_account_base]

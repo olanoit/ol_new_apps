@@ -1,0 +1,223 @@
+titulo: Comprobantes electrónicos impresos
+subtitulo: >-
+  La representación impresa de la factura, la boleta y las notas peruanas en
+  A4 y en ticket de 80 mm: desglose tributario SUNAT, monto en letras,
+  detracción, cuotas de crédito y el QR oficial extraído del XML firmado.
+categoria: Localización Perú · Facturación electrónica
+etiquetas: [A4 SUNAT, Ticket 80 mm, QR del XML firmado, Op. gravadas / exoneradas / inafectas, ICBPER, Detracción SPOT, Cuotas de crédito]
+portada: screenshots/03-a4-detraccion.png
+
+destacados_intro: >-
+  No es solo una plantilla: añade a la factura los importes que la
+  representación impresa debe mostrar por separado y los dibuja en dos
+  formatos listos para entregar al cliente.
+destacados:
+  - icono: "A4"
+    titulo: Formato A4 con recuadro SUNAT
+    texto: >-
+      Logo, datos de la empresa y el recuadro con RUC, tipo y número del
+      comprobante; tarjeta del cliente, fechas, forma de pago, moneda y tipo
+      de cambio cuando la factura no está en soles.
+  - icono: "80"
+    titulo: Ticket de 80 mm
+    texto: >-
+      La misma información condensada en un formato de papel propio de 80 mm
+      de ancho, pensado para impresoras térmicas.
+  - icono: "QR"
+    titulo: QR oficial, no recalculado
+    texto: >-
+      El código se toma del XML firmado —con el hash de la firma digital—
+      mediante el método nativo de la localización. Antes del envío no se
+      imprime un QR falso.
+  - icono: "%"
+    titulo: Desglose tributario SUNAT
+    texto: >-
+      Op. gravadas, exoneradas e inafectas, ISC, IGV e ICBPER se clasifican
+      por código de tributo y solo se imprimen las filas con importe.
+  - icono: "S/"
+    titulo: Detracción y cuotas
+    texto: >-
+      Bloque SPOT con bien o servicio, porcentaje, cuenta del Banco de la
+      Nación y monto; en ventas al crédito, el cuadro de cuotas con su
+      vencimiento.
+  - icono: "✍"
+    titulo: Firmas, eslogan y cuentas
+    texto: >-
+      Eslogan bajo los datos de la empresa, bloque opcional de firma y
+      «recibido conforme», y la tabla de cuentas bancarias de la compañía.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El comprobante electrónico que se entrega al cliente debe mostrar lo que
+    el XML declara: RUC y número del emisor, el detalle de **operaciones
+    gravadas, exoneradas e inafectas**, el IGV y el ICBPER por separado, el
+    **importe en letras**, la leyenda de detracción cuando corresponde y un
+    **código QR** que permita verificarlo en SUNAT.
+
+
+    La factura estándar de Odoo solo distingue subtotal, impuestos y total.
+    Este módulo calcula y guarda en cada comprobante los importes por código
+    de tributo SUNAT (1000 IGV, 1016 IVAP, 2000 ISC, 7152 ICBPER, 9996 otros,
+    9997 exonerado, 9998 inafecto) y los imprime en A4 y en ticket.
+  nota: >-
+    **Reutiliza la localización nativa.** El QR y el monto en letras salen de
+    `l10n_pe_edi`; el módulo no firma ni envía nada. Mientras el comprobante
+    no tenga XML firmado, el recuadro del QR no aparece y la información
+    legal ocupa todo el ancho.
+
+pasos_intro: >-
+  Recorrido con facturas electrónicas reales de la base de demostración, ya
+  enviadas y con su XML firmado.
+pasos:
+  - titulo: Imprimir el comprobante desde la factura
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ ⚙ ▸ Imprimir
+    texto: >-
+      El botón **Imprimir** de la factura genera directamente el formato
+      **CPE A4**. En el menú de acciones, **Imprimir** ofrece además **CPE
+      Ticket**, junto a los PDF estándar de Odoo.
+    puntos:
+      - El archivo se nombra con el número del comprobante y el nombre del cliente.
+      - Ambos formatos sirven para facturas, boletas y notas de crédito o débito.
+    imagen: screenshots/02-imprimir.png
+
+  - titulo: Formato A4 con detracción y QR
+    texto: >-
+      Encabezado con el recuadro SUNAT, datos del cliente y del documento,
+      detalle con código, cantidad, unidad y precio, y el **monto en letras**
+      junto a los totales. Si la factura está sujeta a detracción, se añade
+      el bloque **Información de la detracción — SPOT**. Al pie, la
+      información legal con el **código QR** y las cuentas bancarias de la
+      empresa.
+    imagen: screenshots/03-a4-detraccion.png
+    pie: "Factura F001-00000002 de S/ 2.301,00 con detracción del 12 % (código 022): S/ 276,00."
+
+  - titulo: Desglose de operaciones exoneradas e ICBPER
+    texto: >-
+      Los totales muestran solo las filas con importe. En esta factura
+      conviven una línea gravada con IGV, una bolsa plástica con ICBPER y un
+      libro exonerado: cada importe va en su fila.
+    puntos:
+      - Las líneas sin impuesto se suman a **Op. exoneradas**.
+      - En facturas en dólares el desglose sale en la moneda del documento y, si hay tasa registrada en la fecha de la factura, se imprime el tipo de cambio de venta.
+    imagen: screenshots/04-a4-exonerada.png
+
+  - titulo: Ticket de 80 mm
+    texto: >-
+      La versión de rollo lleva logo, RUC, tipo y número, cliente, fechas,
+      forma de pago, detalle, desglose tributario, monto en letras,
+      detracción (si aplica), usuario, fecha y hora, y el QR.
+    imagen: screenshots/05-ticket.png
+    pie: El mismo comprobante F002-00000001 en formato ticket.
+
+  - titulo: Configurar firma y eslogan
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Comprobantes electrónicos
+    texto: >-
+      Marque **Firma y eslogan en el reporte** para añadir al A4 el bloque de
+      firma y sello del responsable y el de **Recibido conforme**. El
+      **Eslogan** se imprime bajo los datos de la empresa y el
+      **Representante** queda registrado en la compañía.
+    imagen: screenshots/01-ajustes.png
+
+funcionalidades:
+  - grupo: Formato A4
+    items:
+      - Recuadro SUNAT con RUC, tipo de comprobante y número.
+      - Cliente con documento, dirección, forma de pago (contado o crédito), pedido de venta y vendedor.
+      - Fechas de emisión y vencimiento, condición de pago, moneda y tipo de cambio de venta en facturas en moneda extranjera.
+      - Columna de descuento solo cuando alguna línea lo tiene, y fila de descuento global.
+      - Monto en letras, glosa y leyenda EDI del comprobante.
+      - Bloque de detracción SPOT y cuadro de cuotas de crédito.
+      - Información legal con QR oficial, firmas opcionales y cuentas bancarias.
+  - grupo: Ticket de 80 mm
+    items:
+      - Formato de papel propio de 80 mm de ancho.
+      - Referencia al documento modificado en notas de crédito y débito.
+      - Detracción, usuario y fecha y hora de emisión.
+  - grupo: Datos de la factura
+    items:
+      - "Importes por código de tributo SUNAT almacenados en la factura: base, IGV, ISC, IVAP, ICBPER, exonerado, inafecto y otros tributos."
+      - Desglose en la moneda del documento, también en notas de crédito.
+      - Vínculo de la factura con su orden de venta.
+      - Marca de crédito según el término de pago.
+  - grupo: Menú
+    items:
+      - "Certificados digitales accesibles desde **Perú ▸ Configuración ▸ Comprobantes electrónicos**."
+
+ejemplos_intro: Cifras tomadas de las facturas de la base de demostración.
+ejemplos:
+  - titulo: Desglose de la factura F002-00000001
+    texto: >-
+      Tres líneas con tratamiento distinto. La bolsa plástica lleva IGV y el
+      ICBPER de S/ 0,50; el libro está exonerado.
+    tabla:
+      - [Producto, Cantidad, Precio, Tratamiento, Fila en el comprobante]
+      - [Gaseosa 500ml, "2", "S/ 3,50", IGV 18 %, "Op. gravadas S/ 7,00"]
+      - [Bolsa plástica, "1", "S/ 0,20", IGV 18 % + ICBPER, "Op. gravadas S/ 0,20 · ICBPER S/ 0,50"]
+      - [Libro educativo, "1", "S/ 25,00", Exonerado, "Op. exoneradas S/ 25,00"]
+    nota: "Op. gravadas S/ 7,20 + IGV S/ 1,30 + Op. exoneradas S/ 25,00 + ICBPER S/ 0,50 = importe total S/ 34,00."
+
+  - titulo: Factura con detracción F001-00000002
+    tabla:
+      - [Concepto, Importe]
+      - [Op. gravadas, "S/ 1.950,00"]
+      - [IGV (18 %), "S/ 351,00"]
+      - [Importe total, "S/ 2.301,00"]
+      - ["Detracción 022 Otros servicios empresariales (12 %)", "S/ 276,00"]
+    nota: El monto de la detracción lo calcula el módulo de detracciones redondeado a soles enteros; este módulo lo imprime.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; requiere la facturación electrónica peruana (`l10n_pe_edi`).
+  - Cargue el logo, la dirección, el teléfono y el correo de la compañía; salen en el encabezado y el pie.
+  - Registre las cuentas bancarias en el contacto de la compañía para la tabla de cuentas; la del **Banco de la Nación** se imprime en el bloque de detracción.
+  - "En **Perú ▸ Configuración ▸ Ajustes ▸ Comprobantes electrónicos** active la firma si la necesita y escriba el eslogan."
+  - Configure los certificados digitales en **Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Certificados digitales**.
+ediciones: [enterprise]
+requisitos_nota: >-
+  Requiere Odoo Enterprise: se apoya en la facturación electrónica peruana
+  (`l10n_pe_edi`). El módulo no firma ni envía comprobantes: el XML y su
+  envío los resuelve esa localización.
+
+faq:
+  - pregunta: ¿Por qué el comprobante no muestra el código QR?
+    respuesta: >-
+      El QR se extrae del XML firmado. Mientras la factura no se haya enviado
+      y no tenga ese XML, el recuadro no se imprime, a propósito: un QR sin el
+      hash de la firma no permite verificar el comprobante.
+  - pregunta: ¿Cuándo aparece el cuadro de cuotas?
+    respuesta: >-
+      Cuando la factura tiene un término de pago con líneas: la forma de pago
+      pasa a **CRÉDITO** y se listan las cuotas con fecha y monto. Sin término
+      de pago, se imprime **CONTADO**.
+  - pregunta: ¿Por qué no sale la fila de ISC o de exoneradas?
+    respuesta: >-
+      El desglose solo imprime las filas con importe distinto de cero. El IGV
+      y el importe total se muestran siempre.
+  - pregunta: ¿Qué botón usa el formato A4?
+    respuesta: >-
+      El botón **Imprimir** de la factura. El ticket se elige desde el menú de
+      acciones ▸ Imprimir ▸ **CPE Ticket**.
+  - pregunta: ¿Incluye la guía de remisión?
+    respuesta: >-
+      No. La guía de remisión tiene su propio reporte en el módulo
+      `al_l10n_pe_delivery_guide_report`, instalable por separado.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "Certificados digitales dentro de la sección **Comprobantes electrónicos** de la configuración de la app Perú."
+  - version: 8.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Los certificados digitales, antes solo en Contabilidad, también desde la app Perú.
+  - version: 7.20260827
+    fecha: 27/08/2026
+    cambios:
+      - El descuento global vuelve a imprimirse; en Odoo 19 salía siempre en cero.
+      - Pruebas del desglose de IGV, exonerado, inafecto e ICBPER, moneda extranjera, notas de crédito, cuotas y descuento.
+  - version: 6.20260719
+    fecha: 25/07/2026
+    cambios:
+      - "Versión para Odoo 19: formatos A4 y ticket, QR del XML firmado, monto en letras nativo y desglose tributario almacenado."
+
+relacionados: [al_l10n_pe_delivery_guide_report, al_l10n_pe_detraction, al_l10n_pe_edi_pos, al_l10n_pe_currency, al_account_base]

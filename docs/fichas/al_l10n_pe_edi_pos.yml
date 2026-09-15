@@ -1,0 +1,212 @@
+titulo: Boleta y factura electrónica en el TPV
+subtitulo: >-
+  La facturación electrónica peruana en la caja: el cajero elige recibo,
+  boleta o factura y su serie en un solo diálogo, cada tipo se registra en
+  su diario y el ticket sale con el formato del comprobante SUNAT.
+categoria: Localización Perú · Punto de venta
+etiquetas: [Boleta electrónica, Factura electrónica, Serie por caja, Diario por tipo, Ticket CPE, Emisión retenida]
+portada: screenshots/03-comprobante.png
+
+destacados_intro: >-
+  Pensado para cajas con mucho movimiento: el tipo de comprobante se decide en
+  la pantalla de pago y el resto lo resuelve el sistema.
+destacados:
+  - icono: "B/F"
+    titulo: Un botón, tres opciones
+    texto: >-
+      En la pantalla de pago, un único botón abre el diálogo con **Recibo**,
+      **Boleta electrónica** (por defecto) y **Factura electrónica**.
+  - icono: "★"
+    titulo: Serie fija por caja
+    texto: >-
+      Elija la serie del comprobante en el mismo diálogo y márquela con la
+      estrella para que se aplique sola en cada venta de esa caja.
+  - icono: "RUC"
+    titulo: Factura solo con RUC
+    texto: >-
+      La factura exige un cliente con RUC de 11 dígitos: si falta, se abre la
+      selección de cliente y el cobro se bloquea con un aviso.
+  - icono: "📒"
+    titulo: Diario por tipo de documento
+    texto: >-
+      Cada TPV tiene su diario de boletas y su diario de facturas; la factura
+      contable de la orden se crea en el que corresponde.
+  - icono: "🧾"
+    titulo: Ticket con formato CPE
+    texto: >-
+      RUC, tipo y número del comprobante, desglose de gravadas, exoneradas,
+      inafectas, ICBPER e IGV, importe en letras y QR de representación
+      impresa.
+  - icono: "⏸"
+    titulo: Emisión a SUNAT retenida
+    texto: >-
+      Con «Emitir a SUNAT: No» el comprobante se genera pero no se envía; otro
+      usuario lo libera desde el backend desmarcando una casilla.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En Perú cada venta de la caja debe respaldarse con un comprobante de pago:
+    **boleta de venta** para el consumidor final y **factura** cuando el
+    cliente tiene RUC, cada una con su serie (B### o F###) y su numeración.
+
+
+    El punto de venta estándar solo ofrece un interruptor de «factura» y un
+    único diario. Este módulo lleva la elección boleta / factura / recibo y la
+    serie a la pantalla de pago, valida el RUC antes de cobrar, separa los
+    diarios y convierte el ticket en la representación impresa del
+    comprobante.
+  nota: >-
+    **Sin esperar a SUNAT.** El QR del ticket sigue la R.S. 018-2005/SUNAT
+    (RUC, tipo, serie, número, IGV, total, fecha y documento del cliente) y
+    está disponible en cuanto la factura se publica, sin esperar la
+    constancia de recepción.
+
+pasos_intro: >-
+  Recorrido con el TPV «DEMO TPV Vendedores» y una venta de S/ 34,00 con
+  gaseosas, una bolsa plástica y un libro exonerado.
+pasos:
+  - titulo: Configurar los diarios del TPV
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes ▸ Comprobantes electrónicos (Perú)
+    texto: >-
+      Elija el **Diario de boletas** y el **Diario de facturas** de cada TPV.
+      Con los dos configurados se activa el flujo de comprobantes en la caja;
+      las series disponibles son las publicadas en cada diario.
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: El botón del comprobante en la pantalla de pago
+    ruta: TPV ▸ Pago
+    texto: >-
+      Junto a los botones de cliente y vendedor aparece el botón del
+      comprobante, que muestra el tipo elegido y su serie. Con el flujo activo
+      se oculta el interruptor nativo de factura, para que exista un solo
+      botón.
+    imagen: screenshots/02-pantalla-pago.png
+
+  - titulo: Elegir tipo, serie y emisión
+    ruta: TPV ▸ Pago ▸ Boleta electrónica
+    texto: >-
+      El diálogo **Comprobante** ofrece Recibo, Boleta electrónica y Factura
+      electrónica. Para boleta y factura se elige la **Serie del
+      comprobante** y se decide **Emitir a SUNAT**.
+    puntos:
+      - La estrella fija la serie de esa caja y ese tipo; se guarda en el navegador de la caja.
+      - Si la caja tiene una sola serie para el tipo, se aplica sola.
+      - "**Recibo** emite un ticket simple, sin comprobante electrónico ni factura contable."
+    imagen: screenshots/03-comprobante.png
+    pie: Boleta con la serie B002 y la emisión a SUNAT retenida.
+
+  - titulo: Factura electrónica
+    texto: >-
+      Al elegir factura cambian las series (F001, F002) y, si la orden no
+      tiene cliente, se abre la selección. Si el cliente no tiene RUC válido se
+      abre su ficha para completarlo; al validar el pago sin RUC aparece el
+      aviso **Factura electrónica** y el cobro no procede.
+    puntos:
+      - Con series configuradas, **Confirmar** se habilita cuando se elige una.
+    imagen: screenshots/04-factura.png
+
+  - titulo: El ticket con formato de comprobante
+    ruta: TPV ▸ Validar
+    texto: >-
+      Al validar, toda venta con boleta o factura se factura automáticamente y
+      el recibo muestra encabezado con RUC, **BOLETA DE VENTA ELECTRÓNICA** y
+      su número, cliente con su documento, detalle, desglose tributario,
+      importe en letras, pagos, usuario y el QR.
+    puntos:
+      - Los importes del desglose salen de la factura publicada.
+      - "Con «Emitir a SUNAT: No» no aparece el aviso de problema de procesamiento EDI: la ausencia de datos es deliberada."
+    imagen: screenshots/05-ticket.png
+    pie: "Boleta B002-00000004: Op. gravadas S/ 7,20, exoneradas S/ 25,00, ICBPER S/ 0,50 e IGV S/ 1,30."
+
+  - titulo: La orden en el backend
+    ruta: Punto de venta ▸ Órdenes ▸ Órdenes
+    texto: >-
+      La orden guarda el **Tipo de comprobante (PE)**, la **Serie CPE** elegida
+      en caja y la marca **Emitir a SUNAT**.
+    imagen: screenshots/06-orden.png
+
+  - titulo: Liberar una boleta retenida
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ pestaña Otra información
+    texto: >-
+      El comprobante emitido con «Emitir a SUNAT: No» lleva marcada la casilla
+      **Emisión SUNAT retenida**: ni el proceso automático ni el botón
+      **Procesar ahora** lo envían. Desmarque la casilla para liberarlo; lo
+      enviará el siguiente proceso automático o el botón.
+    imagen: screenshots/07-boleta-retenida.png
+
+funcionalidades:
+  - grupo: En la caja
+    items:
+      - Botón único del comprobante con el tipo y la serie elegidos.
+      - Diálogo con Recibo, Boleta electrónica (por defecto) y Factura electrónica.
+      - Selección de serie por tipo y serie fija por caja con la estrella.
+      - Interruptor «Emitir a SUNAT» para retener el envío.
+      - Validación del RUC de 11 dígitos al elegir factura y al validar el pago.
+      - Facturación automática de toda venta con boleta o factura.
+  - grupo: Contabilidad
+    items:
+      - Diario de boletas y diario de facturas por TPV.
+      - Factura contable en el diario del tipo elegido y numerada con la serie de la caja.
+      - Casilla **Emisión SUNAT retenida** que excluye el comprobante del envío.
+      - "Tipo de comprobante, serie y emisión visibles en la orden del backend."
+  - grupo: Ticket
+    items:
+      - Formato del ticket de 80 mm de los comprobantes impresos.
+      - "Tipo de documento: boleta, factura, nota de crédito o débito, o ticket de venta para el recibo."
+      - Desglose de Op. gravadas, exoneradas, inafectas, ICBPER e IGV, importe en letras y pagos con vuelto.
+      - QR de representación impresa según la R.S. 018-2005/SUNAT.
+      - Recibo estándar del TPV para compañías no peruanas, cajas sin diarios configurados o recibos simples.
+
+ejemplos:
+  - titulo: Qué ocurre según lo elegido en caja
+    tabla:
+      - [Elección, "¿Factura contable?", Diario, Requisito, Ticket]
+      - [Recibo, "No", "—", "—", Recibo estándar]
+      - [Boleta electrónica, "Sí", Diario de boletas, Ninguno (DNI opcional), BOLETA DE VENTA ELECTRÓNICA]
+      - [Factura electrónica, "Sí", Diario de facturas, Cliente con RUC de 11 dígitos, FACTURA ELECTRÓNICA]
+  - titulo: Contenido del QR de la boleta de demostración
+    texto: >-
+      Nueve campos separados por `|`: RUC del emisor, tipo de comprobante,
+      serie, número, IGV, total, fecha, tipo y número de documento del
+      cliente.
+    codigo: |
+      20512528458|03|B002|00000004|1.30|34.00|2026-09-14|1|00000000
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; requiere el punto de venta peruano y la facturación electrónica.
+  - Cree o revise los diarios de venta de boletas y de facturas con sus series CPE publicadas.
+  - "En **Punto de venta ▸ Configuración ▸ Ajustes**, sección Contabilidad, elija el diario de boletas y el de facturas de cada TPV."
+  - Abra la sesión y, en la primera venta, fije con la estrella la serie de la caja.
+ediciones: [enterprise]
+requisitos_nota: >-
+  Requiere Odoo Enterprise por la facturación electrónica peruana del punto
+  de venta (`l10n_pe_edi_pos`).
+
+faq:
+  - pregunta: No aparece el botón del comprobante en la pantalla de pago.
+    respuesta: >-
+      El TPV necesita los dos diarios (boletas y facturas) y la compañía debe
+      ser peruana. Sin ellos se usa el interruptor de factura estándar.
+  - pregunta: ¿Por qué no puedo confirmar el diálogo?
+    respuesta: >-
+      El diario del tipo elegido tiene series publicadas y aún no se eligió
+      ninguna. Elija una o fíjela con la estrella.
+  - pregunta: ¿La serie fija se comparte entre cajas?
+    respuesta: >-
+      No. Se guarda por caja y por tipo en el navegador de esa caja.
+  - pregunta: ¿Cómo envío a SUNAT una boleta retenida?
+    respuesta: >-
+      Abra la factura, pestaña Otra información, desmarque **Emisión SUNAT
+      retenida** y use **Procesar ahora** o espere al proceso automático.
+  - pregunta: ¿Qué pasa al facturar las órdenes al cierre de la sesión?
+    respuesta: >-
+      Si se facturan varias órdenes juntas, se usa el diario estándar del TPV,
+      porque pueden mezclar boletas y facturas.
+
+novedades:
+  - fecha: 25/07/2026
+    cambios:
+      - "Versión para Odoo 19: diálogo de comprobante con serie fija por caja, diario por tipo, validación de RUC, emisión retenida y ticket con formato CPE."
+
+relacionados: [al_l10n_pe_invoice, al_account_move_name_sequence, al_pos_vendedor, al_pos_product_view]

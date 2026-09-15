@@ -1,0 +1,312 @@
+titulo: Beneficios sociales de planilla
+subtitulo: >-
+  CTS, gratificaciones, renta de 5ta categoría, liquidación de cese,
+  provisiones, subsidios, utilidades, vacaciones, préstamos y quincena para
+  la planilla peruana, sobre un único motor de remuneración computable.
+categoria: Localización Perú · Nómina
+etiquetas: [CTS, Gratificaciones, Renta de 5ta, Liquidación de cese, Provisiones, Utilidades D.L. 892, Préstamos]
+portada: screenshots/02-cts.png
+
+destacados_intro: >-
+  Todos los beneficios siguen el mismo circuito: se crea el documento del
+  periodo, se procesa trabajador por trabajador, se revisa y se exporta a las
+  boletas del lote.
+destacados:
+  - icono: "CTS"
+    titulo: CTS semestral
+    texto: >-
+      Depósitos de mayo (noviembre–abril) y noviembre (mayo–octubre): 1/12 de
+      la remuneración computable por mes y 1/360 por día, con faltas y exceso
+      de descanso médico.
+  - icono: "½"
+    titulo: Gratificaciones
+    texto: >-
+      Fiestas Patrias y Navidad (Ley 27735): 1/6 por mes, con el bono
+      extraordinario de la Ley 29351 según el seguro del trabajador.
+  - icono: "5ta"
+    titulo: Renta de 5ta categoría
+    texto: >-
+      Proyección anual, deducción de 7 UIT, tramos de 8 % a 30 % generables
+      desde la UIT del año, reproyección con el mes anterior y lista de
+      excluidos.
+  - icono: "⇥"
+    titulo: Liquidación de cese
+    texto: >-
+      CTS, gratificación y vacaciones truncas del trabajador cesado, más
+      conceptos extra, exportados como entradas de su boleta.
+  - icono: "%"
+    titulo: Provisiones y utilidades
+    texto: >-
+      Devengo mensual de CTS, gratificación y vacaciones, y reparto de
+      utilidades del D.L. 892: 50 % por remuneraciones y 50 % por días.
+  - icono: "S/"
+    titulo: Préstamos, adelantos y quincena
+    texto: >-
+      Cronograma de cuotas iguales a fin de mes, adelantos descontables y lote
+      de adelanto quincenal que se descuenta en la planilla mensual.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Casi ningún beneficio peruano se calcula sobre el sueldo, sino sobre la
+    **remuneración computable**: lo fijo se suma y lo variable se promedia
+    solo si apareció las veces suficientes. Hacerlo en hojas de cálculo
+    obliga a reconstruir seis meses de boletas por trabajador, a contar meses
+    y días computables, a descontar faltas y a trasladar después cada importe
+    a la boleta.
+
+
+    Este módulo lo calcula desde las boletas de Odoo con la configuración de
+    cada compañía y deja el resultado listo para pagarse en el lote de nómina.
+  nota: >-
+    **La regla de las tres apariciones.** Un concepto variable (comisión,
+    bonificación, horas extras) entra en el promedio si aparece en tres o más
+    boletas del semestre; entonces se suma y se divide entre 6, o entre los
+    meses trabajados si el trabajador ingresó a mitad del semestre. La misma
+    regla la usan la CTS, la gratificación y la liquidación de cese.
+
+pasos_intro: >-
+  Recorrido con la planilla de pruebas de «Comercial Demo Perú S.A.C.», cuyos
+  trabajadores son ficticios.
+pasos:
+  - titulo: Configurar el motor de beneficios
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Beneficios sociales
+    texto: >-
+      Una pestaña por compañía indica qué **entradas** de la boleta reciben
+      cada beneficio y qué **reglas salariales** y **tipos de días** usa el
+      motor: básico, asignación familiar, sobretiempo, comisiones y
+      bonificaciones para los promedios; días laborados, faltas y descanso
+      médico para el tiempo computable.
+    puntos:
+      - La misma pestaña configura las entradas de liquidación de cese, subsidios, utilidades, adelantos y préstamos especiales y quincena.
+      - Los motores comparan la regla concreta configurada con las líneas de la boleta; si apunta a otra estructura, no encuentra importes.
+    imagen: screenshots/01-parametros.png
+
+  - titulo: Procesar la CTS del semestre
+    ruta: Nómina ▸ Beneficios sociales ▸ CTS
+    texto: >-
+      Indique año, tipo (**CTS Noviembre - Abril** o **CTS Mayo - Octubre**),
+      tipo de cambio, lote de nómina y fecha de depósito, y pulse
+      **Procesar**. Se crea una línea por trabajador con meses, días, sueldo,
+      asignación familiar, 1/6 de gratificación, remuneración computable y
+      total.
+    puntos:
+      - "**Recalcular** vuelve a calcular las líneas; marcando **No recalcular** en una línea se conservan sus cambios manuales."
+      - "**Exportar CTS** vuelca los importes como entrada de las boletas del lote y cierra el documento."
+      - Al trabajador con menos de un mes no se le deposita en ese semestre; su importe se suma al depósito siguiente.
+    imagen: screenshots/02-cts.png
+    pie: "CTS noviembre 2025 – abril 2026: nueve trabajadores y S/ 17.848,77 de CTS."
+
+  - titulo: Revisar el detalle de un trabajador
+    ruta: CTS ▸ línea del trabajador
+    texto: >-
+      Cada línea muestra de dónde sale el importe: documento, fecha de
+      ingreso, cuenta CTS y banco, meses, días, faltas y exceso de descanso
+      médico, y en la otra columna la remuneración computable, los montos por
+      mes y por día, lo que se descuenta por faltas, intereses, otros
+      descuentos y el total en soles y dólares. **Detalle histórico** abre los
+      importes mes a mes.
+    puntos:
+      - El descanso médico computa hasta 60 días al año; el exceso se descuenta como falta.
+    imagen: screenshots/03-cts-trabajador.png
+
+  - titulo: Liquidar la gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    texto: >-
+      Mismo circuito que la CTS con el tipo **Gratificación Fiestas Patrias**
+      o **Navidad**. Con **Bono extraordinario** se añade la bonificación de la
+      Ley 29351 con el porcentaje del seguro social del trabajador; con
+      **Calcular días grati.** también cuentan los días sueltos además de los
+      meses completos.
+    imagen: screenshots/04-gratificacion.png
+    pie: "Fiestas Patrias 2026: S/ 30.479,12 de gratificación y S/ 2.524,13 de bono, exportados al lote."
+
+  - titulo: Calcular la renta de 5ta categoría
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta de 5ta categoría
+    texto: >-
+      Sobre el lote del mes, **Generar quinta** proyecta la renta bruta anual
+      de cada trabajador, resta 7 UIT, aplica los tramos y calcula la retención
+      del mes. Los trabajadores sin retención pasan a **Excluidos de quinta**.
+      **Exportar quinta** lleva la retención a las boletas.
+    puntos:
+      - Los tramos (8, 14, 17, 20 y 30 % sobre 5, 20, 35 y 45 UIT) se generan con un botón en la pestaña Quinta categoría de los Parámetros principales.
+      - Si existe la quinta del mes anterior, la retención parte de su saldo pendiente, y si el impuesto proyectado cambió, se reproyecta.
+      - Se pueden declarar ingresos y retenciones de otros empleadores.
+    imagen: screenshots/05-renta-5ta.png
+
+  - titulo: Provisionar los beneficios del mes
+    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
+    texto: >-
+      Por lote de nómina, **Procesar** calcula el devengo de gratificación
+      (con su bono), CTS y vacaciones de cada trabajador en tres pestañas.
+      **Obtener acumulado** suma lo provisionado en el semestre o el año y
+      **Cerrar** fija el documento.
+    imagen: screenshots/06-provisiones.png
+
+  - titulo: Repartir las utilidades
+    ruta: Nómina ▸ Beneficios sociales ▸ Utilidades
+    texto: >-
+      Indique el ejercicio, la renta anual antes de impuestos y el porcentaje
+      de su actividad. **Procesar** reparte la mitad por remuneraciones del año
+      y la otra mitad por días laborados menos faltas, y muestra los dos
+      factores. **Exportar utilidades** lleva el total a la boleta del lote de
+      pago.
+    imagen: screenshots/07-utilidades.png
+    pie: "Renta de S/ 500.000,00 al 10 %: S/ 50.000,00 repartidos entre diez trabajadores."
+
+  - titulo: Registrar un préstamo con cronograma
+    ruta: Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos ▸ Préstamos
+    texto: >-
+      Elija trabajador, tipo de préstamo, fecha, monto y número de cuotas y
+      pulse **Generar cuotas**: cuotas iguales que vencen el último día de cada
+      mes con su deuda pendiente. Desde el lote de nómina se importan las
+      cuotas del periodo y quedan marcadas como pagadas.
+    puntos:
+      - Los tipos de préstamo y de adelanto definen la entrada de la boleta por la que se descuentan.
+      - No se puede eliminar un préstamo con cuotas ya aplicadas.
+    imagen: screenshots/08-prestamo.png
+
+funcionalidades:
+  - grupo: CTS y gratificación
+    items:
+      - Semestres de CTS tipo mayo y noviembre; gratificaciones de julio y diciembre.
+      - Remuneración computable con básico, asignación familiar, promedios de variables y 1/6 de gratificación (solo CTS).
+      - Divisores de pequeña empresa (CTS ÷ 24 y gratificación ÷ 12 por mes).
+      - Descuento de faltas y exceso de descanso médico sobre 60 días.
+      - Reserva del trabajador con menos de un mes para el semestre siguiente.
+      - Bono extraordinario de la Ley 29351 con el porcentaje del seguro social.
+      - Líneas protegidas contra el recálculo y detalle histórico mes a mes.
+      - Exportación de los importes a las boletas del lote.
+  - grupo: Renta de 5ta y liquidación de cese
+    items:
+      - Proyección anual con gratificaciones proyectadas o ya liquidadas y remuneraciones de meses anteriores.
+      - Tabla escalonada de tramos por compañía generada desde la UIT del año.
+      - Reproyección con el saldo de la quinta del mes anterior.
+      - Afectos y excluidos en pestañas separadas.
+      - Liquidación de cese con CTS, gratificación y vacaciones truncas y conceptos extra.
+  - grupo: Provisiones, subsidios y utilidades
+    items:
+      - Provisión mensual de CTS, gratificación con bono y vacaciones, con acumulado del periodo.
+      - Subsidios EsSalud de enfermedad (20 primeros días a cargo del empleador) y maternidad, repartidos por periodo.
+      - Utilidades D.L. 892 con reparto 50 % por remuneraciones y 50 % por días laborados.
+  - grupo: Vacaciones, préstamos y quincena
+    items:
+      - Récord vacacional y saldos de vacaciones por trabajador.
+      - Liquidación vacacional con importación de la quinta y descarga en Excel.
+      - Adelantos y préstamos con importación a las boletas del lote.
+      - Lote de adelanto quincenal que genera boletas y exporta el neto como descuento de la mensual.
+
+ejemplos_intro: >-
+  Cifras tomadas de las capturas; los cálculos cuadran al céntimo.
+ejemplos:
+  - titulo: CTS de noviembre–abril de un trabajador con faltas
+    texto: >-
+      Sueldo S/ 2.500,00 con asignación familiar S/ 113,00, sin variables. En
+      el semestre computa 5 meses y 26 días, con 4 faltas:
+    tabla:
+      - [Concepto, Cálculo, Importe S/]
+      - [Remuneración computable, "2.500,00 + 113,00", "2.613,00"]
+      - [Monto por mes, "2.613,00 ÷ 12", "217,75"]
+      - [Monto por día, "217,75 ÷ 30", "7,26"]
+      - [CTS por meses, "217,75 × 5", "1.088,75"]
+      - [CTS por días, "7,2583 × 26", "188,72"]
+      - [(−) Faltas, "7,2583 × 4", "−29,03"]
+      - [Total CTS, "", "1.248,44"]
+
+  - titulo: Gratificación de Fiestas Patrias con bono extraordinario
+    texto: Mismo trabajador, 5 meses computables y 4 faltas, asegurado en EsSalud.
+    tabla:
+      - [Concepto, Cálculo, Importe S/]
+      - [Monto por mes, "2.613,00 ÷ 6", "435,50"]
+      - [Gratificación por meses, "435,50 × 5", "2.177,50"]
+      - [(−) Faltas, "435,50 ÷ 30 × 4", "−58,07"]
+      - [Total gratificación, "", "2.119,43"]
+      - [(+) Bono extraordinario, "9 % de 2.119,43", "190,75"]
+      - [Total a pagar, "", "2.310,18"]
+    nota: La provisión mensual de la misma gratificación es 435,50 + 39,20 de bono = 474,70.
+
+  - titulo: Retención de 5ta categoría de junio
+    texto: >-
+      Trabajadora con S/ 6.000,00 al mes y UIT de S/ 5.350,00. La renta bruta
+      anual proyectada es S/ 84.280,00:
+    tabla:
+      - [Paso, Cálculo, Importe S/]
+      - [Renta neta anual, "84.280,00 − 7 UIT (37.450,00)", "46.830,00"]
+      - [Primer tramo, "8 % de 26.750,00 (5 UIT)", "2.140,00"]
+      - [Segundo tramo, "14 % de 20.080,00", "2.811,20"]
+      - [Impuesto anual proyectado, "", "4.951,20"]
+      - [Retención de junio, "4.951,20 ÷ 7", "707,31"]
+    nota: >-
+      El divisor lo fija el mes: 12 en enero, 11 en febrero… 7 en junio y 1 en
+      diciembre, restando antes las retenciones ya practicadas.
+
+  - titulo: Reparto de utilidades
+    texto: >-
+      Renta de S/ 500.000,00 al 10 %: S/ 50.000,00, mitad por remuneraciones
+      (S/ 230.386,83 en el año) y mitad por días (1.716 días).
+    tabla:
+      - [Trabajador, Remuneraciones, Días, Por remuneraciones, Por días, Total]
+      - [Quispe Mamani Juan Carlos, "15.344,67", "173", "1.665,10", "2.520,40", "4.185,50"]
+      - [Ramos Vega Carlos Alberto, "10.064,67", "151", "1.092,15", "2.199,88", "3.292,03"]
+    nota: "Factores: 25.000 ÷ 230.386,83 = 0,108513 por sol y 25.000 ÷ 1.716 = 14,5688 por día."
+
+  - titulo: Cronograma de un préstamo
+    tabla:
+      - [Cuota, Vence, Monto, Deuda pendiente]
+      - ["1", 30/09/2026, "500,00", "1.000,00"]
+      - ["2", 31/10/2026, "500,00", "500,00"]
+      - ["3", 30/11/2026, "500,00", "0,00"]
+    nota: "Préstamo DEMO de S/ 1.500,00 en 3 cuotas otorgado el 10/09/2026."
+
+configuracion_intro: >-
+  Los beneficios leen las boletas de los lotes mensuales, así que conviene
+  tener la planilla calculada antes de procesarlos.
+configuracion:
+  - "Complete la pestaña **Beneficios sociales** de los Parámetros principales de cada compañía: entradas, reglas para promedios y tipos de días."
+  - "Genere los tramos de la renta de 5ta desde la pestaña **Quinta categoría** después de registrar la UIT del año."
+  - "Revise los tipos de préstamo y de adelanto en **Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos**."
+  - Calcule los lotes de nómina mensuales con su periodo antes de procesar CTS, gratificación, provisiones o utilidades.
+requisitos_nota: >-
+  Requiere Nómina de Odoo Enterprise y el núcleo de planillas peruano. Los
+  asientos contables y los archivos de pago bancario los añaden los módulos
+  relacionados.
+
+faq:
+  - pregunta: ¿Por qué un trabajador sale con 1/6 de gratificación en cero?
+    respuesta: >-
+      El sexto de gratificación de la CTS se toma de la gratificación liquidada
+      del semestre. Si no hay una gratificación registrada para ese periodo, el
+      sexto queda en cero.
+  - pregunta: ¿Recalcular pisa los cambios que hice a mano?
+    respuesta: >-
+      Sí, salvo en las líneas marcadas con **No recalcular**, que se conservan.
+  - pregunta: Proceso la CTS y no aparece ningún trabajador, ¿qué reviso?
+    respuesta: >-
+      Que el lote de nómina tenga periodo y boletas, y que las reglas y tipos de
+      días de los Parámetros principales sean los de la estructura que usa la
+      planilla: el motor busca esas reglas concretas en las boletas.
+  - pregunta: ¿Cómo se paga lo calculado?
+    respuesta: >-
+      Con el botón de exportar de cada documento, que vuelca el importe como
+      entrada de la boleta del lote. Desde ahí se generan el asiento y el
+      archivo de pago con los módulos de contabilización y de documentos y
+      bancos.
+  - pregunta: ¿Se contempla la pequeña empresa?
+    respuesta: >-
+      Sí. Para el régimen laboral de pequeña empresa la CTS y la gratificación
+      por mes se dividen entre 24 y 12, y las provisiones se reducen a la mitad.
+
+novedades:
+  - fecha: 18/08/2026
+    cambios:
+      - El menú Beneficios sociales se sitúa detrás de Recibos de nómina, en el orden del trabajo.
+  - version: 4.20260722
+    fecha: 26/07/2026
+    cambios:
+      - Parámetros de quincena (modo de cálculo, tasa, asignación familiar y aportes) que usan las reglas de adelanto quincenal.
+  - version: 3.20260722
+    fecha: 25/07/2026
+    cambios:
+      - "Primera versión en Odoo 19: CTS, gratificaciones, renta de 5ta, liquidación de cese, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena."
+
+relacionados: [al_hr_pe, al_hr_pe_account, al_hr_pe_reports, al_hr_pe_construction]

@@ -1,0 +1,215 @@
+titulo: Catálogo del TPV con etiquetas y vista de lista
+subtitulo: >-
+  Encuentre productos más rápido en la caja: chips de etiquetas sobre el
+  catálogo del Punto de Venta y un conmutador entre las tarjetas de siempre y
+  una lista compacta con código, etiquetas, stock y precio.
+categoria: Punto de venta · Catálogo
+etiquetas: [Filtro por etiquetas, Vista de lista, Stock en la fila, Precio con impuestos, Preferencia por cajero]
+portada: screenshots/05-lista.png
+
+destacados_intro: >-
+  Dos mejoras del catálogo del TPV en un solo módulo, construidas sobre las
+  etiquetas de producto estándar de Odoo: nada que migrar ni modelos nuevos.
+destacados:
+  - icono: "#"
+    titulo: Chips de etiquetas
+    texto: >-
+      Una fila de chips de color bajo las categorías. Marque una o varias
+      etiquetas y el catálogo muestra los productos que llevan alguna de ellas.
+  - icono: "↻"
+    titulo: Etiquetas al día sin salir
+    texto: >-
+      El botón de recarga trae etiquetas nuevas, renombradas o recoloreadas
+      desde el backend sin cerrar ni recargar la sesión.
+  - icono: "≡"
+    titulo: Vista de lista compacta
+    texto: >-
+      Una fila por producto con miniatura, nombre, código interno, código de
+      barras, etiquetas, stock disponible, cantidad en el carrito y precio.
+  - icono: "S/"
+    titulo: El precio que se cobra
+    texto: >-
+      El precio de la lista aplica la tarifa del pedido y los impuestos según la
+      configuración de la caja: coincide con la línea al añadir el producto.
+  - icono: "i"
+    titulo: Información a un toque
+    texto: >-
+      Botón de información en cada fila y en cada tarjeta de la cuadrícula para
+      abrir la ficha del producto sin añadirlo al pedido.
+  - icono: "★"
+    titulo: Cada cajero, su vista
+    texto: >-
+      La caja tiene una vista por defecto y cada usuario conserva la última que
+      eligió, también desde sus preferencias.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El catálogo estándar del TPV solo filtra por categoría y por texto, y muestra
+    tarjetas grandes con nombre y foto. En tiendas con muchos productos parecidos
+    (bebidas, abarrotes, repuestos) el cajero necesita otros cortes —promoción,
+    línea, marca— y ver de un vistazo el código, el stock y el precio final.
+
+
+    Este módulo usa las **etiquetas de producto** que ya existen en Odoo como
+    filtro rápido en la caja y añade una vista de lista para leer más datos en
+    menos espacio.
+  nota: >-
+    **Mismas etiquetas del backend.** Se gestionan en el producto como siempre;
+    un campo por etiqueta decide si sale como chip en la caja. El filtro se
+    aplica antes del tope de 100 productos visibles del TPV, así que no se
+    pierden resultados.
+
+pasos_intro: >-
+  Recorrido con el TPV de demostración: seis productos con las etiquetas de
+  ejemplo que instala el módulo (Bebidas, Textil, Abarrotes, Servicios y
+  Promoción).
+pasos:
+  - titulo: Elegir la vista por defecto y activar el filtro
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes ▸ Interfaz de PdV
+    texto: >-
+      Con el punto de venta elegido arriba, bajo **Mostrar imágenes del
+      producto** aparecen **Vista de productos por defecto** —**Cuadrícula
+      (tarjetas)** o **Lista (filas compactas)**— y la casilla **Filtrar
+      productos por etiqueta**, activada por defecto.
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: Decidir qué etiquetas salen como chip
+    ruta: Punto de venta ▸ Productos ▸ Etiquetas de producto
+    texto: >-
+      Cada etiqueta tiene la casilla **Mostrar en la barra de filtros del TPV**.
+      Desmarcarla oculta el chip para acortar la barra, pero la etiqueta sigue
+      en los productos. En la lista de etiquetas la columna se edita en bloque.
+    imagen: screenshots/02-etiqueta.png
+
+  - titulo: Chips de etiquetas sobre el catálogo
+    ruta: TPV ▸ Registrar
+    texto: >-
+      Bajo las categorías aparecen los chips de las etiquetas que usa algún
+      producto cargado, con su color y en el orden del backend. Encima, el botón
+      **Lista** / **Cuadrícula** cambia de vista, y cada tarjeta lleva su botón
+      de información.
+    puntos:
+      - El botón de recarga (↻) actualiza las etiquetas desde el backend y avisa con «Etiquetas actualizadas».
+      - En pantallas pequeñas la fila de chips se oculta para dejar sitio al catálogo.
+    imagen: screenshots/03-cuadricula.png
+
+  - titulo: Filtrar por una o varias etiquetas
+    ruta: TPV ▸ Registrar ▸ chips
+    texto: >-
+      Al tocar **Promoción** el catálogo se reduce a los productos con esa
+      etiqueta. Si se marca otra, se suman los de ambas (basta con que el
+      producto tenga una). **Limpiar** quita todas las marcas.
+    puntos:
+      - Convive con la búsqueda por texto, las categorías y «Agrupar productos por categorías».
+      - Si el filtro deja el catálogo vacío, los chips siguen visibles para desmarcar.
+    imagen: screenshots/04-filtro.png
+    pie: "Promoción: Gaseosa 500ml y Fruta fresca (kg)."
+
+  - titulo: Vista de lista con stock y precio final
+    ruta: TPV ▸ Registrar ▸ Lista
+    texto: >-
+      Cada fila muestra miniatura, nombre, código interno, código de barras y
+      etiquetas; a la derecha, el stock disponible (solo productos
+      almacenables, en rojo si no hay), la cantidad ya en el carrito y el
+      precio. Tocar la fila añade el producto; el botón **i** abre su
+      información.
+    imagen: screenshots/05-lista.png
+    pie: "Pedido de 2 Gaseosa 500ml (S/ 4,13) y 1 Libro educativo (S/ 25,00): total S/ 33,26."
+
+  - titulo: La vista preferida de cada usuario
+    ruta: Menú del usuario ▸ Preferencias
+    texto: >-
+      El TPV recuerda la última vista que eligió cada usuario y la guarda en
+      **Vista de productos del TPV**. Vacía, se usa la vista por defecto de la
+      caja. El administrador también la ve en la ficha del usuario.
+    imagen: screenshots/06-preferencias.png
+
+funcionalidades:
+  - grupo: Filtro por etiquetas
+    items:
+      - Fila de chips con el color y el orden de las etiquetas del backend.
+      - Solo se ofrecen etiquetas usadas por algún producto que la caja puede mostrar.
+      - Selección múltiple (producto con cualquiera de las etiquetas marcadas) y botón **Limpiar**.
+      - Filtrado antes del tope de 100 productos visibles, compatible con búsqueda, categorías y agrupación por categorías.
+      - Recarga de etiquetas desde el backend sin salir de la sesión, con aviso si no hay conexión.
+      - Casilla **Mostrar en la barra de filtros del TPV** por etiqueta, editable en bloque en la lista.
+      - Activación por punto de venta y etiquetas de ejemplo al instalar.
+  - grupo: Vista de lista y cuadrícula
+    items:
+      - Botón para alternar entre tarjetas y filas compactas.
+      - "Fila con miniatura (si la caja muestra imágenes), código interno, código de barras, etiquetas, stock, cantidad en carrito y precio."
+      - Precio con tarifa del pedido e impuestos incluidos o no según la configuración de la caja.
+      - Botón de información en filas y tarjetas (no en el configurador de combos).
+      - "Ventana de información reorganizada: inventario por almacén arriba, productos opcionales como tarjetas y panel «Información General» en dos columnas."
+  - grupo: Preferencias
+    items:
+      - Vista por defecto por punto de venta.
+      - "Vista preferida por usuario, guardada al cambiarla en la caja: usuario → punto de venta → cuadrícula."
+      - Campo **Vista de productos del TPV** en las preferencias y en la ficha del usuario.
+
+ejemplos:
+  - titulo: Qué muestra el filtro
+    texto: >-
+      Etiquetas de los productos del TPV de demostración y resultado al marcar
+      chips:
+    tabla:
+      - [Chips marcados, Productos visibles]
+      - [Ninguno, "Los 6 productos"]
+      - [Promoción, "Gaseosa 500ml, Fruta fresca (kg)"]
+      - [Abarrotes, "Bolsa plástica, Libro educativo, Fruta fresca (kg)"]
+      - [Bebidas + Textil, "Gaseosa 500ml, Polo Alta"]
+      - [Servicios, Servicio de mantenimiento industrial]
+
+  - titulo: Qué vista ve cada cajero
+    tabla:
+      - [Preferencia del usuario, Vista por defecto de la caja, Vista al abrir el TPV]
+      - [Vacía, Cuadrícula, Cuadrícula]
+      - [Vacía, Lista, Lista]
+      - [Lista, Cuadrícula, Lista]
+      - [Cuadrícula, Lista, Cuadrícula]
+    nota: La preferencia se rellena sola la primera vez que el usuario pulsa el botón de cambio de vista.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; crea cinco etiquetas de ejemplo que puede renombrar o borrar.
+  - Asigne etiquetas a los productos del TPV desde la ficha del producto.
+  - "En **Punto de venta ▸ Configuración ▸ Ajustes** elija la caja, la **Vista de productos por defecto** y deje marcado **Filtrar productos por etiqueta**."
+  - "Si hay muchas etiquetas, desmarque **Mostrar en la barra de filtros del TPV** en las que no deban salir como chip."
+  - Abra o recargue la sesión del TPV.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. En esta versión la ventana de
+  información del producto falla al abrirse si también está instalada la
+  integración de empleados con el TPV (`pos_hr`).
+
+faq:
+  - pregunta: ¿Por qué no aparece un chip para una etiqueta?
+    respuesta: >-
+      Solo salen las etiquetas que lleva algún producto disponible en esa caja y
+      que tienen marcado **Mostrar en la barra de filtros del TPV**. Si la acaba
+      de asignar, pulse el botón de recarga (↻).
+  - pregunta: ¿Ocultar un chip quita la etiqueta de los productos?
+    respuesta: >-
+      No. Solo acorta la barra de filtros; la etiqueta sigue en los productos y
+      en la vista de lista.
+  - pregunta: ¿Por qué el stock no aparece en algunas filas?
+    respuesta: >-
+      Solo se muestra para productos almacenables. Servicios y consumibles sin
+      control de inventario siempre tendrían cero, lo que confundiría.
+  - pregunta: ¿El precio de la lista incluye IGV?
+    respuesta: >-
+      Depende de la configuración de impuestos de la caja: muestra el mismo
+      importe que tendrá la línea del pedido, con la tarifa del pedido aplicada.
+  - pregunta: ¿Un cajero puede cambiar la vista si el administrador fijó otra?
+    respuesta: >-
+      Sí. La vista por defecto de la caja solo decide la primera vez; después
+      manda la última que eligió cada usuario.
+
+novedades:
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 25/07/2026
+    cambios:
+      - "Migración a Odoo 19 y unificación en un solo módulo del filtro por etiquetas y del conmutador de vista, sobre las etiquetas de producto estándar."
+
+relacionados: [al_pos_vendedor, al_l10n_pe_edi_pos]

@@ -1,0 +1,240 @@
+titulo: Diagrama de Gantt de proyectos
+subtitulo: >-
+  Un Gantt interactivo para las tareas de Proyecto, dentro del backend de Odoo y
+  sin Enterprise: jerarquía, dependencias, hitos, ruta crítica, línea base,
+  edición con arrastre y exportación a Excel y PDF.
+categoria: Proyectos · Planificación
+etiquetas: [Gantt interactivo, Dependencias, Ruta crítica, Línea base, Código EDT, Excel y PDF, Community]
+portada: screenshots/02-diagrama.png
+
+destacados_intro: >-
+  La aplicación **Gantt** abre todos sus proyectos en un solo diagrama, con las
+  herramientas que se esperan de un planificador de obras o implantaciones.
+destacados:
+  - icono: "▤"
+    titulo: Proyecto, tarea y subtarea
+    texto: >-
+      Árbol completo con dependencias fin-comienzo, hitos del proyecto y color de
+      barra según el estado de la tarea.
+  - icono: "↔"
+    titulo: Edición directa
+    texto: >-
+      Arrastre o estire barras, mueva el avance, cree y borre tareas y
+      dependencias. Cada cambio se guarda al momento con los permisos reales.
+  - icono: "⚡"
+    titulo: Ruta crítica
+    texto: >-
+      Calculada en el servidor con holgura por tarea; un botón resalta las tareas
+      sin margen y cuenta cuántas son.
+  - icono: "◫"
+    titulo: Línea base
+    texto: >-
+      Guarde una foto del plan y compare: barra fantasma bajo cada tarea y
+      columna de desvío en días.
+  - icono: "1.2"
+    titulo: Herramientas de vista
+    texto: >-
+      Búsqueda instantánea, código EDT, expandir y contraer, ocultar terminadas,
+      pantalla completa y cuatro escalas de tiempo.
+  - icono: "⇩"
+    titulo: Excel y PDF
+    texto: >-
+      Exporte lo que está viendo, con filtros y escala. Los archivos los genera
+      su propio servidor, sin servicios externos.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La vista Gantt de Odoo es de la edición Enterprise y trabaja sobre las
+    fechas de planificación. En Community no hay forma de ver un cronograma con
+    dependencias, ni de saber qué tareas marcan la fecha de fin del proyecto.
+
+
+    Este módulo añade una aplicación propia, **Gantt ▸ Diagrama de Gantt**, que
+    dibuja las tareas de uno o varios proyectos con sus dependencias e hitos y
+    permite replanificar sin salir del diagrama.
+  nota: >-
+    **Los permisos son los de Proyecto.** Cada usuario ve las tareas que ya
+    puede ver en Proyecto y solo mueve las que puede modificar; las demás
+    aparecen con trama y no se arrastran. La lectura, la escritura y los cálculos
+    viven en el módulo base de la suite.
+
+pasos_intro: >-
+  Recorrido con los proyectos de demostración «[DEMO Gantt] Edificio A» y
+  «[DEMO Gantt] Migración ERP».
+pasos:
+  - titulo: Abrir el Gantt desde el proyecto
+    ruta: Proyecto ▸ Proyectos ▸ (proyecto)
+    texto: >-
+      El formulario del proyecto gana el botón **Gantt** con el número de tareas
+      planificadas (con fecha). Abre el diagrama acotado a ese proyecto; en la
+      barra, **Ver todos los proyectos** quita el acotado.
+    imagen: screenshots/01-boton-proyecto.png
+
+  - titulo: El diagrama de todos los proyectos
+    ruta: Gantt ▸ Diagrama de Gantt
+    texto: >-
+      Arriba, un botón por proyecto con su número de tareas: pulse para
+      mostrarlo u ocultarlo, o **Todos**. La rejilla lista tarea, inicio, fin y
+      personas asignadas; el diagrama dibuja barras, dependencias (flechas) e
+      hitos (rombos).
+    puntos:
+      - "Avisos claros si hay tareas sin fecha límite (no se pueden dibujar) o si el resultado se recortó por el límite de tareas."
+      - "Doble clic abre el formulario de la tarea; el signo **+** de cada fila añade una subtarea."
+      - Un punto rojo, naranja o verde en la rejilla indica actividades atrasadas, para hoy o planificadas.
+    imagen: screenshots/02-diagrama.png
+
+  - titulo: Cambiar de escala y numerar con EDT
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Escala
+    texto: >-
+      **Escala** cambia entre Día, Semana, Mes y Trimestre. El botón **EDT**
+      añade la columna con el código de la estructura de desglose (1, 1.1,
+      1.2…), que se reinicia en cada proyecto.
+    puntos:
+      - En la escala Día se sombrean los días no laborables según el calendario de trabajo del proyecto.
+      - "Los otros botones del grupo: expandir o contraer todo, ocultar tareas terminadas y canceladas, y pantalla completa."
+    imagen: screenshots/03-escala-mes-edt.png
+
+  - titulo: Filtrar por persona, estado y fechas
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Filtros
+    texto: >-
+      El panel **Filtros** acota por **Personas asignadas** (con su número de
+      tareas), **Estado**, rango **Desde / Hasta** e **Incluir sin fecha**. El
+      botón muestra cuántos filtros hay activos y **Aplicar** se desactiva si la
+      fecha «desde» es posterior a «hasta».
+    imagen: screenshots/04-filtros.png
+
+  - titulo: Ver la ruta crítica
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Ruta crítica
+    texto: >-
+      **Ruta crítica** pide al servidor el cálculo sobre las dependencias:
+      añade la columna **Holgura (h)** y resalta las tareas sin margen. El
+      contador del botón indica cuántas tareas son críticas.
+    imagen: screenshots/05-ruta-critica.png
+    pie: "En el Edificio A, «Entrega de obra» tiene holgura 0: es la tarea crítica del plan."
+
+  - titulo: Comparar contra una línea base
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Sin línea base
+    texto: >-
+      El botón de la cámara guarda una foto inmutable de fechas y avance de los
+      proyectos seleccionados. Al elegirla en el desplegable, cada tarea muestra
+      una barra gris con el plan original y la columna **Desvío (d)**: en rojo
+      los días de retraso, en verde los de adelanto.
+    imagen: screenshots/06-linea-base.png
+    pie: "Línea base del 17/08/2026: «Obra gruesa» termina 7,2 días más tarde de lo previsto."
+
+  - titulo: Editar la tarea en el formulario
+    ruta: Gantt ▸ Diagrama de Gantt ▸ doble clic en una tarea
+    texto: >-
+      El formulario reúne nombre, periodo (inicio y fin con fecha y hora),
+      etapa, personas asignadas, prioridad, horas asignadas y etiquetas; el
+      avance aparece si está instalado Partes de horas. **Guardar** escribe por
+      el mismo camino que el arrastre.
+    puntos:
+      - "**Abrir en Odoo** lleva a la ficha completa de la tarea (descripción, chatter, adjuntos)."
+      - Personas y etiquetas se añaden y quitan como etiquetas con «×»; se ofrece a todo el personal interno activo.
+    imagen: screenshots/07-formulario-tarea.png
+
+  - titulo: Acciones con clic derecho
+    ruta: Gantt ▸ Diagrama de Gantt ▸ clic derecho en una tarea
+    texto: >-
+      El menú contextual ofrece **Abrir en Odoo**, **Planificar actividad**
+      (asistente estándar de actividades), **Añadir subtarea**, **Indentar**,
+      **Desindentar** y **Eliminar**.
+    imagen: screenshots/08-menu-contextual.png
+
+funcionalidades:
+  - grupo: Diagrama
+    items:
+      - Aplicación **Gantt** con menú propio y acceso por el grupo «Gantt de Proyectos / Usuario».
+      - Selección de uno, varios o todos los proyectos; botón **Gantt** en el formulario del proyecto.
+      - Jerarquía proyecto → tarea → subtarea, dependencias fin-comienzo, hitos de proyecto y tareas de duración cero como hito.
+      - Color de barra por estado, configurable en **Gantt ▸ Configuración ▸ Colores por estado**.
+      - Escalas Día, Semana, Mes y Trimestre; marca del día de hoy; sombreado de no laborables.
+      - Tooltip con fechas, etapa, responsables y actividades pendientes.
+      - Avisos de tareas sin fecha límite y de resultado truncado.
+  - grupo: Edición
+    items:
+      - Arrastrar y redimensionar barras, mover el avance, crear y borrar tareas y dependencias.
+      - "**Encadenar**: al mover una tarea se empujan sus sucesoras conservando la duración."
+      - Guardado inmediato con indicador de la hora del último cambio; si el servidor rechaza algo, se avisa y se recarga.
+      - Tareas sin permiso de escritura marcadas con trama y bloqueadas.
+      - Formulario con nombre, periodo, etapa, personas, prioridad, horas, etiquetas y avance.
+      - Menú contextual con actividad, subtarea, indentar, desindentar y eliminar.
+  - grupo: Análisis y salida
+    items:
+      - Ruta crítica con holgura por tarea y contador.
+      - Líneas base con barra fantasma y desvío en días.
+      - Búsqueda instantánea con contador, código EDT y ocultar terminadas.
+      - "Exportación a Excel (hojas Tareas y Diagrama) y PDF A3 apaisado, con los filtros y la escala en pantalla."
+
+ejemplos:
+  - titulo: Desvío contra la línea base del Edificio A
+    texto: >-
+      Valores de la columna **Desvío (d)** con la línea base «Línea base
+      17/08/2026 17:53». Positivo = termina más tarde que en la foto.
+    tabla:
+      - [EDT, Tarea, Fin actual, "Desvío (d)"]
+      - ["1", Expediente técnico, "08/10/2026", "-6,7"]
+      - ["1.1", Planos estructurales, "13/10/2026", "+0,3"]
+      - ["2", Obra gruesa, "25/12/2026", "+7,2"]
+      - ["2.2", Cimentación, "29/11/2026", "+0,3"]
+      - ["3", Acabados, "10/01/2027", "0"]
+
+  - titulo: Qué hace «Encadenar» al mover una tarea
+    texto: >-
+      «Cimentación» (09/11 – 29/11) depende de «Excavación» (28/10 – 09/11) y
+      «Estructura» (29/11 – 27/12) depende de «Cimentación». Con **Encadenar**
+      activo, retrasar «Excavación» 5 días hace:
+    tabla:
+      - [Tarea, Antes, Después]
+      - [Excavación, "28/10 – 09/11", "02/11 – 14/11"]
+      - [Cimentación, "09/11 – 29/11", "14/11 – 04/12"]
+      - [Estructura, "29/11 – 27/12", "04/12 – 01/01"]
+    nota: >-
+      Las sucesoras se empujan lo justo para no empezar antes de que termine su
+      predecesora y conservan su duración. Mover una tarea hacia atrás no
+      adelanta a las demás.
+
+configuracion:
+  - Instale **Gantt de Proyectos — Backend** desde Aplicaciones; instala también el módulo base.
+  - "Los administradores de Proyecto reciben acceso al instalar; para otros usuarios, asigne **Gantt de Proyectos: Usuario** en su ficha."
+  - "Dé fecha límite a las tareas (y fecha de inicio si su edición la tiene): las que no tienen fin no se dibujan."
+  - "Opcional: ajuste los colores en **Gantt ▸ Configuración ▸ Colores por estado**."
+requisitos_nota: >-
+  Funciona en Community y Enterprise; no usa la vista Gantt de Enterprise. Sin
+  fechas de planificación (Community), el inicio de cada tarea se calcula hacia
+  atrás desde su fecha límite.
+
+faq:
+  - pregunta: ¿Por qué una tarea no aparece en el diagrama?
+    respuesta: >-
+      No tiene fecha límite, o no la puede ver con sus permisos de Proyecto. Las
+      tareas sin fecha se cuentan en el aviso azul y se listan activando
+      **Filtros ▸ Incluir sin fecha**.
+  - pregunta: ¿Puedo mover una tarea de un proyecto al que no tengo acceso de escritura?
+    respuesta: >-
+      No. Se ve con trama y no se arrastra; el servidor comprueba el permiso
+      tarea por tarea antes de escribir.
+  - pregunta: ¿Qué tipos de dependencia admite?
+    respuesta: >-
+      Fin-comienzo, que es lo que guarda Odoo en «Bloqueada por». No hay retraso
+      ni otros tipos de vínculo.
+  - pregunta: ¿La exportación a PDF o Excel envía mis datos a algún servicio?
+    respuesta: >-
+      No. Ambos archivos los genera su servidor de Odoo con lo que está en
+      pantalla.
+  - pregunta: ¿La línea base se puede modificar?
+    respuesta: >-
+      No: es una foto inmutable. Capture otra cuando cambie el plan de forma
+      oficial y elija contra cuál comparar.
+
+novedades:
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 18/08/2026
+    cambios:
+      - "Primera versión: diagrama con filtros, edición, ruta crítica, línea base, encadenado, herramientas de vista, formulario de tarea, menú contextual, actividades y exportación a Excel y PDF."
+
+relacionados: [al_project_gantt_base, al_project_gantt_website, al_project_gantt_ai]

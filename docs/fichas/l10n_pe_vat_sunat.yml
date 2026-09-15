@@ -1,0 +1,246 @@
+titulo: Consulta de RUC y DNI
+subtitulo: >-
+  Autocompleta el contacto al escribir un RUC o un DNI —razón social, dirección,
+  ubigeo, estado y condición SUNAT— desde las APIs que usted elija, y marca
+  buenos contribuyentes y agentes de retención con el padrón SUNAT guardado en
+  la base.
+categoria: Localización Perú · Contactos
+etiquetas: [RUC, DNI, Estado y condición SUNAT, Padrón SUNAT, Agente de retención, APIs configurables]
+portada: screenshots/05-contacto.png
+
+destacados_intro: >-
+  La consulta no está atada a un proveedor: cada API es un registro con su
+  prioridad y su mapeo de campos.
+destacados:
+  - icono: "RUC"
+    titulo: Autocompletado al escribir
+    texto: >-
+      Al ingresar un RUC (11 dígitos, 10/15/17/20) o un DNI (8 dígitos) el
+      contacto se rellena solo. Si la consulta falla, un aviso pide completar
+      los datos a mano, sin interrumpir la edición.
+  - icono: "⇅"
+    titulo: Varias APIs, por prioridad
+    texto: >-
+      Vienen configuradas SUNAT (oficial), apiperu.dev, apis.net.pe, json.pe y
+      Decolecta. Se usa la de mayor prioridad y, si activa el fallback, las
+      siguientes en cascada.
+  - icono: "→"
+    titulo: Mapeo sin programar
+    texto: >-
+      Cada fila lleva un atributo de la respuesta a un campo del contacto, con
+      rutas con puntos, plantillas para concatenar y transformaciones
+      (mayúsculas, título…).
+  - icono: "✓"
+    titulo: Habido, activo y padrón
+    texto: >-
+      Estado SUNAT en la cabecera, cinta «Habido» / «No Habido» y las casillas
+      **Buen contribuyente** y **Agente de retención**, editables.
+  - icono: "57k"
+    titulo: Padrón SUNAT en la base
+    texto: >-
+      Una acción planificada diaria descarga los padrones de buenos
+      contribuyentes y agentes de retención; cada consulta es una búsqueda
+      local, no una descarga.
+  - icono: "📍"
+    titulo: Ubigeo resuelto
+    texto: >-
+      El código de ubigeo o los nombres de distrito, provincia y departamento
+      de la respuesta se convierten en el distrito, la ciudad y el
+      departamento del contacto.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Registrar clientes y proveedores copiando a mano la razón social y la
+    dirección de la consulta RUC produce errores que luego salen en los
+    comprobantes electrónicos, y el estado **activo / habido** de SUNAT cambia
+    sin avisar.
+
+
+    Además, las retenciones del IGV dependen de si el proveedor es **agente de
+    retención** o **buen contribuyente**, dos datos que SUNAT publica en
+    padrones de decenas de miles de RUC. Este módulo trae los datos al contacto
+    en el momento de crearlo y mantiene los padrones al día en la propia base.
+  nota: >-
+    **Tokens y proveedores.** Las APIs REST que exigen token no se consultan
+    hasta que se lo pone: una conexión sin token se salta sola. El token de
+    **Decolecta** lo reutiliza también el módulo de tipo de cambio.
+
+pasos_intro: >-
+  Recorrido con los datos de la compañía de demostración. Las capturas
+  muestran datos ya consultados: ninguna llamada a servicios externos.
+pasos:
+  - titulo: Activar la validación
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Validación RUC/DNI (PE)
+    texto: >-
+      Marque **Validar RUC** y **Validar DNI** para que la consulta se lance al
+      ingresar o modificar el documento del contacto. **Fallback en cascada**
+      decide si, cuando la primera conexión falla, se prueban las siguientes.
+    puntos:
+      - Desactivado (por defecto) se usa solo la conexión activa de mayor prioridad.
+      - "**Configurar conexiones RUC/DNI** abre las conexiones de la compañía."
+      - Los mismos interruptores están en la pestaña **Validación RUC/DNI (PE)** de la ficha de la compañía.
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: Ordenar las conexiones
+    ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI
+    texto: >-
+      Cada conexión indica su motor (API REST/JSON o SUNAT por scraping), a qué
+      documentos responde y si está habilitada. Arrastre las filas para cambiar
+      la prioridad; el interruptor **Habilitada** la saca de la consulta sin
+      borrarla.
+    imagen: screenshots/02-conexiones.png
+    pie: "Cinco conexiones sembradas al instalar; json.pe viene deshabilitada."
+
+  - titulo: Revisar cómo se llama a la API y qué se guarda
+    ruta: Conexiones RUC/DNI ▸ Decolecta
+    texto: >-
+      En **Conexión REST** van la URL base, los endpoints con el marcador
+      `{doc}`, el método (GET o POST con cuerpo JSON), la autenticación y el
+      token. **Ruta de éxito** y **Raíz de datos** indican cómo leer la
+      respuesta. En **Mapeo de campos** cada fila lleva un atributo a un campo
+      del contacto.
+    puntos:
+      - "Plantillas para concatenar: `{first_last_name} {second_last_name} {first_name}` con transformación **Título**."
+      - "**Aplica a**: solo RUC, solo DNI o ambos."
+      - El campo de destino puede ser cualquier campo de texto, booleano o selección del contacto.
+    imagen: screenshots/03-conexion-mapeo.png
+
+  - titulo: La consulta oficial de SUNAT
+    ruta: Conexiones RUC/DNI ▸ SUNAT (oficial)
+    texto: >-
+      El motor **SUNAT oficial (scraping)** lee la consulta RUC del portal y
+      pasa el resultado por el mismo mapeo. Puede además crear como contactos
+      hijos a los **representantes legales** (gerente, apoderado) y los
+      **locales anexos**.
+    imagen: screenshots/04-conexion-sunat.png
+
+  - titulo: El contacto con los datos de SUNAT
+    ruta: Contactos ▸ (contacto con RUC)
+    texto: >-
+      Con la validación activa, escribir el RUC rellena el contacto. La
+      cabecera muestra el **Estado SUNAT** (ACTIVO, BAJA DE OFICIO…) y la cinta
+      la condición **Habido** o **No Habido**. Junto al número quedan las
+      casillas **Buen contribuyente** y **Agente de retención**.
+    puntos:
+      - "**Actualizar desde API** repite la consulta y, si falla, muestra el motivo real (plan vencido, token, sin datos)."
+      - Las dos casillas del padrón son editables por si la designación aún no figura en el padrón descargado.
+    imagen: screenshots/05-contacto.png
+    pie: "NOR AUTOS CHICLAYO S.A.C.: activo, habido y agente de retención."
+
+  - titulo: Consultar el padrón SUNAT
+    ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Padrón SUNAT
+    texto: >-
+      Lista de los RUC de ambos padrones con la fecha de la última
+      sincronización, con filtros **Buenos contribuyentes** y **Agentes de
+      retención** y agrupación por tipo.
+    imagen: screenshots/06-padron.png
+    pie: 50 710 buenos contribuyentes y 7 212 agentes de retención en la base de demostración.
+
+funcionalidades:
+  - grupo: Consulta
+    items:
+      - Consulta automática al escribir el RUC o el DNI, activable por separado para cada documento.
+      - Validación de formato del RUC (11 dígitos, prefijo 10/15/17/20) y del DNI (8 dígitos).
+      - Botón **Actualizar desde API** con el mensaje de error de la API cuando falla.
+      - Aviso en el contacto cuando la última consulta no obtuvo datos.
+      - Tipo de documento propuesto según persona (DNI) o empresa (RUC).
+  - grupo: Conexiones configurables
+    items:
+      - "Motores: API REST/JSON, SUNAT oficial y SUNAT multi-consulta (scraping)."
+      - "Autenticación Bearer, cabecera personalizada, parámetro de URL o ninguna."
+      - Métodos GET y POST con plantilla de cuerpo JSON.
+      - Prioridad por arrastre, habilitación por conexión y fallback en cascada opcional.
+      - "Mapeo por filas: rutas con puntos e índices, plantillas, transformaciones, valor por defecto y «omitir si vacío»."
+      - Resolución de ubigeo a distrito, ciudad y departamento.
+      - Importación opcional de representantes legales y locales anexos (SUNAT oficial).
+  - grupo: Padrón SUNAT
+    items:
+      - Descarga diaria de los padrones de buenos contribuyentes y agentes de retención.
+      - Marca en el contacto al consultar un RUC; campos editables.
+      - Fuente de las excepciones del régimen de retenciones del IGV.
+
+ejemplos:
+  - titulo: Qué conexión responde
+    texto: >-
+      Orden de la compañía de demostración, con tokens puestos en apis.net.pe y
+      apiperu.dev:
+    tabla:
+      - [Prioridad, Conexión, Documentos, "Fallback desactivado", "Fallback activado"]
+      - ["1", apis.net.pe, RUC y DNI, Única que se consulta, Primera]
+      - ["2", apiperu.dev, RUC y DNI, No se consulta, Si falla la anterior]
+      - ["3", SUNAT (oficial), RUC, No se consulta, Si fallan las anteriores (solo RUC)]
+      - ["4", json.pe, RUC y DNI, Deshabilitada, Deshabilitada]
+      - ["5", Decolecta, RUC y DNI, No se consulta, Se salta mientras no tenga token]
+
+  - titulo: Nombre de una persona desde el DNI
+    texto: >-
+      RENIEC devuelve el nombre partido. La fila de mapeo de Decolecta lo
+      recompone con los apellidos delante y la transformación **Título**:
+    codigo: |
+      Respuesta:  {"first_name": "JUAN", "first_last_name": "PÉREZ", "second_last_name": "GARCÍA"}
+      Plantilla:  {first_last_name} {second_last_name} {first_name}
+      Contacto:   Pérez García Juan
+
+configuracion_intro: >-
+  Al instalar se siembran las cinco conexiones en cada compañía peruana; basta
+  con poner el token de la API que se vaya a usar.
+configuracion:
+  - Instale el módulo desde Aplicaciones.
+  - "En **Perú ▸ Configuración ▸ Ajustes** active **Validar RUC** y **Validar DNI**."
+  - "En **Conexiones RUC/DNI** ponga el token en la conexión elegida y arrástrela al primer lugar."
+  - Active **Fallback en cascada** si quiere que se prueben las demás cuando la primera falle.
+  - "Compruebe que la acción planificada **SUNAT: Sincronizar padrón** esté activa; para una primera carga inmediata, ejecútela desde Ajustes ▸ Técnico ▸ Acciones planificadas."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Necesita las librerías de Python
+  `requests` y `beautifulsoup4` y salida a internet hacia las APIs elegidas y
+  los padrones de SUNAT.
+
+faq:
+  - pregunta: Escribo el RUC y no se completa nada, ¿por qué?
+    respuesta: >-
+      Revise que **Validar RUC** esté activo y que la conexión de mayor
+      prioridad esté habilitada y tenga token. Pulse **Actualizar desde API**:
+      muestra el motivo exacto del fallo.
+  - pregunta: ¿Qué pasa si la API de pago vence?
+    respuesta: >-
+      Con **Fallback en cascada** activo se consulta la siguiente conexión, por
+      ejemplo SUNAT (oficial), que no requiere token. Sin fallback, el contacto
+      queda con el aviso para completarlo a mano.
+  - pregunta: ¿Puedo guardar un dato que la API trae y hoy no se usa?
+    respuesta: >-
+      Sí: añada una fila en **Mapeo de campos** con la ruta del atributo y el
+      campo del contacto de destino. No hace falta tocar código.
+  - pregunta: ¿Cada consulta descarga el padrón de SUNAT?
+    respuesta: >-
+      No. El padrón se descarga una vez al día y se guarda en la base; la marca
+      del contacto es una búsqueda local por RUC.
+  - pregunta: Un proveedor fue designado agente de retención y no aparece marcado.
+    respuesta: >-
+      El padrón descargado puede ir por detrás de la designación. Marque la
+      casilla **Agente de retención** en el contacto; la siguiente consulta del
+      RUC la volverá a tomar del padrón.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - Menús de la app Perú reordenados; consultas RUC/DNI agrupadas en Configuración.
+  - version: 8.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Los ajustes de RUC/DNI se ven dentro de la sección Perú de Ajustes (antes salían en blanco).
+      - Padrón SUNAT y conexiones RUC/DNI también en la app Perú.
+  - version: 6.20260827
+    fecha: 27/08/2026
+    cambios:
+      - Buen contribuyente y agente de retención editables en el contacto, como fuente única de las excepciones de retención.
+  - version: 5.20260815
+    fecha: 18/08/2026
+    cambios:
+      - Nueva conexión Decolecta (RUC contra SUNAT y DNI contra RENIEC), añadida también en bases ya instaladas.
+  - version: 1.20260717
+    fecha: 16/07/2026
+    cambios:
+      - Consulta configurable por datos, mapeo de campos, fallback en cascada y padrón SUNAT con descarga diaria.
+
+relacionados: [al_l10n_pe_retention, al_l10n_pe_currency, al_account_base]

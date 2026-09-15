@@ -1,0 +1,172 @@
+titulo: Medios de pago SUNAT
+subtitulo: >-
+  El catálogo de medios de pago de SUNAT y el número de operación bancaria en
+  cada pago, registrados desde el mismo asistente con el que se paga la
+  factura.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Medios de pago, Bancarización, Número de operación, Tabla 1 SUNAT, Detracciones]
+portada: screenshots/03-asistente-pago.png
+
+destacados_intro: >-
+  Dos datos que cualquier fiscalización pide y que Odoo no guarda de serie:
+  con qué medio se pagó y qué número de operación dio el banco.
+destacados:
+  - icono: "001"
+    titulo: Catálogo SUNAT cargado
+    texto: >-
+      Los 20 medios de pago de la tabla de SUNAT, del 001 Depósito en cuenta al
+      999 Otros medios de pago, listos al instalar.
+  - icono: "→"
+    titulo: Desde el asistente de pago
+    texto: >-
+      **Medio pago** y **Número de operación banco** se llenan al pagar la
+      factura y pasan solos al pago creado, también en pagos agrupados.
+  - icono: "S/"
+    titulo: Sustento de bancarización
+    texto: >-
+      Cada pago queda con el medio utilizado y la referencia bancaria para
+      cruzarla con el extracto.
+  - icono: "SP"
+    titulo: Marca para detracción
+    texto: >-
+      Cada medio indica si es válido para el depósito de detracciones; en el
+      catálogo inicial, la 003 Transferencia de fondos.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La Ley para la Lucha contra la Evasión y para la Formalización de la
+    Economía obliga a pagar con **medios de pago bancarizados** las
+    obligaciones desde cierto importe; si no, el gasto y el crédito fiscal
+    pueden desconocerse. Para sustentarlo hay que saber, pago por pago, **qué
+    medio se usó** según la tabla de SUNAT y **qué número de operación** dio el
+    banco.
+
+
+    En Odoo estándar ese dato queda en el extracto o en una hoja aparte. Este
+    módulo lo guarda en el propio pago y lo pide en el momento de registrarlo.
+  nota: >-
+    **Sin cambiar el flujo de pagos.** Los campos se añaden al formulario de
+    pago y al asistente **Pagar** nativos; no hay pantallas nuevas que
+    aprender. Los dos son opcionales.
+
+pasos_intro: >-
+  Recorrido con los datos de demostración del proveedor DEMO PAGO Proveedor SAC.
+pasos:
+  - titulo: El catálogo de medios de pago
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago
+    texto: >-
+      Lista con el **Código** y la **Descripción** de cada medio. Las columnas
+      **Código de facturador** y **Para detracción** están ocultas por defecto:
+      actívelas desde el selector de columnas. También en **Contabilidad ▸
+      Configuración ▸ Medios de pago**.
+    imagen: screenshots/01-catalogo.png
+
+  - titulo: Ficha del medio de pago
+    ruta: Medios de pago ▸ 003 TRANSFERENCIA DE FONDOS
+    texto: >-
+      Cada medio tiene código (hasta 4 caracteres), descripción, **Código de
+      facturador** y la casilla **Para detracción**. Puede crear medios nuevos
+      o archivar los que no use.
+    imagen: screenshots/02-medio-pago.png
+
+  - titulo: Pagar la factura indicando el medio
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ Pagar
+    texto: >-
+      El asistente **Pagar** muestra **Medio pago** y **Número de operación
+      banco**. El medio se busca por código o por descripción: escriba `003` o
+      `transferencia`.
+    imagen: screenshots/03-asistente-pago.png
+    pie: "Factura F001-00004588 de S/ 590,00 pagada por transferencia, operación 00461390."
+
+  - titulo: El pago guarda los datos
+    ruta: Contabilidad ▸ Proveedores ▸ Pagos
+    texto: >-
+      El pago creado lleva el medio y el número de operación del asistente.
+      Mientras está en borrador se pueden editar en el formulario; una vez
+      confirmado quedan de solo lectura.
+    imagen: screenshots/04-pago.png
+    pie: "Pago PBNK1/2026/00002 de S/ 590,00: 003 - TRANSFERENCIA DE FONDOS, operación 00458721."
+
+funcionalidades:
+  - grupo: Catálogo
+    items:
+      - "Modelo **Medios de pago** con código, descripción, código de facturador y marca **Para detracción**."
+      - 20 medios de pago SUNAT cargados al instalar (001 a 011, 101 a 108 y 999).
+      - Registros mostrados como «código - descripción» y búsqueda por cualquiera de los dos.
+      - Archivado de medios que no se usan.
+  - grupo: Pagos
+    items:
+      - "**Medio pago** y **Número de operación banco** en el formulario del pago, editables en borrador."
+      - Los mismos campos en el asistente **Pagar**.
+      - Traslado automático del asistente al pago, también al pagar varias facturas en un pago agrupado.
+      - Sin medio de pago elegido, el pago queda con el campo vacío.
+  - grupo: Menús
+    items:
+      - "Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago."
+      - "Contabilidad ▸ Configuración ▸ Medios de pago."
+
+ejemplos:
+  - titulo: Catálogo inicial
+    tabla:
+      - [Código, Descripción, Código de facturador, Para detracción]
+      - ["001", DEPÓSITO EN CUENTA, "1", ""]
+      - ["002", GIRO, "2", ""]
+      - ["003", TRANSFERENCIA DE FONDOS, "3", Sí]
+      - ["004", ORDEN DE PAGO, "4", ""]
+      - ["005", TARJETA DE DÉBITO, "5", ""]
+      - ["006", TARJETA DE CRÉDITO, "6", ""]
+      - ["007", CHEQUES NO NEGOCIABLES, "7", ""]
+      - ["008", "EFECTIVO, POR OPERACIONES EN LAS QUE NO EXISTE OBLIGACIÓN DE UTILIZAR MEDIOS DE PAGO", "8", ""]
+      - ["009", "EFECTIVO, EN LOS DEMÁS CASOS", "9", ""]
+      - ["010", MEDIOS DE PAGO DE COMERCIO EXTERIOR, "10", ""]
+      - ["011", LETRAS DE CAMBIO, "11", ""]
+      - ["101 a 108", "Transferencias, cheques, órdenes de pago, remesas y cartas de crédito de comercio exterior", "", ""]
+      - ["999", OTROS MEDIOS DE PAGO (ESPECIFICAR), "", ""]
+
+  - titulo: Un pago, dos facturas
+    texto: >-
+      Si selecciona dos facturas del mismo proveedor de S/ 590,00 cada una y
+      paga con **Agrupar pagos** activado, el asistente crea un solo pago de
+      S/ 1.180,00 con el medio y el número de operación indicados. Sin agrupar,
+      cada uno de los pagos creados recibe los mismos datos.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; el catálogo se carga solo.
+  - "Revise el catálogo en **Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago** y archive los medios que no use."
+  - Al registrar cada pago, elija el medio y anote el número de operación del banco.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Cualquier usuario interno puede
+  consultar y mantener el catálogo.
+
+faq:
+  - pregunta: ¿Puedo completar el medio de pago después de confirmar el pago?
+    respuesta: >-
+      En el formulario los dos campos solo se editan en borrador. Si el pago ya
+      está confirmado, restablézcalo a borrador, complételos y vuelva a
+      confirmarlo.
+  - pregunta: ¿Por qué no veo las columnas Código de facturador y Para detracción?
+    respuesta: >-
+      Son columnas opcionales de la lista. Actívelas desde el selector de
+      columnas, a la derecha de la cabecera.
+  - pregunta: Si modifico el catálogo, ¿se pierden mis cambios al actualizar el módulo?
+    respuesta: >-
+      No. Los medios de pago iniciales se cargan una sola vez y las
+      actualizaciones del módulo no los sobrescriben.
+
+novedades:
+  - version: 3.20260828
+    fecha: 14/09/2026
+    cambios:
+      - "El catálogo pasa a **Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago**."
+  - version: 2.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Acceso al catálogo desde la app Perú.
+  - version: 1.20260721
+    fecha: 25/07/2026
+    cambios:
+      - Catálogo de medios de pago SUNAT y campos en el pago y en el asistente de pago.
+      - Traslado de los datos a los pagos agrupados.
+
+relacionados: [al_account_base, al_l10n_pe_detraction, al_l10n_pe_retention]

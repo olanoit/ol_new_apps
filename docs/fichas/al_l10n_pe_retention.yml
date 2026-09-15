@@ -1,0 +1,234 @@
+titulo: Retenciones del IGV
+subtitulo: >-
+  Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT) sobre el marco nativo
+  de Odoo 19: el 3 % se calcula en cada pago, el comprobante se numera solo y
+  el resumen para el PDT 626 sale en un clic.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Agente de retención, "3 % por pago", Comprobante R001, XML CRE, PDT 626, Retenciones sufridas]
+portada: screenshots/03-registrar-pago.png
+
+destacados_intro: >-
+  Cubre los dos lados del régimen: cuando la empresa es agente y retiene a sus
+  proveedores, y cuando un cliente agente le retiene a ella.
+destacados:
+  - icono: "3%"
+    titulo: Retención en cada pago
+    texto: >-
+      El asistente de pago propone el 3 % del importe pagado, también en pagos
+      parciales, y asienta el neto al proveedor y la retención en la cuenta 4011x.
+  - icono: "✓"
+    titulo: Excepciones automáticas
+    texto: >-
+      Montos hasta S/ 700, proveedor agente o buen contribuyente según el padrón
+      SUNAT, boletas y operaciones con detracción quedan fuera sin intervención.
+  - icono: "#"
+    titulo: Comprobante numerado
+    texto: >-
+      Cada pago con retención recibe su número R001-######## al emitirse y genera
+      el XML UBL del Comprobante de Retención Electrónico (CRE).
+  - icono: "↔"
+    titulo: Retenciones sufridas
+    texto: >-
+      Registra el comprobante que entrega el cliente agente: asiento a la 40114
+      conciliado con la factura de venta, listo como crédito de IGV.
+  - icono: "626"
+    titulo: Resumen para el PDT 626
+    texto: >-
+      TXT mensual con una línea por retención: proveedor, comprobante pagado,
+      pago, número de retención e importe retenido.
+  - icono: "PLE"
+    titulo: Marca en el PLE 8.3
+    texto: >-
+      Las compras sujetas a retención salen marcadas en el Registro de Compras
+      Simplificado, sin configuración adicional.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Los agentes de retención designados por SUNAT deben retener el **3 % del
+    importe total** de cada pago a sus proveedores cuando la operación gravada
+    supera **S/ 700**, entregar un comprobante de retención y declararlo en el
+    PDT 626.
+
+
+    Hacerlo a mano obliga a calcular la retención en cada pago —también en los
+    parciales—, a revisar a mano las excepciones del padrón, a numerar
+    comprobantes en una hoja aparte y a reconstruir el resumen del mes al
+    declarar. Este módulo lleva todo eso al flujo normal de pagos de Odoo.
+  nota: >-
+    **Base técnica nativa.** No crea asientos manuales: usa el marco de
+    retenciones en el pago de Odoo 19 (`l10n_account_withholding_tax`), el mismo
+    que emplean otras localizaciones. Actualizar Odoo no rompe el flujo.
+
+pasos_intro: >-
+  Recorrido completo con los datos de demostración: desde la configuración
+  hasta el resumen del mes.
+pasos:
+  - titulo: Activar la empresa como agente de retención
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Retenciones del IGV
+    texto: >-
+      Marque **Agente de retención del IGV** y revise la tasa (3 %) y el monto
+      mínimo (S/ 700). Elija el **impuesto de retención**: un impuesto de compras
+      negativo (-3 %) marcado como retención en el pago, con su cuenta 4011x y la
+      secuencia que numera los comprobantes.
+    puntos:
+      - La **cuenta transitoria** se usa cuando el método de pago no trae cuenta de pagos pendientes.
+      - En el mismo bloque se configuran la cuenta y el diario de las **retenciones sufridas**.
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: La factura de proveedor detecta la retención
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas
+    texto: >-
+      Al publicar una factura que califica, el módulo añade el impuesto
+      **Retención IGV 3%** a sus líneas **sin alterar el total**: la deuda con el
+      proveedor sigue siendo el importe íntegro, porque la retención se practica
+      al pagar.
+    imagen: screenshots/02-factura.png
+    pie: Factura de S/ 2.360,00 sujeta a retención; el total no cambia.
+
+  - titulo: Registrar el pago con la retención propuesta
+    ruta: Factura ▸ Pagar
+    texto: >-
+      El asistente de pago trae la línea de retención ya calculada sobre el
+      importe que se paga y muestra el **neto a pagar**. En un pago parcial
+      propone el 3 % de ese pago; el importe es editable.
+    imagen: screenshots/03-registrar-pago.png
+    pie: "Pago de S/ 5.900,00: retención S/ 177,00 y neto S/ 5.723,00."
+
+  - titulo: Comprobante numerado y XML CRE
+    ruta: Pago ▸ XML CRE
+    texto: >-
+      Al emitirse, el pago recibe el número de comprobante (R001-00000001) y el
+      botón **XML CRE** genera el Comprobante de Retención Electrónico en UBL,
+      listo para firmar y enviar por su OSE.
+    imagen: screenshots/04-pago-cre.png
+
+  - titulo: Consultar las retenciones efectuadas
+    ruta: Perú ▸ Retenciones IGV ▸ Retenciones efectuadas
+    texto: >-
+      Todos los pagos con retención en una sola lista, con filtros y
+      agrupaciones estándar de Odoo.
+    imagen: screenshots/05-efectuadas.png
+
+  - titulo: Registrar una retención sufrida
+    ruta: Perú ▸ Retenciones IGV ▸ Retenciones sufridas
+    texto: >-
+      Cuando un cliente agente paga neto, registre su comprobante: número,
+      fecha, factura y monto (propuesto al 3 %). Al **Registrar** se genera el
+      asiento a la cuenta 40114 contra el cliente, conciliado con la factura.
+    imagen: screenshots/06-sufrida.png
+
+  - titulo: Generar el resumen del mes para el PDT 626
+    ruta: Perú ▸ Retenciones IGV ▸ Resumen 626
+    texto: >-
+      Elija el periodo —por defecto el mes anterior, que es el que se declara— y
+      pulse **Generar**. El asistente muestra cuántas retenciones incluye, el
+      total retenido y el archivo para descargar. Si el mes no tiene
+      retenciones, lo avisa en lugar de entregar un archivo vacío.
+    imagen: screenshots/07-resumen-626.png
+
+funcionalidades:
+  - grupo: Agente de retención (compras)
+    items:
+      - Aplicabilidad automática por factura con la tasa y el mínimo configurables.
+      - "Excepciones del régimen: proveedor agente, buen contribuyente, boletas y operaciones con detracción."
+      - Impuesto de retención inyectado al publicar, sin alterar el total de la factura.
+      - Retención propuesta en cada pago, incluidos los parciales.
+      - Número de comprobante (serie R001) asignado al emitir el pago.
+      - XML UBL del Comprobante de Retención Electrónico desde el pago.
+  - grupo: Proveedor retenido (ventas)
+    items:
+      - Registro de los comprobantes de retención recibidos de clientes agentes.
+      - Asiento a la cuenta 40114 conciliado con la factura de venta.
+      - Vuelta a borrador que deshace el asiento y la conciliación.
+  - grupo: Declaración y reportes
+    items:
+      - Resumen mensual TXT como soporte del PDT 626, con cantidad y total retenido.
+      - Periodo por defecto en el mes anterior y aviso cuando no hay retenciones.
+      - Marca de retención en el PLE 8.3 (Registro de Compras Simplificado).
+      - Menú propio en la app Perú con efectuadas, sufridas y resumen.
+
+ejemplos:
+  - titulo: Pago total y pago parcial de la misma factura
+    texto: >-
+      Factura de proveedor por **S/ 5.900,00** (base S/ 5.000 + IGV S/ 900),
+      proveedor sin excepciones. La retención se calcula sobre lo que se paga
+      en cada momento:
+    tabla:
+      - [Pago, Importe pagado, Retención 3 %, Neto al proveedor, Cuenta de la retención]
+      - [Pago único, "S/ 5.900,00", "S/ 177,00", "S/ 5.723,00", 4011x IGV – Retenciones por pagar]
+      - [Primer parcial, "S/ 3.000,00", "S/ 90,00", "S/ 2.910,00", 4011x]
+      - [Segundo parcial, "S/ 2.900,00", "S/ 87,00", "S/ 2.813,00", 4011x]
+    nota: En los dos casos la retención total es S/ 177,00 y la factura queda saldada.
+
+  - titulo: Cuándo NO se retiene
+    tabla:
+      - [Situación, "¿Retiene?", Motivo]
+      - ["Factura de S/ 650,00", "No", Importe igual o menor que el mínimo de S/ 700]
+      - [Proveedor designado agente de retención, "No", Agente frente a agente]
+      - [Proveedor buen contribuyente, "No", Excluido por el padrón SUNAT]
+      - [Boleta de venta, "No", Tipo de comprobante excluido]
+      - [Operación con detracción, "No", La detracción excluye la retención]
+
+  - titulo: Línea del resumen 626
+    texto: >-
+      Cada retención efectuada del periodo produce una línea con estos campos,
+      separados por `|`: RUC y razón social del proveedor, comprobante pagado,
+      fecha y monto del pago, número de comprobante de retención y monto retenido.
+    codigo: |
+      20131312955|DEMO RET Proveedor SAC|F00T-00000901|2026-07-17|2360.00|R001-00000001|70.80
+      20131312955|DEMO RET Proveedor SAC|F00T-00000902|2026-07-19|1770.00|R001-00000002|53.10
+
+configuracion_intro: >-
+  El módulo trae un script de datos de demostración que crea el impuesto, las
+  cuentas y un flujo completo de ejemplo para validar la instalación.
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere la localización peruana).
+  - "En **Ajustes ▸ Perú ▸ Retenciones del IGV** active **Agente de retención del IGV**, revise tasa y mínimo y elija el impuesto de retención."
+  - "Cree el impuesto de retención si no existe: compras, **-3 %**, retención en el pago, cuenta 4011x y secuencia `R001-########`."
+  - Mantenga actualizado el padrón SUNAT de contactos (buen contribuyente y agente de retención) con `l10n_pe_vat_sunat`.
+  - Para las retenciones sufridas, configure la cuenta 40114 y el diario en el mismo bloque de Ajustes.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. La firma y el envío del CRE los realiza
+  su OSE: el módulo entrega el XML UBL sin firmar.
+
+faq:
+  - pregunta: ¿Por qué el asistente de pago no propone la retención?
+    respuesta: >-
+      La factura no califica (revise el mínimo y las excepciones del proveedor) o
+      se publicó antes de configurar el impuesto de retención. Pásela a borrador
+      y vuelva a publicarla.
+  - pregunta: ¿Qué pasa con los pagos parciales?
+    respuesta: >-
+      Cada pago retiene el 3 % de su propio importe. La suma de las retenciones
+      coincide con el 3 % del total cuando la factura queda pagada.
+  - pregunta: ¿De dónde salen «agente de retención» y «buen contribuyente»?
+    respuesta: >-
+      Del padrón oficial de SUNAT que mantiene el módulo `l10n_pe_vat_sunat` en el
+      contacto. Ambos campos son editables por si la designación aún no figura
+      en el padrón descargado.
+  - pregunta: ¿El módulo firma y envía el comprobante de retención?
+    respuesta: >-
+      No. Genera el XML UBL del CRE; la firma digital y el envío a SUNAT corren
+      a cargo de su OSE.
+  - pregunta: El Resumen 626 dice que no hay retenciones, ¿es un error?
+    respuesta: >-
+      Significa que no hay pagos con retención emitidos en ese mes para la
+      compañía activa. Compruebe el periodo: por defecto se propone el mes
+      anterior.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "Resumen 626: periodo por defecto en el mes anterior, aviso cuando no hay retenciones y resumen con cantidad y total retenido."
+  - version: 5.20260828
+    fecha: 27/08/2026
+    cambios:
+      - Las excepciones del régimen se toman del padrón SUNAT, fuente única y editable.
+  - version: 2.20260719
+    fecha: 19/07/2026
+    cambios:
+      - Retención en el pago, retenciones sufridas, XML CRE y resumen 626.
+      - Etiquetas en español, cuenta transitoria y guía funcional con diagramas.
+
+relacionados: [al_l10n_pe_detraction, l10n_pe_vat_sunat, al_l10n_pe_ple, al_account_base]

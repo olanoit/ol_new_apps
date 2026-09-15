@@ -1,0 +1,359 @@
+titulo: Planillas Perú — Núcleo
+subtitulo: >-
+  La norma laboral peruana debajo del motor de nómina de Odoo 19: ficha
+  laboral con los códigos del T-Registro, AFP/ONP y EsSalud, derechohabientes
+  con asignación familiar por edad, reglas salariales con su código SUNAT y
+  los archivos PLAME, AFPNet y T-Registro listos para subir.
+categoria: Localización Perú · Planillas
+etiquetas: [PLAME, T-Registro, AFP / ONP, EsSalud, Asignación familiar, Derechohabientes, Multicompañía]
+portada: screenshots/10-boleta-peru.png
+
+destacados_intro: >-
+  Es la base de la suite de planillas: los demás módulos (beneficios,
+  asistencia, contabilidad, reportes, importadores) leen lo que se configura
+  aquí.
+destacados:
+  - icono: "T"
+    titulo: Ficha laboral T-Registro
+    texto: >-
+      Régimen laboral (T33), tipo de contrato (T12), ocupación (T30), situación
+      educativa (T09), domicilio estructurado y demás datos de las estructuras
+      E04, E05 y E11, en la propia ficha del empleado.
+  - icono: "%"
+    titulo: AFP, ONP y EsSalud
+    texto: >-
+      Afiliaciones con aporte al fondo, comisión sobre flujo o mixta, prima de
+      seguro y tope asegurable; seguros sociales EsSalud (9 %) y EPS con su tasa.
+  - icono: "AF"
+    titulo: Asignación familiar por edad
+    texto: >-
+      El derecho sale de los hijos registrados: menores de 18 años, o hasta 24
+      si cursan estudios superiores (Ley 25129). Caduca solo el día que el hijo
+      cumple la edad.
+  - icono: "📷"
+    titulo: Snapshot en la boleta
+    texto: >-
+      Al calcular, la boleta guarda la RMV, la asignación familiar y las tasas
+      AFP que usó: recalcular una boleta antigua no la contamina con las tasas
+      de hoy.
+  - icono: "601"
+    titulo: PLAME y AFPNet
+    texto: >-
+      Desde el lote de nóminas: archivos .rem, .jor, .snl y .toc con el nombre
+      oficial 0601AAAAMM<RUC> y la plantilla XLSX de AFPNet, guardados como
+      adjuntos del lote.
+  - icono: "✓"
+    titulo: Carga masiva validada
+    texto: >-
+      El ZIP del T-Registro (.ide, .tra, .per y, si aplican, .est, .edu, .cta)
+      se genera solo después de revisar lo que el PVS de SUNAT rechazaría.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo trae un motor de nómina, pero no la norma peruana: ni los catálogos
+    del Anexo 2 de la Planilla Electrónica, ni las tasas de AFP y ONP, ni la
+    asignación familiar, ni los formatos que exige SUNAT para declarar.
+
+
+    Este módulo añade todo eso sobre `hr.version` —que en Odoo 19 absorbió al
+    contrato— sin escribir códigos dentro de la lógica: qué work entry es un
+    día laborado, qué categoría de regla es un ingreso o qué regla da el neto
+    se configura en los **Parámetros principales** de cada compañía. Los
+    catálogos llegan cargados (tablas T05, T06, T08, T09, T12, T15, T17, T21,
+    T24, T30, T33, T34 y T36) y se revisan, no se teclean.
+  nota: >-
+    **Multicompañía por diseño.** Parámetros, periodos y catálogos propios
+    por compañía, reglas de registro y `check_company` en todo el módulo: dos
+    empresas con criterios distintos conviven en la misma base.
+
+pasos_intro: >-
+  Recorrido con los datos de demostración de la compañía «Comercial Demo Perú
+  S.A.C.»: tres trabajadores DEMO con AFP INTEGRA, ONP y AFP PRIMA y su
+  planilla de julio de 2026.
+pasos:
+  - titulo: Todo lo peruano, agrupado en Configuración ▸ Perú
+    ruta: Nómina ▸ Configuración ▸ Perú
+    texto: >-
+      La configuración de la localización vive en siete grupos: Parámetros,
+      Periodos y suspensiones, Seguridad social, Derechohabientes, Catálogos
+      SUNAT, Construcción civil y Documentos (estos dos últimos los añaden
+      sus módulos).
+    imagen: screenshots/01-menu-peru.png
+    pie: Los catálogos del T-Registro se listan con su número de tabla.
+
+  - titulo: Parámetros principales de la compañía
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+    texto: >-
+      Un registro por compañía que consulta toda la suite. En **Generales**
+      se fija la **R.M.V.** (S/ 1 130 por defecto); la **asignación familiar**
+      se calcula sola como el 10 % de la RMV. En la pestaña **Boleta** se
+      clasifican los tipos de work entry (días laborados, no laborados,
+      subsidiados, sobretiempo y ausencias) y las categorías de reglas de
+      ingresos, descuentos y aportes.
+    puntos:
+      - Si falta el registro de una compañía, la boleta y los exportadores se niegan a trabajar con un mensaje claro en lugar de calcular mal.
+      - Las demás pestañas (beneficios sociales, quinta categoría, contabilidad, tareaje, pagos bancarios) las añaden los otros módulos de la suite.
+    imagen: screenshots/02-parametros.png
+
+  - titulo: Revisar afiliaciones AFP/ONP, seguros y UIT
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
+    texto: >-
+      Cada AFP trae su comisión sobre flujo, comisión mixta, prima de seguro,
+      aporte al fondo (10 %) y remuneración máxima asegurable; la ONP, su
+      13 %. Actualice las tasas cuando la SBS las cambie: las boletas ya
+      calculadas conservan las suyas.
+    puntos:
+      - "**Seguros sociales**: EsSalud 9 % y EPS 6,75 %."
+      - "**UIT** (Parámetros ▸ UIT): valor por año, que alimenta la renta de quinta categoría; si falta el año, el cálculo lo avisa."
+    imagen: screenshots/03-afiliaciones.png
+
+  - titulo: Generar los periodos del ejercicio
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Generar periodos
+    texto: >-
+      Crea de una vez los doce periodos mensuales con código PLAME `AAAAMM`.
+      Con **Generar también semanas** añade las semanas de lunes a domingo
+      cortadas en el fin de mes, colgadas de su mes: la suma de las semanas
+      es exactamente el mes y la PLAME no necesita prorrateos.
+    puntos:
+      - La boleta toma sola el periodo más ajustado que la contiene.
+      - Volver a generar un año no duplica periodos existentes.
+    imagen: screenshots/04-generar-periodos.png
+
+  - titulo: Identificación PLAME y domicilio del trabajador
+    ruta: Empleados ▸ ficha del empleado ▸ pestaña Personal
+    texto: >-
+      **Perú — Identificación (PLAME)** descompone el nombre en apellido
+      paterno, materno y nombres (el nombre del empleado se recompone solo),
+      con tipo y número de documento, condición de domicilio y cuenta CTS.
+      **Domicilio (T-Registro)** guarda hasta dos direcciones estructuradas:
+      vía, número, zona y distrito (ubigeo).
+    puntos:
+      - El tipo y número de documento no se pueden repetir dentro de la compañía.
+      - Para extranjeros se registran el país emisor (T26) y la nacionalidad (T04).
+    imagen: screenshots/05-ficha-plame.png
+
+  - titulo: Datos laborales del T-Registro
+    ruta: Empleados ▸ ficha del empleado ▸ pestaña Nómina ▸ T-Registro (SUNAT)
+    texto: >-
+      Condición laboral, jornada y remuneración, situación especial y riesgo:
+      los campos de la estructura E05 con el código SUNAT como clave. Al elegir
+      el **Régimen laboral (T33)** se ajusta el **Régimen laboral (PE)**, que es
+      la familia de cálculo de CTS, gratificación y vacaciones.
+    puntos:
+      - Establecimientos (E17), estudios concluidos (E29) y cuenta de abono (E30) se completan en el mismo bloque.
+      - Todo vive en la versión del empleado, así que los cambios quedan en su histórico.
+    imagen: screenshots/06-ficha-tregistro.png
+
+  - titulo: Afiliación y datos previsionales por versión
+    ruta: Nómina ▸ Empleados ▸ Registros de los empleados
+    texto: >-
+      El histórico de versiones muestra la afiliación AFP/ONP y el régimen, y
+      permite activar como columnas opcionales el tipo de trabajador (T08), la
+      situación (T15), el seguro social, el CUSPP y el tipo de comisión AFP.
+    imagen: screenshots/07-versiones.png
+    pie: Tres trabajadores DEMO con AFP INTEGRA (flujo), ONP y AFP PRIMA (mixta).
+
+  - titulo: Registrar los derechohabientes
+    ruta: Empleados ▸ ficha del empleado ▸ botón Derechohab.
+    texto: >-
+      Cónyuge o concubino, hijos menores, hijos mayores incapacitados y madre
+      gestante, con el documento que acredita el vínculo. La lista muestra la
+      edad y si **da asignación familiar** hoy; la situación pasa de «Por
+      declarar» a «Vigente» cuando su alta se incluye en la exportación para
+      el T-Registro.
+    puntos:
+      - "**Exportar para el T-Registro** genera el Excel de altas y bajas que alimenta la macro de carga masiva de SUNAT."
+      - También accesible en Empleados ▸ Empleados ▸ Derechohabientes, con filtros Vigentes, Por declarar y Dan asignación familiar.
+    imagen: screenshots/08-derechohabientes.png
+
+  - titulo: Ficha del derechohabiente
+    ruta: Derechohabientes ▸ registro
+    texto: >-
+      Vínculo, identificación, acreditación y asignación familiar. Solo se
+      admite un cónyuge o concubino vigente por trabajador; la gestante exige
+      fecha probable de parto. **Dar de baja** cierra el vínculo con la fecha
+      de hoy y pide el motivo (tabla de motivos de baja).
+    imagen: screenshots/09-derechohabiente.png
+
+  - titulo: Calcular la boleta con la estructura peruana
+    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ pestaña Perú
+    texto: >-
+      La estructura **BASE** trae 64 reglas con su código de la tabla 22 de
+      SUNAT: básico, asignación familiar, horas extras, gratificación, CTS,
+      ONP, AFP (fondo, comisión y prima), quinta categoría, descuentos al neto,
+      EsSalud y totales. La pestaña **Perú** muestra el snapshot del cálculo y
+      los totales PLAME de aportes del trabajador, descuentos al neto y
+      aportes del empleador.
+    imagen: screenshots/10-boleta-peru.png
+    pie: "Boleta de julio 2026 con AFP INTEGRA: aportes del trabajador S/ 385,97 y EsSalud S/ 262,17."
+
+  - titulo: Exportar PLAME y AFPNet desde el lote
+    ruta: Nómina ▸ Recibos de nómina ▸ Periodos de nómina ▸ menú ⋮ del lote
+    texto: >-
+      El menú del lote ofrece **PLAME (.rem)**, **PLAME horas (.jor)**,
+      **PLAME suspensiones (.snl)**, **PLAME condiciones (.toc)** y
+      **AFPNet (.xlsx)**. Cada archivo queda como adjunto del lote y se
+      descarga al momento.
+    puntos:
+      - Si el lote es semanal, la PLAME toma las boletas validadas de todas las semanas del mes.
+      - Las suspensiones de labores (T21) del periodo alimentan el archivo .snl.
+    imagen: screenshots/11-lote-plame.png
+
+  - titulo: Generar la carga masiva del T-Registro
+    ruta: Empleados ▸ lista ▸ seleccionar ▸ Acciones ▸ T-Registro
+    texto: >-
+      **T-Registro: generar alta (.ide/.tra/.per)** y **T-Registro: generar
+      baja (.per)** producen un ZIP con los archivos `RP_<RUC>` que se suben
+      al PVS de SUNAT.
+    imagen: screenshots/12-tregistro-acciones.png
+
+  - titulo: Corregir antes de subir
+    ruta: "Acciones ▸ T-Registro: generar alta"
+    texto: >-
+      Antes de generar nada, el módulo comprueba lo que SUNAT rechazaría
+      —documento, apellidos, sexo, fecha de nacimiento, catálogos obligatorios,
+      establecimiento (E17), estudios si la educación es superior (E29) y
+      cuenta de abono (E30)— y lo lista por trabajador.
+    imagen: screenshots/13-tregistro-validacion.png
+    pie: A los trabajadores DEMO les falta el sexo, el establecimiento, los estudios y la cuenta.
+
+funcionalidades:
+  - grupo: Ficha laboral y catálogos
+    items:
+      - Campos peruanos en la versión del empleado (histórico nativo de Odoo 19).
+      - Nombre descompuesto para PLAME, tipo de documento con códigos SUNAT y AFP.
+      - Dos domicilios estructurados con ubigeo para la E04.
+      - Catálogos del Anexo 2 cargados como datos, con 4 644 ocupaciones, instituciones educativas y carreras.
+      - Régimen SUNAT sincronizado con la familia de cálculo también desde código e importadores.
+  - grupo: Seguridad social y derechohabientes
+    items:
+      - Afiliaciones AFP/ONP con comisión sobre flujo o mixta, prima y tope asegurable.
+      - Seguros sociales (EsSalud, EPS) y aportes adicionales del empleador (Vida Ley).
+      - Derechohabientes con validaciones de identidad, cónyuge único vigente y gestante.
+      - Asignación familiar evaluada a la fecha de fin de la boleta según la edad y estudios de los hijos.
+      - Exportación Excel de altas y bajas de derechohabientes para la macro de SUNAT.
+  - grupo: Cálculo de la boleta
+    items:
+      - Estructura BASE con 64 reglas y su código de la tabla 22.
+      - Snapshot de RMV, asignación familiar y tasas AFP, editable en un caso puntual.
+      - Totales PLAME por categoría de regla, sin códigos escritos en la lógica.
+      - Días de descanso completados hasta los días calendario del periodo.
+      - Redondeo aritmético SUNAT (medio hacia arriba sobre Decimal).
+  - grupo: Periodos y declaraciones
+    items:
+      - Periodos mensuales y semanales por compañía, con código PLAME.
+      - Suspensiones de labores (T21) por periodo.
+      - PLAME .rem, .jor, .snl y .toc con nombre oficial 0601AAAAMM<RUC>.
+      - Plantilla XLSX de AFPNet con una fila por afiliado AFP.
+      - Carga masiva del T-Registro (alta y baja) con validación previa.
+
+ejemplos_intro: Cifras de la planilla DEMO de julio 2026 (estructura BASE, RMV S/ 1 130).
+ejemplos:
+  - titulo: Tres sistemas de pensiones en la misma planilla
+    texto: >-
+      Los importes salen de las líneas de cada boleta. La asignación familiar
+      (10 % de la RMV) solo la recibe la trabajadora con hijos menores.
+    tabla:
+      - [Concepto, "Salazar (AFP INTEGRA, flujo)", "Huamán (ONP)", "Rivas (AFP PRIMA, mixta)"]
+      - [Básico, "S/ 2.800,00", "S/ 1.800,00", "S/ 4.500,00"]
+      - [Asignación familiar, "S/ 113,00", "—", "—"]
+      - [Total ingresos, "S/ 2.913,00", "S/ 1.800,00", "S/ 4.500,00"]
+      - ["Aporte al fondo 10 % / ONP 13 %", "S/ 291,30", "S/ 234,00", "S/ 450,00"]
+      - [Comisión AFP, "S/ 45,15 (1,55 %)", "—", "S/ 0,00 (0 %)"]
+      - ["Prima de seguro 1,70 %", "S/ 49,52", "—", "S/ 76,50"]
+      - [Total aportes del trabajador, "S/ 385,97", "S/ 234,00", "S/ 526,50"]
+      - [Neto a pagar, "S/ 2.527,03", "S/ 1.566,00", "S/ 3.973,50"]
+      - [EsSalud 9 % (empleador), "S/ 262,17", "S/ 162,00", "S/ 405,00"]
+    nota: "Comprobación: 2.913,00 − 385,97 = 2.527,03. La prima se calcula sobre la remuneración hasta el tope asegurable de S/ 11.981,55."
+
+  - titulo: ¿Quién da asignación familiar?
+    texto: >-
+      La regla se evalúa en la fecha de fin de cada boleta, así que el derecho
+      se pierde solo el mes en que el hijo cumple la edad límite.
+    tabla:
+      - [Derechohabiente, Edad, "¿Estudia?", "¿Da asignación?", Motivo]
+      - [Hija (Camila), "10", "No", "Sí", Menor de 18 años]
+      - [Hijo (Mateo), "5", "No", "Sí", Menor de 18 años]
+      - [Cónyuge (Martín), "37", "—", "No", Solo cuentan los hijos]
+      - [Hijo de 20 años, "20", "Sí", "Sí", Hasta 24 si cursa estudios superiores]
+      - [Hijo de 20 años, "20", "No", "No", Superó los 18 sin estudios]
+    nota: Si el trabajador aún no tiene derechohabientes registrados, se usa el número de hijos de la ficha para no cortar una asignación que ya cobraba.
+
+  - titulo: Archivos que produce el módulo
+    tabla:
+      - [Archivo, Contenido, Dónde se genera]
+      - ["0601202607<RUC>.rem", Remuneraciones por trabajador y concepto, Lote ▸ PLAME (.rem)]
+      - ["0601202607<RUC>.jor", Horas ordinarias y de sobretiempo, Lote ▸ PLAME horas (.jor)]
+      - ["0601202607<RUC>.snl", Días de suspensión de labores (T21), Lote ▸ PLAME suspensiones (.snl)]
+      - ["0601202607<RUC>.toc", Otras condiciones del trabajador, Lote ▸ PLAME condiciones (.toc)]
+      - [AFPNet .xlsx, Una fila por afiliado AFP con su remuneración asegurable, Lote ▸ AFPNet (.xlsx)]
+      - ["RP_<RUC>.ide / .tra / .per", "T-Registro: E04 datos personales, E05 datos laborales, E11 periodos", Empleados ▸ Acciones]
+      - ["RP_<RUC>.est / .edu / .cta", "E17 establecimientos, E29 estudios, E30 cuenta de abono (si aplican)", Empleados ▸ Acciones]
+    nota: "Formato del T-Registro según el manual del PVS: separador | también al final de la línea, fechas dd/mm/aaaa y codificación latin-1."
+
+configuracion_intro: Puesta en marcha recomendada, en este orden.
+configuracion:
+  - Instale el módulo (requiere Nómina de Odoo Enterprise y la localización peruana).
+  - "Cree los **Parámetros principales** de cada compañía: RMV, reglas de referencia y la pestaña **Boleta**."
+  - Revise la **UIT** del año, las tasas de las **Afiliaciones (AFP/ONP)** y los **Seguros sociales**.
+  - "Genere los **periodos** del ejercicio (con semanas si hay regímenes semanales)."
+  - "Complete en cada empleado la identificación PLAME, el domicilio y los datos del **T-Registro**, y registre sus **derechohabientes**."
+  - "Asigne la estructura **BASE** (o la suya) a las boletas y calcule el primer lote."
+requisitos_nota: >-
+  Requiere Odoo 19 Enterprise (Nómina). La firma y el envío de los archivos a
+  SUNAT se hacen en sus propios aplicativos (PDT PLAME, PVS T-Registro y
+  AFPNet).
+
+faq:
+  - pregunta: ¿Dónde se registra la AFP, el CUSPP o el seguro social del trabajador?
+    respuesta: >-
+      Son campos de la versión del empleado. Se ven como columnas en Nómina ▸
+      Empleados ▸ Registros de los empleados y se cargan de forma masiva con el
+      importador «Datos PE de versiones» del módulo de importadores Excel.
+  - pregunta: Cambió la tasa de una AFP, ¿se recalculan las boletas anteriores?
+    respuesta: >-
+      No. Cada boleta guarda en la pestaña Perú las tasas con las que se
+      calculó. Las boletas nuevas toman la tasa vigente de la afiliación.
+  - pregunta: ¿Por qué el T-Registro no genera el archivo?
+    respuesta: >-
+      Porque faltan datos que SUNAT rechazaría. El aviso lista, por trabajador,
+      qué completar: documento, sexo, catálogos obligatorios, establecimiento,
+      estudios o cuenta de abono.
+  - pregunta: ¿Se generan las estructuras 13 y 24 de derechohabientes?
+    respuesta: >-
+      No hay especificación pública campo a campo de esas estructuras. El
+      módulo genera el Excel con las columnas del registro, que es lo que
+      consume la macro oficial de carga masiva.
+  - pregunta: ¿Puedo tener regímenes semanales, como construcción civil?
+    respuesta: >-
+      Sí. Genere los periodos con semanas: cada semana cuelga de su mes y la
+      PLAME del lote semanal declara el mes completo.
+
+novedades:
+  - fecha: 01/09/2026
+    cambios:
+      - Instalación corregida en bases de datos nuevas.
+  - version: 11.20260816
+    fecha: 18/08/2026
+    cambios:
+      - Configuración ▸ Perú reorganizada en grupos; los catálogos SUNAT, juntos y con su número de tabla.
+  - version: 10.20260803
+    fecha: 03/08/2026
+    cambios:
+      - Periodos semanales colgados del mes y PLAME mensual de los lotes semanales.
+  - version: 9.20260802
+    fecha: 02/08/2026
+    cambios:
+      - Derechohabientes con asignación familiar por edad y exportación para la macro de SUNAT.
+      - Carga masiva del T-Registro (E04, E05, E11, E17, E29 y E30) con validación previa.
+  - version: 5.20260722
+    fecha: 26/07/2026
+    cambios:
+      - Arreglos hallados en las pruebas funcionales de la planilla.
+  - version: 4.20260722
+    fecha: 25/07/2026
+    cambios:
+      - Primera versión para Odoo 19. Ficha laboral en la versión del empleado, catálogos PLAME, reglas salariales y exportadores PLAME/AFPNet.
+
+relacionados: [al_hr_pe_benefits, al_hr_pe_attendance, al_hr_pe_public_holidays, al_hr_pe_account, al_hr_pe_reports, al_hr_pe_import, al_hr_pe_construction]

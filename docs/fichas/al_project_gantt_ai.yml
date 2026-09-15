@@ -1,0 +1,188 @@
+titulo: Asistente de IA para el Gantt
+subtitulo: >-
+  Un chat dentro del diagrama de Gantt para preguntar por el cronograma y
+  recibir propuestas de cambio concretas. La IA nunca escribe en Odoo: usted
+  revisa cada propuesta y la aplica con un botón.
+categoria: Proyectos · Planificación
+etiquetas: [Chat en el Gantt, Propuestas revisables, Claude, OpenAI, DeepSeek, Clave solo en el servidor]
+portada: screenshots/02-panel.png
+
+destacados_intro: >-
+  Módulo opcional de la suite Gantt. Sin clave configurada, el diagrama queda
+  exactamente como estaba.
+destacados:
+  - icono: "?"
+    titulo: Pregunte por el plan
+    texto: >-
+      «¿Qué tareas van con retraso?», «¿Hay solapamientos en la ruta crítica?»:
+      el asistente responde sobre las tareas que está viendo.
+  - icono: "✓"
+    titulo: Propone, usted decide
+    texto: >-
+      Los cambios llegan como tarjetas con casilla (fechas, avance, nombre,
+      personas). Solo se guardan las que marque al pulsar **Aplicar**.
+  - icono: "🔒"
+    titulo: Mismos permisos
+    texto: >-
+      Aplicar pasa por el mismo camino que arrastrar una barra: una propuesta
+      sobre una tarea que no puede modificar se rechaza.
+  - icono: "∑"
+    titulo: Solo un resumen
+    texto: >-
+      Se envía nombre, proyecto, fechas, estado, avance, dependencias y, si lo
+      permite, personas asignadas. Nunca descripciones, mensajes ni adjuntos.
+  - icono: "AI"
+    titulo: Tres proveedores
+    texto: >-
+      Anthropic (Claude), OpenAI o DeepSeek, con enlace directo a donde crear la
+      clave. La clave queda en el servidor y nunca llega al navegador.
+  - icono: "!"
+    titulo: Respuestas validadas
+    texto: >-
+      Fechas mal formadas, avances fuera de 0–100, tareas fuera de la vista o
+      personas inexistentes se descartan con un aviso en el propio chat.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Revisar un cronograma de decenas de tareas para encontrar retrasos,
+    solapamientos o cargas mal repartidas lleva tiempo, y copiar el plan a un
+    chat externo expone datos del proyecto y obliga a trasladar a mano cada
+    cambio.
+
+
+    Este módulo pone el asistente dentro del Gantt: le envía solo un resumen de
+    lo que está en pantalla y convierte sus sugerencias en cambios que usted
+    aplica sin salir del diagrama.
+  nota: >-
+    **La IA no tiene permiso de escritura.** El modelo solo devuelve propuestas
+    estructuradas; el servidor las valida y la escritura la hace el usuario con
+    sus propios permisos de Proyecto, tarea por tarea.
+
+pasos_intro: >-
+  Configuración y panel del asistente sobre los proyectos de demostración
+  «[DEMO Gantt]». Las capturas no incluyen preguntas enviadas: el
+  funcionamiento de la conversación se describe en los pasos 3 y 4.
+pasos:
+  - titulo: Conectar el proveedor
+    ruta: Gantt ▸ Configuración ▸ Ajustes
+    texto: >-
+      En **Conexión** elija **Proveedor** (Anthropic, OpenAI o DeepSeek), pegue
+      la **Clave de API** y revise el **Modelo**, que se propone solo al cambiar
+      de proveedor. Bajo cada campo hay un enlace a la consola del proveedor.
+    puntos:
+      - "**Comportamiento**: esfuerzo de razonamiento (solo Anthropic), tokens máximos de respuesta (8.000) y tiempo de espera (90 segundos)."
+      - "**Privacidad**: tareas por consulta (200) y **Enviar personas asignadas**, necesario para proponer reasignaciones."
+      - El menú solo lo ven los administradores del sistema.
+    imagen: screenshots/01-ajustes-conexion.png
+
+  - titulo: Abrir el panel del asistente
+    ruta: Gantt ▸ Diagrama de Gantt ▸ Asistente
+    texto: >-
+      Con la clave configurada, la barra muestra el botón **Asistente**. El
+      panel lateral indica proveedor y modelo, explica qué se envía y ofrece
+      preguntas de ejemplo que se copian en el cuadro de texto.
+    imagen: screenshots/02-panel.png
+
+  - titulo: Preguntar sobre el cronograma
+    ruta: Asistente ▸ Pregunte algo sobre este cronograma…
+    texto: >-
+      Escriba la pregunta y pulse **Intro** o **Enviar**. El servidor relee con
+      su usuario las tareas visibles (hasta el límite configurado), arma el
+      resumen y consulta al proveedor. La respuesta aparece en la conversación;
+      el borrador vacía el historial.
+    puntos:
+      - "Los errores del proveedor se explican dentro del chat: clave rechazada, modelo desconocido, límite de peticiones, servicio caído o tiempo agotado."
+
+  - titulo: Revisar y aplicar las propuestas
+    ruta: Asistente ▸ Cambios propuestos ▸ Aplicar
+    texto: >-
+      Cuando el asistente sugiere cambios, aparecen bajo **Cambios propuestos**:
+      una tarjeta por tarea con el antes y el después («Inicio: … → …»,
+      «Avance: 20% → 60%», «Asignar a: …») y el motivo. Marque las que acepta y
+      pulse **Aplicar (n)**; el diagrama se recarga con los cambios guardados.
+
+funcionalidades:
+  - grupo: Conversación
+    items:
+      - Panel lateral en la aplicación Gantt del backend, con proveedor y modelo visibles.
+      - Preguntas de ejemplo, envío con Intro y botón para vaciar la conversación.
+      - Historial de la conversación reenviado como texto mientras la vista esté abierta.
+      - Errores del proveedor traducidos a mensajes accionables en el chat.
+  - grupo: Propuestas
+    items:
+      - Cambios de fecha de inicio y fin, avance, nombre y personas asignadas.
+      - Tarjetas con casilla, detalle del cambio y motivo; aplicación selectiva.
+      - Validación en el servidor de cada propuesta, con avisos de lo descartado.
+      - Escritura por el contrato del módulo base, con los permisos reales de cada tarea.
+  - grupo: Configuración y privacidad
+    items:
+      - Proveedores Anthropic, OpenAI y DeepSeek, con modelo por defecto y enlaces a sus consolas.
+      - URL base opcional para pasarelas compatibles.
+      - Esfuerzo de razonamiento, tokens máximos, tiempo de espera y tareas por consulta.
+      - Envío de personas asignadas opcional.
+      - Clave en los parámetros del sistema; nunca se envía al navegador.
+      - Conexión HTTP directa, sin instalar librerías de los proveedores.
+
+ejemplos:
+  - titulo: Qué recibe el proveedor
+    tabla:
+      - [Se envía, No se envía]
+      - ["Nombre y proyecto de la tarea", Descripción]
+      - [Fechas de inicio y fin, Mensajes y chatter]
+      - [Estado y avance, Adjuntos]
+      - [Dependencias visibles, "Cliente o contacto"]
+      - ["Personas asignadas (opcional)", "Etiquetas, horas e importes"]
+
+  - titulo: Proveedores y modelo por defecto
+    tabla:
+      - [Proveedor, Modelo propuesto, Dónde crear la clave]
+      - [Anthropic (Claude), claude-opus-5, console.anthropic.com]
+      - [OpenAI, gpt-5, platform.openai.com]
+      - [DeepSeek, deepseek-chat, platform.deepseek.com]
+    nota: >-
+      El modelo debe admitir «function calling»: es como llegan las propuestas
+      estructuradas.
+
+configuracion:
+  - "Instale **Gantt de Proyectos — Asistente IA**; requiere la aplicación Gantt del backend."
+  - Cree una clave de API en la consola de su proveedor.
+  - "En **Gantt ▸ Configuración ▸ Ajustes** elija proveedor, pegue la clave, revise el modelo y pulse **Guardar**."
+  - "Ajuste **Tareas por consulta** y **Tokens máximos** para acotar el coste por pregunta."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. El uso del proveedor de IA se factura
+  aparte según su contrato con él; el módulo no incluye créditos.
+
+faq:
+  - pregunta: ¿Por qué no veo el botón «Asistente»?
+    respuesta: >-
+      Falta la clave de API o el modelo en los ajustes. Sin ellos el panel no se
+      muestra y el Gantt funciona igual que sin el módulo.
+  - pregunta: ¿El asistente puede cambiar tareas por su cuenta?
+    respuesta: >-
+      No. Solo propone. Nada se guarda hasta que usted marca las propuestas y
+      pulsa **Aplicar**, y se guarda con sus permisos.
+  - pregunta: ¿Se guarda la conversación?
+    respuesta: >-
+      No. Vive mientras el diagrama esté abierto; al salir o vaciarla se pierde.
+  - pregunta: ¿Puede crear o borrar tareas, o cambiar dependencias?
+    respuesta: >-
+      No en esta versión. Las propuestas cubren fechas, avance, nombre y personas
+      asignadas; lo demás se hace a mano en el diagrama.
+  - pregunta: ¿Está disponible en la página /gantt del sitio web?
+    respuesta: >-
+      No. El asistente solo está en la aplicación Gantt del backend.
+  - pregunta: ¿Cómo controlo el gasto?
+    respuesta: >-
+      Con **Tareas por consulta** (menos contexto por pregunta) y **Tokens
+      máximos de respuesta**. No hay cuota por usuario.
+
+novedades:
+  - fecha: 25/08/2026
+    cambios:
+      - Licencia OPL-1 en toda la suite.
+  - fecha: 18/08/2026
+    cambios:
+      - "Primera versión: panel de chat en el Gantt, propuestas revisables, proveedores Anthropic, OpenAI y DeepSeek y ajustes de conexión, comportamiento y privacidad."
+
+relacionados: [al_project_gantt_backend, al_project_gantt_base]

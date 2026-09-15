@@ -1,0 +1,188 @@
+titulo: Guía de remisión impresa
+subtitulo: >-
+  La representación impresa de la Guía de Remisión Electrónica Remitente
+  (SUNAT) desde la entrega de Inventario: datos del traslado, remitente y
+  destinatario, bienes agrupados por producto con sus lotes, conductor y
+  vehículo o transportista, y el QR de SUNAT.
+categoria: Localización Perú · Inventario
+etiquetas: [GRE Remitente, A4 SUNAT, Series y lotes, Transporte privado y público, Peso bruto, QR del CDR]
+portada: screenshots/03-guia-remision.png
+
+destacados_intro: >-
+  Complementa la guía de remisión electrónica nativa, que genera y envía el
+  XML, con el documento que acompaña a la mercadería.
+destacados:
+  - icono: "▤"
+    titulo: Formato A4 con recuadro SUNAT
+    texto: >-
+      Logo y datos de la empresa, y el recuadro con RUC, «Guía de remisión
+      electrónica remitente» y su número. El mismo lenguaje visual que los
+      comprobantes de venta.
+  - icono: "→"
+    titulo: Datos del traslado
+    texto: >-
+      Fecha y hora de emisión, modalidad, fecha de inicio del traslado o de
+      entrega al transportista, peso bruto total, motivo y observaciones.
+  - icono: "Σ"
+    titulo: Una línea por bien
+    texto: >-
+      Los movimientos se agrupan por producto y unidad de medida, sumando
+      cantidades y reuniendo las series o lotes movidos.
+  - icono: "🚚"
+    titulo: Transporte privado o público
+    texto: >-
+      Conductor y vehículo (placa, marca y modelo, categoría M1 o L) en
+      transporte privado; razón social, RUC y registro MTC del transportista
+      en transporte público.
+  - icono: "kg"
+    titulo: Peso que nunca sale en cero
+    texto: >-
+      Si los productos no tienen peso configurado, la guía toma el peso para
+      envío de la entrega en lugar de declarar 0 KGM, también en el XML.
+  - icono: "QR"
+    titulo: QR de SUNAT
+    texto: >-
+      Cuando la guía tiene su constancia de recepción, el reporte muestra el
+      QR que SUNAT devuelve, leído por el método nativo.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La mercadería que sale del almacén debe viajar con su **guía de remisión
+    remitente**. La localización nativa emite y envía la guía electrónica,
+    pero el albarán estándar de Odoo no reúne lo que la representación
+    impresa debe mostrar: modalidad y motivo del traslado, datos del
+    conductor y del vehículo o del transportista, peso bruto y el número de
+    guía asignado.
+
+
+    Además, una entrega puede tener varios movimientos del mismo producto;
+    la guía debe declarar **una línea por bien transportado**, no una por
+    movimiento de stock.
+  nota: >-
+    **Solo el reporte.** El envío a SUNAT, el vehículo, el conductor y el QR
+    del CDR los gestiona la guía electrónica nativa (`l10n_pe_edi_stock`). El
+    reporte de facturas vive en otro módulo, instalable por separado.
+
+pasos_intro: >-
+  Recorrido con la entrega de demostración «DEMO GRE Obra Ate»: cemento,
+  fierro con dos lotes y ladrillos, en transporte privado.
+pasos:
+  - titulo: Imprimir desde la entrega validada
+    ruta: Inventario ▸ Operaciones ▸ Entregas
+    texto: >-
+      Cuando la entrega está **Hecha** y la guía ya tiene número de ticket de
+      SUNAT, junto a **Imprimir** aparece el botón **Guía de remisión**, que
+      genera el PDF. El reporte también está en el menú de acciones ▸
+      Imprimir.
+    puntos:
+      - "El archivo se nombra `GUIA_REMISION - <cliente> - <referencia>`."
+    imagen: screenshots/01-entrega.png
+
+  - titulo: Datos del traslado en la pestaña EDI PE
+    ruta: Entrega ▸ pestaña EDI PE
+    texto: >-
+      La guía toma el **Tipo de transporte**, el **Motivo de Traslado** y la
+      **Fecha de inicio del traslado** de la entrega; el **Vehículo**, el
+      **Operador** y la **Observación** de la pestaña EDI PE; y el **Número de
+      documento** asignado a la guía.
+    imagen: screenshots/02-datos-traslado.png
+
+  - titulo: La guía de remisión impresa
+    texto: >-
+      Información del traslado, remitente (dirección del almacén) y
+      destinatario con su distrito, detalle de bienes con código, lotes,
+      unidad y cantidad, y los datos del conductor y del vehículo. Al pie, la
+      información legal y, si la guía ya tiene CDR, el código QR.
+    puntos:
+      - "El fierro se movió en dos lotes (60 y 30 unidades): sale en una sola línea de 90 con los dos lotes."
+      - "Los productos no tienen peso: el peso bruto total (4.870 kg) es el peso para envío de la entrega."
+    imagen: screenshots/03-guia-remision.png
+    pie: Guía T001-00000101 de la entrega de demostración, en transporte privado.
+
+  - titulo: Registrar los vehículos
+    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Vehículos (guías de remisión)
+    texto: >-
+      Los vehículos de la guía, con placa y operador predeterminado, también
+      están en la app Perú. Al elegir el vehículo en la entrega se propone su
+      operador.
+    imagen: screenshots/04-vehiculos.png
+
+funcionalidades:
+  - grupo: Representación impresa
+    items:
+      - Recuadro SUNAT con RUC, tipo de documento y número de guía.
+      - Fecha y hora de emisión (efectiva o programada) y fecha de inicio del traslado o de entrega al transportista.
+      - Modalidad, motivo del traslado, peso bruto total y observaciones.
+      - Remitente con razón social, RUC y dirección del almacén; destinatario con documento y dirección con distrito, departamento y país.
+      - Detalle con código de barras o referencia, descripción, series o lotes, unidad y cantidad.
+      - "Transporte privado: conductor y vehículo con placa, marca y modelo y categoría M1 o L."
+      - "Transporte público: transportista con razón social, RUC y número de registro MTC."
+      - Información legal y QR de SUNAT cuando la guía tiene su CDR.
+  - grupo: Datos
+    items:
+      - Agrupación de los movimientos por producto y unidad de medida, sin los que no tienen cantidad.
+      - Peso bruto con respaldo en el peso para envío cuando los productos no tienen peso.
+      - Recálculo del peso antes de armar el XML de la guía electrónica.
+  - grupo: Acceso
+    items:
+      - Botón **Guía de remisión** en la entrega hecha y con ticket de SUNAT, y entrada en el menú Imprimir.
+      - Vehículos de la guía accesibles desde la app Perú.
+      - Formato de papel A4 propio.
+
+ejemplos:
+  - titulo: Detalle agrupado de la entrega de demostración
+    tabla:
+      - [N°, Código, Descripción, Series/Lotes, Cantidad]
+      - ["1", CEM-425, DEMO GRE Cemento Portland Tipo I 42.5 kg, "-", "120"]
+      - ["2", FIE-012, "DEMO GRE Fierro corrugado 1/2\" x 9 m", "DEMO-L2607-01 · DEMO-L2607-02", "90"]
+      - ["3", LAD-KK18, DEMO GRE Ladrillo King Kong 18 huecos, "-", "1.500"]
+    nota: El fierro se entregó con dos líneas de lote (60 + 30); la guía declara un solo bien con sus dos lotes.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones; requiere la guía de remisión electrónica peruana (`l10n_pe_edi_stock`).
+  - Complete el distrito y la calle del almacén (o de la compañía) y el distrito de los clientes.
+  - Registre los vehículos en **Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Vehículos (guías de remisión)** con su operador.
+  - Configure el peso de los productos o indique el peso para envío en la entrega.
+  - Emita la guía electrónica desde la entrega con el flujo nativo; después use el botón **Guía de remisión**.
+ediciones: [enterprise]
+requisitos_nota: >-
+  Requiere Odoo Enterprise por la guía de remisión electrónica peruana
+  (`l10n_pe_edi_stock`). El módulo no envía nada a SUNAT.
+
+faq:
+  - pregunta: No veo el botón «Guía de remisión» en la entrega.
+    respuesta: >-
+      El botón aparece cuando la entrega está hecha y la guía ya tiene número
+      de ticket de SUNAT. Antes de eso puede imprimir el reporte desde el menú
+      de acciones ▸ Imprimir.
+  - pregunta: ¿Por qué la guía no muestra el código QR?
+    respuesta: >-
+      El QR sale de la constancia de recepción (CDR) que devuelve SUNAT. Sin
+      CDR el recuadro no se imprime y la información legal ocupa todo el
+      ancho.
+  - pregunta: El peso bruto sale distinto de la suma de los productos.
+    respuesta: >-
+      Si la suma de pesos de las líneas es cero porque los productos no tienen
+      peso, la guía usa el peso para envío de la entrega.
+  - pregunta: ¿Sirve para transporte público?
+    respuesta: >-
+      Sí. Con **Transporte público** la guía imprime los datos del
+      transportista (razón social, RUC y registro MTC) en lugar del conductor
+      y el vehículo.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "Vehículos dentro de la sección **Comprobantes electrónicos** de la configuración de la app Perú."
+  - version: 5.20260828
+    fecha: 28/08/2026
+    cambios:
+      - Los vehículos de la guía, antes solo en Inventario, también desde la app Perú.
+      - Pruebas de la agrupación por producto y unidad, lotes y peso.
+  - version: 4.20260719
+    fecha: 25/07/2026
+    cambios:
+      - "Versión para Odoo 19: reporte independiente del de facturas, agrupación de bienes con lotes y peso con respaldo."
+
+relacionados: [al_l10n_pe_invoice, al_account_base]

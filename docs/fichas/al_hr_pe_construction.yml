@@ -1,0 +1,306 @@
+titulo: Planillas de construcción civil
+subtitulo: >-
+  El régimen de construcción civil peruano en Odoo 19: jornal diario por
+  categoría desde la tabla del convenio, planilla semanal con BUC, D.S.O.,
+  bonificaciones, beneficios sociales pagados en cada semana y el resumen
+  mensual del CONAFOVICER.
+categoria: Localización Perú · Nómina
+etiquetas: [Jornal por convenio, Planilla semanal, BUC y D.S.O., "CTS 15 % y vacaciones 10 %", CONAFOVICER, Boleta del régimen]
+portada: screenshots/07-boleta-impresa.png
+
+destacados_intro: >-
+  Construcción civil no es el régimen general con otro sueldo: cambian la
+  unidad de pago, la periodicidad y qué beneficios se pagan y cuándo. El
+  módulo lo modela tal cual.
+destacados:
+  - icono: "S/"
+    titulo: Jornal desde la tabla del convenio
+    texto: >-
+      El jornal del trabajador no se escribe a mano: sale de la tabla salarial
+      vigente según su categoría. Trae cargada la R.M. N.° 197-2025-TR
+      (01/01/2026 – 31/12/2026).
+  - icono: "7d"
+    titulo: Planilla semanal
+    texto: >-
+      Estructura CONSTRUCCIÓN CIVIL con jornal, D.S.O., BUC, movilidad, BAE,
+      bonificaciones por condiciones de trabajo y horas extras al 60 % y 100 %.
+  - icono: "15%"
+    titulo: Beneficios en cada semana
+    texto: >-
+      Indemnización 15 % (la CTS del régimen), vacaciones 10 %, gratificación
+      proporcional de 40 jornales, bonificación de la Ley 30334 y asignación
+      escolar.
+  - icono: "2%"
+    titulo: CONAFOVICER
+    texto: >-
+      Retención del 2 % sobre jornal más D.S.O. en cada boleta y resumen
+      mensual con vencimiento el día 15 y detalle en Excel para el depósito.
+  - icono: "▦"
+    titulo: Obras y bonificaciones
+    texto: >-
+      Catálogo editable de BAE y bonificaciones por altitud, contacto con agua,
+      cota cero y altura. Cada obra activa las suyas para todos sus trabajadores.
+  - icono: "✎"
+    titulo: Boleta del régimen
+    texto: >-
+      El botón Imprimir de la boleta saca la variante de construcción: jornal
+      básico, categoría, obra y especialidad, sin tocar la del régimen general.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En construcción civil se paga por **jornal diario** fijado por la
+    convención colectiva CAPECO–FTCCP, por categoría (operario, oficial, peón),
+    con planilla **semanal**. La CTS y las vacaciones se pagan en cada planilla
+    (15 % y 10 %), la gratificación es de **40 jornales**, el sobretiempo va al
+    **60 % y 100 %** y el trabajador aporta al **CONAFOVICER** (D.L. 21067).
+
+
+    Llevarlo con el régimen general obliga a cargar a mano, cada semana y
+    trabajador por trabajador, importes que en realidad salen de una tabla
+    publicada, y a rehacer los jornales cada vez que entra un convenio nuevo.
+  nota: >-
+    **El redondeo es el del convenio.** Los importes del periodo se redondean
+    una sola vez, no multiplicando el diario redondeado por los días. En el
+    oficial la diferencia es de seis céntimos por semana. Las pruebas del
+    módulo reproducen la tabla oficial concepto por concepto en las tres
+    categorías.
+
+pasos_intro: >-
+  Recorrido con los datos de demostración: tres obreros de la obra «DEMO
+  FICHA HR2» con cuatro semanas de agosto de 2026.
+pasos:
+  - titulo: Revisar la tabla salarial del convenio
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales
+    texto: >-
+      Cada convenio es un registro con su resolución y su vigencia. Por
+      categoría se indican el **jornal básico** y la **bonificación por
+      movilidad**; el resto se calcula solo: D.S.O. (jornal ÷ 6), BUC, valor
+      hora (jornal ÷ 8), horas extras al 60 % y 100 %, indemnización 15 % y
+      vacaciones 10 %.
+    puntos:
+      - Cuando salga el convenio siguiente se crea otra tabla con su vigencia; las boletas antiguas siguen usando el jornal de su fecha.
+      - El BUC toma el porcentaje de la categoría (32 % operario, 30 % oficial y peón) salvo que la línea lo cambie.
+    imagen: screenshots/01-tabla-salarial.png
+    pie: "Convención colectiva 2026: operario S/ 89,30, oficial S/ 69,75 y peón S/ 62,80."
+
+  - titulo: Ajustar el catálogo de bonificaciones
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Bonificaciones
+    texto: >-
+      Trae las cuatro especialidades BAE de la tabla de operarios
+      especializados (8 %, 9 %, 10 % y 22 % del jornal) y cuatro bonificaciones
+      por condiciones de trabajo, con importe fijo por día o porcentaje del
+      jornal. Se editan en la misma lista.
+    puntos:
+      - Los importes de altitud, contacto con agua, cota cero y altura vienen marcados como «por verificar» contra el convenio de la empresa.
+      - Una bonificación puede limitarse a ciertas categorías; vacía, aplica a todas.
+    imagen: screenshots/02-bonificaciones.png
+
+  - titulo: Crear la obra
+    ruta: Empleados ▸ Empleados ▸ Obras
+    texto: >-
+      La obra guarda código, fechas, dirección, distrito, altitud y el
+      establecimiento para el T-Registro. En **Bonificaciones que activa la
+      obra** se eligen las que cobran todos sus trabajadores sin marcarlas uno
+      por uno.
+    imagen: screenshots/03-obra.png
+    pie: Una obra a 3 850 m s. n. m. activa la bonificación por altitud y la de contacto con agua.
+
+  - titulo: Configurar las tasas de la compañía
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas ▸ Construcción civil (PE)
+    texto: >-
+      La pestaña reúne EsSalud (9 %), SCTR salud y SCTR pensión, CONAFOVICER
+      (2 %) y su cuenta en el Banco de la Nación, la bonificación
+      extraordinaria sobre la gratificación (9 %) y las edades tope de la
+      asignación escolar (18 años, 21 con estudios superiores).
+    puntos:
+      - "Las tasas del SCTR vienen en cero a propósito: las fija la aseguradora, no la norma. Sin tasa no se calcula el aporte."
+    imagen: screenshots/04-compania.png
+
+  - titulo: Asignar categoría, obra y especialidad al trabajador
+    ruta: Empleados ▸ ficha del trabajador ▸ Nómina
+    texto: >-
+      Con el régimen laboral **Construcción civil**, la pestaña Nómina muestra
+      el bloque del régimen: categoría, obra, especialidad BAE (solo
+      operarios) y bonificaciones propias del puesto. El **jornal básico**
+      aparece calculado desde la tabla vigente.
+    puntos:
+      - Marque la cobertura SCTR de quienes están expuestos al riesgo; en una obra conviven obreros y personal administrativo.
+    imagen: screenshots/05-trabajador.png
+
+  - titulo: Calcular la boleta semanal
+    ruta: Nómina ▸ Recibos de nómina
+    texto: >-
+      Boleta con la estructura **CONSTRUCCIÓN CIVIL** y los días trabajados de
+      la semana. El cálculo trae jornal, D.S.O., BUC, movilidad, BAE, las
+      bonificaciones de la obra, las horas extras y los beneficios del régimen,
+      descuenta el CONAFOVICER y calcula EsSalud y SCTR sobre la remuneración
+      computable.
+    puntos:
+      - "Los periodos semanales se generan en Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Generar periodos, con «Generar también semanas»: se cortan a fin de mes para que ninguna semana cruce dos declaraciones de PLAME."
+      - El jornal queda congelado en la boleta al calcularla y puede ajustarse a mano.
+    imagen: screenshots/06-boleta-semanal.png
+    pie: "Semana del 10 al 16 de agosto de un operario con 4 horas extras al 60 %: neto S/ 1.294,42."
+
+  - titulo: Imprimir la boleta del régimen
+    ruta: Boleta ▸ Imprimir
+    texto: >-
+      La estructura del régimen declara su propia plantilla, así que el botón
+      nativo **Imprimir** saca la boleta de construcción: en lugar del sueldo
+      mensual muestra el **jornal básico**, la **categoría**, la **obra** y la
+      **especialidad**, con los conceptos y sus códigos de la tabla 22 de SUNAT.
+    imagen: screenshots/07-boleta-impresa.png
+    pie: "Boleta del 3 al 9 de agosto: ingresos S/ 1.228,78, CONAFOVICER S/ 12,50 y neto S/ 1.216,28."
+
+  - titulo: Liquidar el CONAFOVICER del mes
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ CONAFOVICER
+    texto: >-
+      Se elige el periodo mensual y se pulsa **Calcular**: toma las boletas
+      validadas o pagadas del mes y de todas sus semanas, con una línea por
+      boleta, y fija el vencimiento el **día 15 del mes siguiente**. **Exportar
+      detalle** genera el Excel con tipo y número de documento, categoría,
+      días, jornal, D.S.O., base y retenido. **Marcar pagado** cierra el
+      resumen.
+    imagen: screenshots/08-conafovicer.png
+    pie: "Agosto 2026: 3 trabajadores, base S/ 6.130,43 y retenido S/ 122,61, vence el 15 de septiembre."
+
+funcionalidades:
+  - grupo: Maestros del régimen
+    items:
+      - Categorías con su porcentaje de BUC y si admiten BAE.
+      - Tablas salariales con vigencia por fechas, nacionales o por compañía.
+      - Importes derivados por categoría (D.S.O., BUC, valor hora, horas extras, indemnización, vacaciones, gratificación y asignación escolar diarias).
+      - Catálogo de bonificaciones BAE y por condiciones de trabajo, de importe fijo o porcentaje.
+      - Obras con altitud, establecimiento y bonificaciones que activan.
+  - grupo: Planilla semanal
+    items:
+      - Estructura CONSTRUCCIÓN CIVIL con 24 reglas y códigos de la tabla 22 de SUNAT.
+      - Jornal calculado en la ficha del trabajador y congelado en la boleta.
+      - Horas extras al 60 % y 100 % sobre el valor hora sin redondear.
+      - Remuneración computable (TREM) que enumera lo afecto; beneficios sociales, gratificación y movilidad quedan fuera.
+      - EsSalud, SCTR salud y SCTR pensión por separado, solo para quien tiene cobertura.
+      - Periodos semanales colgados de su mes y cortados a fin de mes.
+  - grupo: Beneficios pagados en planilla
+    items:
+      - Indemnización 15 % sobre el jornal del periodo más las horas extras a valor simple.
+      - Vacaciones 10 % del jornal percibido.
+      - Gratificación proporcional de 40 jornales, con ventana de 210 días hasta julio y de 150 desde agosto.
+      - Bonificación extraordinaria de la Ley 30334 (9 % de la gratificación).
+      - Asignación escolar de 30 jornales al año por hijo, desde los derechohabientes del trabajador.
+  - grupo: CONAFOVICER y documentos
+    items:
+      - Retención del 2 % sobre jornal básico más D.S.O. en cada boleta.
+      - Resumen mensual con vencimiento, estados Borrador, Calculado y Pagado y constancia de pago.
+      - Detalle en Excel por trabajador para el depósito.
+      - Boleta impresa propia del régimen, elegida por la estructura salarial.
+
+ejemplos_intro: >-
+  Cifras de la tabla de la R.M. N.° 197-2025-TR con los datos de demostración.
+  Todas se pueden comprobar en las capturas.
+ejemplos:
+  - titulo: Semana completa de las tres categorías
+    texto: >-
+      Seis días trabajados, sin bonificaciones de obra ni horas extras. Son los
+      importes que el módulo reproduce de la tabla oficial:
+    tabla:
+      - [Categoría, Jornal (6 días), D.S.O., BUC, Movilidad, Total salarios, CONAFOVICER 2 %]
+      - [Operario, "535,80", "89,30", "171,46", "51,60", "848,16", "12,50"]
+      - [Oficial, "418,50", "69,75", "125,55", "51,60", "665,40", "9,77"]
+      - [Peón, "376,80", "62,80", "113,04", "51,60", "604,24", "8,79"]
+    nota: >-
+      La base del CONAFOVICER incluye el D.S.O.: (535,80 + 89,30) × 2 % = 12,50.
+      Con el jornal solo serían 10,72, que no es lo que publica la tabla.
+
+  - titulo: Boleta de un operario especializado en una obra bajo la cota cero
+    texto: >-
+      Operador de equipo pesado (BAE 10 %), obra con bonificación por riesgo
+      bajo la cota cero (S/ 1,90 por día), semana del 3 al 9 de agosto de 2026
+      con 6 días:
+    tabla:
+      - [Código, Concepto, Cálculo, Importe S/]
+      - [JOR, Jornal básico, "89,30 × 6", "535,80"]
+      - [DSO, Descanso semanal obligatorio, "535,80 ÷ 6", "89,30"]
+      - [BUC, Bonificación unificada, "32 % de 535,80", "171,46"]
+      - [MOV, Movilidad, "8,60 × 6", "51,60"]
+      - [BAE, Alta especialización, "10 % de 535,80", "53,58"]
+      - [BCOTA, Riesgo bajo la cota cero, "1,90 × 6", "11,40"]
+      - [INDEM, Indemnización 15 %, "15 % de 535,80", "80,37"]
+      - [VAC10, Vacaciones 10 %, "10 % de 535,80", "53,58"]
+      - [GRAT, Gratificación proporcional, "89,30 × 40 ÷ 150 × 7 días", "166,69"]
+      - [BEXT, Bonificación Ley 30334, "9 % de 166,69", "15,00"]
+      - [CONAF, CONAFOVICER, "2 % de 625,10", "-12,50"]
+      - [NETO, Neto a pagar, "1.228,78 − 12,50", "1.216,28"]
+    nota: >-
+      La remuneración computable es 861,54 (jornal + D.S.O. + BUC + BAE + cota
+      cero) y EsSalud, a cargo del empleador, 77,54. En agosto la gratificación
+      se devenga en la ventana de Navidad (150 días); con el mismo jornal, hasta
+      julio saldría 119,07.
+
+  - titulo: Horas extras al 60 %
+    texto: >-
+      Valor hora del operario: 89,30 ÷ 8 = 11,1625. Cuatro horas al 60 % son
+      4 × 11,1625 × 1,6 = **71,44**. Esa semana la indemnización sube a 87,07,
+      porque su base suma las horas extras a valor simple (535,80 + 44,65).
+
+  - titulo: Resumen de CONAFOVICER de agosto de 2026
+    tabla:
+      - [Trabajador, Semanas, Base, Retenido]
+      - [Operario, "4 × 625,10", "2.500,40", "50,00"]
+      - [Oficial, "3 × 488,25 + 406,88 (5 días)", "1.871,63", "37,45"]
+      - [Peón, "4 × 439,60", "1.758,40", "35,16"]
+      - [Total, "", "6.130,43", "122,61"]
+    nota: Vence el 15/09/2026, día 15 del mes siguiente al periodo.
+
+configuracion_intro: >-
+  La tabla del convenio 2026, las categorías, las bonificaciones y la estructura
+  salarial se instalan con el módulo.
+configuracion:
+  - "Revise la tabla salarial en **Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales** y cargue la del convenio que corresponda."
+  - Contraste los importes de las bonificaciones por condiciones de trabajo con el convenio de la empresa.
+  - "En **Ajustes ▸ Usuarios y empresas ▸ Empresas**, pestaña **Construcción civil (PE)**, ponga las tasas del SCTR de su póliza y la cuenta del CONAFOVICER."
+  - "Genere los periodos del año marcando **Generar también semanas**."
+  - Cree las obras y, en cada trabajador, elija el régimen laboral Construcción civil, la categoría, la obra y la cobertura SCTR.
+requisitos_nota: >-
+  Requiere Nómina de Odoo Enterprise y la localización de planillas peruana
+  (beneficios sociales y documentos).
+
+faq:
+  - pregunta: ¿Qué pasa con las boletas antiguas cuando entra un convenio nuevo?
+    respuesta: >-
+      Nada. Cada boleta congela el jornal de la tabla vigente en su fecha al
+      calcularse. El convenio nuevo se carga como otra tabla con su vigencia y
+      solo afecta a las boletas de esas fechas.
+  - pregunta: ¿Por qué el SCTR sale en cero?
+    respuesta: >-
+      Porque la compañía no tiene tasa de SCTR: viene en cero a propósito. Ponga
+      las tasas de su póliza en la pestaña Construcción civil (PE) de la empresa
+      y marque la cobertura en los trabajadores expuestos.
+  - pregunta: ¿La movilidad está afecta a aportes?
+    respuesta: >-
+      No. La remuneración computable (TREM) suma jornal, D.S.O., BUC, BAE,
+      bonificaciones por condiciones, horas extras y asignación escolar; la
+      movilidad, la
+      indemnización, las vacaciones 10 %, la gratificación y su bonificación
+      quedan fuera.
+  - pregunta: ¿Qué boletas entran en el resumen de CONAFOVICER?
+    respuesta: >-
+      Las de construcción civil en estado validado o pagado cuyo periodo es el
+      mes elegido o una de sus semanas. Recalcular reemplaza el detalle; un
+      resumen pagado no se puede recalcular.
+  - pregunta: ¿Genera el archivo para el Banco de la Nación?
+    respuesta: >-
+      No. Genera el detalle en Excel que acompaña al depósito; no hay un formato
+      TXT publicado que implementar.
+
+novedades:
+  - fecha: 18/08/2026
+    cambios:
+      - El menú Construcción civil se ordena en Nómina ▸ Configuración ▸ Perú, entre los catálogos SUNAT y Documentos.
+      - La boleta del régimen adopta el nuevo diseño de la boleta legal.
+  - version: 6.20260803
+    fecha: 03/08/2026
+    cambios:
+      - "Primera versión: maestros del convenio, estructura semanal, beneficios en planilla, CONAFOVICER y boleta del régimen."
+      - Pestaña Construcción civil (PE) en la empresa para editar las tasas del régimen.
+
+relacionados: [al_hr_pe, al_hr_pe_benefits, al_hr_pe_reports, al_hr_pe_account]

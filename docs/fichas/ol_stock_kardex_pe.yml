@@ -1,0 +1,219 @@
+titulo: Kardex SUNAT 13.1 / 12.1
+subtitulo: >-
+  Registro de Inventario Permanente Valorizado (formato 13.1) y en Unidades
+  Físicas (formato 12.1) con el diseño de SUNAT: en pantalla con saldo corrido,
+  en Excel y en PDF, a partir de los movimientos de inventario de Odoo 19.
+categoria: Localización Perú · Inventario
+etiquetas: [Formato 13.1, Formato 12.1, Saldo corrido, Excel y PDF, Por almacén, Segundo plano]
+portada: screenshots/02-en-pantalla.png
+
+destacados_intro: >-
+  La capa imprimible del inventario permanente: lo que el contador revisa,
+  imprime y archiva junto al TXT del PLE.
+destacados:
+  - icono: "13.1"
+    titulo: Inventario valorizado
+    texto: >-
+      Entradas, salidas y saldo final con cantidad, costo unitario y costo
+      total por movimiento, con el método de valuación del producto.
+  - icono: "12.1"
+    titulo: Unidades físicas
+    texto: >-
+      El mismo registro solo en cantidades, para quienes llevan el inventario
+      permanente en unidades.
+  - icono: "▤"
+    titulo: Kardex en pantalla
+    texto: >-
+      Lista con saldo corrido, sumas por columna y un botón para abrir el
+      comprobante, la transferencia o el movimiento de origen.
+  - icono: "XLS"
+    titulo: Excel y PDF con cabecera SUNAT
+    texto: >-
+      Un bloque por producto con periodo, RUC, razón social, establecimiento,
+      código, tabla 5, tabla 6 y método de valuación, y fila de totales.
+  - icono: "⌂"
+    titulo: Consolidado o por almacén
+    texto: >-
+      El consolidado de la compañía cuadra con el TXT del PLE; el modo por
+      almacén da una sección con saldo propio por almacén.
+  - icono: "⏱"
+    titulo: Generación en segundo plano
+    texto: >-
+      Para periodos largos o muchos productos, el archivo se prepara sin
+      bloquear la pantalla y queda en «Kardex generados».
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Los contribuyentes obligados a llevar el **Registro de Inventario
+    Permanente** deben presentarlo en los formatos 13.1 (valorizado) o 12.1
+    (unidades físicas) de la R.S. 234-2006/SUNAT: un bloque por existencia con
+    su cabecera y cada movimiento clasificado según la tabla 10 (tipo de
+    comprobante) y la tabla 12 (tipo de operación).
+
+
+    La localización oficial genera el TXT del PLE, pero no el registro legible:
+    sin él, el kardex se arma en hojas de cálculo copiando movimientos y
+    recalculando el costo promedio a mano. Este módulo lo obtiene directamente
+    de los movimientos de inventario, con los mismos campos SUNAT que ya usa
+    la localización.
+  nota: >-
+    **Sin tablas intermedias.** El kardex en pantalla es una vista de base de
+    datos sobre los movimientos de stock: el saldo corrido se calcula al
+    consultar y no se guarda ningún registro por cada ejecución.
+
+pasos_intro: >-
+  Recorrido con los movimientos de julio de 2026 de la compañía de
+  demostración.
+pasos:
+  - titulo: Elegir formato y periodo
+    ruta: Perú ▸ Kardex (12.1 / 13.1) ▸ Generar Kardex
+    texto: >-
+      Elija el **Formato** (13.1 valorizado o 12.1 en unidades físicas) y el
+      **Período**: **Por mes** —la opción habitual, que calcula desde y hasta—
+      o **Rango de fechas**. Opcionalmente filtre por almacenes, productos o
+      categorías.
+    puntos:
+      - "**Kardex por almacén**: una sección por almacén con su propio saldo corrido; desmarcado, kardex consolidado de la compañía."
+      - "**Incluir productos sin movimientos**: añade los productos con saldo inicial distinto de cero aunque no se hayan movido en el periodo."
+      - "Botones: **Ver en pantalla**, **Exportar Excel**, **PDF** y **Generar en segundo plano**."
+    imagen: screenshots/01-generar.png
+
+  - titulo: Revisar el kardex en pantalla
+    ruta: Generar Kardex ▸ Ver en pantalla
+    texto: >-
+      Cada movimiento con su fecha, tipo de comprobante (tabla 10), serie,
+      número y tipo de operación (tabla 12); entradas y salidas con costo
+      unitario y total, y el saldo acumulado. Por defecto se agrupa por
+      producto; el icono del final de cada línea abre el documento de origen.
+    imagen: screenshots/02-en-pantalla.png
+    pie: Movimientos de julio 2026 del aceite y el arroz, con el saldo corrido de cada uno.
+
+  - titulo: Descargar el formato SUNAT en PDF o Excel
+    ruta: Generar Kardex ▸ PDF / Exportar Excel
+    texto: >-
+      El PDF sale en A4 horizontal con un bloque por producto: cabecera con
+      periodo, RUC, razón social, establecimiento, código de existencia, tipo
+      (tabla 5), descripción, unidad de medida (tabla 6) y método de valuación;
+      después la tabla de entradas, salidas y saldo final con su fila de
+      totales. El Excel reproduce la misma estructura.
+    imagen: screenshots/04-pdf-131.png
+    pie: Formato 13.1 del arroz en julio 2026, con saldo inicial y promedio ponderado.
+
+  - titulo: Generar en segundo plano y descargar
+    ruta: Perú ▸ Kardex (12.1 / 13.1) ▸ Kardex generados
+    texto: >-
+      **Generar en segundo plano** crea una solicitud que una tarea programada
+      procesa al momento. La lista muestra el formato, el tipo de archivo y el
+      estado; cuando está **Listo**, el botón **Descargar** entrega el archivo.
+    imagen: screenshots/03-generados.png
+
+  - titulo: Abrir el kardex desde el producto
+    ruta: Inventario ▸ Productos ▸ Productos ▸ Ver Kardex
+    texto: >-
+      Los productos con inventario y las categorías de producto tienen el
+      botón **Ver Kardex**, que abre el asistente con ese producto o esa
+      categoría ya cargados en los filtros.
+    imagen: screenshots/05-ver-kardex.png
+
+funcionalidades:
+  - grupo: Formatos
+    items:
+      - "Formato 13.1: Registro de Inventario Permanente Valorizado."
+      - "Formato 12.1: Registro de Inventario Permanente en Unidades Físicas."
+      - Línea de saldo inicial por producto (operación 16) calculada a la fecha de inicio.
+      - Tipo, serie y número del comprobante vinculado; tipo 00 cuando no hay comprobante.
+      - "Tipo de operación de la transferencia (tabla 12) o deducido de las ubicaciones: compra, venta, devoluciones, producción, ajuste, merma y traslados."
+  - grupo: Salidas
+    items:
+      - Vista en pantalla con saldo corrido, sumas y acceso al documento origen.
+      - Excel con la estructura de la plantilla oficial de SUNAT, generado en memoria.
+      - PDF en A4 horizontal, un bloque por producto.
+      - Generación en segundo plano con lista de archivos generados y descarga.
+  - grupo: Filtros y accesos
+    items:
+      - Periodo por mes o por rango de fechas.
+      - Filtros por almacenes, productos y categorías.
+      - Modo consolidado de la compañía o por almacén.
+      - Botón Ver Kardex en el producto, la variante y la categoría.
+      - "Menús en la app Perú y en Inventario ▸ Reportes."
+
+ejemplos:
+  - titulo: Costo promedio del arroz en julio 2026
+    texto: >-
+      Arroz Superior 5 kg, método **promedio ponderado**, sin saldo al 1 de
+      julio. Cada salida se valora al costo promedio vigente:
+    tabla:
+      - [Fecha, Documento, Op. (T.12), Entrada, Salida, Costo unitario, Saldo, Costo total del saldo]
+      - [02/07/2026, "01 F001-00000201", "02 Compra", "100 × S/ 22,00", "-", "S/ 22,00", "100", "S/ 2.200,00"]
+      - [06/07/2026, "01 F001-00000205", "02 Compra", "50 × S/ 25,00", "-", "S/ 23,00", "150", "S/ 3.450,00"]
+      - [10/07/2026, "01 F001-00000206", "01 Venta", "-", "40 × S/ 23,00", "S/ 23,00", "110", "S/ 2.530,00"]
+      - [14/07/2026, "03 B001-00000201", "01 Venta", "-", "10 × S/ 23,00", "S/ 23,00", "100", "S/ 2.300,00"]
+    nota: "Totales del mes: entradas 150 unidades por S/ 3.450,00, salidas 50 por S/ 1.150,00 y saldo final 100 por S/ 2.300,00."
+
+  - titulo: Consolidado o por almacén
+    tabla:
+      - [Modo, Saldo corrido, Cuadra con el TXT del PLE, Traslados internos]
+      - [Consolidado, Por producto y compañía, "Sí", "No cambian el saldo de la compañía"]
+      - [Por almacén, Por producto y almacén, "No: costo aproximado", "Sí, con operaciones 11 y 21 de la tabla 12"]
+
+configuracion_intro: >-
+  El kardex usa los mismos datos SUNAT que el TXT del inventario permanente
+  de la localización oficial; si el TXT sale bien, el kardex también.
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere la localización peruana con los reportes de inventario).
+  - "En cada producto almacenable indique el **tipo de existencia** (tabla 5) y use unidades de medida con **código SUNAT** (tabla 6)."
+  - "En los almacenes registre el **código de establecimiento anexo**."
+  - "En las transferencias indique el **tipo de operación** (tabla 12); si falta, se deduce de las ubicaciones."
+requisitos_nota: >-
+  Requiere Odoo Enterprise: se apoya en los campos SUNAT de los reportes de
+  inventario de la localización oficial. El TXT del PLE 12.1 / 13.1 se sigue
+  generando desde esa localización.
+
+faq:
+  - pregunta: ¿Sustituye al TXT del PLE de inventarios?
+    respuesta: >-
+      No. El TXT se genera desde Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸
+      Inventarios TXT (12.1 / 13.1). Este módulo da el registro legible —en
+      pantalla, Excel y PDF— con los mismos datos.
+  - pregunta: ¿Por qué el modo por almacén no cuadra con la contabilidad?
+    respuesta: >-
+      Odoo valoriza el inventario por compañía, no por almacén. En el modo por
+      almacén el costo es una aproximación y los traslados internos se valoran
+      al costo promedio corriente. Para cifras contables use el consolidado.
+  - pregunta: ¿Qué fecha aparece en la columna Fecha?
+    respuesta: >-
+      La del movimiento de inventario. El tipo, la serie y el número salen del
+      comprobante vinculado a la venta o la compra; sin comprobante se usa el
+      documento interno con tipo 00.
+  - pregunta: ¿Cuándo conviene generar en segundo plano?
+    respuesta: >-
+      En periodos largos o con muchos productos. El archivo se prepara sin
+      bloquear la pantalla y se descarga desde Kardex generados cuando su
+      estado es Listo.
+  - pregunta: ¿Puedo sacar el kardex de un solo producto?
+    respuesta: >-
+      Sí: filtre por producto en el asistente o pulse Ver Kardex en la ficha
+      del producto o de su categoría.
+
+novedades:
+  - fecha: 14/09/2026
+    cambios:
+      - "Menú Kardex ordenado junto al resto de libros en la app Perú."
+  - version: 2.20260718
+    fecha: 19/07/2026
+    cambios:
+      - Periodo por mes o por rango de fechas, también en Excel, PDF y segundo plano.
+      - Botón Ver Kardex en el producto y la categoría con los filtros precargados.
+      - "Menú en la app Perú: Generar Kardex y Kardex generados."
+  - version: 0.2026071602
+    fecha: 16/07/2026
+    cambios:
+      - Kardex en pantalla sobre una vista de base de datos, sin poblar registros.
+      - Generación en segundo plano y lista de kardex generados.
+  - version: 0.2026071601
+    fecha: 16/07/2026
+    cambios:
+      - Formatos 13.1 y 12.1 en Excel y PDF, y kardex interactivo en pantalla.
+
+relacionados: [al_l10n_pe_ple, al_account_base]

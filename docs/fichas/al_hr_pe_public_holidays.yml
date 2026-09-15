@@ -1,0 +1,184 @@
+titulo: Feriados del Perú
+subtitulo: >-
+  Diez años de feriados nacionales (2026–2035) cargados y listos para
+  aplicarse como descansos a los horarios de trabajo, con el tipo de entrada
+  de trabajo que la planilla usa para pagarlos y una tarea que los renueva
+  cada año.
+categoria: Localización Perú · Planillas
+etiquetas: [2026–2035, Horarios de trabajo, Días de descanso, Zona horaria, Tarea anual, Tareaje]
+portada: screenshots/01-feriados.png
+
+destacados_intro: >-
+  Sirve tanto a Vacaciones como a la planilla peruana: el feriado se convierte
+  en un descanso global del horario y de ahí lo leen las entradas de trabajo
+  y el tareaje.
+destacados:
+  - icono: "10"
+    titulo: Diez años cargados
+    texto: >-
+      170 feriados de 2026 a 2035, 17 por año, incluidos los de fecha móvil de
+      Semana Santa, que no hay que calcular a mano.
+  - icono: "▦"
+    titulo: Aplicación a los horarios
+    texto: >-
+      Un botón crea los descansos en los horarios de trabajo de las compañías
+      activas. Volver a aplicarlo actualiza, no duplica.
+  - icono: "DOM"
+    titulo: Concepto de planilla
+    texto: >-
+      Cada feriado lleva el tipo de entrada de trabajo con el que la nómina lo
+      computa; por defecto, días de descanso (feriado no laborado remunerado,
+      D.Leg. 713).
+  - icono: "⏱"
+    titulo: Zona horaria correcta
+    texto: >-
+      El descanso cubre de 00:00 a 23:59 en la zona horaria de cada horario de
+      trabajo, sin desplazarse por el huso del usuario que lo aplica.
+  - icono: "½"
+    titulo: Día completo o medio día
+    texto: >-
+      Por feriado se puede indicar medio día: el descanso va desde las 00:00
+      hasta la hora configurada (13:00 por defecto).
+  - icono: "↻"
+    titulo: Renovación anual
+    texto: >-
+      Una tarea programada aplica cada 2 de enero los feriados del año en curso
+      y del siguiente.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Si los feriados no están en el horario de trabajo, Odoo los trata como días
+    laborables: las ausencias descuentan días que no correspondían y la
+    planilla no reconoce el descanso remunerado.
+
+
+    En la planilla peruana importa además por el **tareaje**: el feriado
+    trabajado se paga con sobretasa del 100 % (D.Leg. 713) y el módulo de
+    asistencia solo lo detecta si el feriado está como descanso en el horario.
+    Por eso `al_hr_pe_attendance` depende de este módulo.
+  nota: >-
+    **Seguro en multicompañía.** Los descansos se crean solo en los horarios de
+    las compañías activas en la sesión (y en los que no tienen compañía), nunca
+    en los de otras empresas de la base.
+
+pasos_intro: >-
+  Recorrido con los feriados de 2026 aplicados al horario de demostración
+  «DEMO FICHA HR1 Jornada 48h».
+pasos:
+  - titulo: Revisar los feriados del año
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays
+    texto: >-
+      La lista viene agrupada por año. Cada feriado muestra su fecha, tipo
+      (nacional o religioso), si es de día completo, el tipo de entrada de
+      trabajo y en cuántos horarios está aplicado (columna **Calendarios**).
+    puntos:
+      - Los filtros permiten ver los próximos, los nacionales, los religiosos o los de medio día.
+      - Un feriado que la empresa no aplique se puede eliminar; al borrarlo se eliminan también sus descansos.
+    imagen: screenshots/01-feriados.png
+
+  - titulo: Aplicarlos a los horarios de trabajo
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ seleccionar ▸ Aplicar a los calendarios
+    texto: >-
+      Seleccione los feriados y pulse **Aplicar a los calendarios** (en la
+      ficha del feriado, **Apply to Calendars**). Un aviso indica cuántos
+      descansos se crearon y cuántos se actualizaron, y en cuántos horarios.
+    imagen: screenshots/02-aplicar.png
+
+  - titulo: Ajustar un feriado
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ feriado
+    texto: >-
+      Nombre, fecha, tipo, día completo (o, si es medio día, la hora hasta la que dura el descanso) y
+      **Tipo de entrada de trabajo**. El botón **Calendarios** abre los
+      descansos que generó.
+    imagen: screenshots/03-feriado.png
+
+  - titulo: Consultar los descansos creados
+    ruta: Feriado ▸ botón Calendarios
+    texto: >-
+      Un descanso por horario, sin recurso (descanso global), con el tipo de
+      entrada de trabajo del feriado. Si se cambia la zona horaria del horario y
+      se vuelve a aplicar, el descanso se corrige en lugar de duplicarse.
+    imagen: screenshots/04-descansos.png
+    pie: "Vista en hora de Lima: el descanso cubre el 6 de agosto de 00:00 a 23:59."
+
+  - titulo: La planilla cuenta el feriado como día de descanso
+    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ Días trabajados
+    texto: >-
+      Al calcular la boleta, los feriados del periodo entran en la línea de
+      **días de descanso** con su nombre en la descripción, y no como días
+      laborados.
+    imagen: screenshots/05-boleta-feriados.png
+    pie: "Boleta DEMO de julio 2026: Día de la Fuerza Aérea, Día de la Independencia y Día de la Gran Parada Militar."
+
+  - titulo: Renovación automática cada año
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Peru Holidays: Yearly Auto Apply"
+    texto: >-
+      La tarea se ejecuta cada 12 meses, el 2 de enero, y aplica los feriados
+      del año en curso y del siguiente; así la planificación de diciembre ya
+      encuentra los del año nuevo.
+    imagen: screenshots/06-cron.png
+
+funcionalidades:
+  - Feriados nacionales del Perú de 2026 a 2035 (17 por año).
+  - Fechas móviles de Jueves y Viernes Santo según la Pascua de cada año.
+  - Aplicación masiva a los horarios de trabajo de las compañías activas.
+  - Descansos idempotentes por feriado y horario, que se borran con el feriado.
+  - Tipo de entrada de trabajo por feriado, heredado por el descanso (por defecto, días de descanso).
+  - Día completo o medio día (descanso de 00:00 a la hora configurada).
+  - Rango calculado en la zona horaria de cada horario de trabajo.
+  - Tarea programada anual para el año en curso y el siguiente.
+  - Contador de horarios aplicados y acceso directo a los descansos.
+
+ejemplos:
+  - titulo: Feriados de julio y agosto de 2026
+    tabla:
+      - [Fecha, Feriado, Día, Tipo de entrada de trabajo]
+      - [23/07/2026, Día de la Fuerza Aérea del Perú, Jueves, Días de descanso]
+      - [28/07/2026, Día de la Independencia, Martes, Días de descanso]
+      - [29/07/2026, Día de la Gran Parada Militar, Miércoles, Días de descanso]
+      - [06/08/2026, Batalla de Junín, Jueves, Días de descanso]
+      - [30/08/2026, Santa Rosa de Lima, Domingo, Días de descanso]
+
+  - titulo: Qué descanso se crea en un horario de Lima (UTC−5)
+    tabla:
+      - [Feriado, Configuración, Inicio en Lima, Fin en Lima, Guardado en UTC]
+      - [Batalla de Junín, Día completo, "06/08 00:00", "06/08 23:59", "06/08 05:00 → 07/08 04:59"]
+      - [Feriado de medio día, "Medio día, hora 13:00", "00:00", "13:00", "05:00 → 18:00"]
+    nota: Así lo espera Odoo; lo que el usuario ve en pantalla se muestra en su propia zona horaria.
+
+configuracion:
+  - Instale el módulo (requiere Vacaciones y Entradas de trabajo).
+  - "Revise que cada **horario de trabajo** tenga la zona horaria correcta (America/Lima)."
+  - "En **Vacaciones ▸ Peru Holidays ▸ Holidays** seleccione los feriados y pulse **Aplicar a los calendarios**."
+  - Si usa la planilla peruana, compruebe que el tipo de entrada de trabajo sea el de días de descanso.
+requisitos_nota: >-
+  Funciona sin la planilla peruana; con `al_hr_pe` instalado, los feriados
+  toman por defecto el concepto de días de descanso.
+
+faq:
+  - pregunta: ¿Aplicar dos veces duplica los descansos?
+    respuesta: >-
+      No. Cada descanso se identifica por feriado y horario: la segunda vez se
+      actualiza el existente.
+  - pregunta: ¿Afecta a los horarios de otras compañías?
+    respuesta: >-
+      No. Solo a los horarios de las compañías activas en la sesión y a los que
+      no tienen compañía.
+  - pregunta: ¿Qué pasa si elimino un feriado?
+    respuesta: Se eliminan también los descansos que había creado en los horarios.
+  - pregunta: ¿Tengo que acordarme de aplicar el año nuevo?
+    respuesta: >-
+      No. La tarea programada lo hace cada 2 de enero, para el año en curso y el
+      siguiente. También se puede ejecutar a mano desde la acción planificada.
+
+novedades:
+  - fecha: 27/08/2026
+    cambios:
+      - Los descansos ya no se desplazan cinco horas por la zona horaria del usuario que los aplica.
+  - version: 2.20260802
+    fecha: 02/08/2026
+    cambios:
+      - Integración con la planilla peruana, tipo de entrada de trabajo por feriado, aplicación solo a las compañías activas y descansos sin duplicados.
+
+relacionados: [al_hr_pe, al_hr_pe_attendance]

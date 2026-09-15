@@ -1,0 +1,276 @@
+titulo: Documentos y bancos de planilla
+subtitulo: >-
+  La boleta de pago legal peruana con un solo botón de imprimir y envío con
+  confirmación de recepción, los certificados de trabajo, de CTS y de 5ta
+  categoría, los contratos desde plantilla y los archivos TXT de pago masivo
+  de cinco bancos.
+categoria: Localización Perú · Nómina
+etiquetas: [Boleta D.S. 001-98-TR, Envío con confirmación, Certificado de 5ta, Contratos, TXT bancario, BCP · BBVA · Interbank]
+portada: screenshots/01-boleta.png
+
+destacados_intro: >-
+  Todo lo que la planilla tiene que entregar al trabajador y al banco, desde
+  los mismos datos de Nómina.
+destacados:
+  - icono: "▤"
+    titulo: Boleta legal
+    texto: >-
+      Datos del empleador y del trabajador, días y horas, ingresos, descuentos
+      y aportes del empleador con el código de la tabla 22 de SUNAT, neto en
+      letras y firmas (D.S. N.° 001-98-TR).
+  - icono: "⎙"
+    titulo: Un solo botón de imprimir
+    texto: >-
+      El Imprimir nativo, la impresión del lote, el adjunto y el correo sacan la
+      misma boleta; cada estructura salarial puede declarar la suya.
+  - icono: "✉"
+    titulo: Envío con confirmación
+    texto: >-
+      La boleta sale por correo con el PDF adjunto y un enlace firmado para que
+      el trabajador confirme la recepción; queda registrada la fecha.
+  - icono: "✓"
+    titulo: Certificados y cartas
+    texto: >-
+      Certificado de trabajo, carta de retiro de CTS y certificado de rentas y
+      retenciones de 5ta categoría, desde la ficha o la lista de empleados.
+  - icono: "{}"
+    titulo: Contratos desde plantilla
+    texto: >-
+      Plantillas por compañía con marcadores como {{nombre_trabajador}} o
+      {{salario_letras}}, rellenadas con la ficha del trabajador.
+  - icono: "TXT"
+    titulo: Pago masivo bancario
+    texto: >-
+      Archivos de haberes y CTS en los formatos de BCP, BBVA, Interbank,
+      Scotiabank y BanBif, desde lotes, quincena, CTS, gratificación y
+      vacaciones.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La boleta de pago peruana tiene un contenido mínimo fijado por el **D.S.
+    N.° 001-98-TR** y el empleador debe poder demostrar que el trabajador la
+    recibió. Además, cada cese pide su certificado de trabajo, cada año el
+    certificado de retenciones de 5ta categoría (**art. 45 del D.S.
+    122-94-EF**) y cada contratación su contrato.
+
+
+    Los pagos, por su parte, se cargan en el banco con un archivo de ancho fijo
+    propio de cada entidad. Este módulo genera todos esos documentos y archivos
+    desde Odoo, sin hojas de cálculo intermedias.
+  nota: >-
+    **El enlace de confirmación va firmado.** Lleva un token HMAC derivado del
+    secreto de la base de datos: sin él, cualquiera que conociera el número de
+    la boleta podría darla por recibida.
+
+pasos_intro: >-
+  Recorrido con la planilla de pruebas de «Comercial Demo Perú S.A.C.»
+  (trabajadores ficticios) y la trabajadora «DEMO FICHA HR2». No se envían
+  correos ni se generan archivos.
+pasos:
+  - titulo: Imprimir la boleta de pago
+    ruta: Nómina ▸ Recibos de nómina ▸ Imprimir
+    texto: >-
+      La boleta muestra en bloques los datos del trabajador (régimen laboral,
+      pensionario y de salud, remuneración básica y cuenta de abono), los días
+      laborados, no laborados, subsidiados y de vacaciones con las horas
+      ordinarias y de sobretiempo, los conceptos con su código SUNAT, el **neto
+      a pagar en letras**, los aportes del empleador y las firmas.
+    puntos:
+      - Los conceptos se agrupan según las categorías configuradas en los Parámetros principales.
+      - Las horas extras se desglosan por sobretasa (25 %, 35 % y 100 %).
+      - "Un régimen con estructura propia, como construcción civil, imprime su variante con el mismo botón."
+    imagen: screenshots/01-boleta.png
+    pie: "Boleta de junio de 2026: ingresos S/ 2.613,00, descuentos AFP S/ 346,22 y neto S/ 2.266,78."
+
+  - titulo: Enviar la boleta por correo
+    ruta: Nómina ▸ Recibos de nómina ▸ Enviar boleta
+    texto: >-
+      Con la boleta validada o pagada aparece **Enviar boleta**: el correo se
+      encola con el PDF adjunto y un botón de confirmación. Cuando el
+      trabajador lo pulsa se marcan la verificación y la fecha de confirmación,
+      visibles como columnas opcionales en la lista de boletas.
+    puntos:
+      - "Envío masivo desde la lista de boletas (Acción ▸ Enviar boletas PE por correo) o desde el lote (Imprimir boletas y Enviar boletas por correo)."
+      - Las boletas sin correo laboral o sin confirmar se informan en un aviso y no se envían.
+    imagen: screenshots/02-boleta-form.png
+
+  - titulo: Emitir el certificado de trabajo
+    ruta: Empleados ▸ ficha del empleado ▸ Acción ▸ Certificado de trabajo
+    texto: >-
+      El asistente propone el tratamiento, la ciudad de la compañía y las fechas
+      de ingreso y cese del trabajador. **Imprimir certificado** genera el PDF
+      firmado por el representante legal de los Parámetros principales.
+    puntos:
+      - "Desde el mismo menú: **Carta de retiro CTS**, dirigida al banco de la cuenta CTS del trabajador."
+    imagen: screenshots/03-certificado-asistente.png
+
+  - titulo: El certificado impreso
+    ruta: Certificado de trabajo ▸ Imprimir certificado
+    texto: >-
+      Texto con el tratamiento, el documento de identidad, el periodo laborado
+      en letras y el cargo, fechado en la ciudad indicada al día del cese.
+    imagen: screenshots/04-certificado.png
+
+  - titulo: Certificado de rentas y retenciones de 5ta categoría
+    ruta: Empleados ▸ Acción ▸ Certificado de renta de 5ta
+    texto: >-
+      Para uno o varios trabajadores y un ejercicio: renta bruta de las boletas
+      y gratificaciones del año, ingresos de otros empleadores, deducción de 7
+      UIT, renta imponible, impuesto y retención efectuada. Un certificado por
+      página.
+    puntos:
+      - La UIT se toma del catálogo del ejercicio; si falta, el asistente lo avisa antes de imprimir.
+    imagen: screenshots/05-certificado-5ta.png
+    pie: >-
+      Ejercicio 2026 con los datos de prueba: renta bruta S/ 82.290,33 − 7 UIT
+      (S/ 37.450,00) = S/ 44.840,33. Las boletas de prueba no tienen retención
+      de 5ta, por eso el impuesto sale en cero.
+
+  - titulo: Preparar la plantilla de contrato
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato
+    texto: >-
+      Cada plantilla es un texto con formato y marcadores entre llaves dobles.
+      El formulario lista los disponibles: datos de la empresa y su apoderado,
+      del trabajador, del puesto, la remuneración en número y en letras, la
+      duración, el fin del periodo de prueba, la jornada y la fecha de firma.
+      Trae de ejemplo el contrato por inicio o incremento de actividad (art. 57
+      del D.S. 003-97-TR).
+    imagen: screenshots/06-plantilla-contrato.png
+
+  - titulo: Imprimir el contrato del trabajador
+    ruta: Empleados ▸ ficha del empleado ▸ Nómina ▸ Imprimir contrato
+    texto: >-
+      En la pestaña Nómina, el bloque **Perú — Contrato de trabajo** elige la
+      plantilla y el régimen de periodo de prueba (3, 6 o 12 meses, art. 10 de
+      la LPCL), que calcula su fecha de fin. **Imprimir contrato** comprueba
+      antes que estén los datos necesarios y lista los que faltan.
+    imagen: screenshots/07-contrato.png
+    pie: "Contrato de la trabajadora DEMO: S/ 2.800,00 al mes, del 01/03/2025 al 31/08/2026, con 3 meses de prueba."
+
+  - titulo: Generar el pago masivo al banco
+    ruta: Nómina ▸ Pagos masivos bancarios
+    texto: >-
+      Desde el lote de nómina, la CTS, la gratificación, la quincena o la
+      liquidación vacacional, **Generar TXT banco** crea un pago masivo por
+      diario bancario con una línea por trabajador: documento, cuenta destino,
+      banco, referencia e importe. Cada línea se puede excluir del archivo.
+      **Generar TXT banco** descarga el archivo y **Finalizar** cierra el pago.
+    puntos:
+      - La pestaña Configuración del banco muestra los datos propios del formato del diario (tipo de proceso BBVA, subtipo BCP, códigos Interbank, forma de cargo Scotiabank, subtipo BanBif).
+      - El importe de haberes es el neto de la regla configurada en los Parámetros principales.
+    imagen: screenshots/08-pago-masivo.png
+    pie: "PM-000007: planilla de abril de 2026 en formato BCP, 10 abonos por S/ 31.459,37."
+
+funcionalidades:
+  - grupo: Boleta de pago
+    items:
+      - Boleta QWeb con el contenido del D.S. N.° 001-98-TR y códigos de la tabla 22 de SUNAT.
+      - Neto a pagar en letras y horas extras desglosadas por sobretasa.
+      - Plantilla elegida por la estructura salarial, igual para Imprimir, lote, adjunto y correo.
+      - Neto tomado por código cuando la estructura tiene su propia regla de neto.
+      - Envío individual o masivo con PDF adjunto, encolado.
+      - Confirmación de recepción con enlace firmado por HMAC y registro de fecha.
+  - grupo: Certificados y contratos
+    items:
+      - Certificado de trabajo y carta de retiro de CTS con fechas en letras.
+      - Certificado de rentas y retenciones de 5ta categoría multiempleado.
+      - Plantillas de contrato por compañía con marcadores controlados, sin evaluar código.
+      - Régimen de periodo de prueba de 3, 6 o 12 meses con fecha de fin calculada.
+      - Comprobación de datos mínimos antes de imprimir el contrato.
+  - grupo: Pago masivo bancario
+    items:
+      - TXT de haberes y de CTS de BCP, BBVA, Interbank, Scotiabank y BanBif.
+      - "Orígenes: lote de nómina, adelanto quincenal, CTS, gratificación y liquidación vacacional."
+      - CTS en soles o en dólares.
+      - Diarios de pago masivo y códigos de tipo de documento por banco configurables.
+      - Archivo guardado como adjunto del pago masivo.
+
+ejemplos:
+  - titulo: Qué muestra la boleta de junio de 2026
+    tabla:
+      - [Bloque, Contenido]
+      - [Trabajador, "DNI, régimen general, AFP INTEGRA con CUSPP, EsSalud, sueldo S/ 2.500,00 y cuenta de abono"]
+      - [Días y horas, "24,5 días laborados y 196:00 horas ordinarias"]
+      - [Ingresos, "0121 Básico 2.500,00 · 0201 Asignación familiar 113,00"]
+      - [Descuentos, "0608 Aporte AFP 261,30 · 0601 Comisión 40,50 · 0606 Prima de seguros 44,42"]
+      - [Neto, "S/ 2.266,78 (dos mil doscientos sesenta y seis con 78/100 soles)"]
+      - [Aportes del empleador, "0804 EsSalud 235,17 (9 % de 2.613,00)"]
+
+  - titulo: Marcadores de una plantilla de contrato
+    texto: El texto de la plantilla…
+    codigo: |
+      EL TRABAJADOR percibirá una remuneración mensual de S/ {{salario}}
+      ({{salario_letras}} {{moneda}}). El presente contrato tendrá una
+      duración de {{meses}}, iniciándose el {{fecha_inicio}}.
+    nota: >-
+      …se imprime como «S/ 2800.00 (DOS MIL OCHOCIENTOS CON 00/100 Soles)» e
+      «iniciándose el 01 de Marzo del 2025». Un marcador desconocido queda sin
+      sustituir y se anota en el registro del servidor.
+
+  - titulo: Formatos bancarios disponibles
+    tabla:
+      - [Banco, Haberes, CTS, Datos propios del formato]
+      - [BCP, "Sí", "Sí", "Subtipo de planilla e indicador IDC"]
+      - [BBVA, "Sí", "Sí", "Tipo y hora de proceso, validación de pertenencia, aviso"]
+      - [Interbank, "Sí", "Sí", "Código de empresa y de servicio, tipo de proceso y de persona"]
+      - [Scotiabank, "Sí", "Sí", "Forma de cargo, tipo de cargo y forma de pago"]
+      - [BanBif, "Sí", "Sí", "Subtipo de pago"]
+
+configuracion:
+  - "En **Parámetros principales**, elija el representante legal que firma, las categorías de conceptos de la boleta y la regla del neto a pagar."
+  - "En la pestaña **Pagos bancarios** de los Parámetros principales, indique los diarios de pago masivo; el banco de la cuenta del diario debe tener su formato TXT."
+  - Registre las cuentas bancarias de haberes y de CTS de los trabajadores y su correo laboral para el envío de boletas.
+  - "Revise o cree las plantillas en **Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato** y asígnelas en la ficha del trabajador."
+requisitos_nota: >-
+  Requiere Nómina de Odoo Enterprise y el módulo de beneficios sociales
+  peruano. El envío de boletas usa el servidor de correo saliente de Odoo.
+
+faq:
+  - pregunta: ¿Por qué no hay un botón «Boleta PE» aparte?
+    respuesta: >-
+      Porque el Imprimir nativo ya saca la boleta peruana: así el PDF impreso,
+      el adjunto al validar y el enviado por correo son el mismo documento.
+  - pregunta: ¿Cómo imprime su boleta un régimen con estructura propia?
+    respuesta: >-
+      La estructura salarial apunta a su reporte y el botón lo respeta. Es lo
+      que hace construcción civil con su boleta por jornal.
+  - pregunta: ¿Qué pasa si el trabajador no tiene correo laboral?
+    respuesta: >-
+      Su boleta no se envía y aparece en el aviso final junto con las que no
+      están validadas; las demás salen igualmente.
+  - pregunta: El pago masivo sale con importes en cero.
+    respuesta: >-
+      Revise la regla de neto a pagar de los Parámetros principales: el abono
+      de haberes se toma de ella (y de la regla de neto quincenal para la
+      quincena).
+  - pregunta: ¿El certificado de 5ta calcula el impuesto anual?
+    respuesta: >-
+      Muestra como impuesto la suma retenida en el año por la regla de quinta,
+      igual que la retención efectuada, por lo que el saldo por regularizar
+      sale en cero.
+
+novedades:
+  - fecha: 27/08/2026
+    cambios:
+      - El TXT de Interbank vuelve a salir con el formato completo de 380 caracteres por línea.
+  - version: 6.20260816
+    fecha: 18/08/2026
+    cambios:
+      - Nueva boleta de pago rediseñada.
+      - Plantillas de contrato en Configuración ▸ Perú ▸ Documentos y Pagos masivos bancarios al final del menú de Nómina.
+  - version: 4.20260802
+    fecha: 03/08/2026
+    cambios:
+      - Un solo botón de impresión para la boleta en todos los caminos.
+      - Neto y sobretiempo correctos en regímenes con estructura propia.
+  - version: 3.20260722
+    fecha: 26/07/2026
+    cambios:
+      - "TXT bancario desde el lote: neto de la regla configurada y sin error por el número de boleta."
+  - version: 2.20260722
+    fecha: 25/07/2026
+    cambios:
+      - "Primera versión en Odoo 19: boleta, certificados, contratos y pago masivo bancario."
+
+relacionados: [al_hr_pe, al_hr_pe_benefits, al_hr_pe_construction, al_hr_pe_account]

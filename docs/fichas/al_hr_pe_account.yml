@@ -1,0 +1,226 @@
+titulo: Contabilización de planillas
+subtitulo: >-
+  El asiento de la planilla por lote y los de CTS, gratificación,
+  liquidación de cese y provisiones mensuales, con previsualización, ajuste
+  por redondeo, detalle por trabajador y distribución analítica opcional.
+categoria: Localización Perú · Nómina · Contabilidad
+etiquetas: [Asiento por lote, Bloque AFP, CTS y gratificación, Provisiones, Liquidación de cese, Analítica opcional]
+portada: screenshots/03-asistente-lote.png
+
+destacados_intro: >-
+  Contabilizar la planilla es una decisión de cada empresa: el asiento se
+  pide, se revisa y se ajusta antes de crearse.
+destacados:
+  - icono: "∑"
+    titulo: Un asiento por lote
+    texto: >-
+      Agrupa las líneas de todas las boletas del lote por regla salarial y
+      cuenta, con cargo y abono, y lo registra en el diario configurado.
+  - icono: "👁"
+    titulo: Previsualización
+    texto: >-
+      El asistente muestra el asiento completo con total debe, total haber y
+      diferencia antes de generarlo.
+  - icono: "±"
+    titulo: Ajuste por redondeo
+    texto: >-
+      Si debe y haber no cuadran, pide la cuenta de ajuste y añade la línea
+      «Ajuste por Redondeo».
+  - icono: "AFP"
+    titulo: Bloque AFP por afiliación
+    texto: >-
+      Los aportes AFP se abonan en la cuenta de la afiliación de cada
+      trabajador, con una línea por administradora.
+  - icono: "BS"
+    titulo: Asientos de beneficios sociales
+    texto: >-
+      CTS, gratificación con su bono, liquidación de cese por trabajador y
+      provisión mensual, con reversión de lo ya provisionado.
+  - icono: "%"
+    titulo: Analítica nativa
+    texto: >-
+      Interruptor por compañía: las líneas llevan la distribución analítica de
+      la regla salarial o, si no tiene, la de la ficha del trabajador.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo contabiliza cada boleta al validarla. Una planilla peruana, en cambio,
+    suele registrarse con **un asiento por periodo**: el gasto agrupado por
+    concepto, las remuneraciones por pagar detalladas por trabajador y los
+    aportes AFP en la cuenta de cada administradora. A eso se suman los asientos
+    de CTS, gratificaciones, liquidaciones y provisiones, que no salen de una
+    boleta.
+
+
+    Este módulo construye esos asientos desde las boletas y los documentos de
+    beneficios sociales, con las cuentas configuradas por compañía.
+  nota: >-
+    **Convive con el flujo nativo.** El asiento de lote es opcional: la
+    compañía que lo usa deja sin diario la estructura salarial, así la
+    validación de boletas no genera asientos, y lanza el asistente. Si se
+    anula una boleta, se revierte el asiento compartido del lote.
+
+pasos_intro: >-
+  Recorrido con la planilla de pruebas de «Comercial Demo Perú S.A.C.», de
+  trabajadores ficticios. Los asistentes se muestran sin confirmar.
+pasos:
+  - titulo: Configurar el asiento de planilla
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Contabilidad
+    texto: >-
+      Elija el **diario del asiento de planilla**, el **partner para
+      planillas** que se usa en las líneas sin trabajador y si el asiento lleva
+      **analítica**. En **R.S. aportes AFP** indique las reglas cuyo abono va a
+      la cuenta de la afiliación del trabajador.
+    puntos:
+      - Las cuentas de cargo y abono de cada concepto son las de su regla salarial.
+      - Las reglas con detalle por empleado abonan una línea por trabajador con su contacto.
+    imagen: screenshots/01-parametros-lote.png
+
+  - titulo: Configurar las cuentas de beneficios sociales
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Contabilidad BBSS
+    texto: >-
+      Por concepto, la cuenta de gasto (debe), la de provisión (haber) y la de
+      beneficio por pagar: CTS, gratificación, bono extraordinario,
+      vacaciones y liquidación de cese con sus conceptos extra. Al final, si la
+      provisión se detalla por trabajador y la cuenta de ajuste por redondeo.
+    imagen: screenshots/02-parametros-bbss.png
+
+  - titulo: Previsualizar y generar el asiento del lote
+    ruta: Nómina ▸ Contabilidad ▸ Asiento de planilla por lote
+    texto: >-
+      Elija el lote de nómina: el asistente calcula las líneas en el momento
+      con descripción, cuenta, debe y haber, y muestra los totales y la
+      diferencia. **Con distribución analítica** permite ver el asiento en los
+      dos modos. **Generar asiento** lo crea, lo publica con fecha de fin del
+      lote y referencia `PLA` + mes + año, y lo enlaza al lote y a sus boletas.
+    puntos:
+      - También se abre desde el lote de nómina con la opción «Asiento PE por lote».
+      - Las boletas anuladas no entran en el asiento.
+      - Un lote con asiento no genera otro hasta que se anule y elimine el anterior.
+    imagen: screenshots/03-asistente-lote.png
+    pie: "Planilla de junio de 2026: 10 boletas y S/ 46.912,83 al debe y al haber, sin diferencia."
+
+  - titulo: Contabilizar la CTS
+    ruta: Nómina ▸ Beneficios sociales ▸ CTS
+    texto: >-
+      El documento de CTS suma el botón **Obtener provisiones**, que trae lo
+      provisionado en el semestre para cada trabajador (columna **Prov.
+      acumulada**), y **Generar asiento** una vez exportado. El asiento queda
+      enlazado en **Asiento contable**. Gratificación y liquidación de cese
+      siguen el mismo circuito.
+    imagen: screenshots/04-cts-asiento.png
+
+  - titulo: Revisar el asiento del beneficio
+    ruta: CTS ▸ Asiento contable
+    texto: >-
+      Al debe, la reversión de la provisión acumulada de cada trabajador y el
+      gasto por lo no provisionado; al haber, la CTS por pagar de cada
+      trabajador con su contacto. La referencia combina el beneficio y el
+      periodo del lote.
+    imagen: screenshots/05-asiento-cts.png
+    pie: "CTS de mayo 2026: S/ 17.848,78 de CTS por pagar en nueve líneas, sin provisión previa."
+
+  - titulo: Asentar la provisión del mes
+    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones ▸ Generar asiento
+    texto: >-
+      Desde la provisión mensual, **Generar asiento** abre el asistente con
+      total debe, total haber y diferencia; si hay diferencia pide la cuenta de
+      ajuste. Al generar, la provisión pasa a **Hecho** y el botón **Ver
+      asiento** lo abre.
+    imagen: screenshots/06-asistente-provision.png
+    pie: "Provisión de junio 2026: S/ 13.176,39 entre CTS, gratificación, bono y vacaciones."
+
+funcionalidades:
+  - grupo: Asiento de planilla por lote
+    items:
+      - Agregación por regla salarial y cuenta de todas las boletas no anuladas del lote.
+      - Detalle por trabajador en las reglas que lo piden, con su contacto.
+      - Abono de los aportes AFP en la cuenta de la afiliación, una línea por administradora.
+      - Previsualización con totales y diferencia, y línea de ajuste por redondeo.
+      - Asiento publicado y enlazado al lote y a sus boletas.
+      - Validación de diario y partner antes de generar.
+  - grupo: Beneficios sociales
+    items:
+      - CTS y gratificación con reversión de la provisión acumulada y gasto por la diferencia.
+      - Bono extraordinario de la Ley 29351 dentro del asiento de gratificación.
+      - Un asiento por trabajador cesado, con truncos, conceptos extra y retenciones de AFP u ONP.
+      - Provisión mensual por concepto, al haber detallada por trabajador o agrupada.
+      - Un único asistente de generación para los cuatro tipos de documento.
+  - grupo: Analítica y configuración
+    items:
+      - Distribución analítica nativa por compañía, de la regla salarial o de la ficha del trabajador.
+      - Cuentas de beneficios sociales por compañía en los Parámetros principales.
+
+ejemplos:
+  - titulo: Bloque AFP del asiento de junio de 2026
+    texto: >-
+      Las reglas de AFP se cargan contra remuneraciones por pagar y se abonan
+      por administradora, según la afiliación de cada trabajador:
+    tabla:
+      - [Línea, Debe S/, Haber S/]
+      - [AFP Aporte Fondo de Pensiones, "2.624,42", ""]
+      - [AFP Comisión Sobre Flujo, "187,44", ""]
+      - [AFP Prima de Seguros, "445,84", ""]
+      - [AFP HABITAT, "", "270,62"]
+      - [AFP INTEGRA, "", "917,69"]
+      - [AFP PRIMA, "", "2.068,69"]
+      - [AFP PROFUTURO, "", "0,70"]
+      - [Total, "3.257,70", "3.257,70"]
+
+  - titulo: Asiento de la provisión mensual
+    texto: Provisión del lote «Planilla 2026-06», con cuatro conceptos.
+    tabla:
+      - [Concepto, Debe (gasto) S/, Haber (provisión) S/]
+      - [CTS, "3.163,23", "3.163,23"]
+      - [Gratificación, "6.326,47", "6.326,47"]
+      - [Bono extraordinario, "523,46", "523,46"]
+      - [Vacaciones, "3.163,23", "3.163,23"]
+      - [Total, "13.176,39", "13.176,39"]
+    nota: Con «Detallar provisión por trabajador» activo, cada haber se abre en una línea por trabajador.
+
+
+configuracion:
+  - "Asigne las cuentas de debe y haber a las reglas salariales, y el detalle por empleado a las que lo necesiten."
+  - "En **Parámetros principales ▸ Contabilidad** configure diario, partner, analítica y las reglas de aportes AFP."
+  - Asigne a cada afiliación AFP su cuenta contable en la compañía.
+  - "En **Parámetros principales ▸ Contabilidad BBSS** configure las cuentas de CTS, gratificación, vacaciones, liquidación y ajuste."
+  - Si usa el asiento de lote, deje sin diario la estructura salarial para que la validación de boletas no genere asientos propios.
+requisitos_nota: >-
+  Requiere Nómina de Odoo Enterprise con su contabilización y el módulo de
+  beneficios sociales peruano.
+
+faq:
+  - pregunta: ¿El asiento se genera solo al validar la planilla?
+    respuesta: >-
+      No. Se genera desde el asistente «Asiento de planilla por lote» cuando se
+      decide, después de previsualizarlo.
+  - pregunta: ¿Qué pasa si debe y haber no cuadran?
+    respuesta: >-
+      El asistente muestra la diferencia y exige una cuenta de ajuste; al
+      generar añade la línea «Ajuste por Redondeo» por esa diferencia.
+  - pregunta: ¿De dónde sale la distribución analítica?
+    respuesta: >-
+      De la regla salarial si la tiene y, si no, de la ficha del trabajador.
+      Solo se aplica cuando la compañía activa «Asiento de lote con analítica».
+  - pregunta: El asistente dice que no hay importes que contabilizar en la CTS.
+    respuesta: >-
+      Procese el documento y, si corresponde, obtenga las provisiones antes de
+      generar el asiento. Un documento que ya tiene asiento tampoco genera
+      otro: hay que eliminar el actual.
+  - pregunta: ¿Cómo quedan las AFP si falta la cuenta de la afiliación?
+    respuesta: >-
+      El asistente se detiene y lista los trabajadores con aportes AFP cuya
+      afiliación no tiene cuenta en esa compañía; asígnela y vuelva a elegir el
+      lote.
+
+novedades:
+  - fecha: 18/08/2026
+    cambios:
+      - El menú pasa a llamarse Contabilidad y se ordena al final del flujo de Nómina.
+  - version: 2.20260722
+    fecha: 25/07/2026
+    cambios:
+      - "Primera versión en Odoo 19: asiento de planilla por lote por ORM, asientos de beneficios sociales y analítica nativa opcional."
+
+relacionados: [al_hr_pe, al_hr_pe_benefits, al_hr_pe_reports]
