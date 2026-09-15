@@ -1,0 +1,15 @@
+flowchart TD
+  A[Tareaje en borrador:<br/>periodo, tolerancia y Calcular horas extras] --> B[Procesar]
+  B --> C[Por trabajador con marcaciones<br/>y por cada día del periodo]
+  C --> D{Tipo de día}
+  D -- Ausencia validada sin marcación --> D1[Ausencia aprobada:<br/>no se clasifica]
+  D -- Feriado o sin horario --> E{¿Marcó?}
+  E -- No --> E1[Día de descanso]
+  E -- Sí --> E2[Feriado o descanso laborado<br/>+ HE 100 % del exceso]
+  D -- Laborable --> F{¿Marcó?}
+  F -- No --> F1[Falta]
+  F -- Solo entrada o salida --> F3[Marcación incompleta]
+  F -- Sí --> F2[Día laborado, horas diurnas y nocturnas,<br/>tardanza sobre la tolerancia,<br/>HE 25 % y HE 35 %]
+  D1 & E1 & E2 & F1 & F2 & F3 --> G[Líneas editables por trabajador<br/>y detalle diario]
+  G --> H[Aplicar al periodo]
+  H --> I[La boleta, al calcular sus días trabajados,<br/>sustituye DLAB, DOM, FER, FAL, TAR,<br/>HE25, HE35 y HE100 por los totales]

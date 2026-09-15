@@ -40,3 +40,16 @@ with Captura('al_l10n_pe_retention') as c:
     c.page.locator('.o_select_menu_item:has-text("07")').first.click(); c.esperar(400)
     c.clic('.modal-dialog button[name=action_export]', ms=2500)
     c.foto('07-resumen-626', selector='.modal-content')
+
+    # 8. Impuesto de retención (marco nativo: retención en el pago)
+    c.abrir_registro('account.tax', 257, ms=2000)
+    c.foto('08-impuesto', selector='.o_form_view .o_form_sheet_bg')
+
+    # 10. Asiento del pago con retención (base, contrapartida y 4011x)
+    c.abrir_registro('account.move', 359, ms=2000)
+    c.page.get_by_text('Apuntes contables', exact=True).first.click(); c.esperar(900)
+    c.foto('10-asiento-pago', selector='.o_form_view .o_form_sheet_bg')
+
+    # 11. Lista de retenciones sufridas
+    c.abrir_accion('al_l10n_pe_retention.action_retention_received', ms=2000)
+    c.foto('11-sufridas')

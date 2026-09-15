@@ -1,0 +1,11 @@
+flowchart TD
+  A[Modalidad, lote<br/>y periodo] --> B{¿Comprobantes<br/>elegidos a mano?}
+  B -- Sí --> C[Se usan esos]
+  B -- No --> D[Publicadas del periodo:<br/>compras si adquiriente,<br/>ventas si proveedor]
+  C --> E{¿Tipo, monto, RUC,<br/>cuenta BN y fecha?}
+  D --> E
+  E -- Falta algo --> F[Excluido con su motivo]
+  E -- Completo --> G[Línea de detalle<br/>de 107 caracteres]
+  G --> H{¿Longitudes<br/>exactas?}
+  H -- No --> I[Error: no se<br/>entrega el archivo]
+  H -- Sí --> J[TXT D + RUC + lote<br/>y tabla de excluidos]

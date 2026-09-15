@@ -1,0 +1,10 @@
+flowchart TD
+  A[Activo en proceso, pausado o cerrado<br/>con la pestaña PLE SUNAT completa] --> B[Valor, mejoras y bajas del ejercicio<br/>y asientos de depreciación publicados]
+  B --> C{¿Desde dónde?}
+  C -- Informe en pantalla --> D[Perú ▸ Libros PLE ▸ Activos fijos:<br/>un renglón por activo, agrupado por cuenta]
+  C -- Asistente --> E[Exportar PLE:<br/>7.1, 7.3 y 7.4]
+  D --> F[Botones TXT 7.1, XLSX 7.1,<br/>TXT 7.3 y TXT 7.4]
+  F --> G{¿Falta tipo de activo, datos<br/>en moneda extranjera o contrato?}
+  E --> G
+  G -- Sí --> X[Aviso con los activos a corregir]
+  G -- No --> H[7.1 todos los activos · 7.3 los comprados<br/>en moneda extranjera · 7.4 los de leasing]

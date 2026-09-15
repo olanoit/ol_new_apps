@@ -3,15 +3,15 @@ subtitulo: >-
   Ciclos de jornada atípica con control legal, turnos sobre la planificación
   nativa, monitor de lo planificado frente a lo marcado y el tareaje que
   clasifica las horas del periodo (nocturnidad, horas extras al 25 %, 35 % y
-  100 %, faltas y tardanzas) para la boleta.
+  100 %, faltas y tardanzas) para la boleta. Incluye el fotocheck del personal.
 categoria: Localización Perú · Planillas
 etiquetas: [Tareaje, Horas extras, Jornada atípica, "D.S. 007-2002-TR", Monitor de asistencia, Fotocheck]
-portada: screenshots/07-detalle.png
+portada: screenshots/16-detalle.png
 
 destacados_intro: >-
-  Extiende Planificación, Asistencias y Nómina de Odoo en lugar de
-  sustituirlos: los turnos son turnos nativos y las horas llegan a la boleta
-  como entradas de trabajo.
+  Extiende Planeación, Asistencias y Nómina de Odoo en lugar de sustituirlos:
+  los turnos son turnos nativos y las horas llegan a la boleta como entradas
+  de trabajo.
 destacados:
   - icono: "N×M"
     titulo: Ciclos atípicos
@@ -22,7 +22,7 @@ destacados:
   - icono: "▤"
     titulo: Turnos nativos
     texto: >-
-      Una asignación genera los turnos de los días de trabajo en Planificación,
+      Una asignación genera los turnos de los días de trabajo en Planeación,
       en borrador y en la zona horaria del trabajador.
   - icono: "⇄"
     titulo: Monitor de asistencia
@@ -53,7 +53,8 @@ contexto:
     **D.S. 007-2002-TR**: al menos 25 % por las dos primeras horas y 35 % por
     las restantes (art. 10), jornada nocturna entre las 22:00 y las 06:00
     (art. 8) y 100 % por el trabajo en día de descanso o feriado sin descanso
-    sustitutorio (D.Leg. 713).
+    sustitutorio (D.Leg. 713). Las jornadas atípicas o acumulativas (art. 4)
+    no pueden superar en promedio las 48 horas semanales del ciclo.
 
 
     Contar esas horas a mano desde las marcaciones es lento y propenso a
@@ -65,107 +66,395 @@ contexto:
     `al_hr_pe_public_holidays`. Sin él, un feriado trabajado se pagaría como
     jornada ordinaria.
 
+flujos_intro: >-
+  Los tres procesos del módulo: planificar la jornada atípica, controlar la
+  asistencia del día y llevar las horas del periodo a la boleta.
+flujos:
+  - id: ciclo-atipico
+    titulo: Del ciclo atípico a los turnos publicados
+    texto: >-
+      El control legal se hace al guardar el ciclo y al asignarlo; los turnos
+      nacen en borrador y se publican en Planeación.
+    mermaid: |
+      flowchart TD
+        A[Ciclo atípico:<br/>días de trabajo, descanso y horas por día] --> B{¿Promedio semanal ≤ 48 h<br/>y jornada ≤ 12 h?}
+        B -- No --> X[Error de validación:<br/>el ciclo no se guarda]
+        B -- Sí --> C[Asignación de ciclo:<br/>trabajador, plantilla, inicio y N° de ciclos]
+        C --> D{¿La plantilla dura más<br/>que las horas por día?<br/>¿Se superpone con otra asignación?}
+        D -- Sí --> Y[Error de validación]
+        D -- No --> E[Generar turnos]
+        E --> F{¿Choca con turnos<br/>ya existentes?}
+        F -- Sí --> Z[Aviso con las fechas en conflicto:<br/>no se crea ninguno]
+        F -- No --> G[Un turno en borrador por día de trabajo<br/>en la zona horaria del trabajador]
+        G --> H[Publicar en Planeación]
+        H --> I[Monitor: días de trabajo con turno<br/>y días de descanso del ciclo]
+    pie: Los días de descanso no generan turno; el monitor los reconstruye desde la asignación.
+  - id: monitor
+    titulo: Estado de cada día en el monitor
+    texto: >-
+      Para cada turno publicado o descanso del ciclo, el monitor decide el
+      estado con las marcaciones, las ausencias validadas y los feriados.
+    mermaid: |
+      flowchart TD
+        A[Turno publicado o<br/>día de descanso del ciclo] --> B{¿Hay marcación<br/>de entrada ese día?}
+        B -- Sí --> C{¿Feriado?}
+        C -- Sí --> C1[Feriado trabajado]
+        C -- No --> C2{¿Descanso del ciclo?}
+        C2 -- Sí --> C3[Descanso trabajado]
+        C2 -- No --> C4[Asistió]
+        B -- No --> D{¿Ausencia validada?}
+        D -- Sí --> D1{¿Tipo marcado<br/>Es vacaciones Perú?}
+        D1 -- Sí --> D2[Vacaciones]
+        D1 -- No --> D3[Justificada]
+        D -- No --> E{¿Feriado?}
+        E -- Sí --> E1[Día feriado]
+        E -- No --> F{¿Descanso del ciclo?}
+        F -- Sí --> F1[Día de descanso]
+        F -- No --> F2[Falta: botón Reg. ausencia]
+  - id: tareaje
+    titulo: Del tareaje a la boleta
+    texto: >-
+      El tareaje lee las marcaciones y el horario de trabajo, no los turnos;
+      solo el tareaje aplicado cambia la boleta.
+    mermaid: |
+      flowchart TD
+        A[Tareaje en borrador:<br/>periodo, tolerancia y Calcular horas extras] --> B[Procesar]
+        B --> C[Por trabajador con marcaciones<br/>y por cada día del periodo]
+        C --> D{Tipo de día}
+        D -- Ausencia validada sin marcación --> D1[Ausencia aprobada:<br/>no se clasifica]
+        D -- Feriado o sin horario --> E{¿Marcó?}
+        E -- No --> E1[Día de descanso]
+        E -- Sí --> E2[Feriado o descanso laborado<br/>+ HE 100 % del exceso]
+        D -- Laborable --> F{¿Marcó?}
+        F -- No --> F1[Falta]
+        F -- Solo entrada o salida --> F3[Marcación incompleta]
+        F -- Sí --> F2[Día laborado, horas diurnas y nocturnas,<br/>tardanza sobre la tolerancia,<br/>HE 25 % y HE 35 %]
+        D1 & E1 & E2 & F1 & F2 & F3 --> G[Líneas editables por trabajador<br/>y detalle diario]
+        G --> H[Aplicar al periodo]
+        H --> I[La boleta, al calcular sus días trabajados,<br/>sustituye DLAB, DOM, FER, FAL, TAR,<br/>HE25, HE35 y HE100 por los totales]
+    pie: Las horas extras solo se calculan si el tareaje lo indica y la versión del trabajador tiene «Sujeto a horas extras (PE)».
+
 pasos_intro: >-
-  Recorrido con los datos de demostración: tres trabajadores «DEMO FICHA HR1»
-  con horario de 48 h y marcaciones del 1 al 14 de septiembre de 2026.
+  Todas las funciones del módulo con los datos de demostración: tres
+  trabajadores «DEMO FICHA HR1» con horario de 48 h y marcaciones del 1 al
+  14 de septiembre de 2026, un ciclo 14×7 asignado para octubre y la
+  compañía «Comercial Demo Perú S.A.C.».
 pasos:
+  - seccion: Turnos y jornada nocturna
+    texto: Lo que el módulo añade a la configuración nativa de Planeación.
+  - titulo: Tipo de turno peruano en las funciones
+    ruta: Planeación ▸ Configuración ▸ Funciones
+    texto: >-
+      Cada función de planificación lleva un **Tipo de turno (Perú)**: turno
+      mañana, turno tarde, turno noche o rotativo. El módulo carga tres
+      funciones: Turno Mañana, Turno Tarde y Turno Noche.
+    puntos:
+      - Las tres funciones se cargan una sola vez; se pueden renombrar o recolorear sin que una actualización las pise.
+    imagen: screenshots/01-roles.png
+
+  - titulo: Plantillas de turno nocturnas
+    ruta: Planeación ▸ Configuración ▸ Plantillas de turnos
+    texto: >-
+      La columna **Jornada nocturna (Perú)** se marca sola cuando la plantilla
+      empieza antes de las 06:00, termina después de las 22:00 o abarca más de
+      un día (art. 8 del D.S. 007-2002-TR).
+    imagen: screenshots/02-plantillas.png
+    pie: "La plantilla de 22:00 a 6:00 queda marcada; la de 7:00 a 17:00, no."
+
+  - seccion: Ciclos atípicos
+    texto: Jornadas acumulativas del tipo 14×7, desde el catálogo hasta los turnos.
   - titulo: Definir los ciclos de jornada atípica
     ruta: Nómina ▸ Asistencia ▸ Ciclos atípicos
     texto: >-
-      Indique días de trabajo, días de descanso y horas por día. El módulo
-      calcula la duración del ciclo y el **promedio semanal** (horas por día ×
-      días de trabajo × 7 ÷ días del ciclo).
+      Lista de ciclos con días de trabajo, días de descanso, horas por día,
+      duración del ciclo y **promedio semanal**.
+    imagen: screenshots/03-ciclos.png
+
+  - titulo: Ficha del ciclo y su control legal
+    ruta: Ciclos atípicos ▸ Nuevo
+    texto: >-
+      Indique días de trabajo, días de descanso y horas por día. El bloque
+      **Control legal** calcula la duración del ciclo y el promedio semanal:
+      horas por día × días de trabajo × 7 ÷ días del ciclo.
     puntos:
       - Sin compañía, el ciclo es común a todas; con compañía, es propio.
-    imagen: screenshots/01-ciclos.png
+    imagen: screenshots/04-ciclo.png
     pie: "14×7 de 10 horas: 10 × 14 × 7 ÷ 21 = 46:40 h semanales."
 
   - titulo: El validador legal impide un ciclo ilegal
-    ruta: Ciclos atípicos ▸ Nuevo
+    ruta: Ciclos atípicos ▸ Nuevo ▸ Guardar
     texto: >-
       Al guardar, el ciclo se rechaza si el promedio semanal supera las 48 h
       (D.S. 007-2002-TR art. 4 y D.S. 008-2002-TR art. 9) o si la jornada
       diaria supera las 12 h (STC 4635-2004-AA/TC).
-    imagen: screenshots/02-validacion.png
+    imagen: screenshots/05-validacion.png
     pie: "Un 14×7 de 12 horas da 56 h semanales y no se puede guardar."
 
   - titulo: Asignar el ciclo a un trabajador
     ruta: Nómina ▸ Asistencia ▸ Asignaciones de ciclo
     texto: >-
-      Trabajador, ciclo, plantilla de turno (horario y función), fecha de
-      inicio y número de ciclos; la fecha de fin se calcula. **Generar turnos**
-      crea en borrador un turno por cada día de trabajo.
+      Trabajador, ciclo, plantilla de turno, inicio y número de ciclos; el
+      **Fin** se calcula. **Generar turnos** crea en borrador un turno por
+      cada día de trabajo y el botón **Turnos** los abre.
     puntos:
       - La plantilla no puede durar más que las horas por día del ciclo.
-      - No se admiten dos asignaciones superpuestas para el mismo trabajador ni turnos que choquen con otros ya existentes.
-    imagen: screenshots/03-asignacion.png
+      - No se admiten dos asignaciones superpuestas del mismo trabajador.
+      - Si algún día choca con un turno existente, avisa con las fechas y no crea ninguno.
+      - El filtro **Vigentes** muestra las asignaciones que cubren el día de hoy.
+    imagen: screenshots/06-asignacion.png
+    pie: "Dos ciclos 14×7 desde el 5 de octubre: fin el 15 de noviembre."
 
   - titulo: Revisar y publicar los turnos generados
     ruta: Asignación ▸ botón Turnos
     texto: >-
-      Los turnos son de Planificación: se revisan en lista o en gantt y se
+      Los turnos son de Planeación: se revisan en lista o en gantt y se
       publican desde allí. Los días de descanso no generan turno.
     puntos:
       - Al borrar la asignación se borran sus turnos en borrador; si alguno está publicado, primero hay que despublicarlo.
-      - En el turno se puede registrar a quién reemplaza y el motivo (vacaciones, descanso, falta u otro).
-    imagen: screenshots/04-turnos.png
-    pie: "Dos ciclos 14×7 desde el 5 de octubre: 28 turnos de 07:00 a 17:00."
+    imagen: screenshots/07-turnos.png
+    pie: "28 turnos de 7:00 a 17:00: del 5 al 18 de octubre y del 26 de octubre al 8 de noviembre."
 
+  - titulo: Registrar un reemplazo en el turno
+    ruta: Planeación ▸ turno ▸ grupo Perú
+    texto: >-
+      El grupo **Perú** del turno muestra la asignación de ciclo que lo generó
+      y permite registrar a quién **Reemplaza a** y el **Motivo del
+      reemplazo** (vacaciones, día de descanso, falta u otro), obligatorio si
+      se indica el reemplazado.
+    puntos:
+      - Solo lo ven los responsables de Planeación.
+    imagen: screenshots/08-turno-reemplazo.png
+    pie: Huamán cubre el 10 de septiembre la falta de Salazar.
+
+  - seccion: Control de asistencia
+    texto: Lo planificado frente a lo marcado, día a día.
   - titulo: Comparar lo planificado con lo marcado
     ruta: Nómina ▸ Asistencia ▸ Monitor de asistencia
     texto: >-
       Por trabajador y día: ingreso, salida y duración planificados, primera
       entrada y última salida marcadas, horas marcadas y estado. Se abre con
-      el filtro **Hoy** y agrupado por empleado.
+      el filtro **Hoy** y agrupado por empleado; hay filtros de **Faltas** y
+      **Descanso/feriado trabajado** y vista de tabla dinámica.
     puntos:
-      - En una **Falta**, el botón **Reg. ausencia** abre la solicitud de ausencia ya prellenada; si existe, **Ver ausencia** la muestra.
-      - Las ausencias de tipos marcados como **Es vacaciones (Perú)** aparecen como Vacaciones; las demás, como Justificada.
-    imagen: screenshots/05-monitor.png
+      - Con cuatro marcaciones (salida y retorno del refrigerio) las horas marcadas ya descuentan el refrigerio.
+      - Cada marcación nueva se enlaza sola con el turno publicado más cercano (hasta 14 h antes o después de la entrada).
+    imagen: screenshots/09-monitor.png
     pie: "El 10 de septiembre aparece como falta y el 8, con ingreso a las 08:25."
 
-  - titulo: Procesar el tareaje del periodo
+  - titulo: Justificar una falta
+    ruta: Monitor de asistencia ▸ fila con Falta ▸ Reg. ausencia
+    texto: >-
+      **Reg. ausencia** abre la solicitud de ausencia con el trabajador y la
+      fecha ya puestos. Cuando la ausencia se valida, el día pasa a
+      **Justificada** o **Vacaciones** y el botón cambia a **Ver ausencia**.
+    imagen: screenshots/10-registrar-ausencia.png
+
+  - titulo: Marcar los tipos de ausencia de vacaciones
+    ruta: Vacaciones ▸ Configuración ▸ Tipos de vacaciones ▸ tipo
+    texto: >-
+      La casilla **Es vacaciones (Perú)** hace que el monitor muestre esas
+      ausencias como **Vacaciones**; las de los demás tipos salen como
+      **Justificada**.
+    imagen: screenshots/11-tipo-ausencia.png
+
+  - seccion: Tareaje
+    texto: Las horas del periodo, clasificadas y llevadas a la boleta.
+  - titulo: Parámetros del tareaje
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ pestaña Tareaje
+    texto: >-
+      Por compañía: franja nocturna, horas al 25 %, tolerancia de tardanza,
+      redondeo de minutos y el tipo de entrada de trabajo que recibe cada
+      concepto del tareaje.
+    puntos:
+      - Los tipos de destino se proponen por su código peruano (DLAB, DOM, FER, FAL, TAR, HE25, HE35, HE100).
+      - "**W.E. jornada nocturna** no tiene valor por defecto: sin configurarlo, la nocturnidad queda informativa y no llega a la boleta."
+    imagen: screenshots/12-parametros-tareaje.png
+
+  - titulo: Quién está sujeto a horas extras
+    ruta: Nómina ▸ Empleados ▸ Registros de los empleados ▸ columna opcional
+    texto: >-
+      **Sujeto a horas extras (PE)** vive en la versión del trabajador y queda
+      en su historial. Desmárquelo para el personal de dirección o no sujeto a
+      fiscalización inmediata (art. 5 del D.S. 007-2002-TR).
+    imagen: screenshots/13-versiones-he.png
+    pie: Huamán y Rivas están sujetos a horas extras; Salazar, no.
+
+  - titulo: Crear el tareaje del periodo
     ruta: Nómina ▸ Asistencia ▸ Tareaje
     texto: >-
-      Indique el periodo, la tolerancia de tardanza y si se calculan horas
-      extras, y pulse **Procesar**: se crea una línea por trabajador con
-      marcaciones, con días laborados, descansos, feriados o descansos
-      laborados, faltas, tardanzas y horas extras.
+      Lista de tareajes con periodo, tolerancia, cálculo de horas extras y
+      estado, con filtros **Borrador** y **Aplicado**. Un tareaje nuevo propone
+      el mes en curso y la tolerancia de los parámetros.
+    imagen: screenshots/14-tareajes.png
+
+  - titulo: Procesar y revisar el tareaje
+    ruta: Tareaje ▸ Procesar
+    texto: >-
+      **Procesar** crea una línea por trabajador con marcaciones en el periodo:
+      días laborados, descansos, feriados o descansos laborados, faltas,
+      tardanzas y horas extras. Las líneas se pueden corregir mientras el
+      tareaje está en borrador; volver a procesar las regenera.
     puntos:
-      - Las horas extras solo se calculan a quien tenga **Sujeto a horas extras (PE)** en su versión.
-      - Las líneas son editables mientras el tareaje está en borrador.
-    imagen: screenshots/06-tareaje.png
+      - Columnas opcionales para días y horas nocturnas, horas diurnas, inconsistencias y HE 100 %.
+    imagen: screenshots/15-tareaje.png
 
   - titulo: Revisar el detalle diario
     ruta: Tareaje ▸ línea ▸ icono de ojo
     texto: >-
       Cada día con su horario, marcaciones, horas, estado y la clasificación
-      en conceptos. Aquí se ve por qué un día cuenta como descanso laborado o
-      por qué se pagan horas al 35 %.
-    imagen: screenshots/07-detalle.png
+      en conceptos. La columna **Horas a compensar** registra el sobretiempo
+      compensado con descanso: al pasar a la boleta descuenta primero HE 25 %
+      y luego HE 35 %.
+    imagen: screenshots/16-detalle.png
     pie: "Domingo 6: 08:00 a 18:00, descanso laborado con 2 h al 100 %. Miércoles 2: salida 19:30, 2 h al 25 % y 30 min al 35 %."
 
   - titulo: Aplicar el tareaje a las boletas
     ruta: Tareaje ▸ Aplicar al periodo
     texto: >-
-      El tareaje pasa a **Aplicado** y las boletas del periodo lo leen al
-      refrescar sus días trabajados: cada concepto llega como su tipo de
-      entrada de trabajo (días laborados, descanso, feriado laborado, faltas,
-      tardanzas, HE 25 %, 35 % y 100 %). **Reabrir** lo devuelve a borrador.
+      Tras confirmar, el tareaje pasa a **Aplicado** y queda de solo lectura.
+      Las boletas peruanas cuyo periodo incluya sus días lo leen al calcular
+      los días trabajados: cada concepto sustituye el valor de su tipo de
+      entrada de trabajo. **Reabrir** lo devuelve a borrador.
     puntos:
-      - Los tipos de entrada de trabajo de destino, la franja nocturna, el límite de horas al 25 %, la tolerancia y el redondeo de minutos se configuran en **Parámetros principales ▸ Tareaje**.
       - Un tareaje aplicado no se puede eliminar.
+      - Sin tareaje aplicado, la boleta conserva el cálculo nativo.
+    imagen: screenshots/17-boleta-tareaje.png
+    pie: "Boleta DEMO de Rivas del 1 al 14 de septiembre: 12 días laborados (90 h), 1 descanso, 1 descanso laborado, HE 25 % 4 h, HE 35 % 0,5 h y HE 100 % 2 h."
+
+  - seccion: Fotocheck
+    texto: El carné de identificación del personal.
+  - titulo: Configurar el fotocheck de la compañía
+    ruta: Nómina ▸ Asistencia ▸ Configuración de fotocheck
+    texto: >-
+      Una configuración por compañía con hasta cinco **logos de
+      certificaciones** (franja superior), la **imagen de fondo del anverso**
+      y la **imagen de reverso**.
+    puntos:
+      - Solo la ve el administrador de nómina.
+    imagen: screenshots/18-fotocheck-config.png
+
+  - titulo: Imprimir el fotocheck
+    ruta: Empleados ▸ seleccionar ▸ Imprimir ▸ Fotocheck (Perú)
+    texto: >-
+      El reporte **Fotocheck (Perú)** convive con el gafete nativo de Odoo.
+      Anverso con logo de la compañía, certificaciones, foto, nombres y
+      apellidos, código de barras del empleado y puesto; reverso con la imagen
+      configurada.
+    imagen: screenshots/19-imprimir.png
+
+  - titulo: El carné generado
+    ruta: Imprimir ▸ Fotocheck (Perú)
+    texto: >-
+      Cada trabajador en su tarjeta, con la configuración de la compañía del
+      empleado (no la de otra empresa de la base).
+    imagen: screenshots/20-fotocheck.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Ciclo atípico
+    ruta: Nómina ▸ Asistencia ▸ Ciclos atípicos
+    campos:
+      - [Nombre, "Nombre del ciclo; se muestra con «(N×M)» al final.", Vacío, Identifica el ciclo en las asignaciones]
+      - [Días de trabajo, Días seguidos con turno., Vacío, "Obligatorio y mayor que cero"]
+      - [Días de descanso, Días seguidos sin turno., Vacío, "Obligatorio y mayor que cero"]
+      - [Horas por día, Jornada diaria efectiva sin refrigerio., "08:00", "Rechaza más de 12 h"]
+      - ["Duración del ciclo (días)", Días de trabajo + días de descanso., Calculado, Base del promedio]
+      - ["Promedio semanal (h)", "Horas por día × días de trabajo × 7 ÷ días del ciclo.", Calculado, "Rechaza más de 48 h"]
+      - [Compañía, Vacío para un ciclo común a todas las compañías., Vacío, Visibilidad por compañía]
+  - grupo: Asignación de ciclo atípico
+    ruta: Nómina ▸ Asistencia ▸ Asignaciones de ciclo
+    campos:
+      - [Trabajador, Empleado al que se aplica el ciclo., Vacío, Recurso de los turnos]
+      - [Ciclo atípico, Ciclo a repetir., Vacío, Días de trabajo y de descanso]
+      - [Plantilla de turno, "Plantilla de Planeación: hora de inicio, fin y función.", Vacío, "Horario de los turnos; no puede durar más que las horas por día"]
+      - [Inicio del ciclo, Primer día del primer ciclo., Vacío, Punto de partida de los turnos]
+      - [N° de ciclos, Repeticiones consecutivas., "1", "Alarga el periodo"]
+      - [Fin, "Inicio + N ciclos × días del ciclo − 1.", Calculado, Control de superposición]
+      - [Compañía, Compañía de la asignación y de sus turnos., Compañía activa, "—"]
+      - [Turnos, Número de turnos generados., Calculado, "Oculta «Generar turnos» si hay alguno"]
+  - grupo: Funciones y plantillas de turno
+    ruta: Planeación ▸ Configuración
+    campos:
+      - ["Tipo de turno (Perú)", "Turno mañana, turno tarde, turno noche o rotativo.", Vacío, Clasificación de la función]
+      - ["Jornada nocturna (Perú)", "Plantilla que empieza antes de las 06:00, termina después de las 22:00 o abarca más de un día.", Calculado, Columna en la lista de plantillas]
+  - grupo: Turno de Planeación (grupo Perú)
+    ruta: Planeación ▸ turno
+    campos:
+      - [Asignación de ciclo atípico, Asignación que generó el turno., Solo lectura, Filtra los turnos del ciclo]
+      - [Reemplaza a, Trabajador titular al que cubre el turno., Vacío, Hace obligatorio el motivo]
+      - [Motivo del reemplazo, "Vacaciones, día de descanso, falta u otro.", Vacío, Rastro para fiscalización]
+  - grupo: Marcación y tipo de ausencia
+    ruta: Asistencias / Vacaciones ▸ Configuración
+    campos:
+      - [Turno planificado, Turno publicado más cercano a la entrada (hasta 14 h)., Automático, "Enlace de la marcación con el turno; editable"]
+      - ["Es vacaciones (Perú)", "Clasifica las ausencias de ese tipo.", Desmarcado, "Monitor: Vacaciones en lugar de Justificada"]
+  - grupo: Monitor de asistencia
+    ruta: Nómina ▸ Asistencia ▸ Monitor de asistencia
+    campos:
+      - ["Ingreso plan. / Salida plan. / Duración plan.", Horario del turno publicado en la zona horaria del trabajador., Calculado, "Cero en los días de descanso"]
+      - ["Marc. ingreso / Marc. salida", Primera entrada y última salida marcadas del día., Calculado, "—"]
+      - [Horas marcadas, Suma de las horas trabajadas del día., Calculado, "Descuenta el refrigerio con cuatro marcaciones"]
+      - [Estado, "Asistió, Falta, Día de descanso, Día feriado, Vacaciones, Justificada, Descanso trabajado o Feriado trabajado.", Calculado, "Muestra Reg. ausencia o Ver ausencia"]
+      - ["Columnas opcionales", "Establecimiento, Tipo doc., N° marcaciones, Turno planificado, Ciclo atípico, Tipo de entrada y Registro de ausencia.", Ocultas, "—"]
+  - grupo: Parámetros principales ▸ Tareaje
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+    campos:
+      - [Inicio de horario nocturno, Comienzo de la franja nocturna., "22:00", Separa horas diurnas y nocturnas]
+      - [Fin de horario nocturno, Fin de la franja nocturna., "06:00", Separa horas diurnas y nocturnas]
+      - ["Horas extra al 25 %", Horas diarias pagadas al 25 %., "02:00", "El exceso va al 35 %"]
+      - ["Tolerancia de tardanza (horas)", Retraso que no se computa., "00:00", Valor por defecto de cada tareaje nuevo]
+      - [Redondeo de minutos, Múltiplo al que se redondean tardanzas y sobretiempo., "0 (sin redondeo)", "—"]
+      - ["W.E. días laborados (tareaje)", Tipo de entrada de trabajo de los días laborados., DLAB, Línea de la boleta]
+      - ["W.E. jornada nocturna (tareaje)", Tipo de los días y horas nocturnas., Vacío, "Sin él, la nocturnidad no llega a la boleta"]
+      - ["W.E. días de descanso / feriado/descanso laborado / faltas / tardanzas (tareaje)", Tipos de cada concepto., "DOM / FER / FAL / TAR", Línea de la boleta]
+      - ["W.E. horas extra 25 % / 35 % / 100 % (tareaje)", Tipos del sobretiempo., "HE25 / HE35 / HE100", Línea de la boleta]
+  - grupo: Versión del empleado
+    ruta: Nómina ▸ Empleados ▸ Registros de los empleados
+    campos:
+      - ["Sujeto a horas extras (PE)", Habilita el cálculo de sobretiempo del trabajador; guarda historial de cambios., Desmarcado, "Sin él, el tareaje no calcula HE 25/35/100 %"]
+  - grupo: Tareaje
+    ruta: Nómina ▸ Asistencia ▸ Tareaje
+    campos:
+      - [Nombre, Nombre del tareaje., Vacío, Obligatorio]
+      - [Periodo, Desde y hasta., Mes en curso, Días que se clasifican]
+      - ["Tolerancia de tardanza (horas)", "Superada, la tardanza se cuenta completa desde la hora programada.", Valor de los parámetros, Tardanzas]
+      - [Calcular horas extras, Interruptor del sobretiempo del tareaje., Desmarcado, "Se cruza con «Sujeto a horas extras (PE)»"]
+      - [Compañía, Compañía cuyas marcaciones se procesan., Compañía activa, Parámetros aplicados]
+      - [Estado, Borrador o Aplicado., Borrador, "Aplicado: solo lectura y lo leen las boletas"]
+  - grupo: Línea y detalle diario del tareaje
+    ruta: Tareaje ▸ Detalle del tareaje
+    campos:
+      - [Días laborados / Días nocturnos, Día asistido repartido entre diurno y nocturno., Calculado, "DLAB y jornada nocturna"]
+      - [Horas diurnas / Horas nocturnas, Horas dentro del turno según la franja nocturna., Calculado, Horas de esas líneas]
+      - [Días de descanso, Descanso o feriado sin marcación., Calculado, DOM]
+      - [Feriado/descanso laborado, Descanso o feriado con marcación., Calculado, FER]
+      - [Faltas, Día laborable sin marcación., Calculado, FAL]
+      - ["Tardanzas (h)", Retraso de entrada sobre la tolerancia., Calculado, TAR]
+      - ["HE 25 % / HE 35 % / HE 100 %", Sobretiempo del día., Calculado, HE25 / HE35 / HE100]
+      - [Inconsistencias, Marcación con solo entrada o solo salida., Calculado, "No se clasifica"]
+      - [Horas a compensar, Sobretiempo compensado con descanso (solo en el detalle diario)., "0", "Descuenta HE 25 % y luego HE 35 % en la boleta"]
+  - grupo: Configuración de fotocheck
+    ruta: Nómina ▸ Asistencia ▸ Configuración de fotocheck
+    campos:
+      - [Nombre, Nombre de la configuración., Configuración de fotocheck, "—"]
+      - [Logo certificado 1 a 5, Logos de la franja superior del anverso., Vacío, Se imprimen a la derecha del logo de la compañía]
+      - [Compañía, Una configuración por compañía., Compañía activa, El carné usa la de la compañía del empleado]
+      - ["Imagen de fondo (anverso)", Fondo completo de la cara frontal., Vacío, Fondo del carné]
+      - [Imagen de reverso, Imagen a página completa de la cara posterior., Vacío, "Sin imagen no se imprime el reverso"]
 
 funcionalidades:
   - grupo: Turnos y jornada
     items:
-      - Tipo de turno peruano en la función de Planificación (mañana, tarde, noche, rotativo), con tres funciones cargadas.
+      - Tipo de turno peruano en la función de Planeación (mañana, tarde, noche, rotativo), con tres funciones cargadas.
       - Detección de jornada nocturna en la plantilla de turno.
       - Ciclos atípicos N×M con promedio semanal y validación de 48 h semanales y 12 h diarias.
-      - Generación de turnos de Planificación por asignación, en la zona horaria del trabajador.
+      - Generación de turnos de Planeación por asignación, en la zona horaria del trabajador, con control de choques.
       - Registro del trabajador reemplazado y el motivo en el turno.
   - grupo: Control de asistencia
     items:
-      - Monitor diario de turno planificado frente a marcaciones.
+      - Enlace automático de cada marcación con el turno publicado más cercano.
+      - Monitor diario de turno planificado frente a marcaciones, con vista de tabla dinámica.
       - Estados asistió, falta, descanso, feriado, vacaciones, justificada y descanso o feriado trabajado.
       - Registro de la ausencia desde la falta.
       - Marca «Es vacaciones (Perú)» en el tipo de ausencia.
@@ -175,12 +464,16 @@ funcionalidades:
       - HE 25 % / 35 % con límite configurable y HE 100 % en descanso o feriado laborado.
       - Horas diurnas y nocturnas con franja configurable.
       - Tardanzas con tolerancia por tareaje y redondeo de minutos.
-      - Turnos que cruzan la medianoche.
+      - Turnos que cruzan la medianoche y marcaciones incompletas señaladas.
+      - Horas a compensar por día, descontadas del sobretiempo al pasar a la boleta.
       - Volcado a la boleta como entradas de trabajo, respetando el remapeo de días laborados del núcleo.
   - grupo: Fotocheck
     items:
       - Configuración por compañía con cinco logos de certificaciones, fondo del anverso e imagen de reverso.
-      - Reporte «Fotocheck (Perú)» desde el empleado, con nombre, apellidos y foto.
+      - Reporte «Fotocheck (Perú)» desde el empleado, con nombre, apellidos, foto, código de barras y puesto.
+  - grupo: Multicompañía
+    items:
+      - Reglas por compañía en asignaciones, monitor, tareaje y fotocheck; ciclos globales o propios.
 
 ejemplos_intro: Resultado del tareaje DEMO del 1 al 14 de septiembre de 2026 (horario de lunes a viernes de 08:00 a 17:00 y sábado de 08:00 a 13:00, tolerancia de 5 minutos).
 ejemplos:
@@ -194,21 +487,29 @@ ejemplos:
       - ["Dom 13/09 (ambas)", Sin turno, Sin marcaciones, Día de descanso]
     nota: Superada la tolerancia, la tardanza se computa completa desde la hora programada.
 
-  - titulo: Totales del tareaje
+  - titulo: Totales del tareaje y lo que recibe la boleta
     tabla:
       - [Trabajadora, Días laborados, Descansos, Descanso laborado, Faltas, Tardanzas, HE 25 %, HE 35 %, HE 100 %]
       - [Rivas Cárdenas Andrea, "12", "1", "1", "0", "0:00", "4:00", "0:30", "2:00"]
       - [Salazar Quispe Lucía, "11", "2", "0", "1", "0:25", "0:00", "0:00", "0:00"]
-    nota: Salazar no está sujeta a horas extras, así que su tareaje no calcula sobretiempo.
+    nota: "Salazar no está sujeta a horas extras, así que su tareaje no calcula sobretiempo. La boleta DEMO de Rivas del 1 al 14 de septiembre recibe exactamente la fila de Rivas: DLAB 12 días y 90 h, DOM 1, FER 1, HE25 4 h, HE35 0,5 h y HE100 2 h."
+
+  - titulo: Promedio semanal de los ciclos DEMO
+    tabla:
+      - [Ciclo, Horas por día, Días del ciclo, Promedio semanal, "¿Se admite?"]
+      - ["Atípico 14×7", "10:00", "21", "46:40", "Sí"]
+      - ["Atípico 10×4", "09:00", "14", "45:00", "Sí"]
+      - ["Semana 4×3", "12:00", "7", "48:00", "Sí (en el límite)"]
+      - ["Prueba 14×7", "12:00", "21", "56:00", "No"]
 
 configuracion:
-  - Instale el módulo (requiere Planificación, Asistencias, Nómina y el calendario de feriados peruanos).
+  - Instale el módulo (requiere Planeación, Asistencias, Nómina y el calendario de feriados peruanos).
   - "Revise **Parámetros principales ▸ Tareaje**: franja nocturna, horas al 25 %, tolerancia, redondeo y tipos de entrada de trabajo de destino."
   - "Marque **Sujeto a horas extras (PE)** en la versión de quienes tienen sobretiempo."
-  - "Si hay jornadas atípicas, cree los **Ciclos atípicos** y sus **Asignaciones de ciclo**."
+  - "Si hay jornadas atípicas, cree los **Ciclos atípicos** y sus **Asignaciones de ciclo**, genere los turnos y publíquelos."
   - "Marque **Es vacaciones (Perú)** en los tipos de ausencia de vacaciones."
   - "Para el carné, cree la **Configuración de fotocheck** de la compañía."
-requisitos_nota: Requiere Odoo 19 Enterprise (Planificación y Nómina).
+requisitos_nota: Requiere Odoo 19 Enterprise (Planeación y Nómina).
 
 faq:
   - pregunta: ¿Por qué un trabajador no aparece en el tareaje?
@@ -222,12 +523,22 @@ faq:
       **Sujeto a horas extras (PE)** en la versión del trabajador.
   - pregunta: ¿Las ausencias aprobadas cuentan como falta?
     respuesta: >-
-      No. El día queda como ausencia y el tareaje no lo clasifica: la ausencia
-      llega a la boleta por sus propias entradas de trabajo.
+      No. Si ese día no hay marcación, el día queda como ausencia aprobada y
+      el tareaje no lo clasifica: la ausencia llega a la boleta por sus propias
+      entradas de trabajo.
   - pregunta: ¿Por qué el monitor no muestra un día?
     respuesta: >-
-      El monitor lista los días con turno publicado en Planificación y los
-      descansos de los ciclos atípicos asignados.
+      El monitor lista los días con turno publicado en Planeación y los
+      descansos de los ciclos atípicos asignados. Un turno en borrador no
+      aparece.
+  - pregunta: ¿El tareaje lee los turnos de Planeación?
+    respuesta: >-
+      No. El tareaje compara las marcaciones con el horario de trabajo del
+      empleado (o el de la compañía). Los turnos alimentan el monitor.
+  - pregunta: Modifiqué el tareaje después de aplicarlo, ¿cómo lo llevo a la boleta?
+    respuesta: >-
+      Pulse **Reabrir**, corrija, vuelva a **Aplicar al periodo** y recalcule
+      la boleta para que relea los días trabajados.
 
 novedades:
   - version: 5.20260816

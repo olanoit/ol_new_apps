@@ -20,7 +20,7 @@ destacados:
   - icono: "▭"
     titulo: Progreso en vivo
     texto: >-
-      La importación corre en segundo plano y la barra muestra filas
+      La importación corre en segundo plano y la ventana muestra filas
       procesadas, creadas, actualizadas, omitidas y con error.
   - icono: "!"
     titulo: Errores con sugerencia
@@ -35,13 +35,13 @@ destacados:
   - icono: "DNI"
     titulo: Por número de documento
     texto: >-
-      Los trabajadores se localizan por su documento en la versión vigente,
-      como vienen en los reportes de los bancos y relojes biométricos.
-  - icono: "🗂"
-    titulo: Historial
+      Los trabajadores se localizan por su documento, como vienen en los
+      reportes de los bancos y de los relojes biométricos.
+  - icono: "v18"
+    titulo: Reglas de la versión anterior
     texto: >-
-      Cada importación queda registrada con fechas, contadores, registro de
-      procesamiento y reporte, filtrada por compañía.
+      Las reglas salariales exportadas de la versión 18 se adaptan solas al
+      modelo de Odoo 19 y cada cambio queda anotado.
 
 contexto:
   titulo: El problema que resuelve
@@ -59,13 +59,96 @@ contexto:
   nota: >-
     **Acepta `.xlsx` y `.xlsm`.** Detecta las hojas del libro y propone la que
     corresponde al importador; la fila de cabecera y la primera fila de datos
-    son configurables.
+    son configurables. Requiere la biblioteca `openpyxl` en el servidor.
+
+flujos_intro: >-
+  Todos los importadores comparten el mismo motor; cambia solo cómo se valida
+  y se escribe cada fila.
+flujos:
+  - id: motor
+    titulo: El recorrido de una importación
+    texto: >-
+      Del archivo al reporte. La lectura ocurre al pulsar Importar; el
+      proceso sigue en segundo plano aunque se cierre la ventana.
+    mermaid: |
+      flowchart TD
+        A[Abrir el importador<br/>y subir el Excel .xlsx / .xlsm] --> B[Analizar archivo:<br/>detecta las hojas y propone una]
+        B --> C[Configurar: hoja, primera fila de datos,<br/>actualizar existentes y tamaño de lote]
+        C --> D{¿La hoja tiene filas?}
+        D -- No --> E[Aviso: la hoja no contiene filas válidas]
+        D -- Sí --> F[Importar: se crea el registro del historial<br/>y el proceso sigue en segundo plano]
+        F --> G[Cada fila se valida y se escribe aparte:<br/>creado, actualizado, omitido o error]
+        G --> H[Al cerrar cada lote se confirma lo importado<br/>y la barra de progreso avanza]
+        H --> I[Completado: reporte Excel<br/>con hojas Resultado, Errores y Omitidos]
+        I --> J[Corregir solo las filas con error<br/>y volver a subirlas]
+    pie: "Una fila con error no detiene la importación: se anota y se sigue con la siguiente."
+  - id: novedades
+    titulo: Novedades del mes sobre las boletas de un lote
+    texto: >-
+      Validaciones que hace el importador de inputs en cada fila, en este
+      orden.
+    mermaid: |
+      flowchart TD
+        A[Fila: documento, código de input y monto] --> B{¿Hay documento?}
+        B -- No --> S[Omitida]
+        B -- Sí --> C{¿Hay una sola boleta del lote<br/>para ese documento?}
+        C -- No --> X[Error]
+        C -- Sí --> D{¿Boleta en borrador<br/>o por verificar?}
+        D -- No --> X
+        D -- Sí --> E{¿Existe el código de input<br/>y lo permite la estructura?}
+        E -- No --> X
+        E -- Sí --> F{¿La boleta ya tiene ese input?}
+        F -- "Sí, sin «Actualizar existentes»" --> S
+        F -- "Sí, con «Actualizar existentes»" --> U[Actualizado: nuevo importe]
+        F -- No --> N[Creado: entrada salarial<br/>con el monto redondeado]
+  - id: maestros
+    titulo: Datos laborales, saldos y adelantos
+    texto: >-
+      Los tres importadores localizan al trabajador por documento dentro de la
+      compañía del asistente y se diferencian en qué hacen si el dato ya existe.
+    mermaid: |
+      flowchart TD
+        A[Fila con número de documento] --> B{¿Un solo empleado con ese<br/>documento en la compañía?}
+        B -- No --> X[Error con sugerencia]
+        B -- Sí --> C{¿Qué importador?}
+        C -- Datos PE de versiones --> D[Escribe en la versión vigente<br/>solo las celdas con valor]
+        C -- Récord vacacional --> E{¿Ya tiene saldo inicial?}
+        E -- "Sí, sin «Actualizar existentes»" --> O[Omitido]
+        E -- "Sí, con «Actualizar existentes»" --> F[Reemplaza el saldo inicial]
+        E -- No --> G[Crea el saldo inicial]
+        C -- Adelantos --> H{¿Adelanto no pagado del mismo<br/>tipo y fecha de descuento?}
+        H -- "Sí, sin «Actualizar existentes»" --> O
+        H -- "Sí, con «Actualizar existentes»" --> I[Actualiza el adelanto]
+        H -- No --> J[Crea el adelanto]
+  - id: reglas
+    titulo: Reglas salariales exportadas de la versión 18
+    texto: >-
+      Con «Adaptar código v18 → v19» marcado, cada regla pasa por esta
+      limpieza antes de guardarse en la estructura destino.
+    mermaid: |
+      flowchart TD
+        A[Fila: categoría, código, nombre,<br/>secuencia, código y condición Python] --> B{¿Categoría encontrada<br/>por nombre o código?}
+        B -- No --> X[Error]
+        B -- Sí --> C{¿La condición es la que Odoo<br/>pone por defecto?}
+        C -- Sí --> D[Se descarta: la regla<br/>queda «Siempre verdadero»]
+        C -- No --> E[Se conserva]
+        D --> F[Traducción: contract → version,<br/>payslip.wage → version.wage,<br/>campos peruanos renombrados]
+        E --> F
+        F --> G{¿Existe la regla con ese código<br/>en la estructura destino?}
+        G -- "Sí, sin «Actualizar existentes»" --> O[Omitida]
+        G -- "Sí, con «Actualizar existentes»" --> H[Actualizada]
+        G -- No --> I[Creada]
+        H --> J[Las adaptaciones quedan<br/>anotadas en la fila del reporte]
+        I --> J
 
 pasos_intro: >-
-  Recorrido real: importación de las novedades de agosto 2026 sobre el lote
-  DEMO de tres boletas en borrador, con dos filas erróneas a propósito.
+  Recorrido real con los datos de demostración «DEMO FICHA HR1»: los seis
+  importadores ejecutados desde la interfaz, cada uno con al menos una fila
+  errónea a propósito.
 pasos:
-  - titulo: Elegir el importador
+  - seccion: Acceso
+    texto: Dónde están los importadores.
+  - titulo: El menú de importadores
     ruta: Nómina ▸ Importar desde Excel
     texto: >-
       Asistencias, Inputs de boletas (novedades), Récord vacacional (saldos),
@@ -75,65 +158,252 @@ pasos:
       - Datos PE de versiones y Reglas salariales solo los ve el administrador de nómina.
     imagen: screenshots/01-menu.png
 
-  - titulo: Cargar el archivo
-    ruta: Nómina ▸ Importar desde Excel ▸ Inputs de boletas (novedades)
-    texto: >-
-      Elija el **Lote de boletas** y suba el Excel. Si aún no tiene el formato,
-      **Descargar plantilla** baja un libro con las columnas NRO DOCUMENTO,
-      CÓDIGO DE INPUT y MONTO. Pulse **Analizar archivo**.
-    imagen: screenshots/02-archivo.png
-
-  - titulo: Configurar la lectura
-    ruta: Asistente ▸ paso Configurar
-    texto: >-
-      El asistente muestra la **hoja a importar** detectada, la fila de
-      cabecera y la primera fila de datos, y las opciones **Actualizar
-      existentes**, **Procesar por lotes** y **Tamaño de lote**. Pulse
-      **Importar**.
-    puntos:
-      - Solo se escriben boletas en borrador o por verificar.
-      - El input debe estar permitido en la estructura salarial de la boleta.
-      - El monto se redondea con criterio SUNAT (medio hacia arriba).
-    imagen: screenshots/03-configurar.png
-
-  - titulo: Seguir el progreso y descargar el reporte
-    ruta: Asistente ▸ Importar
-    texto: >-
-      La ventana de progreso se actualiza sola hasta terminar. Al final ofrece
-      **Descargar reporte** (Excel con hojas Resultado, Errores y Omitidos),
-      **Ver registros** y **Listo**.
-    imagen: screenshots/04-progreso.png
-    pie: "6 filas: 4 inputs creados y 2 errores."
-
-  - titulo: Consultar el historial
-    ruta: Nómina ▸ Importar desde Excel ▸ Historial de importaciones
-    texto: >-
-      Una línea por importación con fecha, modelo de destino, compañía,
-      estado, contadores e inicio y fin. Hay filtros de completadas, con error
-      y en proceso, y agrupación por modelo o estado.
-    imagen: screenshots/05-historial.png
-
-  - titulo: Comprobar las novedades en la boleta
-    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ Entradas salariales
-    texto: >-
-      Cada fila correcta queda como entrada salarial de la boleta del
-      trabajador; al recalcular la hoja, las reglas la pagan o la descuentan.
-    imagen: screenshots/06-boleta.png
-    pie: "Boleta DEMO de agosto 2026 de Salazar: comisiones por S/ 350,00."
-
   - titulo: Importar desde las listas
     ruta: Asistencias ▸ Información general ▸ Tablero (vista de lista)
     texto: >-
       Las listas de asistencias y de reglas salariales muestran el botón
-      **Importar desde Excel**, que abre su asistente directamente.
-    imagen: screenshots/07-asistencias.png
+      **Importar desde Excel**, que abre su asistente directamente; al
+      cerrarlo, la lista se recarga. Desde Asistencias pueden usarlo también
+      los encargados de asistencias que no son usuarios de nómina.
+    imagen: screenshots/12-asistencias-lista.png
+
+  - titulo: El mismo botón en las reglas salariales
+    ruta: Nómina ▸ Configuración ▸ Salario ▸ Reglas
+    imagen: screenshots/15-reglas-lista.png
+
+  - seccion: Novedades del mes
+    texto: >-
+      El importador que más se usa: comisiones, bonos, horas extras,
+      adelantos o préstamos sobre las boletas de un lote. Muestra también los
+      tres pasos comunes a todos los asistentes.
+  - titulo: Paso 1 — Cargar el archivo
+    ruta: Nómina ▸ Importar desde Excel ▸ Inputs de boletas (novedades)
+    texto: >-
+      Elija el **Lote de boletas** y suba el Excel. Si aún no tiene el formato,
+      **Descargar plantilla** baja un libro con las columnas NRO DOCUMENTO,
+      CÓDIGO DE INPUT y MONTO y una fila de ejemplo. Pulse **Analizar
+      archivo**.
+    puntos:
+      - La plantilla se descarga sin haber elegido lote ni subido archivo.
+      - Un archivo que no sea .xlsx o .xlsm se rechaza al subirlo.
+    imagen: screenshots/02-archivo.png
+
+  - titulo: Paso 2 — Configurar la lectura
+    ruta: Asistente ▸ paso Configurar
+    texto: >-
+      El asistente muestra la **Hoja a importar** detectada, la **Fila de
+      cabecera técnica** y la **Primera fila de datos**, y las opciones
+      **Actualizar existentes**, **Procesar por lotes** y **Tamaño de lote**.
+      Pulse **Importar**.
+    puntos:
+      - Solo se escriben boletas en borrador o por verificar.
+      - El input debe estar permitido en la estructura salarial de la boleta.
+      - El monto se redondea a dos decimales con criterio SUNAT (medio hacia arriba).
+    imagen: screenshots/03-configurar.png
+
+  - titulo: Paso 3 — Progreso y resultado
+    ruta: Asistente ▸ Importar
+    texto: >-
+      La ventana de progreso se actualiza sola cada segundo hasta terminar. Al
+      final ofrece **Descargar reporte** (Excel con hojas Resultado, Errores y
+      Omitidos), **Ver registros** (abre los registros creados o actualizados)
+      y **Listo**.
+    imagen: screenshots/04-progreso.png
+    pie: "6 filas: 4 inputs creados y 2 errores (un código inexistente y un documento sin boleta en el lote)."
+
+  - titulo: Las novedades ya están en la boleta
+    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ Entradas salariales
+    texto: >-
+      Cada fila correcta queda como entrada salarial de la boleta del
+      trabajador; al pulsar **Calcular hoja**, las reglas la pagan o la
+      descuentan.
+    imagen: screenshots/05-boleta.png
+    pie: "Boleta DEMO de agosto 2026 de Salazar: comisiones por S/ 350,00."
+
+  - seccion: Datos laborales PE
+    texto: Para el alta inicial o un cambio masivo de AFP, régimen o catálogos PLAME.
+  - titulo: Cargar los datos PE de las versiones
+    ruta: Nómina ▸ Importar desde Excel ▸ Datos PE de versiones
+    texto: >-
+      Diez columnas: documento, régimen laboral, CUSPP, tipo de comisión AFP,
+      afiliación, seguro social, tipo de trabajador (T08), situación (T15),
+      excepción de jornada y tipo de labor. Se escribe en la **versión
+      vigente** del trabajador.
+    puntos:
+      - Las celdas vacías no borran el valor actual.
+      - "Régimen, comisión, excepción y tipo de labor aceptan la clave (`general`, `mixed`, `N`) o la etiqueta (Régimen general, Comisión mixta, N — Normal)."
+      - T08 y T15 aceptan el código SUNAT o el nombre; afiliación y seguro social, el nombre.
+      - "Este asistente no tiene «Actualizar existentes»: siempre actualiza la versión."
+    imagen: screenshots/06-versiones-archivo.png
+
+  - titulo: Resultado de la carga de versiones
+    ruta: Asistente ▸ Importar
+    texto: >-
+      Cada trabajador localizado cuenta como **actualizado**. Una fila con un
+      valor que no está en la lista (por ejemplo, un régimen «CAS») se rechaza
+      entera y no escribe ningún campo.
+    imagen: screenshots/07-versiones-resultado.png
+    pie: "Tres versiones DEMO actualizadas y una fila rechazada por régimen no reconocido."
+
+  - seccion: Récord vacacional
+    texto: Saldos de vacaciones pendientes al arrancar con el sistema.
+  - titulo: Importar los saldos iniciales
+    ruta: Nómina ▸ Importar desde Excel ▸ Récord vacacional (saldos)
+    texto: >-
+      Columnas FECHA DE APLICACIÓN, NRO DOCUMENTO, DÍAS DE SALDO e IMPORTE DE
+      SALDO (opcional). Cada fila crea el **saldo inicial** del trabajador, del
+      que parte el recálculo del récord vacacional.
+    puntos:
+      - Con **Actualizar existentes**, el saldo inicial anterior se reemplaza (no se suma); sin marcarlo, la fila se omite.
+      - Los días pueden ser negativos y con decimales.
+    imagen: screenshots/08-vacaciones-configurar.png
+
+  - titulo: Los saldos creados
+    ruta: Progreso ▸ Ver registros
+    texto: >-
+      El motivo se asigna solo: **Saldo acumulado anterior** si los días son
+      positivos y **Saldo Ajuste Adelantos** si son negativos. El año sale de
+      la fecha de aplicación.
+    imagen: screenshots/09-vacaciones-registros.png
+    pie: "Tres saldos al 01/01/2026; la cuarta fila, con la fecha escrita como texto 01/01/2026, dio error."
+
+  - seccion: Adelantos
+    texto: Adelantos de sueldo, gratificación, CTS o vacaciones que se descuentan en una boleta posterior.
+  - titulo: Importar adelantos
+    ruta: Nómina ▸ Importar desde Excel ▸ Adelantos
+    texto: >-
+      Columnas NRO DOCUMENTO, TIPO DE ADELANTO (nombre exacto del tipo en la
+      compañía), FECHA DE ADELANTO, FECHA DE DESCUENTO, MONTO y OBSERVACIONES.
+      La **fecha de descuento** decide en qué boleta se descuenta.
+    puntos:
+      - Si ya hay un adelanto no pagado del mismo trabajador, tipo y fecha de descuento, se actualiza (o se omite sin «Actualizar existentes»).
+      - Los adelantos ya pagados nunca se tocan.
+      - El monto debe ser positivo; sin fecha de adelanto se usa la de descuento.
+    imagen: screenshots/10-adelantos-configurar.png
+
+  - titulo: Los adelantos creados
+    ruta: Progreso ▸ Ver registros
+    texto: Quedan en estado **No pagado**, listos para descontarse en la boleta de su fecha de descuento.
+    imagen: screenshots/11-adelantos-registros.png
+    pie: "Dos adelantos DEMO; la fila con el tipo «Adelanto de movilidad», que no existe, dio error."
+
+  - seccion: Asistencias
+    texto: Marcaciones de un reloj biométrico o de una hoja de control.
+  - titulo: Configurar la zona horaria del archivo
+    ruta: Nómina ▸ Importar desde Excel ▸ Asistencias
+    texto: >-
+      Columnas EMPLEADO, ENTRADA y SALIDA. El empleado se busca por su nombre
+      exacto y, si no aparece, por su número de documento. Las horas del Excel
+      se leen en la **Zona horaria del archivo** y se guardan en UTC.
+    puntos:
+      - La salida puede quedar vacía (marcación abierta).
+      - Si ya existe una asistencia del mismo trabajador con la misma entrada, se actualiza la salida.
+    imagen: screenshots/13-asistencias-configurar.png
+
+  - titulo: Resultado de las marcaciones
+    ruta: Asistente ▸ Importar
+    texto: >-
+      Una salida anterior a la entrada se rechaza con su sugerencia; también
+      los homónimos (se pide precisar el nombre).
+    imagen: screenshots/14-asistencias-resultado.png
+    pie: "Tres marcaciones DEMO ya existentes (por nombre y por documento) actualizadas y una rechazada."
+
+  - seccion: Reglas salariales
+    texto: Carga o migración de las reglas de una estructura.
+  - titulo: Elegir la estructura destino
+    ruta: Nómina ▸ Importar desde Excel ▸ Reglas salariales
+    texto: >-
+      El Excel no trae la estructura: todas las reglas van a la **Estructura
+      salarial destino**. La categoría se busca por nombre o código y la regla
+      se crea con importe en código Python. Con **Adaptar código v18 → v19**
+      se traduce el código de la versión anterior.
+    imagen: screenshots/16-reglas-configurar.png
+
+  - titulo: La regla adaptada
+    ruta: Nómina ▸ Configuración ▸ Salario ▸ Reglas ▸ regla
+    texto: >-
+      La condición `result = contract.retirement_fund == 'onp'` del Excel quedó
+      como `result = version.l10n_pe_retirement_fund == 'onp'`. En la otra
+      regla se descartó la condición por defecto de Odoo y quedó «Siempre
+      verdadero».
+    imagen: screenshots/17-regla-adaptada.png
+
+  - seccion: Historial
+    texto: Qué se importó, cuándo y con qué resultado.
+  - titulo: Consultar el historial
+    ruta: Nómina ▸ Importar desde Excel ▸ Historial de importaciones
+    texto: >-
+      Una línea por importación con fecha, modelo de destino, compañía,
+      estado, contadores e inicio y fin. En verde las completadas, en rojo las
+      que fallaron. Al abrir una línea se ve de nuevo la ventana de progreso
+      con **Descargar reporte** y **Ver registros**.
+    puntos:
+      - Filtros Completadas, Con error y En proceso; agrupación por Modelo destino o Estado.
+      - Cada usuario ve solo las importaciones de sus compañías.
+    imagen: screenshots/18-historial.png
+
+campos_intro: >-
+  Campos de cada pantalla del módulo, con sus etiquetas y valores por defecto
+  reales.
+campos:
+  - grupo: Paso «Cargar archivo» (todos los asistentes)
+    ruta: Nómina ▸ Importar desde Excel ▸ cualquier importador
+    campos:
+      - [Archivo Excel, "Libro a importar.", Vacío, "Obligatorio; solo .xlsx o .xlsm"]
+      - [Analizar archivo, Botón que lee las hojas del libro., "—", Pasa al paso Configurar]
+      - [Descargar plantilla, "Libro con las cabeceras del importador y una fila de ejemplo resaltada.", "—", "No necesita archivo ni datos del asistente"]
+  - grupo: Paso «Configurar» (todos los asistentes)
+    ruta: Asistente ▸ paso Configurar
+    campos:
+      - [Nombre del archivo, Nombre del libro subido., "—", Solo lectura]
+      - [Hoja a importar, "Hoja del libro que se leerá.", "La que contiene la palabra clave del importador (input, vac, adelanto, version) o la primera", Obligatoria]
+      - [Fila de cabecera técnica, Fila de los nombres de columna; es solo referencia., "1", "No cambia el orden de columnas, que es fijo"]
+      - [Primera fila de datos, Fila desde la que se leen registros., "2", "Las filas totalmente vacías se saltan"]
+      - [Compañía, "Compañía en la que se buscan trabajadores y tipos.", Compañía activa, "Visible con multicompañía; se guarda en el historial"]
+      - [Actualizar existentes, "Qué hacer si el registro ya existe (por su clave).", Marcado, "Desmarcado: la fila se omite"]
+      - [Procesar por lotes, Confirma lo importado al cerrar cada lote., Marcado, "Desmarcado: confirma fila a fila"]
+      - [Tamaño de lote, Filas por lote., "100", Solo con «Procesar por lotes»]
+      - [Importar, Lanza el proceso en segundo plano., "—", Abre la ventana de progreso]
+  - grupo: Campos propios de cada importador
+    ruta: Asistente ▸ paso Configurar
+    campos:
+      - ["Lote de boletas (Inputs de boletas)", Lote cuyas boletas reciben las novedades., Vacío, "Obligatorio; se elige en el paso 1"]
+      - ["Zona horaria del archivo (Asistencias)", Zona en la que están las horas del Excel., "La del usuario o America/Lima", Conversión a UTC al guardar]
+      - ["Estructura salarial destino (Reglas salariales)", Estructura a la que se asignan todas las reglas., Vacío, "Obligatoria; clave código + estructura"]
+      - ["Adaptar código v18 → v19 (Reglas salariales)", Traduce el código Python de la versión anterior y descarta la condición por defecto., Marcado, Cada cambio se anota en el reporte]
+  - grupo: Columnas y clave de cada plantilla
+    ruta: Descargar plantilla
+    campos:
+      - [Inputs de boletas, "NRO DOCUMENTO · CÓDIGO DE INPUT · MONTO", "Hoja INPUTS", "Clave: boleta del lote + tipo de input"]
+      - [Datos PE de versiones, "NRO DOCUMENTO · RÉGIMEN LABORAL · CUSPP · TIPO COMISIÓN AFP · AFILIACIÓN (AFP/ONP) · SEGURO SOCIAL · TIPO TRABAJADOR (T08) · SITUACIÓN (T15) · EXCEPCIÓN JORNADA (PLAME) · TIPO DE LABOR (PLAME)", "Hoja VERSIONES", "Clave: versión vigente del documento"]
+      - [Récord vacacional, "FECHA DE APLICACIÓN · NRO DOCUMENTO · DÍAS DE SALDO · IMPORTE DE SALDO", "Hoja VACACIONES", "Clave: saldo inicial del trabajador"]
+      - [Adelantos, "NRO DOCUMENTO · TIPO DE ADELANTO · FECHA DE ADELANTO · FECHA DE DESCUENTO · MONTO · OBSERVACIONES", "Hoja ADELANTOS", "Clave: trabajador + tipo + fecha de descuento (no pagado)"]
+      - [Asistencias, "EMPLEADO (nombre exacto o documento) · ENTRADA (check_in) · SALIDA (check_out)", "Hoja ASISTENCIAS", "Clave: trabajador + entrada"]
+      - [Reglas salariales, "CATEGORÍA (nombre o código) · COMPAÑÍA (informativa) · CÓDIGO · NOMBRE · SECUENCIA · CÓDIGO PYTHON · CONDICIÓN PYTHON", "Hoja REGLAS", "Clave: código + estructura destino"]
+  - grupo: Ventana de progreso
+    ruta: Asistente ▸ Importar (o Historial ▸ línea)
+    campos:
+      - [Barra de progreso, Filas procesadas sobre el total y porcentaje., "—", Se actualiza cada segundo]
+      - ["Total, Procesados, Creados, Actualizados, Omitidos, Errores", Contadores de la importación., "0", "—"]
+      - [Detalle del error, Motivo si el proceso entero falla., "—", Solo en estado Error]
+      - [Descargar reporte, "Excel con las hojas Resultado, Errores y Omitidos: fila, estado, detalle, sugerencia y los datos leídos.", "—", Aparece al terminar]
+      - [Ver registros, Lista de los registros creados o actualizados., "—", Solo si hubo alguno]
+  - grupo: Historial de importaciones
+    ruta: Nómina ▸ Importar desde Excel ▸ Historial de importaciones
+    campos:
+      - [Fecha, Momento en que se lanzó la importación., Automático, Orden descendente]
+      - [Modelo destino, "Modelo técnico que recibe los datos (hr.payslip, hr.version…).", Automático, Filtro y agrupación]
+      - [Compañía, Compañía del asistente., Compañía activa, Regla de acceso por compañía]
+      - [Estado, "Pendiente, Procesando, Completado o Error.", Pendiente, Color de la línea]
+      - ["Total, Procesados, Creados, Actualizados, Omitidos, Errores", Contadores finales., "0", "—"]
+      - ["Date Start, Date End", Inicio y fin del proceso., Automático, "—"]
 
 funcionalidades:
   - grupo: Importadores
     items:
       - "Inputs de boletas: novedades del mes sobre las boletas de un lote, por documento y código de input."
       - "Datos PE de versiones: régimen laboral, CUSPP, tipo de comisión AFP, afiliación, seguro social, tipo de trabajador (T08), situación (T15), excepción de jornada y tipo de labor."
-      - "Récord vacacional: saldos iniciales de días e importe por trabajador."
+      - "Récord vacacional: saldos iniciales de días e importe por trabajador, con motivo automático según el signo."
       - "Adelantos: tipo, fechas de adelanto y de descuento, monto y observaciones."
       - "Asistencias: entrada y salida por nombre o documento, con la zona horaria del archivo."
       - "Reglas salariales: carga en una estructura, con opción de adaptar el código de fórmulas de la versión anterior."
@@ -141,17 +411,22 @@ funcionalidades:
     items:
       - Plantilla Excel generada por el sistema y servida sin guardar el asistente.
       - Detección de hojas con autoselección según el importador.
-      - Fila de cabecera y primera fila de datos configurables.
+      - Fila de cabecera y primera fila de datos configurables; filas vacías ignoradas.
       - Proceso en segundo plano con confirmación por lotes y progreso publicado aparte.
+      - "Cada fila aislada: un error no deshace las demás."
       - Estados creado, actualizado, omitido y error por fila, con sugerencia de corrección.
-      - Reporte Excel de resultados y registro de procesamiento.
+      - Reporte Excel con hojas Resultado, Errores y Omitidos y resumen de contadores.
+      - Acceso directo a los registros creados o actualizados.
       - Celdas vacías que no sobrescriben datos en la importación de versiones.
       - Documentos numéricos leídos sin decimales espurios.
+      - Montos redondeados con criterio SUNAT.
   - grupo: Control
     items:
       - Compañía en asistentes e historial, con regla de registro por compañía.
-      - Importadores sensibles restringidos al administrador de nómina.
+      - Importadores de versiones y reglas salariales restringidos al administrador de nómina.
+      - Botón «Importar desde Excel» en las listas de asistencias y de reglas salariales.
 
+ejemplos_intro: Resultados reales de las importaciones DEMO de esta ficha, tal como los anota el reporte (se omite el prefijo «DEMO FICHA HR1» de los nombres).
 ejemplos:
   - titulo: El archivo de novedades de agosto 2026
     tabla:
@@ -163,32 +438,53 @@ ejemplos:
       - ["6", "70935214", HEX25, "150,50"]
       - ["7", "40000001", COMI, "120"]
 
-  - titulo: Lo que devolvió el reporte
+  - titulo: Lo que devolvió el reporte de novedades
     tabla:
       - [Fila, Estado, Detalle, Sugerencia]
       - ["2", CREADO, "input COMI = 350.0 en la boleta de Salazar Quispe Lucía", "—"]
       - ["3", CREADO, "input ADELANTO = 400.0 en la boleta de Huamán Torres Jorge Luis", "—"]
       - ["4", CREADO, "input BONI_EX = 500.0 en la boleta de Rivas Cárdenas Andrea", "—"]
       - ["5", CREADO, "input PREST = 180.26 en la boleta de Rivas Cárdenas Andrea", "—"]
-      - ["6", ERROR, "no existe un tipo de input con código «HEX25»", Revise el código en los tipos de entrada de boleta]
-      - ["7", ERROR, "no hay boleta en el lote para el documento 40000001", Verifique que el empleado tenga boleta en el lote y que su documento coincida con el de su versión vigente]
+      - ["6", ERROR, 'no existe un tipo de input con código "HEX25"', Revise el código en Nómina → Configuración → Tipos de entrada de boleta.]
+      - ["7", ERROR, 'no hay boleta en el lote "DEMO FICHA HR1 Novedades agosto 2026" para el documento 40000001', Verifique que el empleado tenga boleta en el lote y que su documento coincida con el de su versión vigente.]
     nota: "La fila 5 muestra el redondeo SUNAT: 180,255 se guarda como 180,26."
 
-  - titulo: Columnas de cada plantilla
+  - titulo: Los demás importadores, fila por fila
     tabla:
-      - [Importador, Columnas]
-      - [Inputs de boletas, "NRO DOCUMENTO · CÓDIGO DE INPUT · MONTO"]
-      - [Datos PE de versiones, "NRO DOCUMENTO · RÉGIMEN LABORAL · CUSPP · TIPO COMISIÓN AFP · AFILIACIÓN (AFP/ONP) · SEGURO SOCIAL · TIPO TRABAJADOR (T08) · SITUACIÓN (T15) · EXCEPCIÓN JORNADA (PLAME) · TIPO DE LABOR (PLAME)"]
-      - [Récord vacacional, "FECHA DE APLICACIÓN · NRO DOCUMENTO · DÍAS DE SALDO · IMPORTE DE SALDO"]
-      - [Adelantos, "NRO DOCUMENTO · TIPO DE ADELANTO · FECHA DE ADELANTO · FECHA DE DESCUENTO · MONTO · OBSERVACIONES"]
-      - [Asistencias, "EMPLEADO (nombre exacto o documento) · ENTRADA (check_in) · SALIDA (check_out)"]
-      - [Reglas salariales, "CATEGORÍA (nombre o código) · COMPAÑÍA (informativa) · CÓDIGO · NOMBRE · SECUENCIA · CÓDIGO PYTHON · CONDICIÓN PYTHON"]
+      - [Importador, Fila, Estado, Detalle del registro]
+      - [Datos PE de versiones, "2", ACTUALIZADO, "versión de Salazar Quispe Lucía actualizada (8 campos)"]
+      - [Datos PE de versiones, "3", ACTUALIZADO, "versión de Huamán Torres Jorge Luis actualizada (6 campos)"]
+      - [Datos PE de versiones, "5", ERROR, 'régimen laboral "CAS" no reconocido (use general / small / micro / practicante / construccion)']
+      - [Récord vacacional, "2", CREADO, "saldo inicial de Salazar Quispe Lucía: 12.5 días / S/ 1166.67"]
+      - [Récord vacacional, "4", CREADO, "saldo inicial de Rivas Cárdenas Andrea: -2.0 días / S/ -300.0"]
+      - [Récord vacacional, "5", ERROR, 'la fecha de aplicación "01/01/2026" no es válida']
+      - [Adelantos, "2", CREADO, "creado adelanto de Salazar Quispe Lucía: Adelanto de sueldo S/ 500.0 (descuento 2026-10-31)"]
+      - [Adelantos, "4", ERROR, 'tipo de adelanto "Adelanto de movilidad" no encontrado en la compañía']
+      - [Asistencias, "3", ACTUALIZADO, 'actualizada asistencia de "72418305" (entrada 2026-09-01 19:00:00)']
+      - [Asistencias, "5", ERROR, "la salida (check_out) es anterior a la entrada (check_in)"]
+      - [Reglas salariales, "2", CREADO, 'creada regla "DEMO_BAS" — DEMO Básico [condición por defecto descartada; adaptado v19: contract→version ×1]']
+      - [Reglas salariales, "4", ERROR, 'categoría "BONOS" no encontrada (por nombre ni código)']
+    nota: "Las horas de la asistencia se anotan en UTC: la entrada de las 14:00 en Lima es 19:00 UTC. Las fechas de texto deben ir en formato ISO (2026-01-01) o como fecha de Excel."
+
+  - titulo: Qué traduce «Adaptar código v18 → v19»
+    tabla:
+      - [En el Excel de la v18, En Odoo 19]
+      - ["contract", "version"]
+      - ["payslip.wage", "version.wage"]
+      - ["labor_regime / retirement_fund", "l10n_pe_labor_regime / l10n_pe_retirement_fund"]
+      - ["'practice' / 'reg_const_civil'", "'practicante' / 'construccion'"]
+      - ["payslip.commision_type", "version.l10n_pe_commission_type"]
+      - ["payslip.fixed_commision / payslip.mixed_commision", "payslip.l10n_pe_commission"]
+      - ["payslip.prima_insurance / payslip.insurable_remuneration", "payslip.l10n_pe_prima_insurance / payslip.l10n_pe_insurable_remuneration"]
+      - ["version.exception / version.is_older", "version.l10n_pe_exception / version.l10n_pe_is_older"]
+      - ["result = rules['NET']['total'] > categories['NET'] * 0.10", "Condición descartada: Siempre verdadero"]
 
 configuracion:
   - Instale el módulo; requiere la biblioteca Python `openpyxl` en el servidor.
   - "Asegúrese de que los trabajadores tengan su **número de documento** en la versión vigente."
   - "Para novedades, cree el lote del mes y verifique que los códigos de input estén permitidos en la estructura salarial."
-  - "Descargue la plantilla desde el propio asistente y respete la fila de cabecera."
+  - "Para adelantos, compruebe que existan los **tipos de adelanto** de la compañía con el nombre que usará el Excel."
+  - "Descargue la plantilla desde el propio asistente y respete el orden de columnas."
 requisitos_nota: >-
   Es el módulo de cierre de la suite: depende del núcleo, beneficios,
   asistencia, contabilidad y reportes de planillas Perú.
@@ -197,17 +493,26 @@ faq:
   - pregunta: ¿Qué pasa si vuelvo a subir el mismo archivo?
     respuesta: >-
       Con **Actualizar existentes** marcado, las filas ya importadas se
-      actualizan; sin marcarlo, se omiten y el reporte lo indica.
+      actualizan; sin marcarlo, se omiten y el reporte lo indica. El récord
+      vacacional reemplaza el saldo inicial en lugar de sumarlo.
   - pregunta: Una fila dice que el input no está permitido en la estructura.
     respuesta: >-
-      Añada ese tipo de input a la estructura salarial de la boleta y vuelva a
-      importar esa fila.
+      Añada ese tipo de input a los otros inputs de la estructura salarial de
+      la boleta y vuelva a importar esa fila.
   - pregunta: ¿Puedo importar sobre boletas ya validadas?
     respuesta: No. Solo sobre boletas en borrador o por verificar.
   - pregunta: ¿En qué zona horaria se leen las asistencias?
     respuesta: >-
       En la **Zona horaria del archivo** que se elige en el asistente (por
       defecto la del usuario o America/Lima), y se convierten a UTC al guardar.
+  - pregunta: ¿Puedo cerrar la ventana mientras importa?
+    respuesta: >-
+      Sí. El proceso sigue en el servidor; el resultado y el reporte quedan en
+      el **Historial de importaciones**.
+  - pregunta: ¿Por qué el orden de las columnas importa?
+    respuesta: >-
+      Cada importador lee las columnas por su posición, no por el texto de la
+      cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
   - version: 3.20260816

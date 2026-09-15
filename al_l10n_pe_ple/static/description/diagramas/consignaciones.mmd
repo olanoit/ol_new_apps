@@ -1,0 +1,12 @@
+flowchart TD
+  A["Albarán hecho con<br/>«Consignación PLE (Libro 9)»"] --> B{¿Clase de operación?}
+  B -- "Entrega, devolución o venta 9.1" --> C[Rol consignador: 9.1]
+  B -- "Recepción, devolución o venta 9.2" --> D[Rol consignatario: 9.2]
+  C --> E[Saldo inicial por producto y contraparte<br/>con los albaranes anteriores al mes]
+  D --> E
+  E --> F{¿Es una venta?}
+  F -- Sí --> G[Comprobante desde la factura publicada<br/>de la orden de venta]
+  F -- No --> H[Comprobante 00]
+  G --> I[Línea con cantidad entregada o recibida +,<br/>devuelta − o vendida −]
+  H --> I
+  I --> J[TXT 9.1 / 9.2 del mes]

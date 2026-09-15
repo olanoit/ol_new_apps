@@ -1,0 +1,12 @@
+flowchart TD
+  A[Lote del mes de cese] --> B[Procesar]
+  B --> C[Gratificación trunca<br/>semestre en curso + bono]
+  B --> D[CTS trunca<br/>desde el último depósito]
+  B --> E[Vacaciones truncas desde el aniversario<br/>− ONP o AFP de la boleta]
+  B --> F[Fila de conceptos extra<br/>por cesado]
+  F --> G[Agregar conceptos:<br/>ingresos y descuentos]
+  C --> H[Exportar liquidación]
+  D --> H
+  E --> H
+  G --> H
+  H --> I[Entradas truncas y conceptos<br/>en la boleta del cesado]

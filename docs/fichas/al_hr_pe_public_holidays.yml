@@ -62,66 +62,198 @@ contexto:
     las compañías activas en la sesión (y en los que no tienen compañía), nunca
     en los de otras empresas de la base.
 
+flujos_intro: >-
+  Del catálogo de feriados al descanso del horario, y de ahí a la planilla.
+flujos:
+  - id: aplicar
+    titulo: Aplicar los feriados a los horarios
+    texto: >-
+      Lo mismo ocurre al pulsar el botón en la lista o en la ficha, y cuando lo
+      ejecuta la tarea anual.
+    mermaid: |
+      flowchart TD
+        A[Feriados seleccionados] --> B[Horarios de trabajo de las compañías<br/>activas y sin compañía]
+        B --> C[Para cada feriado y cada horario:<br/>rango en la zona horaria del horario]
+        C --> D{¿Día completo?}
+        D -- Sí --> E[00:00 a 23:59]
+        D -- No --> F[00:00 a la hora configurada]
+        E --> G{¿Ya hay descanso de ese<br/>feriado en ese horario?}
+        F --> G
+        G -- Sí --> H[Se actualiza:<br/>nombre, fechas y tipo de entrada]
+        G -- No --> I[Se crea el descanso global<br/>sin recurso]
+        H --> J[Aviso: descansos creados<br/>y actualizados, y nº de horarios]
+        I --> J
+    pie: Borrar un feriado borra también todos sus descansos.
+  - id: planilla
+    titulo: Del descanso a la planilla
+    texto: >-
+      El módulo no calcula la boleta: deja el descanso en el horario y los
+      motores de Odoo y de la suite lo leen.
+    mermaid: |
+      flowchart TD
+        A[Descanso del feriado<br/>en el horario del trabajador] --> B[Entradas de trabajo:<br/>el día toma el tipo del descanso]
+        A --> C{¿Tareaje con<br/>al_hr_pe_attendance?}
+        B --> D[Boleta: línea DIAS DE DESCANSO<br/>con el nombre del feriado]
+        C -- "Sin marcaciones ese día" --> E[Feriado no laborado]
+        C -- "Con marcaciones" --> F[Feriado laborado:<br/>horas al 100 %]
+        F --> G[Boleta: feriado o descanso<br/>laborado y HE 100 %]
+  - id: anual
+    titulo: Renovación anual
+    mermaid: |
+      flowchart TD
+        A[Tarea programada<br/>cada 12 meses desde el 2 de enero] --> B[Busca los feriados del año<br/>en curso y del siguiente]
+        B --> C{¿Hay feriados?}
+        C -- No --> D[No hace nada]
+        C -- Sí --> E[Aplicar a los calendarios<br/>de todas las compañías de OdooBot]
+
 pasos_intro: >-
   Recorrido con los feriados de 2026 aplicados al horario de demostración
-  «DEMO FICHA HR1 Jornada 48h».
+  «DEMO FICHA HR1 Jornada 48h» y la planilla DEMO de julio 2026.
 pasos:
+  - seccion: Calendario de feriados
+    texto: Los feriados vienen cargados; se revisan y, si hace falta, se ajustan.
   - titulo: Revisar los feriados del año
     ruta: Vacaciones ▸ Peru Holidays ▸ Holidays
     texto: >-
-      La lista viene agrupada por año. Cada feriado muestra su fecha, tipo
-      (nacional o religioso), si es de día completo, el tipo de entrada de
-      trabajo y en cuántos horarios está aplicado (columna **Calendarios**).
+      La lista se abre agrupada por año. Cada feriado muestra su fecha, nombre,
+      tipo, si es de día completo, el tipo de entrada de trabajo y en cuántos
+      horarios está aplicado (columna **Calendarios**). Los religiosos se
+      resaltan en azul y los de medio día, en naranja.
     puntos:
-      - Los filtros permiten ver los próximos, los nacionales, los religiosos o los de medio día.
       - Un feriado que la empresa no aplique se puede eliminar; al borrarlo se eliminan también sus descansos.
     imagen: screenshots/01-feriados.png
 
+  - titulo: Filtrar y agrupar
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ búsqueda
+    texto: >-
+      Filtros **Upcoming** (desde hoy), **National**, **Religious** y **Half
+      Day**; agrupación por **Year** o **Type**. También se busca por nombre o
+      por año.
+    imagen: screenshots/02-filtros.png
+
+  - titulo: Ficha del feriado
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ feriado
+    texto: >-
+      Nombre, fecha, tipo, día completo, año (calculado) y **Tipo de entrada de
+      trabajo**. El botón **Calendarios** indica en cuántos horarios está
+      aplicado y abre sus descansos; solo aparece cuando ya se aplicó.
+    imagen: screenshots/03-feriado.png
+
+  - titulo: Feriado de medio día
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ Nuevo
+    texto: >-
+      Al desmarcar **Full Day** aparece **Half Day Starts At** (13:00 por
+      defecto): el descanso irá desde las 00:00 hasta esa hora. Ninguno de los
+      feriados cargados es de medio día.
+    imagen: screenshots/04-medio-dia.png
+    pie: Registro nuevo sin guardar, solo para mostrar el campo.
+
+  - seccion: Aplicación a los horarios
+    texto: Convierte los feriados en descansos de los horarios de trabajo.
   - titulo: Aplicarlos a los horarios de trabajo
     ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ seleccionar ▸ Aplicar a los calendarios
     texto: >-
       Seleccione los feriados y pulse **Aplicar a los calendarios** (en la
       ficha del feriado, **Apply to Calendars**). Un aviso indica cuántos
       descansos se crearon y cuántos se actualizaron, y en cuántos horarios.
-    imagen: screenshots/02-aplicar.png
-
-  - titulo: Ajustar un feriado
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ feriado
-    texto: >-
-      Nombre, fecha, tipo, día completo (o, si es medio día, la hora hasta la que dura el descanso) y
-      **Tipo de entrada de trabajo**. El botón **Calendarios** abre los
-      descansos que generó.
-    imagen: screenshots/03-feriado.png
+    puntos:
+      - Solo se escriben los horarios de las compañías activas en el selector de compañías y los que no tienen compañía.
+      - Aplicar otra vez el mismo feriado corrige su descanso (por ejemplo, tras cambiar la zona horaria del horario) en lugar de duplicarlo.
+    imagen: screenshots/05-aplicar.png
 
   - titulo: Consultar los descansos creados
     ruta: Feriado ▸ botón Calendarios
     texto: >-
       Un descanso por horario, sin recurso (descanso global), con el tipo de
-      entrada de trabajo del feriado. Si se cambia la zona horaria del horario y
-      se vuelve a aplicar, el descanso se corrige en lugar de duplicarse.
-    imagen: screenshots/04-descansos.png
+      entrada de trabajo del feriado.
+    imagen: screenshots/06-descansos.png
     pie: "Vista en hora de Lima: el descanso cubre el 6 de agosto de 00:00 a 23:59."
 
-  - titulo: La planilla cuenta el feriado como día de descanso
+  - titulo: Ficha del descanso
+    ruta: Descansos ▸ descanso
+    texto: >-
+      Es el descanso nativo de Odoo: motivo, horario (**Horas laborales**),
+      empresa, recurso vacío y **Tipo de entrada de trabajo**. Por dentro guarda
+      el feriado que lo generó, que no se muestra en la pantalla.
+    imagen: screenshots/07-descanso.png
+
+  - titulo: Los feriados en Días festivos de Vacaciones
+    ruta: Vacaciones ▸ Configuración ▸ Días festivos
+    texto: >-
+      Al ser descansos globales, los feriados aplicados aparecen en la lista
+      nativa de días festivos, que Vacaciones usa para no descontar esos días
+      en las solicitudes de tiempo personal.
+    imagen: screenshots/08-dias-festivos.png
+
+  - seccion: En la planilla
+    texto: Lo que ven la nómina y el tareaje una vez aplicado el feriado.
+  - titulo: Entradas de trabajo del mes
+    ruta: Nómina ▸ Entradas de trabajo ▸ Entradas de trabajo
+    texto: >-
+      Al generar las entradas de trabajo, los días de feriado de quien tiene el
+      horario con descansos salen con el tipo del feriado (DIAS DE DESCANSO)
+      en lugar de asistencia.
+    imagen: screenshots/09-entradas.png
+    pie: "Julio 2026: los días 23, 28 y 29 (en amarillo) son días de descanso para los tres trabajadores DEMO; el resto, asistencia (A)."
+
+  - titulo: La boleta cuenta el feriado como día de descanso
     ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ Días trabajados
     texto: >-
       Al calcular la boleta, los feriados del periodo entran en la línea de
       **días de descanso** con su nombre en la descripción, y no como días
       laborados.
-    imagen: screenshots/05-boleta-feriados.png
-    pie: "Boleta DEMO de julio 2026: Día de la Fuerza Aérea, Día de la Independencia y Día de la Gran Parada Militar."
+    imagen: screenshots/10-boleta-feriados.png
+    pie: "Boleta DEMO de julio 2026: Día de la Fuerza Aérea, Día de la Independencia y Día de la Gran Parada Militar (24 horas)."
 
-  - titulo: Renovación automática cada año
+  - titulo: Feriado laborado en el tareaje
+    ruta: Nómina ▸ Asistencia ▸ Tareaje
+    texto: >-
+      Con `al_hr_pe_attendance`, el tareaje lee los descansos globales del
+      horario de cada trabajador: si hay marcaciones en un feriado, el día se
+      clasifica como feriado laborado con horas al 100 %. Se ve en la ficha de
+      ese módulo.
+
+  - seccion: Renovación anual
+  - titulo: Tarea programada
     ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Peru Holidays: Yearly Auto Apply"
     texto: >-
-      La tarea se ejecuta cada 12 meses, el 2 de enero, y aplica los feriados
-      del año en curso y del siguiente; así la planificación de diciembre ya
-      encuentra los del año nuevo.
-    imagen: screenshots/06-cron.png
+      La tarea se ejecuta cada 12 meses a partir del 2 de enero a las 02:00
+      UTC (1 de enero, 21:00 en Lima) y aplica los feriados del año en curso y
+      del siguiente; así la planificación de diciembre ya encuentra los del año
+      nuevo. **Ejecutar de forma manual** la lanza en el acto.
+    imagen: screenshots/11-cron.png
+
+campos_intro: >-
+  Las pantallas propias del módulo conservan las etiquetas en inglés del
+  código; se citan tal como aparecen.
+campos:
+  - grupo: Feriado
+    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays
+    campos:
+      - [Holiday Name, Nombre del feriado (traducible)., Vacío (obligatorio), Motivo del descanso en el horario y descripción en la boleta]
+      - [Date, Día del feriado., Vacío (obligatorio), Día del descanso]
+      - [Type, "National, Religious o Memorial.", National, Filtros y color de la lista (religiosos en azul)]
+      - [Full Day, Descanso de todo el día., Marcado, "Rango 00:00–23:59 en la zona del horario"]
+      - [Half Day Starts At, "Visible solo sin Full Day: hora en que termina el descanso.", "13:00", "Rango 00:00 hasta esa hora"]
+      - [Year, Año de la fecha., Calculado, Agrupación de la lista y selección de la tarea anual]
+      - [Tipo de entrada de trabajo, Concepto con que la nómina computa el día; no permite crear uno nuevo desde aquí., "DIAS DE DESCANSO (si está al_hr_pe)", Lo hereda el descanso y de ahí la entrada de trabajo]
+      - [Description, Texto libre., Vacío, Informativo]
+      - [Calendarios, Número de descansos aplicados; botón que los abre., Calculado, "—"]
+  - grupo: Descanso del horario (campo añadido)
+    ruta: Vacaciones ▸ Configuración ▸ Días festivos
+    campos:
+      - ["Feriado (PE)", Feriado peruano que generó el descanso. No figura en las vistas., Vacío, "Clave para no duplicar; se borra el descanso al borrar el feriado"]
+  - grupo: Tarea programada
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Peru Holidays: Yearly Auto Apply"
+    campos:
+      - [Ejecutar cada, Intervalo de la tarea., 12 Meses, Una vez al año]
+      - [Activo, Enciende o apaga la tarea., Activo, "Apagada, los feriados se aplican solo a mano"]
+      - [Siguiente fecha de ejecución, Próxima ejecución., "2 de enero, 02:00 UTC, del año siguiente a la instalación", Aplica el año en curso y el siguiente]
+      - [Usuario encargado de la planificación, Usuario con que corre., OdooBot, Aplica en los horarios de todas las compañías de ese usuario]
 
 funcionalidades:
   - Feriados nacionales del Perú de 2026 a 2035 (17 por año).
-  - Fechas móviles de Jueves y Viernes Santo según la Pascua de cada año.
+  - Fechas móviles de Jueves Santo, Viernes Santo y Domingo de Resurrección según la Pascua de cada año.
   - Aplicación masiva a los horarios de trabajo de las compañías activas.
   - Descansos idempotentes por feriado y horario, que se borran con el feriado.
   - Tipo de entrada de trabajo por feriado, heredado por el descanso (por defecto, días de descanso).
@@ -129,6 +261,7 @@ funcionalidades:
   - Rango calculado en la zona horaria de cada horario de trabajo.
   - Tarea programada anual para el año en curso y el siguiente.
   - Contador de horarios aplicados y acceso directo a los descansos.
+  - Filtros de próximos, nacionales, religiosos y medio día; agrupación por año y tipo.
 
 ejemplos:
   - titulo: Feriados de julio y agosto de 2026
@@ -147,9 +280,19 @@ ejemplos:
       - [Feriado de medio día, "Medio día, hora 13:00", "00:00", "13:00", "05:00 → 18:00"]
     nota: Así lo espera Odoo; lo que el usuario ve en pantalla se muestra en su propia zona horaria.
 
+  - titulo: Semana Santa, calculada para cada año
+    tabla:
+      - [Año, Jueves Santo, Viernes Santo, Domingo de Resurrección]
+      - ["2026", 02/04, 03/04, 05/04]
+      - ["2027", 25/03, 26/03, 28/03]
+      - ["2028", 13/04, 14/04, 16/04]
+      - ["2030", 18/04, 19/04, 21/04]
+      - ["2035", 22/03, 23/03, 25/03]
+
 configuracion:
   - Instale el módulo (requiere Vacaciones y Entradas de trabajo).
   - "Revise que cada **horario de trabajo** tenga la zona horaria correcta (America/Lima)."
+  - "Elija en el selector las compañías cuyos horarios quiere afectar."
   - "En **Vacaciones ▸ Peru Holidays ▸ Holidays** seleccione los feriados y pulse **Aplicar a los calendarios**."
   - Si usa la planilla peruana, compruebe que el tipo de entrada de trabajo sea el de días de descanso.
 requisitos_nota: >-
@@ -167,10 +310,16 @@ faq:
       no tienen compañía.
   - pregunta: ¿Qué pasa si elimino un feriado?
     respuesta: Se eliminan también los descansos que había creado en los horarios.
+  - pregunta: Cambié la zona horaria de un horario, ¿qué hago?
+    respuesta: >-
+      Vuelva a aplicar los feriados: el descanso de cada feriado en ese horario
+      se recalcula con la nueva zona en lugar de crearse otro.
   - pregunta: ¿Tengo que acordarme de aplicar el año nuevo?
     respuesta: >-
       No. La tarea programada lo hace cada 2 de enero, para el año en curso y el
       siguiente. También se puede ejecutar a mano desde la acción planificada.
+      Como corre sin selector de compañías, aplica en los horarios de todas las
+      compañías del usuario OdooBot.
 
 novedades:
   - fecha: 27/08/2026

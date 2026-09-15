@@ -1,0 +1,9 @@
+flowchart TD
+  A[Generar periodos del año<br/>código AAAAMM] --> B[Lote de nóminas<br/>con su Periodo]
+  B --> C[Boleta: periodo más ajustado<br/>que la contiene]
+  C --> D[Snapshot: RMV y<br/>asignación familiar,<br/>tasas AFP/ONP y tope]
+  D --> E[Días trabajados:<br/>conceptos PE en cero,<br/>DOM completa el periodo]
+  E --> F[Estructura BASE:<br/>64 reglas con código SUNAT]
+  F --> G[Totales PLAME por categoría:<br/>aportes, descuentos al neto,<br/>aportes del empleador]
+  G --> H[Menú del lote:<br/>.rem, .jor, .snl, .toc, AFPNet]
+  H --> I[Adjunto del lote y descarga<br/>0601AAAAMMRUC]

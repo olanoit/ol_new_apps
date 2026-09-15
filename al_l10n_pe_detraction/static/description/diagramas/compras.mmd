@@ -1,0 +1,10 @@
+flowchart TD
+  A[Factura de proveedor<br/>con detracción] --> B{¿Muchos depósitos<br/>a la vez?}
+  B -- Sí --> C[Depósito masivo:<br/>TXT para el banco]
+  B -- No --> D[Depósito individual<br/>en el Banco de la Nación]
+  C --> E[Constancias<br/>del banco]
+  D --> E
+  E --> F[Registrar depósito:<br/>diario, fecha<br/>y Nº de constancia]
+  F --> G[Pago de la detracción<br/>con reparto: solo su línea]
+  G --> H[Constancia en la factura<br/>PLE 8.1 y 8.3]
+  G --> I[Pago normal<br/>del neto]

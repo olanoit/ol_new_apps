@@ -1,0 +1,17 @@
+flowchart TD
+  A[Lote del mes] --> B[Generar quinta:<br/>una línea por boleta]
+  B --> C[Proyección: rem. base × meses restantes<br/>+ rem. del mes + gratificaciones<br/>+ meses anteriores + otros empleadores]
+  C --> D[− 7 UIT del año]
+  D --> E[Impuesto por tramos<br/>8 · 14 · 17 · 20 · 30 %]
+  E --> F{¿Hay quinta del<br/>mes anterior?}
+  F -- Sí, mismo impuesto --> G[Parte del saldo pendiente]
+  F -- Sí, impuesto distinto --> H[Reproyecta descontando<br/>lo ya retenido]
+  F -- No --> I[Impuesto − retenciones previas<br/>− otros empleadores]
+  G --> J[Retención = saldo ÷ divisor del mes<br/>12 en enero … 1 en diciembre]
+  H --> J
+  I --> J
+  J --> K{¿Retención mayor que 0?}
+  K -- No --> L[Excluidos de quinta]
+  K -- Sí --> M[Afectos a quinta]
+  L -- Agregar empleados --> M
+  M --> N[Exportar quinta: entradas QUINTA<br/>y retención extraordinaria]

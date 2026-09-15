@@ -1,0 +1,14 @@
+flowchart TD
+  A[Lote del mes] --> B[Procesar]
+  B --> C{Por cada boleta con básico}
+  C -- Cesado en el mes o empleador<br/>con menos de 4 trabajadores --> D[No se provisiona]
+  C -- Microempresa --> E[Solo vacaciones]
+  C -- General o pequeña --> F[CTS: computable + 1/6 grati ÷ 12]
+  C -- General o pequeña --> G[Vacaciones: computable ÷ 12]
+  C -- Ingresó antes del lote --> H[Gratificación: computable ÷ 6<br/>+ bono con la tasa del seguro]
+  F --> I[Pequeña empresa ÷ 2, micro ÷ 2 en vacaciones<br/>CTS y vacaciones: prorrateo del mes de ingreso]
+  G --> I
+  H --> I
+  E --> I
+  I --> J[Obtener acumulado del semestre o año]
+  J --> K[Cerrar o generar el asiento<br/>con el módulo de contabilización]

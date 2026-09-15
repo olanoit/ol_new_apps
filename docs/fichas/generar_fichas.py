@@ -158,7 +158,7 @@ def needs_enterprise(module, _seen=None):
 
 
 def figure(src, alt, margin_top=18, border=LINE,
-           shadow='0 12px 32px rgba(16,24,40,.10)'):
+           shadow='0 12px 32px rgba(16,24,40,.10)', width=None):
     """Captura a su tamaño natural, centrada y como mucho al ancho de la página.
 
     Con ``width:100%`` un diálogo de 650 px se ampliaba a 1070 px y salía
@@ -166,8 +166,9 @@ def figure(src, alt, margin_top=18, border=LINE,
     return ('<div style="margin-top:%dpx;text-align:center;">'
             '<div style="display:inline-block;max-width:100%%;border-radius:12px;'
             'overflow:hidden;border:1px solid %s;box-shadow:%s;vertical-align:top;">'
-            '<img src="%s" alt="%s" style="display:block;max-width:100%%;height:auto;"/>'
-            '</div></div>' % (margin_top, border, shadow, esc(src), esc(alt)))
+            '<img src="%s" alt="%s" style="display:block;max-width:100%%;height:auto;%s"/>'
+            '</div></div>' % (margin_top, border, shadow, esc(src), esc(alt),
+                             'width:%dpx;' % width if width else ''))
 
 
 # ----------------------------------------------------------------------
@@ -293,7 +294,17 @@ def render_steps(data):
     if not steps:
         return ''
     out = ''
-    for i, step in enumerate(steps, start=1):
+    i = 0
+    for step in steps:
+        if step.get('seccion'):
+            # Subtítulo que agrupa los pasos siguientes (una función del módulo).
+            out += ('<div style="margin:%dpx 0 22px;padding:0 0 10px;border-bottom:2px solid %s;">'
+                    '<h3 style="font-size:22px;font-weight:800;color:%s;margin:0;">%s</h3>%s</div>'
+                    % (8 if not out else 20, BRAND, INK, esc(step['seccion']),
+                       ('<p style="font-size:15px;color:%s;margin:6px 0 0;">%s</p>'
+                        % (MUTED, inline(step['texto']))) if step.get('texto') else ''))
+            continue
+        i += 1
         route = ('<div style="display:inline-block;font-size:13px;font-weight:600;'
                  'color:%s;background:%s;border:1px solid #cfe8e5;border-radius:6px;'
                  'padding:4px 10px;margin:0 0 12px;">&#128205; %s</div>'
@@ -323,7 +334,7 @@ def render_steps(data):
                paragraphs(step.get('texto', '')), tips, image))
     return section(heading(data.get('pasos_titulo', 'Paso a paso'),
                            data.get('pasos_intro'), 'Capturas') + out,
-                   anchor='capturas')
+                   anchor='pasos')
 
 
 def render_features(data):
@@ -346,7 +357,8 @@ def render_features(data):
     return section(
         heading('Funcionalidades', data.get('funcionalidades_intro'), 'Qué incluye')
         + '<div style="display:grid;grid-template-columns:repeat(auto-fit,'
-          'minmax(300px,1fr));gap:18px;">%s</div>' % cols, alt=True)
+          'minmax(300px,1fr));gap:18px;">%s</div>' % cols, alt=True,
+        anchor='funcionalidades')
 
 
 def render_examples(data):
@@ -391,7 +403,7 @@ def render_examples(data):
                 'color:%s;margin:0 0 12px;">%s</h3><div style="font-size:15.5px;color:%s;'
                 'line-height:1.65;">%s</div></div>' % (CARD, INK, esc(ex['titulo']), INK, body))
     return section(heading('Ejemplos prácticos', data.get('ejemplos_intro'), 'Casos')
-                   + out)
+                   + out, anchor='ejemplos')
 
 
 def render_setup(data, manifest):
@@ -425,7 +437,7 @@ def render_setup(data, manifest):
         heading('Instalación y configuración', data.get('configuracion_intro'), 'Empezar')
         + '<div style="display:grid;grid-template-columns:repeat(auto-fit,'
           'minmax(320px,1fr));gap:18px;align-items:start;">%s%s</div>' % (setup, deps),
-        alt=True)
+        alt=True, anchor='configuracion')
 
 
 def render_faq(data):
@@ -439,7 +451,7 @@ def render_faq(data):
         '<div style="font-size:15px;color:%s;line-height:1.65;margin-top:10px;">%s</div>'
         '</details>' % (LINE, INK, esc(q['pregunta']), INK, paragraphs(q['respuesta']))
         for q in faq)
-    return section(heading('Preguntas frecuentes', None, 'Dudas') + items)
+    return section(heading('Preguntas frecuentes', None, 'Dudas') + items, anchor='faq')
 
 
 def render_releases(data, manifest):
@@ -498,13 +510,207 @@ def render_footer(data, manifest, module):
            inline(data.get('pie', 'Desarrollado por AltaBPO para Odoo 19.'))))
 
 
+def table(head, rows, where, widths=None):
+    """Tabla con cabecera oscura; valida que todas las filas cuadren."""
+    for row in rows:
+        if len(row) != len(head):
+            raise FichaError(
+                '%s: la fila %r tiene %d celdas y la cabecera %d '
+                '(¿una celda con coma sin comillas?)' % (where, row, len(row), len(head)))
+    th = ''.join(
+        '<th style="text-align:left;padding:10px 12px;background:%s;color:#fff;'
+        'font-size:13px;font-weight:700;%s">%s</th>'
+        % (INK, ('width:%s;' % widths[k]) if widths else 'white-space:nowrap;', esc(c))
+        for k, c in enumerate(head))
+    trs = ''.join(
+        '<tr>%s</tr>' % ''.join(
+            '<td style="padding:9px 12px;border-bottom:1px solid %s;font-size:14px;'
+            'color:%s;background:%s;vertical-align:top;">%s</td>'
+            % (LINE, INK, '#fff' if r % 2 == 0 else SOFT, inline(c)) for c in row)
+        for r, row in enumerate(rows))
+    return ('<div style="overflow-x:auto;border:1px solid %s;border-radius:10px;'
+            'margin:6px 0 14px;"><table style="width:100%%;border-collapse:collapse;">'
+            '<thead><tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (LINE, th, trs))
+
+
+def render_index(data):
+    """Índice con enlaces a las secciones presentes (las fichas son largas)."""
+    entries = [
+        ('flujos', 'Flujo del proceso', data.get('flujos')),
+        ('pasos', data.get('pasos_titulo', 'Paso a paso'), data.get('pasos')),
+        ('campos', 'Referencia de campos', data.get('campos')),
+        ('asientos', 'Asientos contables', data.get('asientos')),
+        ('funcionalidades', 'Funcionalidades', data.get('funcionalidades')),
+        ('ejemplos', 'Ejemplos prácticos', data.get('ejemplos')),
+        ('configuracion', 'Instalación y configuración', True),
+        ('faq', 'Preguntas frecuentes', data.get('faq')),
+    ]
+    links = ''.join(
+        '<a href="#%s" style="display:inline-block;font-size:14px;font-weight:600;'
+        'color:%s;text-decoration:none;background:#fff;border:1px solid %s;'
+        'border-radius:999px;padding:7px 14px;margin:0 8px 8px 0;">%s</a>'
+        % (anchor, INK, LINE, esc(label)) for anchor, label, present in entries if present)
+    sections = [s for s in data.get('pasos') or [] if s.get('seccion')]
+    functions = ''
+    if sections:
+        functions = ('<p style="font-size:13px;font-weight:700;color:%s;margin:14px 0 8px;'
+                     'text-transform:uppercase;letter-spacing:.08em;">Funciones cubiertas</p>'
+                     '<div>%s</div>' % (MUTED, ''.join(
+                         '<span style="%sbackground:%s;color:%s;border:1px solid #cfe8e5;">%s</span>'
+                         % (PILL, ACCENT_SOFT, ACCENT, esc(s['seccion'])) for s in sections)))
+    return ('<div style="background:%s;border-bottom:1px solid %s;padding:22px 0 14px;">'
+            '<div style="%s"><p style="font-size:13px;font-weight:700;color:%s;margin:0 0 10px;'
+            'text-transform:uppercase;letter-spacing:.08em;">En esta ficha</p>%s%s</div></div>\n'
+            % (SOFT, LINE, WRAP, MUTED, links, functions))
+
+
+def render_flows(data):
+    flows = data.get('flujos') or []
+    if not flows:
+        return ''
+    out = ''
+    for flow in flows:
+        out += ('<div style="margin:0 0 34px;">'
+                '<h3 style="font-size:20px;font-weight:700;color:%s;margin:0 0 8px;">%s</h3>'
+                '<div style="font-size:15.5px;color:%s;line-height:1.65;">%s</div>%s%s</div>'
+                % (INK, esc(flow['titulo']), INK, paragraphs(flow.get('texto', '')),
+                   figure(diagram_path(flow), flow['titulo'], margin_top=8,
+                          shadow='none', width=diagram_width(data['_module'], flow)),
+                   ('<p style="font-size:13px;color:%s;text-align:center;margin:10px 0 0;">%s</p>'
+                    % (MUTED, inline(flow['pie']))) if flow.get('pie') else ''))
+    return section(heading('Flujo del proceso', data.get('flujos_intro'), 'Diagrama')
+                   + out, alt=True, anchor='flujos')
+
+
+def diagram_path(flow):
+    return 'diagramas/%s.png' % flow['id']
+
+
+# diagramas.py dibuja a escala 1,5 para que se vean nítidos.
+DIAGRAM_SCALE = 1.5
+
+
+def diagram_width(module, flow):
+    """Ancho en CSS del diagrama: su tamaño real, no el de sus píxeles."""
+    from PIL import Image
+
+    path = ROOT / module / 'static' / 'description' / diagram_path(flow)
+    with Image.open(path) as image:
+        return int(image.size[0] / DIAGRAM_SCALE)
+
+
+def render_fields(data):
+    groups = data.get('campos') or []
+    if not groups:
+        return ''
+    out = ''
+    for group in groups:
+        route = ('<div style="display:inline-block;font-size:13px;font-weight:600;color:%s;'
+                 'background:%s;border:1px solid #cfe8e5;border-radius:6px;padding:4px 10px;'
+                 'margin:0 0 10px;">&#128205; %s</div>'
+                 % (ACCENT, ACCENT_SOFT, esc(group['ruta']))) if group.get('ruta') else ''
+        out += ('<div style="margin:0 0 26px;"><h3 style="font-size:19px;font-weight:700;'
+                'color:%s;margin:0 0 8px;">%s</h3>%s%s%s</div>'
+                % (INK, esc(group['grupo']), route,
+                   paragraphs(group['texto']) if group.get('texto') else '',
+                   table(['Campo', 'Qué hace', 'Por defecto', 'Efecto'], group['campos'],
+                         'campos «%s»' % group['grupo'],
+                         widths=['20%', '40%', '14%', '26%'])))
+    return section(heading('Referencia de campos', data.get('campos_intro'), 'Detalle')
+                   + out, anchor='campos')
+
+
+def parse_amount(value, where):
+    """«S/ 1.234,56», «1234.56», 0 o vacío → float."""
+    if value in ('', None, '-', '—'):
+        return 0.0
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    text = str(value).replace('S/', '').replace('US$', '').replace('$', '').strip()
+    if ',' in text:
+        text = text.replace('.', '').replace(',', '.')
+    try:
+        return float(text)
+    except ValueError:
+        raise FichaError('%s: importe no numérico %r' % (where, value))
+
+
+def money(value):
+    text = '{:,.2f}'.format(value)
+    return 'S/ ' + text.replace(',', 'X').replace('.', ',').replace('X', '.')
+
+
+def render_entries(data):
+    entries = data.get('asientos') or []
+    if not entries:
+        return ''
+    out = ''
+    for entry in entries:
+        where = 'asiento «%s»' % entry['titulo']
+        rows, debit_total, credit_total = [], 0.0, 0.0
+        for line in entry['lineas']:
+            if len(line) != 4:
+                raise FichaError('%s: cada línea es [cuenta, descripción, debe, haber]; %r'
+                                 % (where, line))
+            account, label, debit, credit = line
+            d, c = parse_amount(debit, where), parse_amount(credit, where)
+            debit_total += d
+            credit_total += c
+            rows.append('<tr><td style="padding:8px 12px;border-bottom:1px solid %s;'
+                        'font-family:%s;font-size:13.5px;color:%s;white-space:nowrap;">%s</td>'
+                        '<td style="padding:8px 12px;border-bottom:1px solid %s;font-size:14px;color:%s;">%s</td>'
+                        '<td style="padding:8px 12px;border-bottom:1px solid %s;font-size:14px;'
+                        'text-align:right;white-space:nowrap;color:%s;">%s</td>'
+                        '<td style="padding:8px 12px;border-bottom:1px solid %s;font-size:14px;'
+                        'text-align:right;white-space:nowrap;color:%s;">%s</td></tr>'
+                        % (LINE, MONO, INK, esc(account), LINE, INK, inline(label),
+                           LINE, INK, money(d) if d else '', LINE, INK, money(c) if c else ''))
+        if abs(debit_total - credit_total) > 0.005:
+            raise FichaError('%s no cuadra: debe %.2f, haber %.2f'
+                             % (where, debit_total, credit_total))
+        cell = ('padding:9px 12px;background:%s;color:#fff;font-size:13px;font-weight:700;'
+                % INK)
+        body = (
+            '<div style="overflow-x:auto;border:1px solid %s;border-radius:10px;margin:8px 0 12px;">'
+            '<table style="width:100%%;border-collapse:collapse;"><thead><tr>'
+            '<th style="%stext-align:left;">Cuenta</th><th style="%stext-align:left;">Descripción</th>'
+            '<th style="%stext-align:right;">Debe</th><th style="%stext-align:right;">Haber</th>'
+            '</tr></thead><tbody>%s<tr>'
+            '<td colspan="2" style="padding:9px 12px;font-weight:700;font-size:14px;background:%s;">Total</td>'
+            '<td style="padding:9px 12px;font-weight:700;font-size:14px;text-align:right;background:%s;">%s</td>'
+            '<td style="padding:9px 12px;font-weight:700;font-size:14px;text-align:right;background:%s;">%s</td>'
+            '</tr></tbody></table></div>'
+            % (LINE, cell, cell, cell, cell, ''.join(rows), SOFT, SOFT, money(debit_total),
+               SOFT, money(credit_total)))
+        meta = ''
+        if entry.get('referencia'):
+            meta = ('<span style="%sbackground:%s;color:%s;border:1px solid %s;font-family:%s;">%s</span>'
+                    % (PILL, SOFT, INK, LINE, MONO, esc(entry['referencia'])))
+        out += ('<div style="%smargin:0 0 22px;"><div style="display:flex;flex-wrap:wrap;'
+                'align-items:center;justify-content:space-between;gap:8px;">'
+                '<h3 style="font-size:19px;font-weight:700;color:%s;margin:0;">%s</h3>%s</div>'
+                '<div style="font-size:15px;color:%s;line-height:1.6;margin-top:8px;">%s</div>%s%s</div>'
+                % (CARD, INK, esc(entry['titulo']), meta, INK,
+                   paragraphs(entry.get('texto', '')), body,
+                   ('<div style="background:%s;border-left:4px solid %s;border-radius:0 8px 8px 0;'
+                    'padding:10px 14px;font-size:14px;color:%s;">%s</div>'
+                    % (BRAND_SOFT, BRAND, INK, inline(entry['nota']))) if entry.get('nota') else ''))
+    return section(heading('Asientos contables', data.get('asientos_intro'), 'Contabilidad')
+                   + out, alt=True, anchor='asientos')
+
+
 def render(module, data):
     manifest = manifest_of(module)
+    data = dict(data, _module=module)
     body = (render_topbar(data, manifest, module)
             + render_hero(data, manifest)
+            + render_index(data)
             + render_highlights(data)
             + render_problem(data)
+            + render_flows(data)
             + render_steps(data)
+            + render_fields(data)
+            + render_entries(data)
             + render_features(data)
             + render_examples(data)
             + render_setup(data, manifest)
@@ -526,9 +732,11 @@ def build(module, check=False):
     data = yaml.safe_load(source.read_text(encoding='utf-8'))
     manifest = manifest_of(module)
     target = ROOT / module / 'static' / 'description' / 'index.html'
+    _check_diagrams(module, data)
     content = render(module, data)
     content = fichas.sync_footer(
         fichas.add_link(fichas.encode(content), module), module, manifest)
+    _check_diagrams(module, data)
     missing = [
         img for img in _images(data)
         if not (ROOT / module / 'static' / 'description' / img).exists()]
@@ -545,7 +753,19 @@ def build(module, check=False):
 def _images(data):
     images = [data['portada']] if data.get('portada') else []
     images += [s['imagen'] for s in data.get('pasos', []) if s.get('imagen')]
+    images += [diagram_path(f) for f in data.get('flujos') or []]
     return images
+
+
+def _check_diagrams(module, data):
+    """Cada diagrama debe estar dibujado desde el texto Mermaid actual."""
+    base = ROOT / module / 'static' / 'description'
+    for flow in data.get('flujos') or []:
+        source = base / ('diagramas/%s.mmd' % flow['id'])
+        if not source.exists() or source.read_text(encoding='utf-8') != flow['mermaid']:
+            raise FichaError(
+                'el diagrama «%s» no está dibujado o cambió: ejecute '
+                'docs/fichas/diagramas.py %s' % (flow['id'], module))
 
 
 def main(argv):

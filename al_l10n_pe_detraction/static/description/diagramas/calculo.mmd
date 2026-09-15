@@ -1,0 +1,14 @@
+flowchart TD
+  A[Factura de venta<br/>o de proveedor] --> B{¿Algún producto con<br/>tipo de detracción?}
+  B -- No --> Z[Sin detracción:<br/>no aparece la pestaña]
+  B -- Sí --> C[Código dominante:<br/>el de mayor porcentaje]
+  C --> D{¿Total con IGV<br/>en soles mayor que<br/>el mínimo?}
+  D -- No --> Z
+  D -- Sí --> E[Pestaña Detracción:<br/>monto = total × %<br/>redondeado a soles]
+  E --> F[Publicar]
+  F --> G{¿Venta sin tipo<br/>de operación 100x?}
+  G -- Sí --> H[Tipo de operación<br/>1001]
+  G -- No --> I{¿Separar detracción<br/>en el asiento activo?}
+  H --> I
+  I -- No --> J[Total en la cuenta<br/>del tercero]
+  I -- Sí --> K[Mismo asiento:<br/>neto al tercero,<br/>detracción a 121x / 424x]

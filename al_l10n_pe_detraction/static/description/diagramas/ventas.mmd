@@ -1,0 +1,7 @@
+flowchart TD
+  A[Venta publicada<br/>con operación 1001] --> B[XML con bloque<br/>de detracción]
+  B --> C[El cliente paga el neto]
+  B --> D[El cliente deposita<br/>en el Banco de la Nación]
+  D --> E[Registrar depósito<br/>con el diario del BN]
+  E --> F[Cobro de la detracción<br/>con reparto: línea 121x]
+  C --> G[Cobro normal<br/>del neto]

@@ -1,0 +1,14 @@
+flowchart TD
+  A[Fila: categoría, código, nombre,<br/>secuencia, código y condición Python] --> B{¿Categoría encontrada<br/>por nombre o código?}
+  B -- No --> X[Error]
+  B -- Sí --> C{¿La condición es la que Odoo<br/>pone por defecto?}
+  C -- Sí --> D[Se descarta: la regla<br/>queda «Siempre verdadero»]
+  C -- No --> E[Se conserva]
+  D --> F[Traducción: contract → version,<br/>payslip.wage → version.wage,<br/>campos peruanos renombrados]
+  E --> F
+  F --> G{¿Existe la regla con ese código<br/>en la estructura destino?}
+  G -- "Sí, sin «Actualizar existentes»" --> O[Omitida]
+  G -- "Sí, con «Actualizar existentes»" --> H[Actualizada]
+  G -- No --> I[Creada]
+  H --> J[Las adaptaciones quedan<br/>anotadas en la fila del reporte]
+  I --> J

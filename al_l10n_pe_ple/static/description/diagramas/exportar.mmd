@@ -1,0 +1,12 @@
+flowchart TD
+  A[Perú ▸ Libros PLE ▸ Exportar PLE:<br/>ejercicio, indicador y formatos] --> B{¿Compañía de la<br/>localización peruana?}
+  B -- No --> X[Aviso: se detiene<br/>sin archivo]
+  B -- Sí --> C{¿Simplificado sin la marca de Ajustes,<br/>libro mensual sin mes o<br/>Libro 3 sin fecha de EEFF?}
+  C -- Sí --> X
+  C -- No --> D[Líneas de cada formato marcado:<br/>activos, capturas, albaranes o asientos]
+  D --> E{¿Falta un dato obligatorio<br/>o una línea no tiene los campos<br/>del Anexo 2?}
+  E -- Sí --> X
+  E -- No --> F[TXT con nombre oficial por formato<br/>y XLSX si «Incluir Excel»]
+  F --> G{¿Más de un archivo?}
+  G -- No --> H[Descarga del TXT]
+  G -- Sí --> I[Descarga de un ZIP]

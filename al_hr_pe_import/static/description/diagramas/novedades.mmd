@@ -1,0 +1,13 @@
+flowchart TD
+  A[Fila: documento, código de input y monto] --> B{¿Hay documento?}
+  B -- No --> S[Omitida]
+  B -- Sí --> C{¿Hay una sola boleta del lote<br/>para ese documento?}
+  C -- No --> X[Error]
+  C -- Sí --> D{¿Boleta en borrador<br/>o por verificar?}
+  D -- No --> X
+  D -- Sí --> E{¿Existe el código de input<br/>y lo permite la estructura?}
+  E -- No --> X
+  E -- Sí --> F{¿La boleta ya tiene ese input?}
+  F -- "Sí, sin «Actualizar existentes»" --> S
+  F -- "Sí, con «Actualizar existentes»" --> U[Actualizado: nuevo importe]
+  F -- No --> N[Creado: entrada salarial<br/>con el monto redondeado]

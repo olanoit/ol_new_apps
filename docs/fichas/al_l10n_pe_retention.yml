@@ -60,22 +60,65 @@ contexto:
     retenciones en el pago de Odoo 19 (`l10n_account_withholding_tax`), el mismo
     que emplean otras localizaciones. Actualizar Odoo no rompe el flujo.
 
+flujos_intro: >-
+  Los dos lados del régimen, de la factura a la declaración.
+flujos:
+  - id: compras
+    titulo: La empresa es agente de retención (compras)
+    texto: >-
+      La decisión se toma al publicar la factura de proveedor; la retención se
+      practica y se numera al pagar.
+    mermaid: |
+      flowchart TD
+        A[Factura de proveedor publicada] --> B{¿Sujeta a retención?}
+        B -- "No: total ≤ S/ 700, proveedor agente o buen contribuyente,<br/>boleta o detracción" --> C[Pago normal al proveedor]
+        B -- Sí --> D[Se añade el impuesto Retención IGV -3 %<br/>a las líneas, sin cambiar el total]
+        D --> E[Pagar: el asistente propone el 3 %<br/>del importe pagado]
+        E --> F[Asiento del pago: neto al banco<br/>y retención a la 4011x]
+        F --> G[Número R001-########<br/>y botón XML CRE]
+        G --> H[Resumen 626 del mes<br/>y marca en el PLE 8.3]
+    pie: Si el pago es parcial, cada pago retiene el 3 % de su propio importe.
+  - id: ventas
+    titulo: Un cliente agente nos retiene (ventas)
+    texto: >-
+      El cliente paga el neto y entrega su comprobante de retención; el importe
+      retenido pasa a ser crédito contra el IGV.
+    mermaid: |
+      flowchart TD
+        A[Factura de venta] --> B[Cliente agente paga el neto<br/>y entrega su comprobante]
+        B --> C[Perú ▸ Retenciones sufridas:<br/>número, fecha, factura y monto]
+        C --> D[Registrar: asiento 40114<br/>contra la cuenta por cobrar]
+        D --> E[Conciliado con la factura:<br/>el saldo baja]
+        E --> F[Crédito de IGV<br/>en la declaración]
+
 pasos_intro: >-
-  Recorrido completo con los datos de demostración: desde la configuración
-  hasta el resumen del mes.
+  Todas las funciones del módulo con los datos de demostración «DEMO RET»,
+  agrupadas por tarea.
 pasos:
+  - seccion: Configuración
+    texto: Una sola vez, antes de la primera factura.
   - titulo: Activar la empresa como agente de retención
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ Retenciones del IGV
     texto: >-
       Marque **Agente de retención del IGV** y revise la tasa (3 %) y el monto
-      mínimo (S/ 700). Elija el **impuesto de retención**: un impuesto de compras
-      negativo (-3 %) marcado como retención en el pago, con su cuenta 4011x y la
-      secuencia que numera los comprobantes.
+      mínimo (S/ 700). Elija el **impuesto de retención** y, si el método de
+      pago no tiene cuenta propia, la **cuenta transitoria**.
     puntos:
-      - La **cuenta transitoria** se usa cuando el método de pago no trae cuenta de pagos pendientes.
       - En el mismo bloque se configuran la cuenta y el diario de las **retenciones sufridas**.
     imagen: screenshots/01-ajustes.png
 
+  - titulo: Crear el impuesto de retención
+    ruta: Contabilidad ▸ Configuración ▸ Impuestos
+    texto: >-
+      Es un impuesto nativo de Odoo: **Tipo de impuesto** Compras, **Importe**
+      -3 %, casilla **Retención en el pago** marcada y la cuenta 4011x
+      «IGV – Retenciones por pagar» en la distribución. En **Opciones
+      avanzadas** se elige la secuencia que numera los comprobantes.
+    imagen: screenshots/08-impuesto.png
+    pie: "Impuesto «Retención IGV 3%»: compras, -3 %, retención en el pago y cuenta 401141."
+
+  - seccion: Compras — la empresa retiene
+    texto: El flujo diario del agente de retención.
   - titulo: La factura de proveedor detecta la retención
     ruta: Contabilidad ▸ Proveedores ▸ Facturas
     texto: >-
@@ -83,6 +126,9 @@ pasos:
       **Retención IGV 3%** a sus líneas **sin alterar el total**: la deuda con el
       proveedor sigue siendo el importe íntegro, porque la retención se practica
       al pagar.
+    puntos:
+      - "Solo facturas de proveedor (tipo `in_invoice`): las notas de crédito no retienen."
+      - El importe se compara con el mínimo en soles, también si la factura está en dólares.
     imagen: screenshots/02-factura.png
     pie: Factura de S/ 2.360,00 sujeta a retención; el total no cambia.
 
@@ -95,29 +141,53 @@ pasos:
     imagen: screenshots/03-registrar-pago.png
     pie: "Pago de S/ 5.900,00: retención S/ 177,00 y neto S/ 5.723,00."
 
+  - titulo: El asiento del pago
+    ruta: Pago ▸ Asiento contable ▸ Apuntes contables
+    texto: >-
+      El pago salda la cuenta del proveedor por el importe íntegro, envía el
+      neto a la cuenta de pagos y la retención a la 4011x. Las dos líneas de
+      **base** y **contrapartida** a la cuenta de gasto se anulan entre sí: el
+      marco nativo las usa para guardar la base de la retención.
+    imagen: screenshots/10-asiento-pago.png
+    pie: "Pago de la factura F00T-00000902 (S/ 1.770,00): S/ 1.716,90 al banco y S/ 53,10 a la 401141."
+
   - titulo: Comprobante numerado y XML CRE
     ruta: Pago ▸ XML CRE
     texto: >-
-      Al emitirse, el pago recibe el número de comprobante (R001-00000001) y el
-      botón **XML CRE** genera el Comprobante de Retención Electrónico en UBL,
-      listo para firmar y enviar por su OSE.
+      Al emitirse, el pago recibe el número de comprobante (R001-00000001) desde
+      la secuencia del impuesto, y el botón **XML CRE** genera el Comprobante de
+      Retención Electrónico en UBL, listo para firmar y enviar por su OSE.
     imagen: screenshots/04-pago-cre.png
 
   - titulo: Consultar las retenciones efectuadas
     ruta: Perú ▸ Retenciones IGV ▸ Retenciones efectuadas
     texto: >-
-      Todos los pagos con retención en una sola lista, con filtros y
+      Todos los pagos con número de comprobante de retención, con los filtros y
       agrupaciones estándar de Odoo.
     imagen: screenshots/05-efectuadas.png
 
-  - titulo: Registrar una retención sufrida
+  - seccion: Ventas — un cliente nos retiene
+    texto: Cuando la empresa es el proveedor retenido.
+  - titulo: Lista de retenciones sufridas
     ruta: Perú ▸ Retenciones IGV ▸ Retenciones sufridas
     texto: >-
-      Cuando un cliente agente paga neto, registre su comprobante: número,
-      fecha, factura y monto (propuesto al 3 %). Al **Registrar** se genera el
-      asiento a la cuenta 40114 contra el cliente, conciliado con la factura.
+      Cada comprobante recibido de un cliente agente, con su factura de venta,
+      el monto retenido y el estado (**Borrador** o **Registrado**).
+    imagen: screenshots/11-sufridas.png
+
+  - titulo: Registrar una retención sufrida
+    ruta: Retenciones sufridas ▸ Nuevo
+    texto: >-
+      Indique número, fecha, cliente, factura y monto (propuesto al 3 %). Al
+      **Registrar** se genera el asiento a la cuenta de retenciones sufridas
+      contra la cuenta por cobrar de la factura y se concilian. **Pasar a
+      borrador** deshace la conciliación y el asiento.
+    puntos:
+      - Si no configuró un diario, se usa el primer diario general de la compañía.
     imagen: screenshots/06-sufrida.png
 
+  - seccion: Declaración
+    texto: Lo que se lleva a SUNAT cada mes.
   - titulo: Generar el resumen del mes para el PDT 626
     ruta: Perú ▸ Retenciones IGV ▸ Resumen 626
     texto: >-
@@ -126,6 +196,94 @@ pasos:
       total retenido y el archivo para descargar. Si el mes no tiene
       retenciones, lo avisa en lugar de entregar un archivo vacío.
     imagen: screenshots/07-resumen-626.png
+
+  - titulo: Marca de retención en el PLE 8.3
+    ruta: Perú ▸ Libros PLE ▸ Exportar PLE ▸ 8.3 Compras Simplificado
+    texto: >-
+      Con `al_l10n_pe_ple` instalado, las compras sujetas a retención salen con
+      la marca de retención en el campo 26 del Registro de Compras Simplificado.
+      No requiere configuración.
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Ajustes de la compañía
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Retenciones del IGV
+    campos:
+      - [Agente de retención del IGV, "Activa el régimen: sin esta casilla ninguna factura retiene.", Desmarcado, Habilita el cálculo en facturas y pagos]
+      - ["Tasa de retención (%)", Porcentaje sobre el importe total de la operación (R.S. 033-2014/SUNAT)., "3,00", Estimación en la factura]
+      - ["Monto mínimo de retención (S/)", La operación retiene solo si su total en soles lo supera., "700,00", "Facturas iguales o menores no retienen"]
+      - [Impuesto de retención IGV, "Impuesto de compras con «Retención en el pago»: su cuenta y su secuencia.", Vacío, Obligatorio para publicar facturas sujetas]
+      - ["Cuenta transitoria (retenciones)", Cuenta de pagos que propone el asistente cuando el método de pago no tiene una., Vacío, Evita el error de cuenta obligatoria en el pago]
+      - [Cuenta de retenciones sufridas, Cuenta 40114 donde se acumula el crédito por retenciones de clientes., Vacío, Obligatoria para registrar sufridas]
+      - [Diario de retenciones sufridas, Diario general del asiento de la retención sufrida., Vacío, Si falta se usa el primer diario general]
+  - grupo: Factura de proveedor
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas
+    campos:
+      - [Sujeta a retención de IGV, "Calculado con el agente, el mínimo y las excepciones del proveedor y del documento.", Calculado, Al publicar añade el impuesto de retención]
+      - [Retención estimada, Tasa sobre el total en soles; es informativa., Calculado, La retención real se calcula en cada pago]
+  - grupo: Impuesto de retención
+    ruta: Contabilidad ▸ Configuración ▸ Impuestos
+    campos:
+      - [Tipo de impuesto, Debe ser Compras., "—", Solo así el módulo lo acepta en Ajustes]
+      - [Importe, Porcentaje negativo., "-3,0000 %", Resta la retención del pago]
+      - [Retención en el pago, Marca del marco nativo de retenciones., Desmarcado, "El impuesto no suma al total de la factura"]
+      - [Distribución de facturas, Cuenta de la línea «de impuesto»., "—", "Cuenta 4011x del asiento del pago"]
+      - [Secuencia, En Opciones avanzadas., "—", "Numera los comprobantes R001-########"]
+  - grupo: Pago
+    ruta: Contabilidad ▸ Proveedores ▸ Pagos
+    campos:
+      - [Nº comprobante de retención, Números de las líneas de retención del pago., Calculado, Filtra la lista de retenciones efectuadas]
+      - [Líneas de retención, "Número de secuencia, cuenta, base, impuesto e importe retenido.", Propuestas por el asistente, Generan la línea a la 4011x]
+  - grupo: Retención sufrida
+    ruta: Perú ▸ Retenciones IGV ▸ Retenciones sufridas
+    campos:
+      - [Nº comprobante de retención, "Número del comprobante que entrega el cliente (R###-…).", Vacío, Etiqueta de las líneas del asiento]
+      - [Fecha del comprobante, Fecha del asiento., Hoy, Periodo en que se registra el crédito]
+      - [Cliente (agente de retención), Cliente que retuvo., Vacío, Contacto del asiento]
+      - [Factura de venta, Factura cuyo saldo se reduce., Vacío, Se concilia con el asiento]
+      - [Monto retenido, Importe del comprobante., "3 % propuesto", Debe y haber del asiento]
+      - [Asiento, Asiento generado al registrar., Solo lectura, "Se deshace con «Pasar a borrador»"]
+  - grupo: Resumen 626
+    ruta: Perú ▸ Retenciones IGV ▸ Resumen 626
+    campos:
+      - [Ejercicio y Mes, Periodo de los pagos a incluir., Mes anterior, Filtra por fecha del pago]
+      - [Retenciones, Número de líneas del archivo., Calculado, "—"]
+      - [Total retenido, Suma de los importes retenidos del periodo., Calculado, "—"]
+      - [Archivo, TXT con una línea por retención., Generado, Soporte del PDT 626]
+
+asientos_intro: >-
+  Asientos reales de los datos de demostración, tal como los genera Odoo.
+asientos:
+  - titulo: Factura de proveedor sujeta a retención
+    referencia: DPSC/2026/07/0008
+    texto: >-
+      La factura se registra por su importe íntegro. El impuesto de retención
+      está en las líneas pero no genera apunte: se practica al pagar.
+    lineas:
+      - [6011000, Mercaderías — Servicio con retención, "2.000,00", ""]
+      - [4011100, IGV – Cuenta propia (IGV 18 %), "360,00", ""]
+      - [4212000, "Facturas por pagar — F00T-00000901", "", "2.360,00"]
+  - titulo: Pago con retención
+    referencia: PBNK1/2026/00001
+    texto: >-
+      Pago de la factura F00T-00000902 por S/ 1.770,00. El proveedor se salda
+      por el total, al banco va el neto y la retención queda por pagar a SUNAT.
+    lineas:
+      - [4212000, "Facturas por pagar — F00T-00000902", "1.770,00", ""]
+      - [104901, Pagos pendientes — neto al proveedor, "", "1.716,90"]
+      - [401141, IGV Retenciones por pagar — R001-00000002, "", "53,10"]
+      - [6011000, "Base de la retención (memoria del marco nativo)", "", "1.770,00"]
+      - [6011000, Contrapartida de la base, "1.770,00", ""]
+    nota: "Las dos líneas a la 6011000 se compensan: el gasto no cambia. 1.770,00 × 3 % = 53,10."
+  - titulo: Retención sufrida registrada
+    referencia: MISCE/2026/07/0007
+    texto: >-
+      El cliente DEMO retuvo S/ 106,20 sobre la factura DPSV/2026/00009. El
+      crédito de IGV sube y la cuenta por cobrar baja en el mismo importe.
+    lineas:
+      - [401142, IGV Retenciones sufridas — R777-00000055, "106,20", ""]
+      - [1213000, Facturas por cobrar — R777-00000055, "", "106,20"]
 
 funcionalidades:
   - grupo: Agente de retención (compras)

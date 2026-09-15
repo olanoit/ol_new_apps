@@ -1,0 +1,13 @@
+flowchart TD
+  A[Remuneración computable] --> B[+ 1/6 de la gratificación<br/>del semestre: julio o diciembre]
+  B --> C{Régimen laboral}
+  C -- General --> D[Monto por mes = ÷ 12]
+  C -- Pequeña empresa --> E[Monto por mes = ÷ 24]
+  D --> F[Monto por día = mes ÷ 30]
+  E --> F
+  F --> G[Descanso médico hasta 60 días<br/>suma días; el exceso se descuenta]
+  G --> H[Total = meses + días − faltas<br/>+ saldo reservado del semestre anterior]
+  H --> I{¿Menos de un mes?}
+  I -- Sí --> J[No se deposita:<br/>pasa al semestre siguiente]
+  I -- No --> K[Exportar CTS: entrada CTS<br/>de la boleta del lote]
+  H --> L[CTS en dólares = total ÷ tipo de cambio]

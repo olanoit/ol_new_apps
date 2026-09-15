@@ -1,0 +1,13 @@
+flowchart TD
+  A[Fila con número de documento] --> B{¿Un solo empleado con ese<br/>documento en la compañía?}
+  B -- No --> X[Error con sugerencia]
+  B -- Sí --> C{¿Qué importador?}
+  C -- Datos PE de versiones --> D[Escribe en la versión vigente<br/>solo las celdas con valor]
+  C -- Récord vacacional --> E{¿Ya tiene saldo inicial?}
+  E -- "Sí, sin «Actualizar existentes»" --> O[Omitido]
+  E -- "Sí, con «Actualizar existentes»" --> F[Reemplaza el saldo inicial]
+  E -- No --> G[Crea el saldo inicial]
+  C -- Adelantos --> H{¿Adelanto no pagado del mismo<br/>tipo y fecha de descuento?}
+  H -- "Sí, sin «Actualizar existentes»" --> O
+  H -- "Sí, con «Actualizar existentes»" --> I[Actualiza el adelanto]
+  H -- No --> J[Crea el adelanto]

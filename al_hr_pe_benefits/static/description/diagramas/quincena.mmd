@@ -1,0 +1,11 @@
+flowchart TD
+  A[Lote de subsidios del periodo] --> B[Procesar: suspensiones T21<br/>21 enfermedad y 22 maternidad]
+  B --> C[Traer información:<br/>12 meses de remuneraciones]
+  C --> D{¿Enfermedad que no supera<br/>los 20 días del empleador?}
+  D -- Sí --> E[Aviso: aún no corresponde subsidio]
+  D -- No --> F[Calcular subsidio:<br/>total ÷ 30 × meses con boleta]
+  F --> G[Reparto por periodos<br/>No pagado]
+  G --> H[Lote ▸ Importar subsidios]
+  I[Adelanto quincenal] --> J[Generar quincena:<br/>boletas de los contratos vigentes]
+  J --> K[Importar adelantos y préstamos<br/>de tipo quincena]
+  K --> L[Exportar quincena: neto quincenal<br/>como entrada de la boleta mensual]

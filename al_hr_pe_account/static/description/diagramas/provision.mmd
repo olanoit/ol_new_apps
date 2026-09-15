@@ -1,0 +1,10 @@
+flowchart TD
+  A[Provisión del lote: Procesar] --> B[Generar asiento]
+  B --> C[Por concepto: CTS, gratificación,<br/>bono extraordinario y vacaciones]
+  C --> D[Debe: gasto del concepto]
+  D --> E{¿Detallar provisión<br/>por trabajador?}
+  E -- Sí --> F[Haber: una línea por trabajador<br/>con su contacto]
+  E -- No --> G[Haber: una línea por cuenta]
+  F & G --> H[Asistente: totales y ajuste]
+  H --> I[Asiento publicado a fin del lote<br/>PROVISION + periodo]
+  I --> J[Provisión en estado Hecho<br/>y botón «Ver asiento»]

@@ -1,0 +1,9 @@
+flowchart TD
+  A[Ficha del empleado:<br/>apellidos, nombres, documento,<br/>sexo y nacimiento] --> B[Domicilio T-Registro<br/>con ubigeo]
+  B --> C[Versión: régimen T33, contrato T12,<br/>ocupación T30, T08, T15,<br/>AFP/ONP y seguro social]
+  C --> D[Establecimiento con código,<br/>estudios y cuenta de abono]
+  D --> E[Lista de empleados ▸ Acciones<br/>T-Registro: generar alta]
+  E --> F{¿Falta algún dato<br/>obligatorio?}
+  F -- Sí --> G[Aviso con la lista<br/>por trabajador] --> A
+  F -- No --> H[ZIP RP_RUC: .ide, .tra, .per<br/>y .est, .edu, .cta si aplican]
+  H --> I[Subir al PVS del T-Registro]

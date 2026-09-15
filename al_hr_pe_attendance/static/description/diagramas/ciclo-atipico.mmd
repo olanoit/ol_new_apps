@@ -1,0 +1,12 @@
+flowchart TD
+  A[Ciclo atípico:<br/>días de trabajo, descanso y horas por día] --> B{¿Promedio semanal ≤ 48 h<br/>y jornada ≤ 12 h?}
+  B -- No --> X[Error de validación:<br/>el ciclo no se guarda]
+  B -- Sí --> C[Asignación de ciclo:<br/>trabajador, plantilla, inicio y N° de ciclos]
+  C --> D{¿La plantilla dura más<br/>que las horas por día?<br/>¿Se superpone con otra asignación?}
+  D -- Sí --> Y[Error de validación]
+  D -- No --> E[Generar turnos]
+  E --> F{¿Choca con turnos<br/>ya existentes?}
+  F -- Sí --> Z[Aviso con las fechas en conflicto:<br/>no se crea ninguno]
+  F -- No --> G[Un turno en borrador por día de trabajo<br/>en la zona horaria del trabajador]
+  G --> H[Publicar en Planeación]
+  H --> I[Monitor: días de trabajo con turno<br/>y días de descanso del ciclo]

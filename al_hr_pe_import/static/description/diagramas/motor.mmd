@@ -1,0 +1,10 @@
+flowchart TD
+  A[Abrir el importador<br/>y subir el Excel .xlsx / .xlsm] --> B[Analizar archivo:<br/>detecta las hojas y propone una]
+  B --> C[Configurar: hoja, primera fila de datos,<br/>actualizar existentes y tamaño de lote]
+  C --> D{¿La hoja tiene filas?}
+  D -- No --> E[Aviso: la hoja no contiene filas válidas]
+  D -- Sí --> F[Importar: se crea el registro del historial<br/>y el proceso sigue en segundo plano]
+  F --> G[Cada fila se valida y se escribe aparte:<br/>creado, actualizado, omitido o error]
+  G --> H[Al cerrar cada lote se confirma lo importado<br/>y la barra de progreso avanza]
+  H --> I[Completado: reporte Excel<br/>con hojas Resultado, Errores y Omitidos]
+  I --> J[Corregir solo las filas con error<br/>y volver a subirlas]

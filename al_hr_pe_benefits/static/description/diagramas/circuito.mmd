@@ -1,0 +1,18 @@
+flowchart TD
+  A[Documento del periodo<br/>año, tipo y lote de nómina] --> B[Procesar]
+  B --> C[Borra las líneas<br/>sin «No recalcular»]
+  C --> D[Motor: boletas de los lotes del semestre<br/>por trabajador del lote de cierre]
+  D --> E[Meses y días laborados, faltas<br/>según los tipos de días configurados]
+  D --> F{¿La variable aparece<br/>3 o más veces?}
+  F -- Sí --> G[Promedio: suma ÷ 6<br/>o ÷ meses si ingresó después]
+  F -- No --> H[No entra en el promedio]
+  E --> I[Remuneración computable<br/>básico + asignación familiar + promedios]
+  G --> I
+  H --> I
+  I --> J[Una línea por trabajador]
+  J --> K{¿Ajuste manual?}
+  K -- Sí --> L[Editar la línea y marcar<br/>No recalcular]
+  K -- No --> M[Recalcular]
+  L --> N[Exportar]
+  M --> N
+  N --> O[Entradas en la boleta del trabajador<br/>y documento Exportado]

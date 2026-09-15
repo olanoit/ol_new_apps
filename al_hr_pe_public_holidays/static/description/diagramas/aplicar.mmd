@@ -1,0 +1,12 @@
+flowchart TD
+  A[Feriados seleccionados] --> B[Horarios de trabajo de las compañías<br/>activas y sin compañía]
+  B --> C[Para cada feriado y cada horario:<br/>rango en la zona horaria del horario]
+  C --> D{¿Día completo?}
+  D -- Sí --> E[00:00 a 23:59]
+  D -- No --> F[00:00 a la hora configurada]
+  E --> G{¿Ya hay descanso de ese<br/>feriado en ese horario?}
+  F --> G
+  G -- Sí --> H[Se actualiza:<br/>nombre, fechas y tipo de entrada]
+  G -- No --> I[Se crea el descanso global<br/>sin recurso]
+  H --> J[Aviso: descansos creados<br/>y actualizados, y nº de horarios]
+  I --> J

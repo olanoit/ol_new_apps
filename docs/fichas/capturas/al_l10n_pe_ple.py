@@ -1,10 +1,16 @@
-"""Capturas de la ficha de al_l10n_pe_ple (datos «DEMO PLE», ejercicio 2026)."""
+"""Capturas de la ficha de al_l10n_pe_ple (datos «DEMO PLE», ejercicio 2026).
+
+Solo lectura salvo el propio asistente «Exportar PLE» (modelo transitorio):
+ningún paso modifica registros de la base.
+"""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
 ALTO = {'width': 1440, 'height': 1400}
+# Bloques a ejecutar (todos por defecto): p. ej. ``... al_l10n_pe_ple.py 3 4``
+BLOQUES = {int(a) for a in sys.argv[1:]} or {1, 2, 3, 4}
 
 
 def escoger_anio(c, boton, pasos=1):
@@ -16,71 +22,119 @@ def escoger_anio(c, boton, pasos=1):
     c.esperar(1500)
 
 
-with Captura('al_l10n_pe_ple', viewport=ALTO) as c:
-    # 1. Asistente Exportar PLE con 7.1 y 4.1 generados (julio 2026)
-    c.abrir_accion('al_l10n_pe_ple.action_ple_export_wizard', ms=2000)
-    c.clic('.modal-dialog div[name=export_41] input', ms=600)
-    c.clic('.modal-dialog div[name=month] input', ms=500)
-    c.page.locator('.o_select_menu_item:has-text("07")').first.click()
-    c.esperar(400)
-    c.clic('.modal-dialog button[name=action_export]', ms=3000)
-    c.foto('01-exportar-ple', selector='.modal-content')
-    c.clic('.modal-header .btn-close', ms=800)
-
-    # 2. Pestaña PLE SUNAT del activo en arrendamiento financiero
-    c.abrir_registro('account.asset', 27, ms=2000)
-    c.texto('PLE SUNAT')
-    c.foto('02-activo-ple-sunat', selector='.o_form_view .o_form_sheet_bg')
-
-with Captura('al_l10n_pe_ple', viewport={'width': 1440, 'height': 760}) as c:
-    # 3. Registro de Activos Fijos en pantalla, con los botones del libro
-    c.abrir_accion('al_l10n_pe_ple.action_report_ple_asset_7_1', ms=3000)
-    escoger_anio(c, 'Al 31/12/2025')
-    c.clic('.o_control_panel .fa-cog', ms=800)
-    c.foto('03-libro7-pantalla')
-    c.page.keyboard.press('Escape')
-    c.esperar(500)
-
-    # 4. El mismo informe, bloque de uso, método y depreciación
-    c.js("document.querySelectorAll('*').forEach(e => {"
-         " if (e.scrollWidth > e.clientWidth + 50"
-         " && getComputedStyle(e).overflowX != 'visible') e.scrollLeft = 5000; })")
-    c.esperar(600)
-    c.foto('04-libro7-depreciacion')
-
-with Captura('al_l10n_pe_ple', viewport={'width': 1440, 'height': 700}) as c:
-    # 5. Captura del PLE 4.1
-    c.abrir_accion('al_l10n_pe_ple.action_ple_withholding', ms=2000)
-    c.foto('05-retenciones-41')
-
-    # 6. Patrimonio 3.19
-    c.abrir_accion('al_l10n_pe_ple.action_ple_equity', ms=2000)
-    c.foto('06-patrimonio-319')
-
-    # 7. Libro 10: elementos del costo por mes
-    c.abrir_accion('al_l10n_pe_ple.action_ple_cost_element', ms=2000)
-    c.foto('07-costos-102')
-
-with Captura('al_l10n_pe_ple') as c:
-    # 8. Albarán marcado como consignación (Libro 9)
-    c.abrir_registro('stock.picking', 176, ms=2000)
-    c.foto('08-consignacion', selector='.o_form_view .o_form_sheet_bg')
-
-    # 10. RCE 8.4 (septiembre 2026, periodo por defecto) con los botones TXT y XLSX
-    c.abrir_accion('al_l10n_pe_ple.action_report_ple_purchase_8_1', ms=3000)
-    c.clic('.o_control_panel .fa-cog', ms=800)
-    c.foto('10-rce-84')
-    c.page.keyboard.press('Escape')
-
-    # 11. Clasificación RCE en el producto «DEMO PLE Producto Consignado»
-    c.abrir_registro('product.template', 155, ms=2000)
-    c.texto('Contabilidad')
-    c.foto('11-producto-rce', selector='.o_form_view .o_form_sheet_bg')
-
-with Captura('al_l10n_pe_ple', viewport={'width': 1440, 'height': 420}) as c:
-    # 9. Ajustes: formatos simplificados
+def ajustes(c, bloque, nombre, alto):
+    c.page.set_viewport_size({'width': 1440, 'height': alto})
     c.abrir('/odoo/settings#al_account_base', ms=2500)
-    c.page.get_by_text('Libros electrónicos PLE', exact=True).first.evaluate(
+    c.page.get_by_text(bloque, exact=True).first.evaluate(
         "e => e.scrollIntoView({block: 'start'})")
     c.esperar(600)
-    c.foto('09-ajustes')
+    c.foto(nombre)
+    c.page.set_viewport_size(c.viewport)
+
+
+if 1 in BLOQUES:
+    with Captura('al_l10n_pe_ple', viewport=ALTO) as c:
+        # 01. Ajustes ▸ Perú: formatos simplificados
+        ajustes(c, 'Libros electrónicos PLE', '01-ajustes', 420)
+
+        # 02. Clasificación RCE en el producto «DEMO PLE Producto Consignado»
+        c.abrir_registro('product.template', 155, ms=2000)
+        c.texto('Contabilidad')
+        c.foto('02-producto-rce', selector='.o_form_view .o_form_sheet_bg')
+
+        # 03. Asistente Exportar PLE con 7.1 y 4.1 generados (julio 2026)
+        c.abrir_accion('al_l10n_pe_ple.action_ple_export_wizard', ms=2000)
+        c.clic('.modal-dialog div[name=export_41] input', ms=600)
+        c.clic('.modal-dialog div[name=month] input', ms=500)
+        c.page.locator('.o_select_menu_item:has-text("07")').first.click()
+        c.esperar(400)
+        c.clic('.modal-dialog button[name=action_export]', ms=3000)
+        c.foto('03-exportar-ple', selector='.modal-content')
+        c.clic('.modal-header .btn-close', ms=800)
+
+        # 04. El mismo asistente con el Libro 3 al 31/07/2026 (fecha de los
+        # registros DEMO de 3.8 y 3.19): aparecen Fecha de los EEFF y Oportunidad
+        c.abrir_accion('al_l10n_pe_ple.action_ple_export_wizard', ms=2000)
+        c.clic('.modal-dialog div[name=export_71] input', ms=500)
+        for campo in ('export_38', 'export_39', 'export_319'):
+            c.clic('.modal-dialog div[name=%s] input' % campo, ms=500)
+        # En Odoo 19 la fecha es un botón que se convierte en campo al pulsarlo
+        c.clic('.modal-dialog div[name=balance_date] button', ms=800)
+        fecha = c.page.locator('.modal-dialog div[name=balance_date] input').first
+        fecha.fill('31/07/2026')
+        fecha.press('Enter')
+        c.esperar(600)
+        c.clic('.modal-header', ms=600)
+        c.clic('.modal-dialog button[name=action_export]', ms=3000)
+        c.foto('04-exportar-libro3', selector='.modal-content')
+        c.clic('.modal-header .btn-close', ms=800)
+
+        # 05. Pestaña PLE SUNAT del activo en arrendamiento financiero
+        c.abrir_registro('account.asset', 27, ms=2000)
+        c.texto('PLE SUNAT')
+        c.foto('05-activo-ple-sunat', selector='.o_form_view .o_form_sheet_bg')
+
+        # 06. Pestaña PLE SUNAT del activo comprado en dólares (7.3)
+        c.abrir_registro('account.asset', 28, ms=2000)
+        c.texto('PLE SUNAT')
+        c.foto('06-activo-moneda-extranjera', selector='.o_form_view .o_form_sheet_bg')
+
+        # 16. Albarán marcado como consignación (Libro 9)
+        c.abrir_registro('stock.picking', 176, ms=2000)
+        c.foto('16-consignacion', selector='.o_form_view .o_form_sheet_bg')
+
+if 2 in BLOQUES:
+    with Captura('al_l10n_pe_ple', viewport={'width': 1440, 'height': 760}) as c:
+        # 07. Registro de Activos Fijos en pantalla, con los botones del libro
+        c.abrir_accion('al_l10n_pe_ple.action_report_ple_asset_7_1', ms=3000)
+        escoger_anio(c, 'Al 31/12/2025')
+        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.foto('07-libro7-pantalla')
+        c.page.keyboard.press('Escape')
+        c.esperar(500)
+
+        # 08. El mismo informe, bloque de uso, método y depreciación
+        c.js("document.querySelectorAll('*').forEach(e => {"
+             " if (e.scrollWidth > e.clientWidth + 50"
+             " && getComputedStyle(e).overflowX != 'visible') e.scrollLeft = 5000; })")
+        c.esperar(600)
+        c.foto('08-libro7-depreciacion')
+
+if 3 in BLOQUES:
+    with Captura('al_l10n_pe_ple', viewport={'width': 1440, 'height': 700}) as c:
+        # 09-15. Listas de captura
+        for nombre, accion in (
+                ('09-retenciones-41', 'action_ple_withholding'),
+                ('10-inversiones-38', 'action_ple_investment'),
+                ('11-patrimonio-319', 'action_ple_equity'),
+                ('12-costo-ventas-101', 'action_ple_cost_sales'),
+                ('13-costos-102', 'action_ple_cost_element'),
+                ('14-costo-produccion-103', 'action_ple_cost_production'),
+                ('15-centros-costos-104', 'action_ple_cost_center')):
+            c.abrir_accion('al_l10n_pe_ple.%s' % accion, ms=2000)
+            c.foto(nombre)
+
+if 4 in BLOQUES:
+    with Captura('al_l10n_pe_ple') as c:
+        # 19. Menú Libros PLE con el submenú de reportes nativos
+        c.abrir_accion('al_l10n_pe_ple.action_ple_withholding', ms=2000)
+        c.clic('.o_main_navbar button:has-text("Libros PLE"), '
+               '.o_main_navbar a:has-text("Libros PLE")', ms=900)
+        menu = c.page.locator('.o-dropdown--menu').first
+        caja = menu.bounding_box()
+        c.foto('19-menu-libros-ple', clip={
+            'x': max(caja['x'] - 260, 0), 'y': 0,
+            'width': caja['width'] + 520, 'height': caja['y'] + caja['height'] + 16})
+        c.page.keyboard.press('Escape')
+
+        # 17. RCE 8.4 (septiembre 2026, periodo por defecto) con los botones TXT y XLSX
+        c.abrir_accion('al_l10n_pe_ple.action_report_ple_purchase_8_1', ms=3000)
+        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.foto('17-rce-84')
+        c.page.keyboard.press('Escape')
+
+        # 18. RVIE 14.4 (septiembre 2026) con el botón XLSX RVIE 14.4
+        c.abrir_accion('al_l10n_pe_ple.action_report_ple_sales_14_1', ms=3000)
+        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.foto('18-rvie-144')
+        c.page.keyboard.press('Escape')

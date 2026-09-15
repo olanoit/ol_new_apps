@@ -1,0 +1,16 @@
+flowchart TD
+  A[Turno publicado o<br/>día de descanso del ciclo] --> B{¿Hay marcación<br/>de entrada ese día?}
+  B -- Sí --> C{¿Feriado?}
+  C -- Sí --> C1[Feriado trabajado]
+  C -- No --> C2{¿Descanso del ciclo?}
+  C2 -- Sí --> C3[Descanso trabajado]
+  C2 -- No --> C4[Asistió]
+  B -- No --> D{¿Ausencia validada?}
+  D -- Sí --> D1{¿Tipo marcado<br/>Es vacaciones Perú?}
+  D1 -- Sí --> D2[Vacaciones]
+  D1 -- No --> D3[Justificada]
+  D -- No --> E{¿Feriado?}
+  E -- Sí --> E1[Día feriado]
+  E -- No --> F{¿Descanso del ciclo?}
+  F -- Sí --> F1[Día de descanso]
+  F -- No --> F2[Falta: botón Reg. ausencia]

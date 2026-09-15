@@ -6,7 +6,7 @@ subtitulo: >-
   la API.
 categoria: Localización Perú · Contabilidad
 etiquetas: [RVIE, RCE, API SIRE, Carga manual, CAR SUNAT, TXT de reemplazo, Preliminar]
-portada: screenshots/04-rvie-diferencias.png
+portada: screenshots/08-rvie-diferencias.png
 
 destacados_intro: >-
   Todo el ciclo mensual del SIRE en un solo registro por periodo, con la
@@ -62,10 +62,79 @@ contexto:
     API sigue los manuales oficiales de servicios web SIRE (Compras y Ventas
     v22); conviene estrenarla con un periodo de prueba.
 
+flujos_intro: >-
+  Los tres tramos de un periodo: traer la propuesta, compararla y declarar.
+flujos:
+  - id: propuesta
+    titulo: Obtener la propuesta de SUNAT
+    texto: >-
+      Por la API, la propuesta se pide y se descarga en dos tiempos, porque
+      SUNAT la prepara de forma asíncrona con un ticket. Sin credenciales, se
+      sube el TXT exportado desde SOL.
+    mermaid: |
+      flowchart TD
+        A[Nuevo periodo: Año y Mes<br/>uno por mes y compañía] --> B{¿Carga manual?}
+        B -- Sí --> C[Subir el TXT exportado de SOL<br/>en «TXT propuesta SIRE»]
+        C --> D[Confirmar TXT manual]
+        B -- No --> E[Solicitar propuesta:<br/>token con clave SOL y credenciales API]
+        E --> F[Propuesta solicitada<br/>con número de ticket]
+        F --> G[Consultar ticket]
+        G --> H{¿Estado 06 - Terminado?}
+        H -- No --> G
+        H -- Sí --> I[Descargar propuesta:<br/>el TXT sale del ZIP de SUNAT]
+        D --> J[Propuesta descargada]
+        I --> J
+    pie: Sin credenciales en Ajustes, los botones de la API se detienen con un aviso que lista las que faltan.
+
+  - id: comparacion
+    titulo: Desplegar y comparar
+    texto: >-
+      Los dos lados se convierten en líneas con las mismas columnas y se cruzan
+      por CAR SUNAT; solo se comparan los campos activos del registro.
+    mermaid: |
+      flowchart TD
+        A[Propuesta descargada] --> B{¿Cada fila del TXT tiene<br/>las columnas mínimas?}
+        B -- No --> X[Aviso con la línea<br/>y el número de columnas]
+        B -- Sí --> C[Desplegar SIRE:<br/>una línea por comprobante]
+        C --> D[Desplegar sistema: facturas publicadas<br/>y anuladas del mes]
+        D --> E[Comparar por CAR SUNAT]
+        E --> F{¿El CAR está en los dos lados?}
+        F -- Solo en la propuesta --> G[Solo en SIRE]
+        F -- Solo en Odoo --> H[Solo en Sistema]
+        F -- En los dos --> I{¿Algún campo activo<br/>distinto?}
+        I -- No --> J[Correcto]
+        I -- Sí --> K[No cuadran, con el detalle<br/>SIRE=… / Sistema=…]
+    pie: "RVIE: facturas y notas de cliente por fecha de emisión. RCE: facturas y notas de proveedor por fecha contable."
+
+  - id: envio
+    titulo: Declarar el periodo
+    texto: >-
+      Con el periodo comparado se revisa en XLSX y se decide: aceptar la
+      propuesta, enviar el reemplazo por la API o cargarlo por fuera en SOL.
+    mermaid: |
+      flowchart TD
+        A[Periodo comparado:<br/>Descargar XLSX y TXT de reemplazo] --> B{¿Cómo se declara?}
+        B -- Aceptar propuesta --> C{¿La comparación encontró<br/>diferencias?}
+        C -- Sí --> X[Rechazado: corregir las facturas<br/>o enviar el reemplazo]
+        C -- No --> D[Aceptación por la API]
+        B -- Enviar reemplazo --> E[ZIP del TXT de reemplazo<br/>por carga TUS]
+        B -- "Por fuera, en SOL" --> M[Marcar realizado]
+        D --> F[Enviado a SUNAT:<br/>ticket del envío]
+        E --> F
+        F --> G[Consultar envío]
+        G --> H[Registrar preliminar]
+        H --> I[Realizado]
+        M --> I
+        I --> J[Generación del registro<br/>en el portal de SUNAT]
+    pie: Solo se admite un envío por periodo y, tras enviarlo, Reiniciar queda bloqueado.
+
 pasos_intro: >-
-  Recorrido con el periodo RVIE de agosto de 2026 en carga manual, con una
-  propuesta de ejemplo, y el RCE de julio de 2026.
+  Todas las funciones con los datos de demostración: el RVIE de agosto de 2026
+  comparado contra una propuesta de ejemplo, el RVIE de julio con la propuesta
+  desplegada y el RCE de julio de 2026. Ninguna captura llama a SUNAT.
 pasos:
+  - seccion: Configuración
+    texto: Una sola vez por compañía.
   - titulo: Configurar las credenciales de la API
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ SIRE (RVIE / RCE)
     texto: >-
@@ -75,84 +144,233 @@ pasos:
     puntos:
       - La compañía debe tener RUC de 11 dígitos.
       - Sin credenciales solo está disponible la carga manual; el resto del flujo es idéntico.
+      - El token de acceso se guarda con su caducidad y se reutiliza en las llamadas siguientes.
     imagen: screenshots/01-ajustes.png
 
-  - titulo: Crear el periodo
+  - titulo: Elegir qué campos se comparan
+    ruta: "Perú ▸ Configuración ▸ Tributos SUNAT ▸ SIRE: campos de comparación"
+    texto: >-
+      Cada fila activa una columna del cruce, agrupadas por registro (RCE —
+      Compras y RVIE — Ventas); el asa ordena el detalle de diferencias.
+      Vienen activos 16 campos del RCE y 19 del RVIE: fechas, tipo, serie y
+      número, documento del socio, importes, moneda y estado. La razón social,
+      el tipo de cambio, la fecha de vencimiento y otros campos ruidosos vienen
+      archivados.
+    puntos:
+      - Solo lo ven los administradores de Contabilidad.
+    imagen: screenshots/02-campos-comparacion.png
+
+  - titulo: Clasificar los bienes y servicios en la compra
+    ruta: Factura de proveedor ▸ Otra información ▸ SIRE (PE)
+    texto: >-
+      **Clasificación de bienes y servicios** alimenta la columna «Clasif de
+      Bss y Sss» de las líneas del sistema del RCE: mercadería, activo fijo,
+      otros activos, gastos de educación, recreación, salud y culturales, u
+      otros gastos. Solo aparece en facturas y notas de proveedor.
+    imagen: screenshots/03-factura-clasificacion.png
+
+  - seccion: Propuesta
+    texto: Traer a Odoo lo que SUNAT tiene registrado para el mes.
+  - titulo: Crear el periodo y pedir la propuesta por la API
     ruta: Perú ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo
     texto: >-
-      Indique **Año** y **Mes**; el nombre se forma solo (RVIE-09-2026). Con la
-      API, el botón **Solicitar propuesta** pide la exportación a SUNAT y
-      devuelve un ticket: **Consultar ticket** refresca su estado y, al quedar
-      Terminado, aparece **Descargar propuesta**.
+      Indique **Año** y **Mes**; el nombre se forma solo (RVIE-09-2026).
+      **Solicitar propuesta** pide la exportación a SUNAT y guarda el ticket;
+      **Consultar ticket** refresca su estado y, al quedar en 06 - Terminado,
+      aparece **Descargar propuesta**, que deja el TXT en el periodo.
     puntos:
-      - "Marque **Carga manual** para subir el TXT exportado de SOL en **TXT propuesta SIRE** y pulse **Confirmar TXT manual**."
       - Solo puede existir un periodo por mes y compañía en cada registro.
-    imagen: screenshots/02-nuevo-periodo.png
+      - Año, mes y compañía solo se editan en Borrador.
+    imagen: screenshots/04-nuevo-periodo-api.png
+
+  - titulo: Cargar la propuesta a mano
+    ruta: Perú ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo ▸ Carga manual
+    texto: >-
+      Marque **Carga manual**, suba el TXT exportado desde SOL en **TXT
+      propuesta SIRE** y pulse **Confirmar TXT manual**: el periodo pasa a
+      Propuesta descargada con el ticket «Carga manual». El Registro de Compras
+      funciona igual desde Perú ▸ SIRE ▸ Compras (RCE).
+    imagen: screenshots/05-nuevo-periodo-manual.png
 
   - titulo: Seguir el avance de cada periodo
     ruta: Perú ▸ SIRE ▸ Ventas (RVIE)
     texto: >-
       La lista muestra el estado de cada periodo: Borrador, Propuesta
       solicitada, Propuesta descargada, SIRE desplegado, Sistema desplegado,
-      Comparado, Enviado a SUNAT y Realizado. El estado del ticket se ve en la
-      misma fila.
-    imagen: screenshots/03-periodos.png
+      Comparado, Enviado a SUNAT y Realizado, con el estado del ticket en la
+      misma fila. Filtros **Pendientes** y **Realizados**, y agrupación por año
+      o estado.
+    imagen: screenshots/06-periodos.png
 
-  - titulo: Desplegar, comparar y revisar las diferencias
-    ruta: Periodo ▸ Desplegar SIRE ▸ Desplegar sistema ▸ Comparar
+  - seccion: Comparación
+    texto: Los dos lados con las mismas columnas, cruzados por CAR SUNAT.
+  - titulo: Desplegar la propuesta
+    ruta: Periodo ▸ Desplegar SIRE
     texto: >-
-      **Desplegar SIRE** convierte la propuesta en líneas; **Desplegar
-      sistema** construye las mismas columnas desde las facturas del periodo;
-      **Comparar** cruza ambos lados por CAR SUNAT. El **Resumen de la
+      Convierte cada fila del TXT (sin la cabecera) en una línea de la pestaña
+      **SIRE**. Si una fila tiene menos columnas de las esperadas —40 en el
+      RVIE, 41 en el RCE— se detiene indicando la línea. El siguiente botón es
+      **Desplegar sistema**.
+    imagen: screenshots/07-rvie-sire-desplegado.png
+    pie: "RVIE-07-2026: la propuesta de ejemplo trae un comprobante de S/ 2.950,00."
+
+  - titulo: Comparar y revisar las diferencias
+    ruta: Periodo ▸ Desplegar sistema ▸ Comparar
+    texto: >-
+      **Desplegar sistema** construye las mismas columnas desde las facturas
+      del periodo y **Comparar** cruza ambos lados. El **Resumen de la
       comparación** da los totales y la pestaña **Diferencias** lista cada
       comprobante con su estado y los campos que no coinciden.
     puntos:
-      - "RVIE: facturas y notas de crédito de cliente por fecha de emisión (excluye notas de venta)."
-      - "RCE: facturas y notas de proveedor por fecha contable (excluye recibos por honorarios y no domiciliados)."
-      - "**Descargar XLSX** y **TXT de reemplazo** quedan disponibles desde el estado Comparado."
-    imagen: screenshots/04-rvie-diferencias.png
+      - "Importes en soles con el tipo de cambio del asiento; notas de crédito en negativo y anuladas en cero."
+      - "Si dos comprobantes de Odoo tienen el mismo CAR, el segundo queda marcado con el aviso «CAR SUNAT repetido en el sistema»."
+    imagen: screenshots/08-rvie-diferencias.png
     pie: "Agosto 2026: 2 correctas, 1 no cuadra, 1 solo en SIRE y 1 solo en el sistema."
 
-  - titulo: Decidir el envío
-    ruta: Periodo ▸ Aceptar propuesta / Enviar reemplazo
-    texto: >-
-      **Aceptar propuesta** da por buena la propuesta de SUNAT y solo se
-      permite si la comparación no encontró diferencias: con diferencias, el
-      módulo lo rechaza y explica por qué. **Enviar reemplazo** sube por la API
-      el mismo ZIP del TXT de reemplazo. Después, **Consultar envío** y
-      **Registrar preliminar**.
-    puntos:
-      - Los dos envíos son excluyentes y solo se admite uno por periodo.
-      - Tras el envío, **Reiniciar** queda bloqueado.
-      - "**Marcar realizado** cierra el periodo cuando el envío se hizo por fuera (p. ej. cargando el TXT en SOL)."
-    imagen: screenshots/05-aceptar-con-diferencias.png
-
-  - titulo: Revisar lo que Odoo declara
+  - titulo: Revisar lo que Odoo declara en el RCE
     ruta: Perú ▸ SIRE ▸ Compras (RCE) ▸ pestaña Sistema
     texto: >-
-      La pestaña **Sistema** muestra cada comprobante tal como saldría en el
-      reemplazo: fecha, tipo, serie, número, documento y razón social del
-      proveedor, bases, IGV, total, moneda y estado, con el comprobante de
-      Odoo del que sale.
-    imagen: screenshots/06-rce-sistema.png
+      Cada comprobante tal como saldría en el reemplazo: fecha, tipo, serie,
+      número, documento y razón social del proveedor, base e IGV de
+      operaciones gravadas, valor no gravado, total, moneda y estado, con el
+      comprobante de Odoo del que sale. El RCE excluye los recibos por
+      honorarios (02) y los no domiciliados (91, 97 y 98).
+    imagen: screenshots/09-rce-sistema.png
 
-  - titulo: Elegir qué campos se comparan
+  - titulo: Diferencias del RCE
+    ruta: Perú ▸ SIRE ▸ Compras (RCE) ▸ pestaña Diferencias
+    texto: >-
+      Los comprobantes que Odoo tiene y la propuesta no aparecen como **Solo
+      en Sistema**, con enlace a la factura para revisarla.
+    imagen: screenshots/10-rce-diferencias.png
+    pie: "Julio 2026: la propuesta de ejemplo trae 1 comprobante, que cuadra; Odoo tiene 6 más."
+
+  - seccion: Exportación y envío
+    texto: Revisar, decidir y declarar.
+  - titulo: Descargar el XLSX y el TXT de reemplazo
+    ruta: Periodo ▸ Descargar XLSX / TXT de reemplazo
+    texto: >-
+      Disponibles desde el estado Comparado. **Descargar XLSX** entrega un
+      libro con las hojas **SIRE** y **Sistema** y una cabecera por columna.
+      **TXT de reemplazo** entrega un ZIP con el TXT de importación de las
+      líneas del sistema y el nombre oficial, listo para cargar en SOL.
+
+  - titulo: Aceptar la propuesta solo si todo cuadra
+    ruta: Periodo ▸ Aceptar propuesta
+    texto: >-
+      **Aceptar propuesta** pide confirmación y solo se permite si la
+      comparación no encontró diferencias: con diferencias, el módulo lo
+      rechaza antes de conectarse con SUNAT y dice cuántas hay de cada tipo.
+    imagen: screenshots/11-aceptar-con-diferencias.png
+
+  - titulo: Enviar el reemplazo por la API
+    ruta: Periodo ▸ Enviar reemplazo
+    texto: >-
+      Tras confirmar, sube por la API el mismo ZIP del TXT de reemplazo y guarda
+      el ticket del envío: el periodo pasa a **Enviado a SUNAT** y el grupo
+      **Envío a SUNAT** muestra el tipo de envío, el ticket y su estado.
+    puntos:
+      - Aceptar y reemplazar son excluyentes; un segundo envío se rechaza mostrando el ticket del primero.
+      - Cada envío queda anotado en el historial del periodo.
+    imagen: screenshots/12-confirmar-reemplazo.png
+
+  - titulo: Consultar el envío y registrar el preliminar
+    ruta: Periodo ▸ Consultar envío / Registrar preliminar
+    texto: >-
+      **Consultar envío** refresca el estado del ticket. **Registrar
+      preliminar** deja el preliminar registrado en SUNAT, marca **Preliminar
+      registrado** y cierra el periodo como **Realizado**. La generación del
+      registro se completa en el portal de SUNAT.
+
+  - titulo: Cerrar o rehacer un periodo
+    ruta: Periodo ▸ Marcar realizado / Reiniciar
+    texto: >-
+      **Marcar realizado** cierra un periodo comparado o enviado cuando la
+      declaración se hizo por fuera, por ejemplo cargando el TXT en SOL.
+      **Reiniciar** borra las líneas desplegadas para volver a empezar, pero
+      queda bloqueado si el periodo ya tiene un envío. Un periodo Realizado no
+      se puede eliminar.
+
+campos_intro: >-
+  Las pantallas del módulo y, al final, de dónde sale cada columna de las
+  líneas del sistema.
+campos:
+  - grupo: Ajustes de la compañía
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ SIRE (RVIE / RCE)
+    campos:
+      - [Usuario SOL (SIRE), Usuario secundario SOL con permisos SIRE., Vacío, "Se envía como RUC + usuario"]
+      - [Clave SOL (SIRE), Clave del usuario (oculta)., Vacío, Obligatoria para la API]
+      - [Client ID API SIRE, Credencial de SOL ▸ Credenciales de API SUNAT., Vacío, Obligatoria para la API]
+      - [Client Secret API SIRE, Secreto de la credencial (oculto)., Vacío, Obligatorio para la API]
+  - grupo: Campos de comparación
     ruta: "Perú ▸ Configuración ▸ Tributos SUNAT ▸ SIRE: campos de comparación"
+    campos:
+      - [Registro, RCE — Compras o RVIE — Ventas., Vacío, "Obligatorio; a qué periodos aplica"]
+      - [Columna, Nombre que aparece en el detalle de diferencias., Vacío, "Texto del «Columna: SIRE=… / Sistema=…»"]
+      - [Campo técnico, Campo de las líneas SIRE y Sistema., Vacío, "Único por registro"]
+      - [Secuencia (asa), Orden del detalle., "10", Orden de las diferencias]
+      - [Activo, Incluye el campo en el cruce., Marcado, "Archivado no se compara"]
+  - grupo: Factura de proveedor
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ Otra información ▸ SIRE (PE)
+    campos:
+      - [Clasificación de bienes y servicios, "Cinco opciones, de mercadería a otros gastos.", Vacío, "Columna «Clasif de Bss y Sss» del RCE"]
+  - grupo: Periodo RVIE / RCE
+    ruta: Perú ▸ SIRE ▸ Ventas (RVIE) · Compras (RCE)
+    campos:
+      - [Nombre, Registro + mes + año., Calculado, "RVIE-08-2026"]
+      - [Año, Año del periodo., Año en curso, "Obligatorio; editable solo en Borrador"]
+      - [Mes, Mes del periodo (Enero a Diciembre)., Mes en curso, "Un periodo por mes y compañía"]
+      - [Compañía, Compañía del periodo (multicompañía)., Compañía activa, RUC de la API y del archivo]
+      - [Carga manual, Subir el TXT en lugar de usar la API., Desmarcado, "Cambia «Solicitar propuesta» por «Confirmar TXT manual»"]
+      - [Ticket de propuesta, Ticket devuelto por SUNAT., Vacío, "«Carga manual» en ese modo"]
+      - [Estado del ticket, "00 Fallo a 06 Terminado.", Vacío, "Con 06 aparece Descargar propuesta"]
+      - [Archivo del reporte, Nombre del reporte que devuelve SUNAT., Vacío, Se usa al descargar]
+      - [TXT propuesta SIRE, TXT de la propuesta., Vacío, "Editable en Borrador y Propuesta descargada"]
+      - [Estado, Avance del periodo (8 estados)., Borrador, Decide los botones visibles]
+  - grupo: Envío a SUNAT
+    ruta: Periodo ▸ grupo Envío a SUNAT
+    texto: Visible cuando el periodo tiene un envío; todos son de solo lectura.
+    campos:
+      - [Envío, Propuesta aceptada o Propuesta reemplazada., Vacío, "Un solo envío por periodo"]
+      - [Ticket del envío, Ticket de la aceptación o del reemplazo., Vacío, Bloquea Reiniciar y otro envío]
+      - [Estado del envío, Estado del ticket del envío., "01 al enviar", Se refresca con Consultar envío]
+      - [Preliminar registrado, Marca del preliminar., Desmarcado, "Al marcarse, el periodo queda Realizado"]
+  - grupo: Resumen de la comparación
+    ruta: Periodo ▸ grupo Resumen de la comparación
+    texto: Visible desde SIRE desplegado.
+    campos:
+      - [Comprobantes en la propuesta, Líneas de la pestaña SIRE., Calculado, "—"]
+      - [Comprobantes en el sistema, Líneas de la pestaña Sistema., Calculado, "—"]
+      - [Correctas, Líneas de la propuesta que cuadran., Calculado, "—"]
+      - [No cuadran, Líneas de la propuesta con algún campo distinto., Calculado, "Impiden aceptar la propuesta"]
+      - [Solo en SIRE, Comprobantes que Odoo no tiene., Calculado, "Impiden aceptar la propuesta"]
+      - [Solo en el sistema, Comprobantes que la propuesta no tiene., Calculado, "Impiden aceptar la propuesta"]
+  - grupo: Líneas (pestañas SIRE, Sistema y Diferencias)
+    ruta: Periodo ▸ pestañas
+    campos:
+      - [Comparación, "Correcto, No cuadran, Solo en SIRE o Solo en Sistema.", Vacío, Color de la fila en Diferencias]
+      - [Origen, SIRE o Sistema., "—", "—"]
+      - [Comprobante, Factura de Odoo de la línea del sistema., "—", Enlace a la factura]
+      - [Diferencias, "Detalle «Columna: SIRE=… / Sistema=…» por campo.", Vacío, "También el aviso de CAR repetido"]
+      - [Estado CP, "1 Aceptado, 2 Anulado o 3 Desconocido.", "—", "En el sistema, 2 si la factura está cancelada"]
+  - grupo: "Columnas del sistema — de dónde salen"
     texto: >-
-      Cada fila activa una columna del cruce, agrupadas por registro (RCE —
-      Compras y RVIE — Ventas); la secuencia ordena el detalle de diferencias.
-      Por defecto se comparan fechas, tipo, serie y número, documento del
-      socio, importes y estado; los campos ruidosos, como la razón social o el
-      tipo de cambio, vienen archivados.
-    imagen: screenshots/07-campos-comparacion.png
-
-  - titulo: Clasificar los bienes y servicios en la compra
-    ruta: Factura de proveedor ▸ Otra información ▸ SIRE (PE)
-    texto: >-
-      El campo **Clasificación de bienes y servicios** alimenta la columna de
-      clasificación del RCE: mercadería, activo fijo, otros activos, gastos de
-      educación, recreación, salud y culturales, u otros gastos.
-    imagen: screenshots/08-factura-clasificacion.png
+      **Campo** es la columna de la línea, **Qué hace** el dato de Odoo del que
+      sale, **Por defecto** lo que se usa si falta y **Efecto** la regla
+      aplicada.
+    campos:
+      - [CAR SUNAT, "RUC del emisor (11) + tipo (2) + serie (4) + número (10).", Rellenado con ceros, "En el RCE, tipos 46 y 50 a 54 usan el RUC de la compañía"]
+      - ["Tipo CP, Serie y Nro CP", "Tipo de documento y número de documento (serie-número).", "—", Número sin ceros a la izquierda]
+      - ["Tipo y Nro Doc Identidad, Razón social", Tipo de identificación y documento del cliente o proveedor., Vacío, "—"]
+      - ["BI Gravada / BI Gravado DG", Líneas de producto con afectación gravada., "0,00", "Con signo; anuladas en cero"]
+      - ["Mto Exonerado, Mto Inafecto, Valor Facturado Exportación", "Afectación 20-21, 30-37 y 40 del impuesto.", "0,00", "En el RCE, exonerado + inafecto = Valor Adq. NG"]
+      - ["IGV/IPM, ISC, ICBPER, Otros Trib/Cargos", Apuntes de impuesto según su grupo., "0,00", "—"]
+      - ["Dscto BI y Dscto IGV/IPM (RVIE)", Nota de crédito de un comprobante de otro mes., "0,00", "Base e IGV van a descuento"]
+      - [Valor Op. Gratuitas (RVIE), Líneas con impuesto de código 9996., "0,00", "—"]
+      - ["Total CP, Moneda, Tipo de cambio", "Total en soles, moneda y TC implícito del asiento.", "TC 0 en soles", "—"]
+      - ["Datos del documento modificado", Factura revertida o de origen de la nota de débito., Vacío, "Solo en notas (07; 08 en el RVIE)"]
+      - [Tipo de nota, Motivo de la nota de crédito., Vacío, Solo en tipo 07]
+      - ["Detracción (RCE)", Marca de detracción de la factura., "No", Con el módulo de detracciones]
 
 funcionalidades:
   - grupo: Propuesta
@@ -161,6 +379,7 @@ funcionalidades:
       - Descarga de la propuesta cuando el ticket queda Terminado.
       - Carga manual del TXT exportado desde SUNAT Operaciones en Línea.
       - Validación del número de columnas de cada línea del TXT.
+      - Token de acceso reutilizado mientras no caduca.
   - grupo: Comparación
     items:
       - Líneas del sistema desde las facturas publicadas y anuladas del periodo.
@@ -177,7 +396,7 @@ funcionalidades:
       - TXT de reemplazo en ZIP con el nombre oficial.
       - Aceptación de la propuesta, solo sin diferencias.
       - Envío del reemplazo por la API (carga TUS) con los códigos del manual oficial.
-      - Consulta del envío y registro del preliminar.
+      - Consulta del envío y registro del preliminar, con constancia en el historial.
       - Un único envío por periodo y periodo realizado protegido contra borrado.
 
 ejemplos:
@@ -198,10 +417,18 @@ ejemplos:
     texto: >-
       El ZIP contiene un TXT con el nombre oficial: `LE` + RUC + periodo
       (AAAAMM) + `00` + código de libro (`140400` en el RVIE, `080400` en el
-      RCE) + `021112`.
+      RCE) + `021112`. El XLSX se llama `RVIE_08_2026.xlsx`.
     codigo: |
       LE2051252845820260800140400021112.zip   (RVIE, agosto 2026)
       LE2051252845820260700080400021112.zip   (RCE, julio 2026)
+
+  - titulo: Datos que se envían por la API
+    tabla:
+      - [Operación, RVIE, RCE]
+      - [Código de libro de la carga, "140000", "080000"]
+      - [Proceso de reemplazo, "3", "61"]
+      - [Columnas mínimas de la propuesta, "40", "41"]
+      - [Origen del envío, "2 - servicio web", "2 - servicio web"]
 
 configuracion_intro: >-
   El módulo incluye un script de datos de demostración que crea un periodo
@@ -221,17 +448,21 @@ faq:
     respuesta: >-
       Sí. Marque Carga manual, suba el TXT de la propuesta exportado desde SOL
       y siga el mismo flujo; al final descargue el TXT de reemplazo y cárguelo
-      en SOL.
+      en SOL, y cierre el periodo con Marcar realizado.
   - pregunta: ¿Por qué no me deja aceptar la propuesta?
     respuesta: >-
       Porque la comparación encontró comprobantes que no cuadran o que solo
       están en un lado. Aceptar declararía lo que el propio sistema marca como
-      incorrecto: corrija las facturas y vuelva a comparar, o envíe el
-      reemplazo.
+      incorrecto: corrija las facturas, reinicie y vuelva a comparar, o envíe
+      el reemplazo.
   - pregunta: ¿Qué significa «Solo en SIRE»?
     respuesta: >-
       SUNAT tiene un comprobante que Odoo no registró en ese periodo: una
       factura que falta, se publicó en otro mes o tiene otra serie o número.
+  - pregunta: Una factura sale «No cuadran» solo por la razón social, ¿por qué?
+    respuesta: >-
+      No debería: la razón social viene archivada en los campos de
+      comparación. Si alguien la activó, archívela de nuevo y vuelva a comparar.
   - pregunta: ¿Puedo rehacer un periodo ya enviado?
     respuesta: >-
       No. Tras el envío, Reiniciar queda bloqueado y un segundo envío se

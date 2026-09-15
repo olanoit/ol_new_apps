@@ -1,0 +1,12 @@
+flowchart TD
+  A[Registrar derechohabiente<br/>Situación: Por declarar] --> B{¿El tipo es hijo?}
+  B -- No --> C[No da asignación familiar]
+  B -- Sí --> D{¿Menor de 18, o menor de 24<br/>y cursa estudios superiores?}
+  D -- No --> C
+  D -- Sí --> E[Da asignación familiar]
+  E --> F[Boleta: derecho a<br/>asignación familiar<br/>a su fecha de fin]
+  A --> G[Exportar para el T-Registro]
+  G --> H{¿Documentos y fechas<br/>completos?}
+  H -- No --> I[Aviso: corregir antes de exportar]
+  H -- Sí --> J[Excel con hojas Altas y Bajas]
+  J --> K[Altas marcadas como declaradas<br/>Situación: Vigente]

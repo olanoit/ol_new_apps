@@ -1,0 +1,9 @@
+flowchart TD
+  A[Préstamo: monto, fecha y cuotas] --> B[Generar cuotas<br/>iguales al último día de cada mes]
+  C[Adelanto: monto y fecha de descuento] --> D[Estado No pagado]
+  B --> E[Lote de nómina ▸ Importar préstamos]
+  D --> F[Lote de nómina ▸ Importar adelantos]
+  E --> G{¿Tipo especial de BBSS<br/>o quincena?}
+  F --> G
+  G -- No --> H[Entrada del tipo en la boleta<br/>y marca Pagado]
+  G -- Sí --> I[Se descuenta en su beneficio;<br/>si ya se pagó, se regulariza]

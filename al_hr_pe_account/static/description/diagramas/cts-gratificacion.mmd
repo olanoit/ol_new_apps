@@ -1,0 +1,12 @@
+flowchart TD
+  A[CTS o gratificación procesada] --> B[Obtener provisiones:<br/>acumulado del semestre por trabajador]
+  B --> C[Exportar a las boletas del lote]
+  C --> D[Generar asiento]
+  D --> E{¿Cuentas configuradas<br/>en Contabilidad BBSS?}
+  E -- No --> X[Error con las cuentas que faltan]
+  E -- Sí --> F[Debe: reversión de la provisión<br/>por trabajador]
+  F --> G[Debe: gasto por lo no provisionado]
+  G --> H[Haber: CTS o gratificación por pagar<br/>por trabajador]
+  H --> I[Asistente: total debe, haber,<br/>diferencia y cuenta de ajuste]
+  I --> J[Asiento publicado a la fecha de depósito<br/>CTS o GRA + periodo del lote]
+  J --> K[Enlazado en «Asiento contable»]

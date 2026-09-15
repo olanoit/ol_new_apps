@@ -1,0 +1,18 @@
+flowchart TD
+  A[Lote de nómina calculado] --> B{¿El lote ya<br/>tiene asiento?}
+  B -- Sí --> X[Aviso: anúlelo y elimínelo<br/>para generar uno nuevo]
+  B -- No --> C[Asiento de planilla por lote:<br/>elegir el lote]
+  C --> D[Boletas no anuladas:<br/>líneas con categoría e importe]
+  D --> E[Debe: cuenta de débito de la regla]
+  D --> F{¿Regla de aportes AFP?}
+  F -- Sí --> G[Haber: cuenta de la afiliación,<br/>una línea por AFP]
+  F -- No --> H{¿Detalle por empleado?}
+  H -- Sí --> I[Haber por trabajador<br/>con su contacto]
+  H -- No --> J[Haber agrupado por regla y cuenta]
+  E & G & I & J --> K[Previsualización:<br/>total debe, haber y diferencia]
+  K --> L{¿Diferencia?}
+  L -- Sí --> M[Cuenta de ajuste:<br/>línea «Ajuste por Redondeo»]
+  L -- No --> N[Generar asiento]
+  M --> N
+  N --> O[Asiento publicado con fecha fin del lote<br/>y referencia PLA + mes + año]
+  O --> P[Enlazado al lote y a sus boletas]

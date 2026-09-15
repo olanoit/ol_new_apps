@@ -1,0 +1,8 @@
+flowchart TD
+  A[Factura de proveedor publicada] --> B{¿Sujeta a retención?}
+  B -- "No: total ≤ S/ 700, proveedor agente o buen contribuyente,<br/>boleta o detracción" --> C[Pago normal al proveedor]
+  B -- Sí --> D[Se añade el impuesto Retención IGV -3 %<br/>a las líneas, sin cambiar el total]
+  D --> E[Pagar: el asistente propone el 3 %<br/>del importe pagado]
+  E --> F[Asiento del pago: neto al banco<br/>y retención a la 4011x]
+  F --> G[Número R001-########<br/>y botón XML CRE]
+  G --> H[Resumen 626 del mes<br/>y marca en el PLE 8.3]

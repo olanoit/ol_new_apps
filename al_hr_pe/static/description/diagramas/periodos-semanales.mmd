@@ -1,0 +1,9 @@
+flowchart TD
+  A[Generar periodos<br/>con semanas] --> B[12 periodos mensuales AAAAMM]
+  B --> C[Semanas de lunes a domingo<br/>AAAAMM-S01, S02…]
+  C --> D{¿La semana cruza<br/>el fin de mes?}
+  D -- Sí --> E[Se corta el último día del mes]
+  D -- No --> F[Semana completa]
+  E --> G[Boleta semanal:<br/>toma la semana,<br/>el periodo más corto]
+  F --> G
+  G --> H[Lote semanal:<br/>Periodo PLAME = su mes]

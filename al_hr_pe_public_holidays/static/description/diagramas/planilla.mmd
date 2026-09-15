@@ -1,0 +1,7 @@
+flowchart TD
+  A[Descanso del feriado<br/>en el horario del trabajador] --> B[Entradas de trabajo:<br/>el día toma el tipo del descanso]
+  A --> C{¿Tareaje con<br/>al_hr_pe_attendance?}
+  B --> D[Boleta: línea DIAS DE DESCANSO<br/>con el nombre del feriado]
+  C -- "Sin marcaciones ese día" --> E[Feriado no laborado]
+  C -- "Con marcaciones" --> F[Feriado laborado:<br/>horas al 100 %]
+  F --> G[Boleta: feriado o descanso<br/>laborado y HE 100 %]

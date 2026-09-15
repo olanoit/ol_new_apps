@@ -5,7 +5,7 @@ subtitulo: >-
   por redondeo, detalle por trabajador y distribución analítica opcional.
 categoria: Localización Perú · Nómina · Contabilidad
 etiquetas: [Asiento por lote, Bloque AFP, CTS y gratificación, Provisiones, Liquidación de cese, Analítica opcional]
-portada: screenshots/03-asistente-lote.png
+portada: screenshots/07-asistente-analitica.png
 
 destacados_intro: >-
   Contabilizar la planilla es una decisión de cada empresa: el asiento se
@@ -15,17 +15,18 @@ destacados:
     titulo: Un asiento por lote
     texto: >-
       Agrupa las líneas de todas las boletas del lote por regla salarial y
-      cuenta, con cargo y abono, y lo registra en el diario configurado.
+      cuenta, con cargo y abono, y lo publica en el diario configurado con la
+      referencia PLA + mes + año.
   - icono: "👁"
     titulo: Previsualización
     texto: >-
       El asistente muestra el asiento completo con total debe, total haber y
-      diferencia antes de generarlo.
+      diferencia antes de generarlo, con y sin analítica.
   - icono: "±"
     titulo: Ajuste por redondeo
     texto: >-
       Si debe y haber no cuadran, pide la cuenta de ajuste y añade la línea
-      «Ajuste por Redondeo».
+      «Ajuste por Redondeo» por la diferencia.
   - icono: "AFP"
     titulo: Bloque AFP por afiliación
     texto: >-
@@ -35,7 +36,7 @@ destacados:
     titulo: Asientos de beneficios sociales
     texto: >-
       CTS, gratificación con su bono, liquidación de cese por trabajador y
-      provisión mensual, con reversión de lo ya provisionado.
+      provisión mensual, revirtiendo lo ya provisionado.
   - icono: "%"
     titulo: Analítica nativa
     texto: >-
@@ -54,17 +55,105 @@ contexto:
 
 
     Este módulo construye esos asientos desde las boletas y los documentos de
-    beneficios sociales, con las cuentas configuradas por compañía.
+    beneficios sociales, con las cuentas configuradas por compañía, y deja
+    cada asiento enlazado a su documento de origen.
   nota: >-
     **Convive con el flujo nativo.** El asiento de lote es opcional: la
     compañía que lo usa deja sin diario la estructura salarial, así la
-    validación de boletas no genera asientos, y lanza el asistente. Si se
-    anula una boleta, se revierte el asiento compartido del lote.
+    validación de boletas no genera asientos, y lanza el asistente. El
+    asiento se enlaza al lote y a todas sus boletas, como el modo por lote de
+    Odoo.
+
+flujos_intro: >-
+  Cuatro caminos hacia contabilidad, todos con previsualización de totales y
+  ajuste por redondeo.
+flujos:
+  - id: asiento-lote
+    titulo: Asiento de la planilla por lote
+    texto: >-
+      Las líneas se recalculan desde las boletas en el momento de generar, así
+      que un cambio con el asistente abierto no se contabiliza desfasado.
+    mermaid: |
+      flowchart TD
+        A[Lote de nómina calculado] --> B{¿El lote ya<br/>tiene asiento?}
+        B -- Sí --> X[Aviso: anúlelo y elimínelo<br/>para generar uno nuevo]
+        B -- No --> C[Asiento de planilla por lote:<br/>elegir el lote]
+        C --> D[Boletas no anuladas:<br/>líneas con categoría e importe]
+        D --> E[Debe: cuenta de débito de la regla]
+        D --> F{¿Regla de aportes AFP?}
+        F -- Sí --> G[Haber: cuenta de la afiliación,<br/>una línea por AFP]
+        F -- No --> H{¿Detalle por empleado?}
+        H -- Sí --> I[Haber por trabajador<br/>con su contacto]
+        H -- No --> J[Haber agrupado por regla y cuenta]
+        E & G & I & J --> K[Previsualización:<br/>total debe, haber y diferencia]
+        K --> L{¿Diferencia?}
+        L -- Sí --> M[Cuenta de ajuste:<br/>línea «Ajuste por Redondeo»]
+        L -- No --> N[Generar asiento]
+        M --> N
+        N --> O[Asiento publicado con fecha fin del lote<br/>y referencia PLA + mes + año]
+        O --> P[Enlazado al lote y a sus boletas]
+    pie: Un grupo con importe negativo cambia de columna; los grupos en cero no generan línea.
+  - id: cts-gratificacion
+    titulo: Asiento de CTS y de gratificación
+    texto: >-
+      Un asiento por documento. La provisión acumulada del semestre se revierte
+      por trabajador y solo la diferencia va a gasto.
+    mermaid: |
+      flowchart TD
+        A[CTS o gratificación procesada] --> B[Obtener provisiones:<br/>acumulado del semestre por trabajador]
+        B --> C[Exportar a las boletas del lote]
+        C --> D[Generar asiento]
+        D --> E{¿Cuentas configuradas<br/>en Contabilidad BBSS?}
+        E -- No --> X[Error con las cuentas que faltan]
+        E -- Sí --> F[Debe: reversión de la provisión<br/>por trabajador]
+        F --> G[Debe: gasto por lo no provisionado]
+        G --> H[Haber: CTS o gratificación por pagar<br/>por trabajador]
+        H --> I[Asistente: total debe, haber,<br/>diferencia y cuenta de ajuste]
+        I --> J[Asiento publicado a la fecha de depósito<br/>CTS o GRA + periodo del lote]
+        J --> K[Enlazado en «Asiento contable»]
+    pie: En la CTS no entran los trabajadores con menos de un mes; en la gratificación el haber incluye el bono extraordinario.
+  - id: liquidacion
+    titulo: Asiento de la liquidación de cese
+    texto: >-
+      A diferencia de la CTS, cada cesado tiene su propio asiento, con su fecha
+      de cese y su contacto.
+    mermaid: |
+      flowchart TD
+        A[Liquidación: Procesar] --> B[Una fila de asiento por cesado<br/>en «Asientos contables»]
+        B --> C[Obtener provisiones: CTS, gratificación<br/>y vacaciones desde la fecha de cómputo]
+        C --> D[Botón de la fila: generar asiento]
+        D --> E[Debe: reversión de las tres provisiones]
+        E --> F[Debe: gasto de los truncos<br/>menos lo provisionado]
+        F --> G[Haber: liquidaciones por pagar<br/>truncos + conceptos extra]
+        G --> H[Haber: AFP u ONP de las vacaciones<br/>en la cuenta de la afiliación]
+        H --> I[Asiento publicado a la fecha de cese<br/>LIQUI + periodo del lote]
+        I --> J[La fila queda con «No recalcular»]
+    pie: Al volver a Procesar, las filas marcadas con «No recalcular» se conservan.
+  - id: provision
+    titulo: Asiento de la provisión mensual
+    texto: >-
+      El devengo del mes de CTS, gratificación, bono extraordinario y
+      vacaciones, un concepto tras otro.
+    mermaid: |
+      flowchart TD
+        A[Provisión del lote: Procesar] --> B[Generar asiento]
+        B --> C[Por concepto: CTS, gratificación,<br/>bono extraordinario y vacaciones]
+        C --> D[Debe: gasto del concepto]
+        D --> E{¿Detallar provisión<br/>por trabajador?}
+        E -- Sí --> F[Haber: una línea por trabajador<br/>con su contacto]
+        E -- No --> G[Haber: una línea por cuenta]
+        F & G --> H[Asistente: totales y ajuste]
+        H --> I[Asiento publicado a fin del lote<br/>PROVISION + periodo]
+        I --> J[Provisión en estado Hecho<br/>y botón «Ver asiento»]
 
 pasos_intro: >-
   Recorrido con la planilla de pruebas de «Comercial Demo Perú S.A.C.», de
-  trabajadores ficticios. Los asistentes se muestran sin confirmar.
+  trabajadores ficticios, y con la trabajadora «DEMO FICHA HR2» para la
+  provisión y la liquidación. Los asistentes sobre datos reales se muestran
+  sin confirmar.
 pasos:
+  - seccion: Configuración
+    texto: Una vez por compañía, antes del primer asiento.
   - titulo: Configurar el asiento de planilla
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Contabilidad
     texto: >-
@@ -73,8 +162,8 @@ pasos:
       **analítica**. En **R.S. aportes AFP** indique las reglas cuyo abono va a
       la cuenta de la afiliación del trabajador.
     puntos:
-      - Las cuentas de cargo y abono de cada concepto son las de su regla salarial.
-      - Las reglas con detalle por empleado abonan una línea por trabajador con su contacto.
+      - El diario y el partner también los usan los asientos de beneficios sociales.
+      - Sin diario o sin partner, el asistente se detiene con un aviso.
     imagen: screenshots/01-parametros-lote.png
 
   - titulo: Configurar las cuentas de beneficios sociales
@@ -86,50 +175,316 @@ pasos:
       provisión se detalla por trabajador y la cuenta de ajuste por redondeo.
     imagen: screenshots/02-parametros-bbss.png
 
-  - titulo: Previsualizar y generar el asiento del lote
+  - titulo: Cuentas de cada regla salarial
+    ruta: Nómina ▸ Configuración ▸ Salario ▸ Reglas
+    texto: >-
+      Las cuentas de cargo y abono de cada concepto del asiento de lote son las
+      de su regla salarial, en la pestaña **Contabilidad** (**Cuenta de
+      débito** y **Cuenta de crédito**). Con **Asignar empleado en la línea de
+      la cuenta** marcado, el abono se abre en una línea por trabajador con su
+      contacto.
+    imagen: screenshots/03-regla-cuentas.png
+    pie: "Regla «Basico»: gasto 6211000 y remuneraciones por pagar 4111000, con detalle por trabajador."
+
+  - titulo: Cuenta contable de cada afiliación
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
+    texto: >-
+      Los aportes AFP se abonan en la cuenta de la afiliación del trabajador en
+      la compañía. Si falta, el asistente del lote lista los trabajadores
+      afectados y no genera el asiento.
+    imagen: screenshots/04-afiliacion.png
+
+  - seccion: Asiento de la planilla por lote
+    texto: El asiento único del periodo, desde las boletas.
+  - titulo: Lanzar el asiento desde el lote
+    ruta: Nómina ▸ Recibos de nómina ▸ Periodos de nómina ▸ ⋮ ▸ Asiento PE por lote
+    texto: >-
+      El menú de la tarjeta del lote trae **Asiento PE por lote** mientras el
+      lote no tenga asiento; abre el asistente con el lote ya elegido. También
+      se llega desde **Nómina ▸ Contabilidad ▸ Asiento de planilla por lote**.
+    imagen: screenshots/05-lote-menu.png
+
+  - titulo: Previsualizar el asiento
     ruta: Nómina ▸ Contabilidad ▸ Asiento de planilla por lote
     texto: >-
-      Elija el lote de nómina: el asistente calcula las líneas en el momento
-      con descripción, cuenta, debe y haber, y muestra los totales y la
-      diferencia. **Con distribución analítica** permite ver el asiento en los
-      dos modos. **Generar asiento** lo crea, lo publica con fecha de fin del
-      lote y referencia `PLA` + mes + año, y lo enlaza al lote y a sus boletas.
-    puntos:
-      - También se abre desde el lote de nómina con la opción «Asiento PE por lote».
-      - Las boletas anuladas no entran en el asiento.
-      - Un lote con asiento no genera otro hasta que se anule y elimine el anterior.
-    imagen: screenshots/03-asistente-lote.png
+      Al elegir el lote, el asistente calcula las líneas en el momento con
+      descripción, cuenta, debe y haber, y muestra los totales y la
+      diferencia. Las boletas anuladas no entran.
+    imagen: screenshots/06-asistente-lote.png
     pie: "Planilla de junio de 2026: 10 boletas y S/ 46.912,83 al debe y al haber, sin diferencia."
 
+  - titulo: Ver el asiento con distribución analítica
+    ruta: Asiento de planilla por lote ▸ Con distribución analítica
+    texto: >-
+      La casilla toma su valor de los Parámetros principales y se puede cambiar
+      para previsualizar el otro modo: aparece la columna de distribución
+      analítica y las líneas se agrupan también por ella. **Generar asiento**
+      usa el modo que quede marcado.
+    imagen: screenshots/07-asistente-analitica.png
+    pie: Las reglas y fichas de la base de pruebas no tienen distribución analítica, por eso la columna sale vacía.
+
+  - titulo: El asiento del lote
+    ruta: Lote ▸ Asiento contable
+    texto: >-
+      Queda publicado con fecha de fin del lote y referencia `PLA` + mes + año,
+      enlazado al lote y a sus boletas. Un lote con asiento no genera otro
+      hasta que se anule y elimine el anterior.
+    imagen: screenshots/08-asiento-lote.png
+    pie: "PLA042026: planilla de abril de 2026, 55 líneas y S/ 55.490,97 al debe y al haber."
+
+  - seccion: CTS y gratificación
+    texto: Un asiento por depósito o pago semestral.
   - titulo: Contabilizar la CTS
     ruta: Nómina ▸ Beneficios sociales ▸ CTS
     texto: >-
-      El documento de CTS suma el botón **Obtener provisiones**, que trae lo
-      provisionado en el semestre para cada trabajador (columna **Prov.
-      acumulada**), y **Generar asiento** una vez exportado. El asiento queda
-      enlazado en **Asiento contable**. Gratificación y liquidación de cese
-      siguen el mismo circuito.
-    imagen: screenshots/04-cts-asiento.png
+      El documento suma **Obtener provisiones**, que trae lo provisionado en el
+      semestre para cada trabajador (columna **Prov. acumulada**), y **Generar
+      asiento** una vez exportado. El asiento queda en el campo **Asiento
+      contable** y en el botón **Asiento** de la barra superior.
+    imagen: screenshots/09-cts.png
 
-  - titulo: Revisar el asiento del beneficio
-    ruta: CTS ▸ Asiento contable
+  - titulo: El asiento de la CTS
+    ruta: CTS ▸ Asiento
     texto: >-
       Al debe, la reversión de la provisión acumulada de cada trabajador y el
       gasto por lo no provisionado; al haber, la CTS por pagar de cada
-      trabajador con su contacto. La referencia combina el beneficio y el
-      periodo del lote.
-    imagen: screenshots/05-asiento-cts.png
-    pie: "CTS de mayo 2026: S/ 17.848,78 de CTS por pagar en nueve líneas, sin provisión previa."
+      trabajador con su contacto.
+    imagen: screenshots/10-asiento-cts.png
+    pie: "CTS202604: S/ 17.848,78 de CTS por pagar en nueve líneas, sin provisión previa."
 
-  - titulo: Asentar la provisión del mes
+  - titulo: Contabilizar la gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    texto: >-
+      Mismo circuito que la CTS. El gasto cubre la gratificación y el bono
+      extraordinario, y el haber abona el total a pagar de cada trabajador.
+      La columna **Prov. acumulada** solo se revierte si se obtiene antes de
+      generar el asiento: en este documento se obtuvo después, por eso su
+      asiento va íntegro a gasto.
+    imagen: screenshots/11-gratificacion.png
+
+  - titulo: El asiento de la gratificación
+    ruta: Gratificación ▸ Asiento
+    imagen: screenshots/12-asiento-gratificacion.png
+    pie: "GRA202606: S/ 33.003,25 entre gratificación (S/ 30.479,12) y bono extraordinario (S/ 2.524,13)."
+
+  - seccion: Provisión mensual
+    texto: El devengo de cada mes, con su asiento.
+  - titulo: Generar el asiento de la provisión
     ruta: Nómina ▸ Beneficios sociales ▸ Provisiones ▸ Generar asiento
     texto: >-
-      Desde la provisión mensual, **Generar asiento** abre el asistente con
+      Desde la provisión en borrador, **Generar asiento** abre el asistente con
       total debe, total haber y diferencia; si hay diferencia pide la cuenta de
-      ajuste. Al generar, la provisión pasa a **Hecho** y el botón **Ver
-      asiento** lo abre.
-    imagen: screenshots/06-asistente-provision.png
+      ajuste, propuesta desde los Parámetros principales.
+    imagen: screenshots/13-asistente-provision.png
     pie: "Provisión de junio 2026: S/ 13.176,39 entre CTS, gratificación, bono y vacaciones."
+
+  - titulo: Provisión contabilizada
+    ruta: Provisiones ▸ Ver asiento
+    texto: >-
+      Al generar, la provisión pasa a **Hecho**, muestra el campo **Asiento
+      contable** y el botón **Ver asiento**.
+    imagen: screenshots/14-provision-hecha.png
+
+  - titulo: El asiento de la provisión
+    ruta: Provisiones ▸ Ver asiento
+    imagen: screenshots/15-asiento-provision.png
+    pie: "PROVISION202607: julio de 2026 de la trabajadora DEMO, S/ 975,33 en cuatro conceptos."
+
+  - seccion: Liquidación de cese
+    texto: Un asiento por trabajador cesado.
+  - titulo: Asientos por cesado
+    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese ▸ Asientos contables
+    texto: >-
+      La pestaña **Asientos contables** lista una fila por cesado con
+      documento, fechas de ingreso y cese y su asiento. El icono de la fila
+      genera el asiento de ese trabajador; el botón **Asientos** de la barra
+      superior abre los ya generados. **Obtener provisiones** trae lo provisionado desde la fecha de
+      cómputo hasta el cese.
+    imagen: screenshots/16-liquidacion-asientos.png
+
+  - titulo: El asiento de la liquidación
+    ruta: Liquidación ▸ Asientos
+    imagen: screenshots/17-asiento-liquidacion.png
+    pie: "LIQUI202608: cese de la trabajadora DEMO el 31/08/2026, S/ 1.890,00 de liquidación por pagar."
+
+campos_intro: >-
+  Cada campo y botón que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Parámetros principales ▸ Contabilidad
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+    campos:
+      - [Diario del asiento de planilla, Diario del asiento de lote y de los asientos de beneficios sociales., Vacío, Obligatorio para generar cualquier asiento]
+      - [Partner para planillas, Contacto de las líneas sin trabajador., Vacío, Obligatorio para generar cualquier asiento]
+      - [Asiento de lote con analítica, Lleva la distribución analítica de la regla o de la ficha del trabajador., Desmarcado, "Valor inicial de «Con distribución analítica» y analítica de los gastos de BBSS"]
+      - ["R.S. aportes AFP (cuenta por afiliación)", Reglas cuyo abono va a la cuenta de la afiliación del trabajador., Vacío, Una línea al haber por AFP]
+  - grupo: Parámetros principales ▸ Contabilidad BBSS
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+    texto: Las cuentas dependen de la compañía activa.
+    campos:
+      - ["Gasto CTS (debe)", Gasto de la CTS., Vacío, "Provisión, depósito y CTS trunca"]
+      - ["Provisión CTS (haber)", Pasivo de la provisión de CTS., Vacío, Se abona al provisionar y se carga al revertir]
+      - ["CTS por pagar (haber)", Pasivo del depósito semestral., Vacío, Haber del asiento de CTS]
+      - ["Gasto gratificación (debe)", Gasto de la gratificación legal., Vacío, "Provisión, pago y gratificación trunca"]
+      - ["Provisión gratificación (haber)", Pasivo de la provisión de gratificación., Vacío, Se abona al provisionar y se carga al revertir]
+      - ["Gratificación por pagar (haber)", Pasivo del pago semestral., Vacío, Haber del asiento de gratificación]
+      - ["Gasto bono extraordinario (debe)", Gasto del bono de la Ley 29351 en la provisión., Vacío, Debe de la provisión mensual]
+      - ["Provisión bono extraordinario (haber)", Pasivo de la provisión del bono., Vacío, Haber de la provisión mensual]
+      - ["Gasto vacaciones (debe)", Gasto de vacaciones., Vacío, Provisión y vacaciones truncas]
+      - ["Provisión vacaciones (haber)", Pasivo de la provisión de vacaciones., Vacío, Se abona al provisionar y se carga al revertir]
+      - ["Liquidaciones por pagar (haber)", Pasivo de la liquidación de cese., Vacío, Haber del asiento de liquidación]
+      - ["Conceptos extra ingreso (debe)", Cargo de los conceptos extra de tipo ingreso., Vacío, Obligatoria si la liquidación tiene conceptos]
+      - ["Conceptos extra descuento (haber)", Abono de los conceptos extra de tipo descuento., Vacío, Obligatoria si la liquidación tiene conceptos]
+      - [Detallar provisión por trabajador, Abre el haber de la provisión en una línea por trabajador., Marcado, Desmarcado agrupa por cuenta]
+      - [Cuenta de ajuste por redondeo, Cuenta propuesta en el asistente de BBSS., Vacío, "Se usa si debe y haber difieren"]
+  - grupo: Asistente «Asiento de planilla por lote»
+    ruta: Nómina ▸ Contabilidad ▸ Asiento de planilla por lote
+    campos:
+      - [Lote de nómina, Lote que se contabiliza., Vacío, Calcula la previsualización al elegirlo]
+      - [Con distribución analítica, Modo analítico de la previsualización y del asiento., "El de los Parámetros", Muestra la columna de analítica]
+      - [Total debe, Suma del debe de las líneas., Calculado, "—"]
+      - [Total haber, Suma del haber de las líneas., Calculado, "—"]
+      - [Diferencia, Diferencia absoluta entre debe y haber., Calculado, Si no es cero pide la cuenta de ajuste]
+      - [Cuenta de ajuste, Cuenta de la línea «Ajuste por Redondeo»., Vacío, Visible y obligatoria con diferencia]
+      - ["Líneas: Descripción, Cuenta contable, Debe, Haber", "Una por grupo de regla y cuenta; Secuencia, Regla salarial y Partner como columnas opcionales.", Calculado, Solo lectura]
+  - grupo: Asistente «Generar asiento contable» de BBSS
+    ruta: CTS, Gratificación, Provisiones o fila de liquidación ▸ Generar asiento
+    campos:
+      - [Total debe, Debe precalculado del documento., Calculado, "—"]
+      - [Total haber, Haber precalculado del documento., Calculado, "—"]
+      - [Diferencia, Diferencia entre ambos., Calculado, "—"]
+      - [Cuenta de ajuste, Cuenta de la línea «Ajuste por redondeo»., "La de los Parámetros", Visible y obligatoria con diferencia]
+  - grupo: CTS y gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ CTS / Gratificación
+    campos:
+      - [Obtener provisiones, Trae a cada línea la provisión acumulada del semestre., Botón en borrador, Rellena Prov. acumulada]
+      - [Prov. acumulada, Provisión del semestre del trabajador (gratificación con bono)., "0,00", Se revierte al debe del asiento]
+      - [Generar asiento, Abre el asistente de BBSS., Botón en Exportado sin asiento, Crea y publica el asiento]
+      - [Asiento contable, Asiento generado., Solo lectura, "Botón «Asiento» para abrirlo"]
+  - grupo: Liquidación de cese ▸ Asientos contables
+    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese
+    campos:
+      - [Nro. doc., Documento del trabajador cesado., Calculado, "—"]
+      - [Empleado, Trabajador cesado del lote., Calculado al procesar, Contacto del asiento]
+      - [Fecha de ingreso, Primera fecha de contrato., Calculado, "—"]
+      - [Fecha de cese, Fin del contrato., Calculado, Fecha del asiento]
+      - [No R., «No recalcular»: conserva la fila al volver a procesar., "Se marca al generar el asiento", Protege el asiento generado]
+      - [Asiento contable, Asiento del trabajador., Solo lectura, "El botón «Asientos» abre todos"]
+      - [Obtener provisiones, "Provisión acumulada de CTS, gratificación y vacaciones por cesado.", Botón en borrador, Reversión al debe]
+  - grupo: Provisiones
+    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
+    campos:
+      - [Generar asiento, Abre el asistente de BBSS., Botón en borrador sin asiento, Pasa la provisión a Hecho]
+      - [Ver asiento, Abre el asiento generado., Visible con asiento, "—"]
+      - [Asiento contable, Asiento de la provisión., Solo lectura, "—"]
+
+asientos_intro: >-
+  Asientos reales de la base de pruebas, tal como los genera el módulo. El de
+  la planilla se resume agrupando las líneas del mismo concepto y cuenta.
+asientos:
+  - titulo: Planilla del lote (resumen)
+    referencia: PLA042026
+    texto: >-
+      Planilla de abril de 2026, 10 boletas. Cada concepto va al debe por la
+      cuenta de débito de su regla y al haber por la de crédito, detallado por
+      trabajador cuando la regla lo pide. Las faltas y tardanzas tienen importe
+      negativo, por eso cambian de columna. Los aportes AFP se abonan por
+      administradora.
+    lineas:
+      - [6211000, Básico, "38.133,94", ""]
+      - [6211000, Asignación familiar, "565,00", ""]
+      - [6211000, "Horas extras 25 % y 35 %", "1.186,08", ""]
+      - [6211000, Subsidio por enfermedad, "450,00", ""]
+      - [6211000, Comisiones, "1.500,00", ""]
+      - [4111000, Remuneraciones por pagar — ingresos por trabajador (19 líneas), "", "41.835,02"]
+      - [4111000, Faltas y tardanzas, "4.933,79", ""]
+      - [6211000, Faltas y tardanzas por trabajador (9 líneas), "", "4.933,79"]
+      - [4111000, ONP, "1.279,98", ""]
+      - [4032000, ONP, "", "1.279,98"]
+      - [4111000, "AFP aporte, comisión sobre flujo y prima de seguros", "3.161,88", ""]
+      - [4032000, AFP HABITAT, "", "236,30"]
+      - [4032000, AFP INTEGRA, "", "956,48"]
+      - [4032000, AFP PRIMA, "", "1.968,63"]
+      - [4032000, AFP PROFUTURO, "", "0,47"]
+      - [4111000, "Adelanto, retención judicial y préstamo", "1.000,00", ""]
+      - [4191, "Adelanto, retención judicial y préstamo por trabajador (3 líneas)", "", "1.000,00"]
+      - [6271000, EsSalud, "3.012,55", ""]
+      - [4031000, EsSalud, "", "3.012,55"]
+      - [6271000, "EPS 2,25 %", "267,75", ""]
+      - [4031000, "EPS 2,25 %", "", "267,75"]
+    nota: "El asiento real tiene 55 líneas y S/ 55.490,97 al debe y al haber. Bloque AFP: 2.547,53 + 181,28 + 433,07 = 3.161,88 = suma de las cuatro AFP."
+
+  - titulo: Depósito de CTS
+    referencia: CTS202604
+    texto: >-
+      CTS de noviembre 2025 – abril 2026, depositada el 15/05/2026. Sin
+      provisiones previas en ese semestre, todo el importe va a gasto.
+    lineas:
+      - [6291000, Gasto de CTS, "17.848,78", ""]
+      - [4151000, CTS por pagar — Ccahuana Puma Rosa María, "", "5,74"]
+      - [4151000, CTS por pagar — Chávez Rojas Pedro Pablo, "", "2.060,65"]
+      - [4151000, CTS por pagar — Delgado Ríos Sofía Alejandra, "", "2.866,66"]
+      - [4151000, CTS por pagar — Flores Huamán María Elena, "", "5.733,34"]
+      - [4151000, CTS por pagar — Ortiz Salas Luis Fernando, "", "1.105,10"]
+      - [4151000, CTS por pagar — Quispe Mamani Juan Carlos, "", "1.248,44"]
+      - [4151000, CTS por pagar — Ramos Vega Carlos Alberto, "", "713,75"]
+      - [4151000, CTS por pagar — Torres Quiroz Ana Lucía, "", "1.726,22"]
+      - [4151000, CTS por pagar — Vargas Núñez Elena Sofía, "", "2.388,88"]
+    nota: Con provisiones obtenidas, cada trabajador tendría además una línea «Provisión de CTS» al debe y el gasto bajaría en ese importe.
+
+  - titulo: Pago de la gratificación
+    referencia: GRA202606
+    texto: >-
+      Gratificación de Fiestas Patrias 2026 con bono extraordinario, pagada el
+      15/07/2026. El gasto y el haber incluyen el bono.
+    lineas:
+      - [6214000, Gasto de gratificación, "33.003,25", ""]
+      - [4114000, Gratificación por pagar — Ccahuana Puma Rosa María, "", "10,61"]
+      - [4114000, Gratificación por pagar — Chávez Rojas Pedro Pablo, "", "3.813,18"]
+      - [4114000, Gratificación por pagar — Delgado Ríos Sofía Alejandra, "", "5.304,67"]
+      - [4114000, Gratificación por pagar — Flores Huamán María Elena, "", "10.390,33"]
+      - [4114000, Gratificación por pagar — Ortiz Salas Luis Fernando, "", "2.044,95"]
+      - [4114000, Gratificación por pagar — Quispe Mamani Juan Carlos, "", "2.310,18"]
+      - [4114000, Gratificación por pagar — Ramos Vega Carlos Alberto, "", "1.514,48"]
+      - [4114000, Gratificación por pagar — Torres Quiroz Ana Lucía, "", "3.194,29"]
+      - [4114000, Gratificación por pagar — Vargas Núñez Elena Sofía, "", "4.420,56"]
+
+  - titulo: Provisión mensual
+    referencia: PROVISION202607
+    texto: >-
+      Julio de 2026 de la trabajadora DEMO (sueldo S/ 2.800,00, EsSalud 9 %),
+      con «Detallar provisión por trabajador» activo: cada haber lleva su
+      contacto.
+    lineas:
+      - [6291000, Provisión de CTS, "233,33", ""]
+      - [4151000, Provisión de CTS por pagar — DEMO FICHA HR2 Salazar Ríos Andrea, "", "233,33"]
+      - [6214000, Provisión de gratificación, "466,67", ""]
+      - [4114000, Provisión de gratificación por pagar — DEMO, "", "466,67"]
+      - [6214000, Provisión del bono extraordinario, "42,00", ""]
+      - [4114000, Provisión del bono extraordinario por pagar — DEMO, "", "42,00"]
+      - [6215000, Provisión de vacaciones, "233,33", ""]
+      - [4115000, Provisión de vacaciones por pagar — DEMO, "", "233,33"]
+    nota: "2.800 ÷ 12 = 233,33 (CTS y vacaciones); 2.800 ÷ 6 = 466,67 de gratificación y su 9 % = 42,00 de bono."
+
+  - titulo: Liquidación de cese
+    referencia: LIQUI202608
+    texto: >-
+      Cese de la trabajadora DEMO el 31/08/2026. Se revierte lo provisionado en
+      julio y solo la diferencia de los truncos va a gasto; la ONP de las
+      vacaciones truncas se abona en la cuenta de su afiliación.
+    lineas:
+      - [4151000, Provisión de CTS — DEMO FICHA HR2 Salazar Ríos Andrea, "233,33", ""]
+      - [4114000, Provisión de gratificación — DEMO, "508,67", ""]
+      - [4115000, Provisión de vacaciones — DEMO, "233,33", ""]
+      - [6214000, Gratificación trunca, "508,66", ""]
+      - [6291000, CTS trunca, "233,34", ""]
+      - [6215000, Vacaciones truncas, "233,34", ""]
+      - [4111000, Liquidaciones por pagar — DEMO, "", "1.890,00"]
+      - [4033000, ONP — DEMO, "", "60,67"]
+    nota: >-
+      Truncos: gratificación 933,33 + bono 84,00, CTS 466,67 y vacaciones
+      466,67. Por pagar: 1.017,33 + 466,67 + (466,67 − 60,67) = 1.890,00. La
+      cuenta de la ONP es la que tiene configurada esa afiliación en la base de
+      pruebas.
 
 funcionalidades:
   - grupo: Asiento de planilla por lote
@@ -137,54 +492,44 @@ funcionalidades:
       - Agregación por regla salarial y cuenta de todas las boletas no anuladas del lote.
       - Detalle por trabajador en las reglas que lo piden, con su contacto.
       - Abono de los aportes AFP en la cuenta de la afiliación, una línea por administradora.
-      - Previsualización con totales y diferencia, y línea de ajuste por redondeo.
-      - Asiento publicado y enlazado al lote y a sus boletas.
-      - Validación de diario y partner antes de generar.
+      - Previsualización con totales y diferencia, con y sin analítica, y línea de ajuste por redondeo.
+      - Asiento publicado con referencia PLA + mes + año y enlazado al lote y a sus boletas.
+      - Lanzamiento desde el menú de la tarjeta del lote o desde Nómina ▸ Contabilidad.
   - grupo: Beneficios sociales
     items:
       - CTS y gratificación con reversión de la provisión acumulada y gasto por la diferencia.
       - Bono extraordinario de la Ley 29351 dentro del asiento de gratificación.
       - Un asiento por trabajador cesado, con truncos, conceptos extra y retenciones de AFP u ONP.
-      - Provisión mensual por concepto, al haber detallada por trabajador o agrupada.
-      - Un único asistente de generación para los cuatro tipos de documento.
+      - Provisión mensual por concepto, al haber detallada por trabajador o agrupada, que pasa a Hecho al contabilizarse.
+      - Un único asistente de generación para los cuatro tipos de documento, con cuenta de ajuste propuesta.
   - grupo: Analítica y configuración
     items:
       - Distribución analítica nativa por compañía, de la regla salarial o de la ficha del trabajador.
       - Cuentas de beneficios sociales por compañía en los Parámetros principales.
+      - Validación de cuentas faltantes con la lista de las que hay que configurar.
 
 ejemplos:
-  - titulo: Bloque AFP del asiento de junio de 2026
+  - titulo: Qué va a cada columna en el asiento de lote
+    tabla:
+      - [Regla, Debe, Haber]
+      - ["Ingreso (básico, asignación, horas extras…)", Cuenta de débito de la regla, "Cuenta de crédito, por trabajador si la regla lo pide"]
+      - [Descuento por inasistencia (importe negativo), Cuenta de crédito, Cuenta de débito]
+      - [Aporte AFP del trabajador, Cuenta de débito de la regla, Cuenta de la afiliación de cada trabajador]
+      - [Aporte del empleador (EsSalud), Cuenta de débito de la regla, Cuenta de crédito de la regla]
+    nota: Las líneas sin categoría o con importe cero no entran; la cuenta de crédito de las reglas AFP se ignora.
+
+  - titulo: Sin cuenta de afiliación
     texto: >-
-      Las reglas de AFP se cargan contra remuneraciones por pagar y se abonan
-      por administradora, según la afiliación de cada trabajador:
-    tabla:
-      - [Línea, Debe S/, Haber S/]
-      - [AFP Aporte Fondo de Pensiones, "2.624,42", ""]
-      - [AFP Comisión Sobre Flujo, "187,44", ""]
-      - [AFP Prima de Seguros, "445,84", ""]
-      - [AFP HABITAT, "", "270,62"]
-      - [AFP INTEGRA, "", "917,69"]
-      - [AFP PRIMA, "", "2.068,69"]
-      - [AFP PROFUTURO, "", "0,70"]
-      - [Total, "3.257,70", "3.257,70"]
-
-  - titulo: Asiento de la provisión mensual
-    texto: Provisión del lote «Planilla 2026-06», con cuatro conceptos.
-    tabla:
-      - [Concepto, Debe (gasto) S/, Haber (provisión) S/]
-      - [CTS, "3.163,23", "3.163,23"]
-      - [Gratificación, "6.326,47", "6.326,47"]
-      - [Bono extraordinario, "523,46", "523,46"]
-      - [Vacaciones, "3.163,23", "3.163,23"]
-      - [Total, "13.176,39", "13.176,39"]
-    nota: Con «Detallar provisión por trabajador» activo, cada haber se abre en una línea por trabajador.
-
+      Si un trabajador tiene aportes AFP y su afiliación no tiene cuenta en la
+      compañía, el asistente no calcula el asiento y muestra la lista
+      «trabajador (afiliación: …)» para corregirla antes de volver a elegir el
+      lote.
 
 configuracion:
   - "Asigne las cuentas de debe y haber a las reglas salariales, y el detalle por empleado a las que lo necesiten."
   - "En **Parámetros principales ▸ Contabilidad** configure diario, partner, analítica y las reglas de aportes AFP."
-  - Asigne a cada afiliación AFP su cuenta contable en la compañía.
-  - "En **Parámetros principales ▸ Contabilidad BBSS** configure las cuentas de CTS, gratificación, vacaciones, liquidación y ajuste."
+  - Asigne a cada afiliación su cuenta contable en la compañía.
+  - "En **Parámetros principales ▸ Contabilidad BBSS** configure las cuentas de CTS, gratificación, bono, vacaciones, liquidación y ajuste."
   - Si usa el asiento de lote, deje sin diario la estructura salarial para que la validación de boletas no genere asientos propios.
 requisitos_nota: >-
   Requiere Nómina de Odoo Enterprise con su contabilización y el módulo de
@@ -202,7 +547,8 @@ faq:
   - pregunta: ¿De dónde sale la distribución analítica?
     respuesta: >-
       De la regla salarial si la tiene y, si no, de la ficha del trabajador.
-      Solo se aplica cuando la compañía activa «Asiento de lote con analítica».
+      Solo se aplica cuando está activo «Asiento de lote con analítica» o se
+      marca «Con distribución analítica» en el asistente.
   - pregunta: El asistente dice que no hay importes que contabilizar en la CTS.
     respuesta: >-
       Procese el documento y, si corresponde, obtenga las provisiones antes de
@@ -213,6 +559,11 @@ faq:
       El asistente se detiene y lista los trabajadores con aportes AFP cuya
       afiliación no tiene cuenta en esa compañía; asígnela y vuelva a elegir el
       lote.
+  - pregunta: ¿Por qué la liquidación tiene un asiento por trabajador?
+    respuesta: >-
+      Cada cese tiene su fecha, sus importes y su contacto. Al generarlo, la
+      fila queda marcada con «No recalcular» para que volver a procesar la
+      liquidación no la pierda.
 
 novedades:
   - fecha: 18/08/2026

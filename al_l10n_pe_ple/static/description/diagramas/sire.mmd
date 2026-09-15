@@ -1,0 +1,13 @@
+flowchart TD
+  A[Reportes PLE nativos:<br/>Compras 8.1, No domiciliados 8.2 o Ventas 14.1] --> B[Mes en el filtro de fechas]
+  B --> C[Botón TXT o XLSX]
+  C --> D[Comprobantes publicados y anulados del mes<br/>por fecha de factura, salvo diarios excluidos]
+  D --> E{¿Qué registro?}
+  E -- "Compras" --> F[RCE 8.4, 41 campos:<br/>clasificación, detracción, tipo de nota y estado]
+  E -- "No domiciliados" --> G[RCE 8.5, 35 campos:<br/>tipos 00, 91, 97 y 98]
+  E -- "Ventas" --> H[RVIE 14.4, 33 campos: anulados en cero<br/>y NC de meses anteriores como descuento]
+  F --> I{¿Cada línea tiene el número<br/>de campos de la norma?}
+  G --> I
+  H --> I
+  I -- No --> X[Error de estructura]
+  I -- Sí --> J[TXT con nombre oficial<br/>o XLSX con una cabecera por campo]

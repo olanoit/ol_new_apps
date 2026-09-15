@@ -1,0 +1,6 @@
+flowchart TD
+  A[Factura de venta] --> B[Cliente agente paga el neto<br/>y entrega su comprobante]
+  B --> C[Perú ▸ Retenciones sufridas:<br/>número, fecha, factura y monto]
+  C --> D[Registrar: asiento 40114<br/>contra la cuenta por cobrar]
+  D --> E[Conciliado con la factura:<br/>el saldo baja]
+  E --> F[Crédito de IGV<br/>en la declaración]

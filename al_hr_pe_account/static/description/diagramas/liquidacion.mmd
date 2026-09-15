@@ -1,0 +1,10 @@
+flowchart TD
+  A[Liquidación: Procesar] --> B[Una fila de asiento por cesado<br/>en «Asientos contables»]
+  B --> C[Obtener provisiones: CTS, gratificación<br/>y vacaciones desde la fecha de cómputo]
+  C --> D[Botón de la fila: generar asiento]
+  D --> E[Debe: reversión de las tres provisiones]
+  E --> F[Debe: gasto de los truncos<br/>menos lo provisionado]
+  F --> G[Haber: liquidaciones por pagar<br/>truncos + conceptos extra]
+  G --> H[Haber: AFP u ONP de las vacaciones<br/>en la cuenta de la afiliación]
+  H --> I[Asiento publicado a la fecha de cese<br/>LIQUI + periodo del lote]
+  I --> J[La fila queda con «No recalcular»]

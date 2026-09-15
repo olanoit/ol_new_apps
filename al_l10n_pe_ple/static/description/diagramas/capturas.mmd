@@ -1,0 +1,11 @@
+flowchart TD
+  A[Captura o importación en las listas<br/>de Perú ▸ Libros PLE] --> B{¿Qué formato?}
+  B -- "4.1" --> C[Registros con fecha<br/>dentro del mes]
+  B -- "3.8 y 3.19" --> D[Registros con fecha igual<br/>a la Fecha de los EEFF]
+  B -- "3.9" --> E[Sin captura: activos con cuenta 34<br/>vigentes a la Fecha de los EEFF]
+  B -- "Libro 10" --> F[Registros del ejercicio]
+  C --> G[Signo negativo en retenciones, provisiones,<br/>amortización e inventarios finales]
+  D --> G
+  E --> G
+  F --> G
+  G --> H[TXT y XLSX desde Exportar PLE]

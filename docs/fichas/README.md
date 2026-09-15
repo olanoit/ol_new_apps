@@ -11,6 +11,7 @@ docs/fichas/capturas/<módulo>.py    guion que toma sus capturas
 docs/fichas/generar_fichas.py       YAML → index.html
 docs/fichas/capturar.py             ayudante de capturas (Playwright)
 docs/fichas/revisar.py              foto de la ficha generada, para revisarla
+docs/fichas/diagramas.py            diagramas de flujo (Mermaid → PNG)
 ```
 
 Modelo de referencia: **`al_l10n_pe_retention.yml`** y su guion de capturas.
@@ -21,9 +22,11 @@ Modelo de referencia: **`al_l10n_pe_retention.yml`** y su guion de capturas.
 PY=/home/och/odoo/ce19/.venv/bin/python
 # 1. capturas (servidor de Odoo levantado en http://127.0.0.1:19730)
 $PY docs/fichas/capturas/<módulo>.py
-# 2. ficha
+# 2. diagramas (si el YAML tiene «flujos»; necesita acceso a cdn.jsdelivr.net)
+$PY docs/fichas/diagramas.py <módulo>
+# 3. ficha
 $PY docs/fichas/generar_fichas.py <módulo>
-# 3. revisión visual: deja PNG por tramos en la carpeta indicada
+# 4. revisión visual: deja PNG por tramos en la carpeta indicada
 $PY docs/fichas/revisar.py <módulo> /ruta/temporal
 ```
 
@@ -53,7 +56,10 @@ datos no se muestran.
 | `ediciones` | Forzar `[community, enterprise]` o `[enterprise]` (normalmente se detecta). |
 | `destacados_intro`, `destacados` | 3–6 tarjetas: `icono` (1–3 caracteres o un símbolo), `titulo`, `texto`. |
 | `contexto` | `titulo`, `texto` (el problema que resuelve, norma SUNAT/legal si aplica) y `nota` (recuadro lateral). |
-| `pasos_titulo`, `pasos_intro`, `pasos` | Recorrido con capturas: `titulo`, `ruta` (menú exacto con `▸`), `texto`, `puntos` (lista), `imagen`, `pie`. |
+| `flujos_intro`, `flujos` | Diagramas del proceso: `id` (nombre del PNG), `titulo`, `texto`, `mermaid` (bloque literal `flowchart TD`) y `pie`. |
+| `pasos_titulo`, `pasos_intro`, `pasos` | Recorrido con capturas: `titulo`, `ruta` (menú exacto con `▸`), `texto`, `puntos` (lista), `imagen`, `pie`. Una entrada con `seccion` (y `texto` opcional) abre un grupo: una **función** del módulo. |
+| `campos_intro`, `campos` | Referencia por pantalla: `grupo`, `ruta`, `texto` y `campos` (filas `[Campo, Qué hace, Por defecto, Efecto]`). |
+| `asientos_intro`, `asientos` | Asientos de ejemplo: `titulo`, `referencia` (nombre real del asiento), `texto`, `lineas` (`[cuenta, descripción, debe, haber]`, importes como `"1.234,56"` o vacío) y `nota`. **Debe y haber tienen que cuadrar**: el generador rechaza el asiento si no. |
 | `funcionalidades_intro`, `funcionalidades` | Lista simple, o grupos con `grupo` e `items`. |
 | `ejemplos_intro`, `ejemplos` | Casos con `titulo`, `texto`, `tabla` (primera fila = cabecera), `codigo` (bloque literal) y `nota`. |
 | `configuracion_intro`, `configuracion`, `requisitos_nota` | Pasos de puesta en marcha; las dependencias se añaden solas. |
@@ -89,10 +95,30 @@ con la caja del elemento (`locator.bounding_box()`).
   técnicos).
 - No mencionar a terceros ni a otros proveedores.
 
+## Nivel de detalle (contabilidad y planillas)
+
+Modelo: `al_l10n_pe_retention.yml`. Cada ficha debe tener:
+
+1. **Todas las funciones cubiertas.** Recorre menús, botones, asistentes,
+   reportes y acciones del módulo; agrupa los pasos con `seccion` (una por
+   función: configuración, flujo de clientes, de proveedores, refinanciación,
+   reportes, declaración…). Lo típico: 4–7 secciones y 12–20 capturas. Si una
+   función no se puede capturar, va igual como paso sin imagen.
+2. **Diagramas de flujo.** Al menos uno del proceso principal y uno por cada
+   proceso distinto (p. ej. compras y ventas). `flowchart TD` (vertical); textos
+   cortos con `<br/>`; decisiones con `{…}` y ramas etiquetadas. Solo lo que el
+   código hace.
+3. **Referencia campo por campo** de cada pantalla propia del módulo
+   (ajustes, formularios, asistentes, campos añadidos a modelos nativos), con
+   las etiquetas exactas de la interfaz, el valor por defecto real y su efecto.
+4. **Asientos contables** de cada operación que genere uno, copiados de
+   asientos reales de la base (`account_move_line`), con la referencia del
+   asiento. En planillas: asiento de la planilla, provisiones, CTS, etc.
+
 ## Criterios de capturas
 
-- 5–8 capturas por módulo, en el orden del recorrido, nombradas
-  `NN-descripcion.png` (`01-ajustes.png`…).
+- En el orden del recorrido, nombradas `NN-descripcion.png`
+  (`01-ajustes.png`…); cantidad según el apartado anterior.
 - Recortar a lo relevante: `selector='.modal-content'` para diálogos,
   `'.o_form_view .o_form_sheet_bg'` para formularios; vista completa para
   listas, informes y ajustes. El ayudante aparta el ratón y quita el fondo
