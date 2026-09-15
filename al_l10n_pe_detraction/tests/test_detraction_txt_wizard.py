@@ -124,7 +124,20 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             supplier.action_generate()
 
     def _create_invoice(self, price=5000.0):
-        """Factura de venta con detracción al cliente ``self.customer``."""
+        """Factura de venta con detracción al cliente ``self.customer``.
+
+        La factura electrónica exige que la compañía tenga su cuenta en el
+        Banco de la Nación para publicar una venta con detracción."""
+        national_bank = self.env.ref('l10n_pe.peruvian_national_bank')
+        if not self.company.bank_ids.filtered(
+                lambda b: b.bank_id == national_bank):
+            self.env['res.partner.bank'].create({
+                'partner_id': self.company.partner_id.id,
+                'bank_id': national_bank.id,
+                'acc_number': BN_ACCOUNT,
+                # En v19 la factura rechaza una cuenta propia «no de confianza».
+                'allow_out_payment': True,
+            })
         doc_type = self.env['l10n_latam.document.type'].search(
             [('code', '=', '01'),
              ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
