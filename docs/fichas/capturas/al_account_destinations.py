@@ -52,7 +52,7 @@ with Captura('al_account_destinations') as c:
         pestaña(c, 'Configuración de destinos')
         c.foto('03-cuenta-destinos', selector='.o_form_view .o_form_sheet_bg')
 
-        # 4. Plan contable con la columna opcional «Incluye destino»
+        # 5. Plan contable con la columna opcional «Incluye destino»
         c.abrir_accion('account.action_account_form', ms=2000)
         buscar = c.page.locator('.o_searchview_input').first
         buscar.fill('9')
@@ -67,7 +67,7 @@ with Captura('al_account_destinations') as c:
         c.esperar(500)
         c.foto('05-plan-contable')
 
-        # 5. Vista consolidada de destinos por cuenta
+        # 6. Vista consolidada de destinos por cuenta
         c.abrir_accion('al_account_destinations.account_account_destiny_action', ms=2000)
         for header in c.page.locator('.o_group_header').all():
             header.click()
@@ -77,7 +77,7 @@ with Captura('al_account_destinations') as c:
     if '2' in BLOQUES:
         c.page.set_viewport_size({'width': 1300, 'height': 900})
 
-        # 6. La suma de porcentajes debe ser 100 %
+        # 4. La suma de porcentajes debe ser 100 %
         c.abrir_registro('account.account', ACCOUNT, ms=2000)
         pestaña(c, 'Configuración de destinos')
         c.page.locator('.o_field_one2many .o_data_row').first.locator(

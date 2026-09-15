@@ -298,7 +298,7 @@ pasos:
       entrega el TXT y lista los comprobantes excluidos con su motivo.
     puntos:
       - "Como adquiriente: facturas de proveedor, cabecera con `*` y la cuenta de cada proveedor."
-      - "Como proveedor: facturas de venta, cabecera con `P` y la cuenta de detracciones de la propia empresa (en su contacto)."
+      - "Como proveedor: facturas de venta, cabecera con `P` y el RUC de la empresa; cada línea identifica al cliente que debía depositar y lleva la cuenta de detracciones de la propia empresa (en su contacto)."
       - El archivo se valida antes de entregarse; el banco rechaza el lote completo si una línea no mide lo que debe.
     imagen: screenshots/14-deposito-masivo.png
     pie: "Julio de 2026: tres facturas de proveedor en el archivo y una excluida por no tener cuenta del Banco de la Nación."

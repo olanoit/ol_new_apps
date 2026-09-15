@@ -365,10 +365,11 @@ funcionalidades:
       - Obras con altitud, establecimiento y bonificaciones que activan.
   - grupo: Planilla semanal
     items:
-      - Estructura CONSTRUCCIÓN CIVIL con 24 reglas y códigos de la tabla 22 de SUNAT.
+      - Estructura CONSTRUCCIÓN CIVIL con 29 reglas y códigos de la tabla 22 de SUNAT.
       - Jornal calculado en la ficha del trabajador y congelado en la boleta.
       - Horas extras al 60 % y 100 % sobre el valor hora sin redondear.
       - Remuneración computable (TREM) que enumera lo afecto; beneficios sociales, gratificación y movilidad quedan fuera.
+      - ONP o AFP del trabajador (fondo, comisión sobre flujo o mixta y prima de seguros) sobre TREM, con los mismos códigos SUNAT que la planilla general.
       - EsSalud, SCTR salud y SCTR pensión por separado, solo para quien tiene cobertura.
       - Periodos semanales colgados de su mes y cortados a fin de mes.
   - grupo: Beneficios pagados en planilla
@@ -391,7 +392,7 @@ ejemplos_intro: >-
 ejemplos:
   - titulo: Reglas de la estructura CONSTRUCCIÓN CIVIL
     texto: >-
-      Las reglas que instala el módulo, en su orden de cálculo. Las bonificaciones
+      Las 29 reglas que instala el módulo, en su orden de cálculo. Las bonificaciones
       del catálogo se suman en la regla que indica su «Código de la regla».
     tabla:
       - [Código, Nombre, SUNAT, Cálculo]
@@ -410,6 +411,11 @@ ejemplos:
       - [AESC, Asignación escolar, "0201", "Jornal × 30 ÷ 360 × días × 7/6 × hijos con derecho"]
       - [CONAF, CONAFOVICER 2%, "0703", "−(% de la compañía sobre JOR + DSO)"]
       - [TREM, Total remuneración computable, "—", "JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU + HE60 + HE100 + AESC"]
+      - [ONP, ONP, "0607", "−(% del fondo sobre TREM), solo afiliados a la ONP"]
+      - [A_JUB, AFP Aporte Fondo de Pensiones, "0608", "−(% del fondo sobre TREM), afiliados a una AFP"]
+      - [COMFI, AFP Comisión sobre flujo, "0601", "−(% de comisión sobre TREM), comisión sobre flujo"]
+      - [COMMIX, AFP Comisión mixta, "0601", "−(% de comisión sobre TREM), comisión mixta"]
+      - [SEGI, AFP Prima de seguros, "0606", "−(% de prima sobre TREM hasta el tope asegurable)"]
       - [ESSALUD, EsSalud, "0804", "% de la compañía sobre TREM"]
       - [SCTRS, SCTR salud, "0805", "% de la compañía sobre TREM, solo con cobertura"]
       - [SCTRP, SCTR pensión, "0806", "% de la compañía sobre TREM, solo con cobertura"]
@@ -448,10 +454,13 @@ ejemplos:
       - [GRAT, Gratificación proporcional, "89,30 × 40 ÷ 150 × 7 días", "166,69"]
       - [BEXT, Bonificación Ley 30334, "9 % de 166,69", "15,00"]
       - [CONAF, CONAFOVICER, "2 % de 625,10", "-12,50"]
-      - [NETO, Neto a pagar, "1.228,78 − 12,50", "1.216,28"]
+      - [ONP, ONP (afiliado a la ONP), "13 % de 861,54", "-112,00"]
+      - [NETO, Neto a pagar, "1.228,78 − 12,50 − 112,00", "1.104,28"]
     nota: >-
       La remuneración computable es 861,54 (jornal + D.S.O. + BUC + BAE + cota
-      cero) y EsSalud, a cargo del empleador, 77,54. En agosto la gratificación
+      cero): sobre ella se calculan la ONP o la AFP del trabajador y EsSalud, a
+      cargo del empleador, 77,54. Movilidad, indemnización, vacaciones y
+      gratificación no aportan. En agosto la gratificación
       se devenga en la ventana de Navidad (150 días); con el mismo jornal, hasta
       julio saldría 119,07.
 
