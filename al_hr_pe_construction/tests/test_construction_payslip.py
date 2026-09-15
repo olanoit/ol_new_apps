@@ -294,3 +294,9 @@ class TestConstructionPayslip(TransactionCase):
         for code in ('ONP', 'A_JUB', 'COMFI', 'COMMIX', 'SEGI'):
             self.assertEqual(self._line(payslip, code), 0.0)
 
+    def test_structure_has_only_its_own_rules(self):
+        """Ni reglas nativas copiadas (BASIC/GROSS/NET) ni reglas perdidas."""
+        codes = set(self.structure.rule_ids.mapped('code'))
+        self.assertFalse(codes & {'BASIC', 'GROSS', 'NET'})
+        self.assertTrue({'JOR', 'TREM', 'ONP', 'A_JUB', 'NETO'} <= codes)
+

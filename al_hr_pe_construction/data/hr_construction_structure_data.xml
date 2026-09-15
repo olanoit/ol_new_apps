@@ -18,14 +18,19 @@
             <field name="country_id" ref="base.pe"/>
         </record>
 
-        <!-- rule_ids=[(5,0,0)] anula el default que copiaría las reglas
-             nativas BASIC/GROSS/NET. -->
-        <record id="construction_structure" model="hr.payroll.structure">
+        <!-- default_rule_ids=[] evita que la estructura nazca con las reglas
+             nativas BASIC/GROSS/NET copiadas por su valor por defecto.
+             Antes se usaba rule_ids=[(5,0,0)], pero este archivo se recarga
+             en cada actualización (no es noupdate) y ese comando BORRA las
+             reglas: en una base con boletas de construcción sus líneas las
+             referencian y la actualización fallaba. El contexto solo actúa
+             al crear la estructura. -->
+        <record id="construction_structure" model="hr.payroll.structure"
+                context="{'default_rule_ids': []}">
             <field name="name">CONSTRUCCIÓN CIVIL</field>
             <field name="type_id" ref="hr.structure_type_employee"/>
             <field name="use_worked_day_lines" eval="True"/>
             <field name="country_id" ref="base.pe"/>
-            <field name="rule_ids" eval="[(5, 0, 0)]"/>
         </record>
 
         <!-- ============ INGRESOS ============ -->
