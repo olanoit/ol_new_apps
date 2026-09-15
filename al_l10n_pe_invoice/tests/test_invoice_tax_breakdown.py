@@ -191,7 +191,7 @@ class TestInvoiceTaxBreakdown(AccountTestInvoicingCommon):
     # Bloques auxiliares del reporte
     # ------------------------------------------------------------------
     def test_is_credit_flag(self):
-        """``is_credit`` distingue contado de crédito por el plazo de pago."""
+        """``is_credit`` sigue al XML: crédito solo si vence después de emitir."""
         igv = self._tax('1000')
         term = self.env['account.payment.term'].create({
             'name': 'Crédito 30 días',
@@ -200,11 +200,83 @@ class TestInvoiceTaxBreakdown(AccountTestInvoicingCommon):
                                          'value_amount': 100.0,
                                          'nb_days': 30})],
         })
+        immediate = self.env['account.payment.term'].create({
+            'name': 'Pago inmediato test',
+            'company_id': self.company.id,
+            'line_ids': [Command.create({'value': 'percent',
+                                         'value_amount': 100.0,
+                                         'nb_days': 0})],
+        })
         move = self._invoice([('Servicio', 1000.0, igv)], post=False)
         move.invoice_payment_term_id = False
-        self.assertFalse(move.is_credit, 'sin plazo de pago es contado')
+        move.invoice_date_due = move.invoice_date
+        self.assertFalse(move.is_credit, 'vencer el día de emisión es contado')
+        move.invoice_payment_term_id = immediate
+        self.assertFalse(move.is_credit,
+                         'un plazo con una línea a 0 días es contado, como en el XML')
+        self.assertEqual(move._l10n_pe_edi_get_payment_means(), 'Contado')
         move.invoice_payment_term_id = term
         self.assertTrue(move.is_credit)
+        self.assertEqual(move._l10n_pe_edi_get_payment_means(), 'Credito')
+
+    def test_report_exchange_rate_is_the_invoice_rate(self):
+        """El T.C. del reporte es el que usó la factura, aunque ese día no
+        tenga una tasa cargada con fecha idéntica."""
+        igv = self._tax('1000')
+        pen_move = self._invoice([('Servicio', 1000.0, igv)], post=False)
+        self.assertEqual(pen_move._l10n_pe_report_exchange_rate(), 0.0)
+        usd_move = self._invoice([('Servicio', 1000.0, igv)], currency=self.usd,
+                                 post=False, invoice_date='2026-03-17')
+        rate = usd_move._l10n_pe_report_exchange_rate()
+        self.assertTrue(rate)
+        self.assertAlmostEqual(rate, 1.0 / usd_move.invoice_currency_rate, 6)
+
+    def test_report_company_address_without_name(self):
+        self.company.partner_id.write({
+            'street': 'Av. Test 123', 'city': 'San Isidro', 'zip': '15046'})
+        move = self._invoice([('Servicio', 1000.0, self._tax('1000'))], post=False)
+        address = move._l10n_pe_report_company_address()
+        self.assertNotIn(self.company.name, address)
+        self.assertIn('Av. Test 123', address)
+        self.assertIn('San Isidro', address)
+        self.assertIn('15046', address)
+        self.assertNotIn('15046San Isidro', address)
+        self.assertNotIn('\n', address)
+        # Distrito y ciudad iguales no se repiten.
+        self.assertEqual(move._l10n_pe_report_address(self.env['res.partner'].new({
+            'street': 'Calle 1', 'city': 'Lima', 'zip': '15001',
+            'state_id': False})), 'Calle 1, Lima, 15001')
+        self.assertNotIn(move.partner_id.name, move._l10n_pe_report_partner_address())
+
+    def test_slogan_only_with_the_signature_setting(self):
+        self.company.write({'company_eslogan_pdf': 'ESLOGAN DE PRUEBA',
+                            'active_fep_signatures': False})
+        move = self._invoice([('Servicio', 1000.0, self._tax('1000'))])
+        report = 'al_l10n_pe_invoice.report_cpe_invoice_a4_main'
+        html = self.env['ir.actions.report']._render_qweb_html(report, move.ids)[0]
+        self.assertNotIn(b'ESLOGAN DE PRUEBA', html)
+        self.company.active_fep_signatures = True
+        html = self.env['ir.actions.report']._render_qweb_html(report, move.ids)[0]
+        self.assertIn(b'ESLOGAN DE PRUEBA', html)
+
+    def test_invoice_from_sale_order_keeps_external_purchase(self):
+        """Facturar un pedido con «OC. externa» fallaba: la factura no tenía
+        el campo."""
+        self.env.user.group_ids = [Command.link(self.env.ref('sales_team.group_sale_manager').id)]
+        product = self.env['product.product'].create({
+            'name': 'Producto OC', 'invoice_policy': 'order',
+            'taxes_id': [Command.set(self._tax('1000').ids)]})
+        order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'external_purchase': 'OC-2026-0045',
+            'order_line': [Command.create({'product_id': product.id,
+                                           'product_uom_qty': 1,
+                                           'price_unit': 500.0})],
+        })
+        order.action_confirm()
+        invoice = order._create_invoices()
+        self.assertEqual(invoice.external_purchase, 'OC-2026-0045')
+        self.assertEqual(invoice.sale_id, order)
 
     def test_get_data_dues_single_due(self):
         """Sin detalle de cuotas se muestra una sola con el saldo pendiente."""

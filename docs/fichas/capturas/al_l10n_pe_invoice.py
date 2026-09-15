@@ -82,9 +82,16 @@ def imprimir(c):
     print('captura 03-imprimir')
 
 
+def sin_logo(c):
+    """Oculta el logotipo de la compañía: el de la base de demostración es una
+    marca registrada ajena y no debe salir en una ficha pública."""
+    c.js("document.querySelectorAll('img[alt=\"Logo\"]').forEach(e => e.style.visibility = 'hidden')")
+
+
 def reporte(c, url, nombre):
     ventana(c, NORMAL)
     c.abrir(url, ms=2000)
+    sin_logo(c)
     c.foto(nombre, selector='.cpe-a4', padding=14)
 
 
@@ -111,6 +118,7 @@ def a4_credito(c):
 def ticket(c):
     ventana(c, {'width': 420, 'height': 900})
     c.abrir(TICKET % FACTURA_EXONERADA, ms=2000)
+    sin_logo(c)
     c.foto('09-ticket', full_page=True)
     ventana(c, NORMAL)
 
@@ -118,6 +126,7 @@ def ticket(c):
 def ticket_detraccion(c):
     ventana(c, {'width': 420, 'height': 900})
     c.abrir(TICKET % FACTURA_DETRACCION, ms=2000)
+    sin_logo(c)
     c.foto('10-ticket-detraccion', full_page=True)
     ventana(c, NORMAL)
 

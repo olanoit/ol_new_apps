@@ -81,14 +81,14 @@ flujos:
         A[Factura, boleta o nota] --> B{¿Qué formato?}
         B -- "Botón Imprimir o ⚙ ▸ Imprimir ▸ CPE A4" --> C[A4 con papel «Comprobantes: A4 SUNAT»]
         B -- "⚙ ▸ Imprimir ▸ CPE Ticket" --> D[Ticket con papel de 80 mm]
-        C --> E[Encabezado, cliente, fechas, moneda<br/>y T.C. venta si no es en soles]
+        C --> E[Encabezado, cliente, fechas, moneda<br/>y T.C. de la factura si no es en soles]
         D --> E
         E --> F[Detalle y totales por código de tributo:<br/>solo filas con importe]
         F --> G[Monto en letras]
         G --> H{¿Sujeta a detracción?}
         H -- Sí --> I[Bloque SPOT: bien o servicio,<br/>porcentaje y monto en soles]
         H -- No --> J
-        I --> J{¿Término de pago con líneas?}
+        I --> J{¿Vence después<br/>de la emisión?}
         J -- Sí --> K[CRÉDITO y cuadro de cuotas<br/>solo en A4]
         J -- No --> L[CONTADO]
         K --> M{¿Hay XML firmado?}
@@ -136,7 +136,7 @@ pasos:
       **Eslogan** se imprime bajo los datos de la empresa y el
       **Representante** queda registrado en la compañía.
     puntos:
-      - El eslogan se imprime aunque la casilla esté desmarcada; la casilla solo controla el bloque de firmas.
+      - "Firma y eslogan van juntos: con la casilla desmarcada no se imprime ninguno de los dos."
     imagen: screenshots/01-ajustes.png
 
   - titulo: Representante y eslogan en la compañía
@@ -191,15 +191,15 @@ pasos:
 
   - titulo: Factura en dólares
     texto: >-
-      Moneda **DÓLARES AMERICANOS**, desglose en la moneda del documento y
-      **Tipo de cambio** de venta cuando hay una tasa registrada exactamente en
-      la fecha de emisión. Sin XML firmado, no hay recuadro de QR.
+      Moneda **DÓLARES AMERICANOS**, desglose en la moneda del documento y el
+      **Tipo de cambio** que usó la factura, con tres decimales. Sin XML
+      firmado, no hay recuadro de QR.
     imagen: screenshots/07-a4-dolares.png
-    pie: "F001-00000211: US$ 1.180,00; T.C. venta del 16/07/2026, S/ 3,391."
+    pie: "F001-00000211: US$ 1.180,00 con el tipo de cambio de la propia factura."
 
   - titulo: Venta al crédito desde un pedido
     texto: >-
-      Con un término de pago de varias líneas la forma de pago pasa a
+      Si la factura vence después de la fecha de emisión la forma de pago pasa a
       **CRÉDITO** y se añade **Información del crédito** con cada cuota. Si la
       factura viene de un pedido se imprimen **Pedido de venta** y **O/C
       externa**. Con descuento en alguna línea aparecen la columna **Desc. %**
@@ -244,7 +244,7 @@ pasos:
       **OC. externa** guarda el número de orden de compra del cliente; se
       edita en cotización y se imprime en el A4 como **O/C externa**.
     puntos:
-      - "Ojo: si se informa antes de facturar, la creación de la factura falla (ver preguntas frecuentes)."
+      - La factura creada desde el pedido copia la OC. externa, editable en la propia factura.
     imagen: screenshots/12-pedido-oc.png
 
 campos_intro: >-
@@ -255,7 +255,7 @@ campos:
     campos:
       - [Firma y eslogan en el reporte, Activa el bloque de firmas del A4., Desmarcado, "Firma y sello, «CANCELADO / CANJEADO» o «PENDIENTE DE PAGO» y «Recibido conforme»"]
       - [Representante, Persona responsable de la firma., Vacío, Se guarda en la compañía]
-      - [Eslogan, Texto bajo los datos de la empresa., Vacío, Se imprime en el A4 si tiene texto]
+      - [Eslogan, Texto bajo los datos de la empresa., Vacío, Se imprime en el A4 si tiene texto y la firma está activa]
   - grupo: Compañía
     ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas
     campos:
@@ -269,7 +269,7 @@ campos:
     ruta: Contabilidad ▸ Clientes ▸ Facturas
     campos:
       - [Orden de venta, Pedido del que sale la factura (solo lectura)., Lo pone la facturación del pedido, Pedido de venta en el A4]
-      - [Es Crédito, "Oculto: término de pago con líneas.", Calculado, "CRÉDITO y cuadro de cuotas"]
+      - [Es Crédito, "Oculto: la factura vence después de su emisión, el mismo criterio que el XML.", Calculado, "CRÉDITO y cuadro de cuotas"]
       - ["Base Imponible, IGV, ISC, IVAP, ICBPER, Monto Exonerado, Operaciones Inafectas, Otros Tributos", "Ocultos: importes por código de tributo, en la moneda del documento.", Calculados y guardados, Filas de totales del A4 y del ticket]
       - [Retención, "Oculto, no guardado: tributos con código RET.", Calculado, No se imprime]
   - grupo: Formatos de papel
@@ -298,7 +298,7 @@ funcionalidades:
       - "Importes por código de tributo SUNAT almacenados en la factura: base, IGV, ISC, IVAP, ICBPER, exonerado, inafecto y otros tributos."
       - Desglose en la moneda del documento, también en notas de crédito.
       - Vínculo de la factura con su orden de venta y OC. externa en el pedido.
-      - Marca de crédito según el término de pago.
+      - Marca de crédito con el mismo criterio que el XML (vencimiento posterior a la emisión).
       - Botón Imprimir de la factura directo al CPE A4.
   - grupo: Menú
     items:
@@ -355,23 +355,24 @@ faq:
       hash de la firma no permite verificar el comprobante.
   - pregunta: ¿Cuándo aparece el cuadro de cuotas?
     respuesta: >-
-      Cuando la factura tiene un término de pago con líneas: la forma de pago
-      pasa a **CRÉDITO** y se listan las cuotas con fecha y monto. Sin término
-      de pago, se imprime **CONTADO**. El ticket no lleva el cuadro.
+      Cuando la factura vence después de su fecha de emisión: la forma de pago
+      pasa a **CRÉDITO** y se listan las cuotas con fecha y monto. Si vence el
+      mismo día —incluido «Pago inmediato»— se imprime **CONTADO**, igual que
+      declara el XML. El ticket no lleva el cuadro.
   - pregunta: ¿Por qué no sale la fila de ISC o de exoneradas?
     respuesta: >-
       El desglose solo imprime las filas con importe distinto de cero. El IGV
       y el importe total se muestran siempre.
-  - pregunta: ¿Por qué la factura en dólares no muestra el tipo de cambio?
+  - pregunta: ¿Qué tipo de cambio imprime la factura en dólares?
     respuesta: >-
-      El A4 busca una tasa registrada exactamente en la fecha de emisión. Si
-      ese día no hay tasa (fin de semana, feriado), la fila no se imprime.
-  - pregunta: Al facturar un pedido con «OC. externa» aparece un error, ¿qué pasa?
+      El que usó la propia factura para convertir sus importes a soles, con
+      tres decimales. Es el mismo de sus asientos, también si se eligió el tipo
+      de compra o de venta con el módulo de tipo de cambio.
+  - pregunta: ¿De dónde sale la «O/C externa» del A4?
     respuesta: >-
-      En esta versión la creación de la factura desde un pedido con OC. externa
-      informada falla («Invalid field 'external_purchase' in 'account.move'»).
-      Mientras se corrige, facture el pedido y escriba la OC. externa después:
-      el A4 la toma del pedido.
+      De la factura: al facturar un pedido se copia su **OC. externa**, y se
+      puede escribir o corregir en la propia factura. Si la factura no la
+      tiene, el A4 la toma del pedido vinculado.
   - pregunta: ¿Incluye la guía de remisión?
     respuesta: >-
       No. La guía de remisión tiene su propio reporte en el módulo

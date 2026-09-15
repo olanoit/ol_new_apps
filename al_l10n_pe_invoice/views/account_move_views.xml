@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='delivery_date']" position="after">
                 <field name="sale_id" invisible="not sale_id" readonly="1"/>
+                <field name="external_purchase" invisible="move_type not in ('out_invoice', 'out_refund')"/>
             </xpath>
         </field>
     </record>

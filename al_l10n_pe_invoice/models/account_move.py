@@ -11,15 +11,67 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     sale_id = fields.Many2one('sale.order', string='Orden de venta')
+    external_purchase = fields.Char(
+        string='OC. externa', copy=False,
+        help='Orden de compra externa del cliente, tomada del pedido de venta.')
     is_credit = fields.Boolean(
         string='Es Crédito', compute='_compute_is_credit', store=True)
 
-    @api.depends('invoice_payment_term_id')
+    @api.depends('invoice_date', 'invoice_date_due')
     def _compute_is_credit(self):
+        """Contado o crédito con el mismo criterio que el XML de la factura
+        electrónica (``_l10n_pe_edi_get_payment_means``): crédito si vence
+        después de la emisión.
+
+        Antes se decidía por «el plazo de pago tiene líneas», pero en v19
+        todos los plazos las tienen —también «Pago inmediato»—, y el PDF
+        imprimía CRÉDITO en ventas al contado que el XML declaraba Contado.
+        """
         for move in self:
-            move.is_credit = bool(
-                move.invoice_payment_term_id
-                and move.invoice_payment_term_id.line_ids)
+            move.is_credit = move._l10n_pe_edi_get_payment_means() == 'Credito'
+
+    def _l10n_pe_report_exchange_rate(self):
+        """Tipo de cambio que usó la factura (moneda de la compañía por
+        unidad de la moneda del documento), o 0 si está en la moneda de la
+        compañía.
+
+        Antes el reporte buscaba una tasa con fecha idéntica a la de emisión
+        y no mostraba nada si ese día no se había cargado.
+        """
+        self.ensure_one()
+        if self.currency_id == self.company_currency_id or not self.invoice_currency_rate:
+            return 0.0
+        return 1.0 / self.invoice_currency_rate
+
+    def _l10n_pe_report_company_address(self):
+        """Dirección de la compañía en una línea (ver ``_l10n_pe_report_address``)."""
+        self.ensure_one()
+        return self._l10n_pe_report_address(self.company_id.partner_id)
+
+    def _l10n_pe_report_partner_address(self):
+        """Dirección del cliente o proveedor en una línea, sin su nombre."""
+        self.ensure_one()
+        return self._l10n_pe_report_address(self.partner_id)
+
+    @api.model
+    def _l10n_pe_report_address(self, partner):
+        """Dirección en una línea, sin el nombre del contacto.
+
+        ``contact_address`` incluye el nombre (repetido bajo el título del
+        reporte) y separa las partes con saltos de línea que el PDF no
+        muestra. Tampoco sirve ``_display_address``: el formato peruano de
+        ``l10n_pe`` es ``%(zip)s%(city)s``, sin espacio («15046San Isidro»).
+        """
+        district = partner.l10n_pe_district.name if 'l10n_pe_district' in partner._fields else ''
+        parts = [partner.street, partner.street2, district, partner.city,
+                 partner.state_id.name, partner.zip]
+        address = []
+        for part in parts:
+            part = ' '.join((part or '').split())
+            # Distrito y ciudad suelen coincidir («San Isidro, San Isidro»).
+            if part and (not address or address[-1].lower() != part.lower()):
+                address.append(part)
+        return ', '.join(address)
 
     def action_print_pdf(self):
         self.ensure_one()
