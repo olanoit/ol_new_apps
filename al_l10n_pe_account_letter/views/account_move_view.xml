@@ -16,20 +16,24 @@
                 <xpath expr="//page[@id='aml_tab']//list//field[@name='partner_id']" position="after">
                     <field name="l10n_pe_partner_vat" string="RUC" optional="show"/>
                 </xpath>
-                <xpath expr="//button[@name='button_draft']" position="after">
+                <!-- Botones inteligentes en su caja, no junto a «Restablecer a
+                     borrador»: en la cabecera salían pegados al número. -->
+                <xpath expr="//div[@name='button_box']" position="inside">
                     <button name="action_open_letter"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
-                            invisible="l10n_pe_letter_redeemed_state == 'not_redeemed' or l10n_pe_letter_id == False">
+                            invisible="l10n_pe_letter_redeemed_state == 'not_redeemed' or not l10n_pe_letter_id">
                         <field name="l10n_pe_letter_name" widget="statinfo" string="Canje"/>
                     </button>
+                    <!-- «not …»: en v19 «== []» no oculta un many2many vacío y el
+                         botón salía en todos los asientos. -->
                     <button name="action_open_letters"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
-                            invisible="l10n_pe_letter_ids == []">
-                        <field name="l10n_pe_letter_name" widget="statinfo" string="Canjes"/>
+                            invisible="not l10n_pe_letter_ids">
+                        <field name="l10n_pe_letter_count" widget="statinfo" string="Canjes"/>
                     </button>
                 </xpath>
             </field>

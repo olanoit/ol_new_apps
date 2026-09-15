@@ -24,9 +24,7 @@
                                 <field name="name"/>
                                 <field name="invoice_date"/>
                                 <field name="partner_id"/>
-                                <field name="rest_amount_currency"
-                                       string="Importe pendiente"
-                                       widget="monetary"/>
+                                <field name="refinance_pending_amount" widget="monetary"/>
                                 <field name="currency_id" column_invisible="1"/>
                             </list>
                         </field>
@@ -49,8 +47,9 @@
             <field name="res_model">l10n_pe.letter.refinance.massive.wizard</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
-            <field name="binding_model_id" ref="model_l10n_pe_letter"/>
-            <field name="binding_view_types">list</field>
+            <!-- Sin binding: la acción de servidor «Refinanciación masiva»
+                 ya la ofrece en el menú Acciones tras validar la selección;
+                 con las dos, la opción salía duplicada. -->
         </record>
     </data>
 </odoo>

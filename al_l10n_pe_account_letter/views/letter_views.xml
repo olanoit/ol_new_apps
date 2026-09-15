@@ -367,7 +367,7 @@
         </record>
         <!-- Acción de ventana Historial de canje Masivo Cliente-->
         <record model="ir.actions.act_window" id="account_letter_action_historial_clientes">
-            <field name="name">Historia de canje</field>
+            <field name="name">Historial de canje</field>
             <field name="res_model">l10n_pe.letter</field>
             <field name="view_id" ref="_account_letter_tree_clientes"/>
             <field name="view_mode">list,form</field>
@@ -376,7 +376,7 @@
         </record>
         <!-- Acción de ventana Historial de canje Masivo Proveedor-->
         <record model="ir.actions.act_window" id="account_letter_action_massive_proveedores">
-            <field name="name">Historia de canje</field>
+            <field name="name">Historial de canje</field>
             <field name="res_model">l10n_pe.letter</field>
             <field name="view_id" ref="_account_letter_tree_proveedores"/>
             <field name="view_mode">list</field>

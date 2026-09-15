@@ -25,6 +25,12 @@ class AccountMove(models.Model):
         string='Nombre de la letra',
         related='l10n_pe_letter_id.name',
     )
+    l10n_pe_letter_count = fields.Integer(
+        string='Nº de canjes', compute='_compute_l10n_pe_letter_count')
+
+    def _compute_l10n_pe_letter_count(self):
+        for move in self:
+            move.l10n_pe_letter_count = len(move.l10n_pe_letter_ids)
 
     # Método para el botón de abrir el canje relacionado
     def action_open_letter(self):

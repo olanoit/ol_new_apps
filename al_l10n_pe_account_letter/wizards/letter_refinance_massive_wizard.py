@@ -27,10 +27,17 @@ class L10nPeLetterRefinanceMassiveWizard(models.TransientModel):
         readonly=True,
     )
 
-    @api.depends('letter_ids', 'letter_ids.rest_amount_currency')
+    @api.depends('letter_ids')
     def _compute_total_amount(self):
+        """Lo que se va a refinanciar: el saldo adeudado de las letras.
+
+        Se calcula con el mismo método que usa la refinanciación. Antes se
+        sumaba ``rest_amount_currency``, que es lo que falta convertir en
+        letras: con todas las letras creadas daba 0."""
         for wizard in self:
-            wizard.total_amount = sum(wizard.letter_ids.mapped('rest_amount_currency'))
+            wizard.total_amount = sum(
+                letter._prepare_refinance_invoice_lines()[0]
+                for letter in wizard.letter_ids)
 
     @api.model
     def default_get(self, fields_list):

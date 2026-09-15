@@ -49,21 +49,10 @@ class L10nPeLetterMassive(models.Model):
             parent_record = self.env['l10n_pe.letter'].browse(record.id)
             record.refinance_origin_ids = parent_record.refinance_origin_ids
 
-    @api.depends('letter_line_ids', 'letter_move_ids')
-    def _compute_is_banked(self):
-        for record in self:
-            if record.is_massive_letter:
-                letter_line = record.letter_move_ids
-            else:
-                letter_line = record.letter_line_ids
-            if record.state == 'redeemed' and letter_line:
-                all_banked = all(letter.bank_id for letter in letter_line)
-                all_code = all(letter.code for letter in letter_line)
-                all_letter_type = all(letter.letter_type for letter in letter_line)
-                if all_banked and all_code and all_letter_type:
-                    record.state = 'banked'
-                else:
-                    record.state = 'redeemed'
+    def _banked_letter_lines(self):
+        """En el canje masivo las letras están en ``letter_move_ids``."""
+        self.ensure_one()
+        return self.letter_move_ids if self.is_massive_letter else self.letter_line_ids
 
     @api.depends('invoice_line_ids.invoice_name', 'letter_invoices_ids.invoice_name')
     def _compute_related_invoice_names(self):

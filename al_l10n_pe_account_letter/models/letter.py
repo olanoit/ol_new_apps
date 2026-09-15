@@ -69,10 +69,11 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
         letter_line_ids = self.letter_id.letter_line_ids
         if self.canje_type == 'one':
             letter_line_ids = self.letter_line_id
-        for letter_line in letter_line_ids:
-            letter_line.bank_id = self.bank_id.id
-            letter_line.code = self.code
-            letter_line.letter_type = self.letter_type
+        letter_line_ids.write({
+            'bank_id': self.bank_id.id,
+            'code': self.code,
+            'letter_type': self.letter_type,
+        })
         return True
 
 
@@ -665,7 +666,9 @@ class L10nPeLetter(models.Model):
             raise UserError('No se ha encontrado el tipo de letra seleccionado.')
         account_move = self.env['account.move'].create({
             'ref': ref,
-            'date': self.invoice_date,
+            # La fecha del envío al banco, no la del canje: el asistente la
+            # pide precisamente para eso (y valida que no sea anterior).
+            'date': letter_date,
             'journal_id': self.journal_id.id,
             'partner_id': self.partner_id.id,
             'line_ids': [(0, 0, line) for line in account_move_lines],
@@ -732,18 +735,33 @@ class L10nPeLetter(models.Model):
             for debit_line, credit_line in zip(debit_lines, credit_lines):
                 (debit_line + credit_line).reconcile()
 
-    # Método para el estado de bancarizar
-    @api.onchange('letter_line_ids')
-    def _compute_is_banked(self):
-        if self.state in ['redeemed', 'banked']:
-            for record in self:
-                has_banked = any(letter.bank_id for letter in record.letter_line_ids)
-                has_code = any(letter.code for letter in record.letter_line_ids)
-                has_letter_type = any(letter.letter_type for letter in record.letter_line_ids)
-                if has_banked and has_code and has_letter_type:
-                    record.state = 'banked'
-                else:
-                    record.state = 'redeemed'
+    # Estado «Bancarizado»
+    def _banked_letter_lines(self):
+        """Letras que cuentan para el estado «Bancarizado»."""
+        self.ensure_one()
+        return self.letter_line_ids
+
+    def _update_banked_state(self):
+        """Pasa a «Bancarizado» el canje con todas sus letras enviadas al
+        banco (banco, código y tipo de cobranza libre o descuento) y lo
+        devuelve a «Canjeado» si alguna deja de estarlo.
+
+        Antes era un ``onchange`` sobre las letras: solo corría al editarlas
+        en pantalla, y en estado canjeado están bloqueadas, así que tras el
+        asistente de envío al banco el canje nunca cambiaba de estado.
+
+        Son **todas** y no alguna: el botón «Canje» solo se ofrece en estado
+        «Canjeado», y al enviar las letras de una en una el canje no puede
+        cambiar de estado hasta que se envíe la última.
+        """
+        for record in self.filtered(lambda l: l.state in ('redeemed', 'banked')):
+            lines = record._banked_letter_lines()
+            banked = bool(lines) and all(
+                line.bank_id and line.code and line.letter_type in ('billing', 'discount')
+                for line in lines)
+            state = 'banked' if banked else 'redeemed'
+            if record.state != state:
+                record.state = state
 
     # Canje Masivo
     is_massive_letter = fields.Boolean(
@@ -1018,6 +1036,17 @@ class L10nPeLetter(models.Model):
     def _onchange_refinance_id(self):
         if not self.refinance_id:
             self.is_refinance_parent = False
+
+    refinance_pending_amount = fields.Monetary(
+        string='Importe pendiente',
+        compute='_compute_refinance_pending_amount',
+        help='Saldo adeudado de las letras que se refinanciaría.')
+
+    def _compute_refinance_pending_amount(self):
+        for record in self:
+            record.refinance_pending_amount = (
+                record._prepare_refinance_invoice_lines()[0]
+                if record.letter_line_ids else 0.0)
 
     def _prepare_refinance_invoice_lines(self):
         """Builds the duplicated invoice lines for refinancing purposes."""

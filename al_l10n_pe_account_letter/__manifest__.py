@@ -36,7 +36,7 @@ se usaban en la lógica del módulo).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '5.20260901',
+    'version': '6.20260901',
     'license': 'OPL-1',
     'depends': [
         'mail',

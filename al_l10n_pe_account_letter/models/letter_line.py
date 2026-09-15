@@ -216,6 +216,17 @@ class L10nPeLetterLine(models.Model):
                 values['exchange_rate'] = letter.exchange_rate
         return super().create(vals_list)
 
+    BANK_FIELDS = ('bank_id', 'code', 'letter_type')
+
+    def write(self, vals):
+        result = super().write(vals)
+        if any(field in vals for field in self.BANK_FIELDS):
+            self.letter_id._update_banked_state()
+            # Las letras de un canje masivo cuelgan de él por many2many.
+            self.env['l10n_pe.letter.massive'].search(
+                [('letter_move_ids', 'in', self.ids)])._update_banked_state()
+        return result
+
     # Evitar crear letras con el mismo número para el mismo partner
     @api.constrains('nro_letter')
     def _check_nro_letter(self):

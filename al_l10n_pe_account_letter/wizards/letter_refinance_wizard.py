@@ -22,7 +22,7 @@ class L10nPeLetterRefinanceWizard(models.TransientModel):
         created_refinance_letter = self.env['l10n_pe.letter'].create_refinance(letter_id, refinance_date)
 
         return {
-            'name': 'Canje de letra refinanaciada',
+            'name': 'Canje de letra refinanciada',
             'type': 'ir.actions.act_window',
             'res_model': 'l10n_pe.letter',
             'res_id': created_refinance_letter.id,
