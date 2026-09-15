@@ -5,7 +5,7 @@ subtitulo: >-
   676 / 776 generado, conciliable por socio y con su analítica.
 categoria: Localización Perú · Contabilidad
 etiquetas: [Diferencia de cambio, "Art. 34 Reglamento LIR", Activo compra / pasivo venta, Por socio, Analítica, Asiento 676 / 776]
-portada: screenshots/05-cierre-julio.png
+portada: screenshots/11-cierre-julio.png
 
 destacados_intro: >-
   Un cierre por mes y moneda, en cuatro clics: traer el tipo de cambio,
@@ -63,10 +63,67 @@ contexto:
     variación. Las diferencias realizadas que Odoo registra al conciliar
     cobros y pagos también quedan dentro del saldo.
 
+flujos_intro: >-
+  El ciclo de un cierre y cómo se calcula cada renglón del detalle.
+flujos:
+  - id: cierre
+    titulo: El cierre del mes
+    texto: >-
+      Estados Borrador → Calculado → Contabilizado, con la vuelta atrás por
+      Cancelar.
+    mermaid: |
+      flowchart TD
+        A[Nuevo cierre: mes, año, moneda<br/>y T.C. del último o penúltimo día] --> B[Traer T.C.]
+        B --> C{¿Hay T.C. registrado<br/>en esa fecha?}
+        C -- Sí --> F[Compra y venta en el cierre]
+        C -- No --> D[Intenta descargarlo de apis.net.pe]
+        D --> E{¿Hay ahora T.C. en esa fecha<br/>o en una anterior?}
+        E -- No --> X[Error: registre el T.C. a mano]
+        E -- "Sí, de esa fecha" --> F
+        E -- "Sí, anterior" --> E2[Usa el último anterior<br/>y lo anota en el historial]
+        E2 --> F
+        F --> G[Calcular]
+        G --> H{¿Diario, compra y venta, cuentas 676/776<br/>y ningún cierre posterior contabilizado?}
+        H -- No --> Y[Error con lo que falta]
+        H -- Sí --> I[Detalle por cuenta o cuenta y socio:<br/>estado Calculado]
+        I --> J[Revisar: apuntes de cada renglón,<br/>analítica editable y vista previa del asiento]
+        J --> K[Contabilizar: asiento publicado<br/>el último día del mes]
+        K --> L[Estado Contabilizado]
+        L -- Cancelar --> M[Asiento cancelado]
+        M -- Volver a borrador --> A
+  - id: renglon
+    titulo: El cálculo de cada renglón
+    texto: >-
+      La misma regla para todas las cuentas marcadas, sobre los apuntes
+      publicados en la moneda del cierre hasta su fecha.
+    mermaid: |
+      flowchart TD
+        A[Apuntes publicados en US$ hasta el fin de mes<br/>en cuentas marcadas para el cierre] --> B{¿Cuenta con detalle?}
+        B -- Sí --> C[Un grupo por cuenta y socio]
+        B -- No --> D[Un grupo por cuenta]
+        C --> E[Saldo en M.E. y saldo contable en S/<br/>incluidos los cierres anteriores]
+        D --> E
+        E --> F{¿Ambos saldos en cero?}
+        F -- Sí --> G[Se descarta]
+        F -- No --> H{¿T.C. a aplicar?}
+        H -- "Automático: activo" --> I[Compra]
+        H -- "Automático: pasivo" --> J[Venta]
+        H -- Siempre compra / Siempre venta --> K[El forzado]
+        I --> L[Saldo revaluado = saldo M.E. × T.C.<br/>Ajuste = revaluado − saldo contable]
+        J --> L
+        K --> L
+        L --> M{¿Signo del ajuste?}
+        M -- Positivo --> N[Cargo a la cuenta<br/>abono a 776 ganancia]
+        M -- Negativo --> O[Abono a la cuenta<br/>cargo a 676 pérdida]
+    pie: La contrapartida se agrupa por naturaleza y por distribución analítica; la línea de la cuenta de balance no lleva analítica.
+
 pasos_intro: >-
-  Recorrido con los cierres de junio y julio de 2026 de la demostración
-  (clientes y proveedor «DEMO TC» en dólares).
+  Recorrido con los cierres de junio y julio de 2026 contabilizados y un cierre
+  de agosto calculado sin contabilizar (clientes y proveedor «DEMO TC» en
+  dólares).
 pasos:
+  - seccion: Configuración
+    texto: Diario y cuentas, una sola vez.
   - titulo: Elegir el diario del cierre
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ Cierre de tipo de cambio
     texto: >-
@@ -90,47 +147,187 @@ pasos:
   - titulo: Revisar las cuentas incluidas
     ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Cuentas del cierre de T.C.
     texto: >-
-      El plan contable filtrado por **En el cierre de T.C. (PE)**: de un vistazo,
-      qué cuentas entran al cálculo.
+      El plan contable filtrado por **En el cierre de T.C. (PE)**. La columna
+      opcional **Cierre de tipo de cambio** muestra el modo de cada cuenta.
     imagen: screenshots/03-cuentas-cierre.png
+    pie: "Demostración: 1041002 sin detalle; 1212000 y 4212000 con detalle por socio."
 
-  - titulo: Crear el cierre del mes
+  - seccion: El cierre del mes
+    texto: Traer el tipo de cambio, calcular y revisar.
+  - titulo: Lista de cierres
     ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio
     texto: >-
-      Cree un cierre, elija mes y año y pulse **Traer T.C.**: toma compra y
-      venta de la fecha de cierre registradas por el módulo de tipo de cambio.
-      La lista resume ganancia, pérdida y neto de cada mes.
-    puntos:
-      - "**T.C. del día**: último o penúltimo día del mes."
-      - Si no hay tipo registrado para esa fecha intenta descargarlo y, si no, usa el último anterior y lo anota en el historial.
-      - Los tipos de cambio siguen siendo editables mientras el cierre no esté contabilizado.
+      Un renglón por mes con T.C. compra y venta, ganancia, pérdida, neto,
+      asiento y estado. Por defecto oculta los cancelados (filtro
+      **Vigentes**); se agrupa por año, moneda o estado.
     imagen: screenshots/04-cierres.png
 
-  - titulo: Calcular y revisar el detalle
-    ruta: Cierre ▸ Calcular
+  - titulo: Crear, traer el T.C. y calcular
+    ruta: Cierre de tipo de cambio ▸ Nuevo ▸ Traer T.C. ▸ Calcular
     texto: >-
-      **Calcular** llena el **Detalle** con una fila por cuenta (o por cuenta y
-      socio): saldo en moneda extranjera, tipo y valor del T.C., saldo
-      contable, saldo revaluado y ajuste. Los grupos totalmente saldados no
-      aparecen.
+      Elija mes y año y pulse **Traer T.C.**: toma compra y venta registradas
+      para la fecha del T.C. **Calcular** llena el **Detalle** con una fila por
+      cuenta o por cuenta y socio: saldo en M.E., tipo y valor del T.C., saldo
+      contable, saldo revaluado y ajuste. Arriba, **Resultado del mes**.
     puntos:
-      - La lupa de cada fila abre los apuntes que forman el saldo.
-      - La analítica de cada fila se puede corregir antes de contabilizar.
-      - Mientras está calculado, la pestaña **Vista previa del asiento** muestra el asiento que se generará.
-    imagen: screenshots/05-cierre-julio.png
-    pie: "Julio 2026: ganancia S/ 84,00, pérdida S/ 375,00, neto S/ -291,00."
+      - "**T.C. del día**: último o penúltimo día del mes."
+      - "Sin tipo en esa fecha intenta descargarlo y, si no, usa el último anterior y lo anota en el historial (a la derecha)."
+      - Compra y venta siguen editables mientras el cierre no esté contabilizado.
+      - Los grupos totalmente saldados no aparecen.
+      - "Con contabilidad analítica activada se ven además **Analítica**, **Distribución fija** y la columna de distribución del detalle; el usuario de las capturas no la tiene."
+    imagen: screenshots/05-cierre-calculado.png
+    pie: "Agosto 2026: no había T.C. del 31/08 y se tomó el del 02/08 (3,391 / 3,400); pérdida S/ 100,00 y ganancia S/ 24,00."
 
-  - titulo: Contabilizar el asiento de ajuste
-    ruta: Cierre ▸ Contabilizar ▸ Asiento
+  - titulo: Vista previa del asiento
+    ruta: Cierre calculado ▸ Vista previa del asiento
+    texto: >-
+      Mientras el cierre está **Calculado**, esta pestaña muestra el asiento
+      que se generará, con cuenta, socio, etiqueta, debe y haber. La
+      analítica de cada renglón del detalle se puede corregir antes.
+    imagen: screenshots/06-vista-previa.png
+    pie: "La pérdida se abre en S/ 40,00 (DEMO TC Analítica, con su distribución) y S/ 60,00 sin analítica (36 + 24)."
+
+  - titulo: Los apuntes que forman un saldo
+    ruta: Detalle ▸ lupa del renglón
+    texto: >-
+      La lupa abre los apuntes publicados que suman el saldo de ese renglón
+      —documentos, cobros y ajustes de cierres anteriores—, sin el asiento del
+      propio cierre.
+    imagen: screenshots/07-apuntes-renglon.png
+    pie: "1212000 · DEMO TC Cliente en julio: venta de junio, ajuste de junio y cobro de julio."
+
+  - titulo: Cancelar o volver a borrador
+    ruta: Cierre ▸ Cancelar
+    texto: >-
+      **Cancelar** pide confirmación («De acuerdo») y anula el asiento de
+      ajuste si lo hay.
+      **Volver a borrador** borra ese asiento y deja el mes listo para
+      recalcular. Un cierre contabilizado no se puede eliminar.
+    puntos:
+      - Los cancelados no cuentan para la regla de un cierre por mes, moneda y compañía.
+      - Un mes no se calcula ni contabiliza si hay un cierre posterior contabilizado.
+    imagen: screenshots/08-cancelar.png
+
+  - seccion: Cierres contabilizados
+    texto: Junio y julio de 2026, con sus asientos.
+  - titulo: Cierre de junio
+    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio ▸ Junio 2026
+    texto: >-
+      Compra 3,410 y venta 3,418. Las cuentas por cobrar suben con el dólar
+      (ganancia) y la cuenta por pagar también (pérdida). El renglón de DEMO TC
+      Analítica lleva la distribución 60 / 40 heredada de sus ventas.
+    imagen: screenshots/09-cierre-junio.png
+    pie: "Ganancia S/ 540,00, pérdida S/ 204,00, neto S/ 336,00."
+
+  - titulo: Asiento de junio
+    ruta: Cierre ▸ Asiento
     texto: >-
       **Contabilizar** crea y publica el asiento en el diario del cierre con
-      fecha del último día del mes. Las líneas de balance mueven solo soles; la
-      ganancia y la pérdida van en líneas separadas, una por cada distribución
-      analítica.
-    puntos:
-      - "**Cancelar** anula el asiento; el mes puede rehacerse."
-      - Cada apunte guarda el **T.C. de cierre** con el que se revaluó.
-    imagen: screenshots/06-asiento.png
+      fecha del último día del mes. Las líneas de balance mueven solo soles;
+      la ganancia y la pérdida van en líneas separadas, una por distribución
+      analítica. La columna opcional **T.C. de cierre** guarda el tipo con el
+      que se revaluó cada apunte.
+    imagen: screenshots/10-asiento-junio.png
+
+  - titulo: Cierre de julio
+    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio ▸ Julio 2026
+    texto: >-
+      Compra 3,395 y venta 3,404. El dólar baja: los activos pierden y el
+      pasivo gana. Cada saldo contable ya incluye el ajuste de junio, así que
+      solo se reconoce la variación de julio.
+    imagen: screenshots/11-cierre-julio.png
+    pie: "Ganancia S/ 84,00, pérdida S/ 375,00, neto S/ -291,00."
+
+  - titulo: Asiento de julio
+    ruta: Cierre ▸ Asiento
+    texto: >-
+      La pérdida de DEMO TC Analítica (S/ 150,00) va en su propia línea a la
+      676 con la distribución 60 / 40; el resto de la pérdida, sin analítica.
+    imagen: screenshots/12-asiento-julio.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, con la etiqueta que se ve en pantalla.
+campos:
+  - grupo: Ajustes
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Cierre de tipo de cambio
+    campos:
+      - [Diario del cierre, Diario general de los asientos de ajuste., Vacío, Diario propuesto en cada cierre nuevo]
+  - grupo: Cuenta contable
+    ruta: Plan contable ▸ (cuenta) ▸ Contabilidad ▸ Cierre de tipo de cambio (PE)
+    campos:
+      - [Cierre de tipo de cambio, "Sin detalle (consolidado por cuenta) o Con detalle (por socio).", Vacío (no entra), Incluye la cuenta en el cálculo; solo activo y pasivo]
+      - [T.C. a aplicar, "Automático (activo → compra / pasivo → venta), Siempre compra o Siempre venta.", Automático, Tipo con el que se revalúa; vuelve a Automático si se quita la marca]
+  - grupo: Cierre
+    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio
+    campos:
+      - [Mes / Año, Periodo del cierre., Mes y año actuales, "Título «Julio 2026»; un cierre vigente por mes, moneda y compañía"]
+      - [Fecha de cierre, Último día del mes., Calculada, Fecha de corte de los saldos y del asiento]
+      - [Moneda extranjera, Moneda de las partidas a revaluar., USD, Debe ser distinta del sol]
+      - [T.C. del día, Último día del mes o penúltimo día del mes., Último día del mes, Fecha del T.C.]
+      - [Fecha del T.C., Fecha cuyo tipo se busca., Calculada, "—"]
+      - [T.C. compra, Tipo para las cuentas de activo., "Vacío; lo llena «Traer T.C.»", Editable hasta contabilizar]
+      - [T.C. venta, Tipo para las cuentas de pasivo., "Vacío; lo llena «Traer T.C.»", Editable hasta contabilizar]
+      - [Diario, Diario general del asiento., Diario del cierre de Ajustes, Obligatorio para calcular]
+      - [Analítica, "Heredada de los apuntes de origen, Distribución fija de este cierre o Sin analítica.", Heredada, Analítica de la ganancia o pérdida]
+      - [Distribución fija, "Obligatoria con «fija»; con «heredada», respaldo si el origen no trae analítica.", Vacía, "—"]
+      - [Asiento de ajuste, Asiento generado al contabilizar., Vacío, Botón Asiento en la cabecera]
+      - [Ganancia / Pérdida / Neto al resultado, Suma de ajustes positivos y negativos y su diferencia., Calculados, "—"]
+  - grupo: Detalle del cierre
+    ruta: Cierre ▸ Detalle
+    campos:
+      - [Cuenta / Socio, "Grupo del renglón (socio solo en cuentas con detalle).", Calculado, Línea del asiento]
+      - [Saldo en M.E., Saldo acumulado en dólares a la fecha de cierre., Calculado, "—"]
+      - [Tipo de T.C. / T.C., Compra o venta y su valor., Calculado, "—"]
+      - [Saldo contable, Saldo acumulado en soles con los cierres anteriores., Calculado, "—"]
+      - [Saldo revaluado, Saldo en M.E. × T.C., Calculado, "—"]
+      - [Ajuste, "Saldo revaluado − saldo contable (verde positivo, rojo negativo).", Calculado, Debe o haber de la cuenta]
+      - [Distribución analítica, Analítica que recibirá la ganancia o pérdida., Según «Analítica», Editable mientras está Calculado]
+  - grupo: Apunte contable
+    ruta: Asiento ▸ Apuntes contables (columna opcional)
+    campos:
+      - [T.C. de cierre, Tipo con el que se revaluó el saldo en el cierre., Vacío, Solo lectura]
+
+asientos_intro: >-
+  Asientos reales de la demostración, en el diario CTC «Cierre de tipo de
+  cambio». Todas las líneas de balance llevan importe en dólares cero: solo
+  corrigen los soles.
+asientos:
+  - titulo: Cierre de junio de 2026
+    referencia: CTC/2026/06/0007
+    texto: >-
+      Compra 3,410 para 1041002 y 1212000 (activos) y venta 3,418 para 4212000
+      (pasivo). Glosa «Cierre de tipo de cambio Junio 2026».
+    lineas:
+      - [1041002, "Cuenta transitoria (US$ 5.000 × 3,410)", "120,00", ""]
+      - [1212000, "Por cobrar — DEMO TC Analítica (US$ 10.000 × 3,410)", "210,00", ""]
+      - [1212000, "Por cobrar — DEMO TC Cliente (US$ 10.000 × 3,410)", "210,00", ""]
+      - [4212000, "Por pagar — DEMO TC Proveedor (US$ 6.000 × 3,418)", "", "204,00"]
+      - [7760000, "Ganancia por diferencia de cambio — analítica Norte 60 % / Sur 40 %", "", "210,00"]
+      - [7760000, Ganancia por diferencia de cambio — sin analítica, "", "330,00"]
+      - [6760000, Pérdida por diferencia de cambio, "204,00", ""]
+    nota: "Ganancia 120 + 210 + 210 = S/ 540,00; pérdida S/ 204,00."
+  - titulo: Cobro de julio que entra en el saldo
+    referencia: CTC/2026/07/0001
+    texto: >-
+      DEMO TC Cliente paga US$ 4.000,00 el 15/07/2026. El apunte no es del
+      cierre, pero forma parte del saldo que revalúa julio.
+    lineas:
+      - [1041002, "DEMO TC cobro — US$ 4.000,00", "13.588,00", ""]
+      - [1212000, "DEMO TC cobro — DEMO TC Cliente", "", "13.588,00"]
+  - titulo: Cierre de julio de 2026
+    referencia: CTC/2026/07/0002
+    texto: >-
+      Compra 3,395 y venta 3,404. Cada saldo contable ya incluye el ajuste de
+      junio.
+    lineas:
+      - [1041002, "Cuenta transitoria (US$ 9.000 × 3,395)", "", "83,00"]
+      - [1212000, "Por cobrar — DEMO TC Analítica (US$ 10.000 × 3,395)", "", "150,00"]
+      - [1212000, "Por cobrar — DEMO TC Cliente (US$ 6.000 × 3,395)", "", "142,00"]
+      - [4212000, "Por pagar — DEMO TC Proveedor (US$ 6.000 × 3,404)", "84,00", ""]
+      - [7760000, Ganancia por diferencia de cambio, "", "84,00"]
+      - [6760000, "Pérdida por diferencia de cambio — analítica Norte 60 % / Sur 40 %", "150,00", ""]
+      - [6760000, Pérdida por diferencia de cambio — sin analítica, "225,00", ""]
+    nota: "Pérdida 83 + 142 = S/ 225,00 sin analítica y S/ 150,00 con la distribución de DEMO TC Analítica."
 
 funcionalidades:
   - grupo: Configuración
@@ -138,18 +335,19 @@ funcionalidades:
       - Diario del cierre por compañía.
       - Marca por cuenta de balance, sin detalle o con detalle por socio.
       - T.C. automático según activo o pasivo, o forzado a compra o venta.
-      - Filtro y menú con las cuentas incluidas en el cierre.
+      - Filtro, columna opcional y menú con las cuentas incluidas en el cierre.
   - grupo: Cálculo
     items:
-      - Tipo de cambio del último o penúltimo día del mes.
+      - Tipo de cambio del último o penúltimo día del mes, con respaldo en el último publicado.
       - Saldos acumulados hasta la fecha de cierre, auto-correctores entre meses.
       - Detalle con saldo en M.E., saldo contable, saldo revaluado y ajuste.
       - Acceso a los apuntes que forman cada saldo.
-      - "Analítica heredada de los documentos (ponderada), fija o sin analítica."
+      - "Analítica heredada de los documentos (ponderada), fija o sin analítica, editable por renglón."
   - grupo: Asiento y control
     items:
       - Vista previa del asiento antes de contabilizar.
       - Ganancia (776) y pérdida (676) en líneas separadas.
+      - T.C. de cierre guardado en cada apunte.
       - "Estados Borrador, Calculado, Contabilizado y Cancelado, con historial."
       - Un solo cierre vigente por mes, moneda y compañía.
       - Orden cronológico obligatorio y bloqueo de borrado de cierres contabilizados.
@@ -176,6 +374,18 @@ ejemplos:
       - [4212000 Por pagar, DEMO TC Proveedor, "-6.000,00", "-20.508,00", "-20.424,00", "+84,00"]
     nota: "Ganancia S/ 84,00 y pérdida S/ 375,00: neto S/ -291,00."
 
+  - titulo: Agosto, calculado sin contabilizar (compra 3,391 · venta 3,400)
+    texto: >-
+      Sin T.C. publicado al 31/08 el cierre tomó el del 02/08. Parte de los
+      saldos ya ajustados en julio:
+    tabla:
+      - [Cuenta, Socio, Saldo US$, Saldo S/, Revaluado S/, Ajuste S/]
+      - [1041002 (banco en US$), "—", "9.000,00", "30.555,00", "30.519,00", "-36,00"]
+      - [1212000 Por cobrar, DEMO TC Cliente, "6.000,00", "20.370,00", "20.346,00", "-24,00"]
+      - [1212000 Por cobrar, DEMO TC Analítica, "10.000,00", "33.950,00", "33.910,00", "-40,00"]
+      - [4212000 Por pagar, DEMO TC Proveedor, "-6.000,00", "-20.424,00", "-20.400,00", "+24,00"]
+    nota: "Ganancia S/ 24,00 y pérdida S/ 100,00: neto S/ -76,00."
+
   - titulo: Fórmula
     codigo: |
       ajuste = saldo en M.E. acumulado × T.C. de cierre − saldo en S/ contabilizado
@@ -185,10 +395,11 @@ ejemplos:
 
   - titulo: Analítica ponderada
     texto: >-
-      Las ventas de DEMO TC Analítica se imputaron 60 % a un centro de costo y
-      40 % a otro. En julio su ajuste de S/ -150,00 va a la 676 en una línea
-      propia con esa distribución (S/ 90,00 y S/ 60,00), separada de la
-      pérdida sin analítica de S/ 225,00 (bancos y DEMO TC Cliente).
+      Las ventas de DEMO TC Analítica se imputaron 60 % a DEMO TC Norte (US$
+      6.000) y 40 % a DEMO TC Sur (US$ 4.000). En julio su ajuste de S/ -150,00
+      va a la 676 en una línea propia con esa distribución (S/ 90,00 y S/
+      60,00), separada de la pérdida sin analítica de S/ 225,00 (bancos y DEMO
+      TC Cliente).
 
 configuracion_intro: >-
   Requiere tipos de cambio de compra y venta registrados para las fechas de

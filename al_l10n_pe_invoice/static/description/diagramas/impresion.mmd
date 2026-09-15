@@ -1,0 +1,18 @@
+flowchart TD
+  A[Factura, boleta o nota] --> B{¿Qué formato?}
+  B -- "Botón Imprimir o ⚙ ▸ Imprimir ▸ CPE A4" --> C[A4 con papel «Comprobantes: A4 SUNAT»]
+  B -- "⚙ ▸ Imprimir ▸ CPE Ticket" --> D[Ticket con papel de 80 mm]
+  C --> E[Encabezado, cliente, fechas, moneda<br/>y T.C. venta si no es en soles]
+  D --> E
+  E --> F[Detalle y totales por código de tributo:<br/>solo filas con importe]
+  F --> G[Monto en letras]
+  G --> H{¿Sujeta a detracción?}
+  H -- Sí --> I[Bloque SPOT: bien o servicio,<br/>porcentaje y monto en soles]
+  H -- No --> J
+  I --> J{¿Término de pago con líneas?}
+  J -- Sí --> K[CRÉDITO y cuadro de cuotas<br/>solo en A4]
+  J -- No --> L[CONTADO]
+  K --> M{¿Hay XML firmado?}
+  L --> M
+  M -- Sí --> N[QR oficial con el hash de la firma]
+  M -- No --> O[Sin QR: información legal a todo el ancho]

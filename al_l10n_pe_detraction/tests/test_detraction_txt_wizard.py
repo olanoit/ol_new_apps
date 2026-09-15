@@ -11,6 +11,7 @@ from odoo.addons.al_l10n_pe_detraction.services import bn_txt
 
 RUC_COMPANY = '20512528458'
 RUC_SUPPLIER = '20601034809'
+RUC_CUSTOMER = '20131312955'
 BN_ACCOUNT = '00071234567'
 
 
@@ -121,6 +122,68 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
         # con detracción el asistente avisa en vez de generar un archivo vacío.
         with self.assertRaises(UserError):
             supplier.action_generate()
+
+    def _create_invoice(self, price=5000.0):
+        """Factura de venta con detracción al cliente ``self.customer``."""
+        doc_type = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '01'),
+             ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        sale_tax = self.env['account.tax'].search([
+            ('company_id', '=', self.company.id),
+            ('type_tax_use', '=', 'sale'),
+            ('amount', '=', 18),
+        ], limit=1)
+        invoice = self.env['account.move'].with_company(self.company).create({
+            'move_type': 'out_invoice',
+            'partner_id': self.customer.id,
+            'invoice_date': date(2026, 3, 12),
+            'date': date(2026, 3, 12),
+            'l10n_latam_document_type_id': doc_type.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product.id,
+                'quantity': 1,
+                'price_unit': price,
+                'tax_ids': [(6, 0, sale_tax.ids)] if sale_tax else False,
+            })],
+        })
+        invoice.action_post()
+        return invoice
+
+    def test_supplier_mode_identifies_each_customer(self):
+        """Modalidad proveedor: cabecera con la empresa, detalle con el cliente
+        adquiriente y depósito en la cuenta propia."""
+        self.customer = self.env['res.partner'].create({
+            'name': 'CLIENTE ADQUIRIENTE S.A.C.',
+            'vat': RUC_CUSTOMER,
+            'country_id': self.env.ref('base.pe').id,
+            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
+        })
+        invoice = self._create_invoice()
+        self.assertTrue(invoice.l10n_pe_detraction_applies)
+        wizard = self._wizard(mode='supplier', batch_number='260003')
+        wizard.action_generate()
+        lines = [line for line in self._content(wizard).split('\r\n') if line]
+        header, detail = lines[0], lines[1]
+        self.assertEqual(header[0], 'P')
+        self.assertEqual(header[1:12], RUC_COMPANY)
+        self.assertEqual(detail[0], '6')
+        self.assertEqual(detail[1:12], RUC_CUSTOMER,
+                         'cada línea identifica al cliente, no a la empresa')
+        self.assertEqual(detail[59:70], BN_ACCOUNT,
+                         'el depósito va a la cuenta de la propia empresa')
+
+    def test_supplier_mode_without_own_account_is_excluded(self):
+        self.customer = self.env['res.partner'].create({
+            'name': 'CLIENTE SIN CUENTA S.A.C.',
+            'vat': RUC_CUSTOMER,
+            'country_id': self.env.ref('base.pe').id,
+            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
+        })
+        self._create_invoice()
+        self.company.partner_id.l10n_pe_detraction_account = False
+        wizard = self._wizard(mode='supplier', batch_number='260004')
+        with self.assertRaises(UserError):
+            wizard.action_generate()
 
     def test_filename_includes_ruc_and_batch(self):
         self._create_bill()

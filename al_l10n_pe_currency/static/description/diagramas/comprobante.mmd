@@ -1,0 +1,15 @@
+flowchart TD
+  A[Factura, nota o recibo<br/>en moneda extranjera] --> B{¿Cliente o proveedor?}
+  B -- Cliente --> C[Tipo de T.C. = T.C. en ventas]
+  B -- Proveedor --> D[Tipo de T.C. = T.C. en compras]
+  C --> E[Editable mientras está en borrador]
+  D --> E
+  E --> F{¿Hay tasa en la fecha<br/>o en una anterior?}
+  F -- Sí --> G[Convierte con la compra o la venta<br/>de la última tasa hasta esa fecha]
+  F -- No --> H[Conversión nativa de Odoo]
+  G --> I[Publicar: importe en soles fijo]
+  H --> I
+  I --> J[Pagar: el cobro sigue ventas<br/>y el pago a proveedor, compras]
+  J --> K{¿El cobro cancela en soles lo<br/>mismo que registró la factura?}
+  K -- No --> L[Odoo registra la diferencia<br/>de cambio al conciliar: 676 / 776]
+  K -- Sí --> M[Factura saldada sin diferencia]

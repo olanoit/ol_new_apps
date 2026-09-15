@@ -63,11 +63,68 @@ contexto:
     secreto de la base de datos: sin él, cualquiera que conociera el número de
     la boleta podría darla por recibida.
 
+flujos_intro: >-
+  Lo que pasa entre el clic y el documento o el archivo, según el código.
+flujos:
+  - id: boleta-envio
+    titulo: Impresión y envío de la boleta
+    texto: >-
+      Un solo camino de impresión para el botón, el lote, el adjunto y el
+      correo; el envío deja constancia de la recepción.
+    mermaid: |
+      flowchart TD
+        A[Boleta calculada] --> B[Imprimir]
+        B --> C{¿La estructura declara<br/>su plantilla?}
+        C -- Sí --> D[PDF con la plantilla de la estructura<br/>p. ej. construcción civil]
+        C -- No --> E[Boleta legal D.S. 001-98-TR]
+        A --> F[Enviar boleta: individual,<br/>desde la lista o desde el lote]
+        F --> G{¿Validada o pagada<br/>y con correo laboral?}
+        G -- No --> H[Se omite y se lista<br/>en el aviso final]
+        G -- Sí --> I[Correo encolado con el PDF adjunto<br/>y fecha de envío]
+        I --> J[El trabajador pulsa<br/>«Confirmar recepción»]
+        J --> K{¿Token HMAC válido?}
+        K -- No --> L[Página «Enlace no válido»]
+        K -- Sí --> M[Recepción confirmada<br/>y fecha de confirmación]
+  - id: pago-masivo
+    titulo: Pago masivo bancario
+    texto: >-
+      Un registro por diario bancario; cada uno lleva solo las cuentas de su
+      banco y genera el TXT con su formato.
+    mermaid: |
+      flowchart TD
+        A[Origen: lote, quincena, CTS,<br/>gratificación o liquidación vacacional] --> B[Generar TXT banco]
+        B --> C{¿Ya hay un pago Finalizado?}
+        C -- Sí --> X[Error: no se regenera]
+        C -- No --> D[Borra los pagos en borrador<br/>del origen]
+        D --> E[Un pago por diario de Parámetros<br/>cuyo formato está en las cuentas destino]
+        E --> F[Líneas: neto de la regla configurada,<br/>total a pagar o CTS en soles y dólares]
+        F --> G[Aviso con los trabajadores<br/>sin banco con formato]
+        G --> H[Revisar líneas e «Incluir en TXT»]
+        H --> I[Generar TXT banco: valida cuentas,<br/>tipos de cuenta y datos del banco]
+        I --> J[TXT de haberes o de CTS<br/>como adjunto descargable]
+        J --> K[Finalizar: el origen queda<br/>con TXT generado]
+  - id: contrato
+    titulo: Contrato desde plantilla
+    texto: >-
+      Marcadores controlados: no se evalúa código de la plantilla.
+    mermaid: |
+      flowchart TD
+        A[Plantilla con marcadores entre llaves dobles] --> B[Empleado: plantilla y régimen<br/>de periodo de prueba]
+        B --> C[Fin del periodo de prueba:<br/>inicio + 3, 6 o 12 meses]
+        C --> D[Imprimir contrato]
+        D --> E{¿Plantilla con contenido y<br/>datos mínimos completos?}
+        E -- No --> F[Aviso con la lista<br/>de datos que faltan]
+        E -- Sí --> G[Sustituye los marcadores con datos<br/>de empresa, trabajador y contrato]
+        G --> H[PDF del contrato]
+    pie: Un marcador desconocido queda sin sustituir y se registra en el log del servidor.
+
 pasos_intro: >-
   Recorrido con la planilla de pruebas de «Comercial Demo Perú S.A.C.»
   (trabajadores ficticios) y la trabajadora «DEMO FICHA HR2». No se envían
   correos ni se generan archivos.
 pasos:
+  - seccion: Boleta de pago
+    texto: Impresión, envío y confirmación.
   - titulo: Imprimir la boleta de pago
     ruta: Nómina ▸ Recibos de nómina ▸ Imprimir
     texto: >-
@@ -83,34 +140,79 @@ pasos:
     imagen: screenshots/01-boleta.png
     pie: "Boleta de junio de 2026: ingresos S/ 2.613,00, descuentos AFP S/ 346,22 y neto S/ 2.266,78."
 
-  - titulo: Enviar la boleta por correo
+  - titulo: Enviar la boleta desde su formulario
     ruta: Nómina ▸ Recibos de nómina ▸ Enviar boleta
     texto: >-
       Con la boleta validada o pagada aparece **Enviar boleta**: el correo se
-      encola con el PDF adjunto y un botón de confirmación. Cuando el
-      trabajador lo pulsa se marcan la verificación y la fecha de confirmación,
-      visibles como columnas opcionales en la lista de boletas.
-    puntos:
-      - "Envío masivo desde la lista de boletas (Acción ▸ Enviar boletas PE por correo) o desde el lote (Imprimir boletas y Enviar boletas por correo)."
-      - Las boletas sin correo laboral o sin confirmar se informan en un aviso y no se envían.
+      encola con el PDF adjunto y un botón de confirmación, y se anota la
+      fecha de envío.
     imagen: screenshots/02-boleta-form.png
 
-  - titulo: Emitir el certificado de trabajo
+  - titulo: Envío masivo y seguimiento en la lista
+    ruta: Nómina ▸ Recibos de nómina ▸ Acciones ▸ Enviar boletas PE por correo
+    texto: >-
+      Desde la lista se envían las boletas seleccionadas. Las columnas
+      opcionales **Fecha de envío de boleta**, **Recepción confirmada** y
+      **Fecha de confirmación** muestran el seguimiento.
+    puntos:
+      - Las boletas sin correo laboral o sin confirmar se informan en un aviso y no se envían; el resto sale igual.
+    imagen: screenshots/03-boletas-lista.png
+
+  - titulo: Imprimir y enviar todo el lote
+    ruta: Nómina ▸ Recibos de nómina ▸ Periodos de nómina ▸ ⋮
+    texto: >-
+      Con el lote cerrado o pagado, el menú de la tarjeta trae **Imprimir
+      boletas** (un solo PDF) y **Enviar boletas por correo**, además de
+      **Generar TXT banco** y **Pagos bancarios**.
+    imagen: screenshots/04-lote-menu.png
+
+  - titulo: La plantilla del correo
+    ruta: Ajustes ▸ Técnico ▸ Correo electrónico ▸ Plantillas de correo electrónico
+    texto: >-
+      «Planillas PE: Boleta de pago por correo» va al correo laboral del
+      trabajador, adjunta la boleta y trae el botón **Confirmar recepción**.
+      Es editable como cualquier plantilla de Odoo.
+    imagen: screenshots/05-plantilla-correo.png
+
+  - titulo: Confirmación de recepción
+    ruta: Correo ▸ Confirmar recepción
+    texto: >-
+      El enlace lleva un token firmado. Si es válido marca **Recepción
+      confirmada** con su fecha y muestra «¡Confirmación registrada!»; si ya se
+      confirmó, lo indica. Un enlace alterado muestra esta página y no toca la
+      boleta.
+    imagen: screenshots/06-confirmacion.png
+
+  - seccion: Certificados y cartas
+    texto: Desde el menú Acción de la ficha o de la lista de empleados.
+  - titulo: Certificado de trabajo
     ruta: Empleados ▸ ficha del empleado ▸ Acción ▸ Certificado de trabajo
     texto: >-
-      El asistente propone el tratamiento, la ciudad de la compañía y las fechas
-      de ingreso y cese del trabajador. **Imprimir certificado** genera el PDF
-      firmado por el representante legal de los Parámetros principales.
-    puntos:
-      - "Desde el mismo menú: **Carta de retiro CTS**, dirigida al banco de la cuenta CTS del trabajador."
-    imagen: screenshots/03-certificado-asistente.png
+      El asistente propone el tratamiento, la ciudad y las fechas de ingreso y
+      cese. **Imprimir certificado** genera el PDF firmado por el representante
+      legal de los Parámetros principales.
+    imagen: screenshots/07-certificado-asistente.png
 
   - titulo: El certificado impreso
     ruta: Certificado de trabajo ▸ Imprimir certificado
     texto: >-
-      Texto con el tratamiento, el documento de identidad, el periodo laborado
-      en letras y el cargo, fechado en la ciudad indicada al día del cese.
-    imagen: screenshots/04-certificado.png
+      Tratamiento, documento de identidad, periodo laborado en letras y cargo,
+      fechado en la ciudad indicada al día del cese.
+    imagen: screenshots/08-certificado.png
+
+  - titulo: Carta de retiro de CTS
+    ruta: Empleados ▸ ficha del empleado ▸ Acción ▸ Carta de retiro CTS
+    texto: >-
+      Mismo asistente con tratamiento, ciudad y fecha de cese.
+    imagen: screenshots/09-carta-cts-asistente.png
+
+  - titulo: La carta impresa
+    ruta: Carta de retiro CTS ▸ Imprimir carta
+    texto: >-
+      Dirigida al banco de la cuenta CTS del trabajador, con su número de
+      cuenta y la fecha de cese.
+    imagen: screenshots/10-carta-cts.png
+    pie: Carta de un trabajador de pruebas con cuenta CTS en el BCP y cese de ejemplo el 30/06/2026.
 
   - titulo: Certificado de rentas y retenciones de 5ta categoría
     ruta: Empleados ▸ Acción ▸ Certificado de renta de 5ta
@@ -121,12 +223,14 @@ pasos:
       página.
     puntos:
       - La UIT se toma del catálogo del ejercicio; si falta, el asistente lo avisa antes de imprimir.
-    imagen: screenshots/05-certificado-5ta.png
+    imagen: screenshots/11-certificado-5ta.png
     pie: >-
       Ejercicio 2026 con los datos de prueba: renta bruta S/ 82.290,33 − 7 UIT
       (S/ 37.450,00) = S/ 44.840,33. Las boletas de prueba no tienen retención
       de 5ta, por eso el impuesto sale en cero.
 
+  - seccion: Contratos
+    texto: Plantillas por compañía y contrato impreso por trabajador.
   - titulo: Preparar la plantilla de contrato
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato
     texto: >-
@@ -136,31 +240,158 @@ pasos:
       duración, el fin del periodo de prueba, la jornada y la fecha de firma.
       Trae de ejemplo el contrato por inicio o incremento de actividad (art. 57
       del D.S. 003-97-TR).
-    imagen: screenshots/06-plantilla-contrato.png
+    imagen: screenshots/12-plantilla-contrato.png
 
-  - titulo: Imprimir el contrato del trabajador
-    ruta: Empleados ▸ ficha del empleado ▸ Nómina ▸ Imprimir contrato
+  - titulo: Plantilla y periodo de prueba del trabajador
+    ruta: Empleados ▸ ficha del empleado ▸ Nómina ▸ Perú — Contrato de trabajo
     texto: >-
-      En la pestaña Nómina, el bloque **Perú — Contrato de trabajo** elige la
-      plantilla y el régimen de periodo de prueba (3, 6 o 12 meses, art. 10 de
-      la LPCL), que calcula su fecha de fin. **Imprimir contrato** comprueba
-      antes que estén los datos necesarios y lista los que faltan.
-    imagen: screenshots/07-contrato.png
+      Se elige la plantilla y el régimen de periodo de prueba (3, 6 o 12
+      meses, art. 10 de la LPCL), que calcula el fin del periodo de prueba.
+      **Imprimir contrato** comprueba antes los datos mínimos y lista los que
+      faltan.
+    imagen: screenshots/13-empleado-contrato.png
+    pie: "Trabajadora DEMO con ingreso el 01/03/2025: prueba de 3 meses hasta el 01/06/2025."
+
+  - titulo: El contrato impreso
+    ruta: Perú — Contrato de trabajo ▸ Imprimir contrato
+    imagen: screenshots/14-contrato.png
     pie: "Contrato de la trabajadora DEMO: S/ 2.800,00 al mes, del 01/03/2025 al 31/08/2026, con 3 meses de prueba."
 
-  - titulo: Generar el pago masivo al banco
+  - seccion: Pago masivo bancario
+    texto: TXT de haberes y de CTS por banco.
+  - titulo: El pago masivo y sus líneas
     ruta: Nómina ▸ Pagos masivos bancarios
     texto: >-
-      Desde el lote de nómina, la CTS, la gratificación, la quincena o la
-      liquidación vacacional, **Generar TXT banco** crea un pago masivo por
-      diario bancario con una línea por trabajador: documento, cuenta destino,
-      banco, referencia e importe. Cada línea se puede excluir del archivo.
-      **Generar TXT banco** descarga el archivo y **Finalizar** cierra el pago.
+      Cada pago lleva el diario de cargo, su cuenta, la fecha y la glosa, el
+      origen y una línea por trabajador con documento, cuenta destino, banco,
+      referencia e importe. **Incluir en TXT** excluye una línea del archivo.
+      **Recargar líneas** las vuelve a traer del origen, **Generar TXT banco**
+      descarga el archivo y **Finalizar** cierra el pago.
     puntos:
-      - La pestaña Configuración del banco muestra los datos propios del formato del diario (tipo de proceso BBVA, subtipo BCP, códigos Interbank, forma de cargo Scotiabank, subtipo BanBif).
-      - El importe de haberes es el neto de la regla configurada en los Parámetros principales.
-    imagen: screenshots/08-pago-masivo.png
+      - El importe de haberes es el de la regla de neto a pagar de los Parámetros principales.
+    imagen: screenshots/15-pago-masivo.png
     pie: "PM-000007: planilla de abril de 2026 en formato BCP, 10 abonos por S/ 31.459,37."
+
+  - titulo: Datos del formato del banco
+    ruta: Pago masivo ▸ Configuración del banco
+    texto: >-
+      Solo aparecen los datos del formato del banco del diario: tipo y hora de
+      proceso, validación de pertenencia y aviso (BBVA), subtipo e IDC (BCP),
+      códigos y tipos de proceso y de persona (Interbank), forma de cargo, tipo
+      de abono y forma de pago (Scotiabank) o subtipo (BanBif).
+    imagen: screenshots/16-pago-config-banco.png
+
+  - titulo: Generar desde el origen
+    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    texto: >-
+      CTS, gratificación, quincena y liquidación vacacional suman **Generar TXT
+      banco** (oculto una vez finalizado un pago) y **Pagos bancarios** para
+      abrir los pagos creados. En la CTS el abono va a la cuenta CTS y el pago
+      permite marcar **CTS en dólares**.
+    imagen: screenshots/17-origen-gratificacion.png
+
+  - titulo: Diarios de pago masivo
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Pagos bancarios
+    texto: >-
+      Los diarios bancarios desde los que se paga. Se crea un pago por cada
+      diario cuyo banco tenga un formato presente en las cuentas de los
+      trabajadores.
+    imagen: screenshots/18-parametros-pagos.png
+
+  - titulo: Tipo de cuenta y formato del banco
+    ruta: Contactos ▸ Configuración ▸ Cuentas bancarias ▸ Cuentas bancarias
+    texto: >-
+      La cuenta bancaria gana **Tipo de cuenta** (Corriente, Ahorros,
+      Detracciones, CCI u Otros, con control de 11 dígitos para detracciones y
+      20 para CCI) y **Sucursal BBVA**. El banco gana **Formato de TXT**, que
+      decide qué layout usa el pago masivo.
+    imagen: screenshots/19-cuenta-bancaria.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Boleta
+    ruta: Nómina ▸ Recibos de nómina
+    campos:
+      - [Fecha de envío de boleta, Último envío por correo., Vacío, "Columna opcional; solo lectura"]
+      - [Recepción confirmada, El trabajador confirmó desde el enlace., Desmarcado, "Columna opcional; solo lectura"]
+      - [Fecha de confirmación, Momento de la confirmación., Vacío, "Columna opcional; solo lectura"]
+      - [Enviar boleta, Encola el correo con el PDF., Visible en validada o pagada, Anota la fecha de envío]
+  - grupo: Certificado de trabajo
+    ruta: Empleados ▸ Acción ▸ Certificado de trabajo
+    campos:
+      - [Empleado a certificar, Trabajador del certificado., El de la ficha, "—"]
+      - [Tratamiento, "Señor, Señora o Señorita.", "Según el sexo del trabajador", Texto del certificado]
+      - [Ciudad, Lugar de emisión., Ciudad de la compañía, Encabezado de la fecha]
+      - [Fecha de ingreso / Fecha de cese, Periodo certificado., "Primer contrato y fin del contrato o salida", Periodo en letras]
+  - grupo: Carta de retiro CTS
+    ruta: Empleados ▸ Acción ▸ Carta de retiro CTS
+    campos:
+      - [Empleado, Trabajador cesado., El de la ficha, Banco y cuenta CTS de la carta]
+      - [Tratamiento, "Señor, Señora o Señorita.", "Según el sexo del trabajador", "—"]
+      - [Ciudad, Lugar de emisión., Ciudad de la compañía, "—"]
+      - [Fecha de cese, Fecha del cese en la carta., "Fin del contrato o salida", "—"]
+  - grupo: Certificado de renta de 5ta
+    ruta: Empleados ▸ Acción ▸ Certificado de renta de 5ta
+    campos:
+      - [Ejercicio gravable, Año certificado., Año anterior, UIT y boletas del año]
+      - [Fecha de emisión, Fecha del certificado., Hoy, "—"]
+      - [Empleados, Trabajadores a certificar., Los seleccionados en la lista, Un certificado por página]
+  - grupo: Plantilla de contrato
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato
+    campos:
+      - [Nombre, Nombre de la plantilla., Vacío, Obligatorio]
+      - [Secuencia, Orden en la lista., "10", "—"]
+      - [Compañía, "Vacía: global; con compañía: propia.", Vacío, Quién la puede usar]
+      - [Cuerpo del contrato, Texto con marcadores entre llaves dobles., Vacío, Se rellena al imprimir]
+  - grupo: Empleado ▸ Perú — Contrato de trabajo
+    ruta: Empleados ▸ ficha ▸ Nómina
+    campos:
+      - [Plantilla de contrato, Plantilla global o de la compañía., Vacío, Obligatoria para imprimir]
+      - [Régimen de período de prueba (PE), "3 meses (régimen general), 6 (confianza) o 12 (dirección).", 3 meses (régimen general), Calcula el fin del periodo de prueba]
+      - [Fin del periodo de prueba, Inicio de contrato + meses del régimen., Calculado, Editable]
+      - [Imprimir contrato, Valida datos mínimos e imprime., Botón, Lista los datos que faltan]
+  - grupo: Pago masivo
+    ruta: Nómina ▸ Pagos masivos bancarios
+    campos:
+      - [Nombre, Número PM-######., Secuencia por compañía, Solo lectura]
+      - [Diario (banco de cargo), Diario bancario del pago., Vacío, Formato y cuenta de cargo]
+      - [Cuenta de cargo, Cuenta del diario., Relacionado, Cabecera del TXT]
+      - [Fecha de pago, Fecha del abono., Hoy, Cabecera del TXT]
+      - [Glosa, Referencia del pago., Vacío, Cabecera del TXT]
+      - ["Lote de nómina, Adelanto quincenal, Depósito CTS, Gratificación, Liquidación vacacional", Origen (uno solo)., El que lo creó, Líneas y marca de TXT generado]
+      - [CTS en dólares, Genera el TXT de CTS en dólares., Desmarcado, Solo con origen CTS]
+  - grupo: Líneas del pago masivo
+    ruta: Pago masivo ▸ Líneas
+    campos:
+      - [Incluir en TXT, La línea entra en el archivo., Marcado, Desmarcada no se abona]
+      - ["Nro. documento, Empleado", Trabajador., Del origen, "—"]
+      - [Cuenta destino / Banco, Cuenta de haberes o CTS., Del trabajador, Debe ser del banco del formato]
+      - [Referencia, "Nombre de la boleta, documento o nombre de la CTS.", Del origen, Detalle del TXT]
+      - ["Monto (S/)", Importe a abonar., Del origen, Detalle del TXT]
+      - ["Monto (USD), Base computable ×4", Datos de la CTS (columnas opcionales)., Del origen, TXT de CTS]
+  - grupo: Pago masivo ▸ Configuración del banco
+    ruta: Pago masivo ▸ Configuración del banco
+    campos:
+      - ["Tipo de proceso (BBVA)", "Inmediato, Hora de proceso o Fecha futura.", Inmediato, Cabecera BBVA]
+      - [Hora de proceso, "11:00 a.m., 03:00 p.m. o 07:00 p.m.", Vacío, Con Hora de proceso]
+      - [Validación de pertenencia, Valida o no la titularidad., Valida, Cabecera BBVA]
+      - [Indicador de aviso, Email o Celular., Vacío, Aviso al trabajador]
+      - ["Subtipo de planilla (BCP)", "Gratificación, Vacaciones, Otros afectos…", Otros afectos, Cabecera BCP]
+      - [Validar IDC vs cuenta, Validación del BCP., Marcado, Detalle BCP]
+      - ["Código de la empresa / del servicio (Interbank)", Códigos del convenio., "EE01 / 01", TXT Interbank]
+      - ["Tipo de proceso (Interbank)", En línea o En diferido., En línea, TXT Interbank]
+      - [Tipo de persona, Persona natural o Comercial o jurídica., Persona natural, Nombre en el TXT Interbank]
+      - ["Modalidad de cobro, Tipo de abono, Forma de pago", Datos de Scotiabank., "Cargo en cuenta, Urgencia, Abono cuenta ahorro", TXT Scotiabank]
+      - ["Subtipo de planilla (BanBif)", Cuarta o Quinta categoría., Quinta categoría, TXT BanBif]
+  - grupo: Catálogos
+    ruta: "Parámetros principales, bancos, cuentas y tipos de identificación"
+    campos:
+      - [Diarios de pago masivo, Diarios bancarios habilitados (Parámetros ▸ Pagos bancarios)., Vacío, Un pago por diario]
+      - [Formato de TXT, "Formato BBVA, BCP, Interbank, Scotiabank o BanBif (banco).", Vacío, Layout del archivo]
+      - [Tipo de cuenta, "Corriente, Ahorros, Detracciones, CCI u Otros (cuenta bancaria).", Vacío, "Obligatorio para el TXT; controla dígitos"]
+      - [Sucursal BBVA, Oficina intercalada en la cuenta de cargo., Vacío, Cabecera BBVA]
+      - ["Código BBVA, BCP, Interbank, BanBif", Código del tipo de documento por banco., "DNI: L, 1, 01, 1", Detalle del TXT]
 
 funcionalidades:
   - grupo: Boleta de pago

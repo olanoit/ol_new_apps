@@ -5,7 +5,7 @@ subtitulo: >-
   cuentas por función (clase 9), o al revés, contra la cuenta de carga 79.
 categoria: Localización Perú · Contabilidad
 etiquetas: [PCGE, Clase 6 y 9, Cuenta de carga 79, Asiento automático, Diario GA, Porcentajes por cuenta]
-portada: screenshots/05-asiento-destino.png
+portada: screenshots/10-factura-destino.png
 
 destacados_intro: >-
   Configure una vez el reparto de cada cuenta y olvídese del asiento de destino
@@ -62,21 +62,65 @@ contexto:
     la usen, con un aviso que indica la cuenta. Configure sus destinos o marque
     **Desactivar destinos** en las cuentas que no deban repartirse.
 
+flujos_intro: >-
+  Lo que ocurre al publicar un comprobante y cuando después se corrige.
+flujos:
+  - id: publicar
+    titulo: Publicar un comprobante
+    texto: >-
+      El módulo revisa cada apunte del comprobante publicado; solo los de
+      cuentas de la clase de origen generan líneas de destino.
+    mermaid: |
+      flowchart TD
+        A[Comprobante publicado<br/>de una compañía de Perú] --> B{¿Es un asiento<br/>de destino?}
+        B -- Sí --> Z[No se procesa otra vez]
+        B -- No --> C[Recorre cada apunte]
+        C --> D{¿Cuenta de la clase de origen<br/>sin Desactivar destinos?}
+        D -- No --> E[El apunte no interviene:<br/>IGV, cuenta por pagar…]
+        D -- Sí --> F{¿Tiene destinos<br/>y cuenta de carga?}
+        F -- No --> G[Error: no deja publicar<br/>e indica la cuenta]
+        F -- Sí --> H{¿Porcentajes<br/>suman 100 %?}
+        H -- No --> G
+        H -- Sí --> I[Reparte el importe por porcentaje;<br/>la última línea recibe el remanente]
+        I --> J[Contrapartida por el total<br/>en la cuenta de carga]
+        J --> K[Asiento «Destino: número»<br/>publicado en el diario GA]
+    pie: "El importe al debe genera destinos al debe y carga al haber; un importe al haber, lo contrario."
+  - id: corregir
+    titulo: Corregir o anular el comprobante
+    texto: >-
+      El asiento de destino acompaña al comprobante en cada cambio de estado.
+    mermaid: |
+      flowchart TD
+        A[Comprobante publicado<br/>con asiento de destino] --> B{¿Qué hace el usuario?}
+        B -- Restablecer a borrador --> C[El asiento de destino<br/>vuelve a borrador]
+        B -- Cancelar --> D[El asiento de destino<br/>se cancela]
+        C --> E[Corrige y publica de nuevo]
+        E --> F[Se borran las líneas del destino<br/>y se calculan con el reparto vigente]
+        F --> G[El mismo asiento de destino<br/>se publica otra vez]
+
 pasos_intro: >-
-  Recorrido con los datos de demostración. La compañía de ejemplo trabaja con
-  el sentido **9 → 6**; el funcionamiento en 6 → 9 es idéntico cambiando la
-  clase de las cuentas.
+  Todas las funciones con los datos de demostración. La compañía de ejemplo
+  trabaja con el sentido **9 → 6**; en 6 → 9 funciona igual cambiando la clase
+  de las cuentas.
 pasos:
+  - seccion: Configuración
+    texto: Sentido de la dinámica y reparto de cada cuenta.
   - titulo: Elegir el sentido de la dinámica
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ Contabilidad (PE)
     texto: >-
       En **Cuentas destino (dinámica 6↔9)** elija **Destino de cuenta clase 6
-      a 9** o **Destino de cuenta clase 9 a 6**. El mismo dato está en la ficha
-      de la compañía, pestaña **Contabilidad PE**, grupo **Destinos**.
+      a 9** o **Destino de cuenta clase 9 a 6**.
     puntos:
       - El valor por defecto de una compañía nueva es **9 a 6**.
       - El sentido es por compañía; cada una puede trabajar distinto.
     imagen: screenshots/01-ajustes.png
+
+  - titulo: El mismo dato en la ficha de la compañía
+    ruta: Ajustes ▸ Compañías ▸ Contabilidad PE
+    texto: >-
+      La pestaña **Contabilidad PE** de la compañía muestra el grupo
+      **Destinos** con el **Tipo de destino** como botones de opción.
+    imagen: screenshots/02-compania.png
 
   - titulo: Configurar los destinos de la cuenta
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Plan contable
@@ -86,39 +130,209 @@ pasos:
       opuesta) con su porcentaje, y la **Cuenta de carga** (solo cuentas 78 o
       79).
     puntos:
-      - Si los porcentajes no suman 100 %, al guardar se indica la suma actual.
       - "**Desactivar destinos** excluye la cuenta del reparto aunque tenga destinos configurados."
       - Al duplicar una cuenta se copian también sus destinos.
-    imagen: screenshots/02-cuenta-destinos.png
+    imagen: screenshots/03-cuenta-destinos.png
     pie: "Cuenta 941200 repartida 60 % a energía eléctrica y 40 % a internet, contra la 7910000."
+
+  - titulo: La suma tiene que ser 100 %
+    ruta: Plan contable ▸ cuenta ▸ Configuración de destinos ▸ Guardar
+    texto: >-
+      Si los porcentajes no suman 100 % (con una tolerancia de ±0,01 %), la
+      cuenta no se guarda y el aviso indica la suma actual. Un porcentaje igual
+      o menor que cero también se rechaza.
+    imagen: screenshots/04-error-porcentaje.png
+    pie: La primera línea de la 941200 cambiada de 60 % a 50 %.
+
+  - titulo: Qué cuentas tienen destinos
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Plan contable
+    texto: >-
+      En la lista del plan contable active la columna opcional **Incluye
+      destino** desde el selector de columnas: marca las cuentas con al menos
+      una cuenta destino.
+    imagen: screenshots/05-plan-contable.png
+    pie: Cuentas que contienen «9» en el código; la 941200 y la 941300 tienen destinos.
 
   - titulo: Revisar todos los destinos juntos
     ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta
     texto: >-
       La lista **Destinos de cuentas contables** reúne las líneas de todas las
       cuentas, agrupadas por cuenta principal con el total de porcentajes de
-      cada grupo. Es editable en línea y admite **Importar** registros.
-    imagen: screenshots/03-destinos-por-cuenta.png
+      cada grupo. Es editable en línea y admite **Importar registros** desde el
+      menú de acciones.
+    puntos:
+      - "También en **Contabilidad ▸ Configuración ▸ Destinos ▸ Cuentas contables**."
+      - Se agrupa además por **Cuenta destino** desde el buscador.
+    imagen: screenshots/06-destinos-por-cuenta.png
+    pie: "Las cuentas 631100 y 635100 (clase 6) conservan su reparto de cuando la compañía trabajaba en 6 → 9."
 
-  - titulo: Publicar el comprobante
-    ruta: Contabilidad ▸ Proveedores ▸ Facturas
+  - seccion: Asiento de destino
+    texto: Se genera al publicar, sin ningún paso adicional.
+  - titulo: Publicar un asiento con una cuenta de destino
+    ruta: Contabilidad ▸ Contabilidad ▸ Asientos contables
     texto: >-
-      Al publicar una factura, un asiento o cualquier comprobante de una
-      compañía peruana con líneas en cuentas que trabajan con destinos, se crea
-      el asiento de destino. En la factura, pestaña **Otra información**, el
-      grupo **Destinos** enlaza con él.
-    imagen: screenshots/04-origen.png
+      Cualquier comprobante de una compañía peruana cuenta: asientos
+      manuales, facturas, notas, pagos. Aquí, un asiento de S/ 2.500,00 en la
+      cuenta 941200 contra una cuenta por pagar.
+    imagen: screenshots/07-asiento-origen.png
+
+  - titulo: El asiento de destino generado
+    ruta: Diario Gastos Automáticos
+    texto: >-
+      Con referencia **Destino:** y el número del comprobante, la misma fecha y
+      el mismo contacto de la cabecera, reparte el importe entre las cuentas
+      destino y abona la cuenta de carga por el total. La etiqueta de cada
+      línea es el número del comprobante de origen.
+    imagen: screenshots/08-asiento-destino.png
+    pie: "S/ 2.500,00 → S/ 1.500,00 (60 %) y S/ 1.000,00 (40 %), contra la 7910000."
+
+  - titulo: En una factura de proveedor
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ Otra información
+    texto: >-
+      Solo se reparten los apuntes de cuentas con destinos: el IGV y la cuenta
+      por pagar no intervienen. En la pestaña **Otra información** de la
+      factura, el grupo **Destinos** enlaza con el asiento generado.
+    imagen: screenshots/09-factura-origen.png
     pie: "Factura F001-00000877: base S/ 500,00 en la cuenta 941200 e IGV S/ 90,00."
 
-  - titulo: El asiento de destino
-    ruta: Asiento de destino (diario Gastos Automáticos)
+  - titulo: El asiento de destino de la factura
+    ruta: Otra información ▸ Asiento de destino
     texto: >-
-      El asiento, con referencia **Destino:** y el número del comprobante,
-      reparte la base entre las cuentas destino y abona la cuenta de carga por
-      el total. Solo se reparten las líneas de cuentas con destinos: el IGV y la
-      cuenta por pagar no intervienen.
-    imagen: screenshots/05-asiento-destino.png
-    pie: "S/ 500,00 → S/ 300,00 (60 %) y S/ 200,00 (40 %), contra S/ 500,00 en la 7910000."
+      Reparte la base de S/ 500,00; las líneas llevan el proveedor de la
+      factura.
+    imagen: screenshots/10-factura-destino.png
+
+  - titulo: El redondeo va a la última línea
+    ruta: Plan contable ▸ 941300 ▸ Configuración de destinos
+    texto: >-
+      Con tres destinos de un tercio cada uno, un gasto de S/ 100,00 no se
+      reparte en partes exactas: las dos primeras líneas se redondean a S/ 33,33
+      y la última recibe el remanente, S/ 33,34. El asiento cuadra siempre.
+    imagen: screenshots/11-cuenta-tres-destinos.png
+
+  - titulo: Asiento con el remanente
+    ruta: Diario Gastos Automáticos
+    texto: >-
+      El asiento de destino de «DEMO destinos redondeo» (MISCE/2026/09/0003).
+    imagen: screenshots/12-asiento-redondeo.png
+
+  - seccion: Controles y correcciones
+    texto: Lo que impide publicar y lo que pasa al corregir.
+  - titulo: Cuenta de la clase de origen sin destinos
+    ruta: Asiento en borrador ▸ Publicar
+    texto: >-
+      Con el sentido 9 → 6, toda cuenta de clase 9 trabaja con destinos. Si no
+      tiene cuentas destino (ni **Desactivar destinos**), el comprobante no se
+      publica y el aviso indica la cuenta. Lo mismo ocurre si falta la cuenta
+      de carga.
+    imagen: screenshots/13-error-sin-destinos.png
+    pie: Asiento «DEMO destinos sin configurar» con la cuenta 942100.
+
+  - titulo: Restablecer a borrador arrastra al destino
+    ruta: Comprobante ▸ Restablecer a borrador
+    texto: >-
+      Al pasar el comprobante a borrador, su asiento de destino también vuelve a
+      borrador; al cancelarlo, se cancela. Al publicar de nuevo, se borran las
+      líneas del destino, se calculan con el reparto vigente y se publica el
+      mismo asiento.
+    imagen: screenshots/14-destino-borrador.png
+    pie: "GA/2026/09/0004 en borrador junto con su origen, MISCE/2026/09/0004."
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Ajustes de la compañía
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Contabilidad (PE) ▸ Cuentas destino (dinámica 6↔9)
+    texto: El mismo campo está en la ficha de la compañía, pestaña Contabilidad PE, grupo Destinos.
+    campos:
+      - [Tipo de destino, "Sentido de la dinámica: «Destino de cuenta clase 6 a 9» o «Destino de cuenta clase 9 a 6».", Destino de cuenta clase 9 a 6, "Define qué clase es la de origen: solo sus cuentas trabajan con destinos"]
+  - grupo: Cuenta contable
+    ruta: Plan contable ▸ cuenta ▸ Configuración de destinos
+    texto: La pestaña solo aparece en las cuentas de la clase de origen.
+    campos:
+      - [Cuenta destino, Cuenta por función (o por naturaleza) que recibe una parte del importe., Vacío, "Solo ofrece cuentas de la clase opuesta"]
+      - [Porcentaje %, Parte del importe que va a la cuenta destino., "100 %", "Debe ser mayor que 0 y la suma de la cuenta, 100 %"]
+      - [Cuenta de carga, Contrapartida del asiento de destino., Vacío, "Solo cuentas 78 o 79; obligatoria si hay destinos"]
+      - [Desactivar destinos, Excluye la cuenta del reparto., Desmarcado, "Sus apuntes no generan destino ni bloquean la publicación"]
+  - grupo: Plan contable (lista)
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Plan contable
+    campos:
+      - [Incluye destino, Marca las cuentas con al menos una cuenta destino., Columna oculta, Solo informativo]
+  - grupo: Destinos de cuentas contables
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta
+    campos:
+      - [Cuenta principal, Cuenta de la clase de origen que se reparte., Vacío, Agrupa la lista]
+      - [Cuenta destino, Cuenta que recibe la parte., Vacío, "Limitada a las cuentas permitidas de la principal"]
+      - [Porcentaje %, Parte del importe., "100 %", "Se valida la suma de la cuenta principal al guardar"]
+  - grupo: Factura o nota
+    ruta: Comprobante ▸ Otra información ▸ Destinos
+    texto: >-
+      El grupo solo se muestra en facturas y notas con asiento de destino; en
+      los asientos manuales y en los propios asientos de destino el enlace
+      existe pero no se ve en el formulario.
+    campos:
+      - [Asiento de destino, Enlace al asiento generado., Solo lectura, "Se pasa a borrador o se cancela con el comprobante"]
+      - [Es asiento de destino, Marca los asientos generados por el módulo., Solo lectura, No se procesan otra vez al publicarse]
+      - [Comprobante de origen, Comprobante que generó el asiento de destino., Solo lectura, "—"]
+
+asientos_intro: >-
+  Asientos reales de los datos de demostración, tal como están en la base.
+asientos:
+  - titulo: Asiento de origen con cuenta de clase 9
+    referencia: MISCE/2026/09/0002
+    texto: >-
+      Servicios de la oficina de setiembre registrados en la cuenta 941200,
+      que en el sentido 9 → 6 trabaja con destinos.
+    lineas:
+      - [941200, DEMO Gastos por distribuir (9) — Servicios oficina setiembre, "2.500,00", ""]
+      - [4699000, Otras cuentas por pagar diversas — Servicios por pagar, "", "2.500,00"]
+  - titulo: Su asiento de destino
+    referencia: GA/2026/09/0001
+    texto: >-
+      Referencia «Destino: MISCE/2026/09/0002». Reparte 60 % y 40 % y abona la
+      cuenta de carga por el total.
+    lineas:
+      - [6361000, Servicios básicos – Energía eléctrica, "1.500,00", ""]
+      - [6365000, Servicios básicos – Internet, "1.000,00", ""]
+      - [7910000, Cargas imputables a cuentas de costos y gastos, "", "2.500,00"]
+  - titulo: Factura de proveedor
+    referencia: F F001-00000877
+    texto: >-
+      Solo el apunte de la 941200 interviene en el destino; el IGV y la cuenta
+      por pagar no.
+    lineas:
+      - [941200, "DEMO Gastos por distribuir (9) — Servicios de oficina, setiembre 2026", "500,00", ""]
+      - [4011100, IGV – Cuenta propia (IGV 18 %), "90,00", ""]
+      - [4212000, Facturas por pagar — F001-00000877, "", "590,00"]
+  - titulo: Asiento de destino de la factura
+    referencia: GA/2026/09/0002
+    texto: "Referencia «Destino: F F001-00000877», con el proveedor en cada línea."
+    lineas:
+      - [6361000, Servicios básicos – Energía eléctrica, "300,00", ""]
+      - [6365000, Servicios básicos – Internet, "200,00", ""]
+      - [7910000, Cargas imputables a cuentas de costos y gastos, "", "500,00"]
+  - titulo: Redondeo asignado a la última línea
+    referencia: GA/2026/09/0003
+    texto: >-
+      Destino de «DEMO destinos redondeo» (MISCE/2026/09/0003): S/ 100,00 en la
+      cuenta 941300, repartida en tres tercios.
+    lineas:
+      - [6361000, Servicios básicos – Energía eléctrica, "33,33", ""]
+      - [6365000, Servicios básicos – Internet, "33,33", ""]
+      - [6560000, Suministros — remanente, "33,34", ""]
+      - [7910000, Cargas imputables a cuentas de costos y gastos, "", "100,00"]
+    nota: "100,00 × 33,3333 % = 33,33; la última línea recibe 100,00 − 33,33 − 33,33 = 33,34."
+  - titulo: Sentido 6 → 9 con tres destinos
+    referencia: GA/2026/07/0002
+    texto: >-
+      Generado en julio, cuando la compañía trabajaba con el sentido 6 → 9: el
+      asiento MISCE/2026/07/0002 cargó S/ 3.000,00 a la **635100 Alquileres
+      locales**, repartida 50 % / 30 % / 20 % con cuenta de carga 791100.
+    lineas:
+      - [942100, Gastos de administración (9), "1.500,00", ""]
+      - [951100, Gastos de ventas (9), "900,00", ""]
+      - [921100, Costos de producción (9), "600,00", ""]
+      - [791100, Cargas imputables a cuentas de costos (79), "", "3.000,00"]
 
 funcionalidades:
   - grupo: Configuración
@@ -129,6 +343,7 @@ funcionalidades:
       - Validación de porcentajes mayores que cero y suma de 100 % (tolerancia de ±0,01 %).
       - Casilla **Desactivar destinos** por cuenta.
       - Columna opcional **Incluye destino** en la lista del plan contable.
+      - Los destinos se copian al duplicar la cuenta.
   - grupo: Asiento de destino
     items:
       - Generado y publicado al publicar el comprobante, en el diario GA (se crea si falta).
@@ -137,37 +352,20 @@ funcionalidades:
       - "Débito y crédito respetados: una línea al haber genera un destino al haber."
       - Vuelve a borrador o se cancela junto con el comprobante y se regenera al volver a publicar.
       - Los propios asientos de destino no generan nuevos destinos.
+      - Publicación bloqueada, con la cuenta indicada, si una cuenta de la clase de origen no tiene destinos o cuenta de carga.
   - grupo: Consulta
     items:
       - Lista consolidada de destinos agrupada por cuenta principal, editable e importable.
       - Menú en la app Perú y en Contabilidad ▸ Configuración.
-      - Enlace del comprobante a su asiento de destino en la pestaña Otra información de las facturas.
+      - Enlace al asiento de destino en la pestaña Otra información de las facturas y notas.
 
 ejemplos:
-  - titulo: Sentido 6 → 9 con tres destinos
-    texto: >-
-      Cuenta **635100 Alquileres locales** configurada al 50 % en gastos de
-      administración, 30 % en gastos de ventas y 20 % en costos de producción,
-      con cuenta de carga **791100**. Un asiento con S/ 3.000,00 en esa cuenta
-      genera:
+  - titulo: Qué cuentas trabajan con destinos
     tabla:
-      - [Cuenta, Debe, Haber]
-      - [942100 Gastos de administración (9), "S/ 1.500,00", ""]
-      - [951100 Gastos de ventas (9), "S/ 900,00", ""]
-      - [921100 Costos de producción (9), "S/ 600,00", ""]
-      - [791100 Cargas imputables a cuentas de costos (79), "", "S/ 3.000,00"]
-    nota: Es el asiento GA/2026/07/0002 de los datos de demostración.
-
-  - titulo: El redondeo va a la última línea
-    texto: >-
-      Tres destinos al 33,3333 % sobre S/ 100,00: las dos primeras líneas se
-      redondean a S/ 33,33 y la última recibe el remanente exacto.
-    tabla:
-      - [Destino, Porcentaje, Importe]
-      - [Primera cuenta, "33,3333 %", "S/ 33,33"]
-      - [Segunda cuenta, "33,3333 %", "S/ 33,33"]
-      - [Tercera cuenta, "33,3333 %", "S/ 33,34"]
-      - [Cuenta de carga, "", "S/ 100,00"]
+      - [Sentido de la compañía, Clase de origen, Cuentas destino permitidas, Cuenta de carga]
+      - [Destino de cuenta clase 6 a 9, Cuentas que empiezan por 6, Cuentas que empiezan por 9, 78 o 79]
+      - [Destino de cuenta clase 9 a 6, Cuentas que empiezan por 9, Cuentas que empiezan por 6, 78 o 79]
+    nota: Las cuentas de la clase de origen con Desactivar destinos quedan fuera del reparto.
 
 configuracion:
   - Instale el módulo desde Aplicaciones (requiere la localización peruana).
@@ -197,6 +395,11 @@ faq:
     respuesta: >-
       Sí. Los asientos ya publicados no cambian; el nuevo reparto se aplica a
       los comprobantes que se publiquen desde entonces.
+  - pregunta: ¿Cómo encuentro el asiento de destino de un asiento manual?
+    respuesta: >-
+      Busque en el diario **Gastos Automáticos** la referencia «Destino:»
+      seguida del número del asiento. El enlace directo solo se muestra en
+      facturas y notas.
 
 novedades:
   - version: 3.20260828

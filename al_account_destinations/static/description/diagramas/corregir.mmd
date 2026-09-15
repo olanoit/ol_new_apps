@@ -1,0 +1,7 @@
+flowchart TD
+  A[Comprobante publicado<br/>con asiento de destino] --> B{¿Qué hace el usuario?}
+  B -- Restablecer a borrador --> C[El asiento de destino<br/>vuelve a borrador]
+  B -- Cancelar --> D[El asiento de destino<br/>se cancela]
+  C --> E[Corrige y publica de nuevo]
+  E --> F[Se borran las líneas del destino<br/>y se calculan con el reparto vigente]
+  F --> G[El mismo asiento de destino<br/>se publica otra vez]

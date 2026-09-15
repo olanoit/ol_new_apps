@@ -1,0 +1,10 @@
+flowchart TD
+  A[Apunte contable publicado] --> B{¿Tiene Glosa<br/>el apunte?}
+  B -- Sí --> C[Glosa del apunte]
+  B -- No --> D{¿Tiene etiqueta?}
+  D -- Sí --> E[Etiqueta del apunte]
+  D -- No --> F{¿Tiene Glosa<br/>el asiento?}
+  F -- Sí --> G[Glosa del asiento]
+  F -- No --> H{¿Tiene referencia?}
+  H -- Sí --> I[Referencia del asiento]
+  H -- No --> J[Número del asiento]

@@ -1,0 +1,7 @@
+flowchart TD
+  A[Pago] --> B{¿Estado Borrador?}
+  B -- Sí --> C[Medio pago y Número de operación<br/>editables en el formulario]
+  B -- No --> D[Solo lectura]
+  D --> E[Restablecer a borrador]
+  E --> C
+  C --> F[Confirmar de nuevo]

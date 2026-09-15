@@ -1,0 +1,7 @@
+flowchart TD
+  A[Guardar cuenta bancaria o contacto] --> B[Para validar se ignoran<br/>los espacios de los extremos]
+  B --> C{¿Campo vacío?}
+  C -- Sí --> OK[Se guarda]
+  C -- No --> D{¿Solo dígitos?<br/>banco 2 · anexo 4}
+  D -- Sí --> OK
+  D -- No --> E[Error de validación<br/>con el valor recibido]

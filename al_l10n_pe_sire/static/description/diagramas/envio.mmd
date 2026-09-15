@@ -1,0 +1,14 @@
+flowchart TD
+  A[Periodo comparado:<br/>Descargar XLSX y TXT de reemplazo] --> B{¿Cómo se declara?}
+  B -- Aceptar propuesta --> C{¿La comparación encontró<br/>diferencias?}
+  C -- Sí --> X[Rechazado: corregir las facturas<br/>o enviar el reemplazo]
+  C -- No --> D[Aceptación por la API]
+  B -- Enviar reemplazo --> E[ZIP del TXT de reemplazo<br/>por carga TUS]
+  B -- "Por fuera, en SOL" --> M[Marcar realizado]
+  D --> F[Enviado a SUNAT:<br/>ticket del envío]
+  E --> F
+  F --> G[Consultar envío]
+  G --> H[Registrar preliminar]
+  H --> I[Realizado]
+  M --> I
+  I --> J[Generación del registro<br/>en el portal de SUNAT]

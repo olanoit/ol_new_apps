@@ -1,0 +1,12 @@
+flowchart TD
+  A[Días pagados: laborados, feriados,<br/>vacaciones, descanso médico, paternidad, licencia] --> B[JOR jornal × días<br/>DSO ÷ 6 · BUC % categoría · MOV × días]
+  B --> C[BAE y bonificaciones de obra y de puesto<br/>fijo por día o % del jornal]
+  C --> D[HE60 y HE100: horas × jornal ÷ 8<br/>× 1,6 o × 2]
+  D --> E[INDEM 15 % jornal + extras a valor simple<br/>VAC10 10 % del jornal]
+  E --> F[GRAT 40 jornales: ventana 210 días<br/>hasta julio y 150 desde agosto<br/>BEXT 9 % · AESC por hijo con derecho]
+  F --> G[CONAF 2 % de jornal + D.S.O.]
+  G --> H[TREM: JOR+DSO+BUC+BAE+bonificaciones<br/>+horas extras+AESC]
+  H --> I{¿Cobertura SCTR?}
+  I -- Sí --> J[ESSALUD, SCTRS y SCTRP<br/>sobre TREM]
+  I -- No --> K[Solo ESSALUD sobre TREM]
+  J & K --> L[TINGR ingresos − TDES descuentos = NETO]

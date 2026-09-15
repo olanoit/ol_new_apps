@@ -1,0 +1,15 @@
+flowchart TD
+  A[Nuevo canje en borrador:<br/>socio, diario de letras y fecha] --> B[Facturas: añadir los documentos<br/>pendientes y su importe]
+  B --> C[Confirmar: estado Comprobado]
+  C --> D[Letras: cantidad, primer vencimiento,<br/>rango de días y pago total o parcial]
+  D --> E[Crear letras: importe repartido<br/>y vencimientos escalonados]
+  E --> F[Escribir el número de cada letra]
+  F --> G[Canjear]
+  G --> H{¿Diferencia entre facturas<br/>y letras?}
+  H -- Sí --> I[Línea a la cuenta Redondeo<br/>de gasto u otros ingresos]
+  H -- No --> J
+  I --> J{¿Cliente o proveedor?}
+  J -- Cliente --> K[Asiento: abona la cuenta por cobrar<br/>y carga una línea por letra]
+  J -- Proveedor --> L[Asiento: carga la cuenta por pagar<br/>y abona una línea por letra]
+  K --> M[Factura conciliada:<br/>Estado de canje Canjeado]
+  L --> M

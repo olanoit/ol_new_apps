@@ -128,6 +128,6 @@ faq:
 novedades:
   - fecha: 14/09/2026
     cambios:
-      - Primera versión: ficha completa desde la tarjeta y desde el menú de la tarjeta en Aplicaciones.
+      - "Primera versión: ficha completa desde la tarjeta y desde el menú de la tarjeta en Aplicaciones."
 
 relacionados: [al_account_base]

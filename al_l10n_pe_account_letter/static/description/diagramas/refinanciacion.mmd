@@ -1,0 +1,10 @@
+flowchart TD
+  A{¿Uno o varios canjes?} -- Uno --> B[Canje ▸ Refinanciar:<br/>fecha de refinanciación]
+  A -- Varios --> C[Lista ▸ Acciones ▸ Refinanciación masiva:<br/>mismo cliente, diario, moneda y compañía]
+  B --> D[Canje nuevo en borrador:<br/>una línea «99 Letra» por cada letra con saldo]
+  C --> D
+  D --> E[El origen queda enlazado:<br/>Canje refinanciado / Canjes de origen]
+  E --> F[Confirmar, crear y numerar<br/>las letras nuevas]
+  F --> G[Canjear]
+  G --> H[Asiento: abona las letras de origen<br/>y carga las nuevas]
+  H --> I[Concilia con las letras<br/>del canje de origen]

@@ -6,7 +6,7 @@ subtitulo: >-
   mensual del CONAFOVICER.
 categoria: Localización Perú · Nómina
 etiquetas: [Jornal por convenio, Planilla semanal, BUC y D.S.O., "CTS 15 % y vacaciones 10 %", CONAFOVICER, Boleta del régimen]
-portada: screenshots/07-boleta-impresa.png
+portada: screenshots/12-boleta-impresa.png
 
 destacados_intro: >-
   Construcción civil no es el régimen general con otro sueldo: cambian la
@@ -66,103 +66,294 @@ contexto:
     módulo reproducen la tabla oficial concepto por concepto en las tres
     categorías.
 
+flujos_intro: >-
+  Del convenio publicado a la boleta semanal y al depósito mensual del
+  CONAFOVICER.
+flujos:
+  - id: convenio-jornal
+    titulo: Del convenio al jornal de la boleta
+    texto: >-
+      El jornal nunca se escribe a mano: se busca la tabla vigente en la fecha
+      y, dentro de ella, la fila de la categoría del trabajador.
+    mermaid: |
+      flowchart TD
+        A[Tabla salarial con vigencia<br/>y jornales por categoría] --> B{¿Hay tabla propia de la<br/>compañía vigente en la fecha?}
+        B -- Sí --> C[Se usa la de la compañía]
+        B -- No --> D[Se usa la tabla nacional]
+        C & D --> E[Fila de la categoría del trabajador]
+        E --> F[Jornal básico en la ficha<br/>a la fecha de la versión]
+        E --> G[Al calcular la boleta: jornal congelado<br/>a la fecha de fin del periodo]
+        G --> H{¿Jornal ajustado a mano<br/>en la boleta?}
+        H -- Sí --> I[El cálculo usa el jornal de la boleta]
+        H -- No --> J[El cálculo usa el de la tabla]
+    pie: Dos tablas activas con vigencias solapadas para la misma compañía no se pueden guardar.
+  - id: boleta-semanal
+    titulo: Cálculo de la boleta semanal
+    texto: >-
+      Las reglas de la estructura CONSTRUCCIÓN CIVIL en su orden de secuencia.
+      Los importes del periodo se redondean una sola vez.
+    mermaid: |
+      flowchart TD
+        A[Días pagados: laborados, feriados,<br/>vacaciones, descanso médico, paternidad, licencia] --> B[JOR jornal × días<br/>DSO ÷ 6 · BUC % categoría · MOV × días]
+        B --> C[BAE y bonificaciones de obra y de puesto<br/>fijo por día o % del jornal]
+        C --> D[HE60 y HE100: horas × jornal ÷ 8<br/>× 1,6 o × 2]
+        D --> E[INDEM 15 % jornal + extras a valor simple<br/>VAC10 10 % del jornal]
+        E --> F[GRAT 40 jornales: ventana 210 días<br/>hasta julio y 150 desde agosto<br/>BEXT 9 % · AESC por hijo con derecho]
+        F --> G[CONAF 2 % de jornal + D.S.O.]
+        G --> H[TREM: JOR+DSO+BUC+BAE+bonificaciones<br/>+horas extras+AESC]
+        H --> I{¿Cobertura SCTR?}
+        I -- Sí --> J[ESSALUD, SCTRS y SCTRP<br/>sobre TREM]
+        I -- No --> K[Solo ESSALUD sobre TREM]
+        J & K --> L[TINGR ingresos − TDES descuentos = NETO]
+  - id: conafovicer
+    titulo: Resumen mensual del CONAFOVICER
+    texto: >-
+      La retención se descuenta cada semana; el depósito es mensual.
+    mermaid: |
+      flowchart TD
+        A[Nuevo resumen: periodo mensual] --> B[Calcular]
+        B --> C[Boletas de construcción validadas o pagadas<br/>del mes y de sus semanas]
+        C --> D[Una línea por boleta con retención:<br/>días, jornal, D.S.O., base y retenido]
+        D --> E[Estado Calculado<br/>vence el día 15 del mes siguiente]
+        E --> F[Exportar detalle: Excel adjunto<br/>para el depósito]
+        F --> G[Constancia de pago y Marcar pagado]
+        G --> H{¿Hay que corregir?}
+        H -- Sí --> I[Volver a borrador y recalcular]
+        H -- No --> J[Estado Pagado: ya no se recalcula]
+
 pasos_intro: >-
   Recorrido con los datos de demostración: tres obreros de la obra «DEMO
-  FICHA HR2» con cuatro semanas de agosto de 2026.
+  FICHA HR2 Edificio Los Álamos» con cuatro semanas de agosto de 2026.
 pasos:
-  - titulo: Revisar la tabla salarial del convenio
+  - seccion: Maestros del convenio
+    texto: Se instalan con el módulo y se ajustan cuando cambia el convenio.
+  - titulo: Tablas salariales
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales
     texto: >-
-      Cada convenio es un registro con su resolución y su vigencia. Por
-      categoría se indican el **jornal básico** y la **bonificación por
+      Una tabla por convenio, con su resolución y vigencia. Vacía de compañía es
+      la tabla nacional; con compañía, una tabla propia que prevalece.
+    imagen: screenshots/01-tablas-salariales.png
+
+  - titulo: Jornales por categoría e importes derivados
+    ruta: Tablas salariales ▸ Convención colectiva 2026
+    texto: >-
+      Por categoría se indican el **jornal básico** y la **bonificación por
       movilidad**; el resto se calcula solo: D.S.O. (jornal ÷ 6), BUC, valor
-      hora (jornal ÷ 8), horas extras al 60 % y 100 %, indemnización 15 % y
-      vacaciones 10 %.
+      hora (jornal ÷ 8), horas extras al 60 % y 100 %, indemnización 15 %,
+      vacaciones 10 %, gratificaciones diarias y asignación escolar diaria.
     puntos:
-      - Cuando salga el convenio siguiente se crea otra tabla con su vigencia; las boletas antiguas siguen usando el jornal de su fecha.
-      - El BUC toma el porcentaje de la categoría (32 % operario, 30 % oficial y peón) salvo que la línea lo cambie.
-    imagen: screenshots/01-tabla-salarial.png
+      - Cuando salga el convenio siguiente se crea otra tabla con su vigencia; las boletas antiguas conservan el jornal de su fecha.
+      - La columna opcional «BUC %» permite cambiar el porcentaje de la categoría en esa tabla.
+    imagen: screenshots/02-tabla-salarial.png
     pie: "Convención colectiva 2026: operario S/ 89,30, oficial S/ 69,75 y peón S/ 62,80."
 
-  - titulo: Ajustar el catálogo de bonificaciones
+  - titulo: Categorías
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Categorías
+    texto: >-
+      Operario, oficial y peón con su porcentaje de BUC (32 % y 30 %) y si
+      admiten la bonificación por alta especialización: solo el operario.
+    imagen: screenshots/03-categorias.png
+
+  - titulo: Catálogo de bonificaciones
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Bonificaciones
     texto: >-
-      Trae las cuatro especialidades BAE de la tabla de operarios
-      especializados (8 %, 9 %, 10 % y 22 % del jornal) y cuatro bonificaciones
-      por condiciones de trabajo, con importe fijo por día o porcentaje del
-      jornal. Se editan en la misma lista.
+      Las cuatro especialidades BAE (8 %, 9 %, 10 % y 22 % del jornal) y cuatro
+      bonificaciones por condiciones de trabajo, con importe fijo por día o
+      porcentaje del jornal, editables en la lista.
     puntos:
-      - Los importes de altitud, contacto con agua, cota cero y altura vienen marcados como «por verificar» contra el convenio de la empresa.
-      - Una bonificación puede limitarse a ciertas categorías; vacía, aplica a todas.
-    imagen: screenshots/02-bonificaciones.png
+      - Los importes de altitud, contacto con agua, cota cero y altura vienen con la nota de verificarlos contra el convenio de la empresa.
+      - Una bonificación limitada a categorías solo se paga a esas; sin categorías, a todas.
+    imagen: screenshots/04-bonificaciones.png
 
-  - titulo: Crear la obra
+  - seccion: Obras y compañía
+    texto: Dónde se trabaja y con qué tasas.
+  - titulo: Lista de obras
     ruta: Empleados ▸ Empleados ▸ Obras
     texto: >-
-      La obra guarda código, fechas, dirección, distrito, altitud y el
-      establecimiento para el T-Registro. En **Bonificaciones que activa la
-      obra** se eligen las que cobran todos sus trabajadores sin marcarlas uno
-      por uno.
-    imagen: screenshots/03-obra.png
-    pie: Una obra a 3 850 m s. n. m. activa la bonificación por altitud y la de contacto con agua.
+      Cada obra con código, distrito, altitud, fechas y número de trabajadores.
+    imagen: screenshots/05-obras.png
 
-  - titulo: Configurar las tasas de la compañía
+  - titulo: Crear la obra
+    ruta: Obras ▸ Nuevo
+    texto: >-
+      Código, fechas, dirección, distrito, altitud y el establecimiento con el
+      que se declara en el T-Registro. En **Bonificaciones que activa la obra**
+      se eligen las de condiciones de trabajo que cobran todos sus
+      trabajadores. El botón **Trabajadores** abre quienes tienen la obra.
+    imagen: screenshots/06-obra.png
+    pie: La obra DEMO activa la bonificación por riesgo bajo la cota cero para sus tres obreros.
+
+  - titulo: Tasas del régimen en la compañía
     ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas ▸ Construcción civil (PE)
     texto: >-
-      La pestaña reúne EsSalud (9 %), SCTR salud y SCTR pensión, CONAFOVICER
-      (2 %) y su cuenta en el Banco de la Nación, la bonificación
-      extraordinaria sobre la gratificación (9 %) y las edades tope de la
-      asignación escolar (18 años, 21 con estudios superiores).
+      EsSalud, SCTR salud y pensión, CONAFOVICER y su cuenta en el Banco de la
+      Nación, la bonificación extraordinaria sobre la gratificación y las
+      edades tope de la asignación escolar. La pestaña solo aparece en
+      compañías de Perú.
     puntos:
-      - "Las tasas del SCTR vienen en cero a propósito: las fija la aseguradora, no la norma. Sin tasa no se calcula el aporte."
-    imagen: screenshots/04-compania.png
+      - "Las tasas del SCTR vienen en cero a propósito: las fija la aseguradora. Sin tasa no se calcula el aporte."
+    imagen: screenshots/07-compania.png
 
-  - titulo: Asignar categoría, obra y especialidad al trabajador
+  - seccion: Trabajador
+    texto: El régimen laboral Construcción civil activa el bloque.
+  - titulo: Categoría, obra y especialidad
     ruta: Empleados ▸ ficha del trabajador ▸ Nómina
     texto: >-
-      Con el régimen laboral **Construcción civil**, la pestaña Nómina muestra
-      el bloque del régimen: categoría, obra, especialidad BAE (solo
-      operarios) y bonificaciones propias del puesto. El **jornal básico**
-      aparece calculado desde la tabla vigente.
+      El bloque **Construcción civil** muestra la categoría, la obra, la
+      especialidad BAE (solo operarios; otra categoría no la admite) y las
+      bonificaciones propias del puesto. El **jornal básico** aparece calculado
+      desde la tabla vigente.
     puntos:
-      - Marque la cobertura SCTR de quienes están expuestos al riesgo; en una obra conviven obreros y personal administrativo.
-    imagen: screenshots/05-trabajador.png
+      - Al cambiar a una categoría sin BAE, la especialidad se vacía.
+      - La cobertura SCTR salud y pensión de la versión decide si se calculan esos aportes.
+    imagen: screenshots/08-trabajador.png
 
-  - titulo: Calcular la boleta semanal
+  - seccion: Planilla semanal
+    texto: Boletas por semana con la estructura del régimen.
+  - titulo: Boletas semanales
     ruta: Nómina ▸ Recibos de nómina
     texto: >-
-      Boleta con la estructura **CONSTRUCCIÓN CIVIL** y los días trabajados de
-      la semana. El cálculo trae jornal, D.S.O., BUC, movilidad, BAE, las
-      bonificaciones de la obra, las horas extras y los beneficios del régimen,
-      descuenta el CONAFOVICER y calcula EsSalud y SCTR sobre la remuneración
-      computable.
+      Una boleta por trabajador y semana con la estructura **CONSTRUCCIÓN
+      CIVIL**. Los periodos semanales se generan desde los periodos de nómina de
+      la localización y se cortan a fin de mes.
+    imagen: screenshots/09-boletas-semanales.png
+    pie: Las columnas de importes de esta lista son las nativas de Odoo, que las estructuras peruanas no alimentan; el neto del régimen está en la regla NETO.
+
+  - titulo: Días trabajados y horas extras
+    ruta: Boleta ▸ Días trabajados
+    texto: >-
+      El régimen añade el tipo de entrada **HORAS EXTRAS 60% (CONSTRUCCIÓN)**.
+      Cuentan como días pagados los laborados, feriados, vacaciones, descanso
+      médico, paternidad y licencia con goce.
+    imagen: screenshots/10-boleta-dias.png
+
+  - titulo: Cálculo del salario
+    ruta: Boleta ▸ Cálculo del salario
+    texto: >-
+      Jornal, D.S.O., BUC, movilidad, BAE, bonificaciones, horas extras y los
+      beneficios del régimen, el descuento del CONAFOVICER y los aportes del
+      empleador sobre la remuneración computable.
     puntos:
-      - "Los periodos semanales se generan en Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Generar periodos, con «Generar también semanas»: se cortan a fin de mes para que ninguna semana cruce dos declaraciones de PLAME."
       - El jornal queda congelado en la boleta al calcularla y puede ajustarse a mano.
-    imagen: screenshots/06-boleta-semanal.png
+    imagen: screenshots/11-boleta-semanal.png
     pie: "Semana del 10 al 16 de agosto de un operario con 4 horas extras al 60 %: neto S/ 1.294,42."
 
-  - titulo: Imprimir la boleta del régimen
+  - titulo: Boleta impresa del régimen
     ruta: Boleta ▸ Imprimir
     texto: >-
-      La estructura del régimen declara su propia plantilla, así que el botón
-      nativo **Imprimir** saca la boleta de construcción: en lugar del sueldo
-      mensual muestra el **jornal básico**, la **categoría**, la **obra** y la
-      **especialidad**, con los conceptos y sus códigos de la tabla 22 de SUNAT.
-    imagen: screenshots/07-boleta-impresa.png
+      La estructura declara su propia plantilla, así que el botón nativo
+      **Imprimir** saca la boleta de construcción: **jornal básico**,
+      **categoría**, **obra** y **especialidad**, con los códigos de la tabla 22
+      de SUNAT.
+    imagen: screenshots/12-boleta-impresa.png
     pie: "Boleta del 3 al 9 de agosto: ingresos S/ 1.228,78, CONAFOVICER S/ 12,50 y neto S/ 1.216,28."
 
-  - titulo: Liquidar el CONAFOVICER del mes
+  - seccion: CONAFOVICER
+    texto: El depósito mensual de las retenciones semanales.
+  - titulo: Resúmenes mensuales
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ CONAFOVICER
     texto: >-
-      Se elige el periodo mensual y se pulsa **Calcular**: toma las boletas
-      validadas o pagadas del mes y de todas sus semanas, con una línea por
-      boleta, y fija el vencimiento el **día 15 del mes siguiente**. **Exportar
-      detalle** genera el Excel con tipo y número de documento, categoría,
-      días, jornal, D.S.O., base y retenido. **Marcar pagado** cierra el
-      resumen.
-    imagen: screenshots/08-conafovicer.png
+      Un resumen por periodo y compañía con vencimiento, trabajadores, base,
+      retenido y estado (**Borrador**, **Calculado**, **Pagado**).
+    imagen: screenshots/13-conafovicer-lista.png
+
+  - titulo: Calcular, exportar y pagar
+    ruta: CONAFOVICER ▸ Agosto 2026
+    texto: >-
+      **Calcular** toma las boletas validadas o pagadas del mes y de sus
+      semanas, una línea por boleta, y fija el vencimiento el día 15 del mes
+      siguiente. **Exportar detalle** adjunta un Excel con tipo y número de
+      documento, nombre, categoría, días, jornal, D.S.O., base y retenido.
+      **Marcar pagado** cierra el resumen; **Volver a borrador** lo reabre.
+    imagen: screenshots/14-conafovicer.png
     pie: "Agosto 2026: 3 trabajadores, base S/ 6.130,43 y retenido S/ 122,61, vence el 15 de septiembre."
+
+campos_intro: >-
+  Cada pantalla propia del módulo con sus etiquetas, valores por defecto y efecto.
+campos:
+  - grupo: Tabla salarial
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales
+    campos:
+      - [Convenio, Nombre de la tabla., Vacío, Obligatorio]
+      - [Resolución ministerial, Norma que aprueba la tabla., Vacío, Informativo]
+      - [Compañía, "Vacía = tabla nacional; con compañía = tabla propia.", Vacío, La propia prevalece en su compañía]
+      - [Vigente desde / Vigente hasta, Vigencia del convenio., Vacío, "Elige la tabla por fecha; no admite solapes"]
+      - [Notas, Texto libre., Vacío, "—"]
+  - grupo: Jornales por categoría
+    ruta: Tabla salarial ▸ Jornales por categoría
+    campos:
+      - [Categoría, "Categoría de la fila (una vez por tabla).", Vacío, Enlaza el jornal con los trabajadores]
+      - [Jornal básico, Remuneración de un día según el convenio., Vacío, Base de todo el cálculo]
+      - [Bonif. movilidad, "Importe diario igual para las tres categorías.", Vacío, Regla MOV]
+      - [BUC %, Porcentaje propio de la tabla (columna opcional)., "Vacío: el de la categoría", Regla BUC]
+      - ["D.S.O., BUC, Valor hora", "Jornal ÷ 6, % BUC del jornal y jornal ÷ 8.", Calculado, Referencia]
+      - ["H.E. 60 %, H.E. 100 %", "Valor hora sin redondear × 1,6 y × 2.", Calculado, Referencia]
+      - ["Indemnización 15 %, Vacaciones 10 %", Porcentajes del jornal., Calculado, Referencia]
+      - ["Grat. F. Patrias diaria, Grat. Navidad diaria", "40 jornales ÷ 210 y ÷ 150.", Calculado, Referencia]
+      - [Asig. escolar diaria, "30 jornales ÷ 360.", Calculado, Referencia]
+  - grupo: Categoría
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Categorías
+    campos:
+      - [Código, Código único por compañía., Vacío, "—"]
+      - [Categoría, Nombre., Vacío, "—"]
+      - ["BUC %", Porcentaje de BUC sobre el jornal., Vacío, Regla BUC]
+      - [Admite BAE, Permite asignar especialidad., Desmarcado, Sin él la ficha rechaza la BAE]
+      - [Compañía, "Vacía = global.", Vacío, "—"]
+  - grupo: Bonificación
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Bonificaciones
+    campos:
+      - [Código, Código único por compañía., Vacío, "—"]
+      - [Bonificación, Nombre., Vacío, "—"]
+      - [Tipo, "Alta especialización (BAE) o Condiciones de trabajo.", Condiciones de trabajo, "BAE en la ficha; condiciones en obra o puesto"]
+      - [Cálculo, Porcentaje del jornal o Importe fijo por día., Porcentaje del jornal, Exige el porcentaje o el importe]
+      - [Porcentaje / Importe diario, Valor según el cálculo., Vacío, "Importe × días o % del jornal del periodo"]
+      - [Categorías, Categorías a las que aplica., "Vacío: todas", Filtra a quién se paga]
+      - [Sustento, Nota con la fuente del importe., Vacío, Informativo]
+  - grupo: Obra
+    ruta: Empleados ▸ Empleados ▸ Obras
+    campos:
+      - [Obra, Nombre., Vacío, Obligatorio]
+      - [Código, Único por compañía., Vacío, "—"]
+      - [Compañía, Compañía de la obra., Compañía activa, "—"]
+      - [Inicio / Fin previsto, Fechas de la obra., Vacío, Informativo]
+      - [Dirección / Distrito, Ubicación., Vacío, Informativo]
+      - ["Altitud (m s. n. m.)", Altura de la obra., "0", Informativo]
+      - ["Establecimiento (T-Registro)", Local del RUC con el que se declara., Vacío, T-Registro]
+      - [Bonificaciones que activa la obra, Bonificaciones de condiciones de trabajo., Vacío, Se pagan a todos sus trabajadores]
+  - grupo: Compañía ▸ Construcción civil (PE)
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas
+    campos:
+      - ["EsSalud (%)", Aporte del empleador sobre TREM., "9,00", Regla ESSALUD]
+      - ["SCTR salud (%)", Tasa de la póliza., "0,00", Regla SCTRS]
+      - ["SCTR pensión (%)", Tasa de la póliza., "0,00", Regla SCTRP]
+      - ["CONAFOVICER (%)", Retención sobre jornal + D.S.O., "2,00", Regla CONAF y resumen]
+      - [Cuenta CONAFOVICER (Banco de la Nación), Cuenta del depósito., Vacío, Informativo]
+      - ["Bonif. extraordinaria sobre gratificación (%)", Ley 30334., "9,00", Regla BEXT]
+      - [Edad tope de la asignación escolar, Edad máxima del hijo., "18", Regla AESC]
+      - [Edad tope cursando estudios superiores, Prolongación por estudios., "21", Regla AESC]
+  - grupo: Trabajador ▸ Construcción civil
+    ruta: Empleados ▸ ficha ▸ Nómina
+    campos:
+      - ["Categoría (construcción)", "Operario, oficial o peón.", Vacío, Jornal y BUC]
+      - [Obra, Obra de la versión., Vacío, Bonificaciones de la obra]
+      - [Especialidad (BAE), Solo para categorías que la admiten., Vacío, Regla BAE]
+      - [Jornal básico, Jornal de la tabla vigente., Calculado, Solo lectura]
+      - [Bonificaciones del puesto, Condiciones propias del puesto., Vacío, Se suman a las de la obra]
+      - [Cobertura SCTR salud, Trabajador con cobertura de salud., Desmarcado, Regla SCTRS]
+  - grupo: Boleta
+    ruta: Nómina ▸ Recibos de nómina
+    campos:
+      - [Jornal básico, Jornal congelado al calcular., Calculado, "Editable; manda sobre la tabla"]
+      - [Línea del convenio, Fila de la tabla usada., Calculado, "—"]
+  - grupo: CONAFOVICER
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ CONAFOVICER
+    campos:
+      - [Periodo, "Mes que se liquida (único por compañía).", Vacío, Incluye sus semanas]
+      - [Fecha de inicio / Fecha de fin, Del periodo., Relacionado, "—"]
+      - [Vence, Día 15 del mes siguiente., Calculado, "—"]
+      - ["Trabajadores, Base, Retenido", Totales del detalle., Calculado, "—"]
+      - [Constancia de pago, Referencia del depósito., Vacío, Informativo]
+      - ["Detalle: Trabajador, Categoría, Boleta, Días, Jornal básico, D.S.O., Base, Retenido", Una línea por boleta., Calculado, "La base debe ser jornal + D.S.O."]
 
 funcionalidades:
   - grupo: Maestros del régimen
@@ -198,6 +389,34 @@ ejemplos_intro: >-
   Cifras de la tabla de la R.M. N.° 197-2025-TR con los datos de demostración.
   Todas se pueden comprobar en las capturas.
 ejemplos:
+  - titulo: Reglas de la estructura CONSTRUCCIÓN CIVIL
+    texto: >-
+      Las reglas que instala el módulo, en su orden de cálculo. Las bonificaciones
+      del catálogo se suman en la regla que indica su «Código de la regla».
+    tabla:
+      - [Código, Nombre, SUNAT, Cálculo]
+      - [JOR, Jornal básico, "0121", Jornal × días pagados]
+      - [DSO, Descanso semanal obligatorio, "0100", Jornal del periodo ÷ 6]
+      - [BUC, Bonificación unificada de construcción, "0300", "% de la categoría (o de la tabla) del jornal del periodo"]
+      - [MOV, Bonificación por movilidad, "0904", Movilidad diaria × días]
+      - [BAE, Bonificación por alta especialización, "0300", "% de la especialidad sobre el jornal del periodo"]
+      - ["BALTI, BAGUA, BCOTA, BALTU", Bonificaciones por condiciones de trabajo, "0300", "Importe fijo × días o % del jornal del periodo"]
+      - [HE60, Horas extras 60%, "0105", "Horas × jornal ÷ 8 × 1,6"]
+      - [HE100, Horas extras 100%, "0106", "Horas × jornal ÷ 8 × 2"]
+      - [INDEM, "Indemnización 15% (CTS)", "0916", "15 % de jornal del periodo + horas extras a valor simple"]
+      - [VAC10, Vacaciones 10%, "0400", 10 % del jornal del periodo]
+      - [GRAT, Gratificación proporcional, "0406", "Jornal × 40 × días × 7/6 ÷ 210 (hasta julio) o ÷ 150"]
+      - [BEXT, Bonificación extraordinaria Ley 30334, "0906", "% de la compañía sobre GRAT"]
+      - [AESC, Asignación escolar, "0201", "Jornal × 30 ÷ 360 × días × 7/6 × hijos con derecho"]
+      - [CONAF, CONAFOVICER 2%, "0703", "−(% de la compañía sobre JOR + DSO)"]
+      - [TREM, Total remuneración computable, "—", "JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU + HE60 + HE100 + AESC"]
+      - [ESSALUD, EsSalud, "0804", "% de la compañía sobre TREM"]
+      - [SCTRS, SCTR salud, "0805", "% de la compañía sobre TREM, solo con cobertura"]
+      - [SCTRP, SCTR pensión, "0806", "% de la compañía sobre TREM, solo con cobertura"]
+      - [TINGR, Total ingresos, "—", Suma de la categoría Ingresos]
+      - [TDES, Total descuentos, "—", Aportes y descuentos del trabajador en positivo]
+      - [NETO, Neto a pagar, "—", TINGR − TDES]
+
   - titulo: Semana completa de las tres categorías
     texto: >-
       Seis días trabajados, sin bonificaciones de obra ni horas extras. Son los

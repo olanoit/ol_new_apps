@@ -110,7 +110,7 @@ flujos:
     mermaid: |
       flowchart TD
         A{¿Uno o varios canjes?} -- Uno --> B[Canje ▸ Refinanciar:<br/>fecha de refinanciación]
-        A -- Varios --> C[Lista ▸ Acción ▸ Refinanciación masiva:<br/>mismo cliente, diario, moneda y compañía]
+        A -- Varios --> C[Lista ▸ Acciones ▸ Refinanciación masiva:<br/>mismo cliente, diario, moneda y compañía]
         B --> D[Canje nuevo en borrador:<br/>una línea «99 Letra» por cada letra con saldo]
         C --> D
         D --> E[El origen queda enlazado:<br/>Canje refinanciado / Canjes de origen]
@@ -230,10 +230,11 @@ pasos:
   - titulo: Estado de canje en las facturas
     ruta: Contabilidad ▸ Clientes ▸ Facturas
     texto: >-
-      Una factura canjeada muestra el botón **Canje**, que abre el canje que la
-      canceló; si el canje fue parcial, el botón **Canjes** lista los canjes en
-      los que participa.
+      Una factura canjeada muestra en su cabecera el botón **Canje** con el
+      número del canje que la canceló, que lo abre en una ventana; el botón
+      **Canjes** lista los canjes vinculados a la factura.
     imagen: screenshots/10-factura-canjeada.png
+    pie: "DLTV/2026/00002, pagada por el canje CLC00088 del 10/07/2026."
 
   - titulo: Columna Estado de canje
     ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ columnas opcionales
@@ -290,7 +291,7 @@ pasos:
     puntos:
       - "**Cancelar** una refinanciación en borrador libera el canje de origen para refinanciarlo otra vez."
     imagen: screenshots/13-refinanciacion-borrador.png
-    pie: "CLC00089: lo adeudado de las tres letras de CLC00088 como líneas 99 Letra."
+    pie: "CLC00089: las tres letras de CLC00088 como líneas 99 Letra, creada antes de enviar dos de ellas al banco."
 
   - titulo: Asiento de la refinanciación
     ruta: Canje ▸ pestaña Apuntes contables
@@ -301,7 +302,7 @@ pasos:
     pie: "CLC00091: LET-CLI-004 (S/ 3.540,00) renovada en LET-CLI-006 y LET-CLI-007 de S/ 1.770,00."
 
   - titulo: Refinanciación masiva
-    ruta: Canje de letras ▸ seleccionar ▸ Acción ▸ Refinanciación masiva de canjes
+    ruta: Canje de letras ▸ seleccionar ▸ Acciones ▸ Refinanciación masiva de canjes
     texto: >-
       Con varios canjes de clientes seleccionados, el asistente muestra
       cliente, diario, moneda, el **Importe total** y el importe pendiente de
@@ -309,7 +310,9 @@ pasos:
       las letras pendientes.
     puntos:
       - Todos deben ser de clientes y del mismo cliente, diario, compañía y moneda, y no tener ya una refinanciación.
+      - "Acciones ofrece además **Refinanciación masiva**, que abre el mismo asistente."
     imagen: screenshots/15-refinanciacion-masiva.png
+    pie: "El importe pendiente es el monto restante de cada canje (facturas menos letras): en canjes con todas sus letras creadas sale S/ 0,00, aunque las letras pendientes sí se refinancian."
 
   - seccion: Canje masivo e historial
     texto: Consolidar canjes ya canjeados de un socio.
@@ -335,6 +338,7 @@ pasos:
       Los canjes que forman parte de un canje masivo salen de **Canje de
       letras** y se consultan aquí.
     imagen: screenshots/18-historial.png
+    pie: "La ventana se titula «Historia de canje»."
 
   - titulo: Vincular asientos por referencia
     ruta: Canje de letras ▸ seleccionar ▸ Vincular asientos
@@ -426,7 +430,7 @@ campos:
       - [Letra, Canje que se refinancia., El canje abierto, Solo lectura]
       - [Fecha de refinanciación, Fecha del canje nuevo., Vacío, "Obligatoria; no anterior a las facturas"]
   - grupo: Refinanciación masiva de canjes
-    ruta: Canje de letras ▸ Acción ▸ Refinanciación masiva de canjes
+    ruta: Canje de letras ▸ Acciones ▸ Refinanciación masiva de canjes
     campos:
       - [Cliente / Diario / Moneda, Datos comunes de los canjes., Del primer canje, Solo lectura]
       - [Fecha de refinanciación, Fecha del canje nuevo., Hoy, Obligatoria]

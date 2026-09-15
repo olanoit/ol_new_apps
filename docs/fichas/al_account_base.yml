@@ -64,10 +64,60 @@ contexto:
     base. Reemplaza a una versión anterior que arrastraba catálogos,
     controladores y campos sin uso.
 
+flujos_intro: >-
+  Cómo se usan los datos que aporta el módulo.
+flujos:
+  - id: glosa
+    titulo: Qué texto llega al Libro Diario simplificado
+    texto: >-
+      Con `al_l10n_pe_ple` instalado, el campo 16 (glosa) del formato 5.2 se
+      toma de cada apunte con este orden de preferencia.
+    mermaid: |
+      flowchart TD
+        A[Apunte contable publicado] --> B{¿Tiene Glosa<br/>el apunte?}
+        B -- Sí --> C[Glosa del apunte]
+        B -- No --> D{¿Tiene etiqueta?}
+        D -- Sí --> E[Etiqueta del apunte]
+        D -- No --> F{¿Tiene Glosa<br/>el asiento?}
+        F -- Sí --> G[Glosa del asiento]
+        F -- No --> H{¿Tiene referencia?}
+        H -- Sí --> I[Referencia del asiento]
+        H -- No --> J[Número del asiento]
+    pie: El texto se recorta a 200 caracteres en el libro.
+  - id: codigos
+    titulo: Validación de los códigos SUNAT
+    texto: >-
+      Código SUNAT del banco y establecimiento anexo se validan al guardar, sin
+      recortar el valor.
+    mermaid: |
+      flowchart TD
+        A[Guardar cuenta bancaria o contacto] --> B[Para validar se ignoran<br/>los espacios de los extremos]
+        B --> C{¿Campo vacío?}
+        C -- Sí --> OK[Se guarda]
+        C -- No --> D{¿Solo dígitos?<br/>banco 2 · anexo 4}
+        D -- Sí --> OK
+        D -- No --> E[Error de validación<br/>con el valor recibido]
+  - id: app
+    titulo: Cómo se arma la app Perú
+    texto: >-
+      Este módulo pone los contenedores; cada módulo de la suite cuelga en ellos
+      sus menús y ajustes.
+    mermaid: |
+      flowchart TD
+        A[al_account_base] --> B[Menú raíz Perú<br/>y rama Configuración]
+        A --> C["Aplicación Perú en Ajustes<br/>con el bloque Contabilidad (PE)"]
+        A --> D[Página Contabilidad PE<br/>en la compañía]
+        B --> E[Secciones: Contabilidad, Comprobantes electrónicos,<br/>Tributos SUNAT, Cuentas de la localización,<br/>Consultas RUC / DNI]
+        E --> F[Otros módulos añaden<br/>sus menús en cada sección]
+        C --> G[Otros módulos añaden<br/>sus bloques de ajustes]
+        D --> H[Otros módulos añaden<br/>sus grupos de configuración]
+
 pasos_intro: >-
-  Lo que aporta el módulo, con los datos de demostración de la compañía
+  Todas las funciones del módulo con los datos de demostración de la compañía
   Comercial Demo Perú S.A.C.
 pasos:
+  - seccion: App Perú
+    texto: El punto de entrada de la localización.
   - titulo: La app Perú y su configuración
     ruta: Perú ▸ Configuración
     texto: >-
@@ -89,6 +139,16 @@ pasos:
       RUC/DNI, detracciones, retenciones…) aparecen en la misma página.
     imagen: screenshots/02-ajustes-peru.png
 
+  - titulo: Página Contabilidad PE de la compañía
+    ruta: Ajustes ▸ Compañías ▸ Contabilidad PE
+    texto: >-
+      La ficha de la compañía gana la pestaña **Contabilidad PE**, vacía de por
+      sí: los demás módulos colocan allí sus grupos de configuración.
+    imagen: screenshots/09-compania-contabilidad-pe.png
+    pie: Con `al_account_destinations` instalado, la pestaña muestra el grupo Destinos.
+
+  - seccion: Asientos contables
+    texto: Glosa y botón de borrador.
   - titulo: Glosa en el asiento y en cada apunte
     ruta: Contabilidad ▸ Contabilidad ▸ Asientos contables
     texto: >-
@@ -97,10 +157,13 @@ pasos:
       desde el selector de columnas para describir cada línea.
     puntos:
       - La glosa no se copia al duplicar el asiento.
-      - "El Libro Diario simplificado (formato 5.2 de `al_l10n_pe_ple`) usa la glosa de la línea; si falta, su etiqueta."
+      - "La usan el Libro Diario simplificado (formato 5.2 de `al_l10n_pe_ple`) y el comprobante impreso de `al_l10n_pe_invoice`."
+      - "El botón **Restablecer a borrador** se muestra siempre en los asientos publicados y cancelados."
     imagen: screenshots/03-asiento-glosa.png
     pie: "Provisión de alquiler de S/ 3.500,00 con glosa en la cabecera y en las dos líneas."
 
+  - seccion: Datos para los libros electrónicos
+    texto: Diarios, cuentas bancarias y contactos.
   - titulo: Naturaleza del diario
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
     texto: >-
@@ -109,7 +172,7 @@ pasos:
       los libros electrónicos**.
     puntos:
       - Los asientos de apertura y cierre no son operaciones del periodo; la naturaleza deja constancia de ello en el diario.
-      - "Los diarios excluidos quedan fuera, por ejemplo, del Registro de Compras que genera `al_l10n_pe_ple`."
+      - "Los diarios excluidos quedan fuera del Registro de Compras que genera `al_l10n_pe_ple`."
     imagen: screenshots/04-diario.png
 
   - titulo: Código SUNAT del banco
@@ -117,9 +180,80 @@ pasos:
     texto: >-
       Cada cuenta bancaria admite el **Código SUNAT del banco** según la tabla 3
       del Anexo 2 del PLE, obligatorio en el Libro Caja y Bancos (formato 1.2).
-      Debe tener exactamente dos dígitos.
     imagen: screenshots/05-cuenta-bancaria.png
     pie: Cuenta en el Banco de Crédito del Perú con el código 02.
+
+  - titulo: Un código mal escrito se rechaza
+    ruta: Cuenta bancaria ▸ Guardar
+    texto: >-
+      El código debe tener exactamente dos dígitos. En lugar de recortarlo
+      —«123» pasaría a «12», que es otro banco— la cuenta no se guarda y el
+      aviso muestra el valor recibido.
+    imagen: screenshots/06-error-banco.png
+
+  - titulo: Establecimiento anexo del contacto
+    ruta: Contactos ▸ contacto con país Perú
+    texto: >-
+      Debajo del número de identificación se muestra el **Establecimiento
+      anexo**: el código de cuatro dígitos del establecimiento declarado en el
+      RUC. El principal es «0000».
+    puntos:
+      - Solo aparece en contactos con país Perú.
+      - El campo no lleva etiqueta propia en el formulario; queda justo debajo del RUC.
+    imagen: screenshots/07-contacto-anexo.png
+    pie: DEMO Distribuidora Norte SAC con el anexo 0002.
+
+  - titulo: El anexo también se valida
+    ruta: Contacto ▸ Guardar
+    texto: >-
+      Un código que no sea de cuatro dígitos se rechaza con el nombre del
+      contacto y el valor recibido.
+    imagen: screenshots/08-error-anexo.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Asiento contable
+    ruta: Contabilidad ▸ Contabilidad ▸ Asientos contables
+    campos:
+      - [Glosa, Descripción del asiento junto a la referencia., Vacío, "Libro 5.2 (si la línea no tiene glosa ni etiqueta) y comprobante impreso; no se copia al duplicar"]
+  - grupo: Apunte contable
+    ruta: Asiento ▸ Apuntes contables
+    campos:
+      - [Glosa, Descripción de la línea; columna opcional., "Vacío (columna oculta)", "Primera opción para la glosa del libro 5.2; no se copia al duplicar"]
+  - grupo: Diario
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
+    texto: Los dos campos solo se muestran en diarios de compañías de Perú.
+    campos:
+      - [Naturaleza del diario, "Movimiento, Apertura o Cierre.", Movimiento, Distingue los diarios de apertura y cierre]
+      - [Excluir de los libros electrónicos, Marca diarios auxiliares que no son operaciones declarables., Desmarcado, "Sus asientos no entran en el Registro de Compras del PLE"]
+  - grupo: Cuenta bancaria
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Cuentas bancarias
+    campos:
+      - [Código SUNAT del banco, "Entidad financiera según la tabla 3 del PLE.", Vacío, "Dos dígitos exactos; si no, no se guarda"]
+  - grupo: Contacto
+    ruta: Contactos ▸ contacto con país Perú
+    campos:
+      - [Establecimiento anexo, Establecimiento declarado en el RUC., Vacío, "Cuatro dígitos exactos (principal 0000); si no, no se guarda"]
+  - grupo: Compañía
+    ruta: Ajustes ▸ Compañías
+    campos:
+      - [Página Contabilidad PE, Contenedor de la configuración de la localización., Vacía, Los demás módulos añaden allí sus grupos]
+
+asientos_intro: >-
+  El módulo no genera asientos; añade la glosa que los describe. Asiento real
+  de los datos de demostración.
+asientos:
+  - titulo: Provisión con glosa en la cabecera y en las líneas
+    referencia: MISCE/2026/09/0001
+    texto: >-
+      Glosa del asiento: «Provisión del alquiler del local de Miraflores –
+      setiembre 2026». En la descripción, la etiqueta y, tras la barra, la
+      glosa de cada apunte.
+    lineas:
+      - [6352000, "Alquileres – Edificaciones — Alquiler local Miraflores / Alquiler setiembre 2026", "3.500,00", ""]
+      - [4699000, "Otras cuentas por pagar diversas — Alquiler por pagar / Por pagar a DEMO Distribuidora Norte", "", "3.500,00"]
+    nota: "En el Libro Diario 5.2 las dos líneas salen con su glosa: «Alquiler setiembre 2026» y «Por pagar a DEMO Distribuidora Norte»."
 
 funcionalidades:
   - grupo: Menú y ajustes

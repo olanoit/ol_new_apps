@@ -1,0 +1,11 @@
+flowchart TD
+  A[Canje canjeado ▸ Canje] --> B{¿Tipo de canje?}
+  B -- Todas las letras --> C[Todas las letras pendientes]
+  B -- Por letra --> D[La letra elegida]
+  C --> E[Tipo de letra: cobranza libre o descuento,<br/>fecha, banco y código]
+  D --> E
+  E --> F{¿Hay cuenta configurada para<br/>ese tipo de letra y moneda?}
+  F -- No --> G[Error: no se ha configurado la cuenta]
+  F -- Sí --> H[Asiento «Cobranza libre» o «Letra en descuento»:<br/>sale de la cuenta de la letra<br/>y entra en la del tipo]
+  H --> I[Concilia con la línea de la letra<br/>en el asiento del canje]
+  I --> J[La letra guarda banco, código y tipo;<br/>su adeudado queda en cero]

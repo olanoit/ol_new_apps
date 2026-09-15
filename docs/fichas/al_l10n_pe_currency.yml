@@ -5,7 +5,7 @@ subtitulo: >-
   cada pago, que es la que fija el importe en soles.
 categoria: Localización Perú · Contabilidad
 etiquetas: [Compra y venta, SUNAT, BCRP, Actualización diaria, T.C. por factura, Diferencia de cambio]
-portada: screenshots/05-factura-usd.png
+portada: screenshots/10-factura-compra.png
 
 destacados_intro: >-
   Odoo trabaja con una sola tasa por día; en Perú hay dos. El módulo guarda
@@ -40,7 +40,7 @@ destacados:
     titulo: T.C. aplicado a la vista
     texto: >-
       Junto a la moneda de la factura se lee el tipo aplicado, su valor y su
-      fecha: «T.C. Venta 3.391 · 16/07/2026».
+      fecha: «T.C. Compra 3.391 · 02/08/2026».
 
 contexto:
   titulo: El problema que resuelve
@@ -62,29 +62,103 @@ contexto:
     registradas, Odoo convierte como siempre. Al instalar se comprueban además
     las cuentas de diferencia de cambio 676 / 776 de la compañía.
 
+flujos_intro: >-
+  De dónde salen las tasas y cómo las usa cada comprobante.
+flujos:
+  - id: tasas
+    titulo: Registro de los tipos de cambio
+    texto: >-
+      Tres vías llegan al mismo registro: una tasa por día, moneda y compañía,
+      con compra, venta y origen.
+    mermaid: |
+      flowchart TD
+        A{¿Cómo llega la tasa?} -- Acción planificada diaria<br/>o Actualizar hoy --> B[TXT oficial de SUNAT<br/>del día publicado]
+        A -- Asistente por día, rango o mes --> C{¿Fuente?}
+        C -- BCRP --> D[Una consulta para todo el rango;<br/>días sin publicación no vienen]
+        C -- "Decolecta / apis.net.pe" --> E[Una consulta por día<br/>con el token de la conexión RUC/DNI]
+        A -- Registro manual --> F[Compra y venta escritas a mano;<br/>aviso si compra supera a venta]
+        B --> G[Tasa del día en todas las compañías:<br/>se crea o se actualiza]
+        D --> G
+        E --> G
+        F --> H[Si falta la compra toma la venta]
+        G --> I[Tasa nativa = 1 / venta]
+        H --> I
+  - id: comprobante
+    titulo: Conversión de facturas y pagos
+    texto: >-
+      La elección de compra o venta decide el importe en soles del asiento.
+    mermaid: |
+      flowchart TD
+        A[Factura, nota o recibo<br/>en moneda extranjera] --> B{¿Cliente o proveedor?}
+        B -- Cliente --> C[Tipo de T.C. = T.C. en ventas]
+        B -- Proveedor --> D[Tipo de T.C. = T.C. en compras]
+        C --> E[Editable mientras está en borrador]
+        D --> E
+        E --> F{¿Hay tasa en la fecha<br/>o en una anterior?}
+        F -- Sí --> G[Convierte con la compra o la venta<br/>de la última tasa hasta esa fecha]
+        F -- No --> H[Conversión nativa de Odoo]
+        G --> I[Publicar: importe en soles fijo]
+        H --> I
+        I --> J[Pagar: el cobro sigue ventas<br/>y el pago a proveedor, compras]
+        J --> K{¿El cobro cancela en soles lo<br/>mismo que registró la factura?}
+        K -- No --> L[Odoo registra la diferencia<br/>de cambio al conciliar: 676 / 776]
+        K -- Sí --> M[Factura saldada sin diferencia]
+    pie: Entre dos monedas extranjeras, o sin tasa peruana registrada, se usa siempre la conversión nativa.
+
 pasos_intro: >-
-  Recorrido con las tasas de julio de 2026 de la base de demostración. Las
-  capturas no lanzan descargas: muestran tasas ya registradas.
+  Todas las funciones con las tasas de julio y agosto de 2026 y las facturas
+  «DEMO TC FACTURA». Las capturas no lanzan descargas: muestran tasas ya
+  registradas.
 pasos:
+  - seccion: Configuración
+    texto: El criterio de la empresa y la actualización automática.
   - titulo: Elegir el criterio para ventas y compras
     ruta: Contabilidad ▸ Configuración ▸ Ajustes ▸ Tipo de cambio (Perú)
     texto: >-
       **T.C. en ventas** y **T.C. en compras** fijan el tipo que se propone en
-      los comprobantes emitidos y recibidos en moneda extranjera. Por defecto
-      ambos son **Venta**, el criterio del IGV.
+      los comprobantes emitidos y recibidos en moneda extranjera, y también en
+      los cobros y los pagos. Por defecto ambos son **Venta**, el criterio del
+      IGV.
     imagen: screenshots/01-ajustes.png
 
+  - titulo: La actualización diaria
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Tipo de cambio: actualizar desde SUNAT"
+    texto: >-
+      La acción planificada corre una vez al día y registra compra y venta del
+      TXT oficial de SUNAT. Se instala activa.
+    puntos:
+      - "En la base de demostración está desactivada: las tasas se cargaron desde el asistente y a mano."
+    imagen: screenshots/02-cron.png
+
+  - seccion: Tipos de cambio
+    texto: Consulta, registro manual y carga de históricos.
   - titulo: Consultar los tipos de cambio
     ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
     texto: >-
       Lista completa de tasas con **Moneda**, **Compra**, **Venta** y
-      **Origen**: SUNAT, BCRP, Decolecta, apis.net.pe o Manual. Se pueden
-      registrar a mano; si solo se indica la venta, la compra toma el mismo
-      valor.
+      **Origen** como etiqueta de color: SUNAT, BCRP, Decolecta, apis.net.pe o
+      Manual. Junto a ellas quedan las columnas nativas de Odoo.
+    imagen: screenshots/03-tipos-de-cambio.png
+
+  - titulo: Una tasa, por dentro
+    ruta: Tipos de cambio ▸ (tasa)
+    texto: >-
+      El formulario añade **Compra**, **Venta** y **Origen**. La **Tasa
+      inversa de la empresa** coincide siempre con la venta: si se escribe la
+      venta se recalcula la tasa nativa y viceversa. Si solo se indica la
+      venta, la compra toma el mismo valor.
     puntos:
-      - Si la compra supera a la venta, el formulario avisa sin bloquear el registro.
       - Una tasa por día, moneda y compañía (unicidad nativa de Odoo).
-    imagen: screenshots/02-tipos-de-cambio.png
+      - Ni la compra ni la venta pueden ser negativas.
+    imagen: screenshots/04-tasa.png
+    pie: "31/07/2026, registrada a mano: compra 3,395 y venta 3,404."
+
+  - titulo: Aviso si la compra supera a la venta
+    ruta: Tipos de cambio ▸ Nuevo
+    texto: >-
+      Al escribir una venta menor que la compra aparece un aviso, pero el
+      registro se puede guardar: hay días en que SUNAT publica valores iguales.
+    imagen: screenshots/05-aviso-compra.png
 
   - titulo: Actualizar desde la moneda
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Monedas ▸ USD
@@ -92,10 +166,10 @@ pasos:
       La ficha del dólar suma dos botones: **Actualizar hoy (SUNAT)** trae el
       tipo del día del TXT oficial y **Actualizar por fecha/mes** abre el
       asistente. En la pestaña **Tasas** aparecen las columnas **Compra** y
-      **Venta**.
-    imagen: screenshots/03-moneda-usd.png
+      **Venta** (y **Origen** como columna opcional).
+    imagen: screenshots/06-moneda-usd.png
 
-  - titulo: Cargar históricos
+  - titulo: Cargar históricos por mes
     ruta: Perú ▸ Tipo de cambio ▸ Actualizar tipo de cambio
     texto: >-
       Elija el **Período** (Hoy, Por día, Rango de fechas o Por mes) y la
@@ -103,34 +177,147 @@ pasos:
       BCRP trae todo el rango en una sola consulta.
     puntos:
       - "Por mes: del día 1 al último día del mes, sin pasar de hoy."
-      - Decolecta y apis.net.pe se consultan día a día; el token se prellena desde la conexión de consulta RUC/DNI.
-      - Al terminar indica cuántas fechas cargó o cuántas no pudo obtener.
-    imagen: screenshots/04-asistente.png
+      - "Al terminar indica cuántas fechas cargó desde el BCRP, o cuántas no pudo obtener de Decolecta o apis.net.pe."
+    imagen: screenshots/07-asistente-mes.png
 
-  - titulo: La factura en dólares
+  - titulo: Fuentes con token
+    ruta: Actualizar tipo de cambio ▸ Rango de fechas ▸ Fuente Decolecta
+    texto: >-
+      Con **Decolecta** o **apis.net.pe** aparece el campo del token, prellenado
+      desde la conexión del mismo nombre de la consulta RUC/DNI. Estas fuentes
+      se consultan día por día.
+    imagen: screenshots/08-asistente-decolecta.png
+    pie: En la demostración la conexión Decolecta no tiene token, por eso el campo sale vacío.
+
+  - seccion: Facturas y pagos
+    texto: Compra o venta en cada comprobante.
+  - titulo: La factura a T.C. venta
     ruta: Contabilidad ▸ Clientes ▸ Facturas
     texto: >-
-      El campo **Tipo de T.C.** aparece solo en comprobantes en moneda
-      extranjera y se puede cambiar mientras la factura está en borrador. Al
-      lado de la moneda se muestra el tipo de cambio aplicado y su fecha.
-    imagen: screenshots/05-factura-usd.png
-    pie: "Factura de US$ 1.180,00 del 16/07/2026 al T.C. venta 3.391: S/ 4.001,38."
+      **Tipo de T.C.** aparece bajo la fecha de factura solo en comprobantes en
+      moneda extranjera y se puede cambiar mientras la factura está en
+      borrador. Junto a la moneda se muestra el tipo aplicado, su valor y la
+      fecha de la tasa usada.
+    imagen: screenshots/09-factura-venta.png
+    pie: "DTCV/2026/00001: US$ 1.180,00 al T.C. venta 3,400 del 02/08/2026 = S/ 4.012,00."
+
+  - titulo: La misma factura a T.C. compra
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    texto: >-
+      Idéntica a la anterior salvo el tipo: cada línea del asiento se convierte
+      al 3,391 y el importe por cobrar baja a S/ 4.001,38.
+    imagen: screenshots/10-factura-compra.png
+    pie: "DTCV/2026/00002: US$ 1.180,00 al T.C. compra 3,391 = S/ 4.001,38."
 
   - titulo: Registrar el cobro con su tipo de cambio
     ruta: Factura ▸ Pagar
     texto: >-
       El asistente de pago trae su propio **Tipo de T.C.**, propuesto según el
       sentido: los cobros siguen el criterio de ventas y los pagos a
-      proveedores el de compras. El pago generado conserva la elección y
-      convierte con ella.
-    imagen: screenshots/06-registrar-pago.png
+      proveedores el de compras. El pago generado conserva la elección.
+    imagen: screenshots/11-registrar-pago.png
+
+  - titulo: El cobro convierte con su tipo
+    ruta: Contabilidad ▸ Clientes ▸ Pagos
+    texto: >-
+      El pago muestra el **Tipo de T.C.** con el que se generó su asiento;
+      solo se edita en borrador.
+    imagen: screenshots/12-cobro.png
+    pie: "PBNK1/2026/00005: cobro de US$ 1.180,00 de la factura a venta, registrado con T.C. compra."
+
+  - titulo: La diferencia de cambio al conciliar
+    ruta: Cobro ▸ Factura ▸ Diferencia de cambio
+    texto: >-
+      Si la factura y su cobro se convirtieron con tipos distintos, Odoo
+      registra la diferencia al conciliarlos en el diario de diferencia de
+      cambio, contra la cuenta 676 (pérdida) o 776 (ganancia) de la compañía.
+    imagen: screenshots/13-diferencia-cambio.png
+    pie: "S/ 4.012,00 facturados − S/ 4.001,38 cobrados = S/ 10,62 de pérdida."
+
+campos_intro: >-
+  Cada campo que añade el módulo, con la etiqueta que se ve en pantalla.
+campos:
+  - grupo: Ajustes de Contabilidad
+    ruta: Contabilidad ▸ Configuración ▸ Ajustes ▸ Tipo de cambio (Perú)
+    campos:
+      - [T.C. en ventas, "Tipo propuesto en facturas, notas y recibos de cliente y en los cobros.", Venta, Importe en soles de las ventas]
+      - [T.C. en compras, Tipo propuesto en comprobantes de proveedor y en los pagos a proveedores., Venta, Importe en soles de las compras]
+  - grupo: Tipo de cambio
+    ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
+    campos:
+      - [Compra, "Tipo compra, 3 decimales.", "Igual a la venta si se deja vacío", Facturas y pagos a T.C. compra]
+      - [Venta, "Tipo venta, 3 decimales.", "—", "Recalcula la tasa nativa (1 / venta)"]
+      - [Origen, "SUNAT, BCRP, Decolecta, apis.net.pe o Manual.", Manual, Solo informativo]
+  - grupo: Moneda
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Monedas ▸ USD
+    campos:
+      - ["Actualizar hoy (SUNAT)", Botón (solo en USD) que registra el tipo del día., "—", Crea o actualiza la tasa de hoy]
+      - [Actualizar por fecha/mes, Botón (solo en USD) que abre el asistente., "—", "—"]
+      - ["Tasas: Compra, Venta, Origen", Columnas añadidas a la lista de tasas., "Origen oculta", "—"]
+  - grupo: Asistente Actualizar tipo de cambio
+    ruta: Perú ▸ Tipo de cambio ▸ Actualizar tipo de cambio
+    campos:
+      - [Período, "Hoy, Por día, Rango de fechas o Por mes.", Hoy, Muestra los campos de fecha que tocan]
+      - [Día, Fecha a cargar (Por día)., Hoy, "—"]
+      - [Desde / Hasta, Rango a cargar (Rango de fechas)., Vacío, "«Hasta» no puede ser anterior a «Desde»"]
+      - [Mes / año, Mes a cargar (Por mes)., Mes y año actuales, "Del día 1 al último, sin pasar de hoy"]
+      - [Fuente, "BCRP, Decolecta o apis.net.pe (fechas pasadas).", BCRP, «Hoy» usa siempre SUNAT]
+      - [Token apis.net.pe / Token Decolecta, Credencial de la fuente elegida., Token de la conexión RUC/DNI, "—"]
+  - grupo: Factura
+    ruta: Contabilidad ▸ Clientes o Proveedores ▸ Facturas
+    campos:
+      - [Tipo de T.C., Compra o venta; solo en moneda extranjera., Según T.C. en ventas o en compras, Cambia el importe en soles; editable en borrador]
+      - [T.C. aplicado, "Texto junto a la moneda: tipo, valor y fecha de la tasa usada.", Calculado, Solo lectura]
+  - grupo: Pago y asistente de pago
+    ruta: Factura ▸ Pagar · Contabilidad ▸ Pagos
+    campos:
+      - [Tipo de T.C., Compra o venta del cobro o pago; solo en moneda extranjera., "Cobro: T.C. en ventas · pago: T.C. en compras", "Importe en soles del asiento del pago; editable en borrador"]
+
+asientos_intro: >-
+  Asientos reales de los datos «DEMO TC FACTURA»: la misma factura a venta y a
+  compra, y un cobro con un tipo distinto al de su factura.
+asientos:
+  - titulo: Factura en dólares a T.C. venta
+    referencia: DTCV/2026/00001
+    texto: >-
+      US$ 1.000,00 + IGV US$ 180,00, del 02/08/2026, convertidos a la venta
+      3,400.
+    lineas:
+      - [1213000, "Facturas por cobrar — US$ 1.180,00", "4.012,00", ""]
+      - [7012100, "Venta local — US$ 1.000,00", "", "3.400,00"]
+      - [4011100, "IGV 18 % — US$ 180,00", "", "612,00"]
+  - titulo: La misma factura a T.C. compra
+    referencia: DTCV/2026/00002
+    texto: >-
+      Mismos importes en dólares y misma fecha; solo cambia el **Tipo de T.C.**
+      a compra 3,391.
+    lineas:
+      - [1213000, "Facturas por cobrar — US$ 1.180,00", "4.001,38", ""]
+      - [7012100, "Venta local — US$ 1.000,00", "", "3.391,00"]
+      - [4011100, "IGV 18 % — US$ 180,00", "", "610,38"]
+    nota: "Diferencia entre ambas: S/ 10,62 en el total (S/ 9,00 de base y S/ 1,62 de IGV)."
+  - titulo: Cobro de la factura a venta con T.C. compra
+    referencia: PBNK1/2026/00005
+    texto: >-
+      US$ 1.180,00 cobrados el 02/08/2026 con **Tipo de T.C.** compra.
+    lineas:
+      - [1041003, "Recibos pendientes — DEMO TC FACTURA cobro a compra", "4.001,38", ""]
+      - [1213000, "Facturas por cobrar — DEMO TC FACTURA cobro a compra", "", "4.001,38"]
+  - titulo: Diferencia de cambio al conciliar
+    referencia: CAMBI/2026/08/0001
+    texto: >-
+      La factura quedó en S/ 4.012,00 y el cobro canceló S/ 4.001,38: Odoo
+      salda la diferencia contra la pérdida por diferencia de cambio.
+    lineas:
+      - [6760000, Diferencia en tasa de cambio de moneda, "10,62", ""]
+      - [1213000, Diferencia en tasa de cambio de moneda, "", "10,62"]
 
 funcionalidades:
   - grupo: Tipos de cambio
     items:
       - Campos Compra, Venta y Origen en cada tipo de cambio, con 3 decimales.
-      - Tasa nativa y venta siempre coherentes (tasa = 1 / venta).
-      - Aviso cuando la compra es mayor que la venta.
+      - Tasa nativa y venta siempre coherentes (tasa = 1 / venta); compra vacía toma la venta.
+      - Aviso cuando la compra es mayor que la venta; importes negativos rechazados.
       - Lista completa de tasas en la app Perú, con la moneda y el origen como etiqueta de color.
   - grupo: Fuentes
     items:
@@ -139,6 +326,7 @@ funcionalidades:
       - "Decolecta: por fecha, con el token de la conexión de consulta RUC/DNI."
       - "apis.net.pe: por fecha, con token."
       - Asistente por día, rango de fechas o mes, también desde la ficha del dólar.
+      - Cada tasa descargada se registra en todas las compañías.
   - grupo: Comprobantes y pagos
     items:
       - Tipo de T.C. (compra o venta) por factura, nota y recibo, propuesto por la configuración.
@@ -150,12 +338,12 @@ funcionalidades:
 ejemplos:
   - titulo: Compra o venta en la misma factura
     texto: >-
-      Factura F001-00000211 por **US$ 1.180,00** del 16/07/2026. Ese día SUNAT
-      publicó compra 3,381 y venta 3,391:
+      Facturas DTCV/2026/00001 y DTCV/2026/00002 por **US$ 1.180,00** del
+      02/08/2026. Ese día SUNAT publicó compra 3,391 y venta 3,400:
     tabla:
-      - [Tipo de T.C., T.C., Importe en soles, Diferencia]
-      - [Venta, "3,391", "S/ 4.001,38", "—"]
-      - [Compra, "3,381", "S/ 3.989,58", "S/ -11,80"]
+      - [Tipo de T.C., T.C., Base S/, IGV S/, Total S/]
+      - [Venta, "3,400", "3.400,00", "612,00", "4.012,00"]
+      - [Compra, "3,391", "3.391,00", "610,38", "4.001,38"]
     nota: El importe en soles del asiento sale del tipo elegido; al publicar queda fijo.
 
   - titulo: Criterios por defecto
@@ -167,7 +355,7 @@ ejemplos:
       - [Pago a proveedor, T.C. en compras, Venta]
       - [Asiento manual, "—", Conversión nativa de Odoo]
 
-  - titulo: Tasas de julio de 2026 cargadas en la demostración
+  - titulo: Tasas cargadas en la demostración
     tabla:
       - [Fecha, Compra, Venta, Origen]
       - [01/07/2026, "3,403", "3,415", apis.net.pe]
@@ -204,6 +392,11 @@ faq:
     respuesta: >-
       No. Si la compra viene vacía toma el valor de la venta, para que no quede
       un cero que se leería como «sin tipo de cambio».
+  - pregunta: ¿Por qué un cobro genera diferencia de cambio el mismo día?
+    respuesta: >-
+      Porque la factura y el cobro pueden usar tipos distintos: una factura a
+      venta cobrada con T.C. compra cancela menos soles de los facturados y
+      Odoo registra la diferencia al conciliar.
   - pregunta: ¿Afecta a facturas entre dos monedas extranjeras?
     respuesta: >-
       No. Compra y venta de SUNAT solo se aplican entre el sol y otra moneda;

@@ -5,7 +5,7 @@ subtitulo: >-
   por diario, que no toca los diarios que usted no active.
 categoria: Localización Perú · Facturación electrónica
 etiquetas: [Series CPE, Serie-correlativo SUNAT, Sin huecos, Notas de crédito y débito, Opcional por diario]
-portada: screenshots/04-factura-serie.png
+portada: screenshots/08-factura-serie.png
 
 destacados_intro: >-
   Dos formas de numerar, según el diario, y ninguna obligación: sin activar la
@@ -62,38 +62,114 @@ contexto:
     hasta que un diario marca **Numerar por secuencia**. Desmarcarla devuelve
     el diario a la numeración estándar.
 
+flujos_intro: >-
+  De la serie al número del comprobante, y cómo se decide qué secuencia usa.
+flujos:
+  - id: series
+    titulo: Poner en marcha una serie CPE
+    mermaid: |
+      flowchart TD
+        A[Series CPE ▸ Nuevo] --> B[Tipo de documento<br/>y serie, p. ej. F003]
+        B --> C[Se proponen las rectificativas<br/>FC03 y FD03]
+        C --> D{¿Formato válido<br/>y serie única?}
+        D -- No --> E[Error al guardar]
+        D -- Sí --> F[Publicar: se crean tres secuencias<br/>sin huecos, relleno 8]
+        F --> G[Diario con Numerar por secuencia<br/>▸ Series CPE]
+        G --> H[Comprobantes numerados<br/>F003-00000001…]
+        F --> I{¿Deja de usarse?}
+        I -- Inhabilitar --> J[Inhabilitada: fuera de los diarios]
+        J -- Volver a borrador --> K[Borrador]
+    pie: "Formato: facturas F + 3 caracteres; boletas B o E + 3 caracteres."
+  - id: numeracion
+    titulo: Qué número recibe un comprobante al publicarse
+    texto: >-
+      La decisión se toma al publicar, solo en diarios con la casilla marcada.
+    mermaid: |
+      flowchart TD
+        A[Comprobante publicado] --> B{¿Diario con<br/>Numerar por secuencia?}
+        B -- No --> N[Numeración nativa de Odoo]
+        B -- Sí --> C{¿Diario con<br/>Usa Documentos?}
+        C -- Sí --> D{Tipo de documento}
+        D -- 01 / 03 --> E[Secuencia de la Serie CPE<br/>del comprobante]
+        D -- 07 nota de crédito --> F[Secuencia NC de la serie<br/>del documento de origen]
+        D -- 08 nota de débito --> G[Secuencia ND de la serie<br/>del documento de origen]
+        E --> H{¿Hay secuencia?}
+        F --> H
+        G --> H
+        H -- No --> N
+        H -- Sí --> OK[Siguiente número de la secuencia,<br/>con la fecha del asiento]
+        C -- No --> I{¿Nota de crédito y diario<br/>con secuencia de NC?}
+        I -- Sí --> J[Secuencia de notas de crédito]
+        I -- No --> K{¿Tiene Secuencia<br/>de asientos?}
+        J --> OK
+        K -- Sí --> OK
+        K -- No --> N
+
 pasos_intro: >-
-  Recorrido con los datos de demostración: series F001/F002 y B001/B002 en los
-  diarios de ventas, y un diario de caja chica con prefijo simple.
+  Todas las funciones con los datos de demostración: series F001/F002 y
+  B001/B002 en los diarios de ventas del TPV, y un diario de caja chica con
+  prefijo simple.
 pasos:
-  - titulo: Crear y publicar las Series CPE
+  - seccion: Series CPE
+    texto: Se crean una vez y se asignan a los diarios.
+  - titulo: La lista de series
     ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Series CPE
     texto: >-
-      La lista muestra cada serie con su tipo de documento, sus series de nota
-      de crédito y débito y su estado. El mismo menú está en **Contabilidad ▸
+      Cada serie con su tipo de documento, sus series de nota de crédito y
+      débito y su estado. El mismo menú está en **Contabilidad ▸
       Configuración ▸ Series CPE**.
     imagen: screenshots/01-series-cpe.png
 
-  - titulo: La serie y sus rectificativas
-    ruta: Series CPE ▸ F001
+  - titulo: Crear una serie
+    ruta: Series CPE ▸ Nuevo
     texto: >-
       Elija **(01) Factura** o **(03) Boleta** y escriba la serie. Al escribirla
-      se proponen las rectificativas: F001 → **FC01** y **FD01**. Pulse
-      **Publicar**: se crean las secuencias del comprobante, de la nota de
-      crédito y de la nota de débito, y la serie queda disponible en los diarios.
-    puntos:
-      - "Formato validado: facturas `F` + 3 caracteres; boletas `B` o `E` + 3 caracteres."
-      - "No puede repetirse el nombre de la serie en la misma compañía."
-      - "Publicada, la serie ya no se edita; **Inhabilitar** la retira de uso y **Volver a borrador** la reabre."
-    imagen: screenshots/02-serie-f001.png
+      se proponen las rectificativas: F003 → **FC03** y **FD03** (solo si están
+      vacías; puede cambiarlas).
+    imagen: screenshots/02-serie-nueva.png
 
+  - titulo: Formato validado al guardar
+    ruta: Series CPE ▸ Guardar
+    texto: >-
+      Facturas: `F` + 3 caracteres alfanuméricos; boletas: `B` o `E` + 3. Una
+      serie repetida en la misma compañía también se rechaza.
+    imagen: screenshots/03-error-formato.png
+
+  - titulo: Publicar la serie
+    ruta: Series CPE ▸ Publicar
+    texto: >-
+      **Publicar** crea las secuencias del comprobante, de la nota de crédito y
+      de la nota de débito (sin huecos, relleno 8) y la serie queda disponible
+      en los diarios. Publicada ya no se edita. El botón **Comprobantes** de la
+      barra superior cuenta y abre los documentos de la serie.
+    puntos:
+      - El grupo **Secuencias** solo se ve en modo desarrollador.
+    imagen: screenshots/04-serie-publicada.png
+    pie: "Serie F002 con sus secuencias CPE/01/F002, CPE/07/FC02 y CPE/08/FD02."
+
+  - titulo: Inhabilitar una serie
+    ruta: Series CPE ▸ Inhabilitar
+    texto: >-
+      **Inhabilitar** retira la serie: deja de ofrecerse en los diarios, que
+      solo admiten series publicadas. **Volver a borrador** la reabre.
+    imagen: screenshots/05-serie-inhabilitada.png
+
+  - titulo: Tipos de documento
+    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Tipos de documento
+    texto: >-
+      Acceso desde la app Perú al catálogo nativo de tipos de documento, en el
+      que se apoyan las series.
+    imagen: screenshots/06-tipos-documento.png
+
+  - seccion: Comprobantes con serie
+    texto: Diarios con Usa Documentos.
   - titulo: Asignar las series al diario
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
     texto: >-
       En el grupo **Numeración por secuencia — CPE Perú (opcional)** marque
       **Numerar por secuencia**. En un diario con **Usa Documentos** aparece
       **Series CPE**: asigne las series publicadas que se emiten desde él.
-    imagen: screenshots/03-diario-series.png
+    imagen: screenshots/07-diario-series.png
     pie: Diario Facturas TPV con las series F001 y F002.
 
   - titulo: Elegir la serie en el comprobante
@@ -103,18 +179,37 @@ pasos:
       diario tiene una sola serie para ese tipo, se asigna sola; si tiene varias,
       elija una. Al cambiar de diario o de tipo de documento la serie se
       revalida.
-    imagen: screenshots/04-factura-serie.png
+    imagen: screenshots/08-factura-serie.png
     pie: Factura en borrador del diario Facturas TPV, que ofrece F001 y F002.
 
-  - titulo: Comprobantes numerados por la serie
-    ruta: Series CPE ▸ F001 ▸ Comprobantes
+  - titulo: La factura toma el número de su serie
+    ruta: Factura ▸ Confirmar
     texto: >-
-      Al confirmar, el comprobante recibe el siguiente número de la serie. El
-      botón **Comprobantes** de la serie abre todos los documentos asignados a
-      ella, incluidos los borradores.
-    imagen: screenshots/05-comprobantes-serie.png
+      Al confirmar, el comprobante recibe el siguiente número de la secuencia
+      de la serie. El nombre es a la vez el número de documento
+      serie-correlativo.
+    imagen: screenshots/09-factura-f002.png
+    pie: "«DEMO serie F002»: F002-00000002 por S/ 1.180,00."
 
-  - titulo: Diario sin documentos latam, con prefijo simple
+  - titulo: La nota de crédito usa la serie rectificativa
+    ruta: Factura ▸ Nota de crédito
+    texto: >-
+      La nota de crédito (07) se numera con la serie de nota de crédito de la
+      serie del documento que corrige; la de débito (08), con su serie de nota
+      de débito.
+    imagen: screenshots/10-nota-credito-fc02.png
+    pie: Nota de crédito de F002-00000002 numerada FC02-00000001.
+
+  - titulo: Comprobantes de la serie
+    ruta: Series CPE ▸ F002 ▸ Comprobantes
+    texto: >-
+      Lista de todos los documentos asignados a la serie, incluidos los
+      borradores y las notas que tomaron su serie rectificativa.
+    imagen: screenshots/11-comprobantes-serie.png
+
+  - seccion: Diarios sin documentos latam
+    texto: Una serie por diario con un prefijo simple.
+  - titulo: Prefijo simple
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
     texto: >-
       En diarios sin **Usa Documentos** (ventas, compras o misceláneos) escriba
@@ -122,17 +217,80 @@ pasos:
       ese prefijo, sin huecos y relleno 8. En ventas y compras puede indicar
       además un **Prefijo NC (serie)** para las notas de crédito.
     puntos:
-      - Si no hay secuencia, el botón **Generar** la crea con el prefijo indicado.
       - La secuencia de asientos y la de notas de crédito no pueden ser la misma.
-    imagen: screenshots/06-diario-prefijo.png
+    imagen: screenshots/12-diario-prefijo.png
+
+  - titulo: Botón Generar
+    ruta: Diario ▸ Secuencia de asientos ▸ Generar
+    texto: >-
+      Si el diario no tiene secuencia, **Generar** la crea con el prefijo
+      indicado —o con el código del diario si no hay prefijo— en la compañía
+      del diario.
+    imagen: screenshots/13-boton-generar.png
 
   - titulo: Asientos numerados con el prefijo
     ruta: Contabilidad ▸ Contabilidad ▸ Asientos contables
     texto: >-
       Cada asiento publicado en el diario toma el siguiente número de su
       secuencia.
-    imagen: screenshots/07-asiento-cc01.png
+    imagen: screenshots/14-asiento-cc01.png
     pie: "Segundo gasto de caja chica: CC01-00000002 por S/ 142,50."
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Serie CPE
+    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Series CPE
+    campos:
+      - [Tipo de documento, "(01) Factura o (03) Boleta.", Vacío, "Define el formato de la serie y a qué comprobantes se ofrece"]
+      - [Serie, "Serie de 4 caracteres (F001, B001…).", Vacío, "Única por compañía; propone las rectificativas"]
+      - [Serie nota de crédito, Serie de las NC de los comprobantes de esta serie., "Propuesta: letra + C + últimos 2", "Prefijo de la secuencia de NC"]
+      - [Serie nota de débito, Serie de las ND., "Propuesta: letra + D + últimos 2", "Prefijo de la secuencia de ND"]
+      - [Compañía, Compañía de la serie y de sus secuencias., Compañía actual, Solo visible con varias compañías]
+      - [Secuencia del comprobante / de nota de crédito / de nota de débito, Secuencias creadas al publicar., Solo lectura, Visibles en modo desarrollador]
+      - [Estado, "Borrador, Publicada o Inhabilitada.", Borrador, Solo las publicadas se asignan a diarios]
+      - [Comprobantes, Documentos con esta serie., Calculado, Abre la lista]
+  - grupo: Diario
+    ruta: Diario ▸ Numeración por secuencia — CPE Perú (opcional)
+    texto: El grupo aparece en diarios de ventas, compras y misceláneos.
+    campos:
+      - [Numerar por secuencia, Activa la numeración por secuencia en el diario., Desmarcado, "Sin marcar, numeración nativa"]
+      - [Series CPE, Series publicadas que se emiten desde el diario., Vacío, "Solo con Usa Documentos; única modalidad en esos diarios"]
+      - [Prefijo (serie), "Prefijo de la secuencia de asientos, p. ej. «CC01-».", Vacío, "Al guardar crea la secuencia; vacío usa el código del diario"]
+      - [Secuencia de asientos, Secuencia que numera los asientos., Vacío, "Se crea sola al marcar la casilla; botón Generar"]
+      - [Prefijo NC (serie), Prefijo de la secuencia de notas de crédito., Vacío, "Solo ventas y compras; al guardar crea la secuencia de NC"]
+      - [Secuencia de notas de crédito, Secuencia propia de las NC., Vacío, "Vacía: las NC usan la secuencia de asientos; Generar usa R + código"]
+  - grupo: Comprobante
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    campos:
+      - [Serie CPE, Serie con la que se numera el comprobante., "Única serie candidata del diario, o vacía", "Solo en borrador y si el diario tiene series"]
+
+asientos_intro: >-
+  El módulo no cambia los importes: da el número al asiento. Asientos reales de
+  los datos de demostración.
+asientos:
+  - titulo: Factura numerada con la serie F002
+    referencia: F002-00000002
+    texto: Factura «DEMO serie F002» a DEMO Distribuidora Norte SAC.
+    lineas:
+      - [1213000, "Facturas por cobrar — DEMO serie F002 - F002-00000002", "1.180,00", ""]
+      - [7012100, "Mercaderías – Venta local — Servicio de instalación de red, setiembre 2026", "", "1.000,00"]
+      - [4011100, IGV – Cuenta propia (IGV 18 %), "", "180,00"]
+  - titulo: Nota de crédito con la serie rectificativa FC02
+    referencia: FC02-00000001
+    texto: >-
+      Anula la factura anterior («DEMO error en el precio»): toma la serie de
+      nota de crédito de F002.
+    lineas:
+      - [7012100, "Mercaderías – Venta local — Servicio de instalación de red, setiembre 2026", "1.000,00", ""]
+      - [4011100, IGV – Cuenta propia (IGV 18 %), "180,00", ""]
+      - [1213000, Facturas por cobrar, "", "1.180,00"]
+  - titulo: Asiento de caja chica con prefijo simple
+    referencia: CC01-00000002
+    texto: Diario DEMO Caja chica, secuencia con prefijo CC01-.
+    lineas:
+      - [6560000, Suministros — Útiles de oficina, "142,50", ""]
+      - [1041001, Banco — Útiles de oficina, "", "142,50"]
 
 funcionalidades:
   - grupo: Series CPE
@@ -161,14 +319,13 @@ funcionalidades:
 ejemplos:
   - titulo: Qué serie usa cada comprobante
     texto: >-
-      Diario de ventas con **Usa Documentos**, **Numerar por secuencia** y las
-      series F001 y B001 asignadas:
+      Diario Facturas TPV con **Usa Documentos**, **Numerar por secuencia** y
+      las series F001 y F002 asignadas:
     tabla:
-      - [Comprobante, Serie que numera, Número de ejemplo]
-      - [Factura (01) con serie F001, F001, F001-00000005]
-      - [Boleta (03) con serie B001, B001, B001-00000009]
-      - [Nota de crédito (07) de la factura F001-00000005, FC01, FC01-00000001]
-      - [Nota de débito (08) de la factura F001-00000005, FD01, FD01-00000001]
+      - [Comprobante, Serie que numera, Número real]
+      - ["Factura (01) con serie F002", F002, F002-00000002]
+      - ["Nota de crédito (07) de F002-00000002", FC02, FC02-00000001]
+      - ["Nota de débito (08) de una factura F002", FD02, "Siguiente de FD02-"]
     nota: La serie rectificativa sale de la serie del documento de origen, no de la que tenga la nota.
 
   - titulo: Prefijos simples en un diario sin documentos latam

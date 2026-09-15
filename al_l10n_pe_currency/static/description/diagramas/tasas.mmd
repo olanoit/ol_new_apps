@@ -1,0 +1,12 @@
+flowchart TD
+  A{¿Cómo llega la tasa?} -- Acción planificada diaria<br/>o Actualizar hoy --> B[TXT oficial de SUNAT<br/>del día publicado]
+  A -- Asistente por día, rango o mes --> C{¿Fuente?}
+  C -- BCRP --> D[Una consulta para todo el rango;<br/>días sin publicación no vienen]
+  C -- "Decolecta / apis.net.pe" --> E[Una consulta por día<br/>con el token de la conexión RUC/DNI]
+  A -- Registro manual --> F[Compra y venta escritas a mano;<br/>aviso si compra supera a venta]
+  B --> G[Tasa del día en todas las compañías:<br/>se crea o se actualiza]
+  D --> G
+  E --> G
+  F --> H[Si falta la compra toma la venta]
+  G --> I[Tasa nativa = 1 / venta]
+  H --> I

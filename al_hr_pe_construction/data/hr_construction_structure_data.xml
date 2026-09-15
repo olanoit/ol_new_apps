@@ -383,6 +383,115 @@ result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
             <field name="struct_id" ref="construction_structure"/>
         </record>
 
+        <!-- Pensiones del trabajador sobre TREM. Mismos códigos y códigos
+             SUNAT que la estructura BASE de al_hr_pe (la PLAME los reconoce),
+             pero con base TREM: las reglas del núcleo suman conceptos
+             (BAS_M, AF, TOT_EXT…) que esta estructura no tiene. Importes en
+             negativo, como el CONAFOVICER: TDES los resta con signo.
+             La tabla del convenio lo confirma: el operario descuenta 103.55
+             de ONP, el 13 % de 796.56 = jornal + D.S.O. + BUC. -->
+        <record id="rule_ONP" model="hr.salary.rule">
+            <field name="name">ONP</field>
+            <field name="code">ONP</field>
+            <field name="sunat_code">0607</field>
+            <field name="sequence">191</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+if payslip.membership_id.name == 'ONP':
+    result = -round(payslip.l10n_pe_retirement_fund / 100 * TREM, 2)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_A_JUB" model="hr.salary.rule">
+            <field name="name">AFP Aporte Fondo de Pensiones</field>
+            <field name="code">A_JUB</field>
+            <field name="sunat_code">0608</field>
+            <field name="sequence">192</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+if payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO'):
+    result = -round(payslip.l10n_pe_retirement_fund / 100 * afp_base, 2)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_COMFI" model="hr.salary.rule">
+            <field name="name">AFP Comisión Sobre Flujo</field>
+            <field name="code">COMFI</field>
+            <field name="sunat_code">0601</field>
+            <field name="sequence">193</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+if (version.l10n_pe_commission_type == 'flow'
+        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO')):
+    result = -round(payslip.l10n_pe_commission / 100 * afp_base, 2)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_COMMIX" model="hr.salary.rule">
+            <field name="name">AFP Comisión Mixta</field>
+            <field name="code">COMMIX</field>
+            <field name="sunat_code">0601</field>
+            <field name="sequence">193</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+if (version.l10n_pe_commission_type == 'mixed'
+        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO')):
+    result = -round(payslip.l10n_pe_commission / 100 * afp_base, 2)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
+        <record id="rule_SEGI" model="hr.salary.rule">
+            <field name="name">AFP Prima de Seguros</field>
+            <field name="code">SEGI</field>
+            <field name="sunat_code">0606</field>
+            <field name="sequence">194</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- El tope asegurable es mensual y se compara con la base de
+                 esta boleta, igual que en BASE. Con boletas semanales la
+                 base nunca se acerca al tope, así que no se prorratea. -->
+            <field name="amount_python_compute">
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+insured = min(afp_base, payslip.l10n_pe_insurable_remuneration or afp_base)
+if (not version.l10n_pe_is_older
+        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA',
+                                           'AFP PRIMA', 'AFP PROFUTURO')):
+    result = -round(payslip.l10n_pe_prima_insurance / 100 * insured, 2)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
         <record id="rule_TINGR" model="hr.salary.rule">
             <field name="name">Total ingresos</field>
             <field name="code">TINGR</field>

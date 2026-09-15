@@ -5,7 +5,7 @@ subtitulo: >-
   factura.
 categoria: Localización Perú · Contabilidad
 etiquetas: [Medios de pago, Bancarización, Número de operación, Tabla 1 SUNAT, Detracciones]
-portada: screenshots/03-asistente-pago.png
+portada: screenshots/04-asistente-pago.png
 
 destacados_intro: >-
   Dos datos que cualquier fiscalización pide y que Odoo no guarda de serie:
@@ -50,16 +50,51 @@ contexto:
     pago y al asistente **Pagar** nativos; no hay pantallas nuevas que
     aprender. Los dos son opcionales.
 
+flujos_intro: >-
+  Del asistente de pago al asiento, y cómo corregir los datos después.
+flujos:
+  - id: registrar
+    titulo: Registrar un pago con medio y número de operación
+    texto: >-
+      Los datos se escriben una vez en el asistente y pasan a cada pago que
+      este crea.
+    mermaid: |
+      flowchart TD
+        A[Factura o facturas seleccionadas<br/>▸ Pagar] --> B[Asistente Pagar:<br/>Medio pago y Número de operación banco]
+        B --> C{¿Varias facturas<br/>del mismo proveedor?}
+        C -- No --> D[Un pago]
+        C -- Sí --> E{¿Agrupar pagos?}
+        E -- Sí --> F[Un solo pago<br/>por el total]
+        E -- No --> G[Un pago por factura]
+        D --> H[Cada pago guarda el medio<br/>y el número de operación]
+        F --> H
+        G --> H
+        H --> I[Asiento del pago:<br/>proveedor contra pagos pendientes]
+    pie: Sin medio elegido, el pago queda con el campo vacío.
+  - id: corregir
+    titulo: Completar o corregir los datos de un pago
+    mermaid: |
+      flowchart TD
+        A[Pago] --> B{¿Estado Borrador?}
+        B -- Sí --> C[Medio pago y Número de operación<br/>editables en el formulario]
+        B -- No --> D[Solo lectura]
+        D --> E[Restablecer a borrador]
+        E --> C
+        C --> F[Confirmar de nuevo]
+
 pasos_intro: >-
-  Recorrido con los datos de demostración del proveedor DEMO PAGO Proveedor SAC.
+  Todas las funciones con los datos de demostración del proveedor DEMO PAGO
+  Proveedor SAC.
 pasos:
+  - seccion: Catálogo de medios de pago
+    texto: Cargado al instalar; se mantiene como cualquier catálogo.
   - titulo: El catálogo de medios de pago
     ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago
     texto: >-
-      Lista con el **Código** y la **Descripción** de cada medio. Las columnas
-      **Código de facturador** y **Para detracción** están ocultas por defecto:
-      actívelas desde el selector de columnas. También en **Contabilidad ▸
-      Configuración ▸ Medios de pago**.
+      Lista con el **Código** y la **Descripción** de cada medio, ordenada por
+      código. Las columnas **Código de facturador** y **Para detracción** están
+      ocultas por defecto: actívelas desde el selector de columnas. También en
+      **Contabilidad ▸ Configuración ▸ Medios de pago**.
     imagen: screenshots/01-catalogo.png
 
   - titulo: Ficha del medio de pago
@@ -67,16 +102,25 @@ pasos:
     texto: >-
       Cada medio tiene código (hasta 4 caracteres), descripción, **Código de
       facturador** y la casilla **Para detracción**. Puede crear medios nuevos
-      o archivar los que no use.
+      o archivarlos desde **Acciones ▸ Archivar**: el formulario de un medio
+      archivado muestra la cinta **Archivado**.
     imagen: screenshots/02-medio-pago.png
+
+  - seccion: Registrar el pago
+    texto: Desde el asistente nativo Pagar.
+  - titulo: Buscar el medio por código o descripción
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ Pagar
+    texto: >-
+      En **Medio pago** escriba parte del código (`003`) o de la descripción
+      (`transf`): la lista muestra cada medio como «código - descripción».
+    imagen: screenshots/03-buscar-medio.png
 
   - titulo: Pagar la factura indicando el medio
     ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ Pagar
     texto: >-
-      El asistente **Pagar** muestra **Medio pago** y **Número de operación
-      banco**. El medio se busca por código o por descripción: escriba `003` o
-      `transferencia`.
-    imagen: screenshots/03-asistente-pago.png
+      Complete **Medio pago** y **Número de operación banco** y pulse **Crear
+      pago**. Los dos campos son opcionales.
+    imagen: screenshots/04-asistente-pago.png
     pie: "Factura F001-00004588 de S/ 590,00 pagada por transferencia, operación 00461390."
 
   - titulo: El pago guarda los datos
@@ -85,8 +129,84 @@ pasos:
       El pago creado lleva el medio y el número de operación del asistente.
       Mientras está en borrador se pueden editar en el formulario; una vez
       confirmado quedan de solo lectura.
-    imagen: screenshots/04-pago.png
-    pie: "Pago PBNK1/2026/00002 de S/ 590,00: 003 - TRANSFERENCIA DE FONDOS, operación 00458721."
+    imagen: screenshots/05-pago.png
+    pie: "Pago PBNK1/2026/00002 de la factura F001-00004521: 003 - TRANSFERENCIA DE FONDOS, operación 00458721."
+
+  - titulo: El asiento del pago
+    ruta: Pago ▸ Asiento contable
+    texto: >-
+      El módulo no cambia el asiento: es el nativo de Odoo, que salda la cuenta
+      del proveedor contra la cuenta de pagos pendientes hasta conciliar con el
+      extracto bancario.
+    imagen: screenshots/06-asiento-pago.png
+
+  - seccion: Pagos agrupados
+    texto: Varias facturas del mismo proveedor en un solo pago.
+  - titulo: Pagar varias facturas a la vez
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas ▸ seleccionar ▸ Pagar
+    texto: >-
+      Seleccione las facturas en la lista y pulse **Pagar**. Con **Agrupar
+      pagos** marcado se crea un solo pago por el total con el medio y el
+      número de operación indicados; sin agrupar, cada pago creado recibe los
+      mismos datos.
+    imagen: screenshots/07-asistente-agrupado.png
+    pie: "F001-00004588 y F001-00004610, S/ 590,00 cada una: un pago de S/ 1.180,00 por depósito en cuenta."
+
+  - titulo: El pago agrupado
+    ruta: Contabilidad ▸ Proveedores ▸ Pagos
+    texto: >-
+      Pago real de las facturas F001-00004620 y F001-00004621, registrado con
+      **001 - DEPÓSITO EN CUENTA** y la operación 00471205.
+    imagen: screenshots/08-pago-agrupado.png
+
+  - titulo: Asiento del pago agrupado
+    ruta: Pago ▸ Asiento contable
+    texto: Un solo apunte al proveedor por el total de las dos facturas.
+    imagen: screenshots/09-asiento-agrupado.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Medio de pago
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago
+    campos:
+      - [Código, "Código del medio en la tabla de SUNAT (hasta 4 caracteres).", Obligatorio, "Se muestra antes de la descripción y sirve para buscar"]
+      - [Descripción, Nombre del medio., Obligatorio, "Se busca también por este texto"]
+      - [Código de facturador, "Código del medio para el facturador (hasta 5 caracteres).", Vacío, Columna oculta en la lista]
+      - [Para detracción, Medio usado para el depósito de detracción al proveedor., "Desmarcado (marcado en 003)", Columna oculta en la lista]
+      - [Activo, Archivar oculta el medio de las listas y del asistente., Marcado, Cinta Archivado en el formulario]
+  - grupo: Asistente Pagar
+    ruta: Factura ▸ Pagar
+    campos:
+      - [Medio pago, Medio de pago del catálogo; no permite crear medios desde aquí., Vacío, Se copia a cada pago creado]
+      - [Número de operación banco, Referencia que dio el banco., Vacío, Se copia a cada pago creado]
+  - grupo: Pago
+    ruta: Contabilidad ▸ Proveedores ▸ Pagos (o Clientes ▸ Pagos)
+    campos:
+      - [Medio pago, Medio de pago del catálogo., Vacío, "Editable solo en borrador"]
+      - [Número de operación banco, Referencia bancaria de la operación., Vacío, "Editable solo en borrador"]
+
+asientos_intro: >-
+  El módulo no genera ni modifica apuntes: el asiento del pago es el nativo.
+  Asientos reales de los pagos de demostración con medio de pago.
+asientos:
+  - titulo: Pago por transferencia
+    referencia: PBNK1/2026/00002
+    texto: >-
+      Pago de la factura F001-00004521 por S/ 590,00 con **003 - TRANSFERENCIA
+      DE FONDOS** y la operación 00458721.
+    lineas:
+      - [4212000, "Facturas por pagar — Manual Payment: F001-00004521", "590,00", ""]
+      - [1041004, "Pagos pendientes — Manual Payment: F001-00004521", "", "590,00"]
+  - titulo: Pago agrupado de dos facturas
+    referencia: PBNK1/2026/00006
+    texto: >-
+      F001-00004620 y F001-00004621 (S/ 590,00 cada una) pagadas en un solo
+      pago con **001 - DEPÓSITO EN CUENTA** y la operación 00471205.
+    lineas:
+      - [4212000, "Facturas por pagar — Manual Payment: F001-00004620, F001-00004621", "1.180,00", ""]
+      - [1041004, "Pagos pendientes — Manual Payment: F001-00004620, F001-00004621", "", "1.180,00"]
+    nota: Los apuntes pasan a la cuenta de banco al conciliar el pago con el extracto.
 
 funcionalidades:
   - grupo: Catálogo
@@ -124,12 +244,6 @@ ejemplos:
       - ["101 a 108", "Transferencias, cheques, órdenes de pago, remesas y cartas de crédito de comercio exterior", "", ""]
       - ["999", OTROS MEDIOS DE PAGO (ESPECIFICAR), "", ""]
 
-  - titulo: Un pago, dos facturas
-    texto: >-
-      Si selecciona dos facturas del mismo proveedor de S/ 590,00 cada una y
-      paga con **Agrupar pagos** activado, el asistente crea un solo pago de
-      S/ 1.180,00 con el medio y el número de operación indicados. Sin agrupar,
-      cada uno de los pagos creados recibe los mismos datos.
 
 configuracion:
   - Instale el módulo desde Aplicaciones; el catálogo se carga solo.

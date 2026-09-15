@@ -1,0 +1,19 @@
+flowchart TD
+  A[Comprobante publicado] --> B{¿Diario con<br/>Numerar por secuencia?}
+  B -- No --> N[Numeración nativa de Odoo]
+  B -- Sí --> C{¿Diario con<br/>Usa Documentos?}
+  C -- Sí --> D{Tipo de documento}
+  D -- 01 / 03 --> E[Secuencia de la Serie CPE<br/>del comprobante]
+  D -- 07 nota de crédito --> F[Secuencia NC de la serie<br/>del documento de origen]
+  D -- 08 nota de débito --> G[Secuencia ND de la serie<br/>del documento de origen]
+  E --> H{¿Hay secuencia?}
+  F --> H
+  G --> H
+  H -- No --> N
+  H -- Sí --> OK[Siguiente número de la secuencia,<br/>con la fecha del asiento]
+  C -- No --> I{¿Nota de crédito y diario<br/>con secuencia de NC?}
+  I -- Sí --> J[Secuencia de notas de crédito]
+  I -- No --> K{¿Tiene Secuencia<br/>de asientos?}
+  J --> OK
+  K -- Sí --> OK
+  K -- No --> N

@@ -83,6 +83,11 @@ class FichaError(Exception):
 
 
 def esc(text):
+    if isinstance(text, (dict, list)):
+        # «- Texto: más texto» sin comillas: YAML lo lee como diccionario.
+        raise FichaError(
+            'valor %r donde se esperaba texto: si la línea lleva «:», póngala '
+            'entre comillas' % (text,))
     if isinstance(text, bool) or text is None:
         # YAML 1.1 lee No/Sí/On/Off/Yes sin comillas como booleanos, y una
         # celda vacía como nula: en la ficha saldría «False» o «None».

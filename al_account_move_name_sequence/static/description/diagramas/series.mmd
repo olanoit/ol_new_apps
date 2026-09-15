@@ -1,0 +1,11 @@
+flowchart TD
+  A[Series CPE ▸ Nuevo] --> B[Tipo de documento<br/>y serie, p. ej. F003]
+  B --> C[Se proponen las rectificativas<br/>FC03 y FD03]
+  C --> D{¿Formato válido<br/>y serie única?}
+  D -- No --> E[Error al guardar]
+  D -- Sí --> F[Publicar: se crean tres secuencias<br/>sin huecos, relleno 8]
+  F --> G[Diario con Numerar por secuencia<br/>▸ Series CPE]
+  G --> H[Comprobantes numerados<br/>F003-00000001…]
+  F --> I{¿Deja de usarse?}
+  I -- Inhabilitar --> J[Inhabilitada: fuera de los diarios]
+  J -- Volver a borrador --> K[Borrador]

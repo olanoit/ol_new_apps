@@ -6,7 +6,7 @@ subtitulo: >-
   la base.
 categoria: Localización Perú · Contactos
 etiquetas: [RUC, DNI, Estado y condición SUNAT, Padrón SUNAT, Agente de retención, APIs configurables]
-portada: screenshots/05-contacto.png
+portada: screenshots/08-contacto.png
 
 destacados_intro: >-
   La consulta no está atada a un proveedor: cada API es un registro con su
@@ -22,7 +22,7 @@ destacados:
     titulo: Varias APIs, por prioridad
     texto: >-
       Vienen configuradas SUNAT (oficial), apiperu.dev, apis.net.pe, json.pe y
-      Decolecta. Se usa la de mayor prioridad y, si activa el fallback, las
+      Decolecta. Se usa la primera utilizable y, si activa el fallback, las
       siguientes en cascada.
   - icono: "→"
     titulo: Mapeo sin programar
@@ -34,7 +34,7 @@ destacados:
     titulo: Habido, activo y padrón
     texto: >-
       Estado SUNAT en la cabecera, cinta «Habido» / «No Habido» y las casillas
-      **Buen contribuyente** y **Agente de retención**, editables.
+      de buen contribuyente y agente de retención, editables.
   - icono: "57k"
     titulo: Padrón SUNAT en la base
     texto: >-
@@ -62,14 +62,61 @@ contexto:
     padrones de decenas de miles de RUC. Este módulo trae los datos al contacto
     en el momento de crearlo y mantiene los padrones al día en la propia base.
   nota: >-
-    **Tokens y proveedores.** Las APIs REST que exigen token no se consultan
-    hasta que se lo pone: una conexión sin token se salta sola. El token de
-    **Decolecta** lo reutiliza también el módulo de tipo de cambio.
+    **Tokens y proveedores.** Una conexión REST que exige token no se consulta
+    hasta que se lo pone: sin token se salta sola, con o sin fallback. El
+    token de **Decolecta** lo reutiliza también el módulo de tipo de cambio.
+
+flujos_intro: >-
+  Los dos procesos del módulo: la consulta de un documento y la carga del
+  padrón SUNAT.
+flujos:
+  - id: consulta
+    titulo: Consulta al escribir un RUC o un DNI
+    texto: >-
+      Se dispara al cambiar el número o el tipo de documento del contacto, y
+      también con el botón **Actualizar desde API**.
+    mermaid: |
+      flowchart TD
+        A[Número de identificación<br/>escrito o cambiado] --> B{¿Validar RUC / Validar DNI<br/>activo en la compañía?}
+        B -- No --> Z[No se consulta nada]
+        B -- Sí --> C{¿Formato correcto?}
+        C -- No --> E[Error: RUC o DNI no válido]
+        C -- Sí --> D[Conexiones habilitadas para ese documento<br/>y con token, por prioridad]
+        D --> F{¿Fallback en cascada?}
+        F -- No --> G[Solo la primera]
+        F -- Sí --> H[Todas, una tras otra]
+        G --> I[Llamada a la API REST<br/>o lectura del portal SUNAT]
+        H --> I
+        I --> J{¿Devolvió datos?}
+        J -- "No, y queda otra conexión" --> I
+        J -- "No, y no quedan" --> K[Casilla Alerta API y aviso en el contacto;<br/>el botón muestra el motivo]
+        J -- Sí --> L[Mapeo de campos y ubigeo<br/>escritos en el contacto]
+        L --> M{¿Es un RUC?}
+        M -- Sí --> N[Buen contribuyente y agente de retención<br/>desde el padrón guardado]
+        N --> O[SUNAT oficial: representantes legales<br/>y locales anexos si se pidieron]
+        M -- No --> P[Contacto persona con el nombre de RENIEC]
+    pie: "Con fallback desactivado solo se prueba una conexión: si falla, el contacto queda con el aviso."
+  - id: padron
+    titulo: Padrón SUNAT
+    texto: >-
+      Los padrones se guardan en la base para que marcar un contacto no
+      descargue nada.
+    mermaid: |
+      flowchart TD
+        A[Acción planificada diaria<br/>SUNAT: Sincronizar padrón] --> B[Descarga los ZIP de SUNAT:<br/>buenos contribuyentes y agentes de retención]
+        B --> C{¿Descarga correcta?}
+        C -- No --> D[Se anota el error en el registro<br/>y el padrón anterior se conserva]
+        C -- Sí --> E[Se vacía ese padrón y se recarga<br/>en bloques de 5 000 RUC]
+        E --> F[Consulta de un RUC:<br/>búsqueda local por número]
+        F --> G[Casillas del contacto,<br/>usadas por las retenciones del IGV]
 
 pasos_intro: >-
-  Recorrido con los datos de la compañía de demostración. Las capturas
-  muestran datos ya consultados: ninguna llamada a servicios externos.
+  Todas las funciones del módulo con los datos de la compañía de
+  demostración. Las capturas muestran datos ya consultados: ninguna llamada a
+  servicios externos.
 pasos:
+  - seccion: Configuración
+    texto: Qué documentos se consultan y con qué servicios.
   - titulo: Activar la validación
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ Validación RUC/DNI (PE)
     texto: >-
@@ -77,10 +124,18 @@ pasos:
       ingresar o modificar el documento del contacto. **Fallback en cascada**
       decide si, cuando la primera conexión falla, se prueban las siguientes.
     puntos:
-      - Desactivado (por defecto) se usa solo la conexión activa de mayor prioridad.
-      - "**Configurar conexiones RUC/DNI** abre las conexiones de la compañía."
-      - Los mismos interruptores están en la pestaña **Validación RUC/DNI (PE)** de la ficha de la compañía.
+      - Desactivado (por defecto) se usa solo la primera conexión utilizable.
+      - "**Configurar conexiones RUC/DNI** abre las conexiones de la compañía activa."
+      - "El mismo bloque se abre desde **Contactos ▸ Configuración ▸ Ajustes RUC/DNI**."
     imagen: screenshots/01-ajustes.png
+
+  - titulo: Los mismos interruptores en la compañía
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas ▸ (compañía) ▸ Validación RUC/DNI (PE)
+    texto: >-
+      La pestaña, visible en compañías peruanas, reúne **Validación de RUC**,
+      **Validación de DNI**, **Usar fallback en cascada** y la lista de
+      conexiones de esa compañía, ordenable por arrastre.
+    imagen: screenshots/02-compania.png
 
   - titulo: Ordenar las conexiones
     ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI
@@ -89,53 +144,185 @@ pasos:
       documentos responde y si está habilitada. Arrastre las filas para cambiar
       la prioridad; el interruptor **Habilitada** la saca de la consulta sin
       borrarla.
-    imagen: screenshots/02-conexiones.png
-    pie: "Cinco conexiones sembradas al instalar; json.pe viene deshabilitada."
+    puntos:
+      - La lista no permite crear ni borrar conexiones; las cinco se siembran al instalar.
+      - Desde este menú se ven las conexiones de todas las compañías permitidas; el botón de Ajustes filtra la compañía activa.
+    imagen: screenshots/03-conexiones.png
+    pie: "Compañía de demostración: apis.net.pe y apiperu.dev con token; json.pe deshabilitada; Decolecta sin token."
 
-  - titulo: Revisar cómo se llama a la API y qué se guarda
+  - seccion: Conexiones y mapeo
+    texto: Cómo se llama a cada servicio y qué se guarda de su respuesta.
+  - titulo: Conexión REST con su mapeo
     ruta: Conexiones RUC/DNI ▸ Decolecta
     texto: >-
       En **Conexión REST** van la URL base, los endpoints con el marcador
-      `{doc}`, el método (GET o POST con cuerpo JSON), la autenticación y el
-      token. **Ruta de éxito** y **Raíz de datos** indican cómo leer la
-      respuesta. En **Mapeo de campos** cada fila lleva un atributo a un campo
-      del contacto.
+      `{doc}`, el método, la autenticación y el token. **Ruta de éxito** y
+      **Raíz de datos** indican cómo leer la respuesta. En **Mapeo de campos**
+      cada fila lleva un atributo a un campo del contacto.
     puntos:
       - "Plantillas para concatenar: `{first_last_name} {second_last_name} {first_name}` con transformación **Título**."
       - "**Aplica a**: solo RUC, solo DNI o ambos."
-      - El campo de destino puede ser cualquier campo de texto, booleano o selección del contacto.
-    imagen: screenshots/03-conexion-mapeo.png
+      - Decolecta trae además buen contribuyente y agente de retención de la propia respuesta.
+    imagen: screenshots/04-conexion-mapeo.png
+
+  - titulo: API con método POST
+    ruta: Conexiones RUC/DNI ▸ json.pe
+    texto: >-
+      Con **Http Method** POST aparecen **Body RUC (POST)** y **Body DNI
+      (POST)**: la plantilla JSON del cuerpo con `{doc}`. La cinta
+      **Deshabilitada** indica que la conexión no se consulta.
+    imagen: screenshots/05-conexion-post.png
 
   - titulo: La consulta oficial de SUNAT
     ruta: Conexiones RUC/DNI ▸ SUNAT (oficial)
     texto: >-
       El motor **SUNAT oficial (scraping)** lee la consulta RUC del portal y
       pasa el resultado por el mismo mapeo. Puede además crear como contactos
-      hijos a los **representantes legales** (gerente, apoderado) y los
-      **locales anexos**.
-    imagen: screenshots/04-conexion-sunat.png
+      hijos a los **representantes legales** (gerente general, gerente,
+      titular-gerente, apoderado) y los **locales anexos** (como dirección de
+      entrega).
+    puntos:
+      - Solo responde a RUC y no necesita token.
+      - El motor **SUNAT multi-consulta (scraping)** es una segunda variante del portal.
+    imagen: screenshots/06-conexion-sunat.png
 
+  - titulo: Valor por defecto y «omitir si vacío»
+    ruta: Conexión ▸ Mapeo de campos ▸ columnas opcionales
+    texto: >-
+      Dos columnas opcionales completan cada fila: **Valor por defecto**, que
+      se escribe si el atributo no viene, y **Omitir si vacío** (marcada por
+      defecto), que evita borrar un dato del contacto cuando la API lo trae en
+      blanco.
+    imagen: screenshots/07-mapeo-opciones.png
+    pie: "apiperu.dev: la dirección se toma de `direccion` y, si viene, de `direccion_completa`, que la sobrescribe."
+
+  - seccion: El contacto
+    texto: Lo que ve el usuario al registrar clientes y proveedores.
   - titulo: El contacto con los datos de SUNAT
     ruta: Contactos ▸ (contacto con RUC)
     texto: >-
       Con la validación activa, escribir el RUC rellena el contacto. La
       cabecera muestra el **Estado SUNAT** (ACTIVO, BAJA DE OFICIO…) y la cinta
-      la condición **Habido** o **No Habido**. Junto al número quedan las
-      casillas **Buen contribuyente** y **Agente de retención**.
+      la condición **Habido** o **No Habido**. Bajo el nombre queda el
+      **Nombre comercial**; bajo el número, las casillas de **buen
+      contribuyente** y **agente de retención**.
     puntos:
       - "**Actualizar desde API** repite la consulta y, si falla, muestra el motivo real (plan vencido, token, sin datos)."
+      - Ciudad y distrito se muestran con su departamento o provincia entre paréntesis.
       - Las dos casillas del padrón son editables por si la designación aún no figura en el padrón descargado.
-    imagen: screenshots/05-contacto.png
-    pie: "NOR AUTOS CHICLAYO S.A.C.: activo, habido y agente de retención."
+    imagen: screenshots/08-contacto.png
+    pie: "NOR AUTOS CHICLAYO S.A.C.: activo, habido y agente de retención (segunda casilla)."
 
-  - titulo: Consultar el padrón SUNAT
+  - titulo: Aviso cuando la consulta falla
+    ruta: Contactos ▸ (contacto con Alerta API)
+    texto: >-
+      Si ninguna conexión devolvió datos, el contacto muestra **No hay conexión
+      con SUNAT/API o los datos no existen** y se completa a mano. El aviso
+      desaparece en la siguiente consulta correcta.
+    imagen: screenshots/09-contacto-alerta.png
+
+  - titulo: Número mal formado
+    ruta: Contactos ▸ Nuevo ▸ Número de identificación
+    texto: >-
+      Antes de consultar se comprueba el formato: RUC de 11 dígitos que empiece
+      por 10, 15, 17 o 20, o DNI de 8 dígitos. Un número incorrecto se rechaza
+      con un mensaje y no se llama a ninguna conexión.
+    puntos:
+      - "En un contacto nuevo el tipo de documento se propone según sea persona (DNI) o empresa (RUC)."
+    imagen: screenshots/10-ruc-invalido.png
+
+  - seccion: Padrón SUNAT
+    texto: Buenos contribuyentes y agentes de retención, en la base.
+  - titulo: Consultar el padrón
     ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Padrón SUNAT
     texto: >-
       Lista de los RUC de ambos padrones con la fecha de la última
       sincronización, con filtros **Buenos contribuyentes** y **Agentes de
-      retención** y agrupación por tipo.
-    imagen: screenshots/06-padron.png
+      retención**, búsqueda por RUC y agrupación por **Tipo de padrón**.
+    imagen: screenshots/11-padron.png
     pie: 50 710 buenos contribuyentes y 7 212 agentes de retención en la base de demostración.
+
+  - titulo: La sincronización diaria
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ SUNAT: Sincronizar padrón"
+    texto: >-
+      La acción planificada corre cada día y recarga los dos padrones. Para una
+      carga inmediata, **Ejecutar de forma manual**.
+    puntos:
+      - "En la base de demostración está inactiva: la última carga es del 03/08/2026."
+    imagen: screenshots/12-cron.png
+
+  - titulo: Menús en Contactos
+    ruta: Contactos ▸ Configuración
+    texto: >-
+      Además de la app Perú, los administradores tienen **Ajustes RUC/DNI**,
+      **Conexiones RUC/DNI** y **Padrón SUNAT** en la configuración de
+      Contactos.
+    imagen: screenshots/13-menu-contactos.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, con la etiqueta que se ve en pantalla.
+campos:
+  - grupo: Ajustes
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Validación RUC/DNI (PE)
+    campos:
+      - [Validar RUC, Consulta las conexiones al escribir o cambiar un RUC., Marcado en compañías peruanas, Sin marcar no se valida ni se consulta el RUC]
+      - [Validar DNI, Lo mismo para el DNI., Marcado en compañías peruanas, Sin marcar no se valida ni se consulta el DNI]
+      - [Fallback en cascada, Si la primera conexión falla prueba las siguientes., Desmarcado, "Desmarcado: una sola conexión por consulta"]
+      - [Configurar conexiones RUC/DNI, Botón que abre las conexiones de la compañía activa., "—", "—"]
+  - grupo: Compañía
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas ▸ Validación RUC/DNI (PE)
+    campos:
+      - [Validación de RUC, Mismo valor que «Validar RUC»., Marcado en compañías peruanas, Se desmarca si el país deja de ser Perú]
+      - [Validación de DNI, Mismo valor que «Validar DNI»., Marcado en compañías peruanas, Se desmarca si el país deja de ser Perú]
+      - [Usar fallback en cascada, Mismo valor que «Fallback en cascada»., Desmarcado, "—"]
+      - [Conexiones de consulta RUC/DNI, Lista de conexiones de la compañía por prioridad., Las cinco sembradas, Orden de la consulta]
+  - grupo: Conexión
+    ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI
+    campos:
+      - [Name, Nombre de la conexión., Vacío, "Se usa en los mensajes de error y para buscar el token desde el tipo de cambio"]
+      - [Engine, "API REST / JSON, SUNAT oficial (scraping) o SUNAT multi-consulta (scraping).", API REST / JSON, Muestra la sección REST o la del scraper]
+      - [Tipo de documento, "RUC, DNI o RUC y DNI.", RUC, Documentos que atiende]
+      - [Sequence, Prioridad; también se cambia arrastrando la fila., "10", Orden de la consulta]
+      - [Habilitada, Incluye o saca la conexión de la consulta sin borrarla., Activada, "Desactivada: cinta «Deshabilitada»"]
+      - [Company, Compañía dueña de la conexión., Compañía activa, Solo la usa esa compañía]
+      - [URL base, Dirección del servicio., Vacío, Obligatoria para consultar por REST]
+      - [Endpoint RUC / Endpoint DNI, "Ruta relativa con el marcador `{doc}`.", Vacío, Se une a la URL base]
+      - [Http Method, GET o POST., GET, POST muestra los cuerpos JSON]
+      - ["Body RUC (POST) / Body DNI (POST)", "Plantilla JSON del cuerpo, con `{doc}`.", Vacío, Si el JSON es inválido la consulta falla con el motivo]
+      - ["Timeout (s)", Segundos de espera de la respuesta., "10", "—"]
+      - [Auth Type, "Sin autenticación, Bearer token, Cabecera personalizada o Parámetro de URL.", Bearer token, "Sin token, una conexión con autenticación se salta"]
+      - [Nombre de clave, Nombre de la cabecera o del parámetro (p. ej. X-Api-Key)., Vacío, Obligatorio con cabecera o parámetro]
+      - [Token / clave, Credencial del servicio (oculta)., Vacío, Habilita la conexión]
+      - [Ruta de éxito, "Atributo que indica éxito (p. ej. `success`).", Vacío, Si viene falso la consulta cuenta como fallida]
+      - [Raíz de datos, "Sección con los datos (p. ej. `data`).", Vacío, Las rutas del mapeo son relativas a ella]
+      - [Importar representantes legales, Solo SUNAT oficial., Desmarcado, Crea gerentes y apoderados como contactos hijos]
+      - [Importar locales anexos, Solo SUNAT oficial., Desmarcado, Crea los anexos como direcciones de entrega]
+      - [Atributo ubigeo / distrito / provincia / departamento, Rutas de la respuesta para la ubicación., Vacío, "Distrito, ciudad, departamento y país del contacto"]
+  - grupo: Mapeo de campos
+    ruta: Conexión ▸ Mapeo de campos
+    campos:
+      - [Aplica a, "Solo RUC, Solo DNI o Ambos.", Ambos, La fila se ignora para el otro documento]
+      - [Atributo de la API, "Ruta con puntos e índices (`ubigeo.2`) o plantilla con `{…}`.", Vacío (obligatorio), Valor que se escribe]
+      - [Campo de Odoo, "Campo de texto, booleano o selección del contacto.", Vacío (obligatorio), Destino del valor]
+      - [Transformación, "Sin transformar, MAYÚSCULAS, minúsculas, Título, Primera Mayúscula o Quitar espacios.", Sin transformar, "—"]
+      - [Valor por defecto, Texto que se usa si el atributo no viene (columna opcional)., Vacío, "—"]
+      - [Omitir si vacío, No sobrescribe el contacto con un valor vacío (columna opcional)., Marcado, Conserva lo que ya había]
+  - grupo: Contacto
+    ruta: Contactos ▸ (contacto)
+    campos:
+      - [Actualizar desde API, Botón que repite la consulta., "—", "Si falla, muestra el motivo"]
+      - [Estado SUNAT, "Barra de estado: ACTIVO, BAJA DE OFICIO, BAJA DEFINITIVA…", ACTIVO, Solo visible en empresas]
+      - [Condición SUNAT, "HABIDO, NO HABIDO, NO HALLADO…", Vacío, Cinta «Habido» o «No Habido»]
+      - [Nombre comercial, Bajo el nombre de la empresa., Vacío, "—"]
+      - [Buen contribuyente, Casilla sin rótulo bajo el número (la primera)., Desmarcado, Excepción al régimen de retenciones]
+      - [Agente de retención, Casilla sin rótulo bajo el número (la segunda)., Desmarcado, Excepción al régimen de retenciones]
+      - [Alerta API, "Oculto: marca que la última consulta falló.", Desmarcado, Muestra el aviso amarillo]
+  - grupo: Padrón SUNAT
+    ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Padrón SUNAT
+    campos:
+      - [Tipo de padrón, Buen contribuyente o Agente de retención., "—", "—"]
+      - [RUC, Número de 11 dígitos; único por padrón., "—", "—"]
+      - [Última sincronización, Fecha de la carga., Fecha de la carga, Solo lectura]
 
 funcionalidades:
   - grupo: Consulta
@@ -145,12 +332,14 @@ funcionalidades:
       - Botón **Actualizar desde API** con el mensaje de error de la API cuando falla.
       - Aviso en el contacto cuando la última consulta no obtuvo datos.
       - Tipo de documento propuesto según persona (DNI) o empresa (RUC).
+      - Ciudad y distrito mostrados con su departamento y provincia.
   - grupo: Conexiones configurables
     items:
       - "Motores: API REST/JSON, SUNAT oficial y SUNAT multi-consulta (scraping)."
       - "Autenticación Bearer, cabecera personalizada, parámetro de URL o ninguna."
       - Métodos GET y POST con plantilla de cuerpo JSON.
       - Prioridad por arrastre, habilitación por conexión y fallback en cascada opcional.
+      - Conexiones sin token saltadas automáticamente.
       - "Mapeo por filas: rutas con puntos e índices, plantillas, transformaciones, valor por defecto y «omitir si vacío»."
       - Resolución de ubigeo a distrito, ciudad y departamento.
       - Importación opcional de representantes legales y locales anexos (SUNAT oficial).
@@ -167,11 +356,11 @@ ejemplos:
       apiperu.dev:
     tabla:
       - [Prioridad, Conexión, Documentos, "Fallback desactivado", "Fallback activado"]
-      - ["1", apis.net.pe, RUC y DNI, Única que se consulta, Primera]
-      - ["2", apiperu.dev, RUC y DNI, No se consulta, Si falla la anterior]
-      - ["3", SUNAT (oficial), RUC, No se consulta, Si fallan las anteriores (solo RUC)]
-      - ["4", json.pe, RUC y DNI, Deshabilitada, Deshabilitada]
-      - ["5", Decolecta, RUC y DNI, No se consulta, Se salta mientras no tenga token]
+      - ["12", apis.net.pe, RUC y DNI, Única que se consulta, Primera]
+      - ["13", apiperu.dev, RUC y DNI, No se consulta, Si falla la anterior]
+      - ["14", SUNAT (oficial), RUC, No se consulta, Si fallan las anteriores (solo RUC)]
+      - ["15", json.pe, RUC y DNI, Deshabilitada, Deshabilitada]
+      - ["25", Decolecta, RUC y DNI, Sin token, Sin token]
 
   - titulo: Nombre de una persona desde el DNI
     texto: >-
@@ -218,8 +407,14 @@ faq:
   - pregunta: Un proveedor fue designado agente de retención y no aparece marcado.
     respuesta: >-
       El padrón descargado puede ir por detrás de la designación. Marque la
-      casilla **Agente de retención** en el contacto; la siguiente consulta del
+      casilla de agente de retención en el contacto; la siguiente consulta del
       RUC la volverá a tomar del padrón.
+  - pregunta: ¿Por qué hay dos filas que escriben la calle?
+    respuesta: >-
+      Las filas se aplican en orden y la última con valor gana. En apiperu.dev
+      se toma `direccion` y, si la respuesta trae `direccion_completa`, la
+      sustituye; con **Omitir si vacío** un valor en blanco no borra el
+      anterior.
 
 novedades:
   - fecha: 14/09/2026

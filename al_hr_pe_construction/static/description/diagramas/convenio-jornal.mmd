@@ -1,0 +1,10 @@
+flowchart TD
+  A[Tabla salarial con vigencia<br/>y jornales por categoría] --> B{¿Hay tabla propia de la<br/>compañía vigente en la fecha?}
+  B -- Sí --> C[Se usa la de la compañía]
+  B -- No --> D[Se usa la tabla nacional]
+  C & D --> E[Fila de la categoría del trabajador]
+  E --> F[Jornal básico en la ficha<br/>a la fecha de la versión]
+  E --> G[Al calcular la boleta: jornal congelado<br/>a la fecha de fin del periodo]
+  G --> H{¿Jornal ajustado a mano<br/>en la boleta?}
+  H -- Sí --> I[El cálculo usa el jornal de la boleta]
+  H -- No --> J[El cálculo usa el de la tabla]

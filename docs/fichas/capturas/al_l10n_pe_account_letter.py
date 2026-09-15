@@ -157,7 +157,8 @@ with Captura('al_l10n_pe_account_letter') as c:
     # 12. Asistente Refinanciar (individual), sin confirmar
     canje(c, CANJE_SIMPLE, HISTORIAL)
     c.clic('.o_form_statusbar button:has-text("Refinanciar")', ms=2000)
-    blur(c)
+    # El selector de fecha se abre solo: se cierra pulsando en el título.
+    c.clic('.modal-title', ms=600)
     c.foto('12-refinanciar', selector='.modal-content')
     c.page.keyboard.press('Escape')
     c.esperar(800)

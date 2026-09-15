@@ -5,7 +5,7 @@ subtitulo: >-
   detracción, cuotas de crédito y el QR oficial extraído del XML firmado.
 categoria: Localización Perú · Facturación electrónica
 etiquetas: [A4 SUNAT, Ticket 80 mm, QR del XML firmado, Op. gravadas / exoneradas / inafectas, ICBPER, Detracción SPOT, Cuotas de crédito]
-portada: screenshots/03-a4-detraccion.png
+portada: screenshots/04-a4-detraccion.png
 
 destacados_intro: >-
   No es solo una plantilla: añade a la factura los importes que la
@@ -41,10 +41,11 @@ destacados:
       Nación y monto; en ventas al crédito, el cuadro de cuotas con su
       vencimiento.
   - icono: "✍"
-    titulo: Firmas, eslogan y cuentas
+    titulo: Pedido, firmas y cuentas
     texto: >-
-      Eslogan bajo los datos de la empresa, bloque opcional de firma y
-      «recibido conforme», y la tabla de cuentas bancarias de la compañía.
+      Pedido de venta y orden de compra del cliente, eslogan bajo los datos de
+      la empresa, bloque opcional de firma y «recibido conforme» y la tabla de
+      cuentas bancarias.
 
 contexto:
   titulo: El problema que resuelve
@@ -66,64 +67,222 @@ contexto:
     no tenga XML firmado, el recuadro del QR no aparece y la información
     legal ocupa todo el ancho.
 
+flujos_intro: >-
+  Qué hace el módulo al imprimir un comprobante y cómo reparte cada impuesto
+  entre las filas de totales.
+flujos:
+  - id: impresion
+    titulo: Imprimir el comprobante
+    texto: >-
+      El mismo recorrido para facturas, boletas y notas; el ticket omite
+      cuotas, descuento, firmas y cuentas bancarias.
+    mermaid: |
+      flowchart TD
+        A[Factura, boleta o nota] --> B{¿Qué formato?}
+        B -- "Botón Imprimir o ⚙ ▸ Imprimir ▸ CPE A4" --> C[A4 con papel «Comprobantes: A4 SUNAT»]
+        B -- "⚙ ▸ Imprimir ▸ CPE Ticket" --> D[Ticket con papel de 80 mm]
+        C --> E[Encabezado, cliente, fechas, moneda<br/>y T.C. venta si no es en soles]
+        D --> E
+        E --> F[Detalle y totales por código de tributo:<br/>solo filas con importe]
+        F --> G[Monto en letras]
+        G --> H{¿Sujeta a detracción?}
+        H -- Sí --> I[Bloque SPOT: bien o servicio,<br/>porcentaje y monto en soles]
+        H -- No --> J
+        I --> J{¿Término de pago con líneas?}
+        J -- Sí --> K[CRÉDITO y cuadro de cuotas<br/>solo en A4]
+        J -- No --> L[CONTADO]
+        K --> M{¿Hay XML firmado?}
+        L --> M
+        M -- Sí --> N[QR oficial con el hash de la firma]
+        M -- No --> O[Sin QR: información legal a todo el ancho]
+    pie: El archivo se nombra con el número del comprobante y el nombre del cliente.
+  - id: desglose
+    titulo: Desglose tributario de la factura
+    texto: >-
+      Se recalcula y se guarda en la factura cada vez que cambian sus líneas o
+      impuestos, en la moneda del documento.
+    mermaid: |
+      flowchart TD
+        A[Detalle de impuestos EDI de la factura] --> B{¿Código de tributo SUNAT?}
+        B -- "1000 IGV" --> C[IGV y Op. gravadas]
+        B -- "1016" --> D[IVAP]
+        B -- "2000" --> E[ISC]
+        B -- "7152" --> F[ICBPER]
+        B -- "9997" --> G[Op. exoneradas: base]
+        B -- "9998" --> H[Op. inafectas: base]
+        B -- "9996" --> I[Otros tributos: base]
+        A --> J[Líneas sin ningún impuesto]
+        J --> G
+        C --> K[Importes guardados en la factura]
+        D --> K
+        E --> K
+        F --> K
+        G --> K
+        H --> K
+        I --> K
+    pie: "Solo facturas y notas de crédito de cliente y proveedor; en otros asientos los importes quedan en cero."
+
 pasos_intro: >-
-  Recorrido con facturas electrónicas reales de la base de demostración, ya
-  enviadas y con su XML firmado.
+  Todas las funciones con comprobantes de la base de demostración y el pedido
+  «DEMO FAC» (factura en borrador). Nada se envía a SUNAT ni a la OSE.
 pasos:
-  - titulo: Imprimir el comprobante desde la factura
-    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ ⚙ ▸ Imprimir
-    texto: >-
-      El botón **Imprimir** de la factura genera directamente el formato
-      **CPE A4**. En el menú de acciones, **Imprimir** ofrece además **CPE
-      Ticket**, junto a los PDF estándar de Odoo.
-    puntos:
-      - El archivo se nombra con el número del comprobante y el nombre del cliente.
-      - Ambos formatos sirven para facturas, boletas y notas de crédito o débito.
-    imagen: screenshots/02-imprimir.png
-
-  - titulo: Formato A4 con detracción y QR
-    texto: >-
-      Encabezado con el recuadro SUNAT, datos del cliente y del documento,
-      detalle con código, cantidad, unidad y precio, y el **monto en letras**
-      junto a los totales. Si la factura está sujeta a detracción, se añade
-      el bloque **Información de la detracción — SPOT**. Al pie, la
-      información legal con el **código QR** y las cuentas bancarias de la
-      empresa.
-    imagen: screenshots/03-a4-detraccion.png
-    pie: "Factura F001-00000002 de S/ 2.301,00 con detracción del 12 % (código 022): S/ 276,00."
-
-  - titulo: Desglose de operaciones exoneradas e ICBPER
-    texto: >-
-      Los totales muestran solo las filas con importe. En esta factura
-      conviven una línea gravada con IGV, una bolsa plástica con ICBPER y un
-      libro exonerado: cada importe va en su fila.
-    puntos:
-      - Las líneas sin impuesto se suman a **Op. exoneradas**.
-      - En facturas en dólares el desglose sale en la moneda del documento y, si hay tasa registrada en la fecha de la factura, se imprime el tipo de cambio de venta.
-    imagen: screenshots/04-a4-exonerada.png
-
-  - titulo: Ticket de 80 mm
-    texto: >-
-      La versión de rollo lleva logo, RUC, tipo y número, cliente, fechas,
-      forma de pago, detalle, desglose tributario, monto en letras,
-      detracción (si aplica), usuario, fecha y hora, y el QR.
-    imagen: screenshots/05-ticket.png
-    pie: El mismo comprobante F002-00000001 en formato ticket.
-
-  - titulo: Configurar firma y eslogan
+  - seccion: Configuración
+    texto: Datos de la empresa que salen en el comprobante.
+  - titulo: Firma y eslogan
     ruta: Perú ▸ Configuración ▸ Ajustes ▸ Comprobantes electrónicos
     texto: >-
       Marque **Firma y eslogan en el reporte** para añadir al A4 el bloque de
       firma y sello del responsable y el de **Recibido conforme**. El
       **Eslogan** se imprime bajo los datos de la empresa y el
       **Representante** queda registrado en la compañía.
+    puntos:
+      - El eslogan se imprime aunque la casilla esté desmarcada; la casilla solo controla el bloque de firmas.
     imagen: screenshots/01-ajustes.png
+
+  - titulo: Representante y eslogan en la compañía
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas ▸ (compañía)
+    texto: >-
+      Los mismos datos, bajo el nombre de la empresa: **Representante** (una
+      persona, no una empresa) y **Eslogan**.
+    imagen: screenshots/02-compania.png
+
+  - titulo: Certificados digitales
+    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Certificados digitales
+    texto: >-
+      Acceso directo, desde la app Perú, a los certificados con los que la
+      localización firma el XML. El módulo solo añade el menú.
+    imagen: screenshots/13-certificados.png
+
+  - seccion: Formato A4
+    texto: Un comprobante por caso, tal como se imprime.
+  - titulo: Imprimir desde la factura
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ ⚙ ▸ Imprimir
+    texto: >-
+      El botón **Imprimir** de la factura genera directamente el formato **CPE
+      A4**. En el menú de acciones, **Imprimir** ofrece además **CPE Ticket**,
+      junto a los PDF estándar de Odoo.
+    imagen: screenshots/03-imprimir.png
+
+  - titulo: Factura con detracción y QR
+    texto: >-
+      Encabezado con el recuadro SUNAT, datos del cliente y del documento,
+      detalle con código, cantidad, unidad y precio, y el **monto en letras**
+      junto a los totales. Si la factura está sujeta a detracción se añade
+      **Información de la detracción — SPOT**. Al pie, la información legal
+      con el **código QR** y las cuentas bancarias de la empresa.
+    puntos:
+      - La **Cta. Banco de la Nación** aparece solo si la compañía tiene una cuenta en ese banco; en la demostración no la hay.
+    imagen: screenshots/04-a4-detraccion.png
+    pie: "F001-00000002 de S/ 2.301,00 con detracción del 12 % (código 022): S/ 276,00."
+
+  - titulo: Exoneradas e ICBPER
+    texto: >-
+      Los totales muestran solo las filas con importe. En esta factura
+      conviven líneas gravadas, una bolsa plástica con ICBPER y un libro
+      exonerado: cada importe va en su fila.
+    imagen: screenshots/05-a4-exonerada.png
+
+  - titulo: Boleta con gravadas, exoneradas e inafectas
+    texto: >-
+      La boleta lleva **DNI** en lugar de RUC y el título **Boleta de venta
+      electrónica**. La fruta fresca, inafecta, suma en **Op. inafectas**.
+    imagen: screenshots/06-a4-boleta-inafecta.png
+    pie: "B001-00000001: 52,20 + 25,00 + 12,00 + IGV 9,40 + ICBPER 0,50 = S/ 99,10."
+
+  - titulo: Factura en dólares
+    texto: >-
+      Moneda **DÓLARES AMERICANOS**, desglose en la moneda del documento y
+      **Tipo de cambio** de venta cuando hay una tasa registrada exactamente en
+      la fecha de emisión. Sin XML firmado, no hay recuadro de QR.
+    imagen: screenshots/07-a4-dolares.png
+    pie: "F001-00000211: US$ 1.180,00; T.C. venta del 16/07/2026, S/ 3,391."
+
+  - titulo: Venta al crédito desde un pedido
+    texto: >-
+      Con un término de pago de varias líneas la forma de pago pasa a
+      **CRÉDITO** y se añade **Información del crédito** con cada cuota. Si la
+      factura viene de un pedido se imprimen **Pedido de venta** y **O/C
+      externa**. Con descuento en alguna línea aparecen la columna **Desc. %**
+      y la fila **Descuento**.
+    puntos:
+      - "La fila **Descuento** suma las líneas en negativo con su IGV (S/ 100,00 × 1,18); el descuento por porcentaje de la línea ya va dentro de su importe."
+      - En borrador el recuadro no lleva número ni hay QR.
+    imagen: screenshots/08-a4-credito.png
+    pie: "Borrador DEMO FAC: «30% ahora, el resto en 60 días» sobre S/ 3.351,20 = S/ 1.005,36 y S/ 2.345,84."
+
+  - seccion: Ticket de 80 mm
+    texto: La versión de rollo.
+  - titulo: Ticket con exoneradas e ICBPER
+    ruta: ⚙ ▸ Imprimir ▸ CPE Ticket
+    texto: >-
+      Logo, RUC, tipo y número, cliente, fechas, forma de pago, moneda,
+      origen, detalle, desglose, monto en letras, usuario, fecha y hora y el
+      QR.
+    puntos:
+      - En notas de crédito y débito añade **Modifica a** con el documento de origen.
+    imagen: screenshots/09-ticket.png
+    pie: F002-00000001 en formato ticket.
+
+  - titulo: Ticket con detracción
+    texto: >-
+      El cuadro **Detalle detracción** muestra porcentaje y monto en soles. En
+      notas de crédito no se imprime.
+    imagen: screenshots/10-ticket-detraccion.png
+
+  - seccion: Pedido de venta
+    texto: El origen que se imprime en la factura.
+  - titulo: Orden de venta en la factura
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    texto: >-
+      La factura creada desde un pedido guarda el vínculo: el campo **Orden de
+      venta** aparece bajo los términos de pago, solo cuando lo hay.
+    imagen: screenshots/11-factura-orden.png
+
+  - titulo: Orden de compra del cliente en el pedido
+    ruta: Ventas ▸ Pedidos ▸ (pedido)
+    texto: >-
+      **OC. externa** guarda el número de orden de compra del cliente; se
+      edita en cotización y se imprime en el A4 como **O/C externa**.
+    puntos:
+      - "Ojo: si se informa antes de facturar, la creación de la factura falla (ver preguntas frecuentes)."
+    imagen: screenshots/12-pedido-oc.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, con la etiqueta que se ve en pantalla.
+campos:
+  - grupo: Ajustes
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Comprobantes electrónicos
+    campos:
+      - [Firma y eslogan en el reporte, Activa el bloque de firmas del A4., Desmarcado, "Firma y sello, «CANCELADO / CANJEADO» o «PENDIENTE DE PAGO» y «Recibido conforme»"]
+      - [Representante, Persona responsable de la firma., Vacío, Se guarda en la compañía]
+      - [Eslogan, Texto bajo los datos de la empresa., Vacío, Se imprime en el A4 si tiene texto]
+  - grupo: Compañía
+    ruta: Ajustes ▸ Usuarios y empresas ▸ Empresas
+    campos:
+      - [Representante, "Contacto persona (no empresa).", Vacío, "—"]
+      - [Eslogan, Mismo valor que en Ajustes., Vacío, "—"]
+  - grupo: Pedido de venta
+    ruta: Ventas ▸ Pedidos
+    campos:
+      - [OC. externa, Orden de compra del cliente., Vacío, "O/C externa en el A4; editable en cotización"]
+  - grupo: Factura
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    campos:
+      - [Orden de venta, Pedido del que sale la factura (solo lectura)., Lo pone la facturación del pedido, Pedido de venta en el A4]
+      - [Es Crédito, "Oculto: término de pago con líneas.", Calculado, "CRÉDITO y cuadro de cuotas"]
+      - ["Base Imponible, IGV, ISC, IVAP, ICBPER, Monto Exonerado, Operaciones Inafectas, Otros Tributos", "Ocultos: importes por código de tributo, en la moneda del documento.", Calculados y guardados, Filas de totales del A4 y del ticket]
+      - [Retención, "Oculto, no guardado: tributos con código RET.", Calculado, No se imprime]
+  - grupo: Formatos de papel
+    ruta: Ajustes ▸ Técnico ▸ Formatos de papel
+    campos:
+      - ["Comprobantes: A4 SUNAT", "A4 vertical, márgenes de 10 mm, 90 ppp.", "—", Formato del CPE A4]
+      - ["Comprobantes: Ticket 80mm", "80 × 160 mm, márgenes de 1 a 5 mm, 90 ppp.", "—", "Formato del CPE Ticket; si el contenido excede, sigue en otra página del rollo"]
 
 funcionalidades:
   - grupo: Formato A4
     items:
       - Recuadro SUNAT con RUC, tipo de comprobante y número.
-      - Cliente con documento, dirección, forma de pago (contado o crédito), pedido de venta y vendedor.
+      - Cliente con documento, dirección, forma de pago (contado o crédito), pedido de venta, O/C externa y vendedor.
       - Fechas de emisión y vencimiento, condición de pago, moneda y tipo de cambio de venta en facturas en moneda extranjera.
       - Columna de descuento solo cuando alguna línea lo tiene, y fila de descuento global.
       - Monto en letras, glosa y leyenda EDI del comprobante.
@@ -138,24 +297,26 @@ funcionalidades:
     items:
       - "Importes por código de tributo SUNAT almacenados en la factura: base, IGV, ISC, IVAP, ICBPER, exonerado, inafecto y otros tributos."
       - Desglose en la moneda del documento, también en notas de crédito.
-      - Vínculo de la factura con su orden de venta.
+      - Vínculo de la factura con su orden de venta y OC. externa en el pedido.
       - Marca de crédito según el término de pago.
+      - Botón Imprimir de la factura directo al CPE A4.
   - grupo: Menú
     items:
       - "Certificados digitales accesibles desde **Perú ▸ Configuración ▸ Comprobantes electrónicos**."
 
-ejemplos_intro: Cifras tomadas de las facturas de la base de demostración.
+ejemplos_intro: Cifras tomadas de los comprobantes de la base de demostración.
 ejemplos:
   - titulo: Desglose de la factura F002-00000001
     texto: >-
-      Tres líneas con tratamiento distinto. La bolsa plástica lleva IGV y el
-      ICBPER de S/ 0,50; el libro está exonerado.
+      Líneas con tratamiento distinto. La bolsa plástica lleva IGV y el ICBPER
+      de S/ 0,50; el libro está exonerado.
     tabla:
-      - [Producto, Cantidad, Precio, Tratamiento, Fila en el comprobante]
-      - [Gaseosa 500ml, "2", "S/ 3,50", IGV 18 %, "Op. gravadas S/ 7,00"]
-      - [Bolsa plástica, "1", "S/ 0,20", IGV 18 % + ICBPER, "Op. gravadas S/ 0,20 · ICBPER S/ 0,50"]
-      - [Libro educativo, "1", "S/ 25,00", Exonerado, "Op. exoneradas S/ 25,00"]
-    nota: "Op. gravadas S/ 7,20 + IGV S/ 1,30 + Op. exoneradas S/ 25,00 + ICBPER S/ 0,50 = importe total S/ 34,00."
+      - [Concepto, Importe]
+      - [Op. gravadas, "S/ 7,20"]
+      - [Op. exoneradas, "S/ 25,00"]
+      - [IGV (18 %), "S/ 1,30"]
+      - [ICBPER, "S/ 0,50"]
+      - [Importe total, "S/ 34,00"]
 
   - titulo: Factura con detracción F001-00000002
     tabla:
@@ -165,6 +326,14 @@ ejemplos:
       - [Importe total, "S/ 2.301,00"]
       - ["Detracción 022 Otros servicios empresariales (12 %)", "S/ 276,00"]
     nota: El monto de la detracción lo calcula el módulo de detracciones redondeado a soles enteros; este módulo lo imprime.
+
+  - titulo: Venta al crédito DEMO FAC
+    tabla:
+      - [Línea, Cantidad, Precio, "Desc. %", Importe]
+      - [DEMO FAC Servicio de mantenimiento, "1", "S/ 1.500,00", "0", "S/ 1.500,00"]
+      - [DEMO FAC Revisión técnica, "2", "S/ 800,00", "10", "S/ 1.440,00"]
+      - [DEMO FAC Descuento global, "1", "S/ -100,00", "0", "S/ -100,00"]
+    nota: "Op. gravadas S/ 2.840,00 + IGV S/ 511,20 = S/ 3.351,20. Cuotas: 30 % el 10/09/2026 (S/ 1.005,36) y el resto el 09/11/2026 (S/ 2.345,84)."
 
 configuracion:
   - Instale el módulo desde Aplicaciones; requiere la facturación electrónica peruana (`l10n_pe_edi`).
@@ -188,15 +357,21 @@ faq:
     respuesta: >-
       Cuando la factura tiene un término de pago con líneas: la forma de pago
       pasa a **CRÉDITO** y se listan las cuotas con fecha y monto. Sin término
-      de pago, se imprime **CONTADO**.
+      de pago, se imprime **CONTADO**. El ticket no lleva el cuadro.
   - pregunta: ¿Por qué no sale la fila de ISC o de exoneradas?
     respuesta: >-
       El desglose solo imprime las filas con importe distinto de cero. El IGV
       y el importe total se muestran siempre.
-  - pregunta: ¿Qué botón usa el formato A4?
+  - pregunta: ¿Por qué la factura en dólares no muestra el tipo de cambio?
     respuesta: >-
-      El botón **Imprimir** de la factura. El ticket se elige desde el menú de
-      acciones ▸ Imprimir ▸ **CPE Ticket**.
+      El A4 busca una tasa registrada exactamente en la fecha de emisión. Si
+      ese día no hay tasa (fin de semana, feriado), la fila no se imprime.
+  - pregunta: Al facturar un pedido con «OC. externa» aparece un error, ¿qué pasa?
+    respuesta: >-
+      En esta versión la creación de la factura desde un pedido con OC. externa
+      informada falla («Invalid field 'external_purchase' in 'account.move'»).
+      Mientras se corrige, facture el pedido y escriba la OC. externa después:
+      el A4 la toma del pedido.
   - pregunta: ¿Incluye la guía de remisión?
     respuesta: >-
       No. La guía de remisión tiene su propio reporte en el módulo

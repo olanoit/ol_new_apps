@@ -1,0 +1,13 @@
+flowchart TD
+  A[Comprobante publicado<br/>de una compañía de Perú] --> B{¿Es un asiento<br/>de destino?}
+  B -- Sí --> Z[No se procesa otra vez]
+  B -- No --> C[Recorre cada apunte]
+  C --> D{¿Cuenta de la clase de origen<br/>sin Desactivar destinos?}
+  D -- No --> E[El apunte no interviene:<br/>IGV, cuenta por pagar…]
+  D -- Sí --> F{¿Tiene destinos<br/>y cuenta de carga?}
+  F -- No --> G[Error: no deja publicar<br/>e indica la cuenta]
+  F -- Sí --> H{¿Porcentajes<br/>suman 100 %?}
+  H -- No --> G
+  H -- Sí --> I[Reparte el importe por porcentaje;<br/>la última línea recibe el remanente]
+  I --> J[Contrapartida por el total<br/>en la cuenta de carga]
+  J --> K[Asiento «Destino: número»<br/>publicado en el diario GA]

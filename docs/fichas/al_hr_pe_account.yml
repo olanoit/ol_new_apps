@@ -367,7 +367,7 @@ campos:
       - [Empleado, Trabajador cesado del lote., Calculado al procesar, Contacto del asiento]
       - [Fecha de ingreso, Primera fecha de contrato., Calculado, "—"]
       - [Fecha de cese, Fin del contrato., Calculado, Fecha del asiento]
-      - [No R., «No recalcular»: conserva la fila al volver a procesar., "Se marca al generar el asiento", Protege el asiento generado]
+      - [No R., "«No recalcular»: conserva la fila al volver a procesar.", "Se marca al generar el asiento", Protege el asiento generado]
       - [Asiento contable, Asiento del trabajador., Solo lectura, "El botón «Asientos» abre todos"]
       - [Obtener provisiones, "Provisión acumulada de CTS, gratificación y vacaciones por cesado.", Botón en borrador, Reversión al debe]
   - grupo: Provisiones

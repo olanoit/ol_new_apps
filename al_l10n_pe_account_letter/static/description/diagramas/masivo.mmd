@@ -1,0 +1,7 @@
+flowchart TD
+  A[Lista de canjes: elegir dos o más] --> B[Botón Método: tipo de letra]
+  B --> C{¿Mismo socio y todos<br/>canjeados o bancarizados?}
+  C -- No --> D[Error con el motivo]
+  C -- Sí --> E[Canje masivo con las facturas<br/>y las letras de todos]
+  E --> F[Las letras toman el tipo elegido]
+  E --> G[Los canjes de origen pasan<br/>a Historial de canje]

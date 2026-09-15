@@ -1,0 +1,7 @@
+flowchart TD
+  A[Acción planificada diaria<br/>SUNAT: Sincronizar padrón] --> B[Descarga los ZIP de SUNAT:<br/>buenos contribuyentes y agentes de retención]
+  B --> C{¿Descarga correcta?}
+  C -- No --> D[Se anota el error en el registro<br/>y el padrón anterior se conserva]
+  C -- Sí --> E[Se vacía ese padrón y se recarga<br/>en bloques de 5 000 RUC]
+  E --> F[Consulta de un RUC:<br/>búsqueda local por número]
+  F --> G[Casillas del contacto,<br/>usadas por las retenciones del IGV]

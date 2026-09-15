@@ -1,0 +1,12 @@
+flowchart TD
+  A[Origen: lote, quincena, CTS,<br/>gratificación o liquidación vacacional] --> B[Generar TXT banco]
+  B --> C{¿Ya hay un pago Finalizado?}
+  C -- Sí --> X[Error: no se regenera]
+  C -- No --> D[Borra los pagos en borrador<br/>del origen]
+  D --> E[Un pago por diario de Parámetros<br/>cuyo formato está en las cuentas destino]
+  E --> F[Líneas: neto de la regla configurada,<br/>total a pagar o CTS en soles y dólares]
+  F --> G[Aviso con los trabajadores<br/>sin banco con formato]
+  G --> H[Revisar líneas e «Incluir en TXT»]
+  H --> I[Generar TXT banco: valida cuentas,<br/>tipos de cuenta y datos del banco]
+  I --> J[TXT de haberes o de CTS<br/>como adjunto descargable]
+  J --> K[Finalizar: el origen queda<br/>con TXT generado]

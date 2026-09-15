@@ -1,0 +1,13 @@
+flowchart TD
+  A[Boleta calculada] --> B[Imprimir]
+  B --> C{¿La estructura declara<br/>su plantilla?}
+  C -- Sí --> D[PDF con la plantilla de la estructura<br/>p. ej. construcción civil]
+  C -- No --> E[Boleta legal D.S. 001-98-TR]
+  A --> F[Enviar boleta: individual,<br/>desde la lista o desde el lote]
+  F --> G{¿Validada o pagada<br/>y con correo laboral?}
+  G -- No --> H[Se omite y se lista<br/>en el aviso final]
+  G -- Sí --> I[Correo encolado con el PDF adjunto<br/>y fecha de envío]
+  I --> J[El trabajador pulsa<br/>«Confirmar recepción»]
+  J --> K{¿Token HMAC válido?}
+  K -- No --> L[Página «Enlace no válido»]
+  K -- Sí --> M[Recepción confirmada<br/>y fecha de confirmación]

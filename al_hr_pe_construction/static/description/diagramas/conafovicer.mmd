@@ -1,0 +1,10 @@
+flowchart TD
+  A[Nuevo resumen: periodo mensual] --> B[Calcular]
+  B --> C[Boletas de construcción validadas o pagadas<br/>del mes y de sus semanas]
+  C --> D[Una línea por boleta con retención:<br/>días, jornal, D.S.O., base y retenido]
+  D --> E[Estado Calculado<br/>vence el día 15 del mes siguiente]
+  E --> F[Exportar detalle: Excel adjunto<br/>para el depósito]
+  F --> G[Constancia de pago y Marcar pagado]
+  G --> H{¿Hay que corregir?}
+  H -- Sí --> I[Volver a borrador y recalcular]
+  H -- No --> J[Estado Pagado: ya no se recalcula]

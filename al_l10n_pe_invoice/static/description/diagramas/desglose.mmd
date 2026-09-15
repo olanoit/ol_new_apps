@@ -1,0 +1,18 @@
+flowchart TD
+  A[Detalle de impuestos EDI de la factura] --> B{¿Código de tributo SUNAT?}
+  B -- "1000 IGV" --> C[IGV y Op. gravadas]
+  B -- "1016" --> D[IVAP]
+  B -- "2000" --> E[ISC]
+  B -- "7152" --> F[ICBPER]
+  B -- "9997" --> G[Op. exoneradas: base]
+  B -- "9998" --> H[Op. inafectas: base]
+  B -- "9996" --> I[Otros tributos: base]
+  A --> J[Líneas sin ningún impuesto]
+  J --> G
+  C --> K[Importes guardados en la factura]
+  D --> K
+  E --> K
+  F --> K
+  G --> K
+  H --> K
+  I --> K

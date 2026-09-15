@@ -153,6 +153,10 @@ def paso_10(c):
     abrir_monitor(c)
     c.page.locator('.o_data_row button[name=action_set_justificante]').first.click()
     c.esperar(1800)
+    # Quita el foco del empleado: si no, su nombre sale seleccionado.
+    c.page.evaluate("document.activeElement && document.activeElement.blur()")
+    c.page.locator('.modal-content .modal-title').first.click()
+    c.esperar(400)
     c.foto('10-registrar-ausencia', selector='.modal-content')
     c.page.keyboard.press('Escape')
     c.esperar(800)

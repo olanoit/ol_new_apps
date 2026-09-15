@@ -1,0 +1,12 @@
+flowchart TD
+  A[Propuesta descargada] --> B{¿Cada fila del TXT tiene<br/>las columnas mínimas?}
+  B -- No --> X[Aviso con la línea<br/>y el número de columnas]
+  B -- Sí --> C[Desplegar SIRE:<br/>una línea por comprobante]
+  C --> D[Desplegar sistema: facturas publicadas<br/>y anuladas del mes]
+  D --> E[Comparar por CAR SUNAT]
+  E --> F{¿El CAR está en los dos lados?}
+  F -- Solo en la propuesta --> G[Solo en SIRE]
+  F -- Solo en Odoo --> H[Solo en Sistema]
+  F -- En los dos --> I{¿Algún campo activo<br/>distinto?}
+  I -- No --> J[Correcto]
+  I -- Sí --> K[No cuadran, con el detalle<br/>SIRE=… / Sistema=…]

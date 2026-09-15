@@ -1,0 +1,12 @@
+flowchart TD
+  A[Nuevo periodo: Año y Mes<br/>uno por mes y compañía] --> B{¿Carga manual?}
+  B -- Sí --> C[Subir el TXT exportado de SOL<br/>en «TXT propuesta SIRE»]
+  C --> D[Confirmar TXT manual]
+  B -- No --> E[Solicitar propuesta:<br/>token con clave SOL y credenciales API]
+  E --> F[Propuesta solicitada<br/>con número de ticket]
+  F --> G[Consultar ticket]
+  G --> H{¿Estado 06 - Terminado?}
+  H -- No --> G
+  H -- Sí --> I[Descargar propuesta:<br/>el TXT sale del ZIP de SUNAT]
+  D --> J[Propuesta descargada]
+  I --> J

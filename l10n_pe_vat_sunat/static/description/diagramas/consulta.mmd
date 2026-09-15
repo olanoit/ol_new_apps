@@ -1,0 +1,19 @@
+flowchart TD
+  A[Número de identificación<br/>escrito o cambiado] --> B{¿Validar RUC / Validar DNI<br/>activo en la compañía?}
+  B -- No --> Z[No se consulta nada]
+  B -- Sí --> C{¿Formato correcto?}
+  C -- No --> E[Error: RUC o DNI no válido]
+  C -- Sí --> D[Conexiones habilitadas para ese documento<br/>y con token, por prioridad]
+  D --> F{¿Fallback en cascada?}
+  F -- No --> G[Solo la primera]
+  F -- Sí --> H[Todas, una tras otra]
+  G --> I[Llamada a la API REST<br/>o lectura del portal SUNAT]
+  H --> I
+  I --> J{¿Devolvió datos?}
+  J -- "No, y queda otra conexión" --> I
+  J -- "No, y no quedan" --> K[Casilla Alerta API y aviso en el contacto;<br/>el botón muestra el motivo]
+  J -- Sí --> L[Mapeo de campos y ubigeo<br/>escritos en el contacto]
+  L --> M{¿Es un RUC?}
+  M -- Sí --> N[Buen contribuyente y agente de retención<br/>desde el padrón guardado]
+  N --> O[SUNAT oficial: representantes legales<br/>y locales anexos si se pidieron]
+  M -- No --> P[Contacto persona con el nombre de RENIEC]

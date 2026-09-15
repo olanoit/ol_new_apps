@@ -245,3 +245,52 @@ class TestConstructionPayslip(TransactionCase):
             'date_to': date(2026, 3, 8),
         })
         self.assertFalse(payslip.l10n_pe_daily_wage)
+
+    # ------------------------------------------------------------------
+    # Pensiones: la boleta descuenta ONP o AFP sobre TREM
+    # ------------------------------------------------------------------
+    def test_onp_matches_the_official_table(self):
+        """La tabla descuenta 103.55 de ONP al operario (13 % de 796.56)."""
+        onp = self.env.ref('al_hr_pe.membership_ONP')
+        expected = {'OPE': -103.55, 'OFI': -79.79, 'PEO': -71.84}
+        for code, amount in expected.items():
+            with self.subTest(categoria=code):
+                payslip = self._payslip(
+                    self._worker(code, membership_id=onp.id))
+                self.assertEqual(self._line(payslip, 'ONP'), amount)
+                self.assertEqual(self._line(payslip, 'A_JUB'), 0.0)
+
+    def test_afp_deducts_fund_commission_and_insurance(self):
+        afp = self.env.ref('al_hr_pe.membership_AFP_INTEGRA')
+        payslip = self._payslip(self._worker(
+            'OPE', membership_id=afp.id, l10n_pe_commission_type='flow'))
+        base = self._line(payslip, 'TREM')
+        self.assertEqual(base, 796.56)
+        self.assertEqual(self._line(payslip, 'ONP'), 0.0)
+        self.assertEqual(
+            self._line(payslip, 'A_JUB'),
+            -round(payslip.l10n_pe_retirement_fund / 100 * base, 2))
+        self.assertEqual(
+            self._line(payslip, 'COMFI'),
+            -round(payslip.l10n_pe_commission / 100 * base, 2))
+        self.assertEqual(self._line(payslip, 'COMMIX'), 0.0)
+        self.assertEqual(
+            self._line(payslip, 'SEGI'),
+            -round(payslip.l10n_pe_prima_insurance / 100 * base, 2))
+        self.assertLess(self._line(payslip, 'A_JUB'), 0)
+
+    def test_pension_reduces_the_net_pay(self):
+        """El neto resta la pensión además del CONAFOVICER."""
+        onp = self.env.ref('al_hr_pe.membership_ONP')
+        payslip = self._payslip(self._worker('OPE', membership_id=onp.id))
+        deductions = -(self._line(payslip, 'ONP') + self._line(payslip, 'CONAF'))
+        self.assertAlmostEqual(self._line(payslip, 'TDES'), deductions, places=2)
+        self.assertAlmostEqual(
+            self._line(payslip, 'NETO'),
+            round(self._line(payslip, 'TINGR') - deductions, 2), places=2)
+
+    def test_worker_without_pension_scheme_deducts_nothing(self):
+        payslip = self._payslip(self._worker('OPE'))
+        for code in ('ONP', 'A_JUB', 'COMFI', 'COMMIX', 'SEGI'):
+            self.assertEqual(self._line(payslip, code), 0.0)
+

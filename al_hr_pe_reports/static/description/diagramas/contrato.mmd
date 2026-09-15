@@ -1,0 +1,8 @@
+flowchart TD
+  A[Plantilla con marcadores entre llaves dobles] --> B[Empleado: plantilla y régimen<br/>de periodo de prueba]
+  B --> C[Fin del periodo de prueba:<br/>inicio + 3, 6 o 12 meses]
+  C --> D[Imprimir contrato]
+  D --> E{¿Plantilla con contenido y<br/>datos mínimos completos?}
+  E -- No --> F[Aviso con la lista<br/>de datos que faltan]
+  E -- Sí --> G[Sustituye los marcadores con datos<br/>de empresa, trabajador y contrato]
+  G --> H[PDF del contrato]

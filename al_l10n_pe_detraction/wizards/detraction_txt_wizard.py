@@ -94,23 +94,45 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
             ('invoice_date', '<=', self.date_to),
         ], order='invoice_date, name')
 
-    def _counterparty(self, move):
-        """El titular de la cuenta de detracciones en cada modalidad."""
+    def _identified_party(self, move):
+        """Quién identifica cada línea de detalle (campos 01-47).
+
+        Según el instructivo, en la modalidad adquiriente cada línea lleva al
+        proveedor; en la modalidad proveedor, a cada adquiriente, es decir, al
+        cliente de la factura. No es la propia empresa: esa ya va en la
+        cabecera.
+        """
+        return move.partner_id.commercial_partner_id
+
+    def _account_holder(self, move):
+        """Titular de la cuenta del Banco de la Nación donde se deposita.
+
+        Siempre es el proveedor de la operación: el tercero cuando la empresa
+        compra y la propia empresa cuando vende.
+        """
         return (move.partner_id.commercial_partner_id if self.mode == 'acquirer'
                 else self.company_id.partner_id)
 
+    @api.model
+    def _document_type(self, partner):
+        """Tipo de documento de identidad (tabla 5.8, códigos de SUNAT)."""
+        identification = partner.l10n_latam_identification_type_id
+        code = identification.l10n_pe_vat_code if identification else False
+        return code or bn_txt.DOC_TYPE_RUC
+
     def _check_move(self, move):
         """Motivo por el que un comprobante no puede incluirse, o ``None``."""
-        partner = self._counterparty(move)
+        party = self._identified_party(move)
+        holder = self._account_holder(move)
         if not move.l10n_pe_detraction_type_id:
             return _('sin tipo de detracción (catálogo 54)')
         if not move.l10n_pe_detraction_amount:
             return _('el monto de detracción es cero')
-        if not (partner.vat or '').strip():
-            return _('%s no tiene RUC', partner.display_name)
-        if not (partner.l10n_pe_detraction_account or '').strip():
+        if not (party.vat or '').strip():
+            return _('%s no tiene número de documento', party.display_name)
+        if not (holder.l10n_pe_detraction_account or '').strip():
             return _('%s no tiene cuenta de detracciones del Banco de la '
-                     'Nación', partner.display_name)
+                     'Nación', holder.display_name)
         if not move.invoice_date:
             return _('sin fecha de emisión')
         return None
@@ -128,16 +150,17 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         return bn_type, serie[-4:], folio
 
     def _detail_line(self, move):
-        partner = self._counterparty(move)
+        party = self._identified_party(move)
+        holder = self._account_holder(move)
         bn_type, serie, folio = self._invoice_parts(move)
         return bn_txt.build_detail(
-            doc_type=bn_txt.DOC_TYPE_RUC,
-            vat=partner.vat,
+            doc_type=self._document_type(party),
+            vat=party.vat,
             # El instructivo pide dejar el nombre en blanco: el banco lo
             # recupera del RUC.
             name='',
             service_code=move.l10n_pe_detraction_type_id.code,
-            bank_account=partner.l10n_pe_detraction_account,
+            bank_account=holder.l10n_pe_detraction_account,
             deposit=move.l10n_pe_detraction_amount,
             operation_type=move.l10n_pe_detraction_operation_type or '01',
             tax_period=bn_txt.period(move.invoice_date),
@@ -168,8 +191,9 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
 
         details = [self._detail_line(move) for move in included]
         total = sum(included.mapped('l10n_pe_detraction_amount'))
-        depositor = (self.company_id.partner_id if self.mode == 'acquirer'
-                     else self.company_id.partner_id)
+        # La cabecera siempre lleva a la empresa que presenta el lote: como
+        # adquiriente o como proveedor (el indicador de maestra lo distingue).
+        depositor = self.company_id.partner_id
         header = bn_txt.build_header(
             master=(bn_txt.MASTER_ACQUIRER if self.mode == 'acquirer'
                     else bn_txt.MASTER_SUPPLIER),

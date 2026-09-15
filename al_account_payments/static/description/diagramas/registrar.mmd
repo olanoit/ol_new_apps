@@ -1,0 +1,11 @@
+flowchart TD
+  A[Factura o facturas seleccionadas<br/>▸ Pagar] --> B[Asistente Pagar:<br/>Medio pago y Número de operación banco]
+  B --> C{¿Varias facturas<br/>del mismo proveedor?}
+  C -- No --> D[Un pago]
+  C -- Sí --> E{¿Agrupar pagos?}
+  E -- Sí --> F[Un solo pago<br/>por el total]
+  E -- No --> G[Un pago por factura]
+  D --> H[Cada pago guarda el medio<br/>y el número de operación]
+  F --> H
+  G --> H
+  H --> I[Asiento del pago:<br/>proveedor contra pagos pendientes]

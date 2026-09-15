@@ -1,0 +1,19 @@
+flowchart TD
+  A[Nuevo cierre: mes, año, moneda<br/>y T.C. del último o penúltimo día] --> B[Traer T.C.]
+  B --> C{¿Hay T.C. registrado<br/>en esa fecha?}
+  C -- Sí --> F[Compra y venta en el cierre]
+  C -- No --> D[Intenta descargarlo de apis.net.pe]
+  D --> E{¿Hay ahora T.C. en esa fecha<br/>o en una anterior?}
+  E -- No --> X[Error: registre el T.C. a mano]
+  E -- "Sí, de esa fecha" --> F
+  E -- "Sí, anterior" --> E2[Usa el último anterior<br/>y lo anota en el historial]
+  E2 --> F
+  F --> G[Calcular]
+  G --> H{¿Diario, compra y venta, cuentas 676/776<br/>y ningún cierre posterior contabilizado?}
+  H -- No --> Y[Error con lo que falta]
+  H -- Sí --> I[Detalle por cuenta o cuenta y socio:<br/>estado Calculado]
+  I --> J[Revisar: apuntes de cada renglón,<br/>analítica editable y vista previa del asiento]
+  J --> K[Contabilizar: asiento publicado<br/>el último día del mes]
+  K --> L[Estado Contabilizado]
+  L -- Cancelar --> M[Asiento cancelado]
+  M -- Volver a borrador --> A

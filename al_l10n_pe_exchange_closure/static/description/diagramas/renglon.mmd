@@ -1,0 +1,18 @@
+flowchart TD
+  A[Apuntes publicados en US$ hasta el fin de mes<br/>en cuentas marcadas para el cierre] --> B{¿Cuenta con detalle?}
+  B -- Sí --> C[Un grupo por cuenta y socio]
+  B -- No --> D[Un grupo por cuenta]
+  C --> E[Saldo en M.E. y saldo contable en S/<br/>incluidos los cierres anteriores]
+  D --> E
+  E --> F{¿Ambos saldos en cero?}
+  F -- Sí --> G[Se descarta]
+  F -- No --> H{¿T.C. a aplicar?}
+  H -- "Automático: activo" --> I[Compra]
+  H -- "Automático: pasivo" --> J[Venta]
+  H -- Siempre compra / Siempre venta --> K[El forzado]
+  I --> L[Saldo revaluado = saldo M.E. × T.C.<br/>Ajuste = revaluado − saldo contable]
+  J --> L
+  K --> L
+  L --> M{¿Signo del ajuste?}
+  M -- Positivo --> N[Cargo a la cuenta<br/>abono a 776 ganancia]
+  M -- Negativo --> O[Abono a la cuenta<br/>cargo a 676 pérdida]
