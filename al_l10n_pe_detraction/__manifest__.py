@@ -27,6 +27,13 @@ falta:
   (``l10n_pe_detraction_number/date`` de ``l10n_pe_reports``) que alimenta
   los campos 32-33 del PLE 8.1.
 
+* **Contraste con SUNAT**: botón «Contrastar con SUNAT» en el catálogo y
+  acción planificada mensual que lee la página de apéndices del SPOT,
+  cruza sus porcentajes por nombre y muestra las diferencias (porcentaje
+  distinto, códigos nuevos). Nada se aplica solo: el responsable marca las
+  líneas y las aplica; la acción planificada crea una actividad cuando
+  cambian las diferencias.
+
 Análisis del módulo v18 ``al_l10n_pe_edi_detraction`` (ce18): se adopta su
 catálogo (corrigiendo los porcentajes de los códigos 027/030/040 al 4 %
 oficial) y se descarta el cronograma de pagos con re-balanceo manual de
@@ -37,7 +44,7 @@ asientos por su complejidad y riesgo contable.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '8.20260827',
+    'version': '9.20260827',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -48,6 +55,8 @@ asientos por su complejidad y riesgo contable.
         'security/ir.model.access.csv',
         'data/detraction_type_data.xml',
         'views/detraction_type_views.xml',
+        'views/detraction_check_views.xml',
+        'data/detraction_check_cron.xml',
         'views/product_views.xml',
         'views/account_move_views.xml',
         'views/res_config_settings_views.xml',
@@ -55,6 +64,13 @@ asientos por su complejidad y riesgo contable.
         'wizards/detraction_txt_wizard_views.xml',
         'views/menu.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'al_l10n_pe_detraction/static/src/js/detraction_type_list_view.js',
+            'al_l10n_pe_detraction/static/src/xml/detraction_type_list_buttons.xml',
+        ],
+    },
+    'external_dependencies': {'python': ['requests']},
     'installable': True,
     'application': False,
 }

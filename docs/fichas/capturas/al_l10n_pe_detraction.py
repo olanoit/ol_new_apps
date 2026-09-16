@@ -148,3 +148,17 @@ with Captura('al_l10n_pe_detraction') as c:
     c.js("document.activeElement && document.activeElement.blur()")
     c.esperar(300)
     c.foto('14-deposito-masivo', selector='.modal-content')
+
+    # ---- Contraste con SUNAT ---------------------------------------------
+    # 15. Catálogo con el botón «Contrastar con SUNAT»
+    c.page.set_viewport_size({'width': 1440, 'height': 900})
+    c.abrir_accion('al_l10n_pe_detraction.action_detraction_type', ms=2500)
+    c.page.locator('.o_al_detraction_check_btn').wait_for()
+    c.foto('15-contrastar-boton', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 330})
+
+    # 16. Contraste real con la página de SUNAT (descarga la página: crea un
+    # contraste nuevo en el historial, que es lo que hace el botón)
+    c.page.set_viewport_size({'width': 1600, 'height': 1500})
+    c.clic('.o_al_detraction_check_btn', ms=8000)
+    c.foto('16-contraste-sunat', selector='.o_form_view .o_form_sheet_bg')
+    c.page.set_viewport_size({'width': 1440, 'height': 900})

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- v19: template standalone (ver al_hr_pe_import/static/src/xml/hr_salary_rule_list_buttons.xml) -->
+    <t t-name="al_l10n_pe_detraction.DetractionTypeListView.Buttons">
+        <button t-if="canCheckSunat" type="button"
+                class="btn btn-secondary o_al_detraction_check_btn"
+                t-on-click="() => this.onClickCheckSunat()">
+            <i class="fa fa-balance-scale me-1" role="img"
+               aria-label="SUNAT" title="SUNAT"/>
+            Contrastar con SUNAT
+        </button>
+    </t>
+
+</templates>

@@ -6,6 +6,12 @@
               groups="account.group_account_manager"
               sequence="10"/>
 
+    <menuitem id="menu_detraction_check" name="Contrastes con SUNAT"
+              parent="al_account_base.al_l10n_pe_config_tax"
+              action="action_detraction_check"
+              groups="account.group_account_manager"
+              sequence="11"/>
+
     <!-- Perú ▸ Detracciones: grupo propio para no abrir la app con una
          acción suelta en el primer nivel. -->
     <menuitem id="menu_detraction_root" name="Detracciones"

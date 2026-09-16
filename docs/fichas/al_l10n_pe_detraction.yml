@@ -201,6 +201,34 @@ pasos:
       - Con la opción activa y sin cuentas, publicar una factura afecta se detiene con un aviso que indica dónde configurarlas.
     imagen: screenshots/05-ajustes.png
 
+  - seccion: Contraste con SUNAT
+    texto: Comprobar el catálogo contra la página de SUNAT, sin aplicar nada solo.
+  - titulo: Contrastar el catálogo con SUNAT
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT) ▸ botón Contrastar con SUNAT
+    texto: >-
+      Descarga la página de apéndices del SPOT de SUNAT y compara cada código
+      con el catálogo. SUNAT no publica el porcentaje por código: el módulo
+      cruza por nombre sus tablas de modificaciones y toma la de fecha más
+      reciente (por ejemplo, el 12 % de los servicios desde el 01/04/2018).
+      El botón lo ven los administradores de contabilidad.
+    imagen: screenshots/15-contrastar-boton.png
+
+  - titulo: Revisar y aplicar las diferencias
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Contrastes con SUNAT
+    texto: >-
+      Cada contraste queda guardado con una línea por código: **Coincide**,
+      **Porcentaje distinto**, **Nuevo en SUNAT**, **Sin porcentaje en
+      SUNAT** o **No figura en SUNAT**. Marque **Aplicar** en las diferencias
+      que haya comprobado y pulse **Aplicar marcadas**: el porcentaje se
+      actualiza y se reaplica a los productos, o el código nuevo se crea.
+    puntos:
+      - "Los códigos nuevos del Anexo 1 toman el monto mínimo de los otros bienes del anexo (media UIT); los demás, S/ 700. Revíselo en el tipo creado."
+      - "«Sin porcentaje» y «No figura» son informativos: el 027, transporte de bienes, tiene norma propia y no está en esa página."
+      - "La acción planificada **Detracciones: contrastar el catálogo con SUNAT** lo hace cada mes; solo guarda un contraste —con una actividad para los administradores de contabilidad— cuando cambian las diferencias."
+      - "Los cambios de porcentaje y monto mínimo quedan en el historial del tipo de detracción."
+    imagen: screenshots/16-contraste-sunat.png
+    pie: "Contraste del 16/09/2026: los 26 porcentajes coinciden y SUNAT lista seis códigos que el catálogo no trae."
+
   - seccion: Ventas
     texto: El cliente retiene la detracción y la deposita en la cuenta de la empresa.
   - titulo: La factura de venta calcula la detracción
@@ -329,6 +357,15 @@ campos:
       - ["Monto mínimo (S/)", "Total con IGV a partir del cual aplica; 0 = cualquier monto.", "700,00", "Facturas iguales o menores no llevan detracción"]
       - [Notas, "Base legal, vigencia u otras observaciones.", Vacío, Informativo]
       - [Productos, Productos que usan el tipo., Calculado, Abre su lista]
+  - grupo: Contraste con SUNAT
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Contrastes con SUNAT
+    campos:
+      - [Fecha y Fuente, Cuándo y de qué página se contrastó., "Página de apéndices del SPOT", "La dirección se cambia en el parámetro del sistema al_l10n_pe_detraction.sunat_spot_url"]
+      - [Diferencias / Por aplicar, Porcentajes distintos y códigos nuevos; los que faltan aplicar., Calculado, "«Aplicar marcadas» solo se muestra si hay pendientes"]
+      - [Aplicar, Marca la línea para aplicarla., Desmarcado, Solo en diferencias no aplicadas]
+      - ["% Odoo / % SUNAT", Porcentaje del catálogo y el publicado., "—", "Vigente desde: fecha de la tabla de SUNAT"]
+      - [Estado, "Coincide, Porcentaje distinto, Nuevo en SUNAT, Sin porcentaje en SUNAT o No figura en SUNAT.", Calculado, Solo los dos primeros piden decisión]
+      - [Aplicado, La línea ya se aplicó al catálogo., Desmarcado, Queda en el historial del contraste]
   - grupo: Producto
     ruta: Contabilidad ▸ Clientes ▸ Productos
     campos:
@@ -431,6 +468,8 @@ funcionalidades:
     items:
       - Catálogo 54 con 26 códigos, código único, porcentaje entre 0 y 100, monto mínimo y notas.
       - Botón para actualizar los productos vinculados y acceso a su lista.
+      - "Contraste con la página de SUNAT (botón y acción planificada mensual): porcentajes distintos y códigos nuevos, aplicados a mano línea a línea."
+      - Historial de cambios de porcentaje y monto mínimo en cada tipo.
       - Sincronización del código y el porcentaje nativos del producto al asignar el tipo.
       - Cuenta de detracciones del Banco de la Nación en la ficha del contacto, solo dígitos.
   - grupo: Facturas de venta y compra
@@ -527,11 +566,19 @@ faq:
   - pregunta: SUNAT cambió un porcentaje, ¿qué hago?
     respuesta: >-
       Edite el tipo en el catálogo y pulse **Actualizar productos
-      vinculados**. Las facturas en borrador recalculan al editar sus líneas.
+      vinculados**, o márquelo en un contraste con SUNAT y pulse **Aplicar
+      marcadas**, que hace ambas cosas. Las facturas en borrador recalculan al
+      editar sus líneas.
+  - pregunta: ¿El contraste con SUNAT cambia el catálogo solo?
+    respuesta: >-
+      No. SUNAT no publica el porcentaje por código y el módulo lo deduce
+      cruzando nombres, así que solo muestra las diferencias. Se aplican al
+      marcarlas y pulsar Aplicar marcadas.
 
 novedades:
   - fecha: 16/09/2026
     cambios:
+      - "Contraste del catálogo con la página de SUNAT: botón en el catálogo, historial de contrastes, aplicación manual de las diferencias y acción planificada mensual con actividad cuando cambian."
       - "Mínimo del Anexo 1 (códigos 001 y 003) actualizado a S/ 2.750, media UIT de 2026."
   - version: 6.20260827
     fecha: 14/09/2026

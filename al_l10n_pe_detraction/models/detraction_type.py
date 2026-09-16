@@ -10,15 +10,16 @@ class L10nPeDetractionType(models.Model):
     sincronizan con los campos nativos que usa el XML UBL."""
     _name = 'l10n_pe.detraction.type'
     _description = 'Tipo de detracción SPOT (catálogo 54 SUNAT)'
+    _inherit = ['mail.thread']
     _order = 'code'
 
     code = fields.Char(string='Código', size=3, required=True)
     name = fields.Char(string='Descripción', required=True, translate=False)
     percentage = fields.Float(
-        string='Porcentaje (%)', digits=(5, 2), required=True,
+        string='Porcentaje (%)', digits=(5, 2), required=True, tracking=True,
         help='Porcentaje de detracción vigente (p. ej. 12 para 12 %).')
     min_amount = fields.Float(
-        string='Monto mínimo (S/)', digits=(12, 2), default=700.0,
+        string='Monto mínimo (S/)', digits=(12, 2), default=700.0, tracking=True,
         help='Importe total (IGV incluido) a partir del cual aplica la '
              'detracción. 0 = aplica a cualquier monto.')
     comment = fields.Text(string='Notas')

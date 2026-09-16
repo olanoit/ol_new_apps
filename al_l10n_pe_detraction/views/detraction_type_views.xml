@@ -4,7 +4,7 @@
         <field name="name">l10n_pe.detraction.type.list</field>
         <field name="model">l10n_pe.detraction.type</field>
         <field name="arch" type="xml">
-            <list>
+            <list js_class="detraction_type_list">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="percentage"/>
@@ -49,6 +49,7 @@
                                placeholder="Notas (base legal, vigencia...)"/>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

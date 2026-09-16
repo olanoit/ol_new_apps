@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: una actualización no reactiva la acción si se desactivó. -->
+    <data noupdate="1">
+        <!-- Mensual: los porcentajes cambian rara vez (el último cambio
+             general fue en 2018-2019). Solo guarda un contraste —con
+             actividad— cuando cambian las diferencias. -->
+        <record id="ir_cron_detraction_check_sunat" model="ir.cron">
+            <field name="name">Detracciones: contrastar el catálogo con SUNAT</field>
+            <field name="model_id" ref="model_l10n_pe_detraction_check"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_l10n_pe_check_sunat()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>
