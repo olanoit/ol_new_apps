@@ -8,16 +8,16 @@
         <record id="detraction_001" model="l10n_pe.detraction.type">
             <field name="code">001</field>
             <field name="name">Azúcar y melaza de caña</field>
-            <field name="min_amount">2675.0</field>
+            <field name="min_amount">2750.0</field>
             <field name="percentage">10</field>
-            <field name="comment">Anexo 1: mínimo 1/2 UIT (actualizar según la UIT vigente).</field>
+            <field name="comment">Anexo 1: mínimo 1/2 UIT (2026: UIT S/ 5,500, D.S. 301-2025-EF). Actualizar cada año.</field>
         </record>
         <record id="detraction_003" model="l10n_pe.detraction.type">
             <field name="code">003</field>
             <field name="name">Alcohol etílico</field>
-            <field name="min_amount">2675.0</field>
+            <field name="min_amount">2750.0</field>
             <field name="percentage">10</field>
-            <field name="comment">Anexo 1: mínimo 1/2 UIT (actualizar según la UIT vigente).</field>
+            <field name="comment">Anexo 1: mínimo 1/2 UIT (2026: UIT S/ 5,500, D.S. 301-2025-EF). Actualizar cada año.</field>
         </record>
         <record id="detraction_004" model="l10n_pe.detraction.type">
             <field name="code">004</field>

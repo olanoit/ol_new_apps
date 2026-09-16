@@ -241,7 +241,7 @@ pasos:
       **Generar tramos** reemplaza la tabla con la UIT del año en curso: 5, 20,
       35 y 45 UIT al 8, 14, 17 y 20 %, y el resto al 30 %.
     imagen: screenshots/02-quinta-tramos.png
-    pie: "UIT 2026 de S/ 5.350,00: el primer tramo llega a S/ 26.750,00; límite 0 es «sin tope»."
+    pie: "UIT 2026 de S/ 5.500,00: el primer tramo llega a S/ 27.500,00; límite 0 es «sin tope»."
 
   - seccion: CTS
     texto: Dos depósitos al año por lote de nómina.
@@ -645,15 +645,15 @@ ejemplos:
 
   - titulo: Retención de 5ta categoría de junio
     texto: >-
-      Trabajadora con S/ 6.000,00 al mes y UIT de S/ 5.350,00. La renta bruta
+      Trabajadora con S/ 6.000,00 al mes y UIT de S/ 5.500,00. La renta bruta
       anual proyectada es S/ 84.280,00:
     tabla:
       - [Paso, Cálculo, Importe S/]
-      - [Renta neta anual, "84.280,00 − 7 UIT (37.450,00)", "46.830,00"]
-      - [Primer tramo, "8 % de 26.750,00 (5 UIT)", "2.140,00"]
-      - [Segundo tramo, "14 % de 20.080,00", "2.811,20"]
-      - [Impuesto anual proyectado, "", "4.951,20"]
-      - [Retención de junio, "4.951,20 ÷ 7", "707,31"]
+      - [Renta neta anual, "84.280,00 − 7 UIT (38.500,00)", "45.780,00"]
+      - [Primer tramo, "8 % de 27.500,00 (5 UIT)", "2.200,00"]
+      - [Segundo tramo, "14 % de 18.280,00", "2.559,20"]
+      - [Impuesto anual proyectado, "", "4.759,20"]
+      - [Retención de junio, "4.759,20 ÷ 7", "679,89"]
     nota: >-
       El divisor lo fija el mes: 12 en enero, 11 en febrero… 7 en junio y 1 en
       diciembre, restando antes las retenciones ya practicadas.
@@ -748,7 +748,11 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
-  - fecha: 18/08/2026
+  - fecha: 16/09/2026
+    cambios:
+      - "Los tramos de 5ta generados con la UIT 2026 errónea (S/ 5.350) se recalculan con S/ 5.500 al actualizar; una tabla personalizada no se toca."
+  - version: 5.20260816
+    fecha: 18/08/2026
     cambios:
       - El menú Beneficios sociales se sitúa detrás de Recibos de nómina, en el orden del trabajo.
   - version: 4.20260722

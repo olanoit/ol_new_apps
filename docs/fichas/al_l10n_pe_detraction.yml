@@ -154,7 +154,7 @@ pasos:
       **Porcentaje (%)**, **Monto mínimo (S/)** y cuántos productos usan cada
       tipo. El menú lo ven los administradores de contabilidad.
     puntos:
-      - Los códigos del Anexo 1 (001 y 003) traen como mínimo S/ 2.675 (½ UIT); actualícelo con la UIT de cada año.
+      - Los códigos del Anexo 1 (001 y 003) traen como mínimo S/ 2.750 (½ UIT de 2026); actualícelo con la UIT de cada año.
       - "El código es único y el porcentaje debe estar entre 0 y 100: el sistema no deja guardar otro valor."
     imagen: screenshots/01-catalogo.png
 
@@ -530,7 +530,11 @@ faq:
       vinculados**. Las facturas en borrador recalculan al editar sus líneas.
 
 novedades:
-  - fecha: 14/09/2026
+  - fecha: 16/09/2026
+    cambios:
+      - "Mínimo del Anexo 1 (códigos 001 y 003) actualizado a S/ 2.750, media UIT de 2026."
+  - version: 6.20260827
+    fecha: 14/09/2026
     cambios:
       - "La app Perú agrupa las detracciones en su propio menú: **Perú ▸ Detracciones**; el catálogo pasa a **Configuración ▸ Tributos SUNAT**."
   - version: 5.20260827

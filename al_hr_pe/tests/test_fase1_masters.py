@@ -52,7 +52,7 @@ class TestFase1Masters(TransactionCase):
         self.assertNotIn(other, visible)
 
     def test_uit(self):
-        self.assertEqual(self.env['l10n_pe.hr.uit'].get_uit(2026), 5350)
+        self.assertEqual(self.env['l10n_pe.hr.uit'].get_uit(2026), 5500)
         with self.assertRaises(UserError):
             self.env['l10n_pe.hr.uit'].get_uit(1990)
 

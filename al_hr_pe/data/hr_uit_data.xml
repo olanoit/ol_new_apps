@@ -10,9 +10,11 @@
             <field name="year">2025</field>
             <field name="amount">5350</field>
         </record>
+        <!-- D.S. N.° 301-2025-EF. Hasta la v14 venía con el valor de 2025
+             por error; la migración 19.0.14.20260901 lo corrige. -->
         <record model="l10n_pe.hr.uit" id="uit_2026">
             <field name="year">2026</field>
-            <field name="amount">5350</field>
+            <field name="amount">5500</field>
         </record>
     </data>
 </odoo>

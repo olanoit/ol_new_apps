@@ -45,7 +45,7 @@ Fase 7.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '5.20260816',
+    'version': '6.20260816',
     'license': 'OPL-1',
     'depends': ['al_hr_pe'],
     'data': [

@@ -676,7 +676,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
-  - fecha: 01/09/2026
+  - fecha: 16/09/2026
+    cambios:
+      - "UIT 2026 corregida a S/ 5.500 (D.S. N.° 301-2025-EF); venía con el valor de 2025. Al actualizar se corrige en la base si no se había cambiado a mano."
+  - version: 13.20260901
+    fecha: 01/09/2026
     cambios:
       - Instalación corregida en bases de datos nuevas.
   - version: 11.20260816
