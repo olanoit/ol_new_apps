@@ -44,7 +44,7 @@ asientos por su complejidad y riesgo contable.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '10.20260827',
+    'version': '11.20260827',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

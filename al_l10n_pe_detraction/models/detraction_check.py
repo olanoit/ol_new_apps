@@ -198,16 +198,17 @@ class L10nPeDetractionCheck(models.Model):
         Type = self.env['l10n_pe.detraction.type']
         annex1_min = max(Type.search([('code', 'in', ('001', '003'))])
                          .mapped('min_amount') or [DEFAULT_MIN_AMOUNT])
+        # El catálogo puede haber cambiado desde el contraste (otro contraste
+        # aplicado, una edición a mano, una actualización del módulo): cada
+        # línea se resuelve contra el catálogo de ahora, archivados incluidos,
+        # para no crear un código que ya existe.
+        current = {dtype.code: dtype for dtype in Type.with_context(active_test=False)
+                   .search([('code', 'in', lines.mapped('code'))])}
         rows = []
         for line in lines:
-            if line.status == 'rate_diff':
-                old = line.type_id.percentage
-                line.type_id.percentage = line.sunat_percentage
-                line.type_id.action_sync_products()
-                rows.append(_('%(code)s: %(old)s %% → %(new)s %% (productos actualizados)',
-                              code=line.code, old=old, new=line.sunat_percentage))
-            else:
-                line.type_id = Type.create({
+            dtype = current.get(line.code)
+            if not dtype:
+                dtype = Type.create({
                     'code': line.code,
                     'name': line.sunat_name,
                     'percentage': line.sunat_percentage,
@@ -217,11 +218,23 @@ class L10nPeDetractionCheck(models.Model):
                 })
                 rows.append(_('%(code)s: creado al %(rate)s %%',
                               code=line.code, rate=line.sunat_percentage))
+            elif abs(dtype.percentage - line.sunat_percentage) > 0.001:
+                old = dtype.percentage
+                dtype.percentage = line.sunat_percentage
+                dtype.action_sync_products()
+                rows.append(_('%(code)s: %(old)s %% → %(new)s %% (productos actualizados)',
+                              code=line.code, old=old, new=line.sunat_percentage))
+            else:
+                rows.append(_('%(code)s: ya estaba en el catálogo al %(rate)s %%; '
+                              'no se cambió nada',
+                              code=line.code, rate=dtype.percentage))
+            line.type_id = dtype
         lines.write({'applied': True, 'to_apply': False})
         self.message_post(body=Markup('<p>%s</p><ul>%s</ul>') % (
             _('Cambios aplicados al catálogo:'),
             Markup('').join(Markup('<li>%s</li>') % row for row in rows)))
-        self.activity_ids.action_feedback(feedback=_('Diferencias aplicadas.'))
+        if not self.pending_count:
+            self.activity_ids.action_feedback(feedback=_('Diferencias aplicadas.'))
         return True
 
 

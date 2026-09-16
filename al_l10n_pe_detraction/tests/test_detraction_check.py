@@ -213,6 +213,48 @@ class TestDetractionCheck(TransactionCase):
         self.assertEqual(lead.min_amount, 700.0)
         self.assertEqual(lead.percentage, 15.0)
 
+    def test_apply_on_a_stale_check(self):
+        """Un contraste antiguo no duplica códigos creados después ni pisa un
+        porcentaje ya corregido: se resuelve contra el catálogo de ahora."""
+        cane = self.env.ref('al_l10n_pe_detraction.detraction_007')
+        lead = self.env.ref('al_l10n_pe_detraction.detraction_041')
+        self._drop_codes('007', '041')
+        self.dtype_012.percentage = 10.0
+        stale = self._check()
+        # Después del contraste el catálogo cambia: vuelven 007 (archivado)
+        # y 041, y alguien corrige el 012 a mano.
+        restored_cane = self.env['l10n_pe.detraction.type'].create(
+            {'code': '007', 'name': 'Caña', 'percentage': 10.0, 'active': False})
+        restored_lead = self.env['l10n_pe.detraction.type'].create(
+            {'code': '041', 'name': 'Plomo', 'percentage': 12.0})
+        self.dtype_012.percentage = 12.0
+        self.assertFalse(cane.exists() or lead.exists())
+        stale.line_ids.filtered(lambda l: l.actionable).write({'to_apply': True})
+        stale.action_apply()
+        self.assertEqual(self._line(stale, '007').type_id, restored_cane)
+        self.assertEqual(self._line(stale, '041').type_id, restored_lead)
+        self.assertEqual(restored_lead.percentage, 15.0, 'porcentaje de SUNAT')
+        self.assertEqual(self.dtype_012.percentage, 12.0)
+        self.assertEqual(self.env['l10n_pe.detraction.type'].with_context(
+            active_test=False).search_count([('code', 'in', ('007', '041'))]), 2)
+        self.assertEqual(stale.pending_count, 0)
+        body = stale.message_ids[:1].body
+        self.assertIn('007: ya estaba', body)
+        self.assertIn('012: ya estaba', body)
+        self.assertIn('041: 12.0 % → 15.0 %', body)
+
+    def test_activity_closes_only_when_nothing_is_pending(self):
+        self._drop_codes('007', '041')
+        check = self._check()
+        check._l10n_pe_schedule_review()
+        self.assertTrue(check.activity_ids)
+        self._line(check, '007').to_apply = True
+        check.action_apply()
+        self.assertTrue(check.activity_ids, 'queda el 041 por aplicar')
+        self._line(check, '041').to_apply = True
+        check.action_apply()
+        self.assertFalse(check.activity_ids)
+
     def test_apply_needs_a_marked_line(self):
         self._drop_codes('041')
         check = self._check()
