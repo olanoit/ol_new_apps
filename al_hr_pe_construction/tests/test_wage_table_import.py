@@ -17,7 +17,7 @@ from reportlab.pdfgen import canvas
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import Form, TransactionCase
 
 from ..models.hr_construction_wage_import import L10nPeHrConstructionWageTable
 from ..tools import wage_table_pdf
@@ -182,11 +182,66 @@ class TestWageTableImport(TransactionCase):
             wizard.action_import()
         self.assertEqual(self.Table._l10n_pe_watched_urls(), [URL])
 
-    def test_wizard_rejects_loaded_validity(self):
+    def test_wizard_existing_validity_asks_to_update(self):
+        table, _created = self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
+        operario = table.line_ids.filtered(lambda l: l.category_id == self.operario)
+        operario.write({'daily_wage': 90.0, 'mobility_amount': 8.0})
+        table.resolution = False
+        wizard = self._wizard(source='file', pdf_filename='nuevo.pdf',
+                              pdf_file=base64.b64encode(build_pdf()))
+        action = wizard.action_import()
+        self.assertEqual(action['res_model'], wizard._name)
+        self.assertEqual(wizard.state, 'confirm')
+        self.assertEqual(wizard.existing_table_id, table)
+        self.assertTrue(wizard.has_changes)
+        self.assertIn('90.0', wizard.changes_html)
+        # Aún no cambia nada.
+        self.assertEqual(operario.daily_wage, 90.0)
+
+        wizard.action_update_existing()
+        self.assertEqual(operario.daily_wage, 92.0)
+        self.assertEqual(operario.mobility_amount, 9.0)
+        self.assertEqual(table.resolution, 'R.M. N.° 123-2026-TR')
+        self.assertEqual(table.source_url, 'nuevo.pdf')
+        self.assertFalse(table.active, 'actualizar no activa la tabla')
+        self.assertIn('actualizada', table.message_ids[:1].body)
+        self.assertEqual(len(self._find_2027()), 1)
+
+    def test_update_without_changes_only_logs(self):
+        table, _created = self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
+        wizard = self._wizard(source='file', pdf_file=base64.b64encode(build_pdf()))
+        wizard.action_import()
+        self.assertFalse(wizard.has_changes)
+        wizard.action_update_existing()
+        self.assertIn('sin cambios', table.message_ids[:1].body)
+
+    def test_diff_adds_missing_category(self):
+        table, _created = self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
+        table.line_ids.filtered(lambda l: l.category_id == self.peon).unlink()
+        data = wage_table_pdf.parse_pdf(build_pdf())
+        changes = table._l10n_pe_diff(data)
+        self.assertIn((self.peon.name, 'Jornal básico', None, 64.5), changes)
+        table._l10n_pe_update_from_data(data, URL)
+        self.assertEqual(len(table.line_ids), 3)
+
+    def test_wizard_back_returns_to_upload(self):
         self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
         wizard = self._wizard(source='file', pdf_file=base64.b64encode(build_pdf()))
-        with self.assertRaisesRegex(UserError, 'Ya existe'):
-            wizard.action_import()
+        wizard.action_import()
+        wizard.action_back()
+        self.assertEqual(wizard.state, 'upload')
+        self.assertFalse(wizard.existing_table_id)
+
+    def test_web_source_proposes_the_first_address(self):
+        with Form(self.env['l10n_pe.hr.construction.wage.import']) as form:
+            self.assertFalse(form.url)
+            form.source = 'url'
+            self.assertEqual(form.url, self.Table._l10n_pe_watched_urls()[0])
+            form.source = 'file'
+            self.assertFalse(form.url)
+            # Se termina en «Dirección web»: sin PDF, el formulario no guarda.
+            form.source = 'url'
+            self.assertTrue(form.url)
 
     def test_cron_imports_once_and_schedules_review(self):
         manager = self.env['res.users'].create({

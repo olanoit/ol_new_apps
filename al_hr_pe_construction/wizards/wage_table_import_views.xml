@@ -5,32 +5,68 @@
         <field name="model">l10n_pe.hr.construction.wage.import</field>
         <field name="arch" type="xml">
             <form string="Importar tabla del convenio">
-                <div class="alert alert-info" role="alert">
-                    Lee el PDF de la tabla salarial de CAPECO o de la FTCCP y
-                    crea la tabla <strong>archivada</strong>: revísela y
-                    actívela para que la planilla la use. Antes de crearla se
-                    comprueba que el CONAFOVICER, la pensión y el neto semanal
-                    que publica el convenio coincidan con los del módulo.
+                <field name="state" invisible="1"/>
+                <field name="has_changes" invisible="1"/>
+
+                <!-- Paso 1: origen del PDF -->
+                <div invisible="state != 'upload'">
+                    <div class="alert alert-info" role="alert">
+                        Lee el PDF de la tabla salarial de CAPECO o de la FTCCP.
+                        Antes de nada se comprueba que el CONAFOVICER, la pensión
+                        y el neto semanal que publica el convenio coincidan con
+                        los del módulo. Un convenio nuevo se crea
+                        <strong>archivado</strong> para revisarlo; si la vigencia
+                        ya existe, se muestran los cambios para actualizarla.
+                    </div>
+                    <group>
+                        <field name="source" widget="radio" options="{'horizontal': true}"/>
+                        <field name="pdf_file" filename="pdf_filename"
+                               invisible="source != 'file'"
+                               required="state == 'upload' and source == 'file'"/>
+                        <field name="pdf_filename" invisible="1"/>
+                        <field name="url" widget="url" invisible="source != 'url'"
+                               required="state == 'upload' and source == 'url'"
+                               placeholder="https://www.capeco.org/descargas/…/Remuneraciones.pdf"/>
+                        <field name="watch_url" invisible="source != 'url'"/>
+                    </group>
+                    <group string="Revisión mensual">
+                        <field name="watched_urls" nolabel="1" colspan="2"
+                               placeholder="Una dirección por línea"/>
+                    </group>
                 </div>
-                <group>
-                    <field name="source" widget="radio" options="{'horizontal': true}"/>
-                    <field name="pdf_file" filename="pdf_filename"
-                           invisible="source != 'file'" required="source == 'file'"/>
-                    <field name="pdf_filename" invisible="1"/>
-                    <field name="url" widget="url" invisible="source != 'url'"
-                           required="source == 'url'"
-                           placeholder="https://www.capeco.org/descargas/…/Remuneraciones.pdf"/>
-                    <field name="watch_url" invisible="source != 'url'"/>
-                </group>
-                <group string="Revisión mensual">
-                    <field name="watched_urls" nolabel="1" colspan="2"
-                           placeholder="Una dirección por línea"/>
-                </group>
+
+                <!-- Paso 2: la vigencia ya existe -->
+                <div invisible="state != 'confirm'">
+                    <div class="alert alert-warning" role="alert" invisible="not has_changes">
+                        Ya existe <field name="existing_table_id" class="d-inline fw-bold"/>
+                        con la misma vigencia. El PDF la cambiaría así; al
+                        actualizar, las boletas en borrador toman el jornal nuevo
+                        y las confirmadas conservan el suyo.
+                    </div>
+                    <div class="alert alert-success" role="alert" invisible="has_changes">
+                        La tabla existente ya coincide con el PDF: no hay nada que
+                        actualizar. Puede registrar igualmente la fuente en su
+                        historial.
+                    </div>
+                    <field name="changes_html" nolabel="1" invisible="not has_changes"/>
+                </div>
+
                 <footer>
                     <button name="action_import" type="object" string="Importar"
-                            class="btn-primary" data-hotkey="q"/>
+                            class="btn-primary" data-hotkey="q"
+                            invisible="state != 'upload'"/>
                     <button name="action_check_now" type="object"
-                            string="Revisar direcciones ahora" data-hotkey="w"/>
+                            string="Revisar direcciones ahora" data-hotkey="w"
+                            invisible="state != 'upload'"/>
+                    <button name="action_update_existing" type="object"
+                            string="Actualizar tabla existente" class="btn-primary"
+                            data-hotkey="q" invisible="state != 'confirm' or not has_changes"
+                            confirm="¿Actualizar los jornales de la tabla existente?"/>
+                    <button name="action_update_existing" type="object"
+                            string="Registrar en el historial" class="btn-primary"
+                            data-hotkey="q" invisible="state != 'confirm' or has_changes"/>
+                    <button name="action_back" type="object" string="Volver"
+                            data-hotkey="b" invisible="state != 'confirm'"/>
                     <button string="Cancelar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>

@@ -132,3 +132,8 @@ with Captura('al_hr_pe_construction') as c:
     c.clic('.o_al_import_wage_table_btn', ms=1500)
     c.texto('Dirección web')
     c.foto('16-importar-tabla-asistente', selector='.modal-content')
+
+    # 17. Segundo paso: la vigencia 2026 ya existe (sin vigilar la dirección)
+    c.page.locator('.modal-content input[type=checkbox]').first.uncheck()
+    c.clic('.modal-footer button:has-text("Importar")', ms=6000)
+    c.foto('17-importar-tabla-actualizar', selector='.modal-content')

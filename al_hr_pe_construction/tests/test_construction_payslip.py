@@ -288,6 +288,26 @@ class TestConstructionPayslip(TransactionCase):
                 self.assertEqual(round(salaries + deductions, 2), net)
                 self.assertAlmostEqual(net, published, delta=0.011)
 
+    def test_updating_the_table_refreshes_draft_payslips(self):
+        """Actualizar la tabla desde el PDF alcanza a las boletas en
+        borrador, pero no al jornal ajustado a mano."""
+        table = self.env.ref('al_hr_pe_construction.wage_table_2026')
+        draft = self._payslip(self._worker('OPE'))
+        manual = self._payslip(self._worker('OPE'))
+        manual.l10n_pe_daily_wage = 95.0
+        self.assertEqual(draft.l10n_pe_daily_wage, 89.30)
+        data = {'resolution': '', 'categories': {
+            'operario': {'daily_wage': 91.0, 'mobility': 8.60, 'buc_percent': 32.0},
+            'oficial': {'daily_wage': 69.75, 'mobility': 8.60, 'buc_percent': 30.0},
+            'peon': {'daily_wage': 62.80, 'mobility': 8.60, 'buc_percent': 30.0},
+        }}
+        changes = table._l10n_pe_update_from_data(data, 'prueba.pdf')
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(draft.l10n_pe_daily_wage, 91.0)
+        self.assertEqual(manual.l10n_pe_daily_wage, 95.0)
+        draft.compute_sheet()
+        self.assertEqual(self._line(draft, 'JOR'), 546.0)
+
     def test_afp_deducts_fund_commission_and_insurance(self):
         afp = self.env.ref('al_hr_pe.membership_AFP_INTEGRA')
         payslip = self._payslip(self._worker(

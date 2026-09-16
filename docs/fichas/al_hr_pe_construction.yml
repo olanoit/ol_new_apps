@@ -157,7 +157,8 @@ pasos:
     puntos:
       - "Antes de crearla recalcula el CONAFOVICER, la pensión y el neto semanal de cada categoría y los compara con los que publica el convenio: si uno no coincide al céntimo, no importa nada."
       - "La tabla se crea **archivada**, con la fuente en el historial: revise los jornales y actívela para que la planilla la use."
-      - Si ya existe una tabla nacional con la misma vigencia, activa o archivada, no crea otra.
+      - "Si ya existe una tabla nacional con la misma vigencia, activa o archivada, no crea otra: muestra los cambios (jornal, movilidad, BUC y resolución) y ofrece **Actualizar tabla existente**. Las boletas en borrador toman el jornal nuevo, salvo que se hubiera ajustado a mano; las confirmadas conservan el suyo."
+      - "Si la tabla ya coincide con el PDF, **Registrar en el historial** deja constancia de la fuente sin cambiar nada."
       - "Si el convenio aplica un CONAFOVICER distinto del de alguna compañía, lo avisa en el historial de la tabla."
     imagen: screenshots/15-importar-tabla-boton.png
 
@@ -172,9 +173,19 @@ pasos:
       el acto.
     puntos:
       - Vienen cargadas las direcciones de la tabla 2026 de CAPECO y de la FTCCP; como cambian cada año, añada la del convenio nuevo cuando se publique.
-      - "Al importar por dirección web, «Revisar esta dirección cada mes» la añade a la lista."
+      - "Al elegir **Dirección web** se propone la primera dirección de la lista; «Revisar esta dirección cada mes» añade a la lista la que se importe."
     imagen: screenshots/16-importar-tabla-asistente.png
-    pie: Asistente con las dos direcciones de la tabla 2026.
+    pie: Con origen Dirección web se propone la dirección de CAPECO.
+
+  - titulo: Actualizar una tabla ya cargada
+    ruta: Importar tabla del convenio ▸ Importar
+    texto: >-
+      Si el PDF trae una vigencia que ya existe, el asistente no crea otra
+      tabla: pasa a un segundo paso con la tabla existente y los cambios que
+      haría, y **Actualizar tabla existente** los aplica tras confirmar. Si
+      no hay diferencias, **Registrar en el historial** solo anota la fuente.
+    imagen: screenshots/17-importar-tabla-actualizar.png
+    pie: El PDF de CAPECO 2026 contra la tabla cargada con el módulo, sin diferencias.
 
   - titulo: Categorías
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Categorías
@@ -315,7 +326,8 @@ campos:
     campos:
       - [Origen, "Archivo PDF o Dirección web.", Archivo PDF, Muestra el campo que corresponde]
       - [PDF del convenio, PDF de CAPECO o de la FTCCP., Vacío, "Obligatorio con origen Archivo PDF"]
-      - [Dirección del PDF, Enlace directo al PDF., Vacío, "Obligatorio con origen Dirección web"]
+      - [Dirección del PDF, Enlace directo al PDF., "Primera dirección de la revisión mensual", "Obligatorio con origen Dirección web"]
+      - [Actualizar tabla existente, "Botón del segundo paso cuando la vigencia ya existe; muestra los cambios antes.", "—", "Actualiza jornales, movilidad, BUC y resolución sin cambiar si la tabla está activa"]
       - [Revisar esta dirección cada mes, Añade la dirección a la revisión mensual., Marcado, "Solo con origen Dirección web"]
       - [Direcciones que se revisan cada mes, "Una por línea.", "Tabla 2026 de CAPECO y FTCCP", "Las descarga la acción planificada"]
   - grupo: Jornales por categoría
@@ -544,6 +556,11 @@ faq:
       Porque llega archivada a propósito: un error de lectura cambiaría el
       jornal de toda la planilla. Ábrala con el filtro «Archivadas (por
       revisar)», compruebe los jornales y desarchívela.
+  - pregunta: El convenio ya estaba cargado, ¿cómo lo corrijo con el PDF?
+    respuesta: >-
+      Importe el PDF igual: al encontrar la misma vigencia, el asistente
+      muestra qué cambiaría y el botón Actualizar tabla existente lo aplica.
+      Las boletas confirmadas no cambian.
   - pregunta: ¿Por qué no se importó el PDF?
     respuesta: >-
       Porque no trae la vigencia o los datos de las tres categorías, o porque
@@ -583,6 +600,7 @@ novedades:
     cambios:
       - "Botón Importar tabla del convenio: lee el PDF de CAPECO o de la FTCCP, lo valida contra los importes semanales publicados y crea la tabla archivada para revisión."
       - Acción planificada mensual que busca convenios nuevos y crea una actividad para los responsables de planillas.
+      - "Si la vigencia ya existe, el asistente muestra los cambios y permite actualizar la tabla; con origen Dirección web propone la dirección conocida."
       - "Historial en las tablas salariales, con la fuente del PDF y el aviso si el CONAFOVICER del convenio difiere del de la compañía."
   - version: 7.20260816
     fecha: 18/08/2026

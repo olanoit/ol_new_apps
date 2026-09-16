@@ -127,12 +127,8 @@ class L10nPeHrConstructionWageTable(models.Model):
         return custom_round(base + dso + buc + mobility - conafovicer - pension)
 
     @api.model
-    def _l10n_pe_create_from_pdf(self, content, source):
-        """Crea la tabla archivada desde el PDF.
-
-        Devuelve ``(tabla, creada)``. Si ya hay una tabla nacional con la
-        misma vigencia —activa o archivada— la devuelve sin tocarla.
-        """
+    def _l10n_pe_read_pdf(self, content, source):
+        """Datos del PDF, ya comprobados contra los cálculos del módulo."""
         try:
             data = wage_table_pdf.parse_pdf(content)
         except wage_table_pdf.WageTablePdfError as error:
@@ -145,27 +141,50 @@ class L10nPeHrConstructionWageTable(models.Model):
                 'La tabla de %(source)s no cuadra con los cálculos del '
                 'módulo; no se importó:\n%(errors)s',
                 source=source, errors='\n'.join(errors)))
+        return data
 
-        existing = self.with_context(active_test=False).search([
+    @api.model
+    def _l10n_pe_find_existing(self, data):
+        """Tabla nacional con la misma vigencia, activa o archivada."""
+        return self.with_context(active_test=False).search([
             ('company_id', '=', False),
             ('date_from', '=', data['date_from']),
             ('date_to', '=', data['date_to']),
         ], limit=1)
+
+    @api.model
+    def _l10n_pe_line_values(self, category, values):
+        return {
+            'daily_wage': values['daily_wage'],
+            'mobility_amount': values['mobility'],
+            # Vacío = el de la categoría; solo se fija si el convenio lo
+            # cambia.
+            'buc_percent': (0.0 if values['buc_percent'] == category.buc_percent
+                            else values['buc_percent']),
+        }
+
+    @api.model
+    def _l10n_pe_create_from_pdf(self, content, source):
+        """Crea la tabla archivada desde el PDF.
+
+        Devuelve ``(tabla, creada)``. Si ya hay una tabla nacional con la
+        misma vigencia —activa o archivada— la devuelve sin tocarla.
+        """
+        data = self._l10n_pe_read_pdf(content, source)
+        existing = self._l10n_pe_find_existing(data)
         if existing:
             return existing, False
+        return self._l10n_pe_create_from_data(data, source), True
 
+    @api.model
+    def _l10n_pe_create_from_data(self, data, source):
         years = sorted({data['date_from'].year, data['date_to'].year})
         lines = []
         for key, values in data['categories'].items():
             category = self.env.ref(CATEGORY_XMLIDS[key])
             lines.append(Command.create({
                 'category_id': category.id,
-                'daily_wage': values['daily_wage'],
-                'mobility_amount': values['mobility'],
-                # Vacío = el de la categoría; solo se fija si el convenio
-                # lo cambia.
-                'buc_percent': (0.0 if values['buc_percent'] == category.buc_percent
-                                else values['buc_percent']),
+                **self._l10n_pe_line_values(category, values),
             }))
         table = self.create({
             'name': _('Convención colectiva %s', '-'.join(map(str, years))),
@@ -179,7 +198,83 @@ class L10nPeHrConstructionWageTable(models.Model):
                       'y active la tabla para que la planilla la use.'),
         })
         table._l10n_pe_post_import_message(data)
-        return table, True
+        return table
+
+    # ------------------------------------------------------------------
+    # Actualización de una tabla existente
+    # ------------------------------------------------------------------
+    def _l10n_pe_diff(self, data):
+        """Cambios que el PDF haría en esta tabla.
+
+        Lista de ``(categoría, concepto, valor actual, valor nuevo)``; una
+        categoría que la tabla no tiene sale con valor actual vacío.
+        """
+        self.ensure_one()
+        labels = {
+            'daily_wage': _('Jornal básico'),
+            'mobility_amount': _('Movilidad'),
+            'buc_percent': _('BUC %'),
+        }
+        changes = []
+        for key, values in data['categories'].items():
+            category = self.env.ref(CATEGORY_XMLIDS[key])
+            line = self.line_ids.filtered(lambda l: l.category_id == category)[:1]
+            for field, new in self._l10n_pe_line_values(category, values).items():
+                current = line[field] if line else None
+                if field == 'buc_percent':
+                    # Vacío y el de la categoría son lo mismo.
+                    current = (current or category.buc_percent) if line else None
+                    new = new or category.buc_percent
+                if current is None or abs(current - new) > 0.001:
+                    changes.append((category.name, labels[field], current, new))
+        if data['resolution'] and data['resolution'] != self.resolution:
+            changes.append(('', _('Resolución'), self.resolution or '', data['resolution']))
+        return changes
+
+    def _l10n_pe_update_from_data(self, data, source):
+        """Aplica el PDF a esta tabla sin cambiar si está activa o archivada.
+
+        Las boletas en borrador que usan una línea cambiada toman el jornal
+        nuevo, salvo que se hubiera ajustado a mano; las confirmadas no se
+        tocan: su jornal quedó congelado al calcularse.
+        """
+        self.ensure_one()
+        changes = self._l10n_pe_diff(data)
+        Payslip = self.env['hr.payslip']
+        for key, values in data['categories'].items():
+            category = self.env.ref(CATEGORY_XMLIDS[key])
+            vals = self._l10n_pe_line_values(category, values)
+            line = self.line_ids.filtered(lambda l: l.category_id == category)[:1]
+            if not line:
+                self.write({'line_ids': [Command.create({'category_id': category.id, **vals})]})
+                continue
+            old_wage = line.daily_wage
+            line.write(vals)
+            if abs(old_wage - line.daily_wage) > 0.001:
+                Payslip.search([
+                    ('l10n_pe_wage_line_id', '=', line.id),
+                    ('state', '=', 'draft'),
+                    ('l10n_pe_daily_wage', '=', old_wage),
+                ]).write({'l10n_pe_daily_wage': line.daily_wage})
+        vals = {'source_url': source}
+        if data['resolution']:
+            vals['resolution'] = data['resolution']
+        self.write(vals)
+
+        if changes:
+            rows = Markup('').join(
+                Markup('<li>%s %s: %s → %s</li>') % (
+                    category, label,
+                    '—' if current in (None, '') else current, new)
+                for category, label, current, new in changes)
+            body = Markup('<p>%s</p><ul>%s</ul>') % (
+                _('Tabla actualizada desde %s. Las boletas confirmadas '
+                  'conservan su jornal.', source), rows)
+        else:
+            body = Markup('<p>%s</p>') % _(
+                'Tabla contrastada con %s: sin cambios.', source)
+        self.message_post(body=body)
+        return changes
 
     def _l10n_pe_post_import_message(self, data):
         self.ensure_one()
