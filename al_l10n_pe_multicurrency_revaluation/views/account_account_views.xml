@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_form_revaluation_rate_type" model="ir.ui.view">
+        <field name="name">account.account.form.inherit.al.multicurrency.revaluation</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='accounting']" position="inside">
+                <group string="Ganancias/pérdidas no realizadas (PE)"
+                       name="l10n_pe_revaluation"
+                       invisible="not l10n_pe_revaluation_rate_visible">
+                    <field name="l10n_pe_revaluation_rate_visible" invisible="1"/>
+                    <field name="l10n_pe_revaluation_rate_type"
+                           widget="radio" options="{'horizontal': true}"
+                           required="l10n_pe_revaluation_rate_visible"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_list_revaluation_rate_type" model="ir.ui.view">
+        <field name="name">account.account.list.inherit.al.multicurrency.revaluation</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <field name="account_type" position="after">
+                <field name="l10n_pe_revaluation_rate_type" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

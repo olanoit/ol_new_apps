@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Atajo en la app Perú; el menú nativo de Contabilidad se conserva. -->
+    <menuitem id="menu_pe_multicurrency_revaluation"
+              name="Ganancias/pérdidas no realizadas"
+              parent="al_l10n_pe_currency.menu_pe_exchange_rate"
+              action="account_reports.action_account_report_multicurrency_revaluation"
+              groups="account.group_account_user"
+              sequence="40"/>
+</odoo>

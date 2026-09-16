@@ -1,0 +1,162 @@
+titulo: T.C. compra/venta en ganancias y pérdidas no realizadas
+subtitulo: >-
+  Cada cuenta en moneda extranjera se revalúa con el tipo de cambio SUNAT que
+  le corresponde —compra o venta— en el informe de ganancias y pérdidas no
+  realizadas, y el T.C. aplicado queda a la vista en cada línea y en el
+  asiento de ajuste.
+categoria: Localización Perú · Contabilidad
+etiquetas: [T.C. compra, T.C. venta, Ganancias/pérdidas no realizadas, Columna T.C., Asiento de ajuste]
+
+destacados_intro: >-
+  El informe nativo de Enterprise revalúa todo con una sola tasa por moneda;
+  este módulo le da a cada cuenta la suya.
+destacados:
+  - icono: "C/V"
+    titulo: Compra o venta por cuenta
+    texto: >-
+      Cuentas por cobrar y por pagar, y cuentas con moneda extranjera, indican
+      con qué tipo de cambio SUNAT se revalúan.
+  - icono: "T.C."
+    titulo: Columna con el T.C. aplicado
+    texto: >-
+      Cada línea muestra el tipo de cambio en soles por unidad, con tres
+      decimales; los totales que mezclan tipos quedan en blanco.
+  - icono: "S/"
+    titulo: Tipo de cambio a la peruana
+    texto: >-
+      La cabecera de cada moneda se lee «USD (1 USD = S/ 3.400)», no «1 PEN =
+      0.294118 USD».
+  - icono: "✓"
+    titulo: Asiento que cita su tasa
+    texto: >-
+      Cada provisión del asiento de ajuste indica el T.C. con el que se
+      calculó su importe.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    SUNAT publica dos tipos de cambio y el Reglamento de la Ley del Impuesto a
+    la Renta (art. 34) valora los **activos** al T.C. **compra** y los
+    **pasivos** al T.C. **venta**. El informe **Ganancias/pérdidas de moneda
+    no realizadas** de Odoo Enterprise, en cambio, usa una sola tasa por
+    moneda para todas las cuentas.
+
+
+    Este módulo permite elegir la tasa en cada cuenta y la aplica en el
+    informe y en el asiento de ajuste. Las tasas de compra y venta son las
+    que carga el módulo de tipo de cambio de la suite desde SUNAT, BCRP u
+    otras fuentes.
+  nota: >-
+    **Provisión, no cierre.** El asiento de este informe se revierte al día
+    siguiente, como en el estándar de Odoo. El ajuste definitivo del art. 61
+    de la LIR lo hace el módulo **Cierre de tipo de cambio**; los dos pueden
+    instalarse juntos.
+
+pasos_titulo: Paso a paso
+pasos_intro: >-
+  Con la compañía de demostración peruana y el tipo de cambio de USD al
+  31/08/2026 (S/ 3.400).
+pasos:
+  - seccion: Configuración
+    texto: Una sola vez por cuenta.
+  - titulo: Elegir el tipo de cambio de la cuenta
+    ruta: Contabilidad ▸ Configuración ▸ Plan de cuentas ▸ cuenta ▸ pestaña Contabilidad
+    texto: >-
+      En el grupo **Ganancias/pérdidas no realizadas (PE)** marque **Compra**
+      o **Venta**. El grupo solo aparece —y es obligatorio— en las cuentas por
+      cobrar y por pagar y en las cuentas con moneda extranjera de compañías
+      peruanas; las de ingresos y gastos no lo muestran porque el informe no
+      las revalúa.
+    puntos:
+      - "La columna **T.C. en ganancias/pérdidas no realizadas** se puede añadir a la lista del plan de cuentas."
+  - titulo: Tener el tipo de cambio de compra y venta del día
+    ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
+    texto: >-
+      El informe toma la **Compra** o la **Venta** del registro vigente a su
+      fecha. Si ese día no tiene tipo de cambio registrado, la cuenta se
+      revalúa con el tipo de cambio genérico del informe.
+
+  - seccion: Informe
+    texto: El informe nativo, con el T.C. de cada cuenta.
+  - titulo: Revisar las ganancias y pérdidas no realizadas
+    ruta: Perú ▸ Tipo de cambio ▸ Ganancias/pérdidas no realizadas
+    texto: >-
+      Es el mismo informe de **Contabilidad ▸ Informes ▸ Monedas no realizadas**. Cada cuenta se
+      revalúa con su tipo de cambio y la nueva columna **T.C.** muestra el
+      aplicado. El total de la moneda suma todos los ajustes; su T.C. queda en
+      blanco si bajo él hay cuentas con tipos de cambio distintos.
+    puntos:
+      - "Cabecera de la moneda: «USD (1 USD = S/ 3.400)»."
+      - "Si cambia la tasa en el filtro del informe, solo afecta a las cuentas sin tipo de cambio peruano."
+
+  - seccion: Asiento de ajuste
+    texto: La provisión de fin de mes.
+  - titulo: Generar el asiento de ajuste
+    ruta: Ganancias/pérdidas no realizadas ▸ botón Asiento de ajuste
+    texto: >-
+      El asistente nativo genera una provisión por cuenta y moneda, con su
+      contrapartida de ingreso o gasto, y la revierte en la fecha indicada.
+      Los importes son los del informe —ya con el tipo de cambio de cada
+      cuenta— y cada provisión se etiqueta **Provisión de USD (T.C. S/
+      3.720)**.
+
+campos:
+  - grupo: Cuenta contable
+    ruta: Contabilidad ▸ Configuración ▸ Plan de cuentas ▸ pestaña Contabilidad
+    campos:
+      - [T.C. en ganancias/pérdidas no realizadas, "Compra o Venta.", Vacío, "Obligatorio cuando se muestra; sin tasa del día usa la genérica"]
+  - grupo: Informe Ganancias/pérdidas de moneda no realizadas
+    ruta: Perú ▸ Tipo de cambio ▸ Ganancias/pérdidas no realizadas
+    campos:
+      - [T.C., "Tipo de cambio aplicado, en soles por unidad.", "—", "En blanco si el total mezcla tipos de cambio"]
+      - [Cabecera de moneda, "«USD (1 USD = S/ 3.400)».", "—", "Muestra la tasa genérica del informe"]
+      - [Asiento de ajuste, Etiqueta de cada provisión., "—", "Cita el T.C. de la cuenta"]
+
+ejemplos:
+  - titulo: Dos cuentas con tipos de cambio distintos
+    texto: >-
+      USD a **3,700 venta** y **3,720 compra**. La cuenta por pagar está en
+      compra y la cuenta por cobrar en venta; ambas se registraron a 3,700.
+    tabla:
+      - [Cuenta, T.C., Saldo USD, Saldo registrado, Saldo actual, Ajuste]
+      - [421201 Por pagar ME, "S/ 3.720", "-100,00", "S/ -370,00", "S/ -372,00", "S/ -2,00"]
+      - [121201 Por cobrar ME, "S/ 3.700", "250,00", "S/ 925,00", "S/ 925,00", "S/ 0,00"]
+      - ["**USD (1 USD = S/ 3.700)**", "", "150,00", "S/ 555,00", "S/ 553,00", "S/ -2,00"]
+    nota: >-
+      El asiento de ajuste lleva «Provisión de USD (T.C. S/ 3.720)» con
+      S/ 2,00 al haber de la 421201 y S/ 2,00 al debe de la cuenta de gasto.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere Odoo Enterprise y el módulo de tipo de cambio Perú).
+  - Cargue el tipo de cambio de compra y venta a la fecha del informe.
+  - Elija Compra o Venta en las cuentas por cobrar, por pagar y en moneda extranjera.
+requisitos_nota: >-
+  Se apoya en el informe de ganancias y pérdidas no realizadas de Odoo
+  Enterprise.
+
+faq:
+  - pregunta: ¿Qué pasa si una cuenta no tiene tipo de cambio elegido?
+    respuesta: >-
+      Se revalúa con el tipo de cambio genérico del informe, igual que sin el
+      módulo.
+  - pregunta: ¿Y si el día no tiene tipo de cambio de compra o venta?
+    respuesta: >-
+      Esa moneda usa el tipo de cambio genérico también en las cuentas
+      configuradas.
+  - pregunta: ¿Por qué el total de la moneda no muestra T.C.?
+    respuesta: >-
+      Porque bajo él hay cuentas revaluadas con tipos de cambio distintos, y
+      mostrar uno solo sería engañoso.
+  - pregunta: ¿Sustituye al cierre de tipo de cambio?
+    respuesta: >-
+      No. Este informe genera una provisión que se revierte al día siguiente;
+      el cierre de tipo de cambio genera el ajuste definitivo.
+  - pregunta: ¿Cambia algo en compañías de otros países?
+    respuesta: No. El informe queda como el nativo, sin la columna T.C.
+
+novedades:
+  - fecha: 16/09/2026
+    cambios:
+      - "Primera versión para Odoo 19: T.C. compra o venta por cuenta, columna T.C., cabecera en soles por unidad y etiqueta del asiento de ajuste."
+
+relacionados: [al_l10n_pe_currency, al_l10n_pe_exchange_closure, al_account_base]
