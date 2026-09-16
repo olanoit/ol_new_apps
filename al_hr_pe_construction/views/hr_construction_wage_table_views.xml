@@ -4,12 +4,13 @@
         <field name="name">l10n_pe.hr.construction.wage.table.list</field>
         <field name="model">l10n_pe.hr.construction.wage.table</field>
         <field name="arch" type="xml">
-            <list string="Tablas salariales">
+            <list string="Tablas salariales" js_class="construction_wage_table_list">
                 <field name="name"/>
                 <field name="resolution"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="source_url" optional="hide"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>
@@ -21,6 +22,9 @@
         <field name="arch" type="xml">
             <form string="Tabla salarial">
                 <sheet>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <field name="active" invisible="1"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="Convención colectiva 2026"/></h1>
@@ -34,6 +38,7 @@
                         <group>
                             <field name="date_from"/>
                             <field name="date_to"/>
+                            <field name="source_url" widget="url" invisible="not source_url"/>
                         </group>
                     </group>
                     <notebook>
@@ -64,7 +69,21 @@
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
+        </field>
+    </record>
+
+    <record id="view_construction_wage_table_search" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.table.search</field>
+        <field name="model">l10n_pe.hr.construction.wage.table</field>
+        <field name="arch" type="xml">
+            <search string="Tablas salariales">
+                <field name="name"/>
+                <field name="resolution"/>
+                <filter name="archived" string="Archivadas (por revisar)"
+                        domain="[('active', '=', False)]"/>
+            </search>
         </field>
     </record>
 
@@ -74,6 +93,10 @@
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Cargue la tabla del convenio vigente</p>
+            <p>
+                Use «Importar tabla del convenio» para leerla del PDF de
+                CAPECO o de la FTCCP.
+            </p>
             <p>
                 El jornal de cada trabajador sale de aquí según su
                 categoría y la fecha. Cuando entre un convenio nuevo,

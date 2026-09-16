@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: una actualización no debe reactivar la acción si el
+         usuario la desactivó. -->
+    <data noupdate="1">
+        <!-- Mensual: el convenio se renegocia una vez al año, pero la fecha
+             de publicación varía (en 2026 salió en diciembre). Las
+             direcciones se configuran en el asistente de importación. -->
+        <record id="ir_cron_construction_wage_tables" model="ir.cron">
+            <field name="name">Construcción civil: buscar tabla salarial nueva</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_wage_table"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_l10n_pe_check_wage_tables()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

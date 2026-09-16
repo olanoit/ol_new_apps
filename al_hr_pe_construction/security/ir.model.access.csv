@@ -13,3 +13,4 @@ access_conafovicer_user,conafovicer user,model_l10n_pe_hr_conafovicer,hr_payroll
 access_conafovicer_manager,conafovicer manager,model_l10n_pe_hr_conafovicer,hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_conafovicer_line_user,conafovicer line user,model_l10n_pe_hr_conafovicer_line,hr_payroll.group_hr_payroll_user,1,1,1,1
 access_conafovicer_line_manager,conafovicer line manager,model_l10n_pe_hr_conafovicer_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_construction_wage_import_manager,wage import manager,model_l10n_pe_hr_construction_wage_import,hr_payroll.group_hr_payroll_manager,1,1,1,1

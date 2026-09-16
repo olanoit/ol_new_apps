@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_wage_import_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.import.form</field>
+        <field name="model">l10n_pe.hr.construction.wage.import</field>
+        <field name="arch" type="xml">
+            <form string="Importar tabla del convenio">
+                <div class="alert alert-info" role="alert">
+                    Lee el PDF de la tabla salarial de CAPECO o de la FTCCP y
+                    crea la tabla <strong>archivada</strong>: revísela y
+                    actívela para que la planilla la use. Antes de crearla se
+                    comprueba que el CONAFOVICER, la pensión y el neto semanal
+                    que publica el convenio coincidan con los del módulo.
+                </div>
+                <group>
+                    <field name="source" widget="radio" options="{'horizontal': true}"/>
+                    <field name="pdf_file" filename="pdf_filename"
+                           invisible="source != 'file'" required="source == 'file'"/>
+                    <field name="pdf_filename" invisible="1"/>
+                    <field name="url" widget="url" invisible="source != 'url'"
+                           required="source == 'url'"
+                           placeholder="https://www.capeco.org/descargas/…/Remuneraciones.pdf"/>
+                    <field name="watch_url" invisible="source != 'url'"/>
+                </group>
+                <group string="Revisión mensual">
+                    <field name="watched_urls" nolabel="1" colspan="2"
+                           placeholder="Una dirección por línea"/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Importar"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button name="action_check_now" type="object"
+                            string="Revisar direcciones ahora" data-hotkey="w"/>
+                    <button string="Cancelar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_wage_import" model="ir.actions.act_window">
+        <field name="name">Importar tabla del convenio</field>
+        <field name="res_model">l10n_pe.hr.construction.wage.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

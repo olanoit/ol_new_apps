@@ -64,6 +64,7 @@ class L10nPeHrConstructionWageTable(models.Model):
     """Tabla salarial de una convención colectiva."""
     _name = 'l10n_pe.hr.construction.wage.table'
     _description = 'Tabla salarial de construcción civil'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_from desc'
     _check_company_auto = True
 
@@ -83,7 +84,11 @@ class L10nPeHrConstructionWageTable(models.Model):
         'l10n_pe.hr.construction.wage.line', 'table_id',
         string='Jornales por categoría')
     note = fields.Text(string='Notas')
-    active = fields.Boolean(default=True)
+    source_url = fields.Char(
+        string='Fuente',
+        help='PDF del que se importó la tabla (dirección web o nombre del '
+             'archivo subido).')
+    active = fields.Boolean(default=True, tracking=True)
 
     @api.constrains('date_from', 'date_to')
     def _check_dates(self):

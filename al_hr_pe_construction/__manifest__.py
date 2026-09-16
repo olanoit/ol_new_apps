@@ -76,6 +76,18 @@ Fase 6 — boleta del régimen y aportes del empleador:
   SCTR se paga por quien está expuesto, no por toda la planilla.
 * Total de descuentos y neto a pagar del régimen.
 
+Importación de la tabla del convenio:
+
+* Botón **Importar tabla del convenio** en la lista de tablas salariales:
+  lee el PDF de CAPECO o de la FTCCP (subido o por dirección web).
+* La tabla se crea **archivada** y solo si el CONAFOVICER, la pensión y el
+  neto semanal que publica el convenio coinciden al céntimo con los que
+  calcula el módulo; se revisa y se activa a mano.
+* Acción planificada mensual que revisa las direcciones configuradas y,
+  ante un convenio con vigencia nueva, lo importa y crea una actividad a
+  los responsables de planillas. Avisa si el convenio aplica otra tasa de
+  CONAFOVICER que la de la compañía.
+
 Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -83,7 +95,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '8.20260816',
+    'version': '9.20260816',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden
@@ -96,6 +108,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'data/hr_construction_bonus_data.xml',
         'data/hr_construction_wage_table_data.xml',
         'data/hr_construction_structure_data.xml',
+        'data/hr_construction_cron.xml',
         'views/hr_construction_category_views.xml',
         'views/hr_construction_wage_table_views.xml',
         'views/hr_construction_bonus_views.xml',
@@ -104,8 +117,16 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'views/res_company_views.xml',
         'views/menu.xml',
         'views/hr_conafovicer_views.xml',
+        'wizards/wage_table_import_views.xml',
         'report/hr_construction_voucher_report.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'al_hr_pe_construction/static/src/js/wage_table_list_view.js',
+            'al_hr_pe_construction/static/src/xml/wage_table_list_buttons.xml',
+        ],
+    },
+    'external_dependencies': {'python': ['requests']},
     'installable': True,
     'application': False,
 }

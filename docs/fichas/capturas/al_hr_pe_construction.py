@@ -121,3 +121,14 @@ with Captura('al_hr_pe_construction') as c:
     ancho(c, 1760, 1000)
     c.abrir_registro('l10n_pe.hr.conafovicer', 178, ms=2000)
     c.foto('14-conafovicer', selector=FORM)
+
+    # --- Importar tabla del convenio -------------------------------------
+    # 15. Lista de tablas salariales con el botón de importación
+    ancho(c, 1440, 900)
+    c.abrir_accion('al_hr_pe_construction.action_construction_wage_table', ms=2000)
+    c.foto('15-importar-tabla-boton')
+
+    # 16. Asistente con origen «Dirección web» y la revisión mensual
+    c.clic('.o_al_import_wage_table_btn', ms=1500)
+    c.texto('Dirección web')
+    c.foto('16-importar-tabla-asistente', selector='.modal-content')

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- v19: template standalone (ver al_hr_pe_import/static/src/xml/hr_salary_rule_list_buttons.xml) -->
+    <t t-name="al_hr_pe_construction.WageTableListView.Buttons">
+        <button t-if="canImportWageTable" type="button"
+                class="btn btn-secondary o_al_import_wage_table_btn"
+                t-on-click="() => this.onClickImportWageTable()">
+            <i class="fa fa-file-pdf-o me-1" role="img"
+               aria-label="PDF" title="PDF"/>
+            Importar tabla del convenio
+        </button>
+    </t>
+
+</templates>
