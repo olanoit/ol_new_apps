@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Peru Feriados',
+    'name': 'Planillas Perú - Feriados (AL)',
     'summary': "Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.",
     'description': """Peru 2026-2035 — Odoo HR
 
