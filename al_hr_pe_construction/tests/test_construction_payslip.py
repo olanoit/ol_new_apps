@@ -260,6 +260,34 @@ class TestConstructionPayslip(TransactionCase):
                 self.assertEqual(self._line(payslip, 'ONP'), amount)
                 self.assertEqual(self._line(payslip, 'A_JUB'), 0.0)
 
+    def test_weekly_net_against_the_official_table(self):
+        """Neto semanal sin beneficios sociales, contra el del convenio.
+
+        El convenio publica 732.10 (operario), 575.84 (oficial) y 523.60
+        (peón), pero no suma sus propias columnas: al operario le imprime
+        848.16 de salarios y 116.05 de descuentos, que dan 732.11. Su neto
+        sale de redondear una sola vez los componentes sin redondear
+        (848.156 − 12.502 − 103.5523). La boleta redondea cada concepto,
+        como se declara en la PLAME, y su neto es la suma exacta de sus
+        líneas: un céntimo más en operario y peón, igual en el oficial.
+        """
+        onp = self.env.ref('al_hr_pe.membership_ONP')
+        expected = {
+            #      boleta   convenio
+            'OPE': (732.11, 732.10),
+            'OFI': (575.84, 575.84),
+            'PEO': (523.61, 523.60),
+        }
+        for code, (net, published) in expected.items():
+            with self.subTest(categoria=code):
+                payslip = self._payslip(
+                    self._worker(code, membership_id=onp.id))
+                salaries = sum(self._line(payslip, rule)
+                               for rule in ('JOR', 'DSO', 'BUC', 'MOV'))
+                deductions = self._line(payslip, 'ONP') + self._line(payslip, 'CONAF')
+                self.assertEqual(round(salaries + deductions, 2), net)
+                self.assertAlmostEqual(net, published, delta=0.011)
+
     def test_afp_deducts_fund_commission_and_insurance(self):
         afp = self.env.ref('al_hr_pe.membership_AFP_INTEGRA')
         payslip = self._payslip(self._worker(
