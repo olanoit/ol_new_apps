@@ -110,6 +110,12 @@ class TestDetractionCheck(TransactionCase):
                           return_value=page or build_page()):
             return self.Check._l10n_pe_check(**kwargs)
 
+    def _drop_codes(self, *codes):
+        """El módulo ya trae todos los códigos de la página de ejemplo;
+        sin algunos se prueba el estado «Nuevo en SUNAT»."""
+        for code in codes:
+            self.env.ref('al_l10n_pe_detraction.detraction_%s' % code).unlink()
+
     @staticmethod
     def _line(check, code):
         return check.line_ids.filtered(lambda l: l.code == code)
@@ -148,6 +154,7 @@ class TestDetractionCheck(TransactionCase):
     # Comparación
     # ------------------------------------------------------------------
     def test_compare_statuses(self):
+        self._drop_codes('007', '041')
         self.dtype_012.percentage = 10.0
         check = self._check()
         self.assertEqual(self._line(check, '037').status, 'match')
@@ -165,14 +172,18 @@ class TestDetractionCheck(TransactionCase):
         self.assertEqual(check.pending_count, 3)
 
     def test_catalog_matches_sunat(self):
-        """Con el catálogo del módulo, SUNAT solo aporta códigos nuevos."""
+        """El catálogo del módulo ya no tiene diferencias con SUNAT."""
         check = self._check()
-        self.assertFalse(check.line_ids.filtered(lambda l: l.status == 'rate_diff'))
+        self.assertEqual(check.difference_count, 0)
+        self.assertEqual(self._line(check, '041').status, 'match')
+        self.assertEqual(self._line(check, '007').type_id,
+                         self.env.ref('al_l10n_pe_detraction.detraction_007'))
 
     # ------------------------------------------------------------------
     # Aplicación
     # ------------------------------------------------------------------
     def test_apply_updates_rate_and_products(self):
+        self._drop_codes('007', '041')
         self.dtype_012.percentage = 10.0
         product = self.env['product.template'].create({
             'name': 'Servicio de intermediación DEMO',
@@ -189,6 +200,7 @@ class TestDetractionCheck(TransactionCase):
         self.assertIn('012', check.message_ids[:1].body)
 
     def test_apply_creates_new_codes(self):
+        self._drop_codes('007', '041')
         check = self._check()
         self._line(check, '007').to_apply = True
         self._line(check, '041').to_apply = True
@@ -202,6 +214,7 @@ class TestDetractionCheck(TransactionCase):
         self.assertEqual(lead.percentage, 15.0)
 
     def test_apply_needs_a_marked_line(self):
+        self._drop_codes('041')
         check = self._check()
         with self.assertRaisesRegex(UserError, 'Marque'):
             check.action_apply()
@@ -224,6 +237,7 @@ class TestDetractionCheck(TransactionCase):
         before = self.Check.search_count([])
         with patch.object(L10nPeDetractionCheck, '_l10n_pe_download',
                           return_value=build_page()):
+            self._drop_codes('041')
             self.Check._cron_l10n_pe_check_sunat()
             self.Check._cron_l10n_pe_check_sunat()
             self.assertEqual(self.Check.search_count([]), before + 1, 'sin cambios no repite')

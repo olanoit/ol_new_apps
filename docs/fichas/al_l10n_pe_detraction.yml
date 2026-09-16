@@ -16,7 +16,7 @@ destacados:
   - icono: "54"
     titulo: Catálogo 54 administrable
     texto: >-
-      26 códigos precargados con porcentaje y monto mínimo propios (S/ 700,
+      32 códigos precargados con porcentaje y monto mínimo propios (S/ 700,
       S/ 400 en transporte, ½ UIT en el Anexo 1). Cambiar un porcentaje y
       actualizar los productos vinculados es un botón.
   - icono: "S/"
@@ -150,7 +150,7 @@ pasos:
   - titulo: Revisar el catálogo 54
     ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT)
     texto: >-
-      El catálogo llega cargado con 26 códigos: **Código**, **Descripción**,
+      El catálogo llega cargado con 32 códigos: **Código**, **Descripción**,
       **Porcentaje (%)**, **Monto mínimo (S/)** y cuántos productos usan cada
       tipo. El menú lo ven los administradores de contabilidad.
     puntos:
@@ -227,7 +227,7 @@ pasos:
       - "La acción planificada **Detracciones: contrastar el catálogo con SUNAT** lo hace cada mes; solo guarda un contraste —con una actividad para los administradores de contabilidad— cuando cambian las diferencias."
       - "Los cambios de porcentaje y monto mínimo quedan en el historial del tipo de detracción."
     imagen: screenshots/16-contraste-sunat.png
-    pie: "Contraste del 16/09/2026: los 26 porcentajes coinciden y SUNAT lista seis códigos que el catálogo no trae."
+    pie: "Contraste del 16/09/2026, antes de aplicar: los 26 porcentajes coinciden y SUNAT lista seis códigos nuevos (007, 011, 016, 023, 032 y 041), que ya vienen en el catálogo."
 
   - seccion: Ventas
     texto: El cliente retiene la detracción y la deposita en la cuenta de la empresa.
@@ -466,7 +466,7 @@ asientos:
 funcionalidades:
   - grupo: Catálogo y productos
     items:
-      - Catálogo 54 con 26 códigos, código único, porcentaje entre 0 y 100, monto mínimo y notas.
+      - Catálogo 54 con 32 códigos, código único, porcentaje entre 0 y 100, monto mínimo y notas.
       - Botón para actualizar los productos vinculados y acceso a su lista.
       - "Contraste con la página de SUNAT (botón y acción planificada mensual): porcentajes distintos y códigos nuevos, aplicados a mano línea a línea."
       - Historial de cambios de porcentaje y monto mínimo en cada tipo.
@@ -578,6 +578,7 @@ faq:
 novedades:
   - fecha: 16/09/2026
     cambios:
+      - "Seis códigos nuevos en el catálogo, tomados del contraste con SUNAT: 007 caña de azúcar (Anexo 1), 011 bienes gravados por renuncia a la exoneración, 016 aceite de pescado, 023 leche, 032 páprika y 041 plomo."
       - "Contraste del catálogo con la página de SUNAT: botón en el catálogo, historial de contrastes, aplicación manual de las diferencias y acción planificada mensual con actividad cuando cambian."
       - "Mínimo del Anexo 1 (códigos 001 y 003) actualizado a S/ 2.750, media UIT de 2026."
   - version: 6.20260827

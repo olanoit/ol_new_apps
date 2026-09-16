@@ -31,6 +31,13 @@
             <field name="min_amount">700.0</field>
             <field name="percentage">4</field>
         </record>
+        <record id="detraction_007" model="l10n_pe.detraction.type">
+            <field name="code">007</field>
+            <field name="name">Caña de azúcar</field>
+            <field name="min_amount">2750.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">Anexo 1: mínimo 1/2 UIT (2026: UIT S/ 5,500, D.S. 301-2025-EF). Actualizar cada año. Añadido tras el contraste con SUNAT del 16/09/2026.</field>
+        </record>
         <record id="detraction_008" model="l10n_pe.detraction.type">
             <field name="code">008</field>
             <field name="name">Madera</field>
@@ -49,6 +56,13 @@
             <field name="min_amount">700.0</field>
             <field name="percentage">15</field>
         </record>
+        <record id="detraction_011" model="l10n_pe.detraction.type">
+            <field name="code">011</field>
+            <field name="name">Bienes gravados con el IGV, por renuncia a la exoneración</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">10% desde el 01/04/2018 según la página de apéndices del SPOT de SUNAT.</field>
+        </record>
         <record id="detraction_012" model="l10n_pe.detraction.type">
             <field name="code">012</field>
             <field name="name">Intermediación laboral y tercerización</field>
@@ -61,6 +75,13 @@
             <field name="name">Carnes y despojos comestibles</field>
             <field name="min_amount">700.0</field>
             <field name="percentage">4</field>
+        </record>
+        <record id="detraction_016" model="l10n_pe.detraction.type">
+            <field name="code">016</field>
+            <field name="name">Aceite de pescado</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">10% desde el 01/04/2018 según la página de apéndices del SPOT de SUNAT.</field>
         </record>
         <record id="detraction_017" model="l10n_pe.detraction.type">
             <field name="code">017</field>
@@ -91,6 +112,13 @@
             <field name="name">Otros servicios empresariales</field>
             <field name="min_amount">700.0</field>
             <field name="percentage">12</field>
+        </record>
+        <record id="detraction_023" model="l10n_pe.detraction.type">
+            <field name="code">023</field>
+            <field name="name">Leche</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">4</field>
+            <field name="comment">Solo leche cruda entera. 4% desde el 16/06/2018 según la página de apéndices del SPOT de SUNAT.</field>
         </record>
         <record id="detraction_024" model="l10n_pe.detraction.type">
             <field name="code">024</field>
@@ -128,6 +156,13 @@
             <field name="min_amount">0</field>
             <field name="percentage">10</field>
         </record>
+        <record id="detraction_032" model="l10n_pe.detraction.type">
+            <field name="code">032</field>
+            <field name="name">Páprika y otros frutos de los géneros capsicum o pimienta</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">10</field>
+            <field name="comment">10% desde el 01/08/2019 según la página de apéndices del SPOT de SUNAT.</field>
+        </record>
         <record id="detraction_034" model="l10n_pe.detraction.type">
             <field name="code">034</field>
             <field name="name">Minerales metálicos no auríferos</field>
@@ -163,6 +198,13 @@
             <field name="name">Primera venta de bien inmueble gravado con IGV</field>
             <field name="min_amount">0</field>
             <field name="percentage">4</field>
+        </record>
+        <record id="detraction_041" model="l10n_pe.detraction.type">
+            <field name="code">041</field>
+            <field name="name">Plomo</field>
+            <field name="min_amount">700.0</field>
+            <field name="percentage">15</field>
+            <field name="comment">15% desde el 01/08/2019 según la página de apéndices del SPOT de SUNAT.</field>
         </record>
     </data>
 </odoo>
