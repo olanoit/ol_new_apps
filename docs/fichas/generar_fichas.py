@@ -541,6 +541,7 @@ def table(head, rows, where, widths=None):
 def render_index(data):
     """Índice con enlaces a las secciones presentes (las fichas son largas)."""
     entries = [
+        ('libros', data.get('libros_titulo', 'Guía de los libros'), data.get('libros')),
         ('flujos', 'Flujo del proceso', data.get('flujos')),
         ('pasos', data.get('pasos_titulo', 'Paso a paso'), data.get('pasos')),
         ('campos', 'Referencia de campos', data.get('campos')),
@@ -567,6 +568,69 @@ def render_index(data):
             '<div style="%s"><p style="font-size:13px;font-weight:700;color:%s;margin:0 0 10px;'
             'text-transform:uppercase;letter-spacing:.08em;">En esta ficha</p>%s%s</div></div>\n'
             % (SOFT, LINE, WRAP, MUTED, links, functions))
+
+
+def render_books(data):
+    """Guía por libro u obligación: qué es, ficha (norma, periodicidad, origen
+    del dato…) y qué revisar. Para módulos que cubren varios libros o
+    formatos legales; ``libros_mapa`` añade una tabla resumen al final."""
+    books = data.get('libros') or []
+    if not books:
+        return ''
+    out = ''
+    for i, book in enumerate(books):
+        where = 'libro «%s»' % book['titulo']
+        color = ACCENT if i % 2 == 0 else BRAND
+        formats = ''.join(
+            '<span style="%sbackground:#fff;color:%s;border:1px solid %s;">%s</span>'
+            % (PILL, INK, LINE, inline(f)) for f in book.get('formatos', []))
+        facts = ''
+        for row in book.get('ficha', []):
+            if len(row) != 2:
+                raise FichaError('%s: cada fila de «ficha» es [aspecto, detalle]; %r'
+                                 % (where, row))
+            facts += ('<div style="padding:10px 0;border-bottom:1px solid %s;">'
+                      '<div style="font-size:12px;font-weight:700;color:%s;'
+                      'text-transform:uppercase;letter-spacing:.06em;margin:0 0 3px;">%s</div>'
+                      '<div style="font-size:14.5px;color:%s;line-height:1.55;">%s</div></div>'
+                      % (LINE, MUTED, esc(row[0]), INK, inline(row[1])))
+        if facts:
+            facts = ('<div style="background:%s;border:1px solid %s;border-radius:10px;'
+                     'padding:6px 18px 4px;">%s</div>' % (SOFT, LINE, facts))
+        checks = ''.join(
+            '<li style="display:flex;gap:10px;margin:0 0 8px;"><span style="color:%s;'
+            'font-weight:800;">&#10003;</span><span>%s</span></li>' % (ACCENT, inline(c))
+            for c in book.get('revisar', []))
+        if checks:
+            checks = ('<p style="font-size:13px;font-weight:700;color:%s;margin:16px 0 8px;'
+                      'text-transform:uppercase;letter-spacing:.08em;">Antes de presentar</p>'
+                      '<ul style="list-style:none;margin:0;padding:0;font-size:15px;'
+                      'color:%s;line-height:1.55;">%s</ul>' % (MUTED, INK, checks))
+        note = ('<div style="background:%s;border-left:4px solid %s;border-radius:0 8px 8px 0;'
+                'padding:12px 16px;font-size:14.5px;color:%s;margin-top:16px;">%s</div>'
+                % (BRAND_SOFT, BRAND, INK, inline(book['nota']))) if book.get('nota') else ''
+        out += (
+            '<div style="%smargin:0 0 24px;">'
+            '<div style="display:flex;gap:16px;align-items:center;margin:0 0 16px;">'
+            '<div style="flex:0 0 auto;min-width:56px;height:56px;padding:0 10px;'
+            'box-sizing:border-box;border-radius:12px;background:%s;color:#fff;'
+            'display:flex;align-items:center;justify-content:center;font-size:20px;'
+            'font-weight:800;">%s</div>'
+            '<div style="flex:1;min-width:0;"><h3 style="font-size:22px;font-weight:800;'
+            'color:%s;margin:0 0 8px;">%s</h3><div style="margin:0 0 -6px;">%s</div></div></div>'
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));'
+            'gap:24px;align-items:start;">'
+            '<div style="font-size:15.5px;color:%s;line-height:1.65;">%s%s</div>%s</div>%s</div>'
+            % (CARD, color, esc(book['codigo']), INK, esc(book['titulo']), formats,
+               INK, paragraphs(book.get('texto', '')), checks, facts, note))
+    if data.get('libros_mapa'):
+        head, *rows = data['libros_mapa']
+        out += ('<h3 style="font-size:19px;font-weight:700;color:%s;margin:12px 0 8px;">'
+                'Mapa de todos los libros PLE</h3>%s'
+                % (INK, table(head, rows, 'libros_mapa')))
+    return section(heading(data.get('libros_titulo', 'Guía de los libros'),
+                           data.get('libros_intro'), 'Libro por libro')
+                   + out, anchor='libros')
 
 
 def render_flows(data):
@@ -712,6 +776,7 @@ def render(module, data):
             + render_index(data)
             + render_highlights(data)
             + render_problem(data)
+            + render_books(data)
             + render_flows(data)
             + render_steps(data)
             + render_fields(data)

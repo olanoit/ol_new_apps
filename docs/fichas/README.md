@@ -56,6 +56,7 @@ datos no se muestran.
 | `ediciones` | Forzar `[community, enterprise]` o `[enterprise]` (normalmente se detecta). |
 | `destacados_intro`, `destacados` | 3–6 tarjetas: `icono` (1–3 caracteres o un símbolo), `titulo`, `texto`. |
 | `contexto` | `titulo`, `texto` (el problema que resuelve, norma SUNAT/legal si aplica) y `nota` (recuadro lateral). |
+| `libros_titulo`, `libros_intro`, `libros`, `libros_mapa` | Guía por libro u obligación legal (módulos que cubren varios libros, p. ej. PLE): `codigo` (insignia), `titulo`, `formatos` (etiquetas), `texto` (qué es), `revisar` (lista «Antes de presentar»), `ficha` (filas `[Aspecto, Detalle]`: quién lo lleva, periodicidad, datos de Odoo, dónde se genera…) y `nota`. `libros_mapa` es una tabla resumen (primera fila = cabecera). Va justo después del contexto. |
 | `flujos_intro`, `flujos` | Diagramas del proceso: `id` (nombre del PNG), `titulo`, `texto`, `mermaid` (bloque literal `flowchart TD`) y `pie`. |
 | `pasos_titulo`, `pasos_intro`, `pasos` | Recorrido con capturas: `titulo`, `ruta` (menú exacto con `▸`), `texto`, `puntos` (lista), `imagen`, `pie`. Una entrada con `seccion` (y `texto` opcional) abre un grupo: una **función** del módulo. |
 | `campos_intro`, `campos` | Referencia por pantalla: `grupo`, `ruta`, `texto` y `campos` (filas `[Campo, Qué hace, Por defecto, Efecto]`). |

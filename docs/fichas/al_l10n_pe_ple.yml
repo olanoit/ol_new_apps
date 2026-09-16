@@ -65,6 +65,257 @@ contexto:
     oficial no se reimplementan: el submenú **Reportes PLE nativos** los
     reúne en la app Perú junto a los propios.
 
+libros_titulo: Guía de los libros
+libros_intro: >-
+  Qué registra cada libro, quién lo lleva, con qué frecuencia se presenta, de
+  dónde saca el módulo cada dato y qué conviene revisar antes de cargar el TXT
+  en el PLE. Las estructuras son las del Anexo 2 de la R.S. 286-2009/SUNAT;
+  las tablas citadas (T13, T18…), las del Anexo 3.
+libros:
+  - codigo: "7"
+    titulo: Registro de Activos Fijos
+    formatos: ["7.1 Revaluados y no revaluados · 37 campos", "7.3 Diferencia de cambio · 15 campos", "7.4 Arrendamiento financiero · 11 campos"]
+    texto: >-
+      Detalla cada bien del activo fijo: su identificación, el valor al inicio
+      del ejercicio, las adquisiciones, mejoras y retiros del año, el método y
+      el porcentaje de depreciación, y la depreciación acumulada y del
+      ejercicio. Es la base con la que SUNAT contrasta el gasto por
+      depreciación de la declaración anual.
+
+
+      El **7.1** incluye todos los activos. El **7.3** solo los comprados en
+      moneda extranjera: muestra cuánto cambió su valor en soles entre el tipo
+      de cambio de la compra y el del cierre. El **7.4** solo los adquiridos
+      por **arrendamiento financiero** (leasing), con los datos del contrato.
+
+
+      El módulo lee los activos de Odoo (en proceso, pausados o cerrados) y los
+      asientos de depreciación publicados; solo hay que completar la pestaña
+      **PLE SUNAT** de cada activo.
+    revisar:
+      - "Saldo inicial más adquisiciones (campos 15 y 16) = saldo de las cuentas 33 del mayor."
+      - "Depreciación del ejercicio (campo 30) = gasto por depreciación contabilizado."
+      - "Ningún activo con la columna **Tipo (T18)** vacía en el informe en pantalla."
+      - "Si la empresa revaluó activos, completar a mano los campos 19 a 23 (el módulo los emite en 0.00)."
+    ficha:
+      - [Quién lo lleva, "Empresas con contabilidad completa que tienen activos fijos."]
+      - [Periodicidad, "**Anual**: el nombre del archivo lleva el mes 00."]
+      - [Datos de Odoo, "Activos (módulo Activos de Enterprise), su pestaña PLE SUNAT y sus asientos de depreciación publicados. El tipo de cambio de cierre del 7.3 sale de las tasas de Odoo al 31/12."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Activos fijos (Libro 7)** (informe en pantalla con botones TXT) o **Exportar PLE**."]
+      - [Captura, "Ninguna: solo los datos SUNAT de cada activo."]
+    nota: >-
+      Un activo dado de baja en el ejercicio sale del registro con sus retiros
+      (campo 18) y su depreciación acumulada (campo 31) en negativo, de modo
+      que su valor histórico queda en cero.
+
+  - codigo: "4.1"
+    titulo: Libro de Retenciones — incisos e) y f) del art. 34 LIR
+    formatos: ["4.1 Retenciones · 10 campos"]
+    texto: >-
+      Registra, persona por persona, las retribuciones pagadas y las
+      retenciones efectuadas por servicios que la Ley del Impuesto a la Renta
+      trata como **rentas de quinta categoría** aunque no haya un contrato
+      laboral: los servicios prestados en el lugar y horario que fija el
+      contratante y con sus medios de trabajo (inciso e) y los servicios
+      independientes prestados a quien es también empleador del prestador
+      (inciso f).
+
+
+      Como la base no lleva la planilla peruana en Odoo, el libro se alimenta
+      con una **lista editable e importable**: una fila por pago, con el monto
+      bruto y la retención en positivo. Al exportar, la retención sale con
+      signo negativo, como exige el Anexo 2.
+    revisar:
+      - Cada prestador con tipo y número de documento en su contacto (DNI = tipo 1).
+      - "Total retenido del mes = retenciones declaradas en el PDT/PLAME del mismo periodo."
+      - "Pagos sin retención capturados con retención 0,00 (también se informan)."
+    ficha:
+      - [Quién lo lleva, "Quien paga rentas de los incisos e) o f) del art. 34 de la LIR."]
+      - [Periodicidad, "**Mensual**: solo entran los pagos con fecha dentro del mes elegido."]
+      - [Datos de Odoo, "Captura propia (fecha, prestador, monto bruto y retención) y el documento del contacto."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ 4.1, con el Mes."]
+      - [Captura, "Perú ▸ Libros PLE ▸ **Retenciones 4.1** (admite el importador estándar)."]
+
+  - codigo: "9"
+    titulo: Registro de Consignaciones
+    formatos: ["9.1 Consignador · 22 campos", "9.2 Consignatario · 21 campos"]
+    texto: >-
+      Controla, **en unidades físicas**, los bienes que se entregan o reciben
+      en consignación: qué salió, qué se devolvió y qué se vendió, producto
+      por producto y contraparte por contraparte. Permite a SUNAT verificar
+      que la mercadería que está en poder de un tercero no se ha vendido sin
+      comprobante.
+
+
+      El **9.1** lo lleva quien **entrega** los bienes (consignador): entregas
+      en positivo, devoluciones y ventas en negativo. El **9.2** lo lleva quien
+      los **recibe** (consignatario), con el RUC del consignador.
+
+
+      No hay captura aparte: basta con marcar cada albarán con su clase de
+      consignación. El módulo calcula el **saldo inicial** de cada producto y
+      contraparte con los albaranes marcados de meses anteriores y, en las
+      ventas, busca la factura de la orden de venta para informar el
+      comprobante.
+    revisar:
+      - Productos con tipo de existencia (tabla 5) y unidad de medida con código SUNAT (tabla 6).
+      - "En el 9.2, consignadores con RUC."
+      - Operaciones de consignación marcadas desde el primer mes, para que el saldo inicial sea correcto.
+      - "Saldo final de cada producto = existencias en poder del consignatario."
+    ficha:
+      - [Quién lo lleva, "Quien entrega (9.1) o recibe (9.2) bienes en consignación."]
+      - [Periodicidad, "**Mensual**: solo cuentan los albaranes hechos del mes."]
+      - [Datos de Odoo, "Albaranes con **Consignación PLE (Libro 9)**, su contacto y productos, la guía de remisión si existe y la factura publicada de la orden de venta."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ 9.1 / 9.2, con el Mes."]
+      - [Captura, "Ninguna: un campo en el albarán."]
+
+  - codigo: "3"
+    titulo: Libro de Inventarios y Balances — anexos que faltaban
+    formatos: ["3.8 Inversiones mobiliarias · 12 campos", "3.9 Intangibles · 9 campos", "3.19 Cambios en el patrimonio neto · 16 campos", "3.23 Notas a los EEFF · PDF"]
+    texto: >-
+      El Libro 3 muestra la situación de la empresa **a la fecha de un
+      balance**: el estado de situación financiera y el detalle de las
+      principales cuentas. La localización oficial genera la mayoría de sus
+      formatos; este módulo aporta los cuatro que faltan.
+
+
+      **3.8** detalla los títulos que forman el saldo de la cuenta 30
+      (acciones, bonos, participaciones): emisor, tipo de título, valor
+      nominal, cantidad, costo y provisión por desvalorización. **3.9**
+      detalla los intangibles de la cuenta 34 con su amortización; sale solo,
+      de los activos de Odoo con cuenta 34. **3.19** es el estado de cambios en
+      el patrimonio neto, una fila por rubro de la tabla 34 con sus doce
+      columnas. **3.23** son las notas a los estados financieros, que SUNAT
+      recibe en PDF.
+
+
+      El nombre del archivo lleva el **día** del balance y la **oportunidad**
+      de presentación: 01 al 31 de diciembre, 02 al 31 de enero, 03 al 30 de
+      junio, 04 al último día del mes de suspensión o modificación, 05 el día
+      anterior a una fusión o escisión, 06 balance de liquidación o cese y 07
+      libre propósito.
+    revisar:
+      - "Costo total en libros del 3.8 = saldo de la cuenta 30 al cierre."
+      - "Valor del 3.9 = saldo de la cuenta 34; si un intangible no está registrado como activo, no aparece."
+      - "Totales por columna del 3.19 = estado de cambios en el patrimonio aprobado."
+      - "Registros del 3.8 y del 3.19 con la **misma fecha** que la Fecha de los EEFF del asistente."
+    ficha:
+      - [Quién lo lleva, "Empresas con contabilidad completa (el 3.8, solo si hay inversiones en la cuenta 30)."]
+      - [Periodicidad, "**A la fecha del balance**: normalmente el 31/12, con oportunidad 01."]
+      - [Datos de Odoo, "3.8 y 3.19 por captura; 3.9 desde los activos con cuenta 34 y su amortización publicada; 3.23 un PDF adjunto."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 3, con Fecha de los EEFF y Oportunidad."]
+      - [Captura, "Perú ▸ Libros PLE ▸ **Inversiones 3.8** y **Patrimonio 3.19**."]
+    nota: >-
+      El resto del Libro 3 (3.1 a 3.7, 3.11 a 3.18, 3.20, 3.24 y 3.25) lo
+      genera la localización oficial con el botón **Inventory and Balance**
+      del Libro Mayor.
+
+  - codigo: "10"
+    titulo: Registro de Costos
+    formatos: ["10.1 Costo de ventas · 6 campos", "10.2 Elementos del costo · 8 campos", "10.3 Costo de producción · 13 campos", "10.4 Centros de costos · 7 campos"]
+    texto: >-
+      Explica cómo se forma el costo de lo que la empresa produce y vende. El
+      **10.1** es el estado de costo de ventas del año: inventario inicial de
+      productos terminados, más el costo de producción, menos el inventario
+      final, más ajustes. El **10.2** reparte el costo de cada mes en sus
+      elementos: materiales directos, mano de obra directa, otros costos
+      directos y gastos indirectos de fabricación. El **10.3** valoriza el
+      costo por proceso productivo, con los productos en proceso al inicio y
+      al final. El **10.4** es el catálogo de centros de costos.
+
+
+      Como la base no usa el módulo de Fabricación, los cuatro formatos se
+      **capturan** en listas editables e importables; el sistema impide
+      repetir un ejercicio en el 10.1 o un mes en el 10.2. Los inventarios
+      finales se capturan en positivo y el TXT los emite en negativo.
+    revisar:
+      - "10.1 = costo de ventas del estado de resultados."
+      - "10.2 con los doce meses; su suma = costo de producción del 10.1."
+      - "10.2 y 10.3 cuadran con las cuentas de los elementos 6 y 9 del PCGE."
+    ficha:
+      - [Quién lo lleva, "Empresas con actividad de producción o transformación que superan el límite de ingresos del Reglamento de la LIR (art. 35); confirme el umbral vigente con su contador."]
+      - [Periodicidad, "**Anual**: el 10.2 va en el archivo anual con una fila por mes."]
+      - [Datos de Odoo, "Captura propia; en el 10.4 la cuenta analítica propone código y nombre del centro."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 10, con el Ejercicio."]
+      - [Captura, "Perú ▸ Libros PLE ▸ **Costos (Libro 10)** ▸ 10.1 a 10.4."]
+
+  - codigo: "S"
+    titulo: Formatos simplificados
+    formatos: ["5.2 Diario simplificado · 21 campos", "5.4 Plan contable · 8 campos", "8.3 Compras simplificado · 32 campos", "14.2 Ventas simplificado · 26 campos"]
+    texto: >-
+      Versiones reducidas del Libro Diario (5.2, con su plan de cuentas 5.4),
+      del Registro de Compras (8.3) y del Registro de Ventas (14.2) para las
+      empresas que pueden llevar **contabilidad simplificada**. Son
+      **excluyentes** con los formatos completos (5.1/5.3, 8.1 y 14.1): se
+      presentan unos u otros, nunca ambos.
+
+
+      Salen sin captura. El **5.2** tiene una línea por apunte de los asientos
+      publicados del mes, con la glosa del asiento o de la línea. El **5.4**
+      lista las cuentas activas del plan. El **8.3** toma las facturas y notas
+      de crédito de proveedor publicadas (el número es la referencia del
+      proveedor, con la constancia de detracción y la marca de retención) y el
+      **14.2** las de cliente. Las notas de crédito salen en negativo y
+      referencian el comprobante que modifican.
+    revisar:
+      - "Referencia del proveedor con el formato SERIE-NÚMERO (p. ej. F001-00000123)."
+      - "Facturas con operaciones gravadas y no gravadas a la vez: usar los formatos completos, porque el simplificado clasifica el documento entero."
+      - "Si la empresa ya lleva sus registros de compras y ventas en el SIRE, confirmar con SUNAT qué formato le corresponde."
+    ficha:
+      - [Quién lo lleva, "Contribuyentes autorizados a llevar contabilidad simplificada."]
+      - [Periodicidad, "**Mensual**."]
+      - [Datos de Odoo, "Asientos publicados, plan de cuentas y facturas publicadas del mes."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Formatos simplificados, con el Mes."]
+      - [Activación, "Perú ▸ Configuración ▸ Ajustes ▸ **Libros PLE simplificados**; sin la marca el asistente los oculta y los rechaza."]
+
+  - codigo: "SIRE"
+    titulo: RCE y RVIE — compras y ventas en el SIRE
+    formatos: ["RCE 8.4 Compras · 41 campos", "RCE 8.5 No domiciliados · 35 campos", "RVIE 14.4 Ventas · 33 campos"]
+    texto: >-
+      SUNAT trasladó los registros de compras y ventas al **SIRE**: el
+      Registro de Ventas e Ingresos Electrónico (**RVIE**, R.S.
+      000112-2021/SUNAT) y el Registro de Compras Electrónico (**RCE**, R.S.
+      040-2022/SUNAT). SUNAT propone el registro a partir de los comprobantes
+      electrónicos y la empresa lo acepta o lo reemplaza con su propio archivo.
+
+
+      La localización oficial ya ofrece los informes de compras (8.1),
+      compras a no domiciliados (8.2) y ventas (14.1), pero sus TXT del SIRE no
+      respetan la estructura. Este módulo rehace la extracción y el formato:
+      el **RCE 8.4** con 41 campos (clasificación del bien o servicio,
+      detracción, tipo de nota y estado del comprobante), el **RCE 8.5** para
+      no domiciliados (tipos 00, 91, 97 y 98) y el **RVIE 14.4** con 33
+      campos, los anulados en cero y las notas de crédito de meses anteriores
+      en las columnas de descuento.
+    revisar:
+      - Clasificación RCE en los productos que se compran (se copia a la factura).
+      - "Estado RCE de las facturas de proveedor canceladas: 2 - Baja, o 3 - Revertido en recibos por honorarios y liquidaciones de compra."
+      - "Comparar el XLSX con la propuesta de SUNAT antes de reemplazarla."
+    ficha:
+      - [Quién lo lleva, "Los contribuyentes obligados al SIRE según el calendario de SUNAT."]
+      - [Periodicidad, "**Mensual**, por fecha de factura."]
+      - [Datos de Odoo, "Comprobantes publicados y anulados del mes, salvo los diarios excluidos, con su Clasificación y Estado RCE."]
+      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Reportes PLE nativos** ▸ Compras (8.1), Compras no domiciliados (8.2) o Ventas (14.1): botones TXT y **XLSX RCE 8.4**, **XLSX RCE 8.5** o **XLSX RVIE 14.4**."]
+      - [Nombre del archivo, "Indicador de generación 2 (SIRE) en lugar del 1 del PLE."]
+
+libros_mapa:
+  - [Libro, Formatos, Periodicidad, Lo genera, Menú en la app Perú]
+  - ["1 Caja y Bancos", "1.1 · 1.2", Mensual, Localización oficial, "Reportes PLE nativos ▸ Caja y Bancos (1.1 / 1.2)"]
+  - ["3 Inventarios y Balances", "3.1–3.7 · 3.11–3.18 · 3.20 · 3.24 · 3.25", Al cierre, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor ▸ botón Inventory and Balance"]
+  - ["3 Inventarios y Balances", "3.8 · 3.9 · 3.19 · 3.23", Al cierre, "**Este módulo**", "Exportar PLE"]
+  - ["4 Retenciones", "4.1", Mensual, "**Este módulo**", "Retenciones 4.1 · Exportar PLE"]
+  - ["5 Diario", "5.1 · 5.3", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1)"]
+  - ["5 Diario simplificado", "5.2 · 5.4", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
+  - ["6 Mayor", "6.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1)"]
+  - ["7 Activos Fijos", "7.1 · 7.3 · 7.4", Anual, "**Este módulo**", "Activos fijos (Libro 7) · Exportar PLE"]
+  - ["8 Compras (SIRE)", "RCE 8.4 · 8.5", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Compras (8.1) · Compras no domiciliados (8.2)"]
+  - ["8 Compras simplificado", "8.3", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
+  - ["9 Consignaciones", "9.1 · 9.2", Mensual, "**Este módulo**", "Exportar PLE"]
+  - ["10 Costos", "10.1 · 10.2 · 10.3 · 10.4", Anual, "**Este módulo**", "Costos (Libro 10) · Exportar PLE"]
+  - ["12 y 13 Inventario permanente", "12.1 · 13.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1)"]
+  - ["14 Ventas (SIRE)", "RVIE 14.4", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Ventas (14.1)"]
+  - ["14 Ventas simplificado", "14.2", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
+
 flujos_intro: >-
   Cómo sale cada archivo: del dato en Odoo al TXT que se carga en SUNAT.
 flujos:
