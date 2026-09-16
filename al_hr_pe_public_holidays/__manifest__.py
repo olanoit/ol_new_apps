@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Peru Holidays',
+    'name': 'Peru Feriados',
     'summary': "Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.",
     'description': """Peru 2026-2035 — Odoo HR
 
@@ -26,7 +26,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'OL-TOOLS/Apps',
+    'category': 'OL-PLANILLAS/Apps',
     'version': '3.20260827',
     'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada
