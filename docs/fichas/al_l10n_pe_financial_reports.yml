@@ -1,0 +1,171 @@
+titulo: Reportes financieros Perú
+subtitulo: >-
+  Los estados financieros peruanos en un solo lugar: el 3.19 Estado de Cambios
+  en el Patrimonio Neto según el PCGE, junto al Balance y el Estado de
+  resultados, con filtros, comparaciones y exportación a PDF y Excel.
+categoria: Localización Perú · Contabilidad
+etiquetas: [3.19 Patrimonio neto, PCGE, Balance, Estado de resultados, Líneas editables, Comparación de periodos]
+portada: screenshots/02-estado-cambios-patrimonio.png
+
+destacados_intro: >-
+  Un módulo para todos los estados financieros de la localización, sobre el
+  motor de informes contables de Odoo.
+destacados:
+  - icono: "3.19"
+    titulo: Cambios en el patrimonio
+    texto: >-
+      Saldo inicial, resultado integral, capital, reservas, resultados
+      acumulados y saldo final, por componente del PCGE.
+  - icono: "="
+    titulo: Cuadra con el Balance
+    texto: >-
+      Sin ajustes manuales, el saldo final es el patrimonio del Balance a la
+      misma fecha.
+  - icono: "✎"
+    titulo: Líneas editables
+    texto: >-
+      Cambios de políticas, corrección de errores, aportes, distribuciones y
+      subsidiarias se registran en el propio informe, con nota.
+  - icono: "PE"
+    titulo: Menú Estados financieros
+    texto: >-
+      Balance, Estado de resultados y 3.19 en la app Perú.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo Enterprise trae el Balance y el Estado de resultados con su variante
+    peruana, pero no el **Estado de Cambios en el Patrimonio Neto**, que
+    forma parte de los estados financieros y del Libro de Inventarios y
+    Balances (formato 3.19).
+
+
+    El informe se calcula desde los apuntes: el resultado del ejercicio sale
+    de las cuentas de resultados, así que no hace falta esperar al asiento de
+    cierre, y los asientos de diarios de naturaleza **Cierre** no lo duplican.
+  nota: >-
+    **Informe y archivo PLE.** Este es el estado financiero para revisar y
+    presentar. El TXT del formato 3.19 se sigue generando en **Perú ▸ Libros
+    PLE ▸ Exportar PLE** con la captura de **Patrimonio 3.19**.
+
+pasos_titulo: Paso a paso
+pasos_intro: >-
+  Con la compañía de demostración peruana y el ejercicio 2026.
+pasos:
+  - seccion: Acceso
+    texto: Todos los estados financieros juntos.
+  - titulo: Abrir los estados financieros
+    ruta: Perú ▸ Estados financieros
+    texto: >-
+      El grupo reúne el **Balance** y el **Estado de resultados** de la
+      localización oficial y el **3.19 Estado de Cambios en el Patrimonio
+      Neto**. El 3.19 también está en Contabilidad ▸ Informes.
+    imagen: screenshots/01-menu-estados-financieros.png
+
+  - seccion: 3.19 Estado de Cambios en el Patrimonio Neto
+    texto: Del saldo inicial al saldo final del periodo.
+  - titulo: Leer el estado de cambios
+    ruta: Perú ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
+    texto: >-
+      Columnas **Nota**, **Saldo inicial**, **Movimiento** y **Saldo final**.
+      El periodo por defecto es el año en curso; se puede elegir otro y
+      comparar con periodos anteriores. Todo el patrimonio sale en positivo;
+      una pérdida, en negativo.
+    puntos:
+      - "**Ganancia (pérdida) neta del ejercicio**: cuentas de resultados del periodo."
+      - "**Otro resultado integral**: cuentas 56 (resultados no realizados) y 57 (excedente de revaluación)."
+      - "**Capital** (50 y 52), **acciones de inversión** (51), **reservas** (58) y **resultados acumulados** (59), cada uno en su línea."
+      - "**Otras variaciones del patrimonio** recoge cualquier otra cuenta de patrimonio, para que el total siempre cuadre."
+    imagen: screenshots/02-estado-cambios-patrimonio.png
+    pie: "Ejercicio 2026 de la compañía de demostración: pérdida de S/ 22.575,81, igual al patrimonio del Balance."
+
+  - titulo: Registrar ajustes que no salen de los asientos
+    ruta: 3.19 Estado de Cambios en el Patrimonio Neto ▸ lápiz de la línea
+    texto: >-
+      **Cambios en políticas contables** y **Corrección de errores**
+      reexpresan el saldo inicial, cada una con su **Nota**. **Incremento por
+      otras aportaciones**, **Disminución por otras distribuciones** y
+      **Cambios en la participación de subsidiarias** suman a los cambios del
+      periodo. Los importes se guardan a la fecha final del periodo.
+    imagen: screenshots/03-lineas-editables.png
+
+  - seccion: Configuración contable
+    texto: Para que el cierre del ejercicio no altere el informe.
+  - titulo: Marcar los diarios de apertura y de cierre
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios ▸ Naturaleza del diario
+    texto: >-
+      Los asientos de diarios de naturaleza **Cierre** (resultados → 89 → 59)
+      no cuentan: solo trasladan el resultado dentro del patrimonio. Los de
+      naturaleza **Apertura** fechados en el periodo forman el saldo inicial.
+
+campos:
+  - grupo: 3.19 Estado de Cambios en el Patrimonio Neto
+    ruta: Perú ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
+    campos:
+      - [Saldos al inicio del periodo, "Patrimonio y resultados no distribuidos hasta el día anterior, más los asientos de apertura del periodo.", "—", "Sin asientos de cierre"]
+      - [Saldo inicial reexpresado, "Saldo inicial + cambios de políticas + corrección de errores.", "—", Base del saldo final]
+      - [Ganancia (pérdida) neta del ejercicio, Cuentas de resultados del periodo., "—", "No depende del asiento de cierre"]
+      - [Otro resultado integral, Cuentas 56 y 57., "—", Suma al resultado integral total]
+      - [Emisión (reducción) de capital, Cuentas 50 y 52., "—", "—"]
+      - [Emisión (reducción) de acciones de inversión, Cuenta 51., "—", "—"]
+      - [Constitución (aplicación) de reservas, Cuenta 58., "—", "—"]
+      - [Dividendos y otras variaciones de resultados acumulados, "Cuenta 59, sin el traslado del cierre.", "—", "—"]
+      - [Líneas editables, "Políticas, errores, aportes, distribuciones y subsidiarias.", "0,00", "Se suman al total; políticas y errores llevan nota"]
+      - [Otras variaciones del patrimonio, Otras cuentas de patrimonio., "—", Mantiene el cuadre con el Balance]
+      - [Saldos al final del periodo, Saldo reexpresado + total de cambios., "—", "Igual al patrimonio del Balance sin ajustes editables"]
+  - grupo: Diario
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
+    campos:
+      - [Naturaleza del diario, "Movimiento, Apertura o Cierre.", Movimiento, "Cierre: no cuenta · Apertura: saldo inicial"]
+
+ejemplos:
+  - titulo: Un ejercicio con asiento de cierre
+    texto: >-
+      2025 termina sin cierre con capital de S/ 10.000 y utilidad de S/ 3.000.
+      En 2026 hay un aumento de capital, una utilidad de S/ 1.000, una
+      revaluación, una reserva de S/ 300 tomada de la 59, dividendos de
+      S/ 200 y el cierre del 31/12 (resultados → 89 → 59).
+    tabla:
+      - [Línea, Saldo inicial, Movimiento, Saldo final]
+      - [Saldos al inicio del periodo, "13.000,00", "", ""]
+      - [Ganancia (pérdida) neta del ejercicio, "", "1.000,00", ""]
+      - [Otro resultado integral (56 y 57), "", "400,00", ""]
+      - [Emisión (reducción) de capital, "", "2.000,00", ""]
+      - [Constitución de reservas (58), "", "300,00", ""]
+      - [Dividendos y otras variaciones (59), "", "-500,00", ""]
+      - ["**Saldos al final del periodo**", "13.000,00", "3.200,00", "**16.200,00**"]
+    nota: >-
+      El traslado del cierre a la 59 no cuenta, así que la utilidad no se
+      duplica. El saldo final es el patrimonio del Balance al 31/12/2026.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere Odoo Enterprise y la localización peruana).
+  - Marque la naturaleza de los diarios de apertura y de cierre.
+  - Abra el informe desde Perú ▸ Estados financieros.
+requisitos_nota: >-
+  Se apoya en el motor de informes contables de Odoo Enterprise.
+
+faq:
+  - pregunta: ¿Por qué el resultado aparece aunque no haya cerrado el ejercicio?
+    respuesta: >-
+      Porque se calcula desde las cuentas de resultados, igual que el
+      «resultado del ejercicio» del Balance.
+  - pregunta: ¿El saldo final no coincide con el Balance?
+    respuesta: >-
+      Revise las líneas editables: suman ajustes que no están en los asientos.
+      Sin ellas, el saldo final es el patrimonio del Balance a la misma fecha.
+  - pregunta: Cierro y reabro todo el balance cada año, ¿qué hago?
+    respuesta: >-
+      Registre el cierre y la reapertura en diarios de naturaleza Cierre. El
+      diario de Apertura queda para los saldos iniciales al empezar con Odoo.
+  - pregunta: ¿Genera el TXT del PLE 3.19?
+    respuesta: >-
+      No. El TXT se genera en Perú ▸ Libros PLE ▸ Exportar PLE con la captura
+      de Patrimonio 3.19.
+
+novedades:
+  - fecha: 17/09/2026
+    cambios:
+      - "Primera versión para Odoo 19: 3.19 Estado de Cambios en el Patrimonio Neto (migrado del v18 y corregido: signo, cuentas del PCGE, resultado del ejercicio y asientos de cierre) y menú Perú ▸ Estados financieros."
+
+relacionados: [al_account_base, al_l10n_pe_ple, al_l10n_pe_exchange_closure]

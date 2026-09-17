@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú nativo de Contabilidad ▸ Informes, como en el v18. -->
+    <menuitem id="menu_statement_changes_equity"
+              name="3.19 Estado de Cambios en el Patrimonio Neto"
+              parent="account.account_reports_legal_statements_menu"
+              action="pe_action_statement_changes_equity"
+              groups="account.group_account_readonly,account.group_account_basic"
+              sequence="100"/>
+
+    <!-- App Perú: todos los estados financieros en un grupo. Balance y Estado
+         de resultados son los de Enterprise (con su variante peruana). -->
+    <menuitem id="menu_pe_financial_statements" name="Estados financieros"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_readonly,account.group_account_basic"
+              sequence="65"/>
+
+    <menuitem id="menu_pe_balance_sheet" name="Balance"
+              parent="menu_pe_financial_statements"
+              action="account_reports.action_account_report_bs"
+              sequence="10"/>
+
+    <menuitem id="menu_pe_profit_and_loss" name="Estado de resultados"
+              parent="menu_pe_financial_statements"
+              action="account_reports.action_account_report_pl"
+              sequence="20"/>
+
+    <menuitem id="menu_pe_statement_changes_equity"
+              name="3.19 Estado de Cambios en el Patrimonio Neto"
+              parent="menu_pe_financial_statements"
+              action="pe_action_statement_changes_equity"
+              sequence="30"/>
+</odoo>

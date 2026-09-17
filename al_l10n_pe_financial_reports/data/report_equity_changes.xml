@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        3.19 ESTADO DE CAMBIOS EN EL PATRIMONIO NETO (PCGE)
+        Migrado del módulo v18 al_l10n_pe_reports y corregido:
+        · patrimonio en positivo (subfórmula -sum, como el Balance);
+        · componentes del PCGE vigente: 50 Capital, 51 Acciones de inversión,
+          52 Capital adicional, 56 Resultados no realizados, 57 Excedente de
+          revaluación, 58 Reservas, 59 Resultados acumulados;
+        · el resultado del ejercicio sale de las cuentas de resultados y no
+          del movimiento de la 59, así que no depende del asiento de cierre;
+        · los asientos de diarios de naturaleza «Cierre» no cuentan y los de
+          «Apertura» del periodo van al saldo inicial.
+        Sin líneas editables, el saldo final coincide con el patrimonio del
+        Balance a la fecha final del periodo.
+    -->
+    <record id="pe_statement_changes_equity" model="account.report">
+        <field name="name">3.19 Estado de Cambios en el Patrimonio Neto</field>
+        <field name="country_id" ref="base.pe"/>
+        <field name="availability_condition">country</field>
+        <field name="filter_date_range" eval="True"/>
+        <field name="filter_period_comparison" eval="True"/>
+        <field name="filter_growth_comparison" eval="False"/>
+        <field name="filter_unfold_all" eval="True"/>
+        <field name="filter_journals" eval="False"/>
+        <field name="filter_analytic_groupby" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_hide_0_lines">optional</field>
+        <field name="filter_show_draft" eval="False"/>
+        <field name="filter_hierarchy">never</field>
+        <field name="default_opening_date_filter">this_year</field>
+        <field name="load_more_limit" eval="80"/>
+        <field name="search_bar" eval="True"/>
+        <field name="column_ids">
+                <record id="pe_scep_column_movement_note" model="account.report.column">
+                    <field name="name">Nota</field>
+                    <field name="expression_label">movement_note</field>
+                    <field name="sequence" eval="5"/>
+                    <field name="figure_type">string</field>
+                    <field name="blank_if_zero" eval="True"/>
+                </record>
+                <record id="pe_scep_column_opening" model="account.report.column">
+                    <field name="name">Saldo inicial</field>
+                    <field name="expression_label">opening</field>
+                    <field name="sequence" eval="10"/>
+                    <field name="figure_type">monetary</field>
+                    <field name="blank_if_zero" eval="False"/>
+                </record>
+                <record id="pe_scep_column_movement" model="account.report.column">
+                    <field name="name">Movimiento</field>
+                    <field name="expression_label">movement</field>
+                    <field name="sequence" eval="20"/>
+                    <field name="figure_type">monetary</field>
+                    <field name="blank_if_zero" eval="False"/>
+                </record>
+                <record id="pe_scep_column_closing" model="account.report.column">
+                    <field name="name">Saldo final</field>
+                    <field name="expression_label">closing</field>
+                    <field name="sequence" eval="30"/>
+                    <field name="figure_type">monetary</field>
+                    <field name="blank_if_zero" eval="False"/>
+                </record>
+        </field>
+        <field name="line_ids">
+                <!-- Todo el patrimonio antes del periodo (como el Balance: cuentas de patrimonio más resultados no distribuidos), sin los asientos de cierre; más los asientos de apertura fechados en el periodo (saldos iniciales al empezar con Odoo) -->
+                <record id="pe_scep_line_opening" model="account.report.line">
+                    <field name="name">Saldos al inicio del periodo</field>
+                    <field name="code">SCEP_OPENING</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="sequence" eval="10"/>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_opening_history" model="account.report.expression">
+                            <field name="label">opening_history</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', 'in', ['equity', 'income', 'income_other', 'expense_direct_cost', 'expense', 'expense_depreciation', 'expense_other', 'equity_unaffected']), ('journal_id.l10n_pe_journal_kind', '!=', 'closing')]"/>
+                            <field name="date_scope">to_beginning_of_period</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                        <record id="pe_scep_expr_opening_entries" model="account.report.expression">
+                            <field name="label">opening_entries</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', 'in', ['equity', 'income', 'income_other', 'expense_direct_cost', 'expense', 'expense_depreciation', 'expense_other', 'equity_unaffected']), ('journal_id.l10n_pe_journal_kind', '=', 'opening')]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                        <record id="pe_scep_expr_opening" model="account.report.expression">
+                            <field name="label">opening</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_OPENING.opening_history + SCEP_OPENING.opening_entries</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Editable: se registra a mano en el informe -->
+                <record id="pe_scep_line_policy" model="account.report.line">
+                    <field name="name">Cambios en políticas contables</field>
+                    <field name="code">SCEP_POLICY</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="20"/>
+                    <field name="parent_id" ref="pe_scep_line_opening"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_policy_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">monetary</field>
+                        </record>
+                        <record id="pe_scep_expr_policy_note" model="account.report.expression">
+                            <field name="label">movement_note</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">string</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Editable: se registra a mano en el informe -->
+                <record id="pe_scep_line_errors" model="account.report.line">
+                    <field name="name">Corrección de errores</field>
+                    <field name="code">SCEP_ERRORS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="30"/>
+                    <field name="parent_id" ref="pe_scep_line_opening"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_errors_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">monetary</field>
+                        </record>
+                        <record id="pe_scep_expr_errors_note" model="account.report.expression">
+                            <field name="label">movement_note</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">string</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pe_scep_line_reexpressed" model="account.report.line">
+                    <field name="name">Saldo inicial reexpresado</field>
+                    <field name="code">SCEP_REEXPRESSED</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="sequence" eval="40"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_reexpressed_opening" model="account.report.expression">
+                            <field name="label">opening</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_OPENING.opening + SCEP_POLICY.movement + SCEP_ERRORS.movement</field>
+                        </record>
+                        <record id="pe_scep_expr_reexpressed_closing" model="account.report.expression">
+                            <field name="label">closing</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_REEXPRESSED.opening</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pe_scep_line_changes_title" model="account.report.line">
+                    <field name="name">Cambios en el patrimonio:</field>
+                    <field name="code">SCEP_CHANGES_TITLE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="sequence" eval="50"/>
+                </record>
+
+                <record id="pe_scep_line_result_title" model="account.report.line">
+                    <field name="name">Resultado integral del ejercicio:</field>
+                    <field name="code">SCEP_RESULT_TITLE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="60"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                </record>
+
+                <!-- Cuentas de resultados del periodo, como el «resultado del ejercicio» del Balance. Los asientos de cierre no cuentan: solo trasladan este resultado a la 59 -->
+                <record id="pe_scep_line_net_income" model="account.report.line">
+                    <field name="name">Ganancia (pérdida) neta del ejercicio</field>
+                    <field name="code">SCEP_NET_INCOME</field>
+                    <field name="hierarchy_level" eval="3"/>
+                    <field name="sequence" eval="70"/>
+                    <field name="parent_id" ref="pe_scep_line_result_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_net_income_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', 'in', ['income', 'income_other', 'expense_direct_cost', 'expense', 'expense_depreciation', 'expense_other', 'equity_unaffected']), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- 56 Resultados no realizados · 57 Excedente de revaluación -->
+                <record id="pe_scep_line_oci" model="account.report.line">
+                    <field name="name">Otro resultado integral (cuentas 56 y 57)</field>
+                    <field name="code">SCEP_OCI</field>
+                    <field name="hierarchy_level" eval="3"/>
+                    <field name="sequence" eval="80"/>
+                    <field name="parent_id" ref="pe_scep_line_result_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_oci_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), '|', ('account_id.code', '=like', '56%'), ('account_id.code', '=like', '57%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pe_scep_line_total_integral" model="account.report.line">
+                    <field name="name">Resultado integral total del ejercicio</field>
+                    <field name="code">SCEP_TOTAL_INTEGRAL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="90"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_total_integral_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_NET_INCOME.movement + SCEP_OCI.movement</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- 50 Capital · 52 Capital adicional -->
+                <record id="pe_scep_line_capital_issue" model="account.report.line">
+                    <field name="name">Emisión (reducción) de capital (cuentas 50 y 52)</field>
+                    <field name="code">SCEP_CAPITAL_ISSUE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="100"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_capital_issue_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), '|', ('account_id.code', '=like', '50%'), ('account_id.code', '=like', '52%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- 51 Acciones de inversión -->
+                <record id="pe_scep_line_investment_shares" model="account.report.line">
+                    <field name="name">Emisión (reducción) de acciones de inversión (cuenta 51)</field>
+                    <field name="code">SCEP_INVESTMENT_SHARES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="110"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_investment_shares_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), ('account_id.code', '=like', '51%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- 58 Reservas -->
+                <record id="pe_scep_line_reserves" model="account.report.line">
+                    <field name="name">Constitución (aplicación) de reservas (cuenta 58)</field>
+                    <field name="code">SCEP_RESERVES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="120"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_reserves_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), ('account_id.code', '=like', '58%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- 59 Resultados acumulados, sin los asientos de cierre -->
+                <record id="pe_scep_line_retained" model="account.report.line">
+                    <field name="name">Dividendos y otras variaciones de resultados acumulados (cuenta 59)</field>
+                    <field name="code">SCEP_RETAINED</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="130"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_retained_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), ('account_id.code', '=like', '59%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Editable: se registra a mano en el informe -->
+                <record id="pe_scep_line_owner_contrib" model="account.report.line">
+                    <field name="name">Incremento por otras aportaciones de propietarios</field>
+                    <field name="code">SCEP_OWNER_CONTRIB</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="140"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_owner_contrib_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">monetary</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Editable: se registra a mano en el informe -->
+                <record id="pe_scep_line_owner_dist" model="account.report.line">
+                    <field name="name">Disminución por otras distribuciones a propietarios</field>
+                    <field name="code">SCEP_OWNER_DIST</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="150"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_owner_dist_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">monetary</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Editable: se registra a mano en el informe -->
+                <record id="pe_scep_line_subsidiary" model="account.report.line">
+                    <field name="name">Cambios en la participación de subsidiarias</field>
+                    <field name="code">SCEP_SUBSIDIARY</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="160"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_subsidiary_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">external</field>
+                            <field name="formula">sum</field>
+                            <field name="subformula">editable</field>
+                            <field name="figure_type">monetary</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- Cuentas de patrimonio fuera de 50-52 y 56-59 (p. ej. las 8x fuera de los asientos de cierre): así el saldo final siempre cuadra con el Balance -->
+                <record id="pe_scep_line_other" model="account.report.line">
+                    <field name="name">Otras variaciones del patrimonio</field>
+                    <field name="code">SCEP_OTHER</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="sequence" eval="170"/>
+                    <field name="parent_id" ref="pe_scep_line_changes_title"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_other_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">domain</field>
+                            <field name="formula" eval="[('account_id.account_type', '=', 'equity'), '!', '|', '|', '|', '|', '|', '|', ('account_id.code', '=like', '50%'), ('account_id.code', '=like', '51%'), ('account_id.code', '=like', '52%'), ('account_id.code', '=like', '56%'), ('account_id.code', '=like', '57%'), ('account_id.code', '=like', '58%'), ('account_id.code', '=like', '59%'), ('journal_id.l10n_pe_journal_kind', 'not in', ['closing', 'opening'])]"/>
+                            <field name="date_scope">strict_range</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pe_scep_line_total_changes" model="account.report.line">
+                    <field name="name">Total incremento (disminución) en el patrimonio</field>
+                    <field name="code">SCEP_TOTAL_CHANGES</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="sequence" eval="180"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_total_changes_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_TOTAL_INTEGRAL.movement + SCEP_CAPITAL_ISSUE.movement + SCEP_INVESTMENT_SHARES.movement + SCEP_RESERVES.movement + SCEP_RETAINED.movement + SCEP_OWNER_CONTRIB.movement + SCEP_OWNER_DIST.movement + SCEP_SUBSIDIARY.movement + SCEP_OTHER.movement</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pe_scep_line_closing" model="account.report.line">
+                    <field name="name">Saldos al final del periodo</field>
+                    <field name="code">SCEP_CLOSING</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="sequence" eval="190"/>
+                    <field name="expression_ids">
+                        <record id="pe_scep_expr_closing_opening" model="account.report.expression">
+                            <field name="label">opening</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_REEXPRESSED.opening</field>
+                        </record>
+                        <record id="pe_scep_expr_closing_movement" model="account.report.expression">
+                            <field name="label">movement</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_TOTAL_CHANGES.movement</field>
+                        </record>
+                        <record id="pe_scep_expr_closing_closing" model="account.report.expression">
+                            <field name="label">closing</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">SCEP_CLOSING.opening + SCEP_CLOSING.movement</field>
+                        </record>
+                    </field>
+                </record>
+        </field>
+    </record>
+
+    <record id="pe_action_statement_changes_equity" model="ir.actions.client">
+        <field name="name">3.19 Estado de Cambios en el Patrimonio Neto</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('pe_statement_changes_equity')}"/>
+    </record>
+</odoo>
