@@ -5,7 +5,7 @@ El reporte en pantalla (``l10n_pe.ple.asset.report.handler``) y el asistente
 de exportación (``l10n_pe.ple.export.wizard``) leen de aquí, de modo que lo que
 el contador revisa en pantalla es exactamente lo que va en el TXT.
 
-Estructura: Anexo 2 de SUNAT (``docs/ple/Estructura del PLE.xls``, hoja 7).
+Estructura: Anexo 2 de SUNAT (``docs/ple/oficial/Estructura del PLE.xls``, hoja 7).
 Todos los importes del 7.1 admiten signo; los retiros y su depreciación se
 informan en **negativo** para que cada fila cuadre como en el formato físico:
 valor histórico = saldo inicial + adquisiciones + mejoras + retiros + ajustes.

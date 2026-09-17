@@ -3,7 +3,7 @@ from odoo import _, api, models
 from odoo.exceptions import UserError
 
 # Nº exacto de campos por formato según el Anexo 2 de SUNAT
-# (docs/ple/Estructura del PLE.xls). Los campos de libre utilización
+# (docs/ple/oficial/Estructura del PLE.xls). Los campos de libre utilización
 # posteriores al campo "Estado" no se emiten (sin palotes).
 PLE_EXPECTED_FIELDS = {
     '010100': 19, '010200': 15,

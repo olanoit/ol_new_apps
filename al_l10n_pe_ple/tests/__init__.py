@@ -6,3 +6,4 @@ from . import test_rvie_144
 from . import test_ple_engine
 from . import test_sire_xlsx
 from . import test_ple_asset_report
+from . import test_native_xlsx

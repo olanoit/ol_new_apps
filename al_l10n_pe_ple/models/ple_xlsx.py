@@ -13,6 +13,8 @@ import xlsxwriter
 
 from odoo import models
 
+from .ple_official_headers import PLE_OFFICIAL_HEADERS
+
 # Títulos de hoja (máx. 31 caracteres, restricción de Excel)
 PLE_XLSX_TITLES = {
     '070100': 'PLE 7.1 Activos Fijos',
@@ -32,6 +34,32 @@ PLE_XLSX_TITLES = {
     '050400': 'PLE 5.4 Plan Contable',
     '080300': 'PLE 8.3 Compras Simplificado',
     '140200': 'PLE 14.2 Ventas Simplificado',
+    '010100': 'PLE 1.1 Caja',
+    '010200': 'PLE 1.2 Bancos',
+    '030100': 'PLE 3.1 Situación financiera',
+    '030200': 'PLE 3.2 Cuenta 10',
+    '030300': 'PLE 3.3 Cuenta 12 y 13',
+    '030400': 'PLE 3.4 Cuenta 14',
+    '030500': 'PLE 3.5 Cuenta 16 y 17',
+    '030600': 'PLE 3.6 Cuenta 19',
+    '030700': 'PLE 3.7 Cuenta 20 y 21',
+    '031100': 'PLE 3.11 Cuenta 41',
+    '031200': 'PLE 3.12 Cuenta 42',
+    '031300': 'PLE 3.13 Cuenta 46',
+    '031400': 'PLE 3.14 Cuenta 47',
+    '031500': 'PLE 3.15 Cuenta 49',
+    '031601': 'PLE 3.16.1 Capital',
+    '031602': 'PLE 3.16.2 Accionistas',
+    '031700': 'PLE 3.17 Balance comprobación',
+    '031800': 'PLE 3.18 Flujo de efectivo',
+    '032000': 'PLE 3.20 Estado de resultados',
+    '032400': 'PLE 3.24 Resultados integrales',
+    '032500': 'PLE 3.25 Flujo efectivo indir.',
+    '050100': 'PLE 5.1 Libro Diario',
+    '050300': 'PLE 5.3 Plan Contable',
+    '060100': 'PLE 6.1 Libro Mayor',
+    '120100': 'PLE 12.1 Inventario unidades',
+    '130100': 'PLE 13.1 Inventario valorizado',
     '080400': 'RCE 8.4 Compras',
     '080500': 'RCE 8.5 No Domiciliados',
     '140400': 'RVIE 14.4 Ventas',
@@ -404,46 +432,71 @@ class L10nPePleMixinXlsx(models.AbstractModel):
     def _ple_xlsx(self, book_code, lines, company, year, month='00'):
         """Genera el XLSX (bytes) con el formato del módulo v18: los datos
         son exactamente los campos del TXT (``lines``)."""
-        headers = PLE_XLSX_HEADERS[book_code]
-        sheet_name = PLE_XLSX_TITLES.get(book_code, 'PLE %s' % book_code)
-        num_columns = len(headers)
+        return self._ple_xlsx_books([(book_code, lines)], company, year, month)
 
+    def _ple_xlsx_books(self, books, company, year, month='00'):
+        """Un XLSX con una hoja por formato: ``books`` es una lista de
+        ``(código, líneas)``. Lo usa el Libro 3, que se exporta entero."""
         output = BytesIO()
         workbook = xlsxwriter.Workbook(
             output, {'in_memory': True, 'strings_to_numbers': False})
-        sheet = workbook.add_worksheet(sheet_name)
+        formats = self._ple_xlsx_formats(workbook)
+        for book_code, lines in books:
+            self._ple_xlsx_sheet(workbook, formats, book_code, lines,
+                                 company, year, month)
+        workbook.close()
+        return output.getvalue()
 
-        fmt_title = workbook.add_format({
-            'border': 1, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 10, 'text_wrap': True, 'bg_color': '#afebff'})
-        fmt_gray = workbook.add_format({
-            'border': 0, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 10, 'text_wrap': True, 'bg_color': '#b5b4b4',
-            'font_color': 'white'})
-        fmt_string = workbook.add_format({
-            'border': 0, 'font_size': 10, 'valign': 'vcenter',
-            'num_format': '@'})
-        fmt_number = workbook.add_format({
-            'bold': 0, 'valign': 'vcenter', 'num_format': '#,##0.00',
-            'font_size': 10})
-        fmt_company = workbook.add_format({
-            'border': 0, 'valign': 'vcenter', 'font_size': 22,
-            'text_wrap': True, 'bg_color': '#b5b4b4'})
-        fmt_label = workbook.add_format({
-            'border': 0, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 12, 'text_wrap': True, 'bg_color': '#b5b4b4'})
+    @staticmethod
+    def _ple_xlsx_headers(book_code):
+        """Encabezados propios del módulo o, si no los hay, los del Anexo 2
+        de SUNAT (``ple_official_headers``)."""
+        return PLE_XLSX_HEADERS.get(book_code) or PLE_OFFICIAL_HEADERS[book_code]
+
+    @staticmethod
+    def _ple_xlsx_formats(workbook):
+        return {
+            'title': workbook.add_format({
+                'border': 1, 'align': 'center', 'valign': 'vcenter',
+                'font_size': 10, 'text_wrap': True, 'bg_color': '#afebff'}),
+            'gray': workbook.add_format({
+                'border': 0, 'align': 'center', 'valign': 'vcenter',
+                'font_size': 10, 'text_wrap': True, 'bg_color': '#b5b4b4',
+                'font_color': 'white'}),
+            'string': workbook.add_format({
+                'border': 0, 'font_size': 10, 'valign': 'vcenter',
+                'num_format': '@'}),
+            'number': workbook.add_format({
+                'bold': 0, 'valign': 'vcenter', 'num_format': '#,##0.00',
+                'font_size': 10}),
+            'company': workbook.add_format({
+                'border': 0, 'valign': 'vcenter', 'font_size': 22,
+                'text_wrap': True, 'bg_color': '#b5b4b4'}),
+            'label': workbook.add_format({
+                'border': 0, 'align': 'center', 'valign': 'vcenter',
+                'font_size': 12, 'text_wrap': True, 'bg_color': '#b5b4b4'}),
+        }
+
+    def _ple_xlsx_sheet(self, workbook, formats, book_code, lines, company,
+                        year, month):
+        headers = self._ple_xlsx_headers(book_code)
+        sheet_name = PLE_XLSX_TITLES.get(book_code, 'PLE %s' % book_code)
+        num_columns = len(headers)
+        sheet = workbook.add_worksheet(sheet_name)
+        fmt_title, fmt_gray = formats['title'], formats['gray']
+        fmt_string, fmt_number = formats['string'], formats['number']
 
         # Fila 1: título de la compañía
         sheet.merge_range(0, 0, 0, num_columns,
-                          '%s - %s' % (company.name, sheet_name), fmt_company)
+                          '%s - %s' % (company.name, sheet_name), formats['company'])
         sheet.set_row(0, 30)
 
         # Fila 2: RUC / Período / Mes
-        sheet.write(1, 0, 'RUC', fmt_label)
+        sheet.write(1, 0, 'RUC', formats['label'])
         sheet.merge_range(1, 1, 1, 2, company.partner_id.vat or '', fmt_string)
-        sheet.write(1, 3, 'Período', fmt_label)
+        sheet.write(1, 3, 'Período', formats['label'])
         sheet.write(1, 4, '%s' % year)
-        sheet.write(1, 5, 'Mes', fmt_label)
+        sheet.write(1, 5, 'Mes', formats['label'])
         sheet.write(1, 6, '%s' % str(month).zfill(2))
         if num_columns > 7:
             sheet.merge_range(1, 7, 1, num_columns, '', fmt_gray)
@@ -452,7 +505,11 @@ class L10nPePleMixinXlsx(models.AbstractModel):
         sheet.write(2, 0, '', fmt_gray)
         sheet.set_column(0, 0, 7)
         sheet.merge_range(3, 0, 4, 0, 'Nº', fmt_gray)
-        sheet.set_row(4, 40)
+        # 40 puntos como el v18, o más si un encabezado del Anexo 2 no cabe:
+        # en columnas de ancho 15 entran unos 14 caracteres por línea y la
+        # fila 4 ya aporta una línea de 15 puntos.
+        header_lines = max(-(-len(head) // 14) for head in headers)
+        sheet.set_row(4, max(40, header_lines * 13 - 15))
         for index, head in enumerate(headers):
             column = index + 1
             sheet.set_column(column, column, 15)
@@ -468,6 +525,19 @@ class L10nPePleMixinXlsx(models.AbstractModel):
                 fmt = fmt_number if text.isdecimal() else fmt_string
                 sheet.write(row, index + 1, text, fmt)
             row += 1
+        return sheet
 
-        workbook.close()
-        return output.getvalue()
+    @staticmethod
+    def _ple_txt_rows(content):
+        """Líneas de un TXT del PLE como listas de campos.
+
+        La localización oficial cierra cada línea con «|» y usa ``\n`` o
+        ``\r\n``; el último campo vacío no es un campo.
+        """
+        if isinstance(content, bytes):
+            content = content.decode('utf-8', errors='replace')
+        rows = []
+        for line in (content or '').splitlines():
+            if line.strip():
+                rows.append(line[:-1].split('|') if line.endswith('|') else line.split('|'))
+        return rows

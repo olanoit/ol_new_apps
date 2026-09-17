@@ -2,15 +2,20 @@
 
 Solo lectura salvo el propio asistente «Exportar PLE» (modelo transitorio):
 ningún paso modifica registros de la base.
+
+La 22 es una hoja del Excel, no una pantalla: el bloque 5 la genera con
+``odoo shell`` y LibreOffice (``soffice``) y no necesita el servidor web.
 """
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
 ALTO = {'width': 1440, 'height': 1400}
 # Bloques a ejecutar (todos por defecto): p. ej. ``... al_l10n_pe_ple.py 3 4``
-BLOQUES = {int(a) for a in sys.argv[1:]} or {1, 2, 3, 4}
+BLOQUES = {int(a) for a in sys.argv[1:]} or {1, 2, 3, 4, 5}
 
 
 def escoger_anio(c, boton, pasos=1):
@@ -138,3 +143,65 @@ if 4 in BLOQUES:
         c.clic('.o_control_panel .fa-cog', ms=800)
         c.foto('18-rvie-144')
         c.page.keyboard.press('Escape')
+
+        # 20. Libro Mayor: botones XLSX junto a los TXT del PLE
+        c.abrir_accion('account_reports.action_account_report_general_ledger', ms=3000)
+        c.clic('.o_control_panel .fa-cog', ms=800)
+        caja = c.page.locator('.o-dropdown--menu').first.bounding_box()
+        c.foto('20-libro-mayor-xlsx', clip={
+            'x': 0, 'y': 0, 'width': 760, 'height': caja['y'] + caja['height'] + 12})
+        c.page.keyboard.press('Escape')
+
+        # 21. Asistente del inventario permanente con XLSX 12.1 y 13.1
+        c.abrir_accion('al_l10n_pe_ple.action_ple_stock_wizard', ms=2500)
+        c.page.keyboard.press('Escape')        # cierra el calendario
+        c.page.locator('.modal-title').first.click()
+        c.esperar(500)
+        c.foto('21-inventario-xlsx', selector='.modal-content')
+
+if 5 in BLOQUES:
+    # 22. XLSX 13.1 de julio 2026 («Comercial Demo Perú S.A.C.»), apaisado y
+    # recortado a sus primeras 12 columnas.
+    from openpyxl import load_workbook
+    from PIL import Image, ImageChops
+
+    ODOO = Path('/home/och/odoo/ce19')
+    destino = Path(__file__).resolve().parents[3] / 'al_l10n_pe_ple' / 'static' / 'description' / 'screenshots' / '22-excel-13-1.png'
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        xlsx = tmp / 'ple_13_1.xlsx'
+        script = (
+            "import base64\n"
+            "company = env['res.company'].search([('name', '=', 'Comercial Demo Perú S.A.C.')], limit=1)\n"
+            "env = env(context=dict(env.context, allowed_company_ids=company.ids))\n"
+            "w = env['l10n_pe.stock.ple.wizard'].with_company(company).create("
+            "{'date_from': '2026-07-01', 'date_to': '2026-07-31'})\n"
+            "w.get_ple_xlsx_13_1()\n"
+            "open(%r, 'wb').write(base64.b64decode(w.report_data))\n"
+            "env.cr.rollback()\n" % str(xlsx))
+        subprocess.run([str(ODOO / '.venv/bin/python'), 'odoo-bin', 'shell', '-c',
+                        'cfg/my/pe.cfg', '-d', 'ol_pe_v19', '--no-http'],
+                       input=script, text=True, cwd=ODOO, check=True,
+                       capture_output=True)
+        libro = load_workbook(xlsx)
+        hoja = libro.active
+        hoja.page_setup.orientation = 'landscape'
+        hoja.page_setup.paperSize = hoja.PAPERSIZE_A3
+        hoja.sheet_properties.pageSetUpPr.fitToPage = True
+        hoja.page_setup.fitToWidth = 1
+        hoja.page_setup.fitToHeight = 0
+        hoja.page_margins.left = hoja.page_margins.right = hoja.page_margins.top = 0.2
+        impresion = tmp / 'impresion.xlsx'
+        libro.save(impresion)
+        subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', '--outdir', str(tmp),
+                        str(impresion)], check=True, capture_output=True)
+        subprocess.run(['pdftoppm', '-png', '-r', '200', '-f', '1', '-l', '1',
+                        str(tmp / 'impresion.pdf'), str(tmp / 'pagina')], check=True)
+        imagen = Image.open(tmp / 'pagina-1.png').convert('RGB')
+        borde = ImageChops.difference(imagen, Image.new('RGB', imagen.size, 'white')).getbbox()
+        imagen = imagen.crop((max(borde[0] - 12, 0), max(borde[1] - 12, 0),
+                              min(borde[2] + 12, imagen.width), min(borde[3] + 12, imagen.height)))
+        imagen = imagen.crop((0, 0, int(imagen.width * 0.46), imagen.height))
+        imagen = imagen.resize((1100, int(imagen.height * 1100 / imagen.width)), Image.LANCZOS)
+        imagen.save(destino, optimize=True)
+        print('captura', destino.name)

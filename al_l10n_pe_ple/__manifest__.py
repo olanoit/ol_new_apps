@@ -56,13 +56,22 @@ Fase actual:
 Los demás formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib``
 / ``l10n_pe_reports_stock`` (1.1/1.2, libro 3, 5.1/5.3/6.1, 12.1/13.1)
 NO se reimplementan.
+
+* **Excel de revisión en todos los libros PLE**: además de los propios y los
+  del SIRE, botones XLSX junto a los TXT de la localización oficial —1.1 y
+  1.2 en el Flujo de caja; 5.1, 5.3, 6.1 y el Libro 3 completo (una hoja por
+  formato) en el Libro Mayor; 12.1 y 13.1 en el asistente de inventario—.
+  Mismo formato visual que el módulo v18 y encabezados tomados del Anexo 2
+  oficial de SUNAT (``docs/ple/oficial``), generados con
+  ``docs/ple/oficial/generar_encabezados.py``. El Excel se arma a partir del
+  TXT oficial, así que no puede decir algo distinto del archivo presentado.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '6.20260828',
+    'version': '7.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -80,6 +89,7 @@ NO se reimplementan.
         'views/stock_picking_views.xml',
         'views/res_config_settings_views.xml',
         'views/rce_views.xml',
+        'views/stock_ple_wizard_views.xml',
         'wizards/ple_export_wizard_views.xml',
         'views/menu.xml',
         'data/ple_asset_report.xml',

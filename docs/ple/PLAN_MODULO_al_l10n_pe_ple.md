@@ -5,7 +5,7 @@
 > que la localización oficial (CE + EE) **no** genera hoy.
 >
 > Fecha del plan: 2026-07-18 · Branch: `19.0` · Autor del plan: sesión Claude
-> con análisis del código instalado y de `docs/ple/Estructura del PLE.xls`.
+> con análisis del código instalado y de `docs/ple/oficial/Estructura del PLE.xls`.
 
 ---
 
@@ -18,7 +18,7 @@
 | Configuración de pruebas | `/home/och/odoo/ce19/cfg/my/pe.cfg` (puerto 19700, `dbfilter=ol_pe_v19`) |
 | Base de datos de pruebas | `ol_pe_v19` (PostgreSQL local, usuario `odoo`/`odoo`) |
 | Convención de versión | `N.AAAAMMDD` (ver memoria `module-version-convention` / skill `odoo-module-versioning`) |
-| Estructura oficial SUNAT | `docs/ple/Estructura del PLE.xls` (Anexo 2 — estructuras e información de los libros) |
+| Estructura oficial SUNAT | `docs/ple/oficial/Estructura del PLE.xls` (Anexo 2 — estructuras e información de los libros) |
 
 Referencias oficiales:
 
@@ -183,7 +183,7 @@ limitaciones conocidas.
 
 ## 6. Estructuras oficiales (extracto verificado del XLS)
 
-> Fuente: `docs/ple/Estructura del PLE.xls` — resumen fiel; el XLS manda ante
+> Fuente: `docs/ple/oficial/Estructura del PLE.xls` — resumen fiel; el XLS manda ante
 > cualquier duda. Convenciones: N=numérico, A=alfanumérico, T=texto,
 > F=fecha `DD/MM/AAAA`; `12e2d`=hasta 12 enteros/2 decimales; **(op)**=opcional.
 > Tras el campo "Estado" siguen campos de libre utilización que, si no se
@@ -367,7 +367,7 @@ Cobertura mínima de tests (`tests/`):
 > Respeta: convención de versión `N.AAAAMMDD`; menú bajo
 > `al_account_base.al_l10n_pe_root`; no copiar código OEEL (solo depender y
 > extender); estructuras campo a campo del §6 con el XLS
-> `docs/ple/Estructura del PLE.xls` como fuente de verdad; tests y prueba de
+> `docs/ple/oficial/Estructura del PLE.xls` como fuente de verdad; tests y prueba de
 > instalación en la BD `ol_pe_v19` con `cfg/my/pe.cfg` al cierre de cada
 > fase; documentar cada formato en `docs/ple/reportes/`. Al terminar cada
 > fase: actualizar manifest, correr los tests y dejar commit preparado.

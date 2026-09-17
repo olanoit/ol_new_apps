@@ -76,7 +76,7 @@
     </record>
 
     <record id="action_ple_stock_wizard" model="ir.actions.act_window">
-        <field name="name">Inventario permanente TXT (PLE 12.1 / 13.1)</field>
+        <field name="name">Inventario permanente (PLE 12.1 / 13.1)</field>
         <field name="res_model">l10n_pe.stock.ple.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

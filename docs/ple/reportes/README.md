@@ -27,5 +27,10 @@ visual de `ol_stock_kardex_pe`.
 | **10.1–10.4** | **Registro de Costos** | **`al_l10n_pe_ple`** | **Perú ▸ Libros PLE ▸ Costos (Libro 10)** (captura) + Exportar PLE | [libro_10.md](libro_10.md) |
 | **5.2 / 5.4, 8.3, 14.2** | **Formatos simplificados** | **`al_l10n_pe_ple`** | **Perú ▸ Libros PLE ▸ Exportar PLE** (requiere bandera en Ajustes ▸ Perú) | [libros_simplificados.md](libros_simplificados.md) |
 
-Estructura oficial de todos los formatos: [`Estructura del PLE.xls`](../Estructura%20del%20PLE.xls)
+Todos los formatos tienen **Excel de revisión**: los del módulo en su
+pantalla o en Exportar PLE, y los de la localización oficial en un botón XLSX
+junto a su TXT (1.1/1.2 en el Flujo de caja; 5.1, 5.3, 6.1 y el Libro 3 en el
+Libro Mayor; 12.1/13.1 en el asistente de inventario).
+
+Estructura oficial de todos los formatos (con la nomenclatura y demás documentos de SUNAT en [`../oficial`](../oficial/README.md)): [`Estructura del PLE.xls`](../oficial/Estructura%20del%20PLE.xls)
 (resumen campo a campo en el [plan, §6](../PLAN_MODULO_al_l10n_pe_ple.md)).

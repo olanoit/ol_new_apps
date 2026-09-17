@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Excel de revisión junto a los TXT del inventario permanente. -->
+    <record id="view_l10n_pe_stock_ple_wizard_xlsx" model="ir.ui.view">
+        <field name="name">l10n_pe.stock.ple.wizard.form.inherit.al_l10n_pe_ple</field>
+        <field name="model">l10n_pe.stock.ple.wizard</field>
+        <field name="inherit_id" ref="l10n_pe_reports_stock.view_l10n_pe_stock_ple_wizard"/>
+        <field name="arch" type="xml">
+            <button name="get_ple_report_13_1" position="after">
+                <button name="get_ple_xlsx_12_1" string="XLSX 12.1" type="object"
+                        class="btn-secondary"/>
+                <button name="get_ple_xlsx_13_1" string="XLSX 13.1" type="object"
+                        class="btn-secondary"/>
+            </button>
+        </field>
+    </record>
+</odoo>

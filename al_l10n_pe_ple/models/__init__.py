@@ -17,3 +17,4 @@ from . import ple_report_engine
 from . import rce_report
 from . import rvie_report
 from . import sire_xlsx_export
+from . import ple_native_xlsx

@@ -10,7 +10,8 @@ portada: screenshots/07-libro7-pantalla.png
 
 destacados_intro: >-
   Un solo asistente para todos los TXT que faltaban, con el nombre oficial,
-  validación de estructura y un Excel de revisión por formato.
+  validación de estructura y un Excel de revisión en todos los libros PLE,
+  también en los que genera la localización oficial.
 destacados:
   - icono: "7"
     titulo: Registro de Activos Fijos
@@ -300,19 +301,19 @@ libros:
 
 libros_mapa:
   - [Libro, Formatos, Periodicidad, Lo genera, Menú en la app Perú]
-  - ["1 Caja y Bancos", "1.1 · 1.2", Mensual, Localización oficial, "Reportes PLE nativos ▸ Caja y Bancos (1.1 / 1.2)"]
-  - ["3 Inventarios y Balances", "3.1–3.7 · 3.11–3.18 · 3.20 · 3.24 · 3.25", Al cierre, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor ▸ botón Inventory and Balance"]
+  - ["1 Caja y Bancos", "1.1 · 1.2", Mensual, Localización oficial, "Reportes PLE nativos ▸ Caja y Bancos (1.1 / 1.2): TXT y XLSX"]
+  - ["3 Inventarios y Balances", "3.1–3.7 · 3.11–3.18 · 3.20 · 3.24 · 3.25", Al cierre, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor ▸ botones Inventory and Balance y XLSX Inventario y Balance"]
   - ["3 Inventarios y Balances", "3.8 · 3.9 · 3.19 · 3.23", Al cierre, "**Este módulo**", "Exportar PLE"]
   - ["4 Retenciones", "4.1", Mensual, "**Este módulo**", "Retenciones 4.1 · Exportar PLE"]
-  - ["5 Diario", "5.1 · 5.3", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1)"]
+  - ["5 Diario", "5.1 · 5.3", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
   - ["5 Diario simplificado", "5.2 · 5.4", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
-  - ["6 Mayor", "6.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1)"]
+  - ["6 Mayor", "6.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
   - ["7 Activos Fijos", "7.1 · 7.3 · 7.4", Anual, "**Este módulo**", "Activos fijos (Libro 7) · Exportar PLE"]
   - ["8 Compras (SIRE)", "RCE 8.4 · 8.5", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Compras (8.1) · Compras no domiciliados (8.2)"]
   - ["8 Compras simplificado", "8.3", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
   - ["9 Consignaciones", "9.1 · 9.2", Mensual, "**Este módulo**", "Exportar PLE"]
   - ["10 Costos", "10.1 · 10.2 · 10.3 · 10.4", Anual, "**Este módulo**", "Costos (Libro 10) · Exportar PLE"]
-  - ["12 y 13 Inventario permanente", "12.1 · 13.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1)"]
+  - ["12 y 13 Inventario permanente", "12.1 · 13.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1): TXT y XLSX"]
   - ["14 Ventas (SIRE)", "RVIE 14.4", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Ventas (14.1)"]
   - ["14 Ventas simplificado", "14.2", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
 
@@ -660,6 +661,39 @@ pasos:
       Libro Mayor.
     imagen: screenshots/19-menu-libros-ple.png
 
+  - titulo: Excel de revisión de los libros de la localización oficial
+    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Diario y Mayor ▸ engranaje
+    texto: >-
+      Junto a cada botón TXT de la localización oficial hay uno **XLSX** con
+      las mismas líneas: **XLSX 5.1**, **XLSX 5.3** y **XLSX 6.1** en el Libro
+      Mayor, y **XLSX Inventario y Balance**, que reúne el Libro 3 completo en
+      un solo archivo con una hoja por formato (3.1 a 3.25). En **Caja y
+      Bancos (1.1 / 1.2)** están **XLSX PLE 1.1 (Efectivo)** y **XLSX PLE 1.2
+      (Banco)**.
+    puntos:
+      - "El Excel se arma a partir del TXT oficial: no puede decir algo distinto del archivo que se presenta."
+      - "Los encabezados son los del Anexo 2 publicado por SUNAT, uno por campo del TXT."
+    imagen: screenshots/20-libro-mayor-xlsx.png
+    pie: "Libro Mayor: cada TXT del PLE con su Excel al lado."
+
+  - titulo: Inventario permanente en Excel
+    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1)
+    texto: >-
+      El asistente del inventario permanente suma **XLSX 12.1** (unidades
+      físicas) y **XLSX 13.1** (valorizado) a sus botones TXT, para el periodo
+      elegido.
+    imagen: screenshots/21-inventario-xlsx.png
+
+  - titulo: Cómo se ve el Excel
+    texto: >-
+      Todos los Excel del módulo comparten el formato: título con la compañía
+      y el libro, fila de RUC, periodo y mes, numeración de columnas, banda
+      celeste con el nombre de cada campo, columna **Nº** y una fila por línea
+      del TXT. La fila de encabezados crece si el nombre oficial del campo es
+      largo.
+    imagen: screenshots/22-excel-13-1.png
+    pie: "XLSX 13.1 de julio de 2026 de la compañía de demostración (primeras 12 de sus 27 columnas)."
+
 campos_intro: >-
   Primero las pantallas del módulo; después, formato por formato, de qué dato
   de Odoo sale cada campo del Anexo 2.
@@ -848,6 +882,7 @@ funcionalidades:
   - grupo: App Perú
     items:
       - "Submenú Reportes PLE nativos: Diario y Mayor, Caja y Bancos, Ventas, Compras, no domiciliados e inventarios TXT."
+      - "Excel de revisión junto a cada TXT de la localización oficial: 1.1, 1.2, 5.1, 5.3, 6.1, 12.1, 13.1 y el Libro 3 completo (una hoja por formato), con los encabezados del Anexo 2 de SUNAT."
       - Script de datos de demostración que crea los registros «DEMO PLE» y valida los reportes.
 
 ejemplos:
@@ -974,7 +1009,13 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
-  - fecha: 14/09/2026
+  - fecha: 17/09/2026
+    cambios:
+      - "Excel de revisión en todos los libros PLE: botones XLSX junto a los TXT de la localización oficial (1.1, 1.2, 5.1, 5.3, 6.1, Libro 3 y 12.1 / 13.1), con el formato del resto del módulo."
+      - "Encabezados tomados del Anexo 2 oficial de SUNAT, que acompaña al módulo junto con la nomenclatura de los archivos."
+      - "La fila de encabezados del Excel crece cuando el nombre del campo es largo."
+  - version: 6.20260828
+    fecha: 14/09/2026
     cambios:
       - "Registro de Activos Fijos (PLE 7.1) en pantalla, con botones TXT 7.1, XLSX 7.1, TXT 7.3 y TXT 7.4."
       - La depreciación del 7.1 ya no suma los asientos de baja o venta; los activos dados de baja salen del registro.
