@@ -110,9 +110,12 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <!-- groups: datos privados del trabajador; cada bloque declara
+                 su grupo y no depende de la restricción de la pestaña. -->
             <page name="payroll_information" position="inside">
                 <group string="Perú — Contrato de trabajo"
-                       name="l10n_pe_contract">
+                       name="l10n_pe_contract"
+                       groups="hr_payroll.group_hr_payroll_user">
                     <group>
                         <field name="l10n_pe_contract_template_id"/>
                         <field name="l10n_pe_trial_period_regime"/>

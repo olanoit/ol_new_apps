@@ -130,7 +130,9 @@ class HrEmployee(models.Model):
 
     l10n_pe_construction_site_id = fields.Many2one(
         related='version_id.l10n_pe_construction_site_id', readonly=False,
-        inherited=True)
+        inherited=True,
+        groups='hr.group_hr_user')
     l10n_pe_construction_category_id = fields.Many2one(
         related='version_id.l10n_pe_construction_category_id', readonly=False,
-        inherited=True)
+        inherited=True,
+        groups='hr.group_hr_user')

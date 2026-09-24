@@ -23,6 +23,8 @@ PRIVATE_BLOCKS = (
     ('al_hr_pe.view_employee_form_tregistro_address', 'Domicilio (T-Registro)'),
     ('al_hr_pe.hr_employee_view_form_inherit_pe', 'Perú — Identificación (PLAME)'),
 )
+# Prefijos de los módulos de la suite.
+OUR_MODULES = ('al_', 'ol_')
 ADDRESS_FIELDS = (
     'l10n_pe_road_type_id', 'l10n_pe_road_name', 'l10n_pe_road_number',
     'l10n_pe_district_id', 'l10n_pe_road_type2_id', 'l10n_pe_district2_id',
@@ -61,6 +63,49 @@ class TestEmployeePrivacy(TransactionCase):
                     self.assertEqual(
                         node.get('groups'), 'hr.group_hr_user',
                         '%s: falta groups en <%s> de «%s»' % (xmlid, node.tag, label))
+
+    def test_no_private_field_without_a_group(self):
+        """Ninguna vista de la suite deja un campo privado sin restringir.
+
+        Recorre todas las vistas propias de ``hr.employee``: cada campo que
+        no exista en ``hr.employee.public`` debe estar dentro de un nodo con
+        ``groups``. Si no, un usuario interno sin ese permiso recibe un error
+        de acceso al abrir la ficha.
+        """
+        public = self.env['hr.employee.public']._fields
+        offenders = []
+        for view in self.env['ir.ui.view'].search([('model', '=', 'hr.employee')]):
+            xmlid = view.get_external_id().get(view.id) or ''
+            if not xmlid.startswith(OUR_MODULES):
+                continue
+            for node in etree.fromstring(view.arch_db).xpath('//field[@name]'):
+                if node.get('name') in public:
+                    continue
+                parent, groups = node, None
+                while parent is not None and groups is None:
+                    groups = parent.get('groups')
+                    parent = parent.getparent()
+                if not groups:
+                    offenders.append('%s: %s' % (xmlid, node.get('name')))
+        self.assertFalse(offenders, 'campos privados sin groups:\n%s'
+                         % '\n'.join(sorted(set(offenders))))
+
+    def test_private_fields_declare_the_group(self):
+        """Todo campo propio de hr.employee lleva groups en su definición.
+
+        Es la regla que documenta el propio modelo de Odoo: sin ella el
+        campo entra en la precarga automática y basta con que alguien sin
+        permiso de Recursos Humanos toque un empleado —el TPV lo hace al
+        abrir— para que la lectura falle.
+        """
+        Employee = self.env['hr.employee']
+        public = self.env['hr.employee.public']._fields
+        offenders = [
+            name for name, field in Employee._fields.items()
+            if name not in public and not field.inherited and not field.groups
+            and (field.manual or (field._module or '').startswith(OUR_MODULES))
+        ]
+        self.assertFalse(offenders, 'campos sin groups: %s' % sorted(offenders))
 
     def test_form_hides_the_private_fields(self):
         """La ficha que recibe un usuario sin Recursos Humanos no los pide."""

@@ -482,7 +482,11 @@ faq:
       sale en cero.
 
 novedades:
-  - fecha: 27/08/2026
+  - fecha: 24/09/2026
+    cambios:
+      - "El bloque de contrato de la ficha del trabajador se restringe al personal de nómina."
+  - version: 7.20260827
+    fecha: 27/08/2026
     cambios:
       - El TXT de Interbank vuelve a salir con el formato completo de 380 caracteres por línea.
   - version: 6.20260816

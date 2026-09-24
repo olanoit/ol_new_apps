@@ -57,11 +57,13 @@ class HrEmployee(models.Model):
         string='País emisor del documento (T26)', size=4,
         help='Solo para carné de extranjería o pasaporte: código de la '
              'tabla 26 del Anexo 2. Para documentos peruanos SUNAT exige '
-             '604 y se pone solo.')
+             '604 y se pone solo.',
+        groups='hr.group_hr_user')
     l10n_pe_nationality_code = fields.Char(
         string='Nacionalidad (T04)', size=4,
         help='Código de la tabla 4. Obligatorio para los tipos de '
-             'documento 04 y 07 (extranjeros).')
+             'documento 04 y 07 (extranjeros).',
+        groups='hr.group_hr_user')
 
     # ------------------------------------------------------------------
     # Utilidades de formato

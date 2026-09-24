@@ -679,7 +679,7 @@ faq:
 novedades:
   - fecha: 24/09/2026
     cambios:
-      - "Los bloques de identificación PLAME y domicilio de la ficha se restringen a Recursos Humanos: sin esa restricción, un usuario interno sin permiso recibía un error de acceso al abrir un empleado."
+      - "Los datos privados del trabajador (identificación PLAME, domicilio, T-Registro y estudios) se restringen a Recursos Humanos, en la ficha y en la definición de cada campo: sin esa restricción, un usuario interno sin permiso recibía un error de acceso al abrir un empleado y el TPV no llegaba a abrir."
   - version: 14.20260901
     fecha: 16/09/2026
     cambios:

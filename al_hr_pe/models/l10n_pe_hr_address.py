@@ -17,54 +17,69 @@ from odoo.exceptions import ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
+    # Regla de Odoo (docstring de hr.employee): todo campo que solo exista en
+    # `hr.employee` y no en `hr.employee.public` lleva
+    # `groups="hr.group_hr_user"`. Sin eso entra en la precarga automática y
+    # cualquier lectura de un empleado por un usuario sin permiso de Recursos
+    # Humanos termina en «los campos … no están disponibles para los perfiles
+    # públicos de los empleados» (rompe, por ejemplo, la apertura del TPV).
+
     # --- Dirección 1: domicilio ---
     l10n_pe_road_type_id = fields.Many2one(
-        'l10n_pe.hr.road.type', string='Tipo de vía (T05)')
-    l10n_pe_road_name = fields.Char(string='Nombre de la vía')
-    l10n_pe_road_number = fields.Char(string='N° de la vía', size=6)
-    l10n_pe_department = fields.Char(string='Departamento (dpto.)', size=5)
-    l10n_pe_interior = fields.Char(string='Interior', size=5)
-    l10n_pe_block = fields.Char(string='Manzana', size=6)
-    l10n_pe_lot = fields.Char(string='Lote', size=5)
-    l10n_pe_km = fields.Char(string='Kilómetro', size=5)
-    l10n_pe_block_name = fields.Char(string='Block', size=5)
-    l10n_pe_stage = fields.Char(string='Etapa', size=5)
+        'l10n_pe.hr.road.type', string='Tipo de vía (T05)',
+        groups='hr.group_hr_user')
+    l10n_pe_road_name = fields.Char(string='Nombre de la vía', groups='hr.group_hr_user')
+    l10n_pe_road_number = fields.Char(string='N° de la vía', size=6, groups='hr.group_hr_user')
+    l10n_pe_department = fields.Char(string='Departamento (dpto.)', size=5, groups='hr.group_hr_user')
+    l10n_pe_interior = fields.Char(string='Interior', size=5, groups='hr.group_hr_user')
+    l10n_pe_block = fields.Char(string='Manzana', size=6, groups='hr.group_hr_user')
+    l10n_pe_lot = fields.Char(string='Lote', size=5, groups='hr.group_hr_user')
+    l10n_pe_km = fields.Char(string='Kilómetro', size=5, groups='hr.group_hr_user')
+    l10n_pe_block_name = fields.Char(string='Block', size=5, groups='hr.group_hr_user')
+    l10n_pe_stage = fields.Char(string='Etapa', size=5, groups='hr.group_hr_user')
     l10n_pe_zone_type_id = fields.Many2one(
-        'l10n_pe.hr.zone.type', string='Tipo de zona (T06)')
-    l10n_pe_zone_name = fields.Char(string='Nombre de la zona')
-    l10n_pe_address_reference = fields.Char(string='Referencia')
+        'l10n_pe.hr.zone.type', string='Tipo de zona (T06)',
+        groups='hr.group_hr_user')
+    l10n_pe_zone_name = fields.Char(string='Nombre de la zona', groups='hr.group_hr_user')
+    l10n_pe_address_reference = fields.Char(string='Referencia', groups='hr.group_hr_user')
     l10n_pe_district_id = fields.Many2one(
         'l10n_pe.res.city.district', string='Distrito (ubigeo)',
-        help='Su código de 6 dígitos es el ubigeo que pide SUNAT.')
+        help='Su código de 6 dígitos es el ubigeo que pide SUNAT.',
+        groups='hr.group_hr_user')
 
     # --- Dirección 2: referencia del centro asistencial ---
     l10n_pe_health_center_indicator = fields.Selection(
         selection=[('1', '1 — Dirección 1'), ('2', '2 — Dirección 2')],
         string='Domicilio del centro asistencial', default='1',
         help='Cuál de las dos direcciones usa EsSalud para asignar el '
-             'centro asistencial del trabajador.')
+             'centro asistencial del trabajador.',
+        groups='hr.group_hr_user')
     l10n_pe_road_type2_id = fields.Many2one(
-        'l10n_pe.hr.road.type', string='Tipo de vía (2)')
-    l10n_pe_road_name2 = fields.Char(string='Nombre de la vía (2)')
-    l10n_pe_road_number2 = fields.Char(string='N° de la vía (2)', size=6)
-    l10n_pe_department2 = fields.Char(string='Departamento (2)', size=5)
-    l10n_pe_interior2 = fields.Char(string='Interior (2)', size=5)
-    l10n_pe_block2 = fields.Char(string='Manzana (2)', size=6)
-    l10n_pe_lot2 = fields.Char(string='Lote (2)', size=5)
-    l10n_pe_km2 = fields.Char(string='Kilómetro (2)', size=5)
-    l10n_pe_block_name2 = fields.Char(string='Block (2)', size=5)
-    l10n_pe_stage2 = fields.Char(string='Etapa (2)', size=5)
+        'l10n_pe.hr.road.type', string='Tipo de vía (2)',
+        groups='hr.group_hr_user')
+    l10n_pe_road_name2 = fields.Char(string='Nombre de la vía (2)', groups='hr.group_hr_user')
+    l10n_pe_road_number2 = fields.Char(string='N° de la vía (2)', size=6, groups='hr.group_hr_user')
+    l10n_pe_department2 = fields.Char(string='Departamento (2)', size=5, groups='hr.group_hr_user')
+    l10n_pe_interior2 = fields.Char(string='Interior (2)', size=5, groups='hr.group_hr_user')
+    l10n_pe_block2 = fields.Char(string='Manzana (2)', size=6, groups='hr.group_hr_user')
+    l10n_pe_lot2 = fields.Char(string='Lote (2)', size=5, groups='hr.group_hr_user')
+    l10n_pe_km2 = fields.Char(string='Kilómetro (2)', size=5, groups='hr.group_hr_user')
+    l10n_pe_block_name2 = fields.Char(string='Block (2)', size=5, groups='hr.group_hr_user')
+    l10n_pe_stage2 = fields.Char(string='Etapa (2)', size=5, groups='hr.group_hr_user')
     l10n_pe_zone_type2_id = fields.Many2one(
-        'l10n_pe.hr.zone.type', string='Tipo de zona (2)')
-    l10n_pe_zone_name2 = fields.Char(string='Nombre de la zona (2)')
-    l10n_pe_address_reference2 = fields.Char(string='Referencia (2)')
+        'l10n_pe.hr.zone.type', string='Tipo de zona (2)',
+        groups='hr.group_hr_user')
+    l10n_pe_zone_name2 = fields.Char(string='Nombre de la zona (2)', groups='hr.group_hr_user')
+    l10n_pe_address_reference2 = fields.Char(string='Referencia (2)', groups='hr.group_hr_user')
     l10n_pe_district2_id = fields.Many2one(
-        'l10n_pe.res.city.district', string='Distrito (2)')
+        'l10n_pe.res.city.district', string='Distrito (2)',
+        groups='hr.group_hr_user')
 
     l10n_pe_address_display = fields.Char(
         string='Domicilio (T-Registro)',
         compute='_compute_l10n_pe_address_display',
-        help='La dirección 1 tal como queda armada para SUNAT.')
+        help='La dirección 1 tal como queda armada para SUNAT.',
+        groups='hr.group_hr_user')
 
     @api.depends('l10n_pe_road_type_id', 'l10n_pe_road_name',
                  'l10n_pe_road_number', 'l10n_pe_zone_name',

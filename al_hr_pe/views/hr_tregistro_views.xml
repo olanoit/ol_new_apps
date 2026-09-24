@@ -147,10 +147,14 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <!-- groups: datos privados del trabajador (no existen en
+                 hr.employee.public). La pestaña nativa ya los restringe, pero
+                 cada bloque lo declara para no depender de ella. -->
             <xpath expr="//page[@name='payroll_information']" position="inside">
                 <separator string="T-Registro (SUNAT)"
-                           name="l10n_pe_tregistro"/>
-                    <group>
+                           name="l10n_pe_tregistro"
+                           groups="hr_payroll.group_hr_payroll_user"/>
+                    <group groups="hr_payroll.group_hr_payroll_user">
                         <group string="Condición laboral">
                             <field name="l10n_pe_labor_regime_id"
                                    options="{'no_create': True}"/>
@@ -173,7 +177,7 @@
                             <field name="l10n_pe_unionized"/>
                         </group>
                     </group>
-                    <group>
+                    <group groups="hr_payroll.group_hr_payroll_user">
                         <group string="Situación">
                             <field name="l10n_pe_special_situation"/>
                             <field name="l10n_pe_fifth_income"/>
@@ -376,7 +380,7 @@
         <field name="inherit_id" ref="al_hr_pe.view_employee_form_tregistro"/>
         <field name="arch" type="xml">
             <xpath expr="//separator[@name='l10n_pe_tregistro']" position="after">
-                <group>
+                <group groups="hr_payroll.group_hr_payroll_user">
                     <group string="Establecimientos (E17)">
                         <field name="work_location_id" readonly="1"
                                string="Lugar de trabajo principal"/>
@@ -389,7 +393,8 @@
                     </group>
                 </group>
                 <field name="l10n_pe_education_ids"
-                       string="Estudios concluidos (E29)">
+                       string="Estudios concluidos (E29)"
+                       groups="hr_payroll.group_hr_payroll_user">
                     <list editable="bottom">
                         <field name="education_level_id"
                                options="{'no_create': True}"/>

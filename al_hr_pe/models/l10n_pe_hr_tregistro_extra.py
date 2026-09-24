@@ -173,10 +173,12 @@ class HrEmployee(models.Model):
     l10n_pe_extra_work_location_ids = fields.Many2many(
         'hr.work.location', string='Otros establecimientos',
         help='Locales adicionales del RUC donde también labora. El del '
-             'campo «Lugar de trabajo» se declara siempre.')
+             'campo «Lugar de trabajo» se declara siempre.',
+        groups='hr.group_hr_user')
     l10n_pe_education_ids = fields.One2many(
         'l10n_pe.hr.employee.education', 'employee_id',
-        string='Estudios concluidos')
+        string='Estudios concluidos',
+        groups='hr.group_hr_user')
 
     def _l10n_pe_establishments(self):
         """Locales a declarar en la E17, sin repetir."""

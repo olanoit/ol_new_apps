@@ -596,7 +596,11 @@ faq:
       TXT publicado que implementar.
 
 novedades:
-  - fecha: 16/09/2026
+  - fecha: 24/09/2026
+    cambios:
+      - "Los datos de construcción civil de la ficha del trabajador se restringen al personal de nómina, en la vista y en cada campo: sin ello, un usuario sin ese permiso recibía un error de acceso al abrir un empleado."
+  - version: 10.20260816
+    fecha: 16/09/2026
     cambios:
       - "Botón Importar tabla del convenio: lee el PDF de CAPECO o de la FTCCP, lo valida contra los importes semanales publicados y crea la tabla archivada para revisión."
       - Acción planificada mensual que busca convenios nuevos y crea una actividad para los responsables de planillas.

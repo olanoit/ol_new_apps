@@ -6,30 +6,42 @@ from odoo.exceptions import ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
+    # Regla de Odoo (docstring de hr.employee): todo campo que solo exista en
+    # `hr.employee` y no en `hr.employee.public` lleva
+    # `groups="hr.group_hr_user"`. Sin eso entra en la precarga automática y
+    # cualquier lectura de un empleado por un usuario sin permiso de Recursos
+    # Humanos termina en «los campos … no están disponibles para los perfiles
+    # públicos de los empleados» (rompe, por ejemplo, la apertura del TPV).
+
     # PLAME exige el nombre descompuesto y en orden Apellidos + Nombres;
     # los reportes leen employee.name, así que se mantiene sincronizado.
-    names = fields.Char(string='Nombres')
-    last_name = fields.Char(string='Apellido paterno')
-    m_last_name = fields.Char(string='Apellido materno')
+    names = fields.Char(string='Nombres', groups='hr.group_hr_user')
+    last_name = fields.Char(string='Apellido paterno', groups='hr.group_hr_user')
+    m_last_name = fields.Char(string='Apellido materno', groups='hr.group_hr_user')
     condition = fields.Selection(
         [('domiciled', 'Domiciliado'), ('not_domiciled', 'No domiciliado')],
         string='Condición', default='domiciled',
-        help='Condición de domicilio fiscal (afecta la retención de 5ta).')
+        help='Condición de domicilio fiscal (afecta la retención de 5ta).',
+        groups='hr.group_hr_user')
     # Tipo de documento: nativo latam (con códigos SUNAT/AFP añadidos por
     # este módulo); el número va en el campo nativo identification_id.
     l10n_latam_identification_type_id = fields.Many2one(
         'l10n_latam.identification.type', string='Tipo de documento',
-        domain="[('country_id.code', '=', 'PE')]")
+        domain="[('country_id.code', '=', 'PE')]",
+        groups='hr.group_hr_user')
     cts_bank_account_id = fields.Many2one(
         'res.partner.bank', string='Cuenta CTS',
         domain="[('partner_id', '=', work_contact_id)]",
         help='Cuenta de depósito de CTS; en Perú suele ser un banco '
-             'distinto al de haberes.')
+             'distinto al de haberes.',
+        groups='hr.group_hr_user')
     l10n_pe_dependent_ids = fields.One2many(
-        'l10n_pe.hr.dependent', 'employee_id', string='Derechohabientes')
+        'l10n_pe.hr.dependent', 'employee_id', string='Derechohabientes',
+        groups='hr.group_hr_user')
     l10n_pe_dependent_count = fields.Integer(
         string='N° de derechohabientes',
-        compute='_compute_l10n_pe_dependent_count')
+        compute='_compute_l10n_pe_dependent_count',
+        groups='hr.group_hr_user')
 
     @api.depends('l10n_pe_dependent_ids.date_end')
     def _compute_l10n_pe_dependent_count(self):

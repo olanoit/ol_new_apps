@@ -33,7 +33,13 @@
         Nota de implementación: los nodos nativos `.section-inventory`,
         `.section-optional-product` y `.financials-order` se vacían con
         `position="replace"` en su lugar ORIGINAL (para no duplicar su
-        contenido); Productos opcionales + Información General se
+        contenido), pero dejando en su sitio un div vacío con la MISMA
+        clase: otros módulos se anclan a ellos —`pos_hr` les pone un `t-if`
+        al bloque de finanzas, `pos_self_order` y `pos_urban_piper`
+        insertan antes del inventario— y si desaparecen del todo, el TPV
+        revienta al abrir la ficha del producto con «Element '<xpath …>'
+        cannot be located in parent view». El marcador lleva `d-none` y no
+        se ve; Productos opcionales + Información General se
         reconstruyen en un xpath aparte anclado con `position="after"` en
         `.pos-info-banner` (el nodo creado por el xpath 1, aún presente en
         el arch — su propio `t-if` solo afecta a si ÉL se renderiza, no a
@@ -79,13 +85,19 @@
         </xpath>
 
         <!-- Quita el Inventario nativo de su antigua posición a mitad del popup (reconstruido en el banner de arriba). -->
-        <xpath expr="//div[hasclass('section-inventory')]" position="replace"/>
+        <xpath expr="//div[hasclass('section-inventory')]" position="replace">
+            <div class="section-inventory d-none"/>
+        </xpath>
 
         <!-- Quita los Productos opcionales nativos de su antigua posición (reconstruidos abajo, tras Información General). -->
-        <xpath expr="//div[hasclass('section-optional-product')]" position="replace"/>
+        <xpath expr="//div[hasclass('section-optional-product')]" position="replace">
+            <div class="section-optional-product d-none"/>
+        </xpath>
 
         <!-- Quita Finanzas+Pedido nativos de su antigua posición al final del popup (reconstruidos abajo, justo tras el banner). -->
-        <xpath expr="//div[hasclass('financials-order')]" position="replace"/>
+        <xpath expr="//div[hasclass('financials-order')]" position="replace">
+            <div class="financials-order d-none"/>
+        </xpath>
 
         <!-- ===== 2. Productos opcionales y luego "Información General" (dos columnas) — justo tras el banner ===== -->
         <xpath expr="//div[hasclass('pos-info-banner')]" position="after">
