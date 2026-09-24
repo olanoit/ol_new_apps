@@ -46,7 +46,7 @@ sin dependencias externas.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
-    'version': '3.20260721',
+    'version': '3.20260925',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque
