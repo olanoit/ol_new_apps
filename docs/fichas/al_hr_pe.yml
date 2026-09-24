@@ -280,6 +280,7 @@ pasos:
       (T26) y la nacionalidad (T04).
     puntos:
       - El tipo y número de documento no se pueden repetir dentro de la compañía.
+      - "Ambos bloques solo los ve el personal de Recursos Humanos: son datos privados que no forman parte del perfil público del empleado."
       - Si el centro asistencial se asigna por la dirección 2, hay que informarla.
     imagen: screenshots/12-ficha-plame.png
 
@@ -676,7 +677,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
-  - fecha: 16/09/2026
+  - fecha: 24/09/2026
+    cambios:
+      - "Los bloques de identificación PLAME y domicilio de la ficha se restringen a Recursos Humanos: sin esa restricción, un usuario interno sin permiso recibía un error de acceso al abrir un empleado."
+  - version: 14.20260901
+    fecha: 16/09/2026
     cambios:
       - "UIT 2026 corregida a S/ 5.500 (D.S. N.° 301-2025-EF); venía con el valor de 2025. Al actualizar se corrige en la base si no se había cambiado a mano."
   - version: 13.20260901

@@ -6,8 +6,11 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <!-- groups: documento de identidad, nombres y cuenta de CTS son
+                 datos privados que no existen en hr.employee.public. -->
             <page name="personal_information" position="inside">
-                <group string="Perú — Identificación (PLAME)" name="l10n_pe_plame">
+                <group string="Perú — Identificación (PLAME)" name="l10n_pe_plame"
+                       groups="hr.group_hr_user">
                     <group>
                         <field name="last_name"/>
                         <field name="m_last_name"/>

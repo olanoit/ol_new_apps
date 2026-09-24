@@ -211,10 +211,16 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <!-- groups: el domicilio es dato privado del trabajador. Sin esto,
+                 un usuario interno sin permiso de Recursos Humanos que abra la
+                 ficha recibe un error de acceso, porque estos campos no
+                 existen en el perfil público del empleado
+                 (hr.employee.public). La restricción va DENTRO del arch: en
+                 Odoo 19 una vista heredada no admite «groups» en el registro. -->
             <xpath expr="//page[@name='personal_information']" position="inside">
                 <separator string="Domicilio (T-Registro)"
-                           name="l10n_pe_address"/>
-                <group>
+                           name="l10n_pe_address" groups="hr.group_hr_user"/>
+                <group groups="hr.group_hr_user">
                     <group string="Dirección 1">
                         <label for="l10n_pe_road_type_id" string="Vía"/>
                         <div class="o_row">
@@ -290,7 +296,7 @@
                                options="{'no_create': True}"/>
                     </group>
                 </group>
-                <group>
+                <group groups="hr.group_hr_user">
                     <group string="Documento (extranjeros)">
                         <field name="l10n_pe_country_emitter"/>
                         <field name="l10n_pe_nationality_code"/>

@@ -6,3 +6,4 @@ from . import test_dependents
 from . import test_tregistro_fields
 from . import test_tregistro_export
 from . import test_tregistro_extra
+from . import test_employee_privacy
