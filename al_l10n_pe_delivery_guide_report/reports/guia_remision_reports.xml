@@ -76,7 +76,7 @@
                                     Guía de remisión electrónica remitente
                                 </div>
                                 <div class="gre-doc-number">
-                                    N° <span t-esc="o.l10n_latam_document_number"/>
+                                    N° <span t-out="o.l10n_latam_document_number"/>
                                 </div>
                             </div>
                         </td>
@@ -114,7 +114,7 @@
                                 <span t-field="o.l10n_pe_edi_departure_start_date"
                                       t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
                             </td>
-                            <td class="gre-label">Peso bruto total (KGM):</td>
+                            <td class="gre-label">Peso bruto total (<t t-out="o.weight_uom_name"/>):</td>
                             <td><span t-field="o.weight"/></td>
                         </tr>
                         <tr>
@@ -131,19 +131,18 @@
                     <table class="gre-cols">
                         <tr>
                             <td class="gre-col">
+                                <!-- Remitente = la compañía, como declara el XML
+                                     (DespatchSupplierParty); la dirección del
+                                     almacén va en «Punto de partida». -->
                                 <div class="gre-section-title">Datos del remitente</div>
                                 <table class="gre-info">
                                     <tr>
                                         <td class="gre-label">Razón social:</td>
-                                        <td><span t-field="o.location_id.warehouse_id.partner_id.name"/></td>
+                                        <td><span t-field="o.company_id.name"/></td>
                                     </tr>
                                     <tr>
                                         <td class="gre-label">RUC:</td>
-                                        <td><span t-field="o.location_id.warehouse_id.partner_id.vat"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Dirección:</td>
-                                        <td><span t-field="o.location_id.warehouse_id.partner_id.contact_address"/></td>
+                                        <td><span t-field="o.company_id.vat"/></td>
                                     </tr>
                                 </table>
                             </td>
@@ -177,6 +176,41 @@
                     </table>
                 </div>
 
+                <!-- PUNTOS DE PARTIDA Y LLEGADA, con ubigeo (como en el XML) -->
+                <t t-set="departure" t-value="o._l10n_pe_report_departure_partner()"/>
+                <div class="gre-box">
+                    <table class="gre-cols">
+                        <tr>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Punto de partida</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Dirección:</td>
+                                        <td><span t-out="o._l10n_pe_report_address_line(departure)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Ubigeo:</td>
+                                        <td><span t-out="departure.l10n_pe_district.code"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="gre-col">
+                                <div class="gre-section-title">Punto de llegada</div>
+                                <table class="gre-info">
+                                    <tr>
+                                        <td class="gre-label">Dirección:</td>
+                                        <td><span t-out="o._l10n_pe_report_address_line(o.partner_id)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Ubigeo:</td>
+                                        <td><span t-out="o.partner_id.l10n_pe_district.code"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
                 <!-- DETALLE DE LOS BIENES -->
                 <t t-set="grouped_lines" t-value="o._get_grouped_move_lines()"/>
                 <table class="gre-lines">
@@ -194,17 +228,17 @@
                     <tbody>
                         <tr t-foreach="grouped_lines" t-as="line">
                             <td><span t-out="line_index + 1"/></td>
-                            <td><span t-esc="line['product'].barcode or line['product'].default_code"/></td>
+                            <td><span t-out="line['product'].barcode or line['product'].default_code"/></td>
                             <td class="gre-desc"><span t-field="line['product'].name"/></td>
                             <td>
                                 <t t-if="line['lots']">
-                                    <div class="gre-lot" t-foreach="list(line['lots'])" t-as="lot_name"
-                                         t-esc="lot_name"/>
+                                    <div class="gre-lot" t-foreach="line['lots']" t-as="lot_name"
+                                         t-out="lot_name"/>
                                 </t>
                                 <t t-else="">-</t>
                             </td>
                             <td><span t-field="line['uom'].name"/></td>
-                            <td><span t-esc="'{0:,.2f}'.format(line['quantity'])"/></td>
+                            <td><span t-out="'{0:,.2f}'.format(line['quantity'])"/></td>
                             <td>No</td>
                         </tr>
                     </tbody>
@@ -240,8 +274,14 @@
                                         <td><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
                                     </tr>
                                     <tr>
-                                        <td class="gre-label">Licencia:</td>
+                                        <td class="gre-label">
+                                            <span t-out="o.l10n_pe_edi_operator_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
+                                        </td>
                                         <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="gre-label">Licencia:</td>
+                                        <td><span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_operator_license"/></td>
                                     </tr>
                                 </table>
                             </td>

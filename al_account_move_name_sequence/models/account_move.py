@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
+# Tipos de documento que numera una Serie CPE: factura, boleta y sus
+# notas de crédito y débito. El resto (liquidación de compra, tickets,
+# etc.) no usa la secuencia de la serie.
+SERIES_DOC_CODES = ('01', '03', '07', '08')
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -16,15 +21,19 @@ class AccountMove(models.Model):
     journal_edi_series_ids = fields.Many2many(
         'edi.invoice.series', related='journal_id.edi_series_ids')
 
-    @api.depends('journal_id', 'l10n_latam_document_type_id', 'state')
+    @api.depends('journal_id', 'l10n_latam_document_type_id')
     def _compute_edi_series_id(self):
         """Al cambiar de diario (o de tipo de documento) la serie se
         revalida: si la elegida ya no es candidata del diario nuevo se
         limpia, y si el diario tiene UNA sola serie candidata se asigna
         automáticamente. Con varias candidatas se deja la elección al
-        usuario."""
+        usuario.
+
+        Un comprobante ya numerado (publicado, o devuelto a borrador tras
+        publicarse) conserva su serie: forma parte de su número. Por eso
+        ``state`` no está en el depends: pasar a borrador no la recalcula."""
         for move in self:
-            if move.state != 'draft':
+            if move.state != 'draft' or move.posted_before:
                 move.edi_series_id = move.edi_series_id
                 continue
             # Cambio de diario/tipo de documento → la serie se limpia
@@ -39,6 +48,8 @@ class AccountMove(models.Model):
         if not (journal.use_name_sequence and journal.edi_series_ids):
             return self.env['edi.invoice.series']
         doc_code = self.l10n_latam_document_type_id.code
+        if doc_code not in SERIES_DOC_CODES:
+            return self.env['edi.invoice.series']
         series = journal.edi_series_ids.filtered(lambda s: s.state == 'publish')
         if doc_code in ('01', '03'):
             series = series.filtered(lambda s: s.edi_type_code == doc_code)
@@ -60,6 +71,8 @@ class AccountMove(models.Model):
         origen (o de la serie propia como respaldo)."""
         self.ensure_one()
         doc_code = self.l10n_latam_document_type_id.code
+        if doc_code not in SERIES_DOC_CODES:
+            return self.env['ir.sequence']
         serie = self.edi_series_id
         if doc_code == '07':
             serie = (self.reversed_entry_id.edi_series_id or serie)

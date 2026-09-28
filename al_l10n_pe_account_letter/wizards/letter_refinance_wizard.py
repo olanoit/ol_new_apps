@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 
 class L10nPeLetterRefinanceWizard(models.TransientModel):
@@ -17,6 +18,11 @@ class L10nPeLetterRefinanceWizard(models.TransientModel):
     )
 
     def create_refinance(self):
+        # El asistente toma el canje del ``active_id``: abierto desde otro
+        # modelo (p. ej. el canje masivo) ese id sería el de otro canje.
+        active_model = self.env.context.get('active_model')
+        if active_model and active_model != 'l10n_pe.letter':
+            raise UserError(self.env._('La refinanciación se hace desde el canje, no desde %s.', active_model))
         letter_id = self.letter_id
         refinance_date = self.refinance_date
         created_refinance_letter = self.env['l10n_pe.letter'].create_refinance(letter_id, refinance_date)

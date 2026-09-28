@@ -36,10 +36,11 @@ se usaban en la lógica del módulo).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '6.20260901',
+    'version': '7.20260901',
     'license': 'OPL-1',
     'depends': [
         'mail',
+        'l10n_pe',
         'al_account_base',
         'al_l10n_pe_currency',
         'l10n_latam_invoice_document',

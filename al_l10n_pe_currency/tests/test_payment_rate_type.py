@@ -105,6 +105,21 @@ class TestPaymentRateType(AccountTestInvoicingCommon):
         self.assertAlmostEqual(with_sale - with_purchase,
                                1000 * (RATE_SALE - RATE_PURCHASE), places=2)
 
+    def test_switching_type_in_draft_rebuilds_the_move(self):
+        """Cambiar compra/venta en un pago en borrador rehace su asiento.
+
+        Antes el campo no estaba entre los que sincronizan el asiento y la
+        nueva elección se ignoraba sin aviso."""
+        payment = self._payment(rate_type='sale', amount=1000.0)
+        self.assertAlmostEqual(self._balance(payment), 1000 * RATE_SALE,
+                               places=2)
+        payment.action_draft()
+        self.assertEqual(payment.move_id.state, 'draft')
+        payment.l10n_pe_exchange_rate_type = 'purchase'
+        lines = payment.move_id.line_ids.filtered(lambda l: l.balance)
+        self.assertAlmostEqual(sum(abs(l.balance) for l in lines) / 2,
+                               1000 * RATE_PURCHASE, places=2)
+
     def test_company_currency_payment_is_untouched(self):
         """En soles no hay conversión que elegir."""
         payment = self.env['account.payment'].with_company(self.company).create({

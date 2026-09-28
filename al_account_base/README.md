@@ -14,7 +14,8 @@ la lógica de negocio específica vive en los módulos que dependen de éste.
 - **Utilidad** `account.move.l10n_pe_is_pe()` — indica si el comprobante es de
   una compañía peruana.
 - Muestra siempre el botón **"Restablecer a borrador"** en asientos
-  cancelados/publicados.
+  cancelados/publicados, salvo en los bloqueados con hash o los que exigen
+  solicitar la anulación (ahí el servidor lo rechazaría).
 
 ## Depende de
 

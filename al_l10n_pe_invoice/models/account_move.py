@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import api, fields, models
-from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    sale_id = fields.Many2one('sale.order', string='Orden de venta')
+    # Solo el primer pedido cuando se facturan varios juntos (el resto
+    # queda en ``invoice_origin``).
+    sale_id = fields.Many2one(
+        'sale.order', string='Orden de venta', index='btree_not_null',
+        copy=False, check_company=True)
     external_purchase = fields.Char(
         string='OC. externa', copy=False,
         help='Orden de compra externa del cliente, tomada del pedido de venta.')
@@ -73,12 +72,6 @@ class AccountMove(models.Model):
                 address.append(part)
         return ', '.join(address)
 
-    def action_print_pdf(self):
-        self.ensure_one()
-        return self.env.ref(
-            'al_l10n_pe_invoice.report_cpe_invoice_a4'
-        ).report_action(self.id)
-
     # ------------------------------------------------------------------
     # Datos auxiliares para las plantillas
     # El QR y el monto en letras NO se recalculan aquí: los provee el core
@@ -92,36 +85,86 @@ class AccountMove(models.Model):
         return f'{name_custom} {name_client}'
 
     def get_amount_discount(self):
-        """Descuento global del comprobante: líneas en negativo.
+        """Descuento total del comprobante, en base imponible (sin IGV),
+        igual que las «Op. gravadas» junto a las que se imprime.
 
-        Se filtra por ``display_type in ('product', 'discount')``: en v19
-        las líneas de producto llevan ``display_type = 'product'``, así
-        que el ``not x.display_type`` heredado de v18 no casaba con
-        ninguna línea y el bloque de descuento salía siempre en cero.
+        Suma los dos tipos de descuento:
+
+        * el porcentaje por línea: lo que la línea valdría sin descuento
+          menos su subtotal;
+        * el descuento global: líneas en negativo.
+
+        Antes solo sumaba las líneas negativas y con IGV (``price_total``),
+        mientras que la fila se mostraba según el porcentaje por línea: con
+        descuento % salía 0.00 y con descuento global no salía la fila.
         """
         self.ensure_one()
-        amount = sum(self.invoice_line_ids.filtered(
-            lambda x: x.display_type in ('product', 'discount')
-            and x.price_total < 0
-        ).mapped('price_total'))
-        return abs(amount)
+        amount = 0.0
+        lines = self.invoice_line_ids.filtered(
+            lambda x: x.display_type in ('product', 'discount'))
+        for line in lines:
+            if line.price_subtotal < 0:
+                amount += abs(line.price_subtotal)
+            elif line.discount:
+                undiscounted = line.tax_ids.compute_all(
+                    line.price_unit, currency=self.currency_id,
+                    quantity=line.quantity, product=line.product_id,
+                    partner=self.partner_id)['total_excluded']
+                amount += undiscounted - line.price_subtotal
+        return self.currency_id.round(amount)
 
     def get_data_dues(self):
-        """Cuotas de crédito a mostrar en el reporte: usa el detalle nativo
-        de Odoo cuando hay más de una cuota; si solo hay una, muestra el
-        saldo pendiente con su fecha de vencimiento."""
+        """Cuotas de crédito a mostrar en el reporte, con el mismo criterio
+        que el XML (``_add_invoice_payment_terms_nodes`` de l10n_pe_edi):
+        una cuota por apunte de vencimiento, ordenadas por fecha, y a la
+        primera se le descuenta la detracción.
+
+        Antes se usaba ``payment_term_details``, que el core solo llena
+        mientras la factura está pendiente: al reimprimir una factura
+        pagada salía una sola cuota de 0.00.
+        """
         self.ensure_one()
-        if self.payment_term_details:
-            return [{
+        spot = self._l10n_pe_edi_get_spot() if self.is_sale_document() else {}
+        spot_amount = spot.get('spot_amount', 0.0) if spot else 0.0
+        dues = []
+        term_lines = self.line_ids.filtered(
+            lambda l: l.display_type == 'payment_term').sorted('date_maturity')
+        for idx, line in enumerate(term_lines):
+            amount = abs(line.amount_currency)
+            if idx == 0:
+                amount -= spot_amount
+            dues.append({
                 'nro': idx + 1,
-                'amount': due.get('amount'),
-                'date': due.get('date'),
-            } for idx, due in enumerate(self.payment_term_details)]
-        return [{
-            'nro': 1,
-            'amount': self.amount_residual,
-            'date': self.invoice_date_due.strftime('%d/%m/%Y') if self.invoice_date_due else '',
-        }]
+                'amount': amount,
+                'date': line.date_maturity.strftime('%d/%m/%Y') if line.date_maturity else '',
+            })
+        return dues
+
+    def _l10n_pe_report_currency_label(self):
+        """Nombre de la moneda del documento para el reporte. Antes era
+        fijo («SOLES» salvo USD): una factura en euros imprimía SOLES."""
+        self.ensure_one()
+        labels = {'PEN': 'SOLES', 'USD': 'DÓLARES AMERICANOS', 'EUR': 'EUROS'}
+        currency = self.currency_id
+        return labels.get(currency.name) or (
+            currency.currency_unit_label or currency.full_name or currency.name or '').upper()
+
+    def _l10n_pe_report_igv_label(self):
+        """Etiqueta del IGV con la tasa realmente aplicada: 18 % general o
+        10 % (MYPE de restaurantes y hoteles). Con tasas mezcladas o sin
+        IGV, solo «IGV»."""
+        self.ensure_one()
+        rates = set(self.invoice_line_ids.tax_ids.flatten_taxes_hierarchy().filtered(
+            lambda t: t.l10n_pe_edi_tax_code == '1000').mapped('amount'))
+        if len(rates) == 1:
+            return 'IGV (%s%%)' % ('%g' % rates.pop())
+        return 'IGV'
+
+    def _l10n_pe_report_origin_move(self):
+        """Documento que modifica una nota de crédito (``reversed_entry_id``)
+        o de débito (``debit_origin_id``)."""
+        self.ensure_one()
+        return self.reversed_entry_id or self.debit_origin_id
 
     def _l10n_pe_get_national_bank_account_number(self):
         """Cuenta del Banco de la Nación de la compañía, para el bloque de
@@ -137,88 +180,85 @@ class AccountMove(models.Model):
         return account[0].acc_number if account else ''
 
     # ------------------------------------------------------------------
-    # Detalle tributario SUNAT — campos STORED (split obligatorio Odoo 18+:
-    # un método compute no puede mezclar store=True con store=False)
+    # Detalle tributario SUNAT — campos almacenados, un solo cálculo
     # ------------------------------------------------------------------
     l10n_pe_edi_amount_exonerated = fields.Monetary(
-        string='Monto Exonerado', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='Monto Exonerado', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_igv = fields.Monetary(
-        string='IGV', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='IGV', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_base = fields.Monetary(
-        string='Base Imponible', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='Base Imponible', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_ivap = fields.Monetary(
-        string='IVAP', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='IVAP', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_isc = fields.Monetary(
-        string='ISC', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='ISC', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_unaffected = fields.Monetary(
-        string='Operaciones Inafectas', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='Operaciones Inafectas', compute='_compute_tax_amounts_stored', store=True)
+    l10n_pe_edi_amount_export = fields.Monetary(
+        string='Operaciones de Exportación', compute='_compute_tax_amounts_stored', store=True)
+    l10n_pe_edi_amount_free = fields.Monetary(
+        string='Operaciones Gratuitas', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_others = fields.Monetary(
-        string='Otros Tributos', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
+        string='Otros Tributos', compute='_compute_tax_amounts_stored', store=True)
     l10n_pe_edi_amount_icbper = fields.Monetary(
-        string='ICBPER', compute='_compute_tax_amounts_stored', store=True, compute_sudo=False)
-
-    # Campo NO stored — retención, con su propio método compute
-    l10n_pe_edi_amount_retention = fields.Monetary(
-        string='Retención', compute='_compute_tax_amounts_non_stored', store=False, compute_sudo=False)
+        string='ICBPER', compute='_compute_tax_amounts_stored', store=True)
 
     _TAX_MOVE_TYPES = ('out_invoice', 'in_invoice', 'out_refund', 'in_refund')
 
-    @api.depends('line_ids.tax_ids', 'line_ids.price_subtotal', 'amount_total', 'currency_id')
+    # Campo del desglose → clave de ``_compute_tax_breakdown``.
+    _TAX_AMOUNT_FIELDS = {
+        'l10n_pe_edi_amount_base': 'base',
+        'l10n_pe_edi_amount_igv': 'igv',
+        'l10n_pe_edi_amount_ivap': 'ivap',
+        'l10n_pe_edi_amount_isc': 'isc',
+        'l10n_pe_edi_amount_icbper': 'icbper',
+        'l10n_pe_edi_amount_unaffected': 'unaffected',
+        'l10n_pe_edi_amount_exonerated': 'exonerated',
+        'l10n_pe_edi_amount_export': 'export',
+        'l10n_pe_edi_amount_free': 'free',
+        'l10n_pe_edi_amount_others': 'others',
+    }
+
+    @api.depends('move_type', 'company_id', 'line_ids.tax_ids',
+                 'line_ids.tax_ids.l10n_pe_edi_tax_code',
+                 'line_ids.price_subtotal', 'amount_total', 'currency_id')
     def _compute_tax_amounts_stored(self):
+        # Solo comprobantes de compañías peruanas: el desglose es la
+        # representación impresa SUNAT y no tiene sentido en el resto.
+        # Sin try/except: un error del agregador EDI es un fallo real y
+        # se deja ver en vez de guardar ceros.
         for move in self:
-            if move.move_type not in move._TAX_MOVE_TYPES:
+            if move.move_type not in move._TAX_MOVE_TYPES or move.country_code != 'PE':
                 move._reset_tax_amounts_stored()
                 continue
-            try:
-                tax_amounts = move._compute_tax_breakdown(move._prepare_edi_tax_details())
-                move._update_stored_tax_amounts(tax_amounts)
-            except Exception as e:
-                move._handle_tax_computation_error(e, stored_only=True)
-
-    @api.depends('line_ids.tax_ids', 'line_ids.price_subtotal', 'amount_total', 'currency_id')
-    def _compute_tax_amounts_non_stored(self):
-        for move in self:
-            if move.move_type not in move._TAX_MOVE_TYPES:
-                move.l10n_pe_edi_amount_retention = 0.0
-                continue
-            try:
-                tax_amounts = move._compute_tax_breakdown(move._prepare_edi_tax_details())
-                move.l10n_pe_edi_amount_retention = round(tax_amounts['retention'], 2)
-            except Exception as e:
-                _logger.error('Error calculando retenciones para %s: %s', move.name, e)
-                move.l10n_pe_edi_amount_retention = 0.0
+            move._update_stored_tax_amounts(
+                move._compute_tax_breakdown(move._prepare_edi_tax_details()))
 
     def _update_stored_tax_amounts(self, tax_amounts):
         self.update({
-            'l10n_pe_edi_amount_base': round(tax_amounts['base'], 2),
-            'l10n_pe_edi_amount_igv': round(tax_amounts['igv'], 2),
-            'l10n_pe_edi_amount_ivap': round(tax_amounts['ivap'], 2),
-            'l10n_pe_edi_amount_isc': round(tax_amounts['isc'], 2),
-            'l10n_pe_edi_amount_icbper': round(tax_amounts['icbper'], 2),
-            'l10n_pe_edi_amount_unaffected': round(tax_amounts['unaffected'], 2),
-            'l10n_pe_edi_amount_exonerated': round(tax_amounts['exonerated'], 2),
-            'l10n_pe_edi_amount_others': round(tax_amounts['others'], 2),
+            field: round(tax_amounts[key], 2)
+            for field, key in self._TAX_AMOUNT_FIELDS.items()
         })
 
     def _reset_tax_amounts_stored(self):
-        self.update({
-            'l10n_pe_edi_amount_base': 0.0,
-            'l10n_pe_edi_amount_igv': 0.0,
-            'l10n_pe_edi_amount_ivap': 0.0,
-            'l10n_pe_edi_amount_isc': 0.0,
-            'l10n_pe_edi_amount_icbper': 0.0,
-            'l10n_pe_edi_amount_unaffected': 0.0,
-            'l10n_pe_edi_amount_exonerated': 0.0,
-            'l10n_pe_edi_amount_others': 0.0,
-        })
+        self.update(dict.fromkeys(self._TAX_AMOUNT_FIELDS, 0.0))
 
     def _compute_tax_breakdown(self, tax_details):
-        """Clasifica los impuestos del detalle EDI nativo según los
-        códigos tributarios SUNAT (catálogo 05/07/08/09/etc.)."""
-        tax_amounts = {
-            'base': 0.0, 'igv': 0.0, 'ivap': 0.0, 'isc': 0.0, 'icbper': 0.0,
-            'unaffected': 0.0, 'exonerated': 0.0, 'others': 0.0, 'retention': 0.0,
-        }
+        """Clasifica los impuestos del detalle EDI nativo según el código de
+        tributo SUNAT (catálogo 05, ``l10n_pe`` ``account_tax.py``):
+
+        * 1000 IGV, 1016 IVAP, 2000 ISC, 7152 ICBPER y 9999 otros → importe;
+        * 9995 exportación, 9996 gratuito, 9997 exonerado, 9998 inafecto →
+          base (valor de la operación).
+
+        Antes el 9996 (gratuito) iba a «otros» y el 9995 (exportación) no
+        se contaba: el PDF no cuadraba con el XML en esas operaciones.
+        """
+        tax_amounts = dict.fromkeys(self._TAX_AMOUNT_FIELDS.values(), 0.0)
+        tax_keys = {'1000': 'igv', '1016': 'ivap', '2000': 'isc',
+                    '7152': 'icbper', '9999': 'others'}
+        base_keys = {'9995': 'export', '9996': 'free',
+                     '9997': 'exonerated', '9998': 'unaffected'}
         for tax_detail in tax_details.get('tax_details', {}).values():
             tax = tax_detail.get('grouping_key', self.env['account.tax'])
             tax_code = tax.l10n_pe_edi_tax_code if tax else ''
@@ -228,36 +268,14 @@ class AccountMove(models.Model):
             # un importe total en dólares.
             amount = tax_detail.get('tax_amount_currency', 0.0)
             base = tax_detail.get('base_amount_currency', 0.0)
-
-            if tax_code == '1000':  # IGV (18%)
-                tax_amounts['igv'] += amount
+            if tax_code == '1000':
                 tax_amounts['base'] += base
-            elif tax_code == '1016':  # IVAP
-                tax_amounts['ivap'] += amount
-            elif tax_code == '2000':  # ISC
-                tax_amounts['isc'] += amount
-            elif tax_code == '7152':  # ICBPER
-                tax_amounts['icbper'] += amount
-            elif tax_code == '9996':  # Otros tributos
-                tax_amounts['others'] += base
-            elif tax_code == '9997':  # Exonerado
-                tax_amounts['exonerated'] += base
-            elif tax_code == '9998':  # Inafecto
-                tax_amounts['unaffected'] += base
-            elif tax_code == 'RET':  # Retenciones
-                tax_amounts['retention'] += abs(amount)
+            if tax_code in tax_keys:
+                tax_amounts[tax_keys[tax_code]] += amount
+            elif tax_code in base_keys:
+                tax_amounts[base_keys[tax_code]] += base
 
         # Líneas sin impuesto se consideran exoneradas según SUNAT
         tax_amounts['exonerated'] += sum(self.invoice_line_ids.filtered(
             lambda l: not l.tax_ids).mapped('price_subtotal'))
         return tax_amounts
-
-    def _handle_tax_computation_error(self, error, stored_only=False):
-        _logger.error('Error calculando impuestos para %s: %s', self.name, error)
-        self._reset_tax_amounts_stored()
-        if not stored_only:
-            self.l10n_pe_edi_amount_retention = 0.0
-        if not self.env.context.get('suppress_tax_warnings'):
-            raise UserError(self.env._(
-                'Error calculando impuestos para el documento %(name)s:\n%(error)s',
-                name=self.name, error=str(error)))

@@ -199,3 +199,96 @@ class TestMoveNameSequence(AccountTestInvoicingCommon):
         # Sin series CPE asignadas → numeración nativa latam
         self.assertTrue(move.name)
         self.assertNotEqual(move.name, 'F001-00000001')
+
+    def _publish_series(self, *specs):
+        doc01 = self.env.ref('l10n_pe.document_type01')
+        series = self.env['edi.invoice.series']
+        for name, name_nc, name_nd in specs:
+            series |= series.create({
+                'name': name, 'name_nc': name_nc, 'name_nd': name_nd,
+                'l10n_latam_document_type_id': doc01.id,
+                'company_id': self.env.company.id,
+            })
+        series.action_publish()
+        return series
+
+    def test_reset_to_draft_keeps_series(self):
+        """Devolver a borrador un comprobante numerado con una de varias
+        series no le quita la serie; al volver a publicar conserva número
+        y serie."""
+        s1, s2 = self._publish_series(('F201', 'FC21', 'FD21'),
+                                      ('F202', 'FC22', 'FD22'))
+        journal = self.company_data['default_journal_sale'].copy({
+            'name': 'Dos series borrador', 'code': 'JDSB',
+            'l10n_latam_use_documents': True,
+            'use_name_sequence': True,
+            'edi_series_ids': [(6, 0, (s1 | s2).ids)]})
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'journal_id': journal.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product_a.id,
+                'quantity': 1, 'price_unit': 100.0,
+                'tax_ids': [(6, 0, self.tax_sale_a.ids)]})],
+        })
+        move.edi_series_id = s2
+        move.action_post()
+        self.assertEqual(move.name, 'F202-00000001')
+        move.button_draft()
+        self.assertEqual(move.edi_series_id, s2)
+        move.action_post()
+        self.assertEqual(move.name, 'F202-00000001')
+        self.assertEqual(move.edi_series_id, s2)
+        self.assertEqual(s2.invoice_count, 1)
+
+    def test_other_document_types_not_numbered_by_series(self):
+        """Un tipo de documento distinto de 01/03/07/08 no toma la
+        secuencia de la serie del diario."""
+        serie = self._publish_series(('F301', 'FC31', 'FD31'))
+        journal = self.company_data['default_journal_sale'].copy({
+            'name': 'Serie otros docs', 'code': 'JSOD',
+            'l10n_latam_use_documents': True,
+            'use_name_sequence': True,
+            'edi_series_ids': [(6, 0, serie.ids)]})
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'journal_id': journal.id,
+        })
+        move.l10n_latam_document_type_id = self.env.ref('l10n_pe.document_type04')
+        self.assertFalse(move._al_candidate_edi_series())
+        self.assertFalse(move._al_get_series_sequence())
+        self.assertFalse(move._al_uses_name_sequence())
+
+    def test_series_names_must_be_unique(self):
+        """Dos series no pueden compartir la serie de NC (ni ninguna otra):
+        emitirían números duplicados."""
+        from odoo.exceptions import ValidationError
+        self._publish_series(('F401', 'FC41', 'FD41'))
+        doc01 = self.env.ref('l10n_pe.document_type01')
+        with self.assertRaises(ValidationError):
+            self.env['edi.invoice.series'].create({
+                'name': 'F402', 'name_nc': 'FC41', 'name_nd': 'FD42',
+                'l10n_latam_document_type_id': doc01.id,
+                'company_id': self.env.company.id,
+            })
+        with self.assertRaises(ValidationError):
+            self.env['edi.invoice.series'].create({
+                'name': 'F403', 'name_nc': 'BC43', 'name_nd': 'FD43',
+                'l10n_latam_document_type_id': doc01.id,
+                'company_id': self.env.company.id,
+            })
+
+    def test_series_multicompany_rule(self):
+        """Las series de otra compañía no son visibles."""
+        serie = self._publish_series(('F501', 'FC51', 'FD51'))
+        other = self.env['res.company'].create({'name': 'Otra series CPE'})
+        user = self.env['res.users'].create({
+            'name': 'Usuario otra compañía', 'login': 'series_otra',
+            'company_id': other.id, 'company_ids': [(6, 0, other.ids)],
+            'group_ids': [(6, 0, [self.env.ref('account.group_account_invoice').id])],
+        })
+        visible = self.env['edi.invoice.series'].with_user(user).search(
+            [('id', '=', serie.id)])
+        self.assertFalse(visible)

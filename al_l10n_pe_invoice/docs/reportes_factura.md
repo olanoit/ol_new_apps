@@ -34,11 +34,12 @@ muestra un placeholder «Pendiente de envío a SUNAT» en lugar del QR
 
 - **Detalle tributario como campos almacenados** (`l10n_pe_edi_amount_igv`,
   `_base`, `_exonerated`, `_unaffected`, `_isc`, `_icbper`, `_ivap`,
-  `_others` + `_retention` no almacenado): clasifica los impuestos por
-  código SUNAT vía `_prepare_edi_tax_details()` con el split
-  stored/non-stored obligatorio desde Odoo 18.
+  `_export` (9995), `_free` (9996), `_others` (9999)): clasifica los
+  impuestos por código SUNAT (catálogo 05) vía
+  `_prepare_edi_tax_details()`, solo en compañías peruanas.
 - `is_credit`, `sale_id`, `external_purchase` (orden de venta) y las
-  cuotas de crédito (`get_data_dues`, sobre `payment_term_details` nativo).
+  cuotas de crédito (`get_data_dues`, sobre los apuntes de vencimiento, con
+  el mismo criterio que el XML y válidas también tras el pago).
 - Bloque de detracción sobre los campos de `al_l10n_pe_detraction`
   (`l10n_pe_detraction_applies` / `_type_id` / `_percent` / `_amount`) —
   en v18 el A4 y el ticket usaban dos fuentes de datos distintas y ambas

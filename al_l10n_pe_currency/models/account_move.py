@@ -77,13 +77,16 @@ class AccountMove(models.Model):
         es peruana— se mantiene el comportamiento nativo.
         """
         self.ensure_one()
-        rate = self._l10n_pe_rate_record(date)
-        value = rate.rate_purchase if self.l10n_pe_exchange_rate_type == 'purchase' \
-            else rate.rate_sale
-        if rate and value:
-            # La tasa nativa va de la moneda de la compañía a la del
-            # documento, es decir la inversa de «soles por dólar».
-            return 1.0 / value
+        if self.l10n_pe_exchange_rate_type == 'purchase':
+            rate = self._l10n_pe_rate_record(date)
+            value = rate and rate._l10n_pe_purchase_value()
+            if value:
+                # La tasa nativa va de la moneda de la compañía a la del
+                # documento, es decir la inversa de «soles por dólar».
+                return 1.0 / value
+        # Venta (o compra sin valor propio): la tasa nativa ya es 1 / venta,
+        # sin el redondeo a 3 decimales de ``rate_sale``, que desviaría las
+        # monedas de poco valor.
         return super()._get_expected_currency_rate_at(date)
 
     def _l10n_pe_rate_record(self, date):

@@ -14,7 +14,6 @@ class ResCompany(models.Model):
         domain=[('is_company', '=', False)],
         help='Persona cuya firma aparece en el bloque de firmas del reporte de comprobantes.',
     )
-    represent_dni = fields.Char(string='DNI', related='represent_id.vat')
     company_eslogan_pdf = fields.Text(
         string='Eslogan',
         help='Texto mostrado bajo los datos de la compañía en el reporte de comprobantes.',

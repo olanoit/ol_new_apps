@@ -21,14 +21,12 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_api_use_fallback = fields.Boolean(
         string='Usar fallback en cascada',
         related='company_id.l10n_pe_api_use_fallback', readonly=False)
-    l10n_pe_api_connection_ids = fields.One2many(
-        related='company_id.l10n_pe_api_connection_ids', readonly=False)
 
     def action_open_pe_api_connections(self):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Conexiones de consulta RUC/DNI',
+            'name': self.env._('Conexiones de consulta RUC/DNI'),
             'res_model': 'l10n_pe.api.connection',
             'view_mode': 'list,form',
             'domain': [('company_id', '=', self.company_id.id)],

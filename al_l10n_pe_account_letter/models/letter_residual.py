@@ -64,14 +64,22 @@ class L10nPeLetterResidual(models.Model):
                 record.debit = 0
                 record.credit = record.amount * -1
 
-    @api.depends('debit', 'credit')
+    @api.depends('debit', 'credit', 'letter_id.company_id')
     def _compute_account(self):
+        """Cuenta «Redondeo» de gasto (redondeo a favor) o de ingreso (en
+        contra) de la compañía del canje."""
+        Account = self.env['account.account']
         for record in self:
             if record.debit > 0:
-                record.account_id = self.env['account.account'].search(
-                    [('name', '=', 'Redondeo'), ('account_type', '=', 'expense')], limit=1)
+                account_type = 'expense'
             elif record.credit > 0:
-                record.account_id = self.env['account.account'].search(
-                    [('name', '=', 'Redondeo'), ('account_type', '=', 'income_other')], limit=1)
+                account_type = 'income_other'
             else:
                 record.account_id = False
+                continue
+            company = record.letter_id.company_id or self.env.company
+            record.account_id = Account.search([
+                *Account._check_company_domain(company),
+                ('name', '=', 'Redondeo'),
+                ('account_type', '=', account_type),
+            ], limit=1)

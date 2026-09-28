@@ -17,6 +17,7 @@ los campos ``rate_purchase`` / ``rate_sale``.
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 
 from ..services import bcrp_rate, decolecta_rate, sunat_rate
 
@@ -27,14 +28,43 @@ class ResCurrency(models.Model):
     _inherit = 'res.currency'
 
     def _l10n_pe_upsert_rate(self, rate_date, compra, venta, origin='sunat'):
-        """Crea o actualiza el tipo de cambio del día para esta moneda en todas
-        las compañías, respetando la unicidad nativa (una tasa por día)."""
+        """Crea o actualiza el tipo de cambio del día para esta moneda,
+        respetando la unicidad nativa (una tasa por día).
+
+        Solo en las compañías **raíz** cuya moneda es el sol: el núcleo
+        prohíbe tasas en las sucursales (``_check_company_id``, heredan las de
+        su matriz) y en una compañía con otra moneda base «1 / venta» no
+        significaría nada.
+        """
         self.ensure_one()
         if not (venta and venta > 0):
             return
-        Rate = self.env['res.currency.rate'].sudo()
+        pen = self.env.ref('base.PEN', raise_if_not_found=False)
+        # sudo: la tasa es de toda la base (la usan todas las compañías en
+        # soles), no solo de las que el usuario tiene activas.
+        companies_sudo = self.env['res.company'].sudo().search([
+            ('parent_id', '=', False),
+            ('currency_id', '=', pen.id if pen else False),
+        ]).filtered(lambda company: company.currency_id != self)
+        if not companies_sudo:
+            return
+        # sudo: la escritura de tasas está reservada al administrador
+        # contable; quien llega aquí ya pasó _l10n_pe_check_rate_access (o es
+        # el cron), y la tasa se replica en compañías que el usuario puede no
+        # tener activas.
+        rates_sudo = self.env['res.currency.rate'].sudo()
         date_str = fields.Date.to_string(rate_date)
-        for company in self.env['res.company'].search([]):
+        # Una sola búsqueda para todas las compañías (antes, una por compañía).
+        existing_by_company = {
+            rate.company_id: rate
+            for rate in rates_sudo.search([
+                ('currency_id', '=', self.id),
+                ('company_id', 'in', companies_sudo.ids),
+                ('name', '=', date_str),
+            ])
+        }
+        to_create = []
+        for company in companies_sudo:
             vals = {
                 'name': date_str,
                 'currency_id': self.id,
@@ -44,15 +74,30 @@ class ResCurrency(models.Model):
                 'rate_purchase': compra,
                 'ref_origin': origin,
             }
-            existing = Rate.search([
-                ('currency_id', '=', self.id),
-                ('company_id', '=', company.id),
-                ('name', '=', date_str),
-            ], limit=1)
+            existing = existing_by_company.get(company)
             if existing:
                 existing.write(vals)
             else:
-                Rate.create(vals)
+                to_create.append(vals)
+        if to_create:
+            rates_sudo.create(to_create)
+
+    def _l10n_pe_check_rate_access(self):
+        """Solo contables pueden cargar tipos de cambio.
+
+        Los métodos de actualización son públicos (los usan los botones, el
+        asistente y el cierre de tipo de cambio) y escriben con ``sudo()``;
+        sin esta comprobación cualquier usuario interno podría, por RPC,
+        pisar la tasa del día o lanzar consultas a servicios externos.
+        """
+        if self.env.su:
+            return
+        user = self.env.user
+        if not (user.has_group('account.group_account_user')
+                or user.has_group('account.group_account_manager')):
+            raise AccessError(_(
+                'Solo los usuarios de contabilidad pueden actualizar el tipo '
+                'de cambio.'))
 
     # ------------------------------------------------------------------ #
     # Fuentes                                                             #
@@ -111,27 +156,35 @@ class ResCurrency(models.Model):
             ('company_id', '=', company.root_id.id),
             ('name', '<=', date or fields.Date.context_today(self)),
         ], order='name desc', limit=1)
-        value = rate.rate_purchase if rate_type == 'purchase' else rate.rate_sale
+        value = rate._l10n_pe_purchase_value() if rate_type == 'purchase' else None
         if not value:
+            # Venta, o compra sin valor propio: la tasa nativa ya es 1 / venta
+            # y sin el redondeo a 3 decimales de ``rate_sale``, que falsearía
+            # las monedas de poco valor (yen, peso chileno…).
             return None
         return (1.0 / value) if invert else value
 
     @api.model
-    def _l10n_pe_connection_token(self, name, company=None):
+    def _l10n_pe_connection_token(self, host, company=None):
         """Token de una conexión configurada en ``l10n_pe_vat_sunat``.
 
         Dependencia suave: quien consulta RUC/DNI con un proveedor ya tiene
         allí su token, y varios de esos proveedores publican también el tipo
-        de cambio. Si el módulo no está instalado, devuelve ''.
+        de cambio. La conexión se identifica por el dominio del proveedor en
+        su URL base (más estable que el nombre, que el usuario puede cambiar).
+        Si el módulo no está instalado, devuelve ''.
         """
         if 'l10n_pe.api.connection' not in self.env:
             return ''
         company = company or self.env.company
-        connection = self.env['l10n_pe.api.connection'].sudo().search([
-            ('name', 'ilike', name),
+        # sudo: el token es una credencial reservada al administrador
+        # (``groups`` en el campo); aquí se lee en el servidor solo para
+        # llamar al proveedor y nunca se devuelve al cliente.
+        connection_sudo = self.env['l10n_pe.api.connection'].sudo().search([
+            '|', ('base_url', 'ilike', host), ('name', 'ilike', host),
             ('company_id', '=', company.id),
         ], limit=1)
-        return connection.token or ''
+        return connection_sudo.token or ''
 
     @api.model
     def _l10n_pe_apis_net_token(self, company=None):
@@ -139,10 +192,13 @@ class ResCurrency(models.Model):
 
     @api.model
     def _l10n_pe_decolecta_token(self, company=None):
-        return self._l10n_pe_connection_token('decolecta', company=company)
+        return self._l10n_pe_connection_token('decolecta.com', company=company)
 
     def l10n_pe_update_today_sunat(self):
-        """Tipo de cambio de hoy desde el TXT oficial de SUNAT (USD)."""
+        """Tipo de cambio de hoy desde el TXT oficial de SUNAT (USD).
+
+        Devuelve los datos cargados, o ``None`` si SUNAT no respondió."""
+        self._l10n_pe_check_rate_access()
         usd = self._l10n_pe_get_usd()
         data = sunat_rate.fetch_sunat_txt()
         if usd and data:
@@ -150,12 +206,13 @@ class ResCurrency(models.Model):
                 data['date'], data['compra'], data['venta'], 'sunat')
             _logger.info('TC SUNAT %s: compra=%s venta=%s',
                          data['date'], data['compra'], data['venta'])
-        return True
+        return data if usd else None
 
     def l10n_pe_update_date_apis(self, rate_date, token=''):
         """Tipo de cambio de una fecha desde apis.net.pe (USD).
 
         Si no se pasa token, reutiliza el de l10n_pe_vat_sunat."""
+        self._l10n_pe_check_rate_access()
         usd = self._l10n_pe_get_usd()
         token = token or self._l10n_pe_apis_net_token()
         data = sunat_rate.fetch_apis_net(date=rate_date, token=token)
@@ -175,6 +232,7 @@ class ResCurrency(models.Model):
 
         Devuelve el número de fechas cargadas.
         """
+        self._l10n_pe_check_rate_access()
         usd = self._l10n_pe_get_usd()
         if not usd:
             return 0
@@ -193,6 +251,7 @@ class ResCurrency(models.Model):
         admite fecha histórica. Si no se pasa token, se reutiliza el de la
         conexión Decolecta configurada para consultar RUC/DNI.
         """
+        self._l10n_pe_check_rate_access()
         usd = self._l10n_pe_get_usd()
         token = token or self._l10n_pe_decolecta_token()
         data = decolecta_rate.fetch_decolecta(token, date=rate_date)
@@ -211,7 +270,21 @@ class ResCurrency(models.Model):
     # ------------------------------------------------------------------ #
 
     def action_update_today_sunat(self):
-        self.l10n_pe_update_today_sunat()
+        data = self.l10n_pe_update_today_sunat()
+        if data:
+            message = _('Tipo de cambio del %(date)s cargado: compra %(buy)s, '
+                        'venta %(sell)s.', date=data['date'],
+                        buy=data['compra'], sell=data['venta'])
+            kind = 'success'
+        else:
+            message = _('SUNAT no devolvió el tipo de cambio de hoy. Inténtelo '
+                        'más tarde o use «Actualizar por fecha/mes».')
+            kind = 'warning'
+        return {
+            'type': 'ir.actions.client', 'tag': 'display_notification',
+            'params': {'title': _('Tipo de cambio'), 'message': message,
+                       'type': kind, 'sticky': False},
+        }
 
     def action_open_rate_wizard(self):
         return {

@@ -10,6 +10,11 @@ from datetime import date, timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+# Decolecta y apis.net.pe se consultan un día por llamada, dentro de la misma
+# petición: un rango largo agotaría el tiempo del proceso. Para históricos
+# largos está el BCRP, que trae el rango completo en una sola llamada.
+MAX_DAILY_DAYS = 31
+
 MONTH_SELECTION = [
     ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
     ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
@@ -35,17 +40,19 @@ class L10nPeExchangeRateWizard(models.TransientModel):
              'sistema bancario SBS (la que SUNAT usa para efectos '
              'tributarios) de forma gratuita y trae el rango completo en una '
              'sola consulta. «Hoy» siempre se toma del TXT de SUNAT.')
+    # Sin valor por defecto: el token guardado en la conexión es una
+    # credencial de administrador y no se envía al navegador. Si se deja
+    # vacío, el servidor usa el de la conexión de la compañía.
     apis_net_token = fields.Char(
         string='Token apis.net.pe',
-        default=lambda self: self.env['res.currency']._l10n_pe_apis_net_token(),
-        help='Opcional. Necesario para consultar fechas históricas sin límite. '
-             'Se prellena con el token configurado en la conexión apis.net.pe '
-             'del módulo de consulta RUC/DNI (l10n_pe_vat_sunat) si existe.')
+        help='Opcional. Vacío: se usa el token de la conexión apis.net.pe '
+             'configurada en el módulo de consulta RUC/DNI '
+             '(l10n_pe_vat_sunat) de la compañía.')
     decolecta_token = fields.Char(
         string='Token Decolecta',
-        default=lambda self: self.env['res.currency']._l10n_pe_decolecta_token(),
-        help='Se prellena con el token de la conexión Decolecta configurada '
-             'para consultar RUC/DNI: el mismo token sirve para las dos cosas.')
+        help='Opcional. Vacío: se usa el token de la conexión Decolecta '
+             'configurada para consultar RUC/DNI; el mismo token sirve para '
+             'las dos cosas.')
 
     range = fields.Selection(
         [('now', 'Hoy'), ('date', 'Por día'), ('dates', 'Rango de fechas'),
@@ -89,22 +96,33 @@ class L10nPeExchangeRateWizard(models.TransientModel):
         return []
 
     def _notify(self, message, kind='warning'):
+        params = {
+            'title': _('Tipo de cambio'),
+            'message': message,
+            'type': kind,
+            'sticky': False,
+        }
+        if kind == 'success':
+            # Hecho el trabajo, el asistente se cierra solo.
+            params['next'] = {'type': 'ir.actions.act_window_close'}
         return {
             'type': 'ir.actions.client', 'tag': 'display_notification',
-            'params': {
-                'title': _('Tipo de cambio'),
-                'message': message,
-                'type': kind,
-                'sticky': False,
-            },
+            'params': params,
         }
 
     def action_process(self):
         self.ensure_one()
-        currency = self.currency_id
+        # La compañía del asistente decide de qué conexión sale el token.
+        currency = self.currency_id.with_company(self.company_id)
         if self.range == 'now':
-            currency.l10n_pe_update_today_sunat()
-            return {'type': 'ir.actions.act_window_close'}
+            data = currency.l10n_pe_update_today_sunat()
+            if not data:
+                return self._notify(_(
+                    'SUNAT no devolvió el tipo de cambio de hoy. Inténtelo '
+                    'más tarde o cargue la fecha desde el BCRP.'))
+            return self._notify(
+                _('Tipo de cambio del %(date)s cargado desde SUNAT.',
+                  date=data['date']), kind='success')
 
         days = self._iter_dates()
         if not days:
@@ -121,6 +139,12 @@ class L10nPeExchangeRateWizard(models.TransientModel):
                 _('%s fecha(s) cargadas desde el BCRP.', loaded), kind='success')
 
         # Decolecta y apis.net.pe se consultan día a día.
+        if len(days) > MAX_DAILY_DAYS:
+            return self._notify(_(
+                '%(source)s se consulta día por día: elija como máximo '
+                '%(max)s días, o use el BCRP para rangos largos.',
+                source=dict(self._fields['source'].selection)[self.source],
+                max=MAX_DAILY_DAYS))
         failed = 0
         for day in days:
             if self.source == 'decolecta':
@@ -137,4 +161,5 @@ class L10nPeExchangeRateWizard(models.TransientModel):
                 '%(source)s (límite, token o día sin publicación).',
                 failed=failed, total=len(days),
                 source=dict(self._fields['source'].selection)[self.source]))
-        return {'type': 'ir.actions.act_window_close'}
+        return self._notify(
+            _('%s fecha(s) cargadas.', len(days)), kind='success')

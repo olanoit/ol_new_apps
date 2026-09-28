@@ -2,15 +2,6 @@
 from odoo import fields, models
 
 
-class SaleAdvancePaymentInv(models.TransientModel):
-    _inherit = 'sale.advance.payment.inv'
-
-    def _prepare_invoice_values(self, order, so_lines):
-        res = super()._prepare_invoice_values(order, so_lines)
-        res['sale_id'] = order.id
-        return res
-
-
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 

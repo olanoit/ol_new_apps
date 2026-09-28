@@ -137,7 +137,7 @@
                                 invisible="state == 'draft'"/>
                         <button name="%(account_refinance_invoice_action)d" type="action" string="Refinanciar"
                                 class="oe_highlight"
-                                invisible="is_all_paid == True"/>
+                                invisible="is_all_paid == True or state not in ('redeemed', 'banked') or is_refinance_parent"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -389,6 +389,22 @@
             <field name="model_id" ref="model_l10n_pe_letter"/>
             <field name="global" eval="True"/>
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- El canje masivo es un modelo aparte (herencia por prototipo): la
+             regla del canje no le alcanza. -->
+        <record id="account_letter_massive_rule_company" model="ir.rule">
+            <field name="name">Canje masivo multi-company</field>
+            <field name="model_id" ref="model_l10n_pe_letter_massive"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="account_letter_account_config_rule_company" model="ir.rule">
+            <field name="name">Cuentas de letras multi-company</field>
+            <field name="model_id" ref="model_l10n_pe_letter_account_config"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
         <record id="view_account_letter_link_summary" model="ir.ui.view">

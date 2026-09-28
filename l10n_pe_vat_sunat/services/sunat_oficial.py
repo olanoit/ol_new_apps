@@ -15,10 +15,9 @@ Hay dos endpoints distintos en SUNAT:
 
 Ambos se exponen como funciones puras que devuelven ``RucResult``.
 """
-import io
 import logging
 from io import BytesIO
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 from bs4 import BeautifulSoup
 
@@ -31,8 +30,10 @@ SUNAT_HOST = 'https://e-consultaruc.sunat.gob.pe'
 SUNAT_INDIVIDUAL = SUNAT_HOST + '/cl-ti-itmrconsruc/jcrS00Alias'
 SUNAT_MULTI = SUNAT_HOST + '/cl-ti-itmrconsmulruc/jrmS00Alias'
 
-# Número de intentos para superar el 401 inicial del portal.
-SUNAT_MAX_RETRIES = 6
+# Reintentos ante errores transitorios del portal (5xx, 429, red; ver
+# ``http.RETRYABLE_STATUS``). Pocos: la consulta se hace mientras el usuario
+# espera y cada reintento suma segundos.
+SUNAT_MAX_RETRIES = 2
 
 
 # ---------------------------------------------------------------------- #
@@ -352,9 +353,20 @@ def fetch_ruc_multi(ruc):
     txt_name = zip_name.replace('.zip', '.txt')
 
     zip_resp = http.get(zip_url, service='SUNAT-multi', retries=1)
-    with ZipFile(BytesIO(zip_resp.content)) as zf:
-        with zf.open(txt_name) as fh:
-            lines = [ln.decode('utf-8') for ln in fh.readlines()]
+    if zip_resp.status_code != 200:
+        raise http.HttpError(
+            'SUNAT Multi-RUC no entregó el ZIP de %s.' % ruc,
+            status_code=zip_resp.status_code, service='SUNAT-multi',
+        )
+    try:
+        with ZipFile(BytesIO(zip_resp.content)) as zf:
+            with zf.open(txt_name) as fh:
+                lines = [ln.decode('utf-8') for ln in fh.readlines()]
+    except (BadZipFile, KeyError) as exc:
+        raise http.HttpError(
+            'SUNAT Multi-RUC: ZIP inválido o sin %s.' % txt_name,
+            status_code=200, service='SUNAT-multi',
+        ) from exc
 
     if len(lines) < 2:
         raise http.HttpError(

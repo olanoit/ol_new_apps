@@ -65,8 +65,10 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
             if not self.letter_line_id:
                 raise UserError('Necesitas seleccionar una letra.')
             letter_line_id = self.letter_line_id
+        # «Todas las letras» = las que siguen en cartera: las ya enviadas al
+        # banco (canje por letra) o pagadas no se vuelven a enviar.
+        letter_line_ids = self.letter_id._get_letters_to_send()
         self.letter_id.action_canje_create(self.letter_type, self.date_canje, letter_line_id)
-        letter_line_ids = self.letter_id.letter_line_ids
         if self.canje_type == 'one':
             letter_line_ids = self.letter_line_id
         letter_line_ids.write({
@@ -81,6 +83,7 @@ class L10nPeLetter(models.Model):
     _name = 'l10n_pe.letter'
     _description = 'Gestión de letras'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _check_company_auto = True
 
     type = fields.Selection([
         ('out_invoice', 'Cliente'),
@@ -100,6 +103,7 @@ class L10nPeLetter(models.Model):
         'account.journal',
         string='Diario',
         tracking=True,
+        check_company=True,
         domain="[('name', 'ilike', 'letra')]",
     )
 
@@ -112,9 +116,9 @@ class L10nPeLetter(models.Model):
     @api.depends('type')
     def _compute_domain_letter_ids(self):
         for record in self:
-            # Filtrar por la compañía actual
+            # Filtrar por la compañía del canje
             domain = [
-                ('company_id', '=', self.env.company.id),
+                ('company_id', '=', (record.company_id or self.env.company).id),
                 ('name', 'ilike', 'letra')
             ]
 
@@ -181,6 +185,7 @@ class L10nPeLetter(models.Model):
         'account.move',
         string='Asiento contable',
         readonly=True,
+        check_company=True,
         ondelete='set null'
     )
 
@@ -240,7 +245,10 @@ class L10nPeLetter(models.Model):
         related='journal_id.currency_id',
     )
 
-    @api.depends('invoice_line_ids', 'letter_line_ids', 'letter_residual_ids',
+    @api.depends('invoice_line_ids.debit', 'invoice_line_ids.credit',
+                 'invoice_line_ids.document_type_id',
+                 'letter_line_ids.debit', 'letter_line_ids.credit',
+                 'letter_residual_ids.amount',
                  'exchange_rate', 'rest_amount_adeudado', 'is_refinance_children')
     def _compute_rest_amount(self):
         """
@@ -252,57 +260,40 @@ class L10nPeLetter(models.Model):
         - Caso especial para refinanciamiento
         """
         for record in self:
-            try:
-                # Inicializar variables
-                invoice_total = 0.0
-                letter_total = 0.0
-                residual_amount = 0.0
-                exchange_rate = record.exchange_rate or 1.0
+            invoice_total = 0.0
+            letter_total = 0.0
+            exchange_rate = record.exchange_rate or 1.0
 
-                # 1. Calcular totales de factura
-                if record.invoice_line_ids:
-                    invoice_total = sum(line.debit + line.credit for line in record.invoice_line_ids)
+            # 1. Calcular totales de factura
+            invoice_total = sum(line.debit + line.credit for line in record.invoice_line_ids)
+            refinance_invoice_total = sum(
+                line.debit + line.credit
+                for line in record.invoice_line_ids
+                if line.document_type_id.code == '99'
+            )
 
-                    refinance_invoice_total = sum(
-                        line.debit + line.credit
-                        for line in record.invoice_line_ids
-                        if line.document_type_id.code == '99'
-                    )
-                else:
-                    refinance_invoice_total = 0.0
+            # 2. Calcular totales de carta
+            letter_total = sum(line.debit + line.credit for line in record.letter_line_ids)
 
-                # 2. Calcular totales de carta
-                if record.letter_line_ids:
-                    letter_total = sum(line.debit + line.credit for line in record.letter_line_ids)
+            # 3. Calcular residuales (puede haber más de uno)
+            residual_amount = sum(record.letter_residual_ids.mapped('amount'))
 
-                # 3. Calcular residuales
-                if record.letter_residual_ids:
-                    residual_amount = record.letter_residual_ids.amount
+            # 4. Calcular diferencia base
+            if record.is_refinance_children:
+                base_amount = (
+                    (record.rest_amount_adeudado or 0.0) * exchange_rate
+                    + (invoice_total - refinance_invoice_total)
+                )
+                diference = base_amount - letter_total
+            else:
+                diference = invoice_total - letter_total
 
-                # 4. Calcular diferencia base
-                if record.is_refinance_children:
-                    base_amount = (
-                        (record.rest_amount_adeudado or 0.0) * exchange_rate
-                        + (invoice_total - refinance_invoice_total)
-                    )
-                    diference = base_amount - letter_total
-                else:
-                    diference = invoice_total - letter_total
+            # 5. Ajustar por residuales
+            diference += residual_amount
 
-                # 5. Ajustar por residuales
-                diference += residual_amount
-
-                # 6. Asignar valores finales
-                record.rest_amount = diference
-                if exchange_rate != 0:
-                    record.rest_amount_currency = diference / exchange_rate
-                else:
-                    record.rest_amount_currency = 0.0
-
-            except Exception as e:
-                _logger.error("Error computing rest amount: %s", str(e))
-                record.rest_amount = 0.0
-                record.rest_amount_currency = 0.0
+            # 6. Asignar valores finales
+            record.rest_amount = diference
+            record.rest_amount_currency = diference / exchange_rate
 
     # Método para autogeneracion de letras
     def create_letters(self):
@@ -371,8 +362,14 @@ class L10nPeLetter(models.Model):
         if self.letter_residual_ids:
             self.letter_residual_ids.unlink()
         if self.is_refinance_parent:
+            refinance = self.refinance_id
             self.is_refinance_parent = False
-            self.refinance_id.unlink()
+            self.refinance_id = False
+            if refinance:
+                # El unlink() del canje exige force_unlink; se devuelve antes
+                # a borrador, igual que al eliminar el canje refinanciador.
+                refinance.action_draft()
+                refinance.with_context(force_unlink=True).unlink()
         self.name = f"{'Borrador'}*{self.id}"
         self.state = 'draft'
 
@@ -393,6 +390,14 @@ class L10nPeLetter(models.Model):
         self.state = 'checked'
 
     def action_cancel(self):
+        for letter in self:
+            # Un canje contabilizado (canjeado/bancarizado) tiene asiento
+            # publicado y facturas conciliadas: no se cancela sin más. Los
+            # refinanciamientos (hijos) sí, porque se deshace su asiento abajo.
+            if letter.state not in ('draft', 'checked', 'cancel') and not letter.is_refinance_children:
+                raise UserError(self.env._(
+                    'Solo se pueden cancelar canjes en borrador o comprobados. '
+                    'Restablezca el canje %s a borrador antes de cancelarlo.', letter.name))
         for letter in self:
             # Si la letra es un refinanciamiento (hijo), limpiar las referencias
             # hacia los canjes de origen para permitir un nuevo refinanciamiento.
@@ -518,6 +523,11 @@ class L10nPeLetter(models.Model):
 
             # Apunte contable del redondeo
             letter_residual = self.create_residual()
+            if letter_residual and not letter_residual.account_id:
+                raise UserError(self.env._(
+                    'Falta la cuenta de redondeo: cree en la compañía %s una cuenta '
+                    'llamada «Redondeo» de tipo gasto (redondeo a favor) e ingreso '
+                    '(redondeo en contra).', self.company_id.name))
             if letter_residual:
                 account_move_lines.append({
                     'name': 'Redondeo',
@@ -610,9 +620,11 @@ class L10nPeLetter(models.Model):
         account_move_lines = []
         company_currency = self.company_id.currency_id
         exchange_rate = 1
-        letter_line_ids = self.letter_line_ids
+        letter_line_ids = self._get_letters_to_send()
         if letter_line_id:
             letter_line_ids = letter_line_id
+        if not letter_line_ids:
+            raise UserError(self.env._('No quedan letras pendientes de enviar al banco en el canje %s.', self.name))
         if self.currency_id != company_currency:
             exchange_rate = self.currency_id._convert(1, company_currency, self.company_id, letter_date, round=False)
         for letter_line in letter_line_ids:
@@ -637,7 +649,8 @@ class L10nPeLetter(models.Model):
             ('account_type', '=', account_type),
             ('document_type', '=', 'letter'),
             ('letter_type', '=', letter_type),
-            ('currency_id', '=', self.currency_id.id)
+            ('currency_id', '=', self.currency_id.id),
+            ('company_id', '=', self.company_id.id),
         ], limit=1)
         # Cuenta por defecto en Portafolio
         if invoice_account:
@@ -686,6 +699,14 @@ class L10nPeLetter(models.Model):
             if not counter_line:
                 raise UserError('No se ha encontrado el apunte contable relacionado a conciliar.')
             (line + counter_line).reconcile()
+
+    def _get_letters_to_send(self):
+        """Letras que siguen en cartera: ni enviadas ya al banco (tienen
+        apunte en un asiento de canje) ni pagadas."""
+        self.ensure_one()
+        sent = (self.canje_move_id | self.canje_move_ids).line_ids.l10n_pe_letter_line_id
+        return self.letter_line_ids.filtered(
+            lambda line: line not in sent and line.payment_state != 'paid')
 
     # Método para conciliar las facturas relacionadas
     def action_reconcile_related_invoices(self, move_id):
@@ -952,12 +973,14 @@ class L10nPeLetter(models.Model):
             if currency and currency != company.currency_id:
                 rate_date = record.invoice_date or fields.Date.context_today(record)
                 field = 'rate_purchase' if record.type == 'out_invoice' else 'rate_sale'
-                rate_rec = self.env['res.currency.rate'].sudo().search([
+                # sudo: la tasa vive en la compañía raíz, que puede no estar
+                # entre las compañías permitidas del usuario (solo se lee).
+                rate_sudo = self.env['res.currency.rate'].sudo().search([
                     ('currency_id', '=', currency.id),
                     ('company_id', '=', company.root_id.id),
                     ('name', '<=', rate_date),
                 ], order='name desc', limit=1)
-                pe_rate = rate_rec[field] if rate_rec else 0.0
+                pe_rate = rate_sudo[field] if rate_sudo else 0.0
                 if pe_rate:
                     rate = pe_rate
                 else:
@@ -965,23 +988,14 @@ class L10nPeLetter(models.Model):
                     rate = currency._convert(1.0, company.currency_id, company, rate_date, round=False)
             record.exchange_rate = rate or 1.0
 
-    def delete_all_invoices(self):
-        invoices_to_delete = self.env['l10n_pe.letter.invoice.line'].search([])
-        invoices_to_delete.unlink()
+    # Los canjes no se eliminan a mano: solo el propio módulo, con force_unlink.
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_manual(self):
+        if self and not self.env.context.get('force_unlink'):
+            raise UserError(self.env._('No se puede eliminar la letra manualmente. Contacte al administrador.'))
 
-    def delete_all_residual(self):
-        residual_to_delete = self.env['l10n_pe.letter.residual'].search([])
-        residual_to_delete.unlink()
-
-    # Método para evitar la eliminación de registros en estado canjeado y bancarizado
     def unlink(self):
-        # Verificar si el contexto permite forzar la eliminación
-        force_unlink = self.env.context.get('force_unlink', False)
-
         for letter in self:
-            # Validación solo si no se forzó el unlink
-            if not force_unlink:
-                raise UserError('No se puede eliminar la letra manualmente. Contacte al administrador.')
             # Limpiar relaciones de refinanciamiento si existen
             if letter.is_refinance_children:
                 origins = letter.refinance_origin_ids
@@ -1092,7 +1106,13 @@ class L10nPeLetter(models.Model):
         return total_adeudado, duplicated_invoice_lines
 
     def create_refinance(self, letter_id, refinance_date):
-        letter_record = self.browse(letter_id.id)
+        letter_record = self.env['l10n_pe.letter'].browse(letter_id.id)
+        if letter_record.state not in ('redeemed', 'banked'):
+            raise UserError(self.env._(
+                'Solo se refinancian canjes canjeados o bancarizados (%s).', letter_record.name))
+        if letter_record.is_refinance_parent and letter_record.refinance_id:
+            raise UserError(self.env._(
+                'El canje %s ya tiene un refinanciamiento relacionado.', letter_record.name))
         total_adeudado, duplicated_invoice_lines = letter_record._prepare_refinance_invoice_lines()
         letter_values = {
             'partner_id': letter_record.partner_id.id,
@@ -1106,7 +1126,6 @@ class L10nPeLetter(models.Model):
             'inverse_id': letter_record.id,
             'refinance_origin_ids': [(6, 0, [letter_record.id])],
             'rest_amount_adeudado': total_adeudado,
-            'rest_amount_currency': total_adeudado,
             'invoice_line_ids': duplicated_invoice_lines,
         }
 
@@ -1198,7 +1217,6 @@ class L10nPeLetter(models.Model):
             'inverse_id': inverse_id,
             'refinance_origin_ids': [(6, 0, letters.ids)],
             'rest_amount_adeudado': total_amount,
-            'rest_amount_currency': total_amount,
             'invoice_line_ids': duplicated_invoice_lines,
         }
         new_letter = self.create(letter_values)
@@ -1219,9 +1237,8 @@ class L10nPeLetter(models.Model):
     def action_open_massive_refinance_wizard(self):
         self._validate_massive_refinance_selection()
 
-        action = self.env.ref(
-            'al_l10n_pe_account_letter.account_massive_refinance_wizard_action'
-        ).sudo().read()[0]
+        action = self.env['ir.actions.actions']._for_xml_id(
+            'al_l10n_pe_account_letter.account_massive_refinance_wizard_action')
         action['context'] = {
             'default_refinance_date': fields.Date.context_today(self),
             'active_model': 'l10n_pe.letter',
@@ -1346,6 +1363,8 @@ class L10nPeLetter(models.Model):
             if record.invoice_line_ids:
                 invoice_names = record.invoice_line_ids.mapped('invoice_name')
                 record.related_invoice_names = '-'.join(invoice_names)
+            else:
+                record.related_invoice_names = False
 
     # Método para el botón de abrir facturas relacionadas
     def action_open_related_invoices(self):
@@ -1380,21 +1399,16 @@ class L10nPeLetter(models.Model):
         store=True
     )
 
-    @api.depends('account_id.line_ids.amount_residual_currency')
+    @api.depends('account_id.line_ids.matched_debit_ids',
+                 'account_id.line_ids.matched_credit_ids')
     def compute_payment_ids(self):
-        total_adeudado = sum(line.adeudado for line in self.letter_line_ids)
-        total_imp_div = sum(line.imp_div for line in self.invoice_line_ids)
-        if total_adeudado == total_imp_div:
-            self.payment_ids = False
-            return
-        if self.account_id:
-            for record in self:
-                name = record.account_id.name
-                payments = self.env['account.payment'].search([('move_id.line_ids.name', '=', name)])
-                if payments:
-                    record.payment_ids = [(6, 0, payments.ids)]
-                else:
-                    record.payment_ids = False
+        """Pagos conciliados con las letras del asiento del canje: se leen de
+        las conciliaciones (no por nombre) y registro a registro."""
+        for record in self:
+            letter_lines = record.account_id.line_ids.filtered('l10n_pe_letter_line_id')
+            partials = letter_lines.matched_debit_ids | letter_lines.matched_credit_ids
+            counterparts = (partials.debit_move_id | partials.credit_move_id) - letter_lines
+            record.payment_ids = counterparts.move_id.origin_payment_id
 
     # Método para el botón de abrir pagos relacionados
     def action_open_related_payments(self):
@@ -1428,14 +1442,12 @@ class L10nPeLetter(models.Model):
         store=True
     )
 
-    @api.depends('account_id.line_ids.amount_residual_currency')
+    @api.depends('letter_line_ids.adeudado')
     def _compute_is_all_paid(self):
         for record in self:
-            total_adeudado = sum(line.adeudado for line in record.letter_line_ids)
-            if total_adeudado == 0.0:
-                record.is_all_paid = True
-            else:
-                record.is_all_paid = False
+            total_adeudado = sum(record.letter_line_ids.mapped('adeudado'))
+            rounding = (record.currency_id or record.company_currency_id).rounding or 0.01
+            record.is_all_paid = float_is_zero(total_adeudado, precision_rounding=rounding)
 
     # ------------------------------------------ Validaciónes de fechas ------------------------------------------
     @api.constrains('invoice_date')

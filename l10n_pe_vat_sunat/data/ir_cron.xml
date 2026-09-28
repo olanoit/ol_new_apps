@@ -12,7 +12,7 @@
         <field name="name">SUNAT: Sincronizar padrón (Buen contribuyente / Agente de retención)</field>
         <field name="model_id" ref="model_l10n_pe_sunat_padron"/>
         <field name="state">code</field>
-        <field name="code">model.cron_sync_padron()</field>
+        <field name="code">model._cron_sync_padron()</field>
         <field name="user_id" ref="base.user_root"/>
         <field name="active" eval="True"/>
         <field name="interval_number">1</field>

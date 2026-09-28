@@ -403,6 +403,19 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 7.20260901
+    fecha: 27/09/2026
+    cambios:
+      - "Cargar el tipo de cambio ya no falla en bases con sucursales: la tasa se guarda en la compañía principal, de la que la toman sus sucursales."
+      - "El tipo de cambio del dólar solo se registra en las compañías que llevan la contabilidad en soles."
+      - "En monedas de poco valor (yen, peso chileno…) la factura y el pago convierten con la tasa exacta, sin el redondeo a tres decimales de la venta."
+      - "Cambiar entre compra y venta en un pago devuelto a borrador rehace su asiento."
+      - "La diferencia de pago y el descuento por pronto pago del asistente de pagos usan el mismo tipo de cambio (compra o venta) que el pago."
+      - "Solo los usuarios de contabilidad pueden actualizar el tipo de cambio."
+      - "El asistente ya no muestra los tokens guardados: si el campo queda vacío se usa el de la conexión de la compañía elegida. Decolecta y apis.net.pe admiten hasta 31 días por carga; para rangos largos, el BCRP."
+      - "«Actualizar hoy (SUNAT)» y el asistente avisan si la carga salió bien o no, y el asistente se cierra solo al terminar."
+      - "En la lista **Tipos de cambio** se puede crear una tasa nueva (propone el dólar), y una tasa creada solo con el valor nativo completa la compra y la venta."
+      - "El tipo de T.C. aparece en su sitio también en las facturas de proveedor."
   - fecha: 14/09/2026
     cambios:
       - Menús de la app Perú reordenados.

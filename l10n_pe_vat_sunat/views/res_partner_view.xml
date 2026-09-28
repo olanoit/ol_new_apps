@@ -14,7 +14,7 @@
                             type="object" name="btn_update_document"
                             class="oe_highlight"
                             invisible="country_code != 'PE'"
-                            context="{'force_update': True}"/>
+                            />
                     <field name="state" widget="statusbar" nolabel="1"
                            statusbar_visible="ACTIVO,BAJA DE OFICIO"
                            invisible="not is_company"

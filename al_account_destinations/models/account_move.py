@@ -25,12 +25,16 @@ class AccountMove(models.Model):
         string='Es asiento de destino', default=False, copy=False, readonly=True,
         help='Marca los asientos generados automáticamente por la dinámica de '
              'destinos (no se procesan de nuevo).')
+    # Sin cascada en la base de datos: un ``ON DELETE CASCADE`` borraría el
+    # comprobante de origen (publicado) al eliminar su asiento de destino, y
+    # viceversa, saltándose los controles del ORM. El asiento de destino se
+    # elimina por el ORM en ``unlink``.
     l10n_pe_destiny_move_id = fields.Many2one(
         'account.move', string='Asiento de destino', readonly=True, copy=False,
-        ondelete='cascade')
+        ondelete='set null')
     l10n_pe_origin_move_id = fields.Many2one(
         'account.move', string='Comprobante de origen', readonly=True, copy=False,
-        ondelete='cascade')
+        ondelete='set null')
 
     # ------------------------------------------------------------------ #
     # Ciclo de vida: propagar borrador/cancelación al asiento de destino  #
@@ -52,6 +56,15 @@ class AccountMove(models.Model):
                 destiny.button_cancel()
         return res
 
+    def unlink(self):
+        # Al eliminar el comprobante de origen se elimina también su asiento
+        # de destino, por el ORM: si este sigue publicado, el borrado se
+        # rechaza con el control nativo.
+        destinies = self.l10n_pe_destiny_move_id - self
+        if destinies:
+            destinies.unlink()
+        return super().unlink()
+
     def _post(self, soft=True):
         posted = super()._post(soft)
         # No reprocesar el propio asiento de destino (evita recursión).
@@ -66,15 +79,17 @@ class AccountMove(models.Model):
     def _l10n_pe_get_ga_journal(self):
         """Diario 'Gastos Automáticos' (GA); se crea si no existe."""
         self.ensure_one()
-        Journal = self.env['account.journal']
-        journal = Journal.search(
+        # sudo: quien publica una factura (grupo Facturación) no tiene permiso
+        # de crear diarios; el diario GA es infraestructura de la dinámica de
+        # destinos y se crea una sola vez por compañía.
+        journal_sudo = self.env['account.journal'].sudo().search(
             [('code', '=', 'GA'), ('company_id', '=', self.company_id.id)], limit=1)
-        if not journal:
-            journal = Journal.create({
+        if not journal_sudo:
+            journal_sudo = journal_sudo.create({
                 'name': 'Gastos Automáticos', 'type': 'general',
                 'code': 'GA', 'company_id': self.company_id.id,
             })
-        return journal
+        return journal_sudo.sudo(False)
 
     def _l10n_pe_create_destiny_entry(self):
         """Crea (o regenera) el asiento de destino de este comprobante."""
@@ -110,7 +125,9 @@ class AccountMove(models.Model):
         self.ensure_one()
         line_vals = []
         for line in self.line_ids:
-            account = line.account_id
+            # La dinámica (6→9 o 9→6) y el código de la cuenta dependen de la
+            # compañía: se evalúan en la del comprobante, no en la activa.
+            account = line.account_id.with_company(self.company_id)
             if account.l10n_pe_work_destinies and not account.l10n_pe_no_destiny:
                 line_vals.extend(self._l10n_pe_build_destiny_lines(line))
         return line_vals
@@ -120,7 +137,7 @@ class AccountMove(models.Model):
         de origen: reparte su importe entre las cuentas destino según su
         porcentaje y contabiliza la contrapartida en la cuenta de carga."""
         self.ensure_one()
-        account = line.account_id
+        account = line.account_id.with_company(self.company_id)
         dest_lines = account.l10n_pe_destiny_ids
         if not dest_lines:
             raise ValidationError(_(
@@ -132,7 +149,9 @@ class AccountMove(models.Model):
                 'No existe una cuenta de carga para la cuenta: %s', account.code))
         account.l10n_pe_check_destiny_percentage()
 
-        currency = line.currency_id or line.company_currency_id
+        # El asiento de destino se lleva en la moneda de la compañía: reparte
+        # el importe en soles (debe/haber) de la línea de origen.
+        currency = line.company_currency_id
         base_amount = line.debit - line.credit
         is_debit = base_amount >= 0
         base_abs = abs(base_amount)
@@ -154,7 +173,9 @@ class AccountMove(models.Model):
         return [(0, 0, v) for v in vals]
 
     def _l10n_pe_prepare_line(self, line, account, amount, is_debit):
-        currency = line.currency_id or line.company_currency_id
+        # Moneda de la compañía: con la divisa del comprobante, el
+        # ``amount_currency`` explícito quedaría con el importe en soles.
+        currency = line.company_currency_id
         amount = abs(amount)
         return {
             'name': self.name or _('Distribución de destino'),

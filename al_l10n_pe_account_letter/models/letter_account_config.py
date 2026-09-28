@@ -6,6 +6,7 @@ from odoo import models, fields
 class L10nPeLetterAccountConfig(models.Model):
     _name = 'l10n_pe.letter.account.config'
     _description = 'Configuración de cuentas de letras'
+    _check_company_auto = True
 
     account_type = fields.Selection(
         [('asset_receivable', 'Por cobrar'),
@@ -35,6 +36,7 @@ class L10nPeLetterAccountConfig(models.Model):
     account_id = fields.Many2one(
         'account.account',
         string='Cuenta',
+        check_company=True,
         domain="[('account_type', '=', account_type), ('company_ids', 'in', company_id)]"
     )
     currency_id = fields.Many2one(

@@ -36,6 +36,9 @@ DOCUMENT_TYPES = [
     ('both', 'RUC y DNI'),
 ]
 
+# Marca de «valor descartado» en el mapeo.
+_SKIP = object()
+
 AUTH_TYPES = [
     ('none', 'Sin autenticación'),
     ('bearer', 'Bearer token'),
@@ -48,6 +51,7 @@ class L10nPeApiConnection(models.Model):
     _name = 'l10n_pe.api.connection'
     _description = 'Conexión de consulta RUC/DNI'
     _order = 'sequence, id'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', required=True, ondelete='cascade', index=True,
@@ -88,7 +92,9 @@ class L10nPeApiConnection(models.Model):
         string='Nombre de clave',
         help="Nombre de la cabecera o parámetro cuando la autenticación es "
              "'Cabecera' o 'Parámetro de URL' (p. ej. 'X-Api-Key').")
-    token = fields.Char(string='Token / clave')
+    # Solo administradores: el token es una credencial de pago. El resto de
+    # usuarios consulta igual, porque el motor lo lee con sudo().
+    token = fields.Char(string='Token / clave', groups='base.group_system')
 
     # --- Interpretación de la respuesta (rest_json) ---
     success_path = fields.Char(
@@ -125,12 +131,19 @@ class L10nPeApiConnection(models.Model):
         """Una conexión REST que exige token pero no lo tiene nunca funcionará
         (siempre daría 401); se considera no utilizable hasta configurarla."""
         self.ensure_one()
-        if self.engine == 'rest_json' and self.auth_type != 'none' and not self.token:
+        # sudo(): ``token`` es solo de administradores, pero cualquier usuario
+        # que consulta un RUC necesita saber si la conexión tiene token.
+        connection_sudo = self.sudo()
+        if (self.engine == 'rest_json' and self.auth_type != 'none'
+                and not connection_sudo.token):
             return False
         return True
 
-    def run(self, document, doc_type):
+    def run(self, document, doc_type, quick=False):
         """Consulta la API y devuelve ``(vals, extra)``.
+
+        ``quick`` (consulta automática al escribir): sin reintentos y con
+        timeout corto, para no bloquear el formulario.
 
         - ``vals``: dict {campo_odoo: valor} listo para ``partner.write``.
         - ``extra``: dict con estructuras especiales (representantes
@@ -140,7 +153,7 @@ class L10nPeApiConnection(models.Model):
         consulta falla; el llamador decide si prueba la siguiente conexión.
         """
         self.ensure_one()
-        data = self._fetch_data(document, doc_type)
+        data = self._fetch_data(document, doc_type, quick=quick)
         if not data:
             raise http.HttpError(
                 _('La conexión "%s" no devolvió datos.', self.name),
@@ -157,10 +170,10 @@ class L10nPeApiConnection(models.Model):
     # 1. Obtener la respuesta como dict (según engine)                   #
     # ------------------------------------------------------------------ #
 
-    def _fetch_data(self, document, doc_type):
+    def _fetch_data(self, document, doc_type, quick=False):
         self.ensure_one()
         if self.engine == 'rest_json':
-            return self._fetch_rest(document, doc_type)
+            return self._fetch_rest(document, doc_type, quick=quick)
         if self.engine == 'sunat_oficial':
             result = sunat_oficial.fetch_ruc(
                 document, with_legal_reps=self.import_legal_reps,
@@ -170,7 +183,10 @@ class L10nPeApiConnection(models.Model):
             return dataclasses.asdict(sunat_oficial.fetch_ruc_multi(document))
         raise UserError(_('Engine de conexión no soportado: %s', self.engine))
 
-    def _fetch_rest(self, document, doc_type):
+    def _fetch_rest(self, document, doc_type, quick=False):
+        # sudo(): el token es solo de administradores; se lee aquí para
+        # autenticar la consulta sin exponerlo al usuario que la lanza.
+        token = self.sudo().token
         endpoint = self.endpoint_dni if doc_type == 'dni' else self.endpoint_ruc
         if not self.base_url or not endpoint:
             raise ValueError(
@@ -180,12 +196,12 @@ class L10nPeApiConnection(models.Model):
         url = url.replace('{doc}', document)
         headers = {'Accept': 'application/json'}
         params = {}
-        if self.auth_type == 'bearer' and self.token:
-            headers['Authorization'] = 'Bearer %s' % self.token
+        if self.auth_type == 'bearer' and token:
+            headers['Authorization'] = 'Bearer %s' % token
         elif self.auth_type == 'header' and self.auth_key:
-            headers[self.auth_key] = self.token or ''
+            headers[self.auth_key] = token or ''
         elif self.auth_type == 'query' and self.auth_key:
-            params[self.auth_key] = self.token or ''
+            params[self.auth_key] = token or ''
         # Cuerpo JSON para POST (APIs que reciben el número en el body).
         json_body = None
         if self.http_method == 'post':
@@ -197,10 +213,13 @@ class L10nPeApiConnection(models.Model):
                     raise ValueError(_(
                         'Body JSON inválido en la conexión "%(name)s": %(err)s',
                         name=self.name, err=exc))
+        timeout = self.timeout or 10
+        if quick:
+            timeout = min(timeout, 5)
         response = http.request(
             self.http_method.upper(), url, service=self.name,
             headers=headers, params=params or None, json=json_body,
-            timeout=self.timeout or 10)
+            timeout=timeout, retries=0 if quick else 2)
         if response.status_code != 200:
             # Extraer el mensaje de la API (p. ej. "Su plan ha vencido...")
             # para que el error sea accionable, no un genérico "HTTP 401".
@@ -215,7 +234,13 @@ class L10nPeApiConnection(models.Model):
                   code=response.status_code),
                 status_code=response.status_code, body=response.text,
                 service=self.name)
-        payload = response.json() or {}
+        try:
+            payload = response.json() or {}
+        except ValueError as exc:
+            raise http.HttpError(
+                _('%(name)s: la respuesta no es JSON válido.', name=self.name),
+                status_code=200, body=response.text,
+                service=self.name) from exc
         if self.success_path and not engine.truthy(
                 engine.get_path(payload, self.success_path)):
             message = engine.get_path(payload, 'message') or _('sin datos')
@@ -246,15 +271,33 @@ class L10nPeApiConnection(models.Model):
                 value = mapping.default_value
             if value in (None, '') and mapping.skip_if_empty:
                 continue
-            vals[field_name] = self._coerce(Partner._fields[field_name], value)
+            value = self._coerce(Partner._fields[field_name], value)
+            if value is _SKIP:
+                continue
+            vals[field_name] = value
         return vals
 
-    @staticmethod
-    def _coerce(field, value):
-        """Convierte el valor extraído al tipo del campo destino."""
+    def _coerce(self, field, value):
+        """Convierte el valor extraído al tipo del campo destino.
+
+        En selecciones, un valor que no está entre las opciones se descarta
+        (con aviso en el log): escribirlo haría fallar toda la consulta.
+        SUNAT recorta sus estados a 20 caracteres, así que se prueba también
+        el valor recortado.
+        """
         if field.type == 'boolean':
             return engine.truthy(value)
-        if field.type in ('char', 'text', 'selection'):
+        if field.type == 'selection':
+            text = '' if value is None else str(value).strip()
+            valid = field.get_values(self.env)
+            for candidate in (text, text.upper(), text.upper()[:20].strip()):
+                if candidate in valid:
+                    return candidate
+            _logger.warning(
+                '[%s] Valor «%s» no válido para %s; se ignora.',
+                self.name, text, field.name)
+            return _SKIP
+        if field.type in ('char', 'text'):
             return '' if value is None else str(value)
         return value
 

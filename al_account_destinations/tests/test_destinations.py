@@ -109,3 +109,116 @@ class TestDestinations(TransactionCase):
         move = self._post_entry(1000.0)
         dest = move.l10n_pe_destiny_move_id
         self.assertFalse(dest.l10n_pe_destiny_move_id)
+
+    # ------------------------------------------------------------------
+    # Borrado: sin cascada en la base de datos
+    # ------------------------------------------------------------------
+    def test_unlink_destiny_keeps_origin(self):
+        """Eliminar el asiento de destino no borra el comprobante de origen."""
+        self._configure()
+        move = self._post_entry(1000.0)
+        dest = move.l10n_pe_destiny_move_id
+        dest.button_draft()
+        dest.unlink()
+        self.assertTrue(move.exists())
+        self.assertEqual(move.state, 'posted')
+        self.assertFalse(move.l10n_pe_destiny_move_id)
+
+    def test_unlink_origin_removes_destiny(self):
+        """Eliminar el origen (en borrador) elimina su destino por el ORM."""
+        self._configure()
+        move = self._post_entry(1000.0)
+        dest = move.l10n_pe_destiny_move_id
+        move.button_draft()
+        self.assertEqual(dest.state, 'draft')
+        move.unlink()
+        self.assertFalse(dest.exists())
+
+    # ------------------------------------------------------------------
+    # Moneda, compañía y permisos
+    # ------------------------------------------------------------------
+    def test_foreign_currency_destiny_in_company_currency(self):
+        """Con un comprobante en divisa, el destino se lleva en soles y su
+        ``amount_currency`` coincide con el balance."""
+        self._configure(0.6, 0.4)
+        usd = self.env.ref('base.USD')
+        usd.active = True
+        move = self.env['account.move'].create({
+            'move_type': 'entry', 'journal_id': self.journal.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto',
+                                'currency_id': usd.id, 'amount_currency': 100.0,
+                                'debit': 375.0, 'credit': 0.0}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco',
+                                'currency_id': usd.id, 'amount_currency': -100.0,
+                                'debit': 0.0, 'credit': 375.0}),
+            ],
+        })
+        move.action_post()
+        dest = move.l10n_pe_destiny_move_id
+        self.assertTrue(dest)
+        company_currency = self.company.currency_id
+        for line in dest.line_ids:
+            self.assertEqual(line.currency_id, company_currency)
+            self.assertAlmostEqual(line.amount_currency, line.balance, places=2)
+        d1 = sum(dest.line_ids.filtered(lambda l: l.account_id == self.d1).mapped('debit'))
+        self.assertAlmostEqual(d1, 225.0, places=2)
+
+    def test_destiny_uses_move_company_settings(self):
+        """El sentido de la dinámica se toma de la compañía del comprobante,
+        no de la compañía activa."""
+        self._configure()
+        other = self.env['res.company'].create({
+            'name': 'Otra compañía destinos',
+            'country_id': self.env.ref('base.pe').id,
+            'l10n_pe_dest_type': '9a6',
+        })
+        move = self.env['account.move'].create({
+            'move_type': 'entry', 'journal_id': self.journal.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto',
+                                'debit': 200.0, 'credit': 0.0}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco',
+                                'debit': 0.0, 'credit': 200.0}),
+            ],
+        })
+        # Compañía activa = la otra (9a6); el comprobante es de la 6a9.
+        move.with_context(
+            allowed_company_ids=[other.id, self.company.id]).action_post()
+        self.assertTrue(move.l10n_pe_destiny_move_id)
+
+    def test_invoicing_user_can_post(self):
+        """Un usuario solo de Facturación publica y se genera el destino:
+        lee la configuración de destinos y, si el diario GA aún no existe,
+        se crea sin exigirle permiso sobre diarios."""
+        self._configure()
+        user = self.env['res.users'].create({
+            'name': 'Facturación destinos', 'login': 'fact_destinos',
+            'company_id': self.company.id,
+            'company_ids': [Command.set(self.company.ids)],
+            'group_ids': [Command.set([self.env.ref('account.group_account_invoice').id])],
+        })
+        move = self.env['account.move'].with_user(user).create({
+            'move_type': 'entry', 'journal_id': self.journal.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto',
+                                'debit': 100.0, 'credit': 0.0}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco',
+                                'debit': 0.0, 'credit': 100.0}),
+            ],
+        })
+        move.action_post()
+        self.assertTrue(move.l10n_pe_destiny_move_id)
+        self.assertEqual(move.l10n_pe_destiny_move_id.journal_id.code, 'GA')
+
+    def test_destiny_lines_created_one_by_one(self):
+        """Desde la lista de destinos se crean líneas de una en una sin que
+        la primera choque con la suma del 100 %."""
+        Destiny = self.env['l10n_pe.account.destiny']
+        self.exp.l10n_pe_load_account_id = self.load
+        Destiny.create({'parent_account_id': self.exp.id,
+                        'dest_account_id': self.d1.id, 'percentage': 0.6})
+        Destiny.create({'parent_account_id': self.exp.id,
+                        'dest_account_id': self.d2.id, 'percentage': 0.4})
+        move = self._post_entry(100.0)
+        self.assertTrue(move.l10n_pe_destiny_move_id)

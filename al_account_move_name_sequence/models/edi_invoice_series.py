@@ -25,6 +25,7 @@ class EdiInvoiceSeries(models.Model):
     _description = 'Serie de comprobante electrónico'
     _inherit = ['mail.thread']
     _rec_name = 'name'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
@@ -92,22 +93,55 @@ class EdiInvoiceSeries(models.Model):
             if not self.name_nd:
                 self.name_nd = f'{letter}D{tail}'
 
-    @api.constrains('name', 'l10n_latam_document_type_id')
+    @api.constrains('name', 'name_nc', 'name_nd', 'l10n_latam_document_type_id')
     def _check_serie_format(self):
+        # Las series de NC/ND siguen la letra del comprobante que modifican
+        # (FC01 para facturas, BC01 para boletas).
         for serie in self:
             regex = SERIE_REGEX.get(serie.edi_type_code)
-            if regex and serie.name and not regex.match(serie.name):
+            if not regex:
+                continue
+            for value in (serie.name, serie.name_nc, serie.name_nd):
+                if value and not regex.match(value):
+                    raise ValidationError(self.env._(
+                        'La serie «%(serie)s» no es válida para %(doc)s: debe '
+                        'ser la letra del tipo (%(letras)s) seguida de 3 '
+                        'caracteres alfanuméricos, p. ej. %(ejemplo)s.',
+                        serie=value,
+                        doc=serie.l10n_latam_document_type_id.name,
+                        letras='F' if serie.edi_type_code == '01' else 'B/E',
+                        ejemplo='F001' if serie.edi_type_code == '01' else 'B001'))
+
+    @api.constrains('name', 'name_nc', 'name_nd', 'company_id')
+    def _check_serie_names_unique(self):
+        """Cada serie (comprobante, NC o ND) numera por separado: si dos
+        registros comparten, p. ej., la serie de NC «FC01», ambos emitirían
+        FC01-00000001 y SUNAT rechazaría el duplicado."""
+        for serie in self:
+            names = [n for n in (serie.name, serie.name_nc, serie.name_nd) if n]
+            if len(names) != len(set(names)):
                 raise ValidationError(self.env._(
-                    'La serie «%(serie)s» no es válida para %(doc)s: debe '
-                    'ser la letra del tipo (%(letras)s) seguida de 3 '
-                    'caracteres alfanuméricos, p. ej. %(ejemplo)s.',
-                    serie=serie.name,
-                    doc=serie.l10n_latam_document_type_id.name,
-                    letras='F' if serie.edi_type_code == '01' else 'B/E',
-                    ejemplo='F001' if serie.edi_type_code == '01' else 'B001'))
+                    'La serie «%s» repite el mismo nombre para el comprobante '
+                    'y sus notas de crédito o débito.', serie.name))
+            clash = self.search([
+                ('id', '!=', serie.id),
+                ('company_id', '=', serie.company_id.id),
+                '|', '|',
+                ('name', 'in', names),
+                ('name_nc', 'in', names),
+                ('name_nd', 'in', names),
+            ], limit=1)
+            if clash:
+                raise ValidationError(self.env._(
+                    'Las series de «%(serie)s» (%(names)s) ya se usan en la '
+                    'serie «%(other)s» de la misma compañía.',
+                    serie=serie.name, names=', '.join(names),
+                    other=clash.name))
 
     def _create_sequence(self, serie_name, edi_type):
         self.ensure_one()
+        # sudo: crear ir.sequence es exclusivo de Ajustes (base.group_system);
+        # publicar la serie (administrador contable) crea sus secuencias.
         return self.env['ir.sequence'].sudo().create({
             'name': f'CPE/{edi_type}/{serie_name}',
             'implementation': 'no_gap',

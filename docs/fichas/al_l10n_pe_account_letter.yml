@@ -594,6 +594,18 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 7.20260901
+    fecha: 27/09/2026
+    cambios:
+      - "El canje masivo ya no muestra ni modifica las facturas o letras de otro canje; restablecer, canjear y refinanciar se hacen en cada canje de origen."
+      - "Un canje refinanciado se puede volver a borrador: se elimina su refinanciamiento."
+      - "Refinanciar solo se ofrece en canjes canjeados o bancarizados y una sola vez."
+      - "Un canje canjeado o bancarizado no se puede cancelar sin volverlo antes a borrador."
+      - "«Todas las letras» en el envío al banco lleva solo las letras que siguen en cartera, sin repetir las ya enviadas."
+      - "El adeudado de cada letra se actualiza al cambiar su importe y sale del apunte de esa letra; los pagos del canje se leen de sus conciliaciones."
+      - "En varias compañías, cada canje usa sus propias cuentas de letras y su cuenta «Redondeo»; si falta la cuenta de redondeo, el canje lo avisa."
+      - "Solo el administrador contable o de letras puede cambiar las cuentas de letras; el usuario de letras las consulta."
+      - "Los grupos de acceso se llaman «Usuario» y «Administrador»."
   - fecha: 14/09/2026
     cambios:
       - "Corrección: en las facturas del canje ya no aparece una columna vacía."

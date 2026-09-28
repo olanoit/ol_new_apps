@@ -373,6 +373,13 @@ faq:
       No. Sin la casilla, el diario numera igual que el Odoo estándar.
 
 novedades:
+  - version: 9.20260828
+    fecha: 27/09/2026
+    cambios:
+      - "Un comprobante devuelto a borrador conserva su Serie CPE aunque el diario tenga varias series. Antes la perdía y, al volver a publicarlo, quedaba sin serie."
+      - "Los tipos de documento distintos de factura, boleta y sus notas de crédito y débito ya no se numeran con la secuencia de la serie."
+      - "Las series de nota de crédito y de débito deben empezar con la letra del comprobante (F o B/E) y no pueden repetirse entre series de la misma compañía, para no emitir números duplicados."
+      - "Con varias compañías, cada una ve solo sus Series CPE."
   - version: 8.20260828
     fecha: 14/09/2026
     cambios:

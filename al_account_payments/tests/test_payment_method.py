@@ -12,6 +12,7 @@ Lo que se valida:
   varias facturas del mismo partner en un solo pago.
 """
 from odoo import Command
+from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -165,3 +166,26 @@ class TestPePaymentMethod(TransactionCase):
         self.assertEqual(len(payments), 1, 'las dos facturas se agrupan en un pago')
         self.assertEqual(payments.pe_payment_method_id, self.deposito)
         self.assertEqual(payments.bank_operation_number, 'LOTE-001')
+
+    # ------------------------------------------------------------------
+    # Permisos del catálogo
+    # ------------------------------------------------------------------
+    def test_catalog_readonly_for_internal_users(self):
+        """Un usuario interno lee el catálogo SUNAT pero no lo modifica;
+        el administrador contable sí."""
+        user = self.env['res.users'].create({
+            'name': 'Interno catálogo', 'login': 'interno_catalogo_pago',
+            'group_ids': [Command.set([self.env.ref('base.group_user').id])],
+        })
+        catalog = self.Catalog.with_user(user)
+        self.assertTrue(catalog.search([('code', '=', '001')]))
+        with self.assertRaises(AccessError):
+            self.deposito.with_user(user).write({'name': 'CAMBIADO'})
+        with self.assertRaises(AccessError):
+            catalog.create({'code': '998', 'name': 'NO PERMITIDO'})
+        manager = self.env['res.users'].create({
+            'name': 'Admin catálogo', 'login': 'admin_catalogo_pago',
+            'group_ids': [Command.set([self.env.ref('account.group_account_manager').id])],
+        })
+        rec = self.Catalog.with_user(manager).create({'code': '997', 'name': 'PERMITIDO'})
+        self.assertTrue(rec)

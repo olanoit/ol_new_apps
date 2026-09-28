@@ -32,6 +32,12 @@ URLS = {
     'retention_agent': 'https://ww1.sunat.gob.pe/descarga/AgentRet/AgenRet_TXT.zip',
 }
 
+# Campo del contacto que refleja cada padrón.
+PARTNER_FIELDS = {
+    'is_good_taxpayer': 'good_taxpayer',
+    'is_retention_agent': 'retention_agent',
+}
+
 
 def sync(env, kinds=None):
     """Descarga los padrones SUNAT y los persiste en la caché.
@@ -45,7 +51,9 @@ def sync(env, kinds=None):
     """
     kinds = kinds or list(URLS.keys())
     counts = {}
-    Padron = env['l10n_pe.sunat.padron'].sudo()
+    # sudo(): el cron y el botón de administración recargan la caché, que
+    # solo el administrador puede escribir.
+    padron_sudo = env['l10n_pe.sunat.padron'].sudo()
     for kind in kinds:
         url = URLS[kind]
         try:
@@ -57,34 +65,66 @@ def sync(env, kinds=None):
             counts[kind] = 0
             continue
 
+        if not rucs:
+            # Una descarga «correcta» sin RUCs (formato cambiado, HTML en
+            # lugar de ZIP…) no debe vaciar la caché: se conserva la anterior.
+            _logger.warning(
+                'El padrón %s descargado no trae RUCs; se conserva la caché.',
+                kind)
+            counts[kind] = 0
+            continue
+
         # Truncar y recargar — más rápido que diff a esta escala.
-        Padron.search([('kind', '=', kind)]).unlink()
-        if rucs:
-            # Crear en bloques para no hinchar la memoria.
-            BLOCK = 5000
-            for i in range(0, len(rucs), BLOCK):
-                Padron.create([
-                    {'kind': kind, 'vat': r} for r in rucs[i:i + BLOCK]
-                ])
+        padron_sudo.search([('kind', '=', kind)]).unlink()
+        # Crear en bloques para no hinchar la memoria.
+        BLOCK = 5000
+        for i in range(0, len(rucs), BLOCK):
+            padron_sudo.create([
+                {'kind': kind, 'vat': r} for r in rucs[i:i + BLOCK]
+            ])
         counts[kind] = len(rucs)
         _logger.info('Padrón "%s" sincronizado: %d RUCs.', kind, len(rucs))
+        _refresh_partners(env, kind, set(rucs))
     return counts
 
 
+def _refresh_partners(env, kind, rucs):
+    """Actualiza la casilla del padrón en los contactos con RUC."""
+    field_name = next(f for f, k in PARTNER_FIELDS.items() if k == kind)
+    # sudo(): el cron recorre los contactos de todas las compañías.
+    partners_sudo = env['res.partner'].sudo().with_context(active_test=False)
+    partners_sudo = partners_sudo.search_fetch(
+        [('vat', '!=', False)], ['vat', field_name])
+    to_true = partners_sudo.filtered(
+        lambda p: not p[field_name] and (p.vat or '').strip() in rucs)
+    to_false = partners_sudo.filtered(
+        lambda p: p[field_name] and (p.vat or '').strip() not in rucs)
+    to_true.write({field_name: True})
+    to_false.write({field_name: False})
+
+
+def has_data(env, kind):
+    """El padrón de ese tipo tiene filas (se descargó alguna vez)."""
+    # sudo(): la caché es de solo lectura para todos; sudo evita reglas.
+    return bool(env['l10n_pe.sunat.padron'].sudo().search_count(
+        [('kind', '=', kind)], limit=1))
+
+
 def is_good_taxpayer(env, ruc):
-    return _has_ruc(env, 'good_taxpayer', ruc)
+    return has_ruc(env, 'good_taxpayer', ruc)
 
 
 def is_retention_agent(env, ruc):
-    return _has_ruc(env, 'retention_agent', ruc)
+    return has_ruc(env, 'retention_agent', ruc)
 
 
-def _has_ruc(env, kind, ruc):
+def has_ruc(env, kind, ruc):
     if not ruc:
         return False
-    Padron = env['l10n_pe.sunat.padron'].sudo()
-    return bool(Padron.search_count(
-        [('kind', '=', kind), ('vat', '=', str(ruc).strip())],
+    # sudo(): la caché del padrón es pública para consulta.
+    padron_sudo = env['l10n_pe.sunat.padron'].sudo()
+    return bool(padron_sudo.search_count(
+        [('kind', '=', kind), ('vat', '=', str(ruc).strip())], limit=1,
     ))
 
 
@@ -113,7 +153,7 @@ def _download_zip(url, service='SUNAT'):
         ) from exc
 
     rucs = []
-    for line in text.split('\r'):
+    for line in text.splitlines():
         line = line.strip()
         if not line:
             continue

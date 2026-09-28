@@ -132,6 +132,10 @@ class TestRatePurchaseSale(TransactionCase):
         self.assertIsNone(decolecta_rate.fetch_decolecta('', date=date(2026, 3, 2)))
 
     def test_decolecta_updates_rate(self):
+        if self.env.company.currency_id != self.env.ref('base.PEN') \
+                or self.env.company.parent_id:
+            self.skipTest('el tipo de cambio SUNAT solo se carga en '
+                          'compañías raíz en soles')
         with patch.object(decolecta_rate, 'fetch_decolecta',
                           return_value={'date': date(2026, 3, 2),
                                         'compra': 3.359, 'venta': 3.368}):

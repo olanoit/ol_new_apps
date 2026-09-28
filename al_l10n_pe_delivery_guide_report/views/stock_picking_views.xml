@@ -5,11 +5,14 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="l10n_pe_edi_stock.view_picking_edi_form"/>
         <field name="arch" type="xml">
+            <!-- Solo con la guía aceptada por SUNAT (CDR recibido): el número
+                 de ticket existe también mientras el CDR está pendiente o
+                 tras un error de conexión. -->
             <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="after">
                 <button name="action_print_guia_remision"
                         icon="fa-print"
                         string="Guía de remisión"
-                        invisible="state != 'done' or not l10n_pe_edi_ticket_number"
+                        invisible="state != 'done' or l10n_pe_edi_status != 'sent'"
                         type="object" groups="base.group_user" data-hotkey="p"/>
             </xpath>
         </field>

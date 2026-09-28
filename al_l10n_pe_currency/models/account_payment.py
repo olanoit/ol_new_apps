@@ -48,6 +48,13 @@ class AccountPayment(models.Model):
                 l10n_pe_exchange_rate_type=self.l10n_pe_exchange_rate_type),
         )._prepare_move_lines_per_type(*args, **kwargs)
 
+    @api.model
+    def _get_trigger_fields_to_synchronize(self):
+        # Cambiar compra/venta en un pago en borrador debe rehacer su asiento,
+        # igual que cambiar la fecha o el importe.
+        return super()._get_trigger_fields_to_synchronize() + (
+            'l10n_pe_exchange_rate_type',)
+
 
 class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
@@ -72,12 +79,24 @@ class AccountPaymentRegister(models.TransientModel):
                 wizard.l10n_pe_exchange_rate_type = \
                     company.l10n_pe_exchange_rate_type_out or 'sale'
 
+    def _l10n_pe_with_rate_type(self):
+        """El asistente con el tipo de cambio elegido en el contexto: el
+        núcleo convierte aquí la diferencia de pago (write-off), el importe
+        forzado y el descuento por pronto pago, y deben ir al mismo tipo de
+        cambio que la línea de liquidez del pago."""
+        return self.with_context(
+            l10n_pe_exchange_rate_type=self.l10n_pe_exchange_rate_type)
+
     def _create_payment_vals_from_wizard(self, batch_result):
-        values = super()._create_payment_vals_from_wizard(batch_result)
+        values = super(
+            AccountPaymentRegister, self._l10n_pe_with_rate_type(),
+        )._create_payment_vals_from_wizard(batch_result)
         values['l10n_pe_exchange_rate_type'] = self.l10n_pe_exchange_rate_type
         return values
 
     def _create_payment_vals_from_batch(self, batch_result):
-        values = super()._create_payment_vals_from_batch(batch_result)
+        values = super(
+            AccountPaymentRegister, self._l10n_pe_with_rate_type(),
+        )._create_payment_vals_from_batch(batch_result)
         values['l10n_pe_exchange_rate_type'] = self.l10n_pe_exchange_rate_type
         return values

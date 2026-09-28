@@ -88,14 +88,17 @@ def request(method, url, *, service='', headers=None, params=None,
             )
         except (requests.Timeout, requests.ConnectionError) as exc:
             last_exc = exc
+            # El mensaje de requests incluye la URL con su query string, que
+            # puede llevar el token (autenticación por parámetro).
+            detail = _redact(str(exc), params)
             _logger.warning(
                 '[%s] %s %s: error de red (intento %d/%d): %s',
                 service or 'http', method, url, attempt + 1,
-                retries + 1, exc,
+                retries + 1, detail,
             )
             if attempt >= retries:
                 raise HttpError(
-                    'Error de red contactando a %s: %s' % (service, exc),
+                    'Error de red contactando a %s: %s' % (service, detail),
                     status_code=None, service=service,
                 ) from exc
             time.sleep(delay)
@@ -119,6 +122,15 @@ def request(method, url, *, service='', headers=None, params=None,
         'Error inesperado al contactar a %s' % service,
         service=service,
     ) from last_exc
+
+
+def _redact(text, params):
+    """Oculta los valores de ``params`` (p. ej. un token) en ``text``."""
+    for value in (params or {}).values():
+        value = str(value or '')
+        if len(value) >= 4:
+            text = text.replace(value, '***')
+    return text
 
 
 def get(url, **kwargs):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare
 
 
@@ -195,7 +195,7 @@ class L10nPeLetterInvoiceLine(models.Model):
         compute='_compute_debit_credit', default=0.0
     )
 
-    @api.depends('imp_div', 'move_invoice_type')
+    @api.depends('imp_div', 'move_invoice_type', 'exchange_rate')
     def _compute_debit_credit(self):
         for line in self:
             debit = credit = 0.0
@@ -205,9 +205,10 @@ class L10nPeLetterInvoiceLine(models.Model):
                 credit = line.imp_div * line.exchange_rate
 
             if line.exchange_rate != 1.0:
-                # Aplicar redondeo si el tipo de cambio es diferente a 1
-                debit = line.currency_id and line.currency_id.round(debit) or 0.0
-                credit = line.currency_id and line.currency_id.round(credit) or 0.0
+                # Debe/haber van en moneda de la compañía: se redondean con ella
+                company_currency = line.company_currency_id or self.env.company.currency_id
+                debit = company_currency.round(debit)
+                credit = company_currency.round(credit)
 
             line.debit = debit
             line.credit = credit
@@ -230,7 +231,7 @@ class L10nPeLetterInvoiceLine(models.Model):
             entered = abs(line.imp_div or 0.0)
 
             if entered <= 0:
-                raise UserError('El importe div debe ser mayor que 0.')
+                raise ValidationError('El importe div debe ser mayor que 0.')
 
             if line.letter_id.is_refinance_children and line.document_type_id.code == '99':
                 residual = abs(line.refinance_base_amount or 0.0)
@@ -240,7 +241,7 @@ class L10nPeLetterInvoiceLine(models.Model):
             precision = line.currency_id.rounding if line.currency_id else 0.01
 
             if float_compare(entered, residual, precision_digits=None, precision_rounding=precision) == 1:
-                raise UserError(
+                raise ValidationError(
                     f'El importe div ({entered}) no puede ser mayor que el saldo pendiente ({residual}) '
                     f'en {line.currency_id.name}.'
                 )
@@ -282,23 +283,14 @@ class L10nPeLetterInvoiceLine(models.Model):
         if not self:
             return
 
-        move_line_env = self.env['account.move.line'].sudo().with_context(
-            active_test=False,
+        # sudo: el usuario de letras puede no tener permiso de escritura sobre
+        # apuntes contables; solo se desengancha el vínculo técnico con la
+        # línea del canje, sin tocar importes ni cuentas.
+        move_lines_sudo = self.env['account.move.line'].sudo().with_context(
             check_move_validity=False,
-        )
-        move_lines = move_line_env.search([
-            ('l10n_pe_letter_invoice_line_id', 'in', self.ids)
-        ])
-        if move_lines:
-            move_lines.write({'l10n_pe_letter_invoice_line_id': False})
-
-        ids_tuple = tuple(self.ids)
-        if ids_tuple:
-            query = (
-                "UPDATE account_move_line SET l10n_pe_letter_invoice_line_id = NULL "
-                "WHERE l10n_pe_letter_invoice_line_id IN %s"
-            )
-            self.env.cr.execute(query, [ids_tuple])
+        ).search([('l10n_pe_letter_invoice_line_id', 'in', self.ids)])
+        if move_lines_sudo:
+            move_lines_sudo.write({'l10n_pe_letter_invoice_line_id': False})
 
     def unlink(self):
         self._clear_move_line_links()

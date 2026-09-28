@@ -31,7 +31,7 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNT/Apps',
-    'version': '8.20260828',
+    'version': '9.20260828',
     'license': 'OPL-1',
     'depends': [
         'account',
@@ -40,6 +40,7 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/edi_invoice_series_security.xml',
         'views/edi_invoice_series_views.xml',
         'views/account_journal_views.xml',
         'views/account_move_views.xml',

@@ -308,13 +308,14 @@ class TestInvoiceTaxBreakdown(AccountTestInvoicingCommon):
                                move.amount_total, 2)
 
     def test_get_amount_discount(self):
-        """El descuento global se toma de las líneas en negativo, en positivo."""
+        """El descuento global se toma de las líneas en negativo, en
+        positivo y en base imponible (sin IGV), como las «Op. gravadas»."""
         igv = self._tax('1000')
         move = self._invoice([
             ('Servicio', 1000.0, igv),
             ('Descuento', -100.0, igv),
         ])
-        self.assertAlmostEqual(move.get_amount_discount(), 118.0, 2)
+        self.assertAlmostEqual(move.get_amount_discount(), 100.0, 2)
 
     def test_report_filename_includes_partner(self):
         """El PDF se nombra con el documento y el cliente."""
@@ -331,16 +332,3 @@ class TestInvoiceTaxBreakdown(AccountTestInvoicingCommon):
             lambda b: b.bank_id == self.env.ref('l10n_pe.peruvian_national_bank')
         ).unlink()
         self.assertEqual(move._l10n_pe_get_national_bank_account_number(), '')
-
-    def test_action_print_pdf_returns_report_action(self):
-        """El botón de imprimir devuelve el reporte A4 propio."""
-        igv = self._tax('1000')
-        move = self._invoice([('Servicio', 1000.0, igv)])
-        action = move.action_print_pdf()
-        report = self.env.ref('al_l10n_pe_invoice.report_cpe_invoice_a4')
-        if action['type'] == 'ir.actions.report':
-            self.assertEqual(action['report_name'], report.report_name)
-        else:
-            # Sin formato de documento configurado, Odoo interpone el
-            # asistente de diseño antes de imprimir.
-            self.assertEqual(action['res_model'], 'base.document.layout')

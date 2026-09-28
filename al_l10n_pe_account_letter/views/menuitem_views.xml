@@ -126,5 +126,6 @@
               name="Cuentas de letras"
               parent="account.account_account_menu"
               action="action_account_configuration"
+              groups="account.group_account_manager"
               sequence="3"/>
 </odoo>

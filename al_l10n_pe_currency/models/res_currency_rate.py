@@ -48,7 +48,13 @@ class ResCurrencyRate(models.Model):
         recalcular ``rate``; y si solo se toca ``rate``, hay que reflejarlo en
         la venta, o la ficha quedaría diciendo dos cosas distintas.
         """
-        touched_sale = 'rate_sale' in vals
+        # En el alta, el formulario envía ``rate_sale=0.0`` aunque el usuario
+        # solo haya llenado la tasa nativa: un cero no cuenta como venta
+        # informada. En la modificación, en cambio, un cero es explícito.
+        if record is None:
+            touched_sale = bool(vals.get('rate_sale'))
+        else:
+            touched_sale = 'rate_sale' in vals
         touched_rate = 'rate' in vals
 
         sale = vals.get('rate_sale', record.rate_sale if record else 0.0)
@@ -89,7 +95,20 @@ class ResCurrencyRate(models.Model):
                 raise ValidationError(_(
                     'El tipo de cambio no puede ser negativo.'))
 
-    @api.onchange('rate_sale')
+    def _l10n_pe_purchase_value(self):
+        """Compra propia de esta tasa, o 0 si no la hay.
+
+        Cuando no se informó compra se guarda la venta (ver
+        ``_l10n_pe_sync_values``); en ese caso no hay una compra distinta que
+        aplicar y conviene usar la tasa nativa, que no arrastra el redondeo a
+        3 decimales de estos campos.
+        """
+        self.ensure_one()
+        if self.rate_purchase and self.rate_purchase != self.rate_sale:
+            return self.rate_purchase
+        return 0.0
+
+    @api.onchange('rate_sale', 'rate_purchase')
     def _onchange_l10n_pe_rate_sale(self):
         """Avisa si la compra supera a la venta, sin bloquear el registro.
 

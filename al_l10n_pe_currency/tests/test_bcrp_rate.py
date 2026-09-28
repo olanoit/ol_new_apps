@@ -89,6 +89,10 @@ class TestBcrpRate(TransactionCase):
     # Integración con el ORM
     # ------------------------------------------------------------------
     def test_update_range_creates_rates(self):
+        if self.env.company.currency_id != self.env.ref('base.PEN') \
+                or self.env.company.parent_id:
+            self.skipTest('el tipo de cambio SUNAT solo se carga en '
+                          'compañías raíz en soles')
         usd = self.env.ref('base.USD')
         with patch.object(bcrp_rate, 'fetch_bcrp',
                           return_value=bcrp_rate.parse_response(BCRP_PAYLOAD)):
@@ -109,6 +113,10 @@ class TestBcrpRate(TransactionCase):
 
     def test_update_range_is_idempotent(self):
         """Recargar el mismo rango actualiza, no duplica."""
+        if self.env.company.currency_id != self.env.ref('base.PEN') \
+                or self.env.company.parent_id:
+            self.skipTest('el tipo de cambio SUNAT solo se carga en '
+                          'compañías raíz en soles')
         rates = bcrp_rate.parse_response(BCRP_PAYLOAD)
         with patch.object(bcrp_rate, 'fetch_bcrp', return_value=rates):
             self.env['res.currency'].l10n_pe_update_range_bcrp(

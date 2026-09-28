@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 4.20260815
+    fecha: 27/09/2026
+    cambios:
+      - "El botón **Restablecer a borrador** ya no aparece en los asientos bloqueados con hash ni en los comprobantes que exigen solicitar la anulación a SUNAT: allí el sistema lo rechazaba igualmente con un error."
   - version: 3.20260815
     fecha: 14/09/2026
     cambios:

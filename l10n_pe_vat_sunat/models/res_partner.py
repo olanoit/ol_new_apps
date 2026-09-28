@@ -101,12 +101,7 @@ class ResPartner(models.Model):
         help='Verificado contra el padrón SUNAT (caché diaria).',
     )
 
-    # `ref` con default del VAT; `country_id` con default de la compañía.
-    ref = fields.Char(
-        string='Reference',
-        index=True,
-        default=lambda self: self.vat or False,
-    )
+    # `country_id` con default de la compañía.
     country_id = fields.Many2one(
         default=lambda self: self.env.company.country_id.id,
     )
@@ -120,7 +115,6 @@ class ResPartner(models.Model):
         """Setea el tipo de documento por defecto según company_type."""
         if self.vat:
             return
-        IdType = self.env['l10n_latam.identification.type']
         if self.company_type == 'person':
             rec = self.env.ref('l10n_pe.it_DNI', raise_if_not_found=False)
         else:
@@ -142,6 +136,8 @@ class ResPartner(models.Model):
         self._run_document_lookup(raise_on_fail=False)
 
     def _run_document_lookup(self, raise_on_fail=False):
+        """``raise_on_fail`` distingue el botón (espera, reintenta y avisa)
+        de la consulta automática al escribir (rápida y silenciosa)."""
         if not self.vat or not self.l10n_latam_identification_type_id:
             return
         # Sólo si la compañía habilitó validación.
@@ -206,7 +202,8 @@ class ResPartner(models.Model):
         last_exc = None
         for connection in connections:
             try:
-                vals, extra = connection.run(document, doc_type)
+                vals, extra = connection.run(
+                    document, doc_type, quick=not raise_on_fail)
             except (http_service.HttpError, UserError, ValueError) as exc:
                 last_exc = exc
                 _logger.warning('[%s] Consulta %s %s falló: %s',
@@ -223,13 +220,6 @@ class ResPartner(models.Model):
                 'No se pudo consultar el %(doc)s %(num)s:\n\n%(err)s',
                 doc=doc_type.upper(), num=document, err=str(last_exc)))
 
-    # Compatibilidad con llamadas previas.
-    def _fetch_ruc(self):
-        return self._fetch_document('ruc')
-
-    def _fetch_dni(self):
-        return self._fetch_document('dni')
-
     # ============================================================ #
     # Aplicar resultado de la API al partner                        #
     # ============================================================ #
@@ -243,16 +233,22 @@ class ResPartner(models.Model):
         # No sobrescribir el nombre con vacío.
         if not (vals.get('name') or '').strip():
             vals.pop('name', None)
+        if doc_type == 'ruc':
+            # Padrón SUNAT (caché diaria): solo completa lo que la API no
+            # trajo, y solo si el padrón está cargado. Con el padrón vacío
+            # (recién instalado o descarga fallida) no se pisa nada.
+            for field_name, kind in sunat_padron.PARTNER_FIELDS.items():
+                if field_name not in vals and sunat_padron.has_data(self.env, kind):
+                    vals[field_name] = sunat_padron.has_ruc(self.env, kind, self.vat)
         self.write(vals)
 
-        if doc_type == 'ruc':
-            if extra.get('legal_representatives') and self.is_company:
+        # Los contactos hijos solo se crean en un contacto ya guardado (botón):
+        # desde el onchange quedarían creados aunque se descarte el formulario.
+        if doc_type == 'ruc' and self.is_company and isinstance(self.id, int):
+            if extra.get('legal_representatives'):
                 self._sync_legal_representatives(extra['legal_representatives'])
-            if extra.get('annexed_locals') and self.is_company:
+            if extra.get('annexed_locals'):
                 self._sync_annexed_locals(extra['annexed_locals'])
-            # Padrón SUNAT (caché diaria).
-            self.is_good_taxpayer = sunat_padron.is_good_taxpayer(self.env, self.vat)
-            self.is_retention_agent = sunat_padron.is_retention_agent(self.env, self.vat)
 
     def _sync_legal_representatives(self, reps):
         """Crea como child_ids los representantes con cargos relevantes."""

@@ -4,7 +4,7 @@
         <field name="name">l10n_pe.api.connection.list</field>
         <field name="model">l10n_pe.api.connection</field>
         <field name="arch" type="xml">
-            <list create="0" delete="0" import="0" duplicate="0">
+            <list import="0" duplicate="0">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="engine"/>
@@ -20,7 +20,7 @@
         <field name="name">l10n_pe.api.connection.form</field>
         <field name="model">l10n_pe.api.connection</field>
         <field name="arch" type="xml">
-            <form create="0" delete="0" import="0" duplicate="0">
+            <form import="0" duplicate="0">
                 <sheet>
                     <widget name="web_ribbon" title="Deshabilitada"
                             bg_color="text-bg-secondary" invisible="enabled"/>

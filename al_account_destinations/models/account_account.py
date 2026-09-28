@@ -53,16 +53,21 @@ class AccountAccount(models.Model):
 
     @api.depends('l10n_pe_work_destinies')
     def _compute_l10n_pe_allowed_dest_ids(self):
-        # Destinos permitidos: la clase opuesta (9 si 6→9, 6 si 9→6).
+        # Destinos permitidos: la clase opuesta (9 si 6→9, 6 si 9→6). Una sola
+        # búsqueda por prefijo para todo el lote.
+        allowed_by_prefix = {}
         for account in self:
             if not account.l10n_pe_work_destinies:
                 account.l10n_pe_allowed_dest_ids = [Command.clear()]
                 continue
             target_prefix = '9%' if account.l10n_pe_dest_type == '6a9' else '6%'
-            # v19: 'deprecated' ya no existe; las cuentas dadas de baja son
-            # active=False (filtrado por defecto en search).
-            allowed = self.env['account.account'].search([('code', '=like', target_prefix)])
-            account.l10n_pe_allowed_dest_ids = [Command.set(allowed.ids)]
+            if target_prefix not in allowed_by_prefix:
+                # v19: 'deprecated' ya no existe; las cuentas dadas de baja son
+                # active=False (filtrado por defecto en search).
+                allowed_by_prefix[target_prefix] = self.env['account.account'].search(
+                    [('code', '=like', target_prefix)])
+            account.l10n_pe_allowed_dest_ids = [
+                Command.set(allowed_by_prefix[target_prefix].ids)]
 
     @api.depends('l10n_pe_destiny_ids')
     def _compute_l10n_pe_has_destiny(self):
@@ -136,15 +141,7 @@ class L10nPeAccountDestiny(models.Model):
                              precision_digits=PERCENTAGE_DIGITS) <= 0:
                 raise UserError(_('El porcentaje de la cuenta destino debe ser mayor que 0.'))
 
-    @api.constrains('percentage', 'parent_account_id')
-    def _check_parent_total(self):
-        for line in self:
-            if line.parent_account_id:
-                line.parent_account_id.l10n_pe_check_destiny_percentage()
-
-    @api.model
-    def get_import_templates(self):
-        return [{
-            'label': _('Importar destinos de cuentas contables'),
-            'template': '/al_account_destinations/static/xls/account_account_destiny.xlsx',
-        }]
+    # La suma del 100 % no se valida línea a línea: desde la lista de
+    # destinos las líneas se crean de una en una y la primera (p. ej. 60 %)
+    # nunca cuadraría. Se valida al guardar la cuenta con sus destinos
+    # (``_constrain_l10n_pe_destiny``) y, siempre, al generar el asiento.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class L10nPeLetterLine(models.Model):
@@ -117,20 +117,18 @@ class L10nPeLetterLine(models.Model):
         compute='compute_adeudado',
         store=True)
 
-    # Cambio del monto adeudado
-    @api.depends('letter_id.account_id.line_ids.amount_residual_currency')
+    # Cambio del monto adeudado: saldo del apunte de la letra en el asiento
+    # del canje (enlazado por ``l10n_pe_letter_line_id``) o, sin asiento, el
+    # importe de la letra.
+    @api.depends('imp_div', 'nro_letter',
+                 'letter_id.account_id.line_ids.amount_residual_currency',
+                 'letter_id.account_id.line_ids.l10n_pe_letter_line_id')
     def compute_adeudado(self):
         for line in self:
-            if line.letter_id.account_id:
-                name = line.nro_letter
-                partner_id = line.partner_id.id
-                move_name = line.letter_id.account_id.name
-                move_line_id = line.letter_id.account_id.line_ids.search(
-                    [('name', '=', name), ('partner_id', '=', partner_id), ('move_name', '=', move_name)])
-                if move_line_id:
-                    line.adeudado = abs(move_line_id.amount_residual_currency)
-                else:
-                    line.adeudado = line.imp_div
+            move_lines = line.letter_id.account_id.line_ids.filtered(
+                lambda move_line: move_line.l10n_pe_letter_line_id == line)
+            if move_lines:
+                line.adeudado = abs(sum(move_lines.mapped('amount_residual_currency')))
             else:
                 line.adeudado = line.imp_div
 
@@ -185,11 +183,13 @@ class L10nPeLetterLine(models.Model):
                 account_type = 'asset_receivable'
             else:
                 continue
+            company = record.letter_id.company_id or self.env.company
             invoice_account = self.env['l10n_pe.letter.account.config'].search([
                 ('account_type', '=', account_type),
                 ('document_type', '=', 'letter'),
                 ('letter_type', '=', record.letter_type),
-                ('currency_id', '=', record.currency_id.id)
+                ('currency_id', '=', record.currency_id.id),
+                ('company_id', '=', company.id),
             ], limit=1)
             # Cuenta por defecto en Portafolio
             if invoice_account:
@@ -199,22 +199,14 @@ class L10nPeLetterLine(models.Model):
                     ('account_type', '=', account_type),
                     ('document_type', '=', 'letter'),
                     ('currency_id', '=', record.currency_id.id),
-                    ('letter_type', '=', 'portfolio')
+                    ('letter_type', '=', 'portfolio'),
+                    ('company_id', '=', company.id),
                 ], limit=1)
                 if invoice_account:
                     record.account_id = invoice_account.account_id.id
                 else:
-                    raise UserError('No se encontró una cuenta para la letra')
-
-    # Guarda el tipo de cambio al momento de la creación
-    @api.model_create_multi
-    def create(self, vals_list):
-        for values in vals_list:
-            letter_id = values.get('letter_id')
-            if letter_id:
-                letter = self.env['l10n_pe.letter'].browse(letter_id)
-                values['exchange_rate'] = letter.exchange_rate
-        return super().create(vals_list)
+                    raise UserError(self.env._(
+                        'No se encontró una cuenta para la letra en la compañía %s.', company.name))
 
     BANK_FIELDS = ('bank_id', 'code', 'letter_type')
 
@@ -238,4 +230,4 @@ class L10nPeLetterLine(models.Model):
                     ('id', '!=', record.id)
                 ])
                 if letter:
-                    raise UserError(f'Ya existe la letra: {letter.name} para el socio: {letter.partner_id.name}')
+                    raise ValidationError(f'Ya existe la letra: {letter.name} para el socio: {letter.partner_id.name}')

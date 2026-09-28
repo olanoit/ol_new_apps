@@ -83,3 +83,58 @@ class TestDeliveryGuideReport(TransactionCase):
             'al_l10n_pe_delivery_guide_report.action_report_guia_remision')
         html, _ = report._render_qweb_html(report.report_name, picking.ids)
         self.assertTrue(html)
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (septiembre de 2026)
+    # ------------------------------------------------------------------
+    def _render(self, picking):
+        report = self.env.ref(
+            'al_l10n_pe_delivery_guide_report.action_report_guia_remision')
+        return report._render_qweb_html(report.report_name, picking.ids)[0].decode()
+
+    def test_sender_is_the_company_not_the_warehouse_partner(self):
+        """El remitente es la compañía, como en el XML; antes salía el
+        contacto del almacén (vacío si el almacén no tenía)."""
+        warehouse_partner = self.env['res.partner'].create({
+            'name': 'ALMACÉN SIN RUC', 'street': 'Jr. Almacén 1',
+            'l10n_pe_district': self.district.id,
+        })
+        self.warehouse.partner_id = warehouse_partner
+        picking = self._create_picking()
+        html = self._render(picking)
+        self.assertIn(self.company.name, html)
+        self.assertIn(self.company.vat, html)
+        self.assertNotIn('ALMACÉN SIN RUC', html)
+        # El almacén aparece como punto de partida, con su ubigeo.
+        self.assertEqual(picking._l10n_pe_report_departure_partner(), warehouse_partner)
+        self.assertIn('Punto de partida', html)
+        self.assertIn('Jr. Almacén 1', html)
+        self.assertIn(self.district.code, html)
+
+    def test_departure_falls_back_to_company(self):
+        self.warehouse.partner_id = False
+        picking = self._create_picking()
+        self.assertEqual(picking._l10n_pe_report_departure_partner(),
+                         self.company.partner_id)
+
+    def test_driver_license_is_printed(self):
+        """«Licencia» imprime la licencia de conducir, no el DNI; el DNI
+        va en su propia fila."""
+        self.operator.l10n_pe_edi_operator_license = 'Q70025425'
+        picking = self._create_picking()
+        html = self._render(picking)
+        self.assertIn('Q70025425', html)
+        self.assertIn('70025425', html)
+
+    def test_weight_unit_is_not_hardcoded(self):
+        picking = self._create_picking()
+        html = self._render(picking)
+        self.assertIn('Peso bruto total (%s)' % picking.weight_uom_name, html)
+
+    def test_print_button_requires_accepted_guide(self):
+        """El botón solo aparece con la guía aceptada (estado «sent»), no
+        con un ticket pendiente de CDR."""
+        view = self.env.ref(
+            'al_l10n_pe_delivery_guide_report.view_picking_form_delivery_guide_report')
+        self.assertIn("l10n_pe_edi_status != 'sent'", view.arch_db)
+        self.assertNotIn('l10n_pe_edi_ticket_number', view.arch_db)

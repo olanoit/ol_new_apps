@@ -7,6 +7,9 @@
         <field name="res_model">res.currency.rate</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="base.view_currency_rate_search"/>
+        <!-- La moneda es de solo lectura en la lista: sin este valor por
+             defecto, «Nuevo» no podría guardarse. -->
+        <field name="context" eval="{'default_currency_id': ref('base.USD')}"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Registre un tipo de cambio

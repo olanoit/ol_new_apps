@@ -14,7 +14,7 @@ Solución: descargar el padrón una vez al día mediante un
 ``ir.cron``, persistir los RUCs en este modelo y dejar las consultas
 del partner como un simple ``search_count`` indexado (~ms).
 """
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class L10nPeSunatPadron(models.Model):
@@ -50,36 +50,16 @@ class L10nPeSunatPadron(models.Model):
         'Ya existe una entrada para este RUC en este padrón.')
 
     # ------------------------------------------------------------------ #
-    # Acciones (botón Run Manually en el cron)                            #
+    # Cron (botón «Ejecutar manualmente» del ir.cron)                      #
     # ------------------------------------------------------------------ #
 
     @api.model
-    def cron_sync_padron(self):
-        """Llamado por el ``ir.cron`` diario. Sincroniza ambos padrones."""
+    def _cron_sync_padron(self):
+        """Llamado por el ``ir.cron`` diario. Sincroniza ambos padrones.
+
+        Privado (``_``) para que no se pueda lanzar por RPC: descarga
+        decenas de MB y recarga la caché con sudo().
+        """
         # Import diferido — evita ciclo con services/__init__.py.
         from ..services import sunat_padron
         return sunat_padron.sync(self.env)
-
-    @api.model
-    def action_sync_now(self):
-        """Acción manual desde la list view."""
-        from ..services import sunat_padron
-        counts = sunat_padron.sync(self.env)
-        message = _(
-            'Padrón sincronizado:\n'
-            '  • Buenos contribuyentes: %(g)d\n'
-            '  • Agentes de retención: %(r)d'
-        ) % {
-            'g': counts.get('good_taxpayer', 0),
-            'r': counts.get('retention_agent', 0),
-        }
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Padrón SUNAT'),
-                'message': message,
-                'type': 'success',
-                'sticky': False,
-            },
-        }

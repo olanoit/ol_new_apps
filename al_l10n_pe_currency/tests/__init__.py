@@ -6,3 +6,4 @@ from . import test_invoice_rate_type
 from . import test_payment_rate_type
 from . import test_exchange_difference
 from . import test_exchange_accounts
+from . import test_rate_update_scope

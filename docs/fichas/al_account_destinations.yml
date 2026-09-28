@@ -402,6 +402,15 @@ faq:
       facturas y notas.
 
 novedades:
+  - version: 4.20260828
+    fecha: 27/09/2026
+    cambios:
+      - "Eliminar un asiento de destino ya no borra el comprobante de origen. Al eliminar un comprobante en borrador, su asiento de destino se elimina con él."
+      - "En comprobantes en dólares, el asiento de destino se registra en soles, con los mismos importes que el debe y el haber de la línea de origen."
+      - "Los usuarios que solo tienen Facturación ya pueden publicar comprobantes con cuentas de destino. El diario de Gastos Automáticos se crea aunque no tengan permiso sobre diarios."
+      - "Con varias compañías, el sentido de la dinámica (6→9 o 9→6) se toma de la compañía del comprobante y no de la compañía activa."
+      - "Desde la lista de destinos ya se pueden cargar las líneas de una en una. La suma del 100 % se comprueba al guardar la cuenta y al generar el asiento."
+      - "Se retira el enlace a la plantilla de importación, que apuntaba a un archivo inexistente."
   - version: 3.20260828
     fecha: 14/09/2026
     cambios:

@@ -13,9 +13,12 @@
                 <field name="l10n_pe_gloss" optional="hide"/>
             </xpath>
 
-            <!-- Mostrar siempre "Restablecer a borrador" en cancelado/publicado -->
+            <!-- Mostrar siempre "Restablecer a borrador" en cancelado/publicado,
+                 salvo donde el servidor lo rechazaría igualmente: asiento ya
+                 bloqueado con hash o comprobante enviado que exige solicitar
+                 la anulación (button_draft lanza error en ambos casos). -->
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="invisible">state not in ('cancel', 'posted')</attribute>
+                <attribute name="invisible">state not in ('cancel', 'posted') or inalterable_hash or need_cancel_request</attribute>
             </xpath>
         </field>
     </record>

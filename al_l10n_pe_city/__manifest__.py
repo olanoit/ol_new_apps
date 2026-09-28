@@ -9,7 +9,7 @@
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-TOOLS/Apps',
-    'version': '1.20260730',
+    'version': '2.20260730',
     'license': 'LGPL-3',
 
     'depends': ['base_address_extended'],
@@ -19,6 +19,5 @@
 
     'installable': True,
     'auto_install': False,
-    'application': True,
-    'pre_init_hook': 'pre_init_check'
+    'application': False,
 }

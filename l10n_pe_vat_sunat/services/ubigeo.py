@@ -51,8 +51,10 @@ def resolve_by_code(env, ubigeo_code):
     code = str(ubigeo_code).strip()
     if not code.isdigit() or len(code) != 6:
         return {}
-    Distrito = env[M_DISTRICT].sudo()
-    district = Distrito.search([('code', '=', code)], limit=1)
+    # sudo(): catálogo geográfico de solo lectura; la consulta se lanza desde
+    # el contacto con cualquier usuario interno.
+    districts_sudo = env[M_DISTRICT].sudo()
+    district = districts_sudo.search([('code', '=', code)], limit=1)
     if not district:
         return {}
     return _district_to_vals(district)
@@ -79,24 +81,25 @@ def resolve_by_names(env, *, district='', city='', state='', country_code='PE'):
         city = 'Callao'
         state = 'Callao'
 
+    # sudo(): catálogos geográficos de solo lectura (ver ``resolve``).
     country = env[M_COUNTRY].sudo().search(
         [('code', '=', country_code)], limit=1,
     )
     if not country:
         return {}
 
-    Distrito = env[M_DISTRICT].sudo()
-    City = env[M_CITY].sudo()
-    State = env[M_STATE].sudo()
+    districts_sudo = env[M_DISTRICT].sudo()
+    cities_sudo = env[M_CITY].sudo()
+    states_sudo = env[M_STATE].sudo()
 
     # 1) Match exacto distrito + ciudad
     if district and city:
-        cities = City.search([
+        cities = cities_sudo.search([
             ('name', '=ilike', city.strip()),
             ('country_id', '=', country.id),
         ])
         if cities:
-            d = Distrito.search([
+            d = districts_sudo.search([
                 ('name', '=ilike', district.strip()),
                 ('city_id', 'in', cities.ids),
             ], limit=1)
@@ -105,13 +108,13 @@ def resolve_by_names(env, *, district='', city='', state='', country_code='PE'):
 
     # 2) Distrito solo (la mayoría de distritos en PE son únicos)
     if district:
-        d = Distrito.search([('name', '=ilike', district.strip())], limit=1)
+        d = districts_sudo.search([('name', '=ilike', district.strip())], limit=1)
         if d:
             return _district_to_vals(d)
 
     # 3) Ciudad/Provincia
     if city:
-        c = City.search([
+        c = cities_sudo.search([
             ('name', '=ilike', city.strip()),
             ('country_id', '=', country.id),
         ], limit=1)
@@ -120,7 +123,7 @@ def resolve_by_names(env, *, district='', city='', state='', country_code='PE'):
 
     # 4) Departamento/Estado
     if state:
-        s = State.search([
+        s = states_sudo.search([
             ('name', '=ilike', state.strip()),
             ('country_id', '=', country.id),
         ], limit=1)

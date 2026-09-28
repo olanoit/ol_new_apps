@@ -26,10 +26,13 @@ dependencia muerta de ``al_account_dua``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '3.20260828',
+    'version': '4.20260828',
     'license': 'OPL-1',
     'depends': [
         'account',
+        # Catálogos peruanos (tipos de identificación y códigos de tributo
+        # SUNAT) que usan los pagos y sus pruebas.
+        'l10n_pe',
         'al_account_base',
     ],
     'data': [

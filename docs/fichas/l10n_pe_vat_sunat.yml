@@ -417,6 +417,17 @@ faq:
       anterior.
 
 novedades:
+  - version: 10.20260828
+    fecha: 27/09/2026
+    cambios:
+      - "El token de cada conexión solo lo ven los administradores; el resto de usuarios sigue consultando RUC y DNI con normalidad."
+      - "Cada compañía ve solo sus propias conexiones RUC/DNI y sus mapeos."
+      - "Las conexiones RUC/DNI se pueden crear y borrar desde la lista (antes estaba bloqueado)."
+      - "Buen contribuyente y agente de retención: si la API ya trae el dato se respeta, y el padrón solo completa lo que falta. Con el padrón aún sin descargar ya no se desmarcan las casillas."
+      - "Una descarga del padrón SUNAT sin RUCs ya no vacía la caché; y tras cada descarga diaria se actualizan las casillas de los contactos."
+      - "Un estado o condición SUNAT desconocido ya no hace fallar la consulta: se ignora ese dato y se completa el resto."
+      - "La consulta automática al escribir el RUC/DNI es más rápida (sin reintentos) y ya no crea representantes ni locales anexos si luego se descarta el contacto; eso queda para el botón «Actualizar desde API»."
+      - "La sincronización del padrón solo la lanza la acción planificada."
   - fecha: 14/09/2026
     cambios:
       - Menús de la app Perú reordenados; consultas RUC/DNI agrupadas en Configuración.

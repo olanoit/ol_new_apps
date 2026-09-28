@@ -47,15 +47,10 @@
         <field name="model">l10n_pe.letter.massive</field>
         <field name="arch" type="xml">
             <form>
+                <!-- Sin botones de flujo: el masivo agrupa canjes ya canjeados;
+                     borrador, canje y refinanciación se hacen en cada canje de
+                     origen (el masivo no tiene líneas propias). -->
                 <header>
-                    <button name="action_checked" string="Confirmar" class="oe_highlight" type="object"
-                            invisible="state != 'draft'"/>
-                    <button name="action_redeemed" string="Canjear" class="oe_highlight" type="object"
-                            invisible="state != 'checked'"/>
-                    <button name="action_draft" string="Restablecer a borrador" type="object"
-                            invisible="state == 'draft'"/>
-                    <button name="%(account_refinance_invoice_action)d" type="action" string="Refinanciar"
-                            class="oe_highlight"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -152,8 +147,6 @@
                                     <field name="rest_amount"/>
                                 </group>
                             </group>
-                            <button name="create_letters" string="Crear letras" type="object" class="oe_highlight"
-                                    invisible="state in ('redeemed','banked')"/>
                             <field name="letter_move_ids"
                                    readonly="state in ('redeemed','banked')">
                                 <list editable="bottom">

@@ -1,12 +1,68 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+from odoo.fields import Domain
 
 
 class L10nPeLetterMassive(models.Model):
     _name = 'l10n_pe.letter.massive'
     _inherit = 'l10n_pe.letter'
     _description = 'Gestión de letras masivas'
+
+    # Los One2many heredados (``invoice_line_ids``, ``letter_line_ids``,
+    # ``letter_residual_ids``) tienen su inverso ``letter_id`` en
+    # ``l10n_pe.letter``: heredados tal cual, el masivo con id N leería y
+    # escribiría las líneas del canje normal con id N. El masivo no tiene
+    # líneas propias (usa ``letter_invoices_ids`` / ``letter_move_ids``),
+    # así que se redefinen vacíos.
+    invoice_line_ids = fields.Many2many(
+        'l10n_pe.letter.invoice.line', string='Facturas',
+        compute='_compute_massive_no_own_lines',
+        search='_search_massive_no_own_lines')
+    letter_line_ids = fields.Many2many(
+        'l10n_pe.letter.line', string='Letra',
+        compute='_compute_massive_no_own_lines',
+        search='_search_massive_no_own_lines')
+    letter_residual_ids = fields.Many2many(
+        'l10n_pe.letter.residual', string='Redondeo',
+        compute='_compute_massive_no_own_lines',
+        search='_search_massive_no_own_lines')
+
+    def _compute_massive_no_own_lines(self):
+        for record in self:
+            record.invoice_line_ids = False
+            record.letter_line_ids = False
+            record.letter_residual_ids = False
+
+    def _search_massive_no_own_lines(self, operator, value):
+        # Ningún canje masivo tiene líneas propias. Además de responder a las
+        # búsquedas, evita que el ORM falle al buscar qué masivos recalcular
+        # cuando cambian las líneas de un canje normal (los computes
+        # heredados dependen de estos campos).
+        if operator in ('not in', '!='):
+            return Domain.TRUE
+        return Domain.FALSE
+
+    def _raise_not_for_massive(self):
+        raise UserError(self.env._(
+            'Esta acción no está disponible en el canje masivo: hágala en cada '
+            'canje de origen.'))
+
+    def action_draft(self):
+        self._raise_not_for_massive()
+
+    def action_checked(self):
+        self._raise_not_for_massive()
+
+    def action_redeemed(self):
+        self._raise_not_for_massive()
+
+    def create_letters(self):
+        self._raise_not_for_massive()
+
+    def action_cancel(self):
+        self._raise_not_for_massive()
 
     canje_move_ids = fields.Many2many('account.move', 'account_letter_move_massive_canje_rel', 'letter_id', 'move_id',
                                       string='Asientos de canje', readonly=True)
@@ -54,13 +110,10 @@ class L10nPeLetterMassive(models.Model):
         self.ensure_one()
         return self.letter_move_ids if self.is_massive_letter else self.letter_line_ids
 
-    @api.depends('invoice_line_ids.invoice_name', 'letter_invoices_ids.invoice_name')
+    @api.depends('letter_invoices_ids.invoice_name')
     def _compute_related_invoice_names(self):
         for record in self:
-            if record.invoice_line_ids:
-                invoice_names = record.invoice_line_ids.mapped('invoice_name')
-                record.related_invoice_names = '-'.join(invoice_names)
-            elif record.letter_invoices_ids:
+            if record.letter_invoices_ids:
                 invoice_names = record.letter_invoices_ids.mapped('invoice_name')
                 record.related_invoice_names = '-'.join(invoice_names)
             else:

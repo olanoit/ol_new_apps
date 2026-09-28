@@ -126,7 +126,7 @@
                                     </tr>
                                     <tr>
                                         <td class="cpe-label">Moneda:</td>
-                                        <td><span t-out="'DÓLARES AMERICANOS' if o.currency_id.name == 'USD' else 'SOLES'"/></td>
+                                        <td><span t-out="o._l10n_pe_report_currency_label()"/></td>
                                     </tr>
                                     <t t-set="report_rate" t-value="o._l10n_pe_report_exchange_rate()"/>
                                     <tr t-if="report_rate">
@@ -142,10 +142,42 @@
                     </table>
                 </div>
 
+                <!-- NOTA DE CRÉDITO / DÉBITO: documento que modifica y motivo
+                     (obligatorios en la representación impresa) -->
+                <t t-set="origin_move" t-value="o._l10n_pe_report_origin_move()"/>
+                <div class="cpe-box" t-if="o.l10n_latam_document_type_id.code in ('07', '08')">
+                    <table class="cpe-partner">
+                        <tr>
+                            <td class="cpe-label">Documento que modifica:</td>
+                            <td>
+                                <t t-if="origin_move">
+                                    <span t-out="origin_move.l10n_latam_document_type_id.report_name"/>
+                                    <span t-out="origin_move.l10n_latam_document_number or origin_move.name"/>
+                                    <t t-if="origin_move.invoice_date">
+                                        del <span t-field="origin_move.invoice_date"
+                                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                                    </t>
+                                </t>
+                                <t t-else=""><span t-out="o.ref"/></t>
+                            </td>
+                        </tr>
+                        <tr t-if="o.l10n_latam_document_type_id.code == '07' and o.l10n_pe_edi_refund_reason">
+                            <td class="cpe-label">Motivo:</td>
+                            <td><span t-field="o.l10n_pe_edi_refund_reason"/></td>
+                        </tr>
+                        <tr t-if="o.l10n_latam_document_type_id.code == '08' and o.l10n_pe_edi_charge_reason">
+                            <td class="cpe-label">Motivo:</td>
+                            <td><span t-field="o.l10n_pe_edi_charge_reason"/></td>
+                        </tr>
+                    </table>
+                </div>
+
                 <!-- DETALLE DE LÍNEAS -->
                 <t t-set="lines"
                    t-value="o.invoice_line_ids.filtered(lambda l: l.display_type not in ('line_section', 'line_note'))"/>
                 <t t-set="has_discount" t-value="any(l.discount for l in lines)"/>
+                <!-- Descuento en base imponible: % por línea + líneas negativas -->
+                <t t-set="discount_amount" t-value="o.get_amount_discount()"/>
                 <table class="cpe-lines">
                     <thead>
                         <tr>
@@ -218,10 +250,24 @@
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                     </tr>
-                                    <tr t-if="has_discount">
+                                    <tr t-if="o.l10n_pe_edi_amount_export">
+                                        <td class="cpe-label">Op. exportación</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_export"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_free">
+                                        <td class="cpe-label">Op. gratuitas</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_free"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="discount_amount">
                                         <td class="cpe-label">Descuento</td>
                                         <td class="cpe-amount">
-                                            <span t-out="o.get_amount_discount()"
+                                            <span t-out="discount_amount"
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                     </tr>
@@ -233,7 +279,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="cpe-label">IGV (18%)</td>
+                                        <td class="cpe-label"><span t-out="o._l10n_pe_report_igv_label()"/></td>
                                         <td class="cpe-amount">
                                             <span t-out="o.l10n_pe_edi_amount_igv"
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
@@ -243,6 +289,13 @@
                                         <td class="cpe-label">ICBPER</td>
                                         <td class="cpe-amount">
                                             <span t-out="o.l10n_pe_edi_amount_icbper"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.l10n_pe_edi_amount_others">
+                                        <td class="cpe-label">Otros tributos</td>
+                                        <td class="cpe-amount">
+                                            <span t-out="o.l10n_pe_edi_amount_others"
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                     </tr>

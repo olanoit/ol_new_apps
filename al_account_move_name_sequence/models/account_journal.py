@@ -73,6 +73,9 @@ class AccountJournal(models.Model):
 
     def _al_create_name_sequence(self, refund=False):
         self.ensure_one()
+        # sudo: crear ir.sequence es exclusivo de Ajustes (base.group_system);
+        # quien configura el diario (administrador contable) necesita crear
+        # la secuencia de su numeración, en la compañía del diario.
         return self.env['ir.sequence'].sudo().create(
             self._al_prepare_name_sequence_vals(refund=refund))
 

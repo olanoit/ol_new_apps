@@ -153,3 +153,38 @@ class TestInvoiceRateType(AccountTestInvoicingCommon):
         invoice = self._invoice(rate_type='sale', price=100.0)
         invoice.invoice_currency_rate = 0.2
         self.assertAlmostEqual(invoice.invoice_currency_rate, 0.2, places=6)
+
+    def test_small_value_currency_keeps_native_precision(self):
+        """En monedas de poco valor no se usa ``rate_sale`` redondeado.
+
+        Con solo la tasa nativa (40.37 yenes por sol), la venta deducida
+        (1 / 40.37 = 0.02477) se guarda con 3 decimales (0.025) y convertir
+        con ella daría 40 en lugar de 40.37: un 1 % de desvío."""
+        jpy = self.env.ref('base.JPY')
+        jpy.active = True
+        self.env['res.currency.rate'].search([
+            ('currency_id', '=', jpy.id),
+            ('company_id', '=', self.company.id),
+        ]).unlink()
+        self.env['res.currency.rate'].create({
+            'name': '2026-03-10',
+            'currency_id': jpy.id,
+            'company_id': self.company.id,
+            'rate': 40.37,
+        })
+        for rate_type in ('sale', 'purchase'):
+            invoice = self.env['account.move'].with_company(self.company).create({
+                'move_type': 'out_invoice',
+                'partner_id': self.partner.id,
+                'invoice_date': date(2026, 3, 15),
+                'currency_id': jpy.id,
+                'l10n_pe_exchange_rate_type': rate_type,
+                'invoice_line_ids': [(0, 0, {
+                    'product_id': self.product.id,
+                    'quantity': 1,
+                    'price_unit': 1000.0,
+                    'tax_ids': [(5, 0, 0)],
+                })],
+            })
+            self.assertAlmostEqual(invoice.invoice_currency_rate, 40.37,
+                                   places=6, msg=rate_type)
