@@ -11,8 +11,8 @@ Routes:
 Authentication rules (applied in order):
   1. If page.is_public → allow everyone.
   2. If request has ?token=<access_token> matching the page → allow.
-  3. If the user has an active Odoo session (request.session.uid) → allow.
-  4. Otherwise → redirect to /web/login.
+  3. If the logged-in user is the page owner or a system administrator → allow.
+  4. Other logged-in users → 404; anonymous → redirect to /web/login.
 
 Widget data is always computed using page.created_by as the execution user,
 restricting data access to what the page owner can see. This prevents a
@@ -27,6 +27,8 @@ from werkzeug.wrappers import Response
 
 from odoo import http
 from odoo.http import request
+from odoo.tools import consteq
+from odoo.tools.json import scriptsafe
 
 from ..services.portal_renderer import compute_widget
 
@@ -150,10 +152,15 @@ class McpPortalController(http.Controller):
         """Return a redirect/error response if access is denied, else None."""
         if page.is_public:
             return None
-        if token and token == page.access_token:
+        if token and page.access_token and consteq(token, page.access_token):
             return None
         if request.session and request.session.uid:
-            return None
+            # Los widgets se calculan como el dueño: una sesión cualquiera
+            # (p. ej. un usuario portal) no basta para ver sus datos.
+            user = request.env.user
+            if page.created_by == user or user.has_group("base.group_system"):
+                return None
+            return request.not_found()
         # Redirect to login, preserving return URL
         login_url = f"/web/login?redirect=/mcp-page/{page.slug}"
         if token:
@@ -196,7 +203,7 @@ class McpPortalController(http.Controller):
             "widgets": widget_data,
             "embed": embed,
             "token": token,
-            "json_charts_data": Markup(json.dumps(charts_data, default=_json_default, ensure_ascii=False)),
+            "json_charts_data": charts_json(charts_data),
         }
 
     def _parse_spec_safe(self, page) -> dict:
@@ -210,6 +217,12 @@ class McpPortalController(http.Controller):
 # ---------------------------------------------------------------------------
 # Response helpers
 # ---------------------------------------------------------------------------
+
+
+def charts_json(charts_data) -> Markup:
+    """JSON seguro dentro de <script>: escapa <, > y & como \\u003c... para que
+    un nombre de registro con "</script>" no pueda cerrar la etiqueta."""
+    return scriptsafe.dumps(charts_data, default=_json_default, ensure_ascii=False).__html__()
 
 
 def _json_error(code: str, message: str, status: int) -> Response:

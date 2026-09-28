@@ -2,7 +2,7 @@
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 {
     'name': 'Servidor MCP para Odoo (AL)',
-    'version': '3.20260825',
+    'version': '4.20260825',
     'summary': 'Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva',
     'description': """
 Servidor MCP Odoo
@@ -87,6 +87,7 @@ bandera de función de forma predeterminada. Aislado a la ruta de addons configu
         'views/portal_templates.xml',
         'views/mcp_html_artifact_views.xml',
         'views/mcp_generated_module_views.xml',
+        'views/mcp_oauth_client_views.xml',
         'views/res_users_views.xml',
         'views/res_config_settings_views.xml',
         'views/mcp_menus.xml',

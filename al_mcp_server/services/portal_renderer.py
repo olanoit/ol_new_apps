@@ -316,7 +316,8 @@ def _run_read_group(env, model_name: str, domain: list, groupby: list, agg_field
     """Run _read_group and return a list of serializable dicts."""
     kw = {"limit": limit}
     if orderby:
-        kw["orderby"] = orderby
+        # En Odoo 19 el parámetro de _read_group se llama ``order``.
+        kw["order"] = orderby
 
     rows = env[model_name]._read_group(
         domain=domain,
@@ -333,8 +334,8 @@ def _run_read_group(env, model_name: str, domain: list, groupby: list, agg_field
         row_dict = {}
         for i, key in enumerate(gb_keys):
             val = row[i]
-            if hasattr(val, "id"):
-                row_dict[key] = {"id": val.id, "display_name": str(val)}
+            if hasattr(val, "_name"):
+                row_dict[key] = {"id": val.id, "display_name": val.display_name}
             else:
                 row_dict[key] = val
         for j, key in enumerate(agg_keys):

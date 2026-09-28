@@ -47,16 +47,13 @@ class ResUsers(models.Model):
     def set_pos_product_view_mode(self, mode):
         """Persiste la vista de productos del TPV preferida por el usuario.
 
-        Los cajeros normalmente no tienen permiso de escritura sobre
-        `res.users`, así que usamos `sudo()` tras verificar que la llamada
-        apunta SOLO al registro del propio usuario que llama. Esto mantiene
-        la superficie de ataque mínima y aun así permite que el botón
-        conmutador persista entre sesiones.
+        Sin `sudo()`: el campo está en SELF_WRITEABLE_FIELDS, así que el
+        propio usuario puede escribirlo en su registro con sus permisos.
         """
         if mode not in ("grid", "list"):
             return False
         # Defensivo: solo se permite la automodificación.
         if self.ids != [self.env.uid]:
             raise AccessError(_("Solo puedes cambiar tu propia preferencia de vista del TPV."))
-        self.sudo().write({"pos_product_view_mode": mode})
+        self.write({"pos_product_view_mode": mode})
         return True

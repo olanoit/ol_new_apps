@@ -14,3 +14,12 @@ class ProductTemplate(models.Model):
         # búsqueda/carga limitada del TPV base ya acota cuántos productos
         # se computan a la vez.
         return super()._load_pos_data_fields(config_id) + ["qty_available"]
+
+    @api.model
+    def _load_pos_data_read(self, records, config):
+        # Stock del almacén del TPV (el de su tipo de operación), no la suma
+        # de todos los almacenes de la compañía.
+        warehouse = config.picking_type_id.warehouse_id
+        if warehouse:
+            records = records.with_context(warehouse_id=warehouse.id)
+        return super()._load_pos_data_read(records, config)

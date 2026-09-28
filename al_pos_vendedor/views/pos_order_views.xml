@@ -13,8 +13,8 @@
             </xpath>
 
             <xpath expr="//group[last()]" position="inside">
-                <filter string="Vendedor" domain="[]" name="main_seller_id"
-                        context="{'seller_id':'seller_id'}"/>
+                <filter string="Vendedor" name="main_seller_id"
+                        context="{'group_by': 'seller_id'}"/>
             </xpath>
         </field>
     </record>

@@ -4,6 +4,8 @@ import logging
 
 from markupsafe import Markup
 
+from odoo.service.model import get_public_method
+
 from . import schema_cache
 from . import bi_tools
 from . import job_tools
@@ -180,6 +182,83 @@ def _get_field_restrictions(env, model_name: str) -> list | None:
     return field_map.get(model_name)  # None if model not in map
 
 
+def _domain_field_names(domain) -> set:
+    """Primer segmento de cada hoja del dominio (('partner_id.name', ...) -> 'partner_id')."""
+    names = set()
+    for leaf in domain or []:
+        if isinstance(leaf, (list, tuple)) and len(leaf) == 3 and isinstance(leaf[0], str):
+            names.add(leaf[0].split(".")[0])
+    return names
+
+
+def _check_read_fields(env, model_name: str, domain=None, order=None, extra=None) -> None:
+    """Rechaza dominios, órdenes o agrupaciones sobre campos fuera de la lista
+    permitida del token: filtrar por un campo oculto también revela su valor."""
+    allowed = _get_field_restrictions(env, model_name)
+    if allowed is None:
+        return
+    used = _domain_field_names(domain)
+    if order:
+        for part in str(order).split(","):
+            token = part.strip().split(" ")[0]
+            if token:
+                used.add(token)
+    for name in extra or []:
+        used.add(str(name).split(":")[0].split(".")[0])
+    blocked = sorted(n for n in used if n != "id" and n not in allowed)
+    if blocked:
+        raise PermissionError(
+            f"Los campos {blocked!r} del modelo {model_name!r} no están permitidos "
+            f"por las restricciones de campos de este token."
+        )
+
+
+# Operación de trabajo asíncrono → herramienta síncrona equivalente, para aplicar
+# exactamente el mismo alcance y las mismas restricciones en el cron.
+_JOB_OPERATION_TOOLS = {
+    "bulk_update": "odoo_write",
+    "bulk_create": "odoo_create",
+    "bulk_unlink": "odoo_unlink",
+    "export_csv": "odoo_export_csv",
+    "export_xlsx": "odoo_export_xlsx",
+    "call_method": "odoo_call_method",
+    "custom": "odoo_call_method",
+}
+
+
+def enforce_job_operation(env, operation: str, args: dict) -> None:
+    """Aplica alcance y restricciones del token a un trabajo asíncrono.
+
+    Se llama al enviar el trabajo y de nuevo al ejecutarlo en el cron. Puede
+    ajustar ``args['fields']`` de las exportaciones a la lista permitida.
+    """
+    tool_name = _JOB_OPERATION_TOOLS.get(operation)
+    if not tool_name:
+        raise ValueError(f"Operación de trabajo desconocida: {operation!r}")
+    _enforce_scope(env, tool_name)
+    _enforce_model_access(env, tool_name, args)
+    model_name = args.get("model")
+    if not model_name:
+        return
+    if operation == "bulk_update":
+        _check_write_fields(env, model_name, args.get("values") or {})
+        _check_read_fields(env, model_name, domain=args.get("domain"))
+    elif operation == "bulk_create":
+        for vals in args.get("records") or []:
+            if isinstance(vals, dict):
+                _check_write_fields(env, model_name, vals)
+    elif operation == "bulk_unlink":
+        _check_read_fields(env, model_name, domain=args.get("domain"))
+    elif operation in ("export_csv", "export_xlsx"):
+        _check_read_fields(env, model_name, domain=args.get("domain"))
+        allowed = _get_field_restrictions(env, model_name)
+        if allowed is not None:
+            requested = args.get("fields") or []
+            args["fields"] = [f for f in requested if f in allowed] if requested else list(allowed)
+    elif operation in ("call_method", "custom"):
+        _check_call_method_restrictions(env, model_name, args.get("method") or "")
+
+
 # ---------------------------------------------------------------------------
 # Individual tool implementations
 # ---------------------------------------------------------------------------
@@ -187,7 +266,7 @@ def _get_field_restrictions(env, model_name: str) -> list | None:
 
 def _get_models(env, args: dict):
     filter_kw = args.get("filter", "") or ""
-    cache_key = f"get_models:{filter_kw}"
+    cache_key = schema_cache.scoped_key(env, f"get_models:{filter_kw}")
 
     if schema_cache._cache_enabled(env):
         ttl = schema_cache._cache_ttl(env)
@@ -219,7 +298,7 @@ def _fields_get(env, args: dict):
     model_name = args["model"]
     attributes = args.get("attributes") or ["string", "type", "required", "readonly", "help"]
     attr_key = ",".join(sorted(attributes))
-    cache_key = f"fields_get:{model_name}:{attr_key}"
+    cache_key = schema_cache.scoped_key(env, f"fields_get:{model_name}:{attr_key}")
 
     if schema_cache._cache_enabled(env):
         ttl = schema_cache._cache_ttl(env)
@@ -257,6 +336,8 @@ def _search_read(env, args: dict):
     elif allowed is not None and not fields:
         # No explicit field list — auto-restrict to allowlist only
         fields = list(allowed)
+
+    _check_read_fields(env, model_name, domain=domain, order=order)
 
     model = _resolve_model(env, model_name)
     kw = {"limit": limit, "offset": offset}
@@ -323,10 +404,12 @@ def _execute_wizard(env, args: dict):
             f"Use odoo_create + odoo_call_method para modelos permanentes."
         )
 
-    if method_name.startswith("_"):
+    if method_name.startswith("_") or method_name in _CALL_METHOD_DENYLIST:
         raise ValueError(
             f"El método {method_name!r} es privado y no se puede llamar mediante MCP."
         )
+
+    _check_write_fields(env, model_name, values)
 
     if not hasattr(model, method_name):
         available = sorted(
@@ -340,6 +423,8 @@ def _execute_wizard(env, args: dict):
             f"Métodos públicos disponibles: {available}"
         )
 
+    # Mismas reglas que el RPC de Odoo: nada de métodos @api.private.
+    get_public_method(model, method_name)
     wizard = model.create(values)
     result = getattr(wizard, method_name)(**method_kwargs)
 
@@ -376,6 +461,23 @@ _CALL_METHOD_DENYLIST = frozenset({
 })
 
 
+# Métodos genéricos de lectura/escritura que saltarían la lista de campos permitidos.
+_FIELD_BYPASS_METHODS = frozenset({
+    "export_data", "web_read", "web_search_read", "web_save", "web_read_group",
+    "formatted_read_group", "search_fetch", "fetch", "copy_data", "copy",
+    "read_group", "onchange", "web_override_translations", "update_field_translations",
+    "get_field_translations",
+})
+
+
+def _check_call_method_restrictions(env, model_name: str, method_name: str) -> None:
+    if method_name in _FIELD_BYPASS_METHODS and _get_field_restrictions(env, model_name) is not None:
+        raise PermissionError(
+            f"El método {method_name!r} no está disponible en {model_name!r} porque este token "
+            f"tiene restricciones de campos para ese modelo."
+        )
+
+
 def _call_method(env, args: dict):
     model_name = args["model"]
     method_name = args["method"]
@@ -396,6 +498,9 @@ def _call_method(env, args: dict):
     model = _resolve_model(env, model_name)
     if not hasattr(model, method_name):
         raise ValueError(f"El método {method_name!r} no se encontró en el modelo {model_name!r}")
+    # Mismas reglas que el RPC de Odoo: rechaza @api.private y atributos inseguros.
+    get_public_method(model, method_name)
+    _check_call_method_restrictions(env, model_name, method_name)
 
     target = model.browse(ids) if ids else model
     result = getattr(target, method_name)(*method_args, **method_kwargs)
@@ -529,6 +634,7 @@ def _print_report(env, args: dict):
 def _count(env, args: dict):
     model_name = args["model"]
     domain = args.get("domain") or []
+    _check_read_fields(env, model_name, domain=domain)
     model = _resolve_model(env, model_name)
     total = model.search_count(domain)
     return {"model": model_name, "domain": domain, "count": total}
@@ -555,10 +661,15 @@ def _read_group(env, args: dict):
     limit = args.get("limit", 80)
     orderby = args.get("orderby")
 
+    _check_read_fields(env, model_name, domain=domain, extra=list(groupby) + [
+        f for f in fields if not str(f).startswith("__count")
+    ])
+
     model = _resolve_model(env, model_name)
     kw = {"limit": limit}
     if orderby:
-        kw["orderby"] = orderby
+        # En Odoo 19 el parámetro de _read_group se llama ``order``.
+        kw["order"] = orderby
 
     rows = model._read_group(
         domain=domain,
@@ -573,8 +684,8 @@ def _read_group(env, args: dict):
         for i, key in enumerate(groupby):
             field_name = key.split(":")[0]
             val = row[i]
-            if hasattr(val, "id"):
-                result[field_name] = {"id": val.id, "display_name": str(val)}
+            if hasattr(val, "_name"):
+                result[field_name] = {"id": val.id, "display_name": val.display_name}
             else:
                 result[field_name] = val
         for j, agg in enumerate(fields):
@@ -612,8 +723,8 @@ def _message_post(env, args: dict):
     # from an AI client. bleach/html_sanitize strips dangerous tags/attributes.
     from odoo.tools import html_sanitize
     if body and not body.strip().startswith("<"):
-        # Plain text: wrap in <p> and let Odoo escape it normally
-        safe_body = Markup(f"<p>{body}</p>")
+        # Plain text: se escapa al interpolar en el Markup (nunca f-string).
+        safe_body = Markup("<p>%s</p>") % body
     else:
         # HTML input: run through Odoo's sanitizer to strip XSS vectors
         safe_body = Markup(html_sanitize(body))
@@ -652,8 +763,8 @@ def _default_get(env, args: dict):
     for k, v in defaults.items():
         if isinstance(v, tuple):
             serialized[k] = {"id": v[0], "display_name": v[1]}
-        elif hasattr(v, "id"):
-            serialized[k] = {"id": v.id, "display_name": str(v)}
+        elif hasattr(v, "_name"):
+            serialized[k] = {"id": v.id, "display_name": v.display_name}
         else:
             serialized[k] = v
 
@@ -665,7 +776,7 @@ def _default_get(env, args: dict):
 
 def _get_views(env, args: dict):
     model_name = args["model"]
-    cache_key = f"get_views:{model_name}"
+    cache_key = schema_cache.scoped_key(env, f"get_views:{model_name}")
 
     if schema_cache._cache_enabled(env):
         ttl = schema_cache._cache_ttl(env)
@@ -745,8 +856,16 @@ def _onchange(env, args: dict):
 
     model = _resolve_model(env, model_name)
 
-    # Odoo onchange spec: {field: "1"} for each field to trigger
-    onchange_spec = {f: "1" for f in field_onchange}
+    _check_write_fields(env, model_name, values)
+
+    # Odoo 19: fields_spec es {campo: {}}; incluye todos los campos del modelo
+    # permitidos para recibir también los valores recalculados.
+    allowed = _get_field_restrictions(env, model_name)
+    # fields_get ya excluye los campos cuyo groups= no alcanza al usuario.
+    onchange_spec = {
+        fname: {} for fname, fdef in model.fields_get(attributes=["type"]).items()
+        if fdef["type"] != "binary" and (allowed is None or fname in allowed)
+    }
     result = model.onchange(values, field_onchange, onchange_spec)
 
     # Serialize result — skip one2many command lists to avoid context explosion
@@ -757,8 +876,8 @@ def _onchange(env, args: dict):
             computed[key] = f"[{len(val)} registros one2many — use odoo_search_read para leerlos]"
         elif isinstance(val, tuple) and len(val) == 2:
             computed[key] = {"id": val[0], "display_name": val[1]}
-        elif hasattr(val, "id"):
-            computed[key] = {"id": val.id, "display_name": str(val)}
+        elif isinstance(val, dict) and "id" in val:
+            computed[key] = {"id": val["id"], "display_name": val.get("display_name")}
         else:
             computed[key] = val
 

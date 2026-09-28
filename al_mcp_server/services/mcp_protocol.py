@@ -35,6 +35,9 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
     capture_payloads: When True, tool args and results are stored in audit log
                       (after PII redaction + truncation).
     """
+    if not isinstance(msg, dict):
+        return _err(None, -32600, "Solicitud no válida")
+
     method = msg.get("method")
     msg_id = msg.get("id")
     params = msg.get("params") or {}
@@ -121,7 +124,11 @@ def _handle_tool_call(env, msg_id, params: dict,
     tool_input = params.get("arguments") or {}
     t0 = time.monotonic()
     try:
-        result = tool_executor.execute_tool(env, tool_name, tool_input)
+        # Savepoint: si la herramienta falla, se deshacen sus escrituras parciales
+        # (el controlador hace commit al final de la petición) y el cursor sigue
+        # usable para registrar el error.
+        with env.cr.savepoint():
+            result = tool_executor.execute_tool(env, tool_name, tool_input)
         duration_ms = int((time.monotonic() - t0) * 1000)
         req_payload, res_payload = _build_payloads(capture_payloads, tool_input, result)
         _log_tool_call(env, session_db_id, transport, tool_name, tool_input,

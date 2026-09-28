@@ -366,6 +366,9 @@ def run_custom(env, args: dict, job) -> dict:
     model = env[model_name]
     if not hasattr(model, method_name):
         raise ValueError(f"Método {method_name!r} no encontrado en el modelo {model_name!r}")
+    # Mismas reglas que el RPC de Odoo: rechaza @api.private y atributos inseguros.
+    from odoo.service.model import get_public_method
+    get_public_method(model, method_name)
 
     target = model.browse(ids) if ids else model
     result = getattr(target, method_name)(*method_args, **method_kwargs)

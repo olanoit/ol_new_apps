@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Los vendedores cargados solo para asignarlos a la venta no aparecen
+         en la lista de cajeros (no pueden iniciar sesión). -->
+    <t t-name="al_pos_vendedor.CashierSelectionPopup"
+       t-inherit="pos_hr.CashierSelectionPopup"
+       t-inherit-mode="extension">
+        <xpath expr="//button[@t-foreach='props.employees']" position="attributes">
+            <attribute name="t-foreach">props.employees.filter((employee) => !employee._al_seller_only)</attribute>
+        </xpath>
+    </t>
+
+</templates>

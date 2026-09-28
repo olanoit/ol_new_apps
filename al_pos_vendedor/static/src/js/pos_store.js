@@ -2,6 +2,7 @@
 
 import { PosStore } from "@point_of_sale/app/services/pos_store";
 import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
 
 patch(PosStore.prototype, {
     getVendedores() {
@@ -42,6 +43,21 @@ patch(PosStore.prototype, {
         } else {
             localStorage.removeItem(key);
         }
+    },
+
+    /**
+     * Los vendedores que solo se cargan para asignarlos a la venta
+     * (`_al_seller_only`, sin PIN) no pueden iniciar sesión como cajero.
+     */
+    canLoginCashier(employee) {
+        if (employee?._al_seller_only) {
+            this.notification.add(
+                _t("%s es vendedor, no cajero: no puede iniciar sesión en la caja.", employee.name),
+                { type: "warning" }
+            );
+            return false;
+        }
+        return super.canLoginCashier(...arguments);
     },
 
     createNewOrder(data = {}) {

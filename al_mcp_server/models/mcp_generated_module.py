@@ -3,13 +3,16 @@ import io
 import json
 import logging
 import os
+import re
 import shutil
 import zipfile
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
+_TECH_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
 class McpGeneratedModule(models.Model):
@@ -96,6 +99,18 @@ class McpGeneratedModule(models.Model):
         "Ya existe un módulo con este nombre técnico.",
     )
 
+    @api.constrains("technical_name")
+    def _check_technical_name(self):
+        # Se usa como nombre de carpeta en action_install (rmtree/extract):
+        # nunca puede contener separadores ni "..".
+        for rec in self:
+            if not _TECH_NAME_RE.match(rec.technical_name or ""):
+                raise ValidationError(_(
+                    "El nombre técnico %(name)s debe estar en snake_case "
+                    "(minúsculas, dígitos y guiones bajos; empieza por letra).",
+                    name=rec.technical_name,
+                ))
+
     # ------------------------------------------------------------------
     # Validation
     # ------------------------------------------------------------------
@@ -125,6 +140,13 @@ class McpGeneratedModule(models.Model):
             raise UserError(_(
                 "El campo de especificación contiene JSON no válido: %(error)s",
                 error=str(exc),
+            ))
+
+        if spec_dict.get("technical_name") != self.technical_name:
+            raise UserError(_(
+                "El technical_name de la especificación (%(spec)s) no coincide con el del registro (%(rec)s).",
+                spec=spec_dict.get("technical_name"),
+                rec=self.technical_name,
             ))
 
         try:
@@ -218,11 +240,19 @@ class McpGeneratedModule(models.Model):
         base_path = os.path.abspath(base_path)
         self._validate_install_path(base_path)
 
-        target_dir = os.path.join(base_path, self.technical_name)
+        target_dir = self._safe_target_dir(base_path)
 
         # Fetch ZIP bytes
-        att = self.attachment_id.sudo()
-        zip_bytes = base64.b64decode(att.datas)
+        att_sudo = self.attachment_id.sudo()  # sudo: adjunto interno del registro
+        zip_bytes = base64.b64decode(att_sudo.datas)
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            prefix = f"{self.technical_name}/"
+            for member in zf.namelist():
+                if not member.startswith(prefix) or ".." in member.split("/"):
+                    raise UserError(_(
+                        "El ZIP contiene una ruta fuera de la carpeta del módulo: %(path)s",
+                        path=member,
+                    ))
 
         # Atomic: remove existing dir if present, extract fresh
         if os.path.exists(target_dir):
@@ -304,6 +334,15 @@ class McpGeneratedModule(models.Model):
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _safe_target_dir(self, base_path: str) -> str:
+        """Carpeta destino dentro de base_path, validando el nombre técnico."""
+        self._check_technical_name()
+        base_real = os.path.realpath(base_path)
+        target = os.path.realpath(os.path.join(base_real, self.technical_name))
+        if os.path.dirname(target) != base_real:
+            raise UserError(_("Ruta de instalación no válida: %(path)s", path=target))
+        return target
 
     def _validate_install_path(self, path: str) -> None:
         """Raise UserError if *path* is not safe for module extraction."""

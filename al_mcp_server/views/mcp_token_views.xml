@@ -100,9 +100,10 @@
 
                     <notebook>
                         <page string="Gobernanza" name="governance">
+                            <field name="can_edit_governance" invisible="1"/>
                             <group string="Alcance">
-                                <field name="scope" widget="radio"/>
-                                <field name="capture_payloads"/>
+                                <field name="scope" widget="radio" readonly="not can_edit_governance"/>
+                                <field name="capture_payloads" readonly="not can_edit_governance"/>
                             </group>
 
                             <group string="Acceso a Modelos">
@@ -111,10 +112,12 @@
                                     Los modelos denegados se evalúan antes que los modelos permitidos.
                                 </div>
                                 <field name="allowed_model_ids"
+                                       readonly="not can_edit_governance"
                                        widget="many2many_tags"
                                        string="Modelos Permitidos"
                                        placeholder="Vacío = todos los modelos permitidos"/>
                                 <field name="denied_model_ids"
+                                       readonly="not can_edit_governance"
                                        widget="many2many_tags"
                                        string="Modelos Denegados"
                                        placeholder="Vacío = ningún modelo bloqueado"/>
@@ -128,6 +131,7 @@
                                     Ejemplo: {"sale.order": ["name", "partner_id", "amount_total"]}
                                 </div>
                                 <field name="field_restrictions"
+                                       readonly="not can_edit_governance"
                                        nolabel="1"
                                        colspan="2"
                                        placeholder='{"sale.order": ["name", "partner_id"], "res.partner": ["name", "email"]}'
@@ -141,11 +145,13 @@
                                     La lista de denegados se evalúa antes que la lista de permitidos.
                                 </div>
                                 <field name="ip_allowlist"
+                                       readonly="not can_edit_governance"
                                        string="Lista de IP permitidas"
                                        nolabel="0"
                                        placeholder="192.168.1.0/24&#10;10.0.0.1&#10;# red de oficina&#10;2001:db8::/32"
                                        colspan="2"/>
                                 <field name="ip_denylist"
+                                       readonly="not can_edit_governance"
                                        string="Lista de IP denegadas"
                                        nolabel="0"
                                        placeholder="203.0.113.5&#10;198.51.100.0/24"

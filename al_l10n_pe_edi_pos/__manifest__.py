@@ -29,7 +29,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-POS/Apps',
-    'version': '6.20260721',
+    'version': '7.20260721',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

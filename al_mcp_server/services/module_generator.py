@@ -73,11 +73,13 @@ Notes
 """
 
 import ast
+import csv
 import io
 import keyword
 import logging
 import re
 import zipfile
+from xml.sax.saxutils import escape as _sax_escape
 
 _logger = logging.getLogger(__name__)
 
@@ -92,6 +94,26 @@ _VERSION_RE = re.compile(r"^\d+\.\d+\.\d+\.\d+\.\d+$")
 _SNAKE_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 _MODEL_NAME_RE = re.compile(r"^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$")
+
+# XML-ID completo "modulo.nombre" (grupos implicados y de acceso).
+_XMLID_RE = re.compile(r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")
+
+
+def _x(value) -> str:
+    """Escapa un valor para texto o atributo XML (entre comillas dobles).
+
+    Todo texto del spec que acaba en los XML generados pasa por aquí: el XML
+    se carga como superusuario al instalar, así que una etiqueta inyectada
+    (<function>, <record>...) equivaldría a ejecutar código arbitrario.
+    """
+    return _sax_escape(str(value), {'"': "&quot;", "'": "&apos;"})
+
+
+def _int(value, default: int = 10) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def _normalize_model_name(name):
@@ -298,6 +320,34 @@ def validate_spec(spec: dict) -> list[str]:
             for ar in ars:
                 if isinstance(ar, dict) and "model" in ar:
                     ar["model"] = _normalize_model_name(ar["model"])
+
+    # ---- security: validate references that end up in XML / CSV ------------
+    sec = spec.get("security")
+    if isinstance(sec, dict):
+        for i, grp in enumerate(sec.get("groups") or []):
+            if not isinstance(grp, dict) or not grp.get("name"):
+                errors.append(f"security.groups[{i}]: name es obligatorio.")
+                continue
+            implied = grp.get("implied_by", "")
+            if implied and not (isinstance(implied, str) and _XMLID_RE.match(implied)):
+                errors.append(
+                    f"security.groups[{i}]: implied_by {implied!r} debe ser un XML-ID 'modulo.nombre'."
+                )
+        for i, ar in enumerate(sec.get("access_rights") or []):
+            if not isinstance(ar, dict):
+                errors.append(f"security.access_rights[{i}]: debe ser un objeto.")
+                continue
+            if not _MODEL_NAME_RE.match(str(ar.get("model", ""))):
+                errors.append(f"security.access_rights[{i}]: model no válido.")
+            group = ar.get("group", "base.group_user")
+            if not (isinstance(group, str) and _XMLID_RE.match(group)):
+                errors.append(
+                    f"security.access_rights[{i}]: group {group!r} debe ser un XML-ID 'modulo.nombre'."
+                )
+            for key in ("perm_read", "read", "perm_write", "write",
+                        "perm_create", "create", "perm_unlink", "unlink"):
+                if key in ar and str(ar[key]) not in ("0", "1", "True", "False"):
+                    errors.append(f"security.access_rights[{i}]: {key} debe ser 0 o 1.")
 
     # ---- menus --------------------------------------------------------------
     menus = spec.get("menus") or []
@@ -630,10 +680,12 @@ def _gen_security_groups(spec: dict, tech: str) -> str:
         gname = grp.get("name", "")
         implied = grp.get("implied_by", "")
         xml_id = _to_xml_id(gname)
+        if implied and not _XMLID_RE.match(str(implied)):
+            raise ValueError(f"implied_by {implied!r} no es un XML-ID válido.")
         lines.append(f'    <record id="group_{xml_id}" model="res.groups">')
-        lines.append(f'        <field name="name">{gname}</field>')
+        lines.append(f'        <field name="name">{_x(gname)}</field>')
         if implied:
-            lines.append(f'        <field name="implied_ids" eval="[(4, ref({implied!r}))]"/>')
+            lines.append(f'        <field name="implied_ids" eval="[(4, ref(\'{implied}\'))]"/>')
         lines.append("    </record>")
         lines.append("")
 
@@ -649,38 +701,42 @@ def _gen_access_csv(spec: dict) -> str:
     access_rights = security.get("access_rights") or []
     models_spec = spec.get("models") or []
 
-    rows: list[str] = [
-        "id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink"
-    ]
+    buf = io.StringIO()
+    writer = csv.writer(buf, lineterminator="\n")
+    writer.writerow(
+        ["id", "name", "model_id:id", "group_id:id",
+         "perm_read", "perm_write", "perm_create", "perm_unlink"]
+    )
+
+    def _perm(value) -> int:
+        return 1 if str(value) in ("1", "True") else 0
 
     if access_rights:
         for ar in access_rights:
-            model = ar.get("model", "")
-            group = ar.get("group", "base.group_user")
+            model = str(ar.get("model", ""))
+            group = str(ar.get("group", "base.group_user"))
+            if not _MODEL_NAME_RE.match(model) or not _XMLID_RE.match(group):
+                raise ValueError(f"Regla de acceso no válida: {ar!r}")
             # Accept both Odoo-CSV-style keys (perm_*) and short keys
-            r = ar.get("perm_read", ar.get("read", 1))
-            w = ar.get("perm_write", ar.get("write", 1))
-            c = ar.get("perm_create", ar.get("create", 1))
-            u = ar.get("perm_unlink", ar.get("unlink", 0))
+            r = _perm(ar.get("perm_read", ar.get("read", 1)))
+            w = _perm(ar.get("perm_write", ar.get("write", 1)))
+            c = _perm(ar.get("perm_create", ar.get("create", 1)))
+            u = _perm(ar.get("perm_unlink", ar.get("unlink", 0)))
             model_xml_id = "model_" + model.replace(".", "_")
-            row_id = ar.get("id") or (
+            row_id = _to_xml_id(str(ar.get("id") or "")) or (
                 f"access_{model.replace('.', '_')}_{group.replace('.', '_')}"
             )
-            row_name = ar.get("name") or f"{model} ({group})"
-            rows.append(
-                f"{row_id},{row_name},{model_xml_id},{group},{r},{w},{c},{u}"
-            )
+            row_name = str(ar.get("name") or f"{model} ({group})")
+            writer.writerow([row_id, row_name, model_xml_id, group, r, w, c, u])
     else:
         # Auto-generate one admin-only line per model
         for model in models_spec:
             mname = model["name"]
             model_xml_id = "model_" + mname.replace(".", "_")
             row_id = f"access_{mname.replace('.', '_')}_admin"
-            rows.append(
-                f"{row_id},{mname} admin,{model_xml_id},base.group_system,1,1,1,1"
-            )
+            writer.writerow([row_id, f"{mname} admin", model_xml_id, "base.group_system", 1, 1, 1, 1])
 
-    return "\n".join(rows) + "\n"
+    return buf.getvalue()
 
 
 def _gen_view(model_spec: dict, spec: dict) -> str:
@@ -737,7 +793,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
         f'            <field name="{f["name"]}"/>' for f in search_char_fields
     )
     filter_lines = "\n".join(
-        f'            <filter string="{f.get("string", f["name"])}" '
+        f'            <filter string="{_x(f.get("string", f["name"]))}" '
         f'name="filter_{f["name"]}" domain="[]"/>'
         for f in selection_fields
     )
@@ -801,7 +857,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
 
     <!-- Action -->
     <record id="{action_id}" model="ir.actions.act_window">
-        <field name="name">{model_spec.get("description", model_name)}</field>
+        <field name="name">{_x(model_spec.get("description", model_name))}</field>
         <field name="res_model">{model_name}</field>
         <field name="view_mode">list,form</field>
     </record>{menu_xml}
@@ -864,7 +920,7 @@ def _collect_model_menus(model_name: str, menus: list, tech: str) -> list[str]:
     for top in menus:
         top_name = top.get("name", "")
         top_id = f"menu_{_to_xml_id(top_name)}"
-        seq = top.get("sequence", 10)
+        seq = _int(top.get("sequence", 10))
         children = top.get("children") or []
 
         # Emit the top-level menu only if not already emitted
@@ -875,14 +931,14 @@ def _collect_model_menus(model_name: str, menus: list, tech: str) -> list[str]:
             continue
 
         result.append(
-            f'<menuitem id="{top_id}" name="{top_name}" sequence="{seq}"/>'
+            f'<menuitem id="{top_id}" name="{_x(top_name)}" sequence="{seq}"/>'
         )
         for child in matching_children:
             child_name = child.get("name", model_name)
             child_id = f"menu_{_to_xml_id(top_name)}_{_to_xml_id(child_name)}"
-            child_seq = child.get("sequence", 10)
+            child_seq = _int(child.get("sequence", 10))
             result.append(
-                f'<menuitem id="{child_id}" name="{child_name}" '
+                f'<menuitem id="{child_id}" name="{_x(child_name)}" '
                 f'parent="{top_id}" '
                 f'action="{action_id}" '
                 f'sequence="{child_seq}"/>'

@@ -21,7 +21,11 @@ import urllib.parse
 from werkzeug.wrappers import Response
 
 from odoo import http
+from odoo.exceptions import AccessDenied
 from odoo.http import request
+
+from ..models.mcp_oauth_client import MAX_REDIRECT_URIS, is_acceptable_redirect_uri
+from ..models.mcp_token import _hash_token
 
 _logger = logging.getLogger(__name__)
 
@@ -104,6 +108,7 @@ def _login_page(
     error: str = "",
 ) -> Response:
     error_html = f'<div class="error">{_esc(error)}</div>' if error else ""
+    redirect_host = urllib.parse.urlsplit(redirect_uri).netloc
     html = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -118,7 +123,8 @@ def _login_page(
     <h1>Autorizar acceso</h1>
     <p class="sub">
       <strong>{_esc(client_name or "MCP Client")}</strong>
-      está solicitando acceso a su cuenta de Odoo.
+      está solicitando acceso a su cuenta de Odoo.<br>
+      Tras autorizar, volverá a <strong>{_esc(redirect_host)}</strong>.
     </p>
     {error_html}
     <div class="scope-box">
@@ -130,7 +136,6 @@ def _login_page(
       <input type="hidden" name="redirect_uri"   value="{_esc(redirect_uri)}">
       <input type="hidden" name="code_challenge" value="{_esc(code_challenge)}">
       <input type="hidden" name="state"          value="{_esc(state)}">
-      <input type="hidden" name="db"             value="{_esc(db)}">
       <label for="login">Usuario de Odoo</label>
       <input id="login" name="login" type="text"
              autocomplete="username" placeholder="admin" autofocus>
@@ -143,6 +148,23 @@ def _login_page(
 </body>
 </html>"""
     return Response(html, content_type="text/html; charset=utf-8")
+
+
+def _error_page(message: str, status: int = 400) -> Response:
+    """Error sin redirigir: si el cliente o la URI no son válidos no se debe
+    enviar al navegador a una URL que no controlamos (redirección abierta)."""
+    html = (
+        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">'
+        f"<title>Error de autorización</title><style>{_CSS}</style></head>"
+        f'<body><div class="card"><div class="error">{_esc(message)}</div></div></body></html>'
+    )
+    return Response(html, status=status, content_type="text/html; charset=utf-8")
+
+
+def _find_client(client_id: str, redirect_uri: str):
+    # sudo: mcp.oauth.client solo es legible por el sistema y aquí la petición
+    # es pública; solo se usa para validar el par client_id/redirect_uri.
+    return request.env["mcp.oauth.client"].sudo().find_client(client_id, redirect_uri)
 
 
 def _json_resp(data: dict, status: int = 200) -> Response:
@@ -252,7 +274,7 @@ class OAuthController(http.Controller):
             base = _base_url()
             return _json_resp({
                 "registration_endpoint": f"{base}/oauth/register",
-                "grant_types_supported": ["authorization_code"],
+                "grant_types_supported": ["authorization_code", "refresh_token"],
                 "response_types_supported": ["code"],
                 "token_endpoint_auth_methods_supported": ["none"],
                 "code_challenge_methods_supported": ["S256"],
@@ -264,13 +286,33 @@ class OAuthController(http.Controller):
         except json.JSONDecodeError:
             return _json_resp({"error": "invalid_request"}, 400)
 
-        import secrets
+        if not isinstance(body, dict):
+            return _json_resp({"error": "invalid_request"}, 400)
+        redirect_uris = body.get("redirect_uris") or []
+        if (
+            not isinstance(redirect_uris, list)
+            or not redirect_uris
+            or len(redirect_uris) > MAX_REDIRECT_URIS
+            or not all(is_acceptable_redirect_uri(u) for u in redirect_uris)
+        ):
+            return _json_resp({
+                "error": "invalid_redirect_uri",
+                "error_description": "redirect_uris debe ser una lista de URIs HTTPS "
+                                     "(o HTTP hacia localhost).",
+            }, 400)
+        client_name = str(body.get("client_name") or "MCP Client")[:128]
+
+        # sudo: registro dinámico público (RFC 7591); el modelo solo es de sistema.
+        client_sudo = request.env["mcp.oauth.client"].sudo().create({
+            "client_name": client_name,
+            "redirect_uris": "\n".join(redirect_uris),
+        })
         return _json_resp(
             {
-                "client_id": secrets.token_urlsafe(16),
-                "client_name": body.get("client_name", "MCP Client"),
-                "redirect_uris": body.get("redirect_uris", []),
-                "grant_types": ["authorization_code"],
+                "client_id": client_sudo.client_id,
+                "client_name": client_name,
+                "redirect_uris": redirect_uris,
+                "grant_types": ["authorization_code", "refresh_token"],
                 "response_types": ["code"],
                 "token_endpoint_auth_method": "none",
             },
@@ -291,16 +333,18 @@ class OAuthController(http.Controller):
         code_challenge = params.get("code_challenge", "")
         code_challenge_method = params.get("code_challenge_method", "")
         state = params.get("state", "")
-        client_name = params.get("client_name", "MCP Client")
-
         if not redirect_uri or not code_challenge:
             return _json_resp({"error": "invalid_request", "error_description": "redirect_uri y code_challenge son obligatorios"}, 400)
+
+        client = _find_client(client_id, redirect_uri)
+        if not client:
+            return _error_page("Cliente OAuth desconocido o redirect_uri no registrada para este cliente.")
 
         if code_challenge_method and code_challenge_method != "S256":
             return _redirect(redirect_uri, {"error": "invalid_request", "error_description": "Solo se admite S256", "state": state})
 
         return _login_page(
-            client_name=client_name,
+            client_name=client.client_name,
             client_id=client_id,
             redirect_uri=redirect_uri,
             code_challenge=code_challenge,
@@ -318,10 +362,14 @@ class OAuthController(http.Controller):
         redirect_uri = form.get("redirect_uri", "")
         code_challenge = form.get("code_challenge", "")
         state = form.get("state", "")
-        client_name = form.get("client_name", "MCP Client")
-        db = form.get("db") or request.db
+        db = request.db  # nunca la base indicada en el formulario
         login = form.get("login", "").strip()
         password = form.get("password", "")
+
+        client = _find_client(client_id, redirect_uri)
+        if not client:
+            return _error_page("Cliente OAuth desconocido o redirect_uri no registrada para este cliente.")
+        client_name = client.client_name
 
         def _error(msg: str) -> Response:
             return _login_page(
@@ -339,20 +387,30 @@ class OAuthController(http.Controller):
         if not password:
             return _error("La contraseña es obligatoria.")
 
-        # Delegate authentication to Odoo 18
-        # Odoo 18 signature: authenticate(db, credential_dict)
+        # Odoo 19: se validan las credenciales con res.users.authenticate()
+        # (incluye el bloqueo por intentos fallidos) sin abrir una sesión web
+        # en el navegador.
         try:
-            db = db or request.db
-            request.session.db = db
-            credential = {'login': login, 'password': password, 'type': 'password'}
-            auth_info = request.session.authenticate(db, credential)
-            uid = auth_info.get('uid') if isinstance(auth_info, dict) else auth_info
+            credential = {"login": login, "password": password, "type": "password"}
+            auth_info = request.env["res.users"].authenticate(credential, {"interactive": True})
+            uid = auth_info.get("uid")
+        except AccessDenied:
+            return _error("Usuario o contraseña no válidos.")
         except Exception as exc:
             _logger.warning("OAuth authorize auth error for %r: %s", login, exc)
             return _error("Error de autenticación. Inténtelo de nuevo.")
 
         if not uid:
             return _error("Usuario o contraseña no válidos.")
+
+        # Con doble factor activo la contraseña sola no basta: este formulario
+        # no puede completar el segundo paso, así que se exige un PAT.
+        user_sudo = request.env["res.users"].sudo().browse(uid)  # sudo: leer la config MFA
+        if auth_info.get("mfa") != "skip" and user_sudo._mfa_url():
+            return _error(
+                "Su usuario tiene verificación en dos pasos. Genere un Token de Acceso "
+                "Personal en Odoo y úselo en su cliente MCP."
+            )
 
         # Issue authorization code (stored in mcp.auth.code)
         code = request.env["mcp.auth.code"].sudo().create_code(
@@ -386,16 +444,20 @@ class OAuthController(http.Controller):
         code = form.get("code", "")
         redirect_uri = form.get("redirect_uri", "")
         code_verifier = form.get("code_verifier", "")
+        client_id = form.get("client_id", "")
         client_name = form.get("client_name", "MCP Client")
 
-        if not code or not redirect_uri or not code_verifier:
+        if not code or not redirect_uri or not code_verifier or not client_id:
             return _json_resp(
                 {"error": "invalid_request",
-                 "error_description": "code, redirect_uri y code_verifier son obligatorios"},
+                 "error_description": "code, redirect_uri, code_verifier y client_id son obligatorios"},
                 400,
             )
 
-        auth_code = request.env["mcp.auth.code"].sudo().exchange(code, code_verifier, redirect_uri)
+        # sudo: el canje lo hace un cliente público sin sesión de Odoo.
+        auth_code = request.env["mcp.auth.code"].sudo().exchange(
+            code, code_verifier, redirect_uri, client_id=client_id,
+        )
         if not auth_code:
             return _json_resp(
                 {"error": "invalid_grant",
@@ -456,12 +518,16 @@ class OAuthController(http.Controller):
         token_value = form.get("token", "")
 
         if token_value:
-            rec = request.env["mcp.token"].sudo().search(
-                [("token", "=", token_value), ("state", "=", "active")],
+            # En BD solo se guarda el SHA-256 del token (de acceso o de refresco).
+            token_hash = _hash_token(token_value)
+            # sudo: RFC 7009, quien presenta el token secreto puede revocarlo.
+            token_sudo = request.env["mcp.token"].sudo().search(
+                ["|", ("token", "=", token_hash), ("refresh_token", "=", token_hash),
+                 ("state", "=", "active")],
                 limit=1,
             )
-            if rec:
-                rec.action_revoke()
+            if token_sudo:
+                token_sudo.action_revoke()
 
         # RFC 7009: always return 200 regardless of whether token existed
         return _json_resp({})

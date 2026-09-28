@@ -48,6 +48,16 @@ def _cache_ttl(env) -> int:
         return 300
 
 
+def scoped_key(env, key: str) -> str:
+    """Prefija la clave con base de datos, usuario e idioma.
+
+    fields_get y las acciones dependen de los grupos del usuario y del idioma;
+    compartir la entrada entre usuarios (o entre bases del mismo proceso)
+    filtraría metadatos que el usuario no puede ver.
+    """
+    return f"{env.cr.dbname}:{env.uid}:{env.lang or ''}:{key}"
+
+
 # ---------------------------------------------------------------------------
 # Core operations
 # ---------------------------------------------------------------------------

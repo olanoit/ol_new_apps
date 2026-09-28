@@ -70,7 +70,7 @@ import re
 import secrets
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -146,6 +146,7 @@ class McpPortalPage(models.Model):
         default=lambda self: self.env.uid,
         ondelete="restrict",
         index=True,
+        readonly=True,
     )
 
     # ------------------------------------------------------------------
@@ -213,6 +214,17 @@ class McpPortalPage(models.Model):
             if not vals.get("access_token"):
                 vals["access_token"] = secrets.token_urlsafe(24)
         return super().create(vals_list)
+
+    def write(self, vals):
+        self._check_created_by_write(vals)
+        return super().write(vals)
+
+    def _check_created_by_write(self, vals):
+        """El dueño determina con qué usuario se calculan los datos publicados:
+        solo un administrador puede reasignarlo (las reglas solo se verifican
+        antes del write, no sobre el valor nuevo)."""
+        if "created_by" in vals and not self.env.su and not self.env.user.has_group("base.group_system"):
+            raise AccessError(_("Solo un administrador puede cambiar el propietario."))
 
     # ------------------------------------------------------------------
     # Computed field implementations
@@ -341,7 +353,10 @@ class McpPortalPage(models.Model):
         base = _slugify(name)
         candidate = base
         suffix = 1
-        while self.search_count([("slug", "=", candidate)]):
+        # sudo: el slug es único en toda la tabla, también entre registros de
+        # otros usuarios que las reglas ocultan.
+        records_sudo = self.sudo().with_context(active_test=False)
+        while records_sudo.search_count([("slug", "=", candidate)]):
             candidate = f"{base}-{suffix}"
             suffix += 1
         return candidate

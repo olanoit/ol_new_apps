@@ -4,6 +4,7 @@ import secrets
 from datetime import timedelta
 
 from odoo import api, fields, models
+from odoo.tools import consteq
 
 CODE_TTL_MINUTES = 10
 
@@ -54,17 +55,19 @@ class McpAuthCode(models.Model):
         return raw
 
     @api.model
-    def exchange(self, code: str, code_verifier: str, redirect_uri: str):
+    def exchange(self, code: str, code_verifier: str, redirect_uri: str, client_id: str = ""):
         """
         Exchange code + PKCE verifier for the auth code record.
         Returns the record (with user_id) on success, None on failure.
         Marks the code as used to prevent replay.
+        The code is bound to the client_id that requested it (RFC 6749 §4.1.3).
         """
         rec = self.search(
             [
                 ("code", "=", _hash_code(code)),
                 ("used", "=", False),
                 ("redirect_uri", "=", redirect_uri),
+                ("client_id", "=", client_id or False),
             ],
             limit=1,
         )
@@ -77,7 +80,7 @@ class McpAuthCode(models.Model):
         # Verify PKCE S256: SHA-256(code_verifier) == base64url(code_challenge)
         digest = hashlib.sha256(code_verifier.encode()).digest()
         computed = base64.urlsafe_b64encode(digest).rstrip(b"=").decode()
-        if computed != rec.code_challenge:
+        if not consteq(computed, rec.code_challenge or ""):
             return None
 
         rec.write({"used": True})

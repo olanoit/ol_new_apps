@@ -221,8 +221,11 @@
                         </div>
                     </div>
 
-                    <!-- Columna derecha: Finanzas + Pedido (datos monetarios). -->
-                    <div class="pos-info-general__col">
+                    <!-- Columna derecha: Finanzas + Pedido (datos monetarios).
+                         Mismo criterio que pos_hr aplica al bloque nativo
+                         .financials-order (su t-if cae ahora en el marcador
+                         vacío): oculta para el rol mínimo. -->
+                    <div class="pos-info-general__col" t-if="alShowFinancials">
                         <div class="pos-info-grid d-grid gap-2"
                              style="grid-template-columns: max-content 1fr;">
 

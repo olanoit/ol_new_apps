@@ -183,6 +183,12 @@ def _enforce_module_scope(env, tool_name: str) -> None:
             f"El alcance actual del token es {scope!r}. "
             f"Contacte a su administrador para elevar el alcance del token."
         )
+    # Generar e instalar módulos equivale a ejecutar código en el servidor:
+    # además del alcance, el usuario del token debe ser administrador de Odoo.
+    if tool_name in _ADMIN_ONLY_TOOLS and not env.user.has_group("base.group_system"):
+        raise PermissionError(
+            f"La herramienta {tool_name!r} solo está disponible para administradores de Odoo."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -194,6 +200,11 @@ def _handle_generate(env, args: dict) -> dict:
     spec = args.get("spec")
     if not isinstance(spec, dict):
         raise ValueError("'spec' debe ser un objeto JSON (dict).")
+
+    from . import module_generator
+    errors = module_generator.validate_spec(spec)
+    if errors:
+        return {"error": "La especificación no es válida.", "errors": errors, "state": "failed"}
 
     display_name = args.get("name") or spec.get("name") or spec.get("technical_name", "Módulo Generado")
 
@@ -258,7 +269,10 @@ def _handle_list(env, args: dict) -> dict:
     domain = []
     if state_filter:
         domain.append(("state", "=", state_filter))
+    if not env.user.has_group("base.group_system"):
+        domain.append(("created_by", "=", env.uid))
 
+    # sudo: el ACL del modelo es solo de sistema; el dominio limita a los propios.
     recs = env["mcp.generated.module"].sudo().search_read(
         domain,
         ["name", "technical_name", "version", "state", "create_date",
@@ -294,6 +308,8 @@ def _handle_install(env, args: dict) -> dict:
     if not module_id:
         raise ValueError("'module_id' es obligatorio.")
 
+    # sudo: tras exigir group_system en _enforce_module_scope; necesario porque
+    # la instalación toca ir.module.module y el sistema de archivos.
     rec = env["mcp.generated.module"].sudo().browse(int(module_id))
     if not rec.exists():
         raise ValueError(f"No se encontró mcp.generated.module#{module_id}.")

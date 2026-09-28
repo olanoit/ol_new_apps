@@ -1,5 +1,6 @@
 import { patch } from "@web/core/utils/patch";
 import { OrderReceipt } from "@point_of_sale/app/screens/receipt_screen/receipt/order_receipt";
+import { generateQRCodeDataUrl } from "@point_of_sale/utils";
 
 patch(OrderReceipt.prototype, {
     /** El formato CPE aplica en empresas peruanas con los diarios
@@ -33,6 +34,7 @@ patch(OrderReceipt.prototype, {
                 igv: move.l10n_pe_edi_amount_igv,
                 total: move.amount_total,
                 words: move.l10n_pe_pos_amount_text,
+                fromMove: true,
             };
         }
         return {
@@ -43,17 +45,17 @@ patch(OrderReceipt.prototype, {
             igv: this.order.prices?.taxDetails?.tax_amount_currency ?? 0,
             total: this.order.priceIncl,
             words: null,
+            fromMove: false,
         };
     },
+    /** QR generado en el navegador (data URL), como el QR nativo del
+     * ticket: funciona sin conexión y ya está listo cuando el ticket se
+     * rasteriza para imprimir (una imagen remota podría no haber cargado). */
     get peQrUrl() {
         const qr = this.peMove?.l10n_pe_pos_qr_str;
         if (!qr) {
             return null;
         }
-        return (
-            "/report/barcode/?barcode_type=QR&value=" +
-            encodeURIComponent(qr) +
-            "&width=110&height=110&quiet=0"
-        );
+        return generateQRCodeDataUrl(qr, { width: 110, height: 110 });
     },
 });

@@ -21,6 +21,7 @@
 
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
+import {user} from "@web/core/user";
 
 export const _getReportUrl = (action, type, env) => {
     const baseUrl = browser.location.origin;
@@ -42,9 +43,10 @@ export const _getReportUrl = (action, type, env) => {
             const cid = actionContext.allowed_company_ids.join();
             url.searchParams.set("cid", cid);
         }
-        if (type === "html") {
-            url.searchParams.set("context", JSON.stringify(env.services.user.context));
-        }
+        // Odoo 19 has no "user" service: the user context comes from
+        // @web/core/user. Like the core download, the action context is
+        // merged into it so reports keep their context keys.
+        url.searchParams.set("context", JSON.stringify({...user.context, ...actionContext}));
     }
     return url.toString();
 };
@@ -52,22 +54,20 @@ export const _getReportUrl = (action, type, env) => {
 const link =
     '<br><br><a href="https://wkhtmltopdf.org/" target="_blank" rel="noopener noreferrer">wkhtmltopdf.org</a>';
 
+// Same msgids as web/static/src/webclient/actions/reports/utils.js, so the
+// existing translations apply (string concatenation defeats extraction).
 export const WKHTMLTOPDF_MESSAGES = {
     broken: _t(
-        "Your installation of Wkhtmltopdf seems to be broken. The report will be shown " +
-            "in html." +
-            link
+        "Your installation of Wkhtmltopdf seems to be broken. The report will be shown in html.%(link)s",
+        {link}
     ),
     install: _t(
-        "Unable to find Wkhtmltopdf on this system. The report will be shown in " +
-            "html." +
-            link
+        "Unable to find Wkhtmltopdf on this system. The report will be shown in html.%(link)s",
+        {link}
     ),
     upgrade: _t(
-        "You should upgrade your version of Wkhtmltopdf to at least 0.12.0 in order to " +
-            "get a correct display of headers and footers as well as support for " +
-            "table-breaking between pages." +
-            link
+        "You should upgrade your version of Wkhtmltopdf to at least 0.12.0 in order to get a correct display of headers and footers as well as support for table-breaking between pages.%(link)s",
+        {link}
     ),
     workers: _t(
         "You need to start Odoo with at least two workers to print a pdf version of " +

@@ -4,8 +4,8 @@
 Cubre las tres piezas de servidor del módulo (la parte OWL del selector se
 prueba a mano):
 
-* la lista blanca de vendedores por punto de venta y su efecto en
-  ``_employee_domain``, que es lo que decide quién aparece en el selector;
+* la lista blanca de vendedores por punto de venta, que se carga en el TPV
+  sin ampliar ``_employee_domain`` (quién puede iniciar sesión) y sin PIN;
 * la carga de ``hr.employee`` en el TPV cuando se usan vendedores
   autorizados aunque ``module_pos_hr`` esté desactivado;
 * el vendedor en la orden y su llegada a la vista de análisis de ventas
@@ -41,34 +41,70 @@ class TestPosSeller(TestPoSCommon):
         self.assertTrue(self.config.authorized_seller)
         self.assertEqual(self.config.seller_ids, self.vendedor_a | self.vendedor_b)
 
-    def test_employee_domain_includes_authorized_sellers(self):
-        """Los vendedores de la lista entran en el dominio aunque no sean pos_hr."""
+    def test_employee_domain_not_widened_by_sellers(self):
+        """Los vendedores NO entran en el dominio de pos_hr: ese dominio
+        decide quién puede iniciar sesión como cajero."""
         self.config.write({
+            'module_pos_hr': True,
+            'basic_employee_ids': [Command.set(self.ajeno.ids)],
             'authorized_seller': True,
             'seller_ids': [Command.set(self.vendedor_a.ids)],
         })
         domain = self.config._employee_domain(self.env.user.id)
         employees = self.env['hr.employee'].sudo().search(domain)
-        self.assertIn(self.vendedor_a, employees,
-                      'el vendedor autorizado debe aparecer en el selector')
+        self.assertIn(self.ajeno, employees)
+        self.assertNotIn(self.vendedor_a, employees,
+                         'un vendedor no debe poder iniciar sesión en la caja')
 
-    def test_employee_domain_untouched_without_flag(self):
-        """Sin la marca, el dominio es el de serie (no se amplía nada)."""
+    def _pos_employee_data(self):
+        # Con sesión abierta `current_user_id` es el usuario del test (sin
+        # sesión sería False y el dominio de pos_hr casaría a los empleados
+        # sin usuario, como los vendedores de este test).
+        self.open_new_session()
+        Employee = self.env['hr.employee']
+        domain = Employee._load_pos_data_domain({}, self.config)
+        records = Employee.sudo().search(domain)
+        return {vals['id']: vals for vals in Employee._load_pos_data_read(records, self.config)}
+
+    def test_sellers_loaded_without_pin_with_pos_hr(self):
+        """Con pos_hr: el vendedor se carga para el selector, sin PIN ni
+        código de barras y marcado como no apto para iniciar sesión."""
+        self.vendedor_a.sudo().write({'pin': '1234', 'barcode': 'VENDA001'})
+        self.ajeno.sudo().write({'pin': '9876'})
         self.config.write({
-            'authorized_seller': False,
+            'module_pos_hr': True,
+            'basic_employee_ids': [Command.set(self.ajeno.ids)],
+            'authorized_seller': True,
             'seller_ids': [Command.set(self.vendedor_a.ids)],
         })
-        base = super(type(self.config), self.config)._employee_domain(self.env.user.id)
-        self.assertEqual(self.config._employee_domain(self.env.user.id), base)
+        data = self._pos_employee_data()
+        self.assertIn(self.vendedor_a.id, data)
+        seller = data[self.vendedor_a.id]
+        self.assertTrue(seller.get('_al_seller_only'))
+        self.assertEqual(seller['_role'], 'minimal')
+        self.assertNotIn('_pin', seller)
+        self.assertNotIn('_barcode', seller)
+        cashier = data[self.ajeno.id]
+        self.assertFalse(cashier.get('_al_seller_only'))
+        self.assertTrue(cashier.get('_pin'), 'el cajero de pos_hr conserva su PIN')
 
-    def test_employee_domain_untouched_with_empty_list(self):
-        """Marca activa pero lista vacía: tampoco se amplía el dominio."""
+    def test_without_pos_hr_only_sellers_loaded(self):
+        """Sin pos_hr solo viajan los vendedores de la lista, y sin PIN: no
+        se exponen los hashes de todos los empleados de la compañía."""
+        self.ajeno.sudo().write({'pin': '9876'})
         self.config.write({
+            'module_pos_hr': False,
             'authorized_seller': True,
-            'seller_ids': [Command.clear()],
+            'seller_ids': [Command.set(self.vendedor_a.ids)],
         })
-        base = super(type(self.config), self.config)._employee_domain(self.env.user.id)
-        self.assertEqual(self.config._employee_domain(self.env.user.id), base)
+        data = self._pos_employee_data()
+        self.assertEqual(set(data), {self.vendedor_a.id})
+        self.assertNotIn('_pin', data[self.vendedor_a.id])
+
+    def test_seller_group_by_filter(self):
+        """El filtro «Vendedor» de la búsqueda agrupa por vendedor."""
+        arch = self.env['pos.order'].get_views([(False, 'search')])['views']['search']['arch']
+        self.assertIn("'group_by': 'seller_id'", arch)
 
     # ------------------------------------------------------------------
     # Carga de datos en el TPV

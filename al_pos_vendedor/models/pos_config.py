@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
-from odoo import api, fields, models
-from odoo.fields import Domain
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 
 class PosConfig(models.Model):
     _inherit = "pos.config"
 
     authorized_seller = fields.Boolean(string='Vendedor autorizado')
+    # Nota: los nombres de columna están invertidos respecto a su contenido
+    # (`empleado_id` guarda el pos.config y `pos_id` el hr.employee). Se
+    # conservan para no migrar la tabla de relación existente.
     seller_ids = fields.Many2many(
         'hr.employee',
         'al_pos_vendedor_employee_rel',
         'empleado_id',
         'pos_id',
         string="Vendedores permitidos",
+        check_company=True,
     )
-
-    def _employee_domain(self, user_id):
-        domain = super()._employee_domain(user_id)
-        if self.authorized_seller and self.seller_ids:
-            # Incluir todos los vendedores configurados aunque no estén en los
-            # grupos de acceso de pos_hr, para que aparezcan en el selector del POS.
-            domain = Domain.OR([domain, [('id', 'in', self.seller_ids.ids)]])
-        return domain
+    # Ya NO se amplía `_employee_domain`: ese dominio decide quién puede
+    # iniciar sesión como cajero en pos_hr. Los vendedores se cargan aparte
+    # (ver hr_employee.py) sin PIN ni código de barras y sin poder iniciar
+    # sesión.

@@ -16,6 +16,7 @@ class McpServerSession:
         self.last_activity: datetime = datetime.utcnow()
         self._queue: queue.Queue = queue.Queue()
         self.db_id: int | None = None  # mcp.session DB record id, set after audit create
+        self.token_id: int | None = None  # mcp.token que abrió la sesión (se revalida por mensaje)
 
     def put(self, data: dict) -> None:
         self.message_count += 1

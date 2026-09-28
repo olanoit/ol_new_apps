@@ -38,9 +38,9 @@ patch(PaymentScreen.prototype, {
         }));
 
         const result = await makeAwaitable(this.dialog, SelectionPopupCustom, {
-            title: "Seleccionar vendedor",
+            title: _t("Seleccionar vendedor"),
             list: selectionList,
-            cancelText: "Cancelar",
+            cancelText: _t("Cancelar"),
             defaultId: defaultSeller ? defaultSeller.id : null,
             onSetDefault: (seller) => this.pos.setSessionDefaultSeller(seller),
         });

@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -130,6 +130,28 @@ class McpJob(models.Model):
                 rec.duration_ms = 0
 
     # ------------------------------------------------------------------
+    # ORM overrides
+    # ------------------------------------------------------------------
+
+    # Qué se ejecuta, con qué usuario y con qué alcance: lo fija el servidor al
+    # enviar el trabajo; el dueño no puede cambiarlo (la regla solo mira el
+    # registro antes del write).
+    _PROTECTED_FIELDS = frozenset({
+        "user_id", "operation", "payload", "mcp_scope", "mcp_restrictions",
+        "token_id", "session_id",
+    })
+
+    def write(self, vals):
+        if not self.env.su and not self.env.user.has_group("base.group_system"):
+            protected = set(vals) & self._PROTECTED_FIELDS
+            if protected:
+                raise AccessError(_(
+                    "Solo un administrador puede modificar estos campos del trabajo: %(fields)s",
+                    fields=", ".join(sorted(protected)),
+                ))
+        return super().write(vals)
+
+    # ------------------------------------------------------------------
     # Public actions
     # ------------------------------------------------------------------
 
@@ -239,11 +261,17 @@ class McpJob(models.Model):
             except (json.JSONDecodeError, TypeError):
                 pass
 
-        job_env = self.with_context(**ctx_updates).env
+        # El cron corre como su propio usuario (normalmente superusuario): el
+        # trabajo debe ejecutarse SIEMPRE con los permisos de quien lo envió.
+        if not self.user_id or not self.user_id.active:
+            raise UserError(_("El usuario que envió el trabajo no existe o está inactivo."))
+        job_env = self.with_user(self.user_id).with_context(**ctx_updates).env
 
-        from ..services import job_runner
+        from ..services import job_runner, tool_executor
 
         op = self.operation
+        # Mismo alcance y restricciones del token que la herramienta síncrona.
+        tool_executor.enforce_job_operation(job_env, op, args)
         if op == "bulk_update":
             return job_runner.run_bulk_update(job_env, args, self)
         if op == "bulk_create":

@@ -43,10 +43,9 @@ def _https_guard() -> Response | None:
         return None
     if _odoo_config.get("dev_mode"):
         return None
-    scheme = (
-        request.httprequest.headers.get("X-Forwarded-Proto")
-        or request.httprequest.environ.get("wsgi.url_scheme", "http")
-    )
+    # Con proxy_mode Odoo ya aplica X-Forwarded-Proto de forma segura; leer la
+    # cabecera directamente permitiría falsearla.
+    scheme = request.httprequest.scheme
     if scheme != "https":
         return _json_resp(
             {"error": "https_required",
@@ -65,21 +64,26 @@ def _ip_guard(user_info: dict, ip: str) -> Response | None:
     token_id = user_info.get("token_id")
     if not token_id:
         return None
+    blocked = _json_resp(
+        {"error": "ip_blocked",
+         "error_description": "Su dirección IP no está permitida para este token."},
+        403,
+    )
     try:
-        token_rec = request.env["mcp.token"].sudo().browse(token_id)
-        if not token_rec.exists():
-            return None
-        if not token_rec.is_ip_allowed(ip):
+        # sudo: el token se acaba de validar con validate_token (sudo) y aquí
+        # solo se leen sus listas de IP.
+        token_sudo = request.env["mcp.token"].sudo().browse(token_id)
+        if not token_sudo.exists():
+            return blocked
+        if not token_sudo.is_ip_allowed(ip):
             _logger.warning(
                 "MCP: IP %r blocked by token %s (client=%s)", ip, token_id, user_info.get("client_name")
             )
-            return _json_resp(
-                {"error": "ip_blocked",
-                 "error_description": "Su dirección IP no está permitida para este token."},
-                403,
-            )
+            return blocked
     except Exception:
+        # Ante un error se deniega (fail-closed), nunca se deja pasar.
         _logger.exception("MCP: IP check failed for token %s", token_id)
+        return blocked
     return None
 
 
@@ -259,6 +263,7 @@ class McpController(http.Controller):
         mcp_session.scope = scope
         mcp_session.restrictions = restrictions
         mcp_session.capture_payloads = capture_payloads
+        mcp_session.token_id = token_id
 
         _logger.info(
             "MCP SSE: new connection uid=%s scope=%s session=%s ip=%s",
@@ -321,6 +326,13 @@ class McpController(http.Controller):
             _logger.warning("MCP messages: session not found: %s", session_id)
             return _json_resp({"error": "Sesión no encontrada o caducada"}, 404)
 
+        # El session_id no sustituye al token: si se revocó, caducó o la IP ya
+        # no está permitida, la sesión SSE se cierra.
+        if not _session_token_still_valid(mcp_session, request.httprequest.remote_addr):
+            session_manager.remove(session_id)
+            mcp_session.close()
+            return unauthorized(_base_url())
+
         allowed, _remaining = get_rate_limiter(request.env).check(f"session:{session_id}")
         if not allowed:
             return _json_resp({"error": "rate_limit_exceeded", "retry_after": 60}, 429)
@@ -329,6 +341,8 @@ class McpController(http.Controller):
             body = json.loads(request.httprequest.data or b"{}")
         except json.JSONDecodeError:
             return _json_resp({"error": "JSON no válido"}, 400)
+        if not isinstance(body, dict):
+            return _json_resp({"error": "Se esperaba un objeto JSON-RPC"}, 400)
 
         _logger.debug("MCP message: session=%s method=%s", session_id, body.get("method"))
 
@@ -371,6 +385,24 @@ class McpController(http.Controller):
             _logger.debug("mcp.session audit update failed for session=%s", session_id)
 
         return Response("", status=202, headers=_CORS_HEADERS)
+
+
+def _session_token_still_valid(mcp_session, ip: str) -> bool:
+    """Revalida el token que abrió la sesión SSE (estado, caducidad e IP)."""
+    token_id = getattr(mcp_session, "token_id", None)
+    if not token_id:
+        return False
+    # sudo: lectura del token de la sesión, sin exponer nada al cliente.
+    token_sudo = request.env["mcp.token"].sudo().browse(token_id)
+    if not token_sudo.exists() or token_sudo.state != "active":
+        return False
+    if token_sudo.expires_at and Datetime.now() > token_sudo.expires_at:
+        return False
+    try:
+        return token_sudo.is_ip_allowed(ip)
+    except Exception:
+        _logger.exception("MCP: IP check failed for token %s", token_id)
+        return False
 
 
 # ---------------------------------------------------------------------------

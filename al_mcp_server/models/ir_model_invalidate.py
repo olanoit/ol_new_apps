@@ -13,7 +13,7 @@ schema data.
 
 import logging
 
-from odoo import models
+from odoo import api, models
 
 from ..services import schema_cache
 
@@ -29,6 +29,7 @@ def _invalidate_all(label: str) -> None:
 class IrModelInvalidate(models.Model):
     _inherit = "ir.model"
 
+    @api.model_create_multi
     def create(self, vals_list):
         result = super().create(vals_list)
         _invalidate_all("ir.model create")
@@ -48,6 +49,7 @@ class IrModelInvalidate(models.Model):
 class IrModelFieldsInvalidate(models.Model):
     _inherit = "ir.model.fields"
 
+    @api.model_create_multi
     def create(self, vals_list):
         result = super().create(vals_list)
         _invalidate_all("ir.model.fields create")

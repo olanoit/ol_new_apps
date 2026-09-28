@@ -3,12 +3,14 @@ import calendar
 from datetime import date, datetime, time
 from types import SimpleNamespace
 
+import pytz
 from dateutil.relativedelta import relativedelta
 from werkzeug.urls import url_encode
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Date, Domain
+from odoo.tools import SQL
 
 from ..reports.kardex_xlsx import build_kardex_xlsx
 
@@ -17,6 +19,10 @@ VALUATION_METHOD_LABELS = {
     'fifo': 'PEPS (FIFO)',
     'standard': 'COSTO ESTÁNDAR',
 }
+
+# El Perú tiene una sola zona horaria: los periodos SUNAT se cortan en hora de
+# Lima, no en UTC (stock.move.date se guarda en UTC).
+PE_TZ = pytz.timezone('America/Lima')
 
 MONTH_SELECTION = [
     ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
@@ -40,6 +46,7 @@ SUNAT_TABLE5_ES = {
 class L10nPeKardexReportWizard(models.TransientModel):
     _name = 'l10n_pe.kardex.report.wizard'
     _description = 'Kardex SUNAT (Formato 13.1 / 12.1)'
+    _check_company_auto = True
 
     @api.model
     def default_get(self, fields_list):
@@ -93,9 +100,10 @@ class L10nPeKardexReportWizard(models.TransientModel):
         ],
         string='Formato', required=True, default='1301')
     warehouse_ids = fields.Many2many(
-        'stock.warehouse', string='Almacenes',
+        'stock.warehouse', string='Almacenes', check_company=True,
         domain="[('company_id', '=', company_id)]",
-        help='Vacío = todos los almacenes de la compañía.')
+        help='Vacío = todos los almacenes de la compañía. Si elige almacenes, '
+             'el kardex sale por almacén, con el saldo de cada uno.')
     product_ids = fields.Many2many(
         'product.product', string='Productos',
         domain=[('is_storable', '=', True)],
@@ -106,8 +114,9 @@ class L10nPeKardexReportWizard(models.TransientModel):
     group_by_warehouse = fields.Boolean(
         string='Kardex por almacén',
         help='Genera una sección/hoja por almacén con su propio saldo corrido. '
-             'El costo por almacén es aproximado: Odoo valoriza por compañía. '
-             'Desmarcado: kardex consolidado de la compañía, cuadra con el TXT PLE.')
+             'El costo por almacén es aproximado: Odoo valoriza por compañía y '
+             'los traslados entre almacenes se valoran al costo promedio '
+             'corriente. Desmarcado: kardex consolidado de la compañía.')
     include_no_movement = fields.Boolean(
         string='Incluir productos sin movimientos', default=True,
         help='Incluye productos con saldo inicial distinto de cero aunque no '
@@ -116,6 +125,31 @@ class L10nPeKardexReportWizard(models.TransientModel):
     report_data = fields.Binary('Archivo', readonly=True, attachment=False)
     report_filename = fields.Char(string='Nombre de archivo', readonly=True)
     mimetype = fields.Char(readonly=True)
+
+    # Sin este control, por RPC se podría pedir el kardex de una compañía
+    # a la que el usuario no tiene acceso (los saldos de apertura se leen
+    # con SQL sobre la vista, sin reglas por fila).
+    # No es un @api.constrains: el ORM ejecuta las restricciones en sudo y el
+    # control debe hacerse con el usuario que crea o modifica el registro.
+    def _check_company_allowed(self):
+        if self.env.su:
+            return
+        for rec in self:
+            if rec.company_id not in self.env.companies:
+                raise ValidationError(self.env._(
+                    'La compañía %s no está entre sus compañías activas.', rec.company_id.display_name))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._check_company_allowed()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'company_id' in vals:
+            self._check_company_allowed()
+        return res
 
     # -------------------------------------------------------------------------
     # Período
@@ -147,7 +181,8 @@ class L10nPeKardexReportWizard(models.TransientModel):
         """Abre la vista SQL del kardex filtrada; no se puebla nada."""
         self.ensure_one()
         self._sync_period_dates()
-        group_by = ['warehouse_id', 'product_id'] if self.group_by_warehouse else ['product_id']
+        by_warehouse = self._by_warehouse()
+        group_by = ['warehouse_id', 'product_id'] if by_warehouse else ['product_id']
         return {
             'name': self.env._('Kardex %(fmt)s (%(df)s a %(dt)s)',
                                fmt='13.1' if self.report_type == '1301' else '12.1',
@@ -159,7 +194,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
             'context': {
                 'group_by': group_by,
                 'kardex_physical': self.report_type == '1201',
-                'kardex_by_warehouse': self.group_by_warehouse,
+                'kardex_by_warehouse': by_warehouse,
             },
         }
 
@@ -240,9 +275,15 @@ class L10nPeKardexReportWizard(models.TransientModel):
     # Consulta de la vista SQL
     # -------------------------------------------------------------------------
 
+    def _by_warehouse(self):
+        """Filtrar almacenes implica kardex por almacén: el saldo consolidado
+        de la compañía no cuadra con las líneas de solo unos almacenes."""
+        self.ensure_one()
+        return self.group_by_warehouse or bool(self.warehouse_ids)
+
     def _get_scopes(self):
         self.ensure_one()
-        if not self.group_by_warehouse:
+        if not self._by_warehouse():
             return [None]
         warehouses = self.warehouse_ids or self.env['stock.warehouse'].search(
             [('company_id', '=', self.company_id.id)])
@@ -256,14 +297,31 @@ class L10nPeKardexReportWizard(models.TransientModel):
                 [('categ_id', 'child_of', self.categ_ids.ids)]).ids
         return None
 
+    def _utc_bounds(self):
+        """[inicio, fin) del periodo en hora de Lima, como datetimes UTC sin
+        zona (el formato de los Datetime de Odoo)."""
+        def to_utc(day):
+            local = PE_TZ.localize(datetime.combine(day, time.min))
+            return local.astimezone(pytz.utc).replace(tzinfo=None)
+        return to_utc(self.date_from), to_utc(self.date_to + relativedelta(days=1))
+
+    @staticmethod
+    def _local_date(value):
+        """Fecha (hora de Lima) de un Datetime UTC de Odoo."""
+        if not value:
+            return None
+        return pytz.utc.localize(value).astimezone(PE_TZ).date()
+
     def _get_line_domain(self, warehouse):
-        dt_from = datetime.combine(self.date_from, time.min)
-        dt_to = datetime.combine(self.date_to, time.max)
+        dt_from, dt_to = self._utc_bounds()
         domain = Domain([
             ('company_id', '=', self.company_id.id),
             ('date', '>=', dt_from),
-            ('date', '<=', dt_to),
+            ('date', '<', dt_to),
         ])
+        if not self._by_warehouse():
+            # Los traslados entre almacenes no mueven el saldo de la compañía
+            domain &= Domain([('is_internal', '=', False)])
         products = self._candidate_product_ids()
         if products is not None:
             domain &= Domain([('product_id', 'in', products)])
@@ -276,28 +334,26 @@ class L10nPeKardexReportWizard(models.TransientModel):
     def _get_opening_balances(self, warehouse):
         """{product_id: (saldo_qty, saldo_value)} justo antes de date_from,
         vía DISTINCT ON sobre la vista (una consulta, sin recorrer historia)."""
-        qty_col = 'balance_qty_wh' if warehouse else 'balance_qty'
-        val_col = 'balance_value_wh' if warehouse else 'balance_value'
-        params = [self.company_id.id, datetime.combine(self.date_from, time.min)]
-        where = "company_id = %s AND date < %s"
+        qty_col = SQL.identifier('balance_qty_wh' if warehouse else 'balance_qty')
+        val_col = SQL.identifier('balance_value_wh' if warehouse else 'balance_value')
+        conditions = [SQL("company_id = %s AND date < %s",
+                          self.company_id.id, self._utc_bounds()[0])]
         products = self._candidate_product_ids()
         if products is not None:
             if not products:
                 return {}
-            where += " AND product_id IN %s"
-            params.append(tuple(products))
+            conditions.append(SQL("product_id IN %s", tuple(products)))
         if warehouse:
-            where += " AND warehouse_id = %s"
-            params.append(warehouse.id)
-        elif self.warehouse_ids:
-            where += " AND warehouse_id IN %s"
-            params.append(tuple(self.warehouse_ids.ids))
-        self.env.cr.execute(
+            conditions.append(SQL("warehouse_id = %s", warehouse.id))
+        # _table_sql lleva los _depends de la vista: execute_query vuelca esos
+        # campos a la base antes de consultar.
+        rows = self.env.execute_query(SQL(
             "SELECT DISTINCT ON (product_id) product_id, %s, %s "
-            "FROM l10n_pe_kardex_line WHERE %s "
-            "ORDER BY product_id, date DESC, id DESC"
-            % (qty_col, val_col, where), params)
-        return {r[0]: (r[1], r[2]) for r in self.env.cr.fetchall()}
+            "FROM %s WHERE %s "
+            "ORDER BY product_id, date DESC, id DESC",
+            qty_col, val_col, self.env['l10n_pe.kardex.line']._table_sql,
+            SQL(" AND ").join(conditions)))
+        return {r[0]: (r[1], r[2]) for r in rows}
 
     # -------------------------------------------------------------------------
     # Estructura de datos para los renderizadores (XLSX / QWeb)
@@ -321,6 +377,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
         for warehouse in self._get_scopes():
             use_wh = bool(warehouse)
             lines = Line.search(self._get_line_domain(warehouse))
+            lines_by_product = lines.grouped('product_id')
             opening = self._get_opening_balances(warehouse)
 
             products = lines.product_id
@@ -342,7 +399,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
 
             products_data = []
             for product in products.sorted(lambda p: (p.default_code or '', p.name)):
-                plines = lines.filtered(lambda l: l.product_id == product)
+                plines = lines_by_product.get(product, Line)
                 oq, ov = opening.get(product.id, (0.0, 0.0))
                 rows = [self._opening_row(product, oq, ov, valued)]
                 t_qin = t_vin = t_qout = t_vout = 0.0
@@ -352,7 +409,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
                     bal_val = l.balance_value_wh if use_wh else l.balance_value
                     bal_uc = l.balance_unit_cost_wh if use_wh else l.balance_unit_cost
                     rows.append(self._row(
-                        line_type='move', date=l.date,
+                        line_type='move', date=self._local_date(l.date),
                         document_type_code=l.document_type_code,
                         serie=l.serie, folio=l.folio, operation_type=l.operation_type,
                         qty_in=l.qty_in, qty_out=l.qty_out,
@@ -398,7 +455,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
     def _opening_row(self, product, oq, ov, valued):
         return self._row(
             line_type='opening',
-            date=datetime.combine(self.date_from, time.min),
+            date=self.date_from,
             document_type_code='00', operation_type='16',
             qty_in=oq if oq > 0 else 0.0,
             cost_unit_in=(ov / oq) if (valued and oq) else 0.0,

@@ -13,6 +13,12 @@ import { getTaxAwareProductPrice } from "@al_pos_product_view/switch_view/utils/
  * propio producto del popup.
  */
 patch(ProductInfoPopup.prototype, {
+    /** Finanzas/Pedido: ocultos al rol «minimal» de pos_hr, igual que el
+     * bloque nativo `.financials-order` que este módulo reubica. */
+    get alShowFinancials() {
+        return this.pos.getCashier()?._role !== "minimal";
+    },
+
     getDisplayPrice(product) {
         return getTaxAwareProductPrice(this.pos, product);
     },

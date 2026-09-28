@@ -29,14 +29,17 @@ class PosOrder(models.Model):
         if len(self) != 1 or self.company_id.country_code != 'PE':
             return vals
         config = self.config_id
+        if not config.l10n_pe_cpe_enabled:
+            # Mismo criterio que el frontend: el flujo CPE exige ambos diarios.
+            return vals
+        if self.refunded_order_id:
+            return self._l10n_pe_prepare_refund_invoice_vals(vals)
         doc_type = self.l10n_pe_doc_type or 'boleta'
         if doc_type == 'recibo':
             # Ticket simple: si aun así se factura, flujo estándar del TPV.
             return vals
         journal = (config.l10n_pe_factura_journal_id if doc_type == 'factura'
                    else config.l10n_pe_boleta_journal_id)
-        if not journal:
-            return vals
         if doc_type == 'factura':
             vat = (self.partner_id.vat or '').strip()
             if not self.partner_id or len(vat) != 11 or not vat.isdigit():
@@ -44,8 +47,26 @@ class PosOrder(models.Model):
                     'La factura electrónica requiere un cliente con RUC '
                     '(11 dígitos). Seleccione el cliente o emita una boleta.'))
         vals['journal_id'] = journal.id
-        if self.edi_series_id and self.edi_series_id in journal.edi_series_ids:
-            vals['edi_series_id'] = self.edi_series_id.id
+        serie = self.edi_series_id
+        doc_code = '01' if doc_type == 'factura' else '03'
+        if (serie and serie in journal.edi_series_ids
+                and serie.state == 'publish' and serie.edi_type_code == doc_code):
+            vals['edi_series_id'] = serie.id
+        if not self.l10n_pe_edi_send:
+            vals['l10n_pe_edi_hold'] = True
+        return vals
+
+    def _l10n_pe_prepare_refund_invoice_vals(self, vals):
+        """Devolución: la nota de crédito va al diario del comprobante que
+        rectifica (una NC de factura nunca al diario de boletas, sea cual
+        sea el tipo marcado en la orden de devolución). La serie la resuelve
+        al_account_move_name_sequence desde el comprobante de origen, así
+        que no se fuerza la de caja. Sin comprobante de origen (se devolvió
+        un «Recibo»), flujo estándar."""
+        refunded_move = self.refunded_order_id.account_move
+        if len(refunded_move) != 1:
+            return vals
+        vals['journal_id'] = refunded_move.journal_id.id
         if not self.l10n_pe_edi_send:
             vals['l10n_pe_edi_hold'] = True
         return vals

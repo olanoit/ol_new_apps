@@ -163,6 +163,29 @@ TOOL_DEFINITIONS = [
 # ---------------------------------------------------------------------------
 
 
+def _check_widget_restrictions(env, spec_obj: dict) -> None:
+    """Los widgets se publican con los permisos del dueño: aplica antes las
+    restricciones de modelos y campos del token que crea o edita la página."""
+    from .tool_executor import _check_read_fields, _enforce_model_access
+    for widget in spec_obj.get("widgets") or []:
+        if not isinstance(widget, dict) or not widget.get("model"):
+            continue
+        model_name = widget["model"]
+        _enforce_model_access(env, "odoo_create_portal_page", {"model": model_name})
+        used = []
+        for key in ("field", "groupby", "fields", "measures", "aggregates"):
+            value = widget.get(key)
+            if isinstance(value, str):
+                used.append(value)
+            elif isinstance(value, list):
+                used.extend(
+                    (v.get("field") if isinstance(v, dict) else v) for v in value
+                    if isinstance(v, (str, dict))
+                )
+        _check_read_fields(env, model_name, domain=widget.get("domain"),
+                           extra=[u for u in used if isinstance(u, str) and u])
+
+
 def _handle_create_portal_page(env, args: dict) -> dict:
     """Create a new mcp.portal.page record and return its URLs."""
     _check_scope(env, "odoo_create_portal_page")
@@ -182,6 +205,7 @@ def _handle_create_portal_page(env, args: dict) -> dict:
     # Validate spec via model method
     Page = env["mcp.portal.page"]
     Page.parse_spec(spec_text)
+    _check_widget_restrictions(env, spec_obj)
 
     vals = {
         "name": name,
@@ -269,6 +293,7 @@ def _handle_update_portal_page(env, args: dict) -> dict:
             raise ValueError("'spec' debe ser un objeto JSON.")
         spec_text = json.dumps(spec_obj, ensure_ascii=False, indent=2)
         env["mcp.portal.page"].parse_spec(spec_text)
+        _check_widget_restrictions(env, spec_obj)
         vals["spec"] = spec_text
 
     if not vals:

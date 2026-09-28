@@ -131,12 +131,12 @@ def build_kardex_xlsx(wizard):
 
             for line in block['lines']:
                 if line.line_type == 'opening':
-                    sheet.write(row, 0, line.date and line.date.date() or '', fmt_date)
+                    sheet.write(row, 0, line.date or '', fmt_date)
                     sheet.write(row, 1, line.document_type_code or '00', fmt_ctr)
                     sheet.write(row, 2, '-', fmt_ctr)
                     sheet.write(row, 3, 'SALDO INICIAL', fmt_ctr)
                 else:
-                    sheet.write(row, 0, line.date and line.date.date() or '', fmt_date)
+                    sheet.write(row, 0, line.date or '', fmt_date)
                     sheet.write(row, 1, line.document_type_code or '', fmt_ctr)
                     sheet.write(row, 2, line.serie or '', fmt_ctr)
                     sheet.write(row, 3, line.folio or '', fmt_ctr)

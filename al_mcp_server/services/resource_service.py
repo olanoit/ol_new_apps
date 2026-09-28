@@ -88,6 +88,12 @@ RESOURCE_TEMPLATES = [
 # Resource dispatcher
 # ---------------------------------------------------------------------------
 
+def _enforce_model(env, model_name: str) -> None:
+    """Aplica al recurso la misma lista de modelos permitidos/denegados que a las herramientas."""
+    from .tool_executor import _enforce_model_access
+    _enforce_model_access(env, "resources/read", {"model": model_name})
+
+
 def read_resource(uri: str, env) -> str:
     """Resolve a resource URI and return its JSON content as a string."""
     if uri == "odoo://context":
@@ -96,13 +102,17 @@ def read_resource(uri: str, env) -> str:
         return _catalog(env)
     if uri.startswith("odoo://model/"):
         model_name = uri[len("odoo://model/"):]
+        _enforce_model(env, model_name)
         return _model_schema(model_name, env)
     if uri.startswith("odoo://chatter/"):
         rest = uri[len("odoo://chatter/"):]
         model_name, record_id = rest.rsplit("/", 1)
+        _enforce_model(env, model_name)
+        _enforce_model(env, "mail.message")
         return _chatter(model_name, record_id, env)
     if uri.startswith("odoo://attachment/"):
         attachment_id = uri[len("odoo://attachment/"):]
+        _enforce_model(env, "ir.attachment")
         return _attachment(attachment_id, env)
     raise ValueError(f"URI de recurso desconocida: {uri!r}")
 
@@ -159,7 +169,7 @@ def _catalog(env) -> str:
             )
             return json.dumps({"total": len(rows), "models": rows}, ensure_ascii=False, indent=2)
 
-        return schema_cache.get_or_compute("catalog", ttl, _compute)
+        return schema_cache.get_or_compute(schema_cache.scoped_key(env, "catalog"), ttl, _compute)
 
     models = env["ir.model"].search_read(
         [("transient", "=", False)],
@@ -173,10 +183,19 @@ def _catalog(env) -> str:
 def _model_schema(model_name: str, env) -> str:
     if model_name not in env.registry:
         raise ValueError(f"No se encontró el modelo {model_name!r} en el registro de Odoo")
+    from .tool_executor import _get_field_restrictions
+    allowed = _get_field_restrictions(env, model_name)
+    if allowed is not None:
+        # Con lista de campos permitidos no se usa la caché compartida.
+        flds = env[model_name].fields_get(
+            allfields=list(allowed),
+            attributes=["string", "type", "required", "readonly", "help", "selection", "relation"],
+        )
+        return json.dumps({"model": model_name, "fields": flds}, ensure_ascii=False, default=str, indent=2)
 
     if schema_cache._cache_enabled(env):
         ttl = schema_cache._cache_ttl(env)
-        cache_key = f"model_schema:{model_name}"
+        cache_key = schema_cache.scoped_key(env, f"model_schema:{model_name}")
 
         def _compute():
             m = env[model_name]
@@ -257,6 +276,8 @@ def _attachment(attachment_id: str, env) -> str:
     rec = env["ir.attachment"].browse(int(attachment_id))
     if not rec.exists():
         raise ValueError(f"No se encontró el adjunto {attachment_id}")
+    if rec.res_model:
+        _enforce_model(env, rec.res_model)
 
     result = {
         "id": rec.id,

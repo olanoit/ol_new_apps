@@ -13,7 +13,8 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
 * **Vendedores autorizados por TPV**: ajuste ``authorized_seller`` +
   lista ``seller_ids`` en la configuración del punto de venta. Los
   vendedores configurados aparecen en el selector aunque no pertenezcan
-  a los grupos de acceso de ``pos_hr``.
+  a los grupos de acceso de ``pos_hr``, pero no pueden iniciar sesión
+  como cajeros ni llegan al TPV con su PIN.
 * **Selector en la pantalla de pago**: botón "Vendedor" junto al de
   cliente que abre un diálogo con búsqueda en vivo, tarjetas con avatar
   (iniciales + color determinista) y acción de quitar selección.
@@ -31,7 +32,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
-    'version': '1.20260721',
+    'version': '2.20260721',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',
@@ -52,6 +53,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
             'al_pos_vendedor/static/src/xml/payment_screen.xml',
             'al_pos_vendedor/static/src/xml/order_receipt.xml',
             'al_pos_vendedor/static/src/xml/selection_popup_custom.xml',
+            'al_pos_vendedor/static/src/xml/cashier_selection_popup.xml',
         ],
     },
     'installable': True,

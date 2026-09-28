@@ -46,6 +46,12 @@ def _check_model_access(env, model_name: str) -> None:
         )
 
 
+def _check_read_restrictions(env, model_name: str, domain, field_names) -> None:
+    """Dominio y agrupaciones solo sobre campos permitidos por el token."""
+    from .tool_executor import _check_read_fields
+    _check_read_fields(env, model_name, domain=domain, extra=field_names)
+
+
 def _filter_fields(env, model_name: str, requested_fields: list) -> list:
     """Return filtered list of fields based on token's field_restrictions.
 
@@ -242,10 +248,12 @@ def _odoo_pivot(env, args: dict):
         aggregates.append(f"{field}:{agg}")
 
     groupby = row_fields + col_fields
+    _check_read_restrictions(env, model_name, domain, groupby + [m["field"] for m in measures_input])
 
     kw = {"limit": limit}
     if orderby:
-        kw["orderby"] = orderby
+        # En Odoo 19 el parámetro de _read_group se llama ``order``.
+        kw["order"] = orderby
 
     rows_raw = model._read_group(
         domain=domain,
@@ -366,6 +374,7 @@ def _odoo_time_series(env, args: dict):
     agg_func = measure.get("aggregate", "sum")
     groupby_key = f"{date_field}:{interval}"
     aggregate_expr = f"{agg_field}:{agg_func}"
+    _check_read_restrictions(env, model_name, domain, [date_field, agg_field])
 
     rows_raw = model._read_group(
         domain=domain,
@@ -473,6 +482,7 @@ def _odoo_top_n(env, args: dict):
     agg_field = measure["field"]
     agg_func = measure.get("aggregate", "sum")
     aggregate_expr = f"{agg_field}:{agg_func}"
+    _check_read_restrictions(env, model_name, domain, [group_field, agg_field])
 
     # Fetch all groups — no limit here so we can compute "Others" accurately
     rows_raw = model._read_group(
@@ -705,6 +715,7 @@ def _odoo_funnel(env, args: dict):
     for stage in stages_input:
         stage_name = stage.get("name", "")
         stage_domain = stage.get("domain") or []
+        _check_read_restrictions(env, model_name, stage_domain, [measure_field] if measure_field else [])
 
         if measure_type == "count":
             value = model.search_count(stage_domain)

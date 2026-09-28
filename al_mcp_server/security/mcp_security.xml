@@ -114,5 +114,45 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
+        <!--
+            mcp.session.log record rules
+            ────────────────────────────
+            group_user  → solo lee sus propias llamadas (los payloads pueden llevar PII)
+            group_system → ve todo
+        -->
+        <record id="rule_mcp_session_log_user_own" model="ir.rule">
+            <field name="name">Registro MCP: los usuarios solo ven sus propias llamadas</field>
+            <field name="model_id" ref="model_mcp_session_log"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="rule_mcp_session_log_admin_all" model="ir.rule">
+            <field name="name">Registro MCP: el administrador ve todos</field>
+            <field name="model_id" ref="model_mcp_session_log"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <!--
+            mcp.html.artifact record rules
+            ──────────────────────────────
+            group_user  → solo sus propios artefactos (created_by = uid)
+            group_system → todos
+        -->
+        <record id="rule_mcp_html_artifact_user_own" model="ir.rule">
+            <field name="name">Artefacto HTML MCP: los usuarios solo ven sus propios artefactos</field>
+            <field name="model_id" ref="model_mcp_html_artifact"/>
+            <field name="domain_force">[('created_by', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="rule_mcp_html_artifact_admin_all" model="ir.rule">
+            <field name="name">Artefacto HTML MCP: el administrador ve todos</field>
+            <field name="model_id" ref="model_mcp_html_artifact"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
     </data>
 </odoo>

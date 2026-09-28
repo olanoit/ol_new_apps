@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 from freezegun import freeze_time
 
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.sale.tests.common import TestSaleCommon
-from odoo.tests import Form, tagged
+from odoo.exceptions import ValidationError
+from odoo.tests import Form, new_test_user, tagged
 
 from ..reports.kardex_xlsx import build_kardex_xlsx
 
@@ -138,11 +141,12 @@ class TestKardexReport(TestSaleCommon):
         self.assertAlmostEqual(in2.cost_total_in, 200.0, places=2)
         self.assertAlmostEqual(in2.balance_qty, 20)
         self.assertAlmostEqual(in2.balance_unit_cost, 15.0, places=2)
-        # Salida: 5 @ 15 = 75 (AVCO) — venta sin comprobante → doc interno
+        # Salida: 5 @ 15 = 75 (AVCO) — venta sin comprobante → guía (09),
+        # como el TXT PLE de l10n_pe_reports_stock
         self.assertEqual(out.operation_type, '01')
         self.assertEqual(out.qty_out, 5)
         self.assertAlmostEqual(out.cost_total_out, 75.0, places=2)
-        self.assertEqual(out.document_type_code, '00')
+        self.assertEqual(out.document_type_code, '09')
         # Totales y cuadratura contra la valorización nativa
         self.assertAlmostEqual(total.qty_in, 20)
         self.assertAlmostEqual(total.cost_total_in, 300.0, places=2)
@@ -246,3 +250,160 @@ class TestKardexReport(TestSaleCommon):
         self.assertEqual(report.state, 'done')
         self.assertTrue(report.output_file)
         self.assertTrue(report.output_filename.endswith('.xlsx'))
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (27/09/2026)
+    # ------------------------------------------------------------------
+    def _warehouse(self):
+        return self.env['stock.warehouse'].search(
+            [('company_id', '=', self.env.company.id)], limit=1)
+
+    def test_09_recepcion_parcial_sin_pendiente(self):
+        """La cantidad es la recibida (6), no la demanda (10) que conserva el
+        movimiento cuando se valida sin crear pedido pendiente."""
+        with freeze_time('2024-01-10'):
+            purchase = self.env['purchase.order'].create({
+                'partner_id': self.partner_a.id,
+                'order_line': [Command.create({
+                    'product_id': self.product_kdx.id,
+                    'product_qty': 10,
+                    'price_unit': 10.0,
+                    'tax_ids': [Command.clear()],
+                })],
+            })
+            purchase.button_confirm()
+            picking = purchase.picking_ids
+            picking.move_ids.write({'quantity': 6, 'picked': True})
+            # Lo que hace «Sin pedido pendiente» del asistente de backorder
+            picking.with_context(
+                skip_backorder=True,
+                picking_ids_not_to_backorder=picking.ids).button_validate()
+        self.assertEqual(picking.state, 'done')
+        block = self._blocks_for(self._create_wizard(), self.product_kdx)[0]
+        self.assertAlmostEqual(block['total_line'].qty_in, 6)
+        self.assertAlmostEqual(block['total_line'].balance_qty, 6)
+        self.assertAlmostEqual(block['total_line'].balance_value, 60.0, places=2)
+        product = self.product_kdx.with_context(to_date='2024-01-31 23:59:59')
+        self.assertAlmostEqual(block['total_line'].balance_qty, product.qty_available)
+
+    def test_10_corte_en_hora_de_lima(self):
+        """31/01 a las 23:00 de Lima (01/02 04:00 UTC) es de enero."""
+        with freeze_time('2024-02-01 04:00:00'):
+            self._receive_purchase(10, 10.0)
+        jan = self._blocks_for(self._create_wizard(), self.product_kdx)[0]
+        move_row = jan['lines'][1]
+        self.assertEqual(move_row.qty_in, 10)
+        self.assertEqual(str(move_row.date), '2024-01-31')
+        feb = self._blocks_for(self._create_wizard(
+            date_from='2024-02-01', date_to='2024-02-29'), self.product_kdx)[0]
+        self.assertEqual([r.line_type for r in feb['lines']], ['opening'])
+        self.assertAlmostEqual(feb['lines'][0].balance_qty, 10)
+
+    def test_11_ajuste_de_inventario_por_almacen(self):
+        """Un ajuste de inventario (sin picking ni warehouse_id en el
+        movimiento) sale con operación 28 y en el kardex de su almacén."""
+        self._build_moves()
+        warehouse = self._warehouse()
+        with freeze_time('2024-01-25'):
+            self.env['stock.quant'].with_context(inventory_mode=True).create({
+                'product_id': self.product_kdx.id,
+                'location_id': warehouse.lot_stock_id.id,
+                'inventory_quantity': 18,
+            }).action_apply_inventory()
+        consolidated = self._blocks_for(self._create_wizard(), self.product_kdx)[0]
+        adjustment = consolidated['lines'][-1]
+        self.assertEqual(adjustment.operation_type, '28')
+        self.assertAlmostEqual(adjustment.qty_in, 3)
+        self.assertAlmostEqual(consolidated['total_line'].balance_qty, 18)
+        by_wh = self._blocks_for(
+            self._create_wizard(warehouse_ids=[Command.set(warehouse.ids)]),
+            self.product_kdx)
+        self.assertEqual(len(by_wh), 1)
+        self.assertAlmostEqual(by_wh[0]['total_line'].balance_qty, 18)
+        self.assertEqual(by_wh[0]['lines'][-1].operation_type, '28')
+
+    def test_12_traslado_entre_almacenes(self):
+        """Salida 11 en el origen y entrada 21 en el destino, al costo
+        promedio corriente; el consolidado no cambia."""
+        self._build_moves()
+        wh1 = self._warehouse()
+        wh2 = self.env['stock.warehouse'].create({
+            'name': 'Almacén Kardex 2', 'code': 'KDX2',
+            'company_id': self.env.company.id,
+        })
+        with freeze_time('2024-01-20'):
+            move = self.env['stock.move'].create({
+                'product_id': self.product_kdx.id,
+                'product_uom_qty': 4,
+                'location_id': wh1.lot_stock_id.id,
+                'location_dest_id': wh2.lot_stock_id.id,
+            })
+            move._action_confirm()
+            move._action_assign()
+            move.write({'quantity': 4, 'picked': True})
+            move._action_done()
+        self.assertEqual(move.state, 'done')
+        blocks = {scope['warehouse']: b
+                  for scope in self._create_wizard(group_by_warehouse=True)._get_report_data()
+                  for b in scope['products'] if b['product'] == self.product_kdx}
+        out = blocks[wh1]['lines'][-1]
+        self.assertEqual((out.operation_type, out.qty_out), ('11', 4))
+        self.assertAlmostEqual(out.cost_total_out, 60.0, places=2)
+        self.assertAlmostEqual(blocks[wh1]['total_line'].balance_qty, 11)
+        inc = blocks[wh2]['lines'][-1]
+        self.assertEqual((inc.operation_type, inc.qty_in), ('21', 4))
+        self.assertAlmostEqual(blocks[wh2]['total_line'].balance_value, 60.0, places=2)
+        consolidated = self._blocks_for(self._create_wizard(), self.product_kdx)[0]
+        self.assertEqual(len(consolidated['lines']), 4)  # apertura + 3 movimientos
+        self.assertAlmostEqual(consolidated['total_line'].balance_qty, 15)
+
+    def test_13_usuario_solo_inventario(self):
+        """Tabla 10 se resuelve aunque el usuario no pueda leer ventas ni
+        facturas (compute_sudo)."""
+        self._build_moves()
+        user = new_test_user(
+            self.env, login='kardex_stock_only', groups='stock.group_stock_user',
+            company_id=self.env.company.id, company_ids=[Command.set(self.env.company.ids)])
+        # Asistente creado por el propio usuario (los transitorios solo los
+        # lee quien los crea)
+        wizard = self.env['l10n_pe.kardex.report.wizard'].with_user(user).create({
+            'company_id': self.env.company.id,
+            'date_from': '2024-01-01', 'date_to': '2024-01-31',
+        })
+        block = self._blocks_for(wizard, self.product_kdx)[0]
+        self.assertEqual(block['lines'][1].document_type_code, '01')
+        self.assertEqual(block['lines'][1].folio, '00000123')
+
+    def test_14_multicompania(self):
+        other = self.env['res.company'].create({'name': 'Otra compañía Kardex'})
+        report = self.env['l10n_pe.kardex.report'].sudo().create({
+            'company_id': other.id,
+            'date_from': '2024-01-01', 'date_to': '2024-01-31',
+        })
+        user = new_test_user(
+            self.env, login='kardex_mc', groups='stock.group_stock_user',
+            company_id=self.env.company.id, company_ids=[Command.set(self.env.company.ids)])
+        Report = self.env['l10n_pe.kardex.report'].with_user(user)
+        self.assertFalse(Report.search([('id', '=', report.id)]))
+        with self.assertRaises(ValidationError):
+            self.env['l10n_pe.kardex.report.wizard'].with_user(user).create({
+                'company_id': other.id,
+                'date_from': '2024-01-01', 'date_to': '2024-01-31',
+            })
+
+    def test_15_error_en_segundo_plano(self):
+        """Un error SQL deja el reporte en «Error» y el cursor utilizable."""
+        report = self.env['l10n_pe.kardex.report'].create({
+            'company_id': self.env.company.id,
+            'date_from': '2024-01-01', 'date_to': '2024-01-31',
+        })
+
+        def broken(wizard):
+            wizard.env.cr.execute("SELECT 1 / 0")
+
+        with patch('odoo.addons.ol_stock_kardex_pe.reports.kardex_xlsx.build_kardex_xlsx',
+                   side_effect=broken), self.assertLogs(level='ERROR'):
+            self.env['l10n_pe.kardex.report']._cron_generate()
+        self.assertEqual(report.state, 'error')
+        self.env.cr.execute("SELECT 1")
+        self.assertEqual(self.env.cr.fetchone(), (1,))

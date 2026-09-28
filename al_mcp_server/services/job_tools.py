@@ -157,6 +157,14 @@ def _check_job_scope(env, tool_name: str) -> None:
         )
 
 
+def _is_job_admin(env) -> bool:
+    """Ver trabajos ajenos exige alcance admin Y ser administrador de Odoo."""
+    return (
+        env.context.get("mcp_scope", "write") == "admin"
+        and env.user.has_group("base.group_system")
+    )
+
+
 # ---------------------------------------------------------------------------
 # Handlers
 # ---------------------------------------------------------------------------
@@ -178,6 +186,10 @@ def _submit_job(env, args: dict) -> dict:
     }
     if operation not in valid_ops:
         raise ValueError(f"Unknown operation {operation!r}. Valid: {sorted(valid_ops)}")
+
+    # Rechazo temprano: la misma comprobación se repite al ejecutar en el cron.
+    from .tool_executor import enforce_job_operation
+    enforce_job_operation(env, operation, job_args)
 
     # Snapshot governance context into payload so async runner uses same rules
     scope = env.context.get("mcp_scope", "write")
@@ -227,9 +239,15 @@ def _job_status(env, args: dict) -> dict:
     if not job_id:
         raise ValueError("odoo_job_status requires 'job_id'")
 
-    job = env["mcp.job"].sudo().search([("id", "=", job_id)], limit=1)
-    if not job:
+    # sudo: el trabajo lo creó el servidor; se filtra por dueño salvo para un
+    # administrador real (alcance admin + grupo de sistema).
+    domain = [("id", "=", job_id)]
+    if not _is_job_admin(env):
+        domain.append(("user_id", "=", env.uid))
+    job_sudo = env["mcp.job"].sudo().search(domain, limit=1)
+    if not job_sudo:
         raise ValueError(f"Job {job_id} not found or not accessible.")
+    job = job_sudo
 
     result = {
         "job_id": job.id,
@@ -274,8 +292,7 @@ def _job_list(env, args: dict) -> dict:
     if state:
         domain.append(("state", "=", state))
 
-    scope = env.context.get("mcp_scope", "write")
-    if my_jobs_only or scope not in ("admin",):
+    if my_jobs_only or not _is_job_admin(env):
         domain.append(("user_id", "=", env.uid))
 
     jobs = env["mcp.job"].sudo().search_read(
@@ -318,8 +335,7 @@ def _job_cancel(env, args: dict) -> dict:
     )
     if not job:
         # Admins can cancel any job
-        scope = env.context.get("mcp_scope", "write")
-        if scope == "admin":
+        if _is_job_admin(env):
             job = env["mcp.job"].sudo().search([("id", "=", job_id)], limit=1)
         if not job:
             raise ValueError(f"Job {job_id} not found or you do not own it.")

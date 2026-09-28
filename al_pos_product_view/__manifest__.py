@@ -26,7 +26,7 @@ sin dependencias externas.
   acotar los chips visibles, con edición masiva en lista.
 * Casilla de activación por caja en los ajustes del TPV (activada por
   defecto) y **etiquetas de ejemplo** (Bebidas, Textil, Abarrotes,
-  Servicios, Promoción) para probar.
+  Servicios, Promoción) en las bases con datos de demostración.
 
 **Conmutador de vista cuadrícula/lista**
 
@@ -46,7 +46,7 @@ sin dependencias externas.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
-    'version': '3.20260925',
+    'version': '4.20260925',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque
@@ -56,10 +56,14 @@ sin dependencias externas.
         'stock',
     ],
     'data': [
-        'data/product_tag_data.xml',
         'views/product_tag_views.xml',
         'views/res_config_settings_views.xml',
         'views/res_users_views.xml',
+    ],
+    # Etiquetas de ejemplo solo en bases con datos de demostración (las
+    # instalaciones previas las conservan: son noupdate).
+    'demo': [
+        'data/product_tag_data.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': [

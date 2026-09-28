@@ -22,6 +22,7 @@ from markupsafe import Markup
 
 from odoo import http
 from odoo.http import request
+from odoo.tools import consteq
 
 _logger = logging.getLogger(__name__)
 
@@ -121,9 +122,12 @@ class McpArtifactController(http.Controller):
 
         self._bump_view_counter(art)
         body = _build_sandbox_document(art)
+        # "sandbox allow-scripts" hace que el documento tenga un origen opaco
+        # aunque se abra directamente: su JS no puede leer ni actuar sobre la
+        # sesión de Odoo del visitante.
         headers = [
             ("Content-Type", "text/html; charset=utf-8"),
-            ("Content-Security-Policy", _CSP_POLICY),
+            ("Content-Security-Policy", "sandbox allow-scripts; " + _CSP_POLICY),
             ("X-Frame-Options", "SAMEORIGIN"),
         ]
         return request.make_response(body, headers=headers)
@@ -158,10 +162,13 @@ class McpArtifactController(http.Controller):
     def _check_auth(self, art, token: str):
         if art.is_public:
             return None
-        if token and token == art.access_token:
+        if token and art.access_token and consteq(token, art.access_token):
             return None
         if request.session and request.session.uid:
-            return None
+            user = request.env.user
+            if art.created_by == user or user.has_group("base.group_system"):
+                return None
+            return request.not_found()
         login_url = f"/web/login?redirect=/mcp-artifact/{art.slug}"
         return request.redirect(login_url, code=302)
 

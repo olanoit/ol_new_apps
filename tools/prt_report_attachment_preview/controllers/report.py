@@ -19,14 +19,12 @@
 
 import json
 import re
-from email.utils import encode_rfc2231
 from typing import Any
 
-from werkzeug import urls
 from werkzeug.wrappers import Response
 
 from odoo import http
-from odoo.http import request, route
+from odoo.http import content_disposition, request, route
 from odoo.tools.safe_eval import safe_eval
 from odoo.tools.safe_eval import time as safe_time
 
@@ -113,6 +111,9 @@ class CxReportController(ReportController):
         type="http",
         auth="user",
         website=True,
+        # Same as the core route. Omitting it would inherit readonly=True
+        # anyway (odoo.http merges the parent routing), so be explicit.
+        readonly=True,
     )
     def report_routes(
         self,
@@ -133,16 +134,19 @@ class CxReportController(ReportController):
 
         context = dict(request.env.context)
 
-        # Handle options and context
+        # Handle options and context. The query string is already decoded by
+        # werkzeug: decoding it again would turn "+" into spaces and break "%".
         if data.get("options"):
             options_str = data.pop("options")
             if isinstance(options_str, str):
-                data.update(json.loads(urls.url_unquote_plus(options_str)))
+                data.update(json.loads(options_str))
 
         if data.get("context"):
             context_str = data.get("context")
             if isinstance(context_str, str):
-                context.update(json.loads(urls.url_unquote_plus(context_str)))
+                # Same as the core controller: reports receive a dict
+                data["context"] = json.loads(context_str)
+            context.update(data["context"])
 
         # Handle company context
         cid = data.get("cid")
@@ -177,11 +181,26 @@ class CxReportController(ReportController):
                 ("Content-Length", str(len(pdf))),
                 (
                     "Content-Disposition",
-                    f'inline; filename="{report_name}.pdf"; '
-                    f"filename*={encode_rfc2231(report_name, 'utf-8')}.pdf",
+                    content_disposition(f"{report_name}.pdf", "inline"),
                 ),
             ],
         )
+
+    @http.route(["/report/download"], type="http", auth="user")
+    def report_download(self, data, context=None, token=None, readonly=True):
+        """The core download calls report_routes() (which here already sets an
+        inline Content-Disposition) and then adds its own attachment header.
+        Two different Content-Disposition headers make Chrome reject the
+        response (ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION); the
+        point of sale downloads invoices this way. Keep only the core one."""
+        response = super().report_download(
+            data, context=context, token=token, readonly=readonly
+        )
+        if response is not None:
+            dispositions = response.headers.getlist("Content-Disposition")
+            if len(dispositions) > 1:
+                response.headers["Content-Disposition"] = dispositions[-1]
+        return response
 
     @http.route("/report/check_wkhtmltopdf", type="jsonrpc", auth="user")
     def check_wkhtmltopdf(self):

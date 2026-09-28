@@ -9,4 +9,6 @@ class PosOrder(models.Model):
     seller_id = fields.Many2one(
         comodel_name='hr.employee',
         string='Vendedor',
+        check_company=True,
+        index='btree_not_null',
     )

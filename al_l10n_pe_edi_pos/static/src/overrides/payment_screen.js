@@ -13,9 +13,9 @@ patch(PaymentScreen.prototype, {
         const order = this.currentOrder;
         const type = order?.l10n_pe_doc_type || "boleta";
         if (type === "recibo") {
-            return "Recibo";
+            return _t("Recibo");
         }
-        const base = type === "factura" ? "Factura electrónica" : "Boleta electrónica";
+        const base = type === "factura" ? _t("Factura electrónica") : _t("Boleta electrónica");
         const serie = order?.edi_series_id?.name;
         return serie ? `${base} · ${serie}` : base;
     },
@@ -34,7 +34,7 @@ patch(PaymentScreen.prototype, {
             factura: this.pos.getPeFixedSeries("factura")?.id || null,
         };
         const result = await makeAwaitable(this.dialog, DocTypePopup, {
-            title: "Comprobante",
+            title: _t("Comprobante"),
             currentType: order.l10n_pe_doc_type || "boleta",
             currentSerieId: order.edi_series_id?.id || false,
             currentSend: order.l10n_pe_edi_send !== false,

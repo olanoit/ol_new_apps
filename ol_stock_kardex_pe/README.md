@@ -25,7 +25,7 @@ PLE): reutiliza sus campos SUNAT y añade la capa visual que falta.
   método de valuación) + tabla ENTRADAS/SALIDAS/SALDO FINAL con fila de
   TOTALES. Generado 100 % en memoria.
 - **PDF QWeb**: mismo formato, A4 horizontal, una página por producto.
-- **Modo consolidado** (por compañía, cuadra con el TXT PLE) o **por almacén**
+- **Modo consolidado** (por compañía) o **por almacén**
   (una hoja/sección por almacén, incluye traslados internos con operaciones
   11/21 de la Tabla 12).
 

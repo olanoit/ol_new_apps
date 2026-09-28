@@ -11,3 +11,4 @@ from . import res_config_settings
 from . import ir_model_invalidate
 from . import mcp_portal_page
 from . import mcp_html_artifact
+from . import mcp_oauth_client

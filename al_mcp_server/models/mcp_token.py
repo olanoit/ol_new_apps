@@ -6,11 +6,27 @@ import secrets
 from datetime import timedelta
 
 from odoo import api, fields, models
+from odoo.exceptions import AccessError
 
 _logger = logging.getLogger(__name__)
 
 TOKEN_TTL_DAYS = 30
 REFRESH_TOKEN_TTL_DAYS = 90
+
+# Campos de credencial y gobierno: solo el administrador (o el servidor con
+# sudo) puede modificarlos. El dueño del token solo puede renombrarlo o revocarlo.
+_PROTECTED_FIELDS = frozenset({
+    "token", "refresh_token", "user_id", "token_type", "state",
+    "expires_at", "refresh_token_expires_at", "last_used",
+    "scope", "ip_allowlist", "ip_denylist",
+    "allowed_model_ids", "denied_model_ids", "field_restrictions",
+    "capture_payloads",
+})
+
+# Campos de gobierno que deben sobrevivir a la rotación del token de refresco.
+_GOVERNANCE_FIELDS = (
+    "scope", "ip_allowlist", "ip_denylist", "field_restrictions", "capture_payloads",
+)
 
 
 def _hash_token(raw: str) -> str:
@@ -117,6 +133,41 @@ class McpToken(models.Model):
         tracking=True,
     )
 
+    can_edit_governance = fields.Boolean(
+        compute="_compute_can_edit_governance",
+        help="Técnico: el usuario actual puede editar el alcance y las restricciones.",
+    )
+
+    def _compute_can_edit_governance(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_edit_governance = is_admin
+
+    # ------------------------------------------------------------------
+    # ORM overrides — protección de credenciales y gobierno
+    # ------------------------------------------------------------------
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Los tokens solo se emiten desde issue()/refresh() (con sudo) o por un
+        # administrador: un usuario no puede fabricar su propio hash ni alcance.
+        if not self.env.su and not self.env.user.has_group("base.group_system"):
+            raise AccessError(self.env._("Los tokens MCP solo se pueden emitir mediante OAuth o el botón de PAT."))
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if not self.env.su and not self.env.user.has_group("base.group_system"):
+            protected = set(vals) & _PROTECTED_FIELDS
+            # El dueño sí puede revocar su propio token.
+            if protected == {"state"} and vals.get("state") == "revoked":
+                protected = set()
+            if protected:
+                raise AccessError(self.env._(
+                    "Solo un administrador puede modificar estos campos del token MCP: %(fields)s",
+                    fields=", ".join(sorted(protected)),
+                ))
+        return super().write(vals)
+
     # ------------------------------------------------------------------
     # Token issuance
     # ------------------------------------------------------------------
@@ -154,8 +205,10 @@ class McpToken(models.Model):
             vals["refresh_token"] = _hash_token(raw_refresh)
             vals["refresh_token_expires_at"] = now + timedelta(days=REFRESH_TOKEN_TTL_DAYS)
 
-        rec = self.with_user(uid).create(vals)
-        rec.message_post(body=f"Token Bearer MCP emitido — cliente: {client_name}")
+        # sudo: la emisión la invoca el flujo OAuth (usuario público) o el botón
+        # de PAT; el propio usuario no tiene permiso de crear tokens (ver create()).
+        token_sudo = self.with_user(uid).sudo().create(vals)
+        token_sudo.message_post(body=f"Token Bearer MCP emitido — cliente: {client_name}")
         return raw_access, raw_refresh
 
     @api.model
@@ -175,10 +228,12 @@ class McpToken(models.Model):
             rec.write({"state": "expired"})
             return None
 
-        # Issue replacement tokens
+        # Issue replacement tokens — conservando alcance y restricciones del token
+        # original (si no, un token restringido se "ampliaría" al refrescarse).
         new_raw_access = secrets.token_urlsafe(32)
         new_raw_refresh = secrets.token_urlsafe(32)
-        self.create({
+        vals = {field: rec[field] for field in _GOVERNANCE_FIELDS}
+        vals.update({
             "name": rec.name,
             "token": _hash_token(new_raw_access),
             "refresh_token": _hash_token(new_raw_refresh),
@@ -186,7 +241,10 @@ class McpToken(models.Model):
             "token_type": rec.token_type,
             "expires_at": now + timedelta(days=TOKEN_TTL_DAYS),
             "refresh_token_expires_at": now + timedelta(days=REFRESH_TOKEN_TTL_DAYS),
+            "allowed_model_ids": [(6, 0, rec.allowed_model_ids.ids)],
+            "denied_model_ids": [(6, 0, rec.denied_model_ids.ids)],
         })
+        self.create(vals)
         # Expire the used token (rotation — prevent reuse)
         rec.write({"state": "expired"})
         return new_raw_access, new_raw_refresh

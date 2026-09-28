@@ -205,6 +205,13 @@ faq:
       manda la última que eligió cada usuario.
 
 novedades:
+  - version: 4.20260925
+    fecha: 27/09/2026
+    cambios:
+      - "En la ficha de producto del TPV, los precios y totales del pedido vuelven a ocultarse a los empleados con permisos mínimos (Empleados activo), como en el Odoo estándar."
+      - "El stock de la vista de lista es el del almacén de la caja, no la suma de todos los almacenes."
+      - "El botón de recarga de etiquetas es mucho más ligero: solo relee las etiquetas de los productos."
+      - "Las etiquetas de ejemplo (Bebidas, Textil…) solo se crean en bases de demostración; las que ya existen se conservan."
   - fecha: 24/09/2026
     cambios:
       - "El cajero ya puede guardar su vista preferida desde Mis preferencias: antes fallaba con «No tienes permiso para modificar registros Usuario»."

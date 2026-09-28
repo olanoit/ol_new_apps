@@ -19,7 +19,7 @@
 
 {
     "name": "Open PDF Reports and PDF Attachments in Browser",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "summary": """
     Preview reports and pdf attachments in browser instead of downloading them.
     Open Report or PDF Attachment in new tab instead of downloading.
@@ -35,6 +35,9 @@
         "web.assets_backend": [
             "prt_report_attachment_preview/static/src/js/tools.esm.js",
             "prt_report_attachment_preview/static/src/js/report.esm.js",
+        ],
+        "web.assets_unit_tests": [
+            "prt_report_attachment_preview/static/tests/**/*",
         ],
     },
     "installable": True,

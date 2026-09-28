@@ -46,9 +46,9 @@ patch(PosStore.prototype, {
     /**
      * Recarga en caliente las etiquetas desde el backend sin salir de la
      * sesión: upsert de nuevas/renombradas/recoloreadas, borrado de
-     * fantasmas, re-lectura de las plantillas cargadas por el MISMO
-     * pipeline que "Buscar más" (los unlink de etiquetas se reflejan) y
-     * poda de la selección activa.
+     * fantasmas, re-lectura del m2m de etiquetas de las plantillas
+     * cargadas (los unlink de etiquetas se reflejan) y poda de la
+     * selección activa.
      */
     async refreshPosTags() {
         const serverTags = await this.data.searchRead("product.tag", []);
@@ -60,9 +60,11 @@ patch(PosStore.prototype, {
             ghost.delete();
         }
 
+        // Solo se relee el m2m de etiquetas de las plantillas cargadas (no
+        // todo el pipeline de productos con tarifas, atributos y stock).
         const templateIds = this.models["product.template"].getAll().map((t) => t.id);
         if (templateIds.length) {
-            await this.loadNewProducts([["id", "in", templateIds]]);
+            await this.data.read("product.template", templateIds, ["product_tag_ids"]);
         }
 
         this.selectedPosTagIds = this.selectedPosTagIds.filter((id) =>

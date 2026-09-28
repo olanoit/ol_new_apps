@@ -35,7 +35,9 @@ class AccountMove(models.Model):
 
     @api.depends('state', 'name', 'amount_total', 'invoice_date',
                  'l10n_pe_edi_amount_igv', 'partner_id.vat',
-                 'partner_id.l10n_latam_identification_type_id')
+                 'partner_id.l10n_latam_identification_type_id',
+                 'l10n_latam_document_number', 'l10n_latam_document_type_id',
+                 'company_id.vat')
     def _compute_l10n_pe_pos_qr_str(self):
         """QR de la representación impresa (R.S. 018-2005/SUNAT):
         RUC|tipo|serie|folio|igv|total|fecha|tipoDocCliente|nroDocCliente.

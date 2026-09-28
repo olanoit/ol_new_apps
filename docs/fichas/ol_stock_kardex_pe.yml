@@ -34,8 +34,8 @@ destacados:
   - icono: "⌂"
     titulo: Consolidado o por almacén
     texto: >-
-      El consolidado de la compañía cuadra con el TXT del PLE; el modo por
-      almacén da una sección con saldo propio por almacén.
+      El consolidado da el saldo de la compañía; el modo por almacén da una
+      sección con saldo propio por almacén.
   - icono: "⏱"
     titulo: Generación en segundo plano
     texto: >-
@@ -122,7 +122,7 @@ funcionalidades:
       - "Formato 13.1: Registro de Inventario Permanente Valorizado."
       - "Formato 12.1: Registro de Inventario Permanente en Unidades Físicas."
       - Línea de saldo inicial por producto (operación 16) calculada a la fecha de inicio.
-      - Tipo, serie y número del comprobante vinculado; tipo 00 cuando no hay comprobante.
+      - Tipo, serie y número del comprobante vinculado; tipo 09 (guía de remisión) en ventas y compras sin comprobante y 00 en el resto.
       - "Tipo de operación de la transferencia (tabla 12) o deducido de las ubicaciones: compra, venta, devoluciones, producción, ajuste, merma y traslados."
   - grupo: Salidas
     items:
@@ -153,9 +153,9 @@ ejemplos:
 
   - titulo: Consolidado o por almacén
     tabla:
-      - [Modo, Saldo corrido, Cuadra con el TXT del PLE, Traslados internos]
-      - [Consolidado, Por producto y compañía, "Sí", "No cambian el saldo de la compañía"]
-      - [Por almacén, Por producto y almacén, "No: costo aproximado", "Sí, con operaciones 11 y 21 de la tabla 12"]
+      - [Modo, Saldo corrido, Costo, Traslados internos]
+      - [Consolidado, Por producto y compañía, "El de la valorización de Odoo", "No cambian el saldo de la compañía"]
+      - [Por almacén, Por producto y almacén, "Aproximado", "Sí, con operaciones 11 y 21 de la tabla 12"]
 
 configuracion_intro: >-
   El kardex usa los mismos datos SUNAT que el TXT del inventario permanente
@@ -183,9 +183,10 @@ faq:
       al costo promedio corriente. Para cifras contables use el consolidado.
   - pregunta: ¿Qué fecha aparece en la columna Fecha?
     respuesta: >-
-      La del movimiento de inventario. El tipo, la serie y el número salen del
-      comprobante vinculado a la venta o la compra; sin comprobante se usa el
-      documento interno con tipo 00.
+      La del movimiento de inventario, en hora de Lima. El tipo, la serie y el
+      número salen del comprobante vinculado a la venta o la compra; sin
+      comprobante, una venta o compra sale con tipo 09 (guía de remisión) y
+      el resto con el documento interno y tipo 00.
   - pregunta: ¿Cuándo conviene generar en segundo plano?
     respuesta: >-
       En periodos largos o con muchos productos. El archivo se prepara sin
@@ -197,6 +198,18 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: 4.20260718
+    fecha: 27/09/2026
+    cambios:
+      - "Las cantidades son las recibidas o entregadas de verdad, no las pedidas: una recepción parcial cerrada sin pendiente ya no infla el kardex."
+      - "Los periodos se cortan en hora de Lima: un movimiento del último día a las 20:00 ya no se va al mes siguiente, y la fecha del Excel coincide con la del PDF."
+      - "Los ajustes de inventario y las mermas salen en el kardex por almacén, y los traslados entre almacenes aparecen con las operaciones 11 y 21."
+      - "Si elige almacenes, el kardex sale por almacén con el saldo de cada uno."
+      - "Un usuario solo de Inventario puede sacar el kardex aunque no tenga permisos de ventas o facturación."
+      - "Cada compañía ve solo sus kardex generados, y no se puede pedir el kardex de una compañía no activa."
+      - "Ventas y compras sin comprobante salen con tipo 09 (guía de remisión), como en el TXT del PLE."
+      - "Un error al generar en segundo plano queda como «Error» en vez de bloquear la cola, y un reporte colgado en «Generando» se vuelve a tomar."
+      - "Kardex más rápido con muchos productos."
   - fecha: 14/09/2026
     cambios:
       - "Menú Kardex ordenado junto al resto de libros en la app Perú."

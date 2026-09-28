@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from unittest.mock import patch
+
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 from odoo.exceptions import UserError
@@ -129,16 +131,119 @@ class TestPosPeEdi(TestPoSCommon):
         })
         vals = order._prepare_invoice_vals()
         self.assertTrue(vals.get('l10n_pe_edi_hold'))
-        # El filtro de _process_documents_web_services excluye los
-        # documentos de facturas retenidas
-        move = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'partner_id': self.partner_dni.id,
-            'l10n_pe_edi_hold': True,
+
+    def test_documentos_retenidos_no_se_procesan(self):
+        """_process_documents_web_services (cron y botón «Procesar ahora»)
+        no procesa los documentos EDI de facturas retenidas."""
+        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
+        Doc = self.env['account.edi.document']
+        docs = Doc
+        for hold in (True, False):
+            move = self.env['account.move'].create({
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_dni.id,
+                'l10n_pe_edi_hold': hold,
+            })
+            docs |= Doc.create({
+                'move_id': move.id,
+                'edi_format_id': edi_format.id,
+                'state': 'to_send',
+            })
+        held = docs.filtered(lambda d: d.move_id.l10n_pe_edi_hold)
+        prepared = []
+
+        def fake_prepare_jobs(recs):
+            prepared.append(recs)
+            return []
+
+        with patch.object(type(Doc), '_prepare_jobs', fake_prepare_jobs):
+            docs._process_documents_web_services(with_commit=False)
+        self.assertEqual(len(prepared), 1)
+        self.assertNotIn(held, prepared[0])
+        self.assertEqual(prepared[0], docs - held)
+
+    def _order_with_line(self, partner, qty=1, **vals):
+        """Orden con una línea: `refunded_order_id` es un compute que sale
+        de `lines.refunded_orderline_id`, así que la devolución necesita
+        líneas enlazadas a las del original."""
+        if not hasattr(self, '_refund_product'):
+            self._refund_product = self.create_product(
+                'Producto devolución', self.categ_basic, 10.0)
+        refunded_line = vals.pop('refunded_orderline_id', False)
+        line = {
+            'product_id': self._refund_product.id,
+            'qty': qty, 'price_unit': 10.0,
+            'price_subtotal': 10.0 * qty, 'price_subtotal_incl': 10.0 * qty,
+        }
+        if refunded_line:
+            line['refunded_orderline_id'] = refunded_line.id
+        return self.env['pos.order'].create({
+            'session_id': self.pos_session.id,
+            'partner_id': partner.id,
+            'lines': [(0, 0, line)],
+            'amount_tax': 0, 'amount_total': 10.0 * qty,
+            'amount_paid': 0, 'amount_return': 0,
+            **vals,
         })
-        doc = self.env['account.edi.document'].new({'move_id': move.id})
-        filtered = doc.filtered(lambda d: not d.move_id.l10n_pe_edi_hold)
-        self.assertFalse(filtered)
+
+    def _refund_for(self, original):
+        refund = self._order_with_line(
+            original.partner_id, qty=-1,
+            refunded_orderline_id=original.lines[:1],
+            # El frontend deja «boleta» por defecto en la devolución.
+            l10n_pe_doc_type='boleta')
+        self.assertEqual(refund.refunded_order_id, original)
+        return refund
+
+    def test_devolucion_de_factura_va_al_diario_de_facturas(self):
+        """La NC de una factura se crea en el diario de la factura aunque la
+        orden de devolución quede marcada como boleta."""
+        self.open_new_session()
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_ruc.id,
+            'journal_id': self.journal_factura.id,
+        })
+        original = self._order_with_line(
+            self.partner_ruc, l10n_pe_doc_type='factura', account_move=invoice.id)
+        vals = self._refund_for(original)._prepare_invoice_vals()
+        self.assertEqual(vals['journal_id'], self.journal_factura.id)
+        self.assertNotIn('edi_series_id', vals)
+
+    def test_devolucion_de_recibo_sin_comprobante(self):
+        """Devolver un «Recibo» (sin comprobante) no usa los diarios CPE."""
+        self.open_new_session()
+        original = self._order_with_line(self.partner_dni, l10n_pe_doc_type='recibo')
+        vals = self._refund_for(original)._prepare_invoice_vals()
+        self.assertNotIn(vals['journal_id'],
+                         (self.journal_boleta | self.journal_factura).ids)
+
+    def test_serie_de_otro_tipo_no_se_aplica(self):
+        """Una serie de boletas no numera una factura aunque esté en el
+        diario."""
+        serie_b = self.env['edi.invoice.series'].create({
+            'name': 'B901',
+            'l10n_latam_document_type_id': self.env.ref(
+                'l10n_pe.document_type03').id,
+            'name_nc': 'BC91', 'name_nd': 'BD91',
+            'company_id': self.company.id,
+        })
+        serie_b.action_publish()
+        self.journal_factura.write({
+            'use_name_sequence': True,
+            'edi_series_ids': [(4, serie_b.id)],
+        })
+        self.open_new_session()
+        order = self.env['pos.order'].create({
+            'session_id': self.pos_session.id,
+            'partner_id': self.partner_ruc.id,
+            'l10n_pe_doc_type': 'factura',
+            'edi_series_id': serie_b.id,
+            'amount_tax': 0, 'amount_total': 0,
+            'amount_paid': 0, 'amount_return': 0,
+        })
+        vals = order._prepare_invoice_vals()
+        self.assertNotIn('edi_series_id', vals)
 
     def test_qr_representacion_impresa(self):
         product = self.create_product('Servicio QR', self.categ_basic, 100.0)

@@ -1,5 +1,6 @@
 import { Component, useState } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
+import { _t } from "@web/core/l10n/translation";
 
 /**
  * Modal único del comprobante en caja: las 3 opciones (Recibo, Boleta,
@@ -33,26 +34,30 @@ export class DocTypePopup extends Component {
         currentSend: true,
     };
 
-    static TYPES = [
-        {
-            code: "recibo",
-            label: "Recibo",
-            icon: "fa-print",
-            hint: "Ticket simple, sin comprobante electrónico",
-        },
-        {
-            code: "boleta",
-            label: "Boleta electrónica",
-            icon: "fa-file-text-o",
-            hint: "Consumidor final (DNI opcional)",
-        },
-        {
-            code: "factura",
-            label: "Factura electrónica",
-            icon: "fa-building-o",
-            hint: "Requiere cliente con RUC",
-        },
-    ];
+    // Getter (no array estático): `_t` se evalúa en tiempo de ejecución,
+    // con las traducciones ya cargadas.
+    static get TYPES() {
+        return [
+            {
+                code: "recibo",
+                label: _t("Recibo"),
+                icon: "fa-print",
+                hint: _t("Ticket simple, sin comprobante electrónico"),
+            },
+            {
+                code: "boleta",
+                label: _t("Boleta electrónica"),
+                icon: "fa-file-text-o",
+                hint: _t("Consumidor final (DNI opcional)"),
+            },
+            {
+                code: "factura",
+                label: _t("Factura electrónica"),
+                icon: "fa-building-o",
+                hint: _t("Requiere cliente con RUC"),
+            },
+        ];
+    }
 
     setup() {
         this.types = this.constructor.TYPES;

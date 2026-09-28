@@ -50,3 +50,15 @@ class TestUserPreference(TransactionCase):
             'group_ids': [Command.set([self.env.ref('base.group_user').id])]})
         with self.assertRaises(AccessError):
             other.with_user(self.cashier).write({FIELD: 'grid'})
+
+    def test_pos_setter_without_sudo(self):
+        """El conmutador del TPV guarda la preferencia con los permisos del
+        propio cajero y no toca a otros usuarios."""
+        own = self._own_record()
+        self.assertTrue(own.set_pos_product_view_mode('list'))
+        self.assertEqual(self.cashier[FIELD], 'list')
+        other = self.env['res.users'].create({
+            'name': 'Otro usuario 2', 'login': 'al_pos_product_view_otro2',
+            'group_ids': [Command.set([self.env.ref('base.group_user').id])]})
+        with self.assertRaises(AccessError):
+            other.with_user(self.cashier).set_pos_product_view_mode('grid')

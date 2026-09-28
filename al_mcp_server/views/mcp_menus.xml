@@ -70,6 +70,13 @@
               groups="base.group_user"
               sequence="99"/>
 
+    <menuitem id="mcp_menu_oauth_clients"
+              name="Clientes OAuth"
+              parent="mcp_menu_configuration"
+              action="mcp_oauth_client_action"
+              groups="base.group_system"
+              sequence="5"/>
+
     <menuitem id="mcp_menu_settings"
               name="Configuración"
               parent="mcp_menu_configuration"

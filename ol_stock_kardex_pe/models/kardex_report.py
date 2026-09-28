@@ -1,11 +1,17 @@
 import base64
 import logging
+from datetime import timedelta
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.modules import module as module_registry
 from odoo.tools import config
 
 _logger = logging.getLogger(__name__)
+
+# Un reporte que sigue en «Generando» pasado este tiempo quedó huérfano (el
+# proceso murió a mitad): el cron lo vuelve a tomar.
+STALE_GENERATING = timedelta(hours=2)
 
 
 def _in_test_mode():
@@ -23,6 +29,7 @@ class L10nPeKardexReport(models.Model):
     _name = 'l10n_pe.kardex.report'
     _description = 'Kardex SUNAT generado'
     _order = 'create_date desc'
+    _check_company_auto = True
 
     name = fields.Char(string='Referencia', compute='_compute_name', store=True)
     company_id = fields.Many2one(
@@ -37,7 +44,7 @@ class L10nPeKardexReport(models.Model):
     include_no_movement = fields.Boolean(string='Incluir sin movimientos', default=True)
     file_format = fields.Selection(
         [('xlsx', 'Excel'), ('pdf', 'PDF')], default='xlsx', required=True)
-    warehouse_ids = fields.Many2many('stock.warehouse', string='Almacenes')
+    warehouse_ids = fields.Many2many('stock.warehouse', string='Almacenes', check_company=True)
     product_ids = fields.Many2many('product.product', string='Productos')
     categ_ids = fields.Many2many('product.category', string='Categorías')
 
@@ -49,6 +56,29 @@ class L10nPeKardexReport(models.Model):
     output_filename = fields.Char(readonly=True)
     error_message = fields.Text(readonly=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user, readonly=True)
+
+    # El cron genera como superusuario: el control es sobre quien lo pide.
+    # No es un @api.constrains: el ORM ejecuta las restricciones en sudo y el
+    # control debe hacerse con el usuario que crea o modifica el registro.
+    def _check_company_allowed(self):
+        if self.env.su:
+            return
+        for rec in self:
+            if rec.company_id not in self.env.companies:
+                raise ValidationError(self.env._(
+                    'La compañía %s no está entre sus compañías activas.', rec.company_id.display_name))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._check_company_allowed()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'company_id' in vals:
+            self._check_company_allowed()
+        return res
 
     @api.depends('report_type', 'date_from', 'date_to')
     def _compute_name(self):
@@ -88,15 +118,18 @@ class L10nPeKardexReport(models.Model):
             if not _in_test_mode():
                 self.env.cr.commit()
             try:
-                wizard = rec.with_company(rec.company_id)._build_wizard()
-                if rec.file_format == 'pdf':
-                    content, _ = self.env['ir.actions.report'].with_company(
-                        rec.company_id)._render_qweb_pdf(
-                        'ol_stock_kardex_pe.report_kardex', wizard.ids)
-                    ext, mimetype = 'pdf', 'application/pdf'
-                else:
-                    content = build_kardex_xlsx(wizard)
-                    ext = 'xlsx'
+                # Savepoint: si falla una consulta, la transacción queda
+                # abortada y ni siquiera se podría guardar el estado «Error».
+                with self.env.cr.savepoint():
+                    wizard = rec.with_company(rec.company_id)._build_wizard()
+                    if rec.file_format == 'pdf':
+                        content, _ = self.env['ir.actions.report'].with_company(
+                            rec.company_id)._render_qweb_pdf(
+                            'ol_stock_kardex_pe.report_kardex', wizard.ids)
+                        ext = 'pdf'
+                    else:
+                        content = build_kardex_xlsx(wizard)
+                        ext = 'xlsx'
                 rec.write({
                     'state': 'done',
                     'output_file': base64.b64encode(content),
@@ -113,14 +146,21 @@ class L10nPeKardexReport(models.Model):
 
     @api.model
     def _cron_generate(self, limit=20):
-        pending = self.search([('state', '=', 'pending')], limit=limit)
+        domain = self._pending_domain()
+        pending = self.search(domain, limit=limit)
         pending._generate()
         # Si quedan pendientes, re-despertar el cron.
-        if len(pending) == limit and self.search_count([('state', '=', 'pending')]):
+        if len(pending) == limit and self.search_count(self._pending_domain()):
             cron = self.env.ref('ol_stock_kardex_pe.ir_cron_kardex_generate',
                                 raise_if_not_found=False)
             if cron:
                 cron._trigger()
+
+    @api.model
+    def _pending_domain(self):
+        stale = fields.Datetime.now() - STALE_GENERATING
+        return ['|', ('state', '=', 'pending'),
+                '&', ('state', '=', 'generating'), ('write_date', '<', stale)]
 
     def action_download(self):
         self.ensure_one()
