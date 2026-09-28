@@ -1,21 +1,22 @@
 import base64
 import io
 import json
-import logging
 import zipfile
 from datetime import timedelta
+from urllib.parse import urljoin, urlparse
 
 import requests
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
-_logger = logging.getLogger(__name__)
-
 SIRE_AUTH_URL = 'https://api-seguridad.sunat.gob.pe/v1/clientessol/%s/oauth2/token/'
 SIRE_SCOPE = 'https://api-sire.sunat.gob.pe'
 SIRE_BASE_URL = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv'
 SIRE_TIMEOUT = 60
+#: Dominio de SUNAT: el token Bearer nunca se envía a otro host (p. ej. a
+#: un ``Location`` de TUS manipulado).
+SIRE_ALLOWED_HOST_SUFFIX = '.sunat.gob.pe'
 #: Subida de archivos: SUNAT expone un servidor TUS (el manual documenta el
 #: cliente `tus-java-client` 0.5.0, que habla TUS 1.0.0).
 SIRE_UPLOAD_ENDPOINT = '/libros/rvierce/receptorpropuesta/web/propuesta/upload'
@@ -72,12 +73,14 @@ class L10nPeSireApi(models.AbstractModel):
         cada una abriría su propia sesión OAuth contra SUNAT. El token se
         guarda en la compañía con su caducidad y se renueva solo.
         """
-        company = company.sudo()
+        # sudo: las credenciales y el token son de base.group_system; el
+        # contable que lanza el flujo los usa sin poder leerlos.
+        company_sudo = company.sudo()
         now = fields.Datetime.now()
-        if company.l10n_pe_sire_token and company.l10n_pe_sire_token_expiry \
-                and company.l10n_pe_sire_token_expiry > now:
-            return company.l10n_pe_sire_token
-        cred = self._sire_credentials(company)
+        if company_sudo.l10n_pe_sire_token and company_sudo.l10n_pe_sire_token_expiry \
+                and company_sudo.l10n_pe_sire_token_expiry > now:
+            return company_sudo.l10n_pe_sire_token
+        cred = self._sire_credentials(company_sudo)
         payload = {
             'grant_type': 'password',
             'scope': SIRE_SCOPE,
@@ -97,18 +100,31 @@ class L10nPeSireApi(models.AbstractModel):
             raise UserError(_(
                 'SUNAT rechazó la autenticación (HTTP %(code)s): %(text)s',
                 code=response.status_code, text=self._sire_error_message(response)))
-        data = response.json()
+        data = self._sire_json(response)
         token = data.get('access_token')
         if not token:
             raise UserError(_('SUNAT no devolvió un token de acceso.'))
         # Se descuenta un minuto del margen: la petición siguiente no debe
         # salir con un token que caduca mientras viaja.
         seconds = max(int(data.get('expires_in') or 3600) - 60, 60)
-        company.write({
+        company_sudo.write({
             'l10n_pe_sire_token': token,
             'l10n_pe_sire_token_expiry': now + timedelta(seconds=seconds),
         })
         return token
+
+    def _sire_json(self, response):
+        """Cuerpo JSON (dict) de una respuesta correcta de SUNAT.
+
+        Un 200 con HTML (proxy, mantenimiento) no debe acabar en traceback.
+        """
+        try:
+            data = response.json()
+        except ValueError as error:
+            raise UserError(_(
+                'SUNAT devolvió una respuesta que no es JSON: %s',
+                (response.text or '')[:300])) from error
+        return data if isinstance(data, dict) else {}
 
     def _sire_error_message(self, response):
         """Extrae los mensajes de error del cuerpo JSON de SUNAT."""
@@ -195,7 +211,7 @@ class L10nPeSireApi(models.AbstractModel):
                 'perPage': '30',
                 'numTicket': num_ticket,
             })
-        registers = response.json().get('registros') or []
+        registers = self._sire_json(response).get('registros') or []
         if not registers:
             raise UserError(_('SUNAT no devolvió información para el ticket %s.', num_ticket))
         register = registers[0]
@@ -285,6 +301,15 @@ class L10nPeSireApi(models.AbstractModel):
                 'Upload-Metadata': self._sire_tus_metadata(metadata),
             })
         location = create.headers.get('Location')
+        if location:
+            # ``Location`` puede venir relativa; y el token solo viaja a SUNAT.
+            location = urljoin(SIRE_BASE_URL + SIRE_UPLOAD_ENDPOINT, location)
+            parsed = urlparse(location)
+            if parsed.scheme != 'https' or not (parsed.hostname or '').endswith(
+                    SIRE_ALLOWED_HOST_SUFFIX):
+                raise UserError(_(
+                    'SUNAT indicó una ubicación de carga fuera de su dominio (%s); '
+                    'no se envía el archivo.', location))
         if not location:
             # Algunas respuestas resuelven la carga en un solo paso.
             ticket = self._sire_ticket_from(create)

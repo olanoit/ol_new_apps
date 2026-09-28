@@ -21,6 +21,10 @@ class L10nPeSireRvie(models.Model):
         'l10n_pe.sire.rvie.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    _period_uniq = models.Constraint(
+        'unique (company_id, year, month)',
+        'Ya existe un periodo RVIE para esta compañía y este mes.')
+
     def _sire_book_type(self):
         return 'rvie'
 
@@ -89,16 +93,10 @@ class L10nPeSireRvie(models.Model):
         }
 
     def _sire_system_moves(self):
-        date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
-        date_to = fields.Date.end_of(date_from, 'month')
-        return self.env['account.move'].search([
-            ('company_id', '=', self.company_id.id),
-            ('move_type', 'in', ('out_invoice', 'out_refund')),
-            ('state', 'in', ('posted', 'cancel')),
-            ('invoice_date', '>=', date_from),
-            ('invoice_date', '<=', date_to),
-            ('l10n_latam_document_type_id.code', 'not in', RVIE_EXCLUDED_DOC_TYPES),
-        ], order='invoice_date, name')
+        return self.env['account.move'].search(
+            self._sire_system_domain(('out_invoice', 'out_refund'), 'invoice_date') + [
+                ('l10n_latam_document_type_id.code', 'not in', RVIE_EXCLUDED_DOC_TYPES),
+            ], order='invoice_date, name')
 
     def _sire_system_line_vals(self, move):
         sign = self._sire_move_sign(move)
@@ -107,6 +105,7 @@ class L10nPeSireRvie(models.Model):
         serie, folio = self._sire_serie_folio(move)
         doc_code = move.l10n_latam_document_type_id.code or ''
         rate = self._sire_move_rate(move)
+        partner = move.commercial_partner_id
 
         def amount(value):
             return 0.0 if cancelled else round(sign * value, 2)
@@ -124,9 +123,9 @@ class L10nPeSireRvie(models.Model):
             'tipo_cp': doc_code,
             'serie_cp': serie,
             'nro_cp': folio,
-            'tipo_doc_identidad': move.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
-            'nro_doc_identidad': move.partner_id.vat or '',
-            'razon_social': move.partner_id.name or '',
+            'tipo_doc_identidad': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
+            'nro_doc_identidad': partner.vat or '',
+            'razon_social': partner.name or '',
             'valor_exportacion': amount(amounts['export']),
             'bi_gravada': 0.0 if discount_columns else amount(amounts['taxed']),
             'dscto_bi': amount(amounts['taxed']) if discount_columns else 0.0,
@@ -135,6 +134,8 @@ class L10nPeSireRvie(models.Model):
             'mto_exonerado': amount(amounts['exonerated']),
             'mto_inafecto': amount(amounts['unaffected']),
             'isc': amount(amounts['isc']),
+            'bi_ivap': amount(amounts['ivap_base']),
+            'ivap': amount(amounts['ivap']),
             'icbper': amount(amounts['icbper']),
             'otros_tributos': amount(amounts['other_taxes']),
             'total_cp': amount(abs(move.amount_total_signed)),

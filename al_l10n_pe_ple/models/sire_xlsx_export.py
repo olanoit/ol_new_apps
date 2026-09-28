@@ -7,12 +7,15 @@ eso se añade un botón «XLSX» junto al de TXT en los tres informes, con las
 mismas líneas y una cabecera por nombre de campo.
 """
 from odoo import _, api, models
+from odoo.tools.translate import LazyTranslate
+
+_lt = LazyTranslate(__name__)
 
 # Informe → (código de libro, etiqueta del botón)
 SIRE_XLSX_BOOKS = {
-    '08040002': ('080400', 'XLSX RCE 8.4'),
-    '08050000': ('080500', 'XLSX RCE 8.5'),
-    '14040002': ('140400', 'XLSX RVIE 14.4'),
+    '08040002': ('080400', _lt('XLSX RCE 8.4')),
+    '08050000': ('080500', _lt('XLSX RCE 8.5')),
+    '14040002': ('140400', _lt('XLSX RVIE 14.4')),
 }
 
 
@@ -26,7 +29,7 @@ class L10nPeSireXlsxExport(models.AbstractModel):
         if not book:
             return
         options.setdefault('buttons', []).append({
-            'name': _(book[1]),
+            'name': str(book[1]),
             'sequence': 30,
             'action': 'export_file',
             'action_param': 'l10n_pe_sire_export_to_xlsx',
@@ -47,7 +50,9 @@ class L10nPeSireXlsxExport(models.AbstractModel):
         xlsx = self.env['l10n_pe.ple.mixin']._ple_xlsx(
             book_code, rows, self.env.company, year, month)
         return {
-            'file_name': result['file_name'],
+            # account_reports no añade extensión: sin ella el Excel se
+            # descargaba con el nombre del TXT.
+            'file_name': '%s.xlsx' % result['file_name'],
             'file_content': xlsx,
             'file_type': 'xlsx',
         }

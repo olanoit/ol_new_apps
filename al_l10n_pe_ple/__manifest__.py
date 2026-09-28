@@ -71,7 +71,7 @@ NO se reimplementan.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNT/Apps',
-    'version': '7.20260828',
+    'version': '8.20260828',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -82,6 +82,7 @@ NO se reimplementan.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/ple_security.xml',
         'views/account_asset_views.xml',
         'views/ple_withholding_views.xml',
         'views/ple_investment_views.xml',
@@ -94,6 +95,9 @@ NO se reimplementan.
         'views/menu.xml',
         'data/ple_asset_report.xml',
     ],
+    'external_dependencies': {
+        'python': ['xlsxwriter'],
+    },
     'installable': True,
     'application': False,
 }

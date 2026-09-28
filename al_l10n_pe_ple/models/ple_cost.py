@@ -101,6 +101,7 @@ class L10nPePleCostCenter(models.Model):
     _name = 'l10n_pe.ple.cost.center'
     _description = 'PLE 10.4 - Centro de costos'
     _order = 'year, id'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
@@ -108,6 +109,7 @@ class L10nPePleCostCenter(models.Model):
     year = fields.Integer(string='Ejercicio', required=True, index=True)
     analytic_account_id = fields.Many2one(
         'account.analytic.account', string='Cuenta analítica',
+        check_company=True,
         help='Opcional: propone el código y la descripción del centro de '
              'costos desde la cuenta analítica.')
     operation_unit_code = fields.Char(

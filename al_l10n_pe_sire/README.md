@@ -48,7 +48,7 @@ cargarlo a mano en SOL.
 
 - Guía funcional: [`docs/README.md`](docs/README.md)
 - Plan técnico: `../docs/sire/PLAN_MODULO_al_l10n_pe_sire.md`
-- Demo/validación: `tools/sire_demo_data.py` (ejecutar vía `odoo-bin shell`)
+- Demo/validación: `docs/sire/pruebas/sire_demo_data.py` (en la raíz del repositorio) (ejecutar vía `odoo-bin shell`)
 
 ## Tests
 

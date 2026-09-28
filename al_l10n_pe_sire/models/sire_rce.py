@@ -25,6 +25,10 @@ class L10nPeSireRce(models.Model):
         'l10n_pe.sire.rce.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    _period_uniq = models.Constraint(
+        'unique (company_id, year, month)',
+        'Ya existe un periodo RCE para esta compañía y este mes.')
+
     def _sire_book_type(self):
         return 'rce'
 
@@ -97,16 +101,10 @@ class L10nPeSireRce(models.Model):
         }
 
     def _sire_system_moves(self):
-        date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
-        date_to = fields.Date.end_of(date_from, 'month')
-        return self.env['account.move'].search([
-            ('company_id', '=', self.company_id.id),
-            ('move_type', 'in', ('in_invoice', 'in_refund')),
-            ('state', 'in', ('posted', 'cancel')),
-            ('date', '>=', date_from),
-            ('date', '<=', date_to),
-            ('l10n_latam_document_type_id.code', 'not in', RCE_EXCLUDED_DOC_TYPES),
-        ], order='invoice_date, name')
+        return self.env['account.move'].search(
+            self._sire_system_domain(('in_invoice', 'in_refund'), 'date') + [
+                ('l10n_latam_document_type_id.code', 'not in', RCE_EXCLUDED_DOC_TYPES),
+            ], order='invoice_date, name')
 
     def _sire_system_line_vals(self, move):
         sign = self._sire_move_sign(move)
@@ -114,8 +112,11 @@ class L10nPeSireRce(models.Model):
         amounts = self._sire_amount_split(move)
         serie, folio = self._sire_serie_folio(move)
         doc_code = move.l10n_latam_document_type_id.code or ''
+        # El contacto de la factura puede ser una persona de la empresa: el
+        # documento y la razón social son los de la entidad comercial.
+        partner = move.commercial_partner_id
         issuer_ruc = (self.company_id.vat if doc_code in RCE_SELF_ISSUED_DOC_TYPES
-                      else move.partner_id.vat)
+                      else partner.vat)
         rate = self._sire_move_rate(move)
 
         def amount(value):
@@ -128,11 +129,12 @@ class L10nPeSireRce(models.Model):
             'tipo_cp': doc_code,
             'serie_cp': serie,
             'nro_cp': folio,
-            'tipo_doc_identidad': move.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
-            'nro_doc_identidad': move.partner_id.vat or '',
-            'razon_social': move.partner_id.name or '',
-            'bi_gravada_dg': amount(amounts['taxed']),
-            'igv_dg': amount(amounts['igv']),
+            'tipo_doc_identidad': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
+            'nro_doc_identidad': partner.vat or '',
+            'razon_social': partner.name or '',
+            # El RCE no tiene columnas propias de IVAP: va con las gravadas.
+            'bi_gravada_dg': amount(amounts['taxed'] + amounts['ivap_base']),
+            'igv_dg': amount(amounts['igv'] + amounts['ivap']),
             'valor_adq_ng': amount(amounts['exonerated'] + amounts['unaffected']),
             'isc': amount(amounts['isc']),
             'icbper': amount(amounts['icbper']),
@@ -144,9 +146,10 @@ class L10nPeSireRce(models.Model):
             'detraccion': 'Si' if getattr(move, 'l10n_pe_detraction_applies', False) else 'No',
             'estado_cp': '2' if cancelled else '1',
         }
-        if doc_code == '07':
+        if doc_code in ('07', '08'):
             vals.update(self._sire_reversed_doc_vals(move))
-            vals['tipo_nota'] = getattr(move, 'l10n_pe_edi_refund_reason', '') or ''
+            if doc_code == '07':
+                vals['tipo_nota'] = move.l10n_pe_edi_refund_reason or ''
         return vals
 
     def _sire_xlsx_headers(self):

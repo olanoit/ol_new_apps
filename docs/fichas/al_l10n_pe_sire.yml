@@ -478,6 +478,18 @@ faq:
       reemplazo.
 
 novedades:
+  - version: 5.20260803
+    fecha: 27/09/2026
+    cambios:
+      - "Las credenciales de la API SIRE (usuario y clave SOL, client ID y secret) y el token solo los ven y editan los administradores; antes cualquier usuario interno podía leerlos."
+      - "Solo los usuarios contables pueden solicitar, aceptar o reemplazar la propuesta y registrar el preliminar; un usuario de solo lectura ya no puede enviar nada a SUNAT."
+      - "Cada compañía ve únicamente sus periodos RVIE y RCE."
+      - "El TXT de la propuesta cargado a mano se lee aunque SUNAT lo entregue con tildes en latin-1."
+      - "Las líneas del sistema usan el RUC y la razón social de la empresa aunque la factura esté a nombre de una persona de contacto."
+      - "No se informan los borradores cancelados que nunca se emitieron ni los diarios excluidos de los libros electrónicos."
+      - "Las notas de débito de compra arrastran el comprobante que modifican, y en ventas el IVAP va a sus propias columnas."
+      - "Mensajes claros cuando SUNAT responde algo que no es JSON; la carga del reemplazo nunca envía el token fuera de sunat.gob.pe."
+      - "Un periodo por libro, compañía y mes garantizado también en la base de datos."
   - fecha: 14/09/2026
     cambios:
       - "Menú SIRE ordenado en la app Perú y campos de comparación en Configuración ▸ Tributos SUNAT."

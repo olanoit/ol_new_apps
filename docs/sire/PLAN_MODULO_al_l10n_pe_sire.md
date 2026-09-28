@@ -66,7 +66,7 @@ al_l10n_pe_sire/
 ├── views/  (rce, rvie, compare_field, account_move, settings, menu.xml al final)
 ├── security/ir.model.access.csv
 ├── tests/test_sire.py
-├── tools/sire_demo_data.py
+(demo: docs/sire/pruebas/sire_demo_data.py)
 └── docs/   (guía funcional)
 ```
 
@@ -123,7 +123,7 @@ Regla RVIE: NC (07) de comprobante de periodo anterior → montos a columnas de
 | 2 | RCE: propuesta/ticket/descarga/parseo + líneas sistema | TXT de muestra parsea; factura de compra genera línea correcta | ✅ |
 | 3 | RVIE: ídem ventas | TXT 40 col parsea; factura/NC de venta generan línea correcta | ✅ |
 | 4 | Comparación configurable + diferencias + XLSX + TXT reemplazo | Estados 0-3 correctos en tests; TXT con nº de columnas oficial | ✅ |
-| 5 | Tests integrales, demo, docs y commit | Suite verde; guía funcional; `tools/sire_demo_data.py` | ✅ |
+| 5 | Tests integrales, demo, docs y commit | Suite verde; guía funcional; `docs/sire/pruebas/sire_demo_data.py` | ✅ |
 | 6 | Envío a SUNAT: aceptar, reemplazar y registrar preliminar | Metadatos oficiales verificados en tests; 27 tests | ✅ |
 
 ## 6. Estructuras oficiales usadas

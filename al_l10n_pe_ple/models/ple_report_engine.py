@@ -39,16 +39,17 @@ class L10nPePleReportHandler(models.AbstractModel):
         if not book:
             # Informe no cubierto por esta sustitución: se deja el original.
             return super()._get_ple_report_data(options, current_groupby)
+        if not current_groupby:
+            # Línea cabecera del informe («RCE 8.4»…): como en Enterprise, sin
+            # valores. Devolver aquí un comprobante pintaba sus importes como
+            # si fueran los del libro.
+            return dict.fromkeys(PLE_EMPTY_COLUMNS)
 
         moves = self._l10n_pe_ple_moves(options, book)
         group_ids = self.env['l10n_pe.rce.extractor']._rce_tax_group_ids(
             self.env.company)
-        rows = [(move.id, self._l10n_pe_ple_columns(move, group_ids))
+        return [(move.id, self._l10n_pe_ple_columns(move, group_ids))
                 for move in moves]
-
-        if not current_groupby:
-            return rows[0][1] if rows else dict.fromkeys(PLE_EMPTY_COLUMNS)
-        return rows
 
     @api.model
     def _l10n_pe_ple_moves(self, options, book):
@@ -75,8 +76,7 @@ class L10nPePleReportHandler(models.AbstractModel):
         mod_date, mod_type, _serie, _folio = \
             extractor._rce_modified_document(move)
         origin = move.reversed_entry_id or move.debit_origin_id
-        dua = move.l10n_pe_dua_invoice_id if 'l10n_pe_dua_invoice_id' in move._fields \
-            else move.browse()
+        dua = move.l10n_pe_dua_invoice_id
 
         return {
             'move_name': move.name,
@@ -108,13 +108,13 @@ class L10nPePleReportHandler(models.AbstractModel):
             'base_free': amounts.get('base_gra', 0.0),
             'vat_other': amounts.get('tax_other', 0.0),
             'base_withholdings': amounts.get('tax_ret', 0.0),
-            'detraction_date': self._l10n_pe_ple_field(move, 'l10n_pe_detraction_date'),
-            'detraction_number': self._l10n_pe_ple_field(move, 'l10n_pe_detraction_number'),
+            'detraction_date': move.l10n_pe_detraction_date,
+            'detraction_number': move.l10n_pe_detraction_number,
             'emission_date_related': mod_date,
             'document_type_related': mod_type,
             'related_document': origin.name if origin else '',
             'status': move.state,
-            'edi_state': move.edi_state if 'edi_state' in move._fields else False,
+            'edi_state': move.edi_state,
             'invoice_dua_name': dua.name if dua else '',
             'invoice_dua_document_type': (
                 dua.l10n_latam_document_type_id.code or '') if dua else '',
@@ -123,18 +123,8 @@ class L10nPePleReportHandler(models.AbstractModel):
             'partner_street': partner.street or '',
             'partner_country_agreement_code':
                 partner.country_id.l10n_pe_agreement_code or '',
-            'usage_type_code': self._l10n_pe_ple_usage_code(move),
-            'service_modality': self._l10n_pe_ple_field(move, 'l10n_pe_service_modality'),
+            'usage_type_code': move.l10n_pe_usage_type_id.code or '',
+            'service_modality': move.l10n_pe_service_modality,
             'company_vat': (move.company_id.vat or '').strip(),
             'company_name': move.company_id.name,
         }
-
-    @api.model
-    def _l10n_pe_ple_field(self, move, name):
-        """Lee un campo que puede no existir si falta el módulo que lo aporta."""
-        return move[name] if name in move._fields else False
-
-    @api.model
-    def _l10n_pe_ple_usage_code(self, move):
-        usage = self._l10n_pe_ple_field(move, 'l10n_pe_usage_type_id')
-        return usage.code if usage else ''

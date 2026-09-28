@@ -17,7 +17,8 @@ class L10nPePleExportWizard(models.TransientModel):
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
-        default=lambda self: self.env.company)
+        default=lambda self: self.env.company,
+        domain=lambda self: [('id', 'in', self.env.companies.ids)])
     year = fields.Integer(
         string='Ejercicio', required=True,
         default=lambda self: fields.Date.context_today(self).year)
@@ -332,11 +333,13 @@ class L10nPePleExportWizard(models.TransientModel):
                 lambda m: m.state == 'posted')
             if invoices:
                 invoice = invoices[0]
-                serie, _sep, number = invoice.name.rpartition('-')
+                # El name lleva el prefijo LATAM («F F001-…»): la serie y el
+                # número salen del número de documento.
+                serie, number = self._serie_folio(
+                    invoice.l10n_latam_document_number or invoice.name)
                 return (invoice.l10n_latam_document_type_id.code or '00',
                         self._ple_date(invoice.invoice_date),
-                        self._ple_text(serie, 20, '0'),
-                        self._ple_text(number, 20, '0'))
+                        serie or '0', number or '0')
         return '00', '', '0', '0'
 
     def _consignment_product_data(self, product):
@@ -448,17 +451,22 @@ class L10nPePleExportWizard(models.TransientModel):
         return self._ple_text(serie, 20), last.group()
 
     def _invoice_amounts(self, move):
-        """(BI gravada, IGV/IPM, ICBPER, otros conceptos) con signo
-        (negativos en notas de crédito)."""
+        """(BI gravada, IGV/IPM, ICBPER, otros conceptos) en moneda de la
+        compañía, con signo (negativos en notas de crédito).
+
+        Todo en la misma moneda: antes el ICBPER salía del apunte (soles) y
+        el resto de los totales del documento (moneda extranjera).
+        """
         sign = -1 if move.move_type in ('in_refund', 'out_refund') else 1
         icbper = 0.0
         for line in move.line_ids:
             if line.tax_line_id and 'ICBPER' in (
                     line.tax_line_id.name or '').upper():
                 icbper += abs(line.balance)
-        igv = max(move.amount_tax - icbper, 0.0)
-        base = move.amount_untaxed if igv else 0.0
-        others = move.amount_untaxed if not igv else 0.0
+        untaxed = abs(move.amount_untaxed_signed)
+        igv = max(abs(move.amount_tax_signed) - icbper, 0.0)
+        base = untaxed if igv else 0.0
+        others = untaxed if not igv else 0.0
         return (sign * base, sign * igv, sign * icbper, sign * others)
 
     def _invoice_rate(self, move):
@@ -505,7 +513,8 @@ class L10nPePleExportWizard(models.TransientModel):
             gloss_move = (getattr(move, 'l10n_pe_gloss', '')
                           or move.ref or move.name)
             for line in move.line_ids:
-                if line.display_type in ('line_section', 'line_note'):
+                if line.display_type in ('line_section', 'line_subsection',
+                                         'line_note'):
                     continue
                 lines.append([
                     self._period_month(),                        # 1
@@ -556,9 +565,12 @@ class L10nPePleExportWizard(models.TransientModel):
     def _simplified_invoice_row(self, move):
         """Campos 1-23 comunes de 8.3 y 14.2 (sin la cola de opcionales)."""
         if move.move_type.startswith('in_'):
-            # en compras el número del CdP es el del proveedor (referencia)
-            number = (move.ref or move.l10n_latam_document_number
-                      or move.name)
+            # en compras el número del CdP es el del proveedor: el número de
+            # documento LATAM y, si falta, la referencia (texto libre)
+            # (sin documentos LATAM el «número» es el propio name del asiento)
+            number = ((move.l10n_latam_use_documents
+                       and move.l10n_latam_document_number)
+                      or move.ref or move.name)
         else:
             number = move.l10n_latam_document_number or move.name
         serie, folio = self._serie_folio(number)

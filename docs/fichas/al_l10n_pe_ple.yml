@@ -1009,6 +1009,19 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 8.20260828
+    fecha: 27/09/2026
+    cambios:
+      - "El RCE 8.4 ya no incluye los comprobantes del 8.5 (tipo 00) ni los recibos por honorarios (02)."
+      - "El RCE toma el periodo por la fecha contable: una factura recibida tarde va al mes en que se anota."
+      - "Los borradores cancelados que nunca se emitieron no aparecen en el RCE ni en el RVIE; solo cuentan los diarios que usan documentos."
+      - "La línea de título de los informes RCE 8.4, 8.5 y RVIE 14.4 ya no muestra los importes de una factura."
+      - "Compras y ventas simplificados (8.3 y 14.2): los importes de facturas en moneda extranjera salen en soles, como el resto del libro."
+      - "El Diario Simplificado (5.2) no genera filas por las subsecciones de la factura."
+      - "La clasificación RCE solo se propone en facturas de proveedor en borrador: cambiar la del producto ya no reescribe lo publicado."
+      - "Cada compañía ve únicamente sus registros de captura (4.1, 3.8, 3.19 y Libro 10)."
+      - "El Excel del RCE/RVIE se descarga con extensión .xlsx."
+      - "Consignaciones (9.1/9.2) y Compras Simplificado (8.3): la serie y el número del comprobante salen del número de documento, no del nombre interno ni de la referencia libre."
   - fecha: 17/09/2026
     cambios:
       - "Excel de revisión en todos los libros PLE: botones XLSX junto a los TXT de la localización oficial (1.1, 1.2, 5.1, 5.3, 6.1, Libro 3 y 12.1 / 13.1), con el formato del resto del módulo."

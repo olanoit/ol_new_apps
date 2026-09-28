@@ -6,7 +6,7 @@ from datetime import datetime
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 
 MONTH_SELECTION = [
@@ -26,10 +26,22 @@ TICKET_STATES = [
 ]
 
 # Afectaciones IGV (catálogo 07 SUNAT) por columna
-AFFECTATION_TAXED = {'10', '17'}
+AFFECTATION_TAXED = {'10'}
+AFFECTATION_IVAP = {'17'}
 AFFECTATION_EXONERATED = {'20', '21'}
 AFFECTATION_UNAFFECTED = {'30', '31', '32', '33', '34', '35', '36', '37'}
 AFFECTATION_EXPORT = {'40'}
+
+# Códigos de tributo SUNAT (catálogo 05, ``l10n_pe_edi_tax_code``). Clasificar
+# por código y no por el nombre del grupo, que es traducible.
+TAX_CODE_IGV = '1000'
+TAX_CODE_IVAP = '1016'
+TAX_CODE_ISC = '2000'
+TAX_CODE_ICBPER = '7152'
+TAX_CODE_FREE = '9996'
+TAX_CODE_OTHER = '9999'
+#: Tributos que se suman a la base de otro impuesto, no la determinan.
+TAX_CODES_SURCHARGE = (TAX_CODE_ISC, TAX_CODE_ICBPER, TAX_CODE_OTHER)
 
 
 class L10nPeSireMixin(models.AbstractModel):
@@ -211,7 +223,7 @@ class L10nPeSireMixin(models.AbstractModel):
                 ('company_id', '=', record.company_id.id),
             ], limit=1)
             if duplicate:
-                raise UserError(_(
+                raise ValidationError(_(
                     'Ya existe un periodo %(name)s para %(company)s.',
                     name=record.name, company=record.company_id.display_name))
 
@@ -266,8 +278,18 @@ class L10nPeSireMixin(models.AbstractModel):
     # Flujo API
     # ------------------------------------------------------------------
 
+    def _sire_check_can_submit(self):
+        """Solo quien puede modificar el periodo puede hablar con SUNAT.
+
+        La llamada a la API se hace antes de escribir en el registro: sin
+        esta comprobación, un usuario de solo lectura aceptaría la propuesta
+        en SUNAT y solo después fallaría la escritura en Odoo.
+        """
+        self.check_access('write')
+
     def action_request_proposal(self):
         self.ensure_one()
+        self._sire_check_can_submit()
         if self.download_manual:
             if not self.proposal_file:
                 raise UserError(_('Cargue el TXT exportado desde SUNAT antes de confirmar.'))
@@ -281,6 +303,7 @@ class L10nPeSireMixin(models.AbstractModel):
 
     def action_check_ticket(self):
         self.ensure_one()
+        self._sire_check_can_submit()
         if not self.ticket_number:
             raise UserError(_('Primero solicite la propuesta.'))
         token = self._sire_get_token(self.company_id)
@@ -293,6 +316,7 @@ class L10nPeSireMixin(models.AbstractModel):
 
     def action_download_proposal(self):
         self.ensure_one()
+        self._sire_check_can_submit()
         if self.ticket_state != '06':
             raise UserError(_('El ticket aún no está terminado (estado %s).', self.ticket_state or '-'))
         token = self._sire_get_token(self.company_id)
@@ -314,7 +338,8 @@ class L10nPeSireMixin(models.AbstractModel):
         self.ensure_one()
         if not self.proposal_file:
             raise UserError(_('No hay archivo de propuesta SIRE para desplegar.'))
-        content = base64.b64decode(self.proposal_file).decode('utf-8').strip('\n')
+        # El TXT exportado a mano desde SOL puede venir en latin-1.
+        content = self._sire_decode(base64.b64decode(self.proposal_file)).strip('\n')
         commands = [(5, 0, 0)]
         min_cols = self._sire_min_columns()
         for index, row in enumerate(content.split('\n')[1:], start=2):
@@ -369,6 +394,26 @@ class L10nPeSireMixin(models.AbstractModel):
             return 0.0
         return abs(move.amount_total_signed / move.amount_total)
 
+    def _sire_system_domain(self, move_types, date_field):
+        """Dominio común de los comprobantes del sistema del periodo.
+
+        Los anulados se informan (estado 2) solo si llegaron a emitirse: un
+        borrador cancelado nunca se publicó y no existe para SUNAT. Se
+        excluyen, como en el PLE, los diarios marcados como ajenos a los
+        libros electrónicos.
+        """
+        date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
+        date_to = fields.Date.end_of(date_from, 'month')
+        return [
+            ('company_id', '=', self.company_id.id),
+            ('move_type', 'in', move_types),
+            '|', ('state', '=', 'posted'),
+            '&', ('state', '=', 'cancel'), ('posted_before', '=', True),
+            (date_field, '>=', date_from),
+            (date_field, '<=', date_to),
+            ('journal_id.l10n_pe_exclude_from_books', '=', False),
+        ]
+
     def _sire_move_sign(self, move):
         return -1 if move.move_type in ('in_refund', 'out_refund') else 1
 
@@ -379,18 +424,24 @@ class L10nPeSireMixin(models.AbstractModel):
         icbper, other_taxes.
         """
         result = dict.fromkeys(
-            ('taxed', 'exonerated', 'unaffected', 'export', 'free',
-             'igv', 'isc', 'icbper', 'other_taxes'), 0.0)
+            ('taxed', 'exonerated', 'unaffected', 'export', 'free', 'ivap_base',
+             'igv', 'ivap', 'isc', 'icbper', 'other_taxes'), 0.0)
         rate = self._sire_move_rate(move) or 1.0
         for line in move.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
-            tax = line.tax_ids[:1]
+            # El impuesto que define la afectación es el principal (IGV,
+            # IVAP, exonerado…), no un recargo como el ICBPER o el ISC.
+            tax = line.tax_ids.filtered(
+                lambda t: t.l10n_pe_edi_tax_code not in TAX_CODES_SURCHARGE)[:1] \
+                or line.tax_ids[:1]
             base = abs(line.balance) or abs(line.price_subtotal) * rate
-            if tax.l10n_pe_edi_tax_code == '9996':
+            if tax.l10n_pe_edi_tax_code == TAX_CODE_FREE:
                 subtotal = line.price_unit * (1 - (line.discount or 0.0) / 100.0) * line.quantity
                 result['free'] += subtotal * rate
                 continue
             reason = tax.l10n_pe_edi_affectation_reason
-            if reason in AFFECTATION_EXONERATED:
+            if tax.l10n_pe_edi_tax_code == TAX_CODE_IVAP or reason in AFFECTATION_IVAP:
+                result['ivap_base'] += base
+            elif reason in AFFECTATION_EXONERATED:
                 result['exonerated'] += base
             elif reason in AFFECTATION_UNAFFECTED:
                 result['unaffected'] += base
@@ -398,17 +449,15 @@ class L10nPeSireMixin(models.AbstractModel):
                 result['export'] += base
             else:
                 result['taxed'] += base
+        keys = {
+            TAX_CODE_IGV: 'igv',
+            TAX_CODE_IVAP: 'ivap',
+            TAX_CODE_ISC: 'isc',
+            TAX_CODE_ICBPER: 'icbper',
+        }
         for line in move.line_ids.filtered('tax_line_id'):
-            group = (line.tax_line_id.tax_group_id.name or '').upper()
-            amount = abs(line.balance)
-            if 'ICBPER' in group or 'ICBPER' in (line.tax_line_id.name or '').upper():
-                result['icbper'] += amount
-            elif 'ISC' in group:
-                result['isc'] += amount
-            elif 'IGV' in group or 'IVAP' in group:
-                result['igv'] += amount
-            else:
-                result['other_taxes'] += amount
+            key = keys.get(line.tax_line_id.l10n_pe_edi_tax_code, 'other_taxes')
+            result[key] += abs(line.balance)
         return result
 
     def _sire_reversed_doc_vals(self, move):
@@ -536,11 +585,11 @@ class L10nPeSireMixin(models.AbstractModel):
         self.ensure_one()
         if not self.system_line_ids:
             raise UserError(_('Primero despliegue las líneas del sistema.'))
-        self._sire_check_ruc(self.company_id)
+        ruc = self._sire_check_ruc(self.company_id)
         lines = self.system_line_ids.sorted(key=lambda l: (l.serie_cp or '', l.nro_cp or ''))
         content = '\n'.join('|'.join(self._sire_replacement_row(line)) for line in lines)
         txt_name = 'LE%s%s00%s021112.txt' % (
-            self.company_id.vat, self._sire_period(), self._sire_ple_book_code())
+            ruc, self._sire_period(), self._sire_ple_book_code())
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as archive:
             archive.writestr(txt_name, content.encode('utf-8'))
@@ -615,6 +664,7 @@ class L10nPeSireMixin(models.AbstractModel):
         dice que está mal, así que se avisa.
         """
         self.ensure_one()
+        self._sire_check_can_submit()
         self._sire_check_submittable()
         if self.count_diff or self.count_only_sire or self.count_only_system:
             raise UserError(_(
@@ -638,6 +688,7 @@ class L10nPeSireMixin(models.AbstractModel):
     def action_send_replacement(self):
         """Sube el TXT de reemplazo por la API en vez de a mano en SOL."""
         self.ensure_one()
+        self._sire_check_can_submit()
         self._sire_check_submittable()
         txt_name, payload = self._sire_replacement_zip()
         zip_name = txt_name.replace('.txt', '.zip')
@@ -668,6 +719,7 @@ class L10nPeSireMixin(models.AbstractModel):
     def action_check_submission(self):
         """Estado del ticket del envío (aceptación o reemplazo)."""
         self.ensure_one()
+        self._sire_check_can_submit()
         if not self.submission_ticket:
             raise UserError(_('Este periodo no tiene ningún envío.'))
         token = self._sire_get_token(self.company_id)
@@ -684,6 +736,7 @@ class L10nPeSireMixin(models.AbstractModel):
         hacerla desde fuera.
         """
         self.ensure_one()
+        self._sire_check_can_submit()
         if not self.submission_ticket:
             raise UserError(_(
                 'Acepte la propuesta o envíe el reemplazo antes de registrar '
@@ -695,10 +748,9 @@ class L10nPeSireMixin(models.AbstractModel):
         return True
 
     def _sire_log(self, body):
-        """Deja constancia en el hilo del registro si el modelo lo tiene."""
+        """Deja constancia en el hilo del registro (RVIE y RCE son mail.thread)."""
         self.ensure_one()
-        if 'message_post' in dir(self):
-            self.message_post(body=body)
+        self.message_post(body=body)
 
     # ------------------------------------------------------------------
     # Otros

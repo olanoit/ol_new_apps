@@ -28,12 +28,13 @@ RCE_TAX_GROUPS = (
     'ret',        # retenciones
 )
 
-# Tipos de comprobante que no forman parte del RCE: los recibos por honorarios
-# van al RHE, y 91/97/98 corresponden a operaciones con no domiciliados (8.5).
-RCE_EXCLUDED_DOC_TYPES = ('91', '97', '98')
-
 # Tipos de comprobante propios del registro de no domiciliados (8.5).
 RCE_NON_DOMICILED_DOC_TYPES = ('00', '91', '97', '98')
+
+# Tipos de comprobante que no forman parte del 8.4: los recibos por
+# honorarios (02) van al RHE, y los del 8.5 no pueden salir también aquí
+# (el '00' aparecía en los dos archivos).
+RCE_EXCLUDED_DOC_TYPES = ('02',) + RCE_NON_DOMICILED_DOC_TYPES
 
 
 class L10nPeRceExtractor(models.AbstractModel):
@@ -59,9 +60,27 @@ class L10nPeRceExtractor(models.AbstractModel):
     # Selección de comprobantes
     # ------------------------------------------------------------------
     @api.model
+    def _ple_issued_domain(self):
+        """Publicados, o anulados que llegaron a emitirse.
+
+        Un borrador cancelado nunca existió para SUNAT; sí hay que informar
+        (con su estado) el comprobante emitido y luego anulado. Solo cuentan
+        los diarios que usan documentos LATAM, como en Enterprise.
+        """
+        return [
+            '|', ('state', '=', 'posted'),
+            '&', ('state', '=', 'cancel'), ('posted_before', '=', True),
+            ('journal_id.l10n_latam_use_documents', '=', True),
+        ]
+
+    @api.model
     def _rce_move_domain(self, company, date_from, date_to,
                          non_domiciled=False):
-        """Comprobantes de compra del periodo.
+        """Comprobantes de compra anotados en el periodo.
+
+        El periodo del RCE es el de anotación (fecha contable), como en
+        Enterprise y en el SIRE: una factura recibida tarde se anota en el
+        mes en que se registra, no en el de su emisión.
 
         Se incluyen los anulados: SUNAT exige informarlos con su estado, no
         omitirlos. La separación entre el 8.4 y el 8.5 la marca el tipo de
@@ -71,10 +90,9 @@ class L10nPeRceExtractor(models.AbstractModel):
         domain = [
             ('company_id', '=', company.id),
             ('move_type', 'in', ('in_invoice', 'in_refund')),
-            ('state', 'in', ('posted', 'cancel')),
-            ('invoice_date', '>=', date_from),
-            ('invoice_date', '<=', date_to),
-        ]
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
+        ] + self._ple_issued_domain()
         operator = 'in' if non_domiciled else 'not in'
         domain.append(
             ('l10n_latam_document_type_id.code', operator,
@@ -84,12 +102,8 @@ class L10nPeRceExtractor(models.AbstractModel):
 
     @api.model
     def _rce_excluded_journals_domain(self):
-        """Excluye los diarios marcados como ajenos a los libros electrónicos.
-
-        Depende de ``al_account_base``; si el campo no existe, no filtra nada.
-        """
-        if 'l10n_pe_exclude_from_books' not in self.env['account.journal']._fields:
-            return []
+        """Excluye los diarios marcados como ajenos a los libros electrónicos
+        (campo de ``al_account_base``)."""
         return [('journal_id.l10n_pe_exclude_from_books', '=', False)]
 
     @api.model
@@ -202,7 +216,7 @@ class L10nPeRceExtractor(models.AbstractModel):
         return self.env['account.move'].search([
             ('company_id', '=', company.id),
             ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt')),
-            ('state', 'in', ('posted', 'cancel')),
             ('invoice_date', '>=', date_from),
             ('invoice_date', '<=', date_to),
-        ] + self._rce_excluded_journals_domain(), order='invoice_date, name')
+        ] + self._ple_issued_domain() + self._rce_excluded_journals_domain(),
+            order='invoice_date, name')

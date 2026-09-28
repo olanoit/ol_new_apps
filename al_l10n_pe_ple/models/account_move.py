@@ -37,8 +37,8 @@ class AccountMove(models.Model):
         compute='_compute_l10n_pe_rce_status',
         store=True, readonly=False,
         help='Estado de validez del comprobante ante SUNAT (campo 40 del RCE '
-             '8.4), según la tabla 14. Se deduce del estado del asiento y de '
-             'su envío electrónico; puede corregirse a mano.')
+             '8.4), según la tabla 14. Se deduce del estado del asiento; '
+             'puede corregirse a mano.')
 
     # ------------------------------------------------------------------
     # Clasificación (campo 33)
@@ -50,8 +50,22 @@ class AccountMove(models.Model):
 
         SUNAT pide un único código por comprobante, no por línea; ante varias
         clasificaciones distintas gana la de mayor peso económico.
+
+        Solo se propone en facturas de proveedor en borrador (o publicadas
+        aún sin clasificación): cambiar la clasificación de un producto no
+        debe reescribir comprobantes ya publicados (y quizá declarados) ni la
+        corrección manual del usuario.
         """
         for move in self:
+            if move.move_type not in ('in_invoice', 'in_refund'):
+                move.l10n_pe_rce_classification = False
+                continue
+            if move.state != 'draft' and move.l10n_pe_rce_classification:
+                # Publicado con valor: se conserva (pudo corregirse a mano o
+                # declararse). Si el cálculo pendiente del alta se resuelve ya
+                # publicado y vacío, sí se propone.
+                move.l10n_pe_rce_classification = move.l10n_pe_rce_classification
+                continue
             totals = {}
             for line in move.invoice_line_ids:
                 code = line.product_id.product_tmpl_id.l10n_pe_rce_classification
@@ -63,7 +77,7 @@ class AccountMove(models.Model):
     # ------------------------------------------------------------------
     # Estado de validez (campo 40)
     # ------------------------------------------------------------------
-    @api.depends('state', 'l10n_latam_document_type_id.code')
+    @api.depends('state', 'move_type', 'l10n_latam_document_type_id.code')
     def _compute_l10n_pe_rce_status(self):
         for move in self:
             if move.move_type not in ('in_invoice', 'in_refund'):

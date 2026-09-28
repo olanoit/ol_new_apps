@@ -35,5 +35,5 @@ configura y cómo se genera. La referencia técnica campo a campo está en
 - **Validación interna**: cada archivo se valida contra el Anexo 2 de SUNAT
   (número exacto de campos por línea) antes de descargarse.
 - **Datos de prueba**: el script
-  [`tools/ple_demo_data.py`](../tools/ple_demo_data.py) crea registros de
+  [`docs/ple/pruebas/ple_demo_data.py`](../../docs/ple/pruebas/ple_demo_data.py) crea registros de
   demostración (prefijo «DEMO PLE») y valida los 22 reportes de una vez.

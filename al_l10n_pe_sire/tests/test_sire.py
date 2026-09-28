@@ -1,12 +1,15 @@
 import base64
 import io
 import zipfile
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+from psycopg2 import IntegrityError
 
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 RUC_TEST = '20512528458'
 PERIOD_YEAR = 2026
@@ -512,7 +515,10 @@ class TestSire(TransactionCase):
     # ------------------------------------------------------------------
 
     def test_one_period_per_book_and_company(self):
-        with self.assertRaises(UserError):
+        # La unicidad la garantiza la base de datos (models.Constraint): el
+        # INSERT falla antes que la restricción Python.
+        with self.assertRaises(IntegrityError), \
+                mute_logger('odoo.sql_db'), self.env.cr.savepoint():
             self.env['l10n_pe.sire.rvie'].create({
                 'year': PERIOD_YEAR, 'month': PERIOD_MONTH,
                 'company_id': self.company.id})
@@ -542,3 +548,137 @@ class TestSire(TransactionCase):
             'numRuc %s,codLibro %s' % (
                 base64.b64encode(RUC_TEST.encode()).decode(),
                 base64.b64encode(b'140000').decode()))
+
+    # ------------------------------------------------------------------
+    # Auditoría 27/09/2026
+    # ------------------------------------------------------------------
+
+    def test_manual_latin1_proposal_loads(self):
+        """El TXT exportado a mano desde SOL en latin-1 se despliega."""
+        row = _rvie_row().replace('CLIENTE SA', 'ÑANDÚ S.A.C.')
+        self.rvie.proposal_file = base64.b64encode(
+            ('CABECERA\n' + row).encode('latin-1'))
+        self.rvie.action_load_sire()
+        self.assertEqual(self.rvie.sire_line_ids.razon_social, 'ÑANDÚ S.A.C.')
+
+    def test_contact_person_reports_the_company(self):
+        """Documento y razón social son los de la entidad comercial."""
+        contact = self.env['res.partner'].create({
+            'name': 'Juana Compras', 'parent_id': self.partner.id,
+            'type': 'contact'})
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': contact.id,
+            'invoice_date': PERIOD_DATE,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Producto', 'quantity': 1, 'price_unit': 100.0,
+                'tax_ids': [(6, 0, self._tax('sale').ids)]})],
+        })
+        invoice.action_post()
+        with patch.object(type(self.rvie), '_sire_system_moves', return_value=invoice):
+            self.rvie.action_load_system()
+        line = self.rvie.system_line_ids
+        self.assertEqual(line.razon_social, self.partner.name)
+        self.assertEqual(line.nro_doc_identidad, '20131312955')
+
+    def test_cancelled_draft_is_not_reported(self):
+        """Un borrador cancelado nunca se emitió: no va al registro."""
+        draft = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_date': PERIOD_DATE,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Nunca emitido', 'quantity': 1, 'price_unit': 10.0,
+                'tax_ids': [(6, 0, self._tax('sale').ids)]})],
+        })
+        draft.button_cancel()
+        posted = self._make_invoice('out_invoice')
+        moves = self.rvie._sire_system_moves()
+        self.assertNotIn(draft, moves)
+        self.assertIn(posted, moves)
+
+    def test_excluded_journal_is_not_reported(self):
+        invoice = self._make_invoice('out_invoice')
+        invoice.journal_id.l10n_pe_exclude_from_books = True
+        self.assertNotIn(invoice, self.rvie._sire_system_moves())
+
+    def test_rce_debit_note_references_its_origin(self):
+        origin = self._make_invoice('in_invoice', document_number='F009-1')
+        doc_08 = self.env['l10n_latam.document.type'].search([
+            ('code', '=', '08'), ('country_id.code', '=', 'PE')], limit=1)
+        debit = self.env['account.move'].create({
+            'move_type': 'in_invoice',
+            'partner_id': self.partner.id,
+            'invoice_date': PERIOD_DATE,
+            'l10n_latam_document_type_id': doc_08.id,
+            'l10n_latam_document_number': 'F009-2',
+            'debit_origin_id': origin.id,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Intereses', 'quantity': 1, 'price_unit': 50.0,
+                'tax_ids': [(6, 0, self._tax('purchase').ids)]})],
+        })
+        vals = self.rce._sire_system_line_vals(debit)
+        self.assertEqual(vals['tipo_cp'], '08')
+        self.assertEqual(vals['tipo_cp_mod'], '01')
+        self.assertEqual(vals['serie_cp_mod'], 'F009')
+        self.assertEqual(vals['nro_cp_mod'], '1')
+
+    def test_rvie_ivap_goes_to_its_own_columns(self):
+        ivap = self.env['account.tax'].create({
+            'name': 'IVAP 4% (test)',
+            'amount': 4.0,
+            'type_tax_use': 'sale',
+            'company_id': self.company.id,
+            'l10n_pe_edi_tax_code': '1016',
+            'l10n_pe_edi_affectation_reason': '17',
+        })
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_date': PERIOD_DATE,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Arroz pilado', 'quantity': 1, 'price_unit': 1000.0,
+                'tax_ids': [(6, 0, ivap.ids)]})],
+        })
+        invoice.action_post()
+        vals = self.rvie._sire_system_line_vals(invoice)
+        self.assertAlmostEqual(vals['bi_ivap'], 1000.0, places=2)
+        self.assertAlmostEqual(vals['ivap'], 40.0, places=2)
+        self.assertAlmostEqual(vals['bi_gravada'], 0.0, places=2)
+        self.assertAlmostEqual(vals['igv_ipm'], 0.0, places=2)
+
+    def test_non_json_answer_is_a_user_error(self):
+        """Un 200 con HTML de SUNAT no acaba en traceback."""
+        self.company.sudo().write({
+            'l10n_pe_sire_sol_user': 'USER', 'l10n_pe_sire_sol_password': 'x',
+            'l10n_pe_sire_client_id': 'cid', 'l10n_pe_sire_client_secret': 's',
+            'l10n_pe_sire_token': False, 'l10n_pe_sire_token_expiry': False,
+        })
+        response = MagicMock(status_code=200, text='<html>mantenimiento</html>')
+        response.json.side_effect = ValueError('no json')
+        with patch('odoo.addons.al_l10n_pe_sire.models.sire_api.requests.post',
+                   return_value=response):
+            with self.assertRaises(UserError):
+                self.env['l10n_pe.sire.api']._sire_get_token(self.company)
+
+    def test_tus_upload_never_leaves_sunat(self):
+        """El token no viaja a un ``Location`` fuera de sunat.gob.pe."""
+        api = self.env['l10n_pe.sire.api']
+        create = MagicMock(headers={'Location': 'https://evil.example.com/up/1'})
+        with patch.object(type(api), '_sire_request', return_value=create) as request:
+            with self.assertRaises(UserError):
+                api._sire_upload('tok', 'a.zip', b'zip', {'filename': 'a.zip'})
+        self.assertEqual(request.call_count, 1, 'no se envían los bytes')
+
+    def test_tus_relative_location_is_resolved(self):
+        api = self.env['l10n_pe.sire.api']
+        create = MagicMock(headers={'Location': '/v1/contribuyente/migeigv/files/abc'})
+        upload = MagicMock(headers={'numTicket': 'T9'})
+        upload.json.side_effect = ValueError
+        with patch.object(type(api), '_sire_request',
+                          side_effect=[create, upload]) as request:
+            ticket = api._sire_upload('tok', 'a.zip', b'zip', {'filename': 'a.zip'})
+        self.assertEqual(ticket, 'T9')
+        self.assertEqual(
+            request.call_args.kwargs['url'],
+            'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/files/abc')

@@ -8,7 +8,8 @@
         <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
-                <block title="SIRE (RVIE / RCE)" name="pe_sire_block">
+                <block title="SIRE (RVIE / RCE)" name="pe_sire_block"
+                       groups="base.group_system">
                     <setting string="API SIRE (SUNAT)"
                              help="Credenciales para descargar la propuesta RVIE/RCE por servicio web. Se generan en SOL: Empresas → Credenciales de API SUNAT.">
                         <div class="content-group">

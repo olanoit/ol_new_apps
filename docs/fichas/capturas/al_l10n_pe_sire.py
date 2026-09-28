@@ -1,7 +1,7 @@
 """Capturas de la ficha de al_l10n_pe_sire.
 
 Datos: periodos RVIE-07-2026 (SIRE desplegado) y RCE-07-2026 del script
-``tools/sire_demo_data.py``, y periodo RVIE-08-2026 en carga manual con una
+``docs/sire/pruebas/sire_demo_data.py``, y periodo RVIE-08-2026 en carga manual con una
 propuesta simulada (``DEMO_Propuesta_RVIE_202608.txt``: una factura con otro
 importe, una que SUNAT no tiene y una del socio «DEMO SIRE SOCIO SAC» que Odoo
 no tiene).

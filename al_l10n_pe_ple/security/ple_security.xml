@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Multicompañía: los registros de captura del PLE solo se ven desde
+             su compañía (el asistente ya exporta por compañía). -->
+        <record id="ple_withholding_company_rule" model="ir.rule">
+            <field name="name">PLE 4.1 retenciones: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_withholding"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_investment_company_rule" model="ir.rule">
+            <field name="name">PLE 3.8 inversiones: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_investment"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_equity_company_rule" model="ir.rule">
+            <field name="name">PLE 3.19 patrimonio: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_equity"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_cost_sales_company_rule" model="ir.rule">
+            <field name="name">PLE 10.1 costo de ventas: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_cost_sales"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_cost_element_company_rule" model="ir.rule">
+            <field name="name">PLE 10.2 elementos del costo: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_cost_element"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_cost_production_company_rule" model="ir.rule">
+            <field name="name">PLE 10.3 costo de producción: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_cost_production"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_cost_center_company_rule" model="ir.rule">
+            <field name="name">PLE 10.4 centros de costos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_ple_cost_center"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

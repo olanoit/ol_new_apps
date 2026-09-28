@@ -27,15 +27,15 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_request_proposal" string="Solicitar propuesta"
+                    <button name="action_request_proposal" groups="account.group_account_user" string="Solicitar propuesta"
                             type="object" class="btn-primary"
                             invisible="state != 'draft' or download_manual"/>
-                    <button name="action_request_proposal" string="Confirmar TXT manual"
+                    <button name="action_request_proposal" groups="account.group_account_user" string="Confirmar TXT manual"
                             type="object" class="btn-primary"
                             invisible="state != 'draft' or not download_manual"/>
-                    <button name="action_check_ticket" string="Consultar ticket"
+                    <button name="action_check_ticket" groups="account.group_account_user" string="Consultar ticket"
                             type="object" invisible="state != 'requested'"/>
-                    <button name="action_download_proposal" string="Descargar propuesta"
+                    <button name="action_download_proposal" groups="account.group_account_user" string="Descargar propuesta"
                             type="object" class="btn-primary"
                             invisible="state != 'requested' or ticket_state != '06'"/>
                     <button name="action_load_sire" string="Desplegar SIRE"
@@ -47,17 +47,17 @@
                     <button name="action_compare" string="Comparar"
                             type="object" class="btn-primary"
                             invisible="state != 'system_loaded'"/>
-                    <button name="action_accept_proposal" string="Aceptar propuesta"
+                    <button name="action_accept_proposal" groups="account.group_account_user" string="Aceptar propuesta"
                             type="object" class="btn-primary"
                             invisible="state != 'compared' or submission_ticket"
                             confirm="Se aceptará la propuesta de SUNAT tal como está. ¿Continuar?"/>
-                    <button name="action_send_replacement" string="Enviar reemplazo"
+                    <button name="action_send_replacement" groups="account.group_account_user" string="Enviar reemplazo"
                             type="object"
                             invisible="state != 'compared' or submission_ticket"
                             confirm="Se enviará a SUNAT el reemplazo con las líneas del sistema. ¿Continuar?"/>
-                    <button name="action_check_submission" string="Consultar envío"
+                    <button name="action_check_submission" groups="account.group_account_user" string="Consultar envío"
                             type="object" invisible="not submission_ticket or state == 'done'"/>
-                    <button name="action_register_preliminary" string="Registrar preliminar"
+                    <button name="action_register_preliminary" groups="account.group_account_user" string="Registrar preliminar"
                             type="object" class="btn-primary"
                             invisible="not submission_ticket or preliminary_registered"/>
                     <button name="action_export_xlsx" string="Descargar XLSX"
