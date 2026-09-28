@@ -68,6 +68,14 @@ class GanttCriticalPath(models.AbstractModel):
             earliest_finish[task_id] = earliest_start + durations[task_id]
 
         project_finish = max(earliest_finish.values())
+        # Fin de cada proyecto: con varios proyectos a la vista, medir la
+        # holgura contra el fin del más largo dejaría sin ruta crítica a los
+        # demás. Cada tarea final se compara con el fin de su propio proyecto.
+        finish_by_project = {}
+        for task_id, finish in earliest_finish.items():
+            project_id = nodes[task_id]['project_id']
+            if project_id not in finish_by_project or finish > finish_by_project[project_id]:
+                finish_by_project[project_id] = finish
 
         # Pasada hacia atrás: fecha más tardía sin retrasar el plan.
         latest_finish = {}
@@ -78,7 +86,7 @@ class GanttCriticalPath(models.AbstractModel):
                     for successor in successors[task_id]
                 )
             else:
-                latest_finish[task_id] = project_finish
+                latest_finish[task_id] = finish_by_project[nodes[task_id]['project_id']]
 
         critical_count = 0
         for task_id, task in nodes.items():

@@ -29,14 +29,15 @@ la suite (``al_project_gantt_backend`` y ``al_project_gantt_website``).
   El base no declara la librería en ningún *bundle*: cada UI la carga de forma
   perezosa al montar su vista.
 
-Versión 1: solo lectura. Los puntos de escritura están definidos en el contrato
-(``editable``) pero desactivados.
+Escritura (``apply_gantt_changes``): mover, crear, borrar y enlazar tareas con
+los permisos reales de cada una; ruta crítica, líneas base y exportación a Excel
+y PDF.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
-    'version': '13.20260818',
+    'version': '14.20260818',
     'license': 'OPL-1',
     'depends': [
         'project',
@@ -50,6 +51,10 @@ Versión 1: solo lectura. Los puntos de escritura están definidos en el contrat
         'report/gantt_report_templates.xml',
         'views/gantt_state_color_views.xml',
     ],
+    'external_dependencies': {
+        # Exportación a Excel (viene con los requisitos de Odoo).
+        'python': ['xlsxwriter'],
+    },
     'installable': True,
     'application': False,
 }

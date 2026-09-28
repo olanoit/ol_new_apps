@@ -182,6 +182,17 @@ faq:
       bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
 
 novedades:
+  - version: 14.20260818
+    fecha: 27/09/2026
+    cambios:
+      - "Editar una subtarea cuyo padre no se ve (por un filtro o por el límite de tareas) ya no la separa de su padre: solo se guarda lo que de verdad se cambió."
+      - "El avance de las tareas con partes de horas se muestra en su porcentaje real (antes salía 100 veces menor) y ya no se ofrece editarlo: lo calcula Odoo a partir de las horas."
+      - "Sin el módulo de planificación de Odoo Enterprise ya se pueden editar las tareas desde el diagrama: se guarda la fecha límite y el inicio estimado se ignora."
+      - "Las líneas base ya no dejan ver tareas de proyectos privados; solo el administrador del Gantt accede a ellas fuera del diagrama. De una línea base solo se puede cambiar el nombre."
+      - "Excel, PDF y filtros de fecha usan la hora de cada usuario: una fecha límite a última hora ya no aparece al día siguiente."
+      - "La reprogramación en cadena empuja también las tareas que dependen de dos predecesoras, y la ruta crítica se calcula por proyecto cuando se ven varios a la vez."
+      - "Los colores por estado solo admiten hexadecimal o un nombre de color, y no puede haber dos colores globales para el mismo estado."
+      - "El informe PDF solo aparece en Imprimir para quien tiene acceso al Gantt."
   - fecha: 25/08/2026
     cambios:
       - Licencia OPL-1 en toda la suite.

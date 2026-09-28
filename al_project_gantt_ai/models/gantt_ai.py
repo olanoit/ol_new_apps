@@ -54,6 +54,10 @@ PROPOSABLE_FIELDS = ('start', 'end', 'progress', 'name', 'user_ids')
 #: Personas asignables que se listan en el prompt (para poder reasignar).
 ASSIGNABLE_IN_PROMPT = 100
 
+#: Tope del tiempo de espera. Por encima, el trabajador de Odoo muere antes
+#: (``limit_time_real`` es 120 s por defecto) y la persona no ve ni el error.
+MAX_TIMEOUT = 100
+
 
 class GanttAi(models.AbstractModel):
     _name = 'al.gantt.ai'
@@ -89,7 +93,7 @@ class GanttAi(models.AbstractModel):
             'base_url': self._get_param('base_url'),
             'effort': self._get_param('effort', DEFAULTS['effort']),
             'max_tokens': self._get_int_param('max_tokens'),
-            'timeout': self._get_int_param('timeout'),
+            'timeout': min(max(self._get_int_param('timeout'), 5), MAX_TIMEOUT),
             'context_limit': self._get_int_param('context_limit'),
             'share_assignees': self._get_param(
                 'share_assignees', str(DEFAULTS['share_assignees'])
@@ -195,7 +199,9 @@ class GanttAi(models.AbstractModel):
                 limit=limit, total=len(task_ids),
             ))
 
-        field_map = self.env['al.gantt.field.map'].get_map()
+        FieldMap = self.env['al.gantt.field.map']
+        field_map = FieldMap.get_map()
+        progress_factor = FieldMap.get_progress_factor(field_map)
         Task = self.env['project.task']
         # Sin sudo, y acotado a los ids pedidos: si el cliente inventa ids, las
         # reglas de registro de `project` los dejan fuera del resultado.
@@ -207,6 +213,8 @@ class GanttAi(models.AbstractModel):
             warnings.append(_("Algunas tareas ya no son accesibles y no se enviaron."))
 
         present_ids = set(records.ids)
+        # Permiso de escritura resuelto en bloque: una consulta, no una por tarea.
+        editable_ids = set(records._filtered_access('write').ids)
         data = self.env['al.gantt.data']
         state_labels = dict(
             Task._fields['state']._description_selection(self.env)
@@ -216,8 +224,9 @@ class GanttAi(models.AbstractModel):
         for record in records:
             start = record[field_map['date_start']] if field_map['date_start'] else False
             end = record[field_map['date_end']] if field_map['date_end'] else False
+            # Siempre en porcentaje (el de hr_timesheet se guarda como fracción).
             progress = (
-                record[field_map['progress']] if field_map['progress']
+                (record[field_map['progress']] or 0.0) * progress_factor if field_map['progress']
                 else (100.0 if record.state in ('1_done', '1_canceled') else 0.0)
             )
             entry = {
@@ -232,7 +241,7 @@ class GanttAi(models.AbstractModel):
                     dependency.id for dependency in record.depend_on_ids
                     if dependency.id in present_ids
                 ],
-                'editable': record.has_access('write'),
+                'editable': record.id in editable_ids,
             }
             if config['share_assignees']:
                 entry['assignees'] = record.user_ids.mapped('name')
@@ -243,12 +252,16 @@ class GanttAi(models.AbstractModel):
             'by_id': {task['id']: task for task in tasks},
             'truncated': truncated,
             'warnings': warnings,
+            # Qué se puede proponer en esta instalación: sin campo de inicio
+            # (Odoo sin planificación) solo se mueve la fecha límite, y el
+            # avance solo si el campo existe y admite escritura.
+            'can_edit_start': bool(field_map['date_start']),
+            'can_edit_progress': FieldMap.is_progress_writable(field_map),
             # Solo hacen falta para que el modelo pueda proponer reasignaciones,
             # y cada nombre cuesta tokens en todas las preguntas: se recorta.
             # El dominio no se duplica aquí; sale del módulo base.
             'assignable_users': (
-                self.env['al.gantt.data']._read_filter_options([])
-                ['assignable_users'][:ASSIGNABLE_IN_PROMPT]
+                self.env['al.gantt.data']._read_assignable_users(limit=ASSIGNABLE_IN_PROMPT)
                 if config['share_assignees'] else []
             ),
         }
@@ -278,6 +291,14 @@ class GanttAi(models.AbstractModel):
             "- Propón cambios solo sobre tareas con `editable: true`.",
             "- Las fechas se escriben en ISO 8601 UTC (2026-09-01T13:00:00Z).",
             "- Al mover una tarea, mantén su duración salvo que se pida lo contrario.",
+            *(
+                [] if context.get('can_edit_start', True) else
+                ["- Esta instalación no guarda fecha de inicio: propón solo `end`."]
+            ),
+            *(
+                [] if context.get('can_edit_progress', True) else
+                ["- El avance se calcula solo (horas imputadas): no propongas `progress`."]
+            ),
             "- Cada propuesta lleva un `reason` de una frase.",
             "- Si la pregunta es solo informativa, responde en texto y no llames a la "
             "herramienta.",
@@ -368,7 +389,7 @@ class GanttAi(models.AbstractModel):
                 ))
                 continue
 
-            values, labels = self._normalize_change(change, task, warnings)
+            values, labels = self._normalize_change(change, task, warnings, context)
             if not values:
                 continue
             proposals.append({
@@ -382,12 +403,21 @@ class GanttAi(models.AbstractModel):
         return proposals, warnings
 
     @api.model
-    def _normalize_change(self, change, task, warnings):
-        """Valida campo a campo. Lo que no encaja se ignora, no se corrige."""
+    def _normalize_change(self, change, task, warnings, context=None):
+        """Valida campo a campo. Lo que no encaja se ignora, no se corrige.
+
+        ``context`` aporta qué admite la instalación (``can_edit_start``,
+        ``can_edit_progress``): proponer algo que luego no se puede guardar
+        solo produciría un error al aplicarlo.
+        """
+        context = context or {}
         values, labels = {}, []
 
         start = self._as_datetime(change.get('start'))
         end = self._as_datetime(change.get('end'))
+        if start and not context.get('can_edit_start', True):
+            # Sin campo de inicio no hay dónde guardarlo: solo cuenta el fin.
+            start = None
         if change.get('start') and not start:
             warnings.append(_("Fecha de inicio no válida en la propuesta sobre «%s».", task['name']))
         if change.get('end') and not end:
@@ -413,7 +443,12 @@ class GanttAi(models.AbstractModel):
             labels.append(_("Fin: %(old)s → %(new)s",
                             old=self._short(task['end']), new=self._short(values['end'])))
 
-        if change.get('progress') is not None:
+        if change.get('progress') is not None and not context.get('can_edit_progress', True):
+            warnings.append(_(
+                "Se ignoró el avance propuesto para «%s»: se calcula a partir de las horas.",
+                task['name'],
+            ))
+        elif change.get('progress') is not None:
             progress = self._as_float(change.get('progress'))
             if progress is None:
                 warnings.append(_("Avance no válido en la propuesta sobre «%s».", task['name']))

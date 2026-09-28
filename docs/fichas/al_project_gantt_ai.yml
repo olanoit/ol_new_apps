@@ -178,6 +178,13 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: 3.20260817
+    fecha: 27/09/2026
+    cambios:
+      - "Desmarcar «Enviar personas asignadas» en los ajustes ahora sí evita que los nombres se envíen al proveedor. Si ya lo había desmarcado, vuelva a guardarlo."
+      - "El asistente ya no propone cambiar el avance cuando lo calcula Odoo con las horas, ni la fecha de inicio si la instalación no la guarda."
+      - "La URL base debe usar https:// y el tiempo de espera máximo es de 100 segundos."
+      - "La clave de API solo la ven los administradores en los ajustes."
   - fecha: 25/08/2026
     cambios:
       - Licencia OPL-1 en toda la suite.

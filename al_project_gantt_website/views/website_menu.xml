@@ -9,6 +9,9 @@
             <field name="url">/gantt</field>
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence">55</field>
+            <!-- Solo lo ven quienes pueden entrar: a un visitante o a un
+                 usuario de portal solo le llevaría al login o a un 403. -->
+            <field name="group_ids" eval="[Command.set([ref('al_project_gantt_base.group_gantt_user')])]"/>
         </record>
 
     </data>

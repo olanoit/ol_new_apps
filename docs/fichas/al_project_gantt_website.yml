@@ -156,6 +156,12 @@ faq:
       backend.
 
 novedades:
+  - version: 11.20260818
+    fecha: 27/09/2026
+    cambios:
+      - "El menú «Gantt» del sitio solo lo ven los usuarios con acceso al Gantt (antes lo veían también visitantes y clientes del portal)."
+      - "El PDF descargado desde el sitio respeta los filtros, la escala, la ruta crítica y la línea base que se están viendo."
+      - "Al desmarcar un proyecto ya no desaparece de la barra, y la edición y el formulario se actualizan al cambiar de proyecto."
   - fecha: 25/08/2026
     cambios:
       - Licencia OPL-1 en toda la suite.

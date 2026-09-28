@@ -22,7 +22,7 @@ class GanttCalendar(models.AbstractModel):
     _inherit = 'al.gantt.data'
 
     @api.model
-    def _read_calendar(self, project_ids):
+    def _read_calendar(self, project_ids, tasks=None):
         """``{working_days: [0..6], holidays: [{start, end, name}]}``.
 
         Si los proyectos usan calendarios distintos se toma el del primero y se
@@ -38,13 +38,23 @@ class GanttCalendar(models.AbstractModel):
         working_days = sorted({
             int(day) for day in calendar.attendance_ids.mapped('dayofweek') if day is not False
         })
+        # Ventana: el rango del plan si hay tareas con fecha (un plan que
+        # empezó hace años también debe sombrear sus feriados); si no, la
+        # ventana alrededor de hoy.
         today = self.env.cr.now()
+        window_from = today - timedelta(days=HOLIDAY_WINDOW_DAYS)
+        window_to = today + timedelta(days=HOLIDAY_WINDOW_DAYS)
+        starts = [task['start'] for task in (tasks or []) if task.get('start')]
+        ends = [task['end'] for task in (tasks or []) if task.get('end')]
+        if starts and ends:
+            window_from = min(window_from, self._from_iso(min(starts)))
+            window_to = max(window_to, self._from_iso(max(ends)))
         leaves = self.env['resource.calendar.leaves'].search_read(
             [
                 ('calendar_id', '=', calendar.id),
                 ('resource_id', '=', False),
-                ('date_to', '>=', today - timedelta(days=HOLIDAY_WINDOW_DAYS)),
-                ('date_from', '<=', today + timedelta(days=HOLIDAY_WINDOW_DAYS)),
+                ('date_to', '>=', window_from),
+                ('date_from', '<=', window_to),
             ],
             ['name', 'date_from', 'date_to'],
         )

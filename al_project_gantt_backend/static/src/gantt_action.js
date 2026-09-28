@@ -61,6 +61,9 @@ export class GanttAction extends Component {
             loading: true,
             error: null,
             projects: [],
+            // Todos los proyectos visibles, para la barra: `projects` solo
+            // trae los seleccionados.
+            availableProjects: [],
             selectedIds: [...contextProjectIds],
             pinnedToProject: contextProjectIds.length > 0,
             zoom: "week",
@@ -106,6 +109,11 @@ export class GanttAction extends Component {
         return Object.entries(ZOOM_LEVELS).map(([key, level]) => ({ key, label: level.label }));
     }
 
+    /** Botones de proyecto: acotado al llegar desde el proyecto; si no, todos. */
+    get projectButtons() {
+        return this.state.pinnedToProject ? this.state.projects : this.state.availableProjects;
+    }
+
     get hasTasks() {
         return this.state.taskCount > 0;
     }
@@ -144,6 +152,7 @@ export class GanttAction extends Component {
 
     applyPayload(payload) {
         this.state.projects = payload.projects || [];
+        this.state.availableProjects = payload.available_projects || this.state.projects;
         if (!this.state.selectedIds.length) {
             this.state.selectedIds = this.state.projects.map((project) => project.id);
         }
@@ -157,6 +166,24 @@ export class GanttAction extends Component {
         this.state.criticalSummary = this.state.meta.critical_path || { computed: false };
         this.ganttData = toDhtmlxData(payload);
         this.state.undated = this.ganttData.undated;
+    }
+
+    /**
+     * Lo que se fija al montar la instancia (edición, formulario). Si cambia
+     * entre cargas —otros proyectos, otras etapas u otros permisos— hay que
+     * rehacer la instancia; reparsear no basta.
+     */
+    configSignature() {
+        const options = this.state.options || {};
+        const ids = (items) => (items || []).map((item) => item.id ?? item.value);
+        return JSON.stringify([
+            Boolean(this.state.meta.editable),
+            Boolean(this.state.meta.can_edit_progress),
+            this.state.meta.tz,
+            ids(options.stages),
+            ids(options.assignable_users),
+            ids(options.tags),
+        ]);
     }
 
     // ------------------------------------------------------------------
@@ -235,6 +262,7 @@ export class GanttAction extends Component {
         // Instancia propia: no se comparte estado con otras vistas ni con la
         // interfaz de website si ambas están instaladas.
         this.gantt = window.Gantt.getGanttInstance();
+        this.mountedSignature = this.configSignature();
         this.setupGantt();
         this.gantt.init(this.containerRef.el);
         this.parseData();
@@ -263,7 +291,7 @@ export class GanttAction extends Component {
             showBaseline: Boolean(this.state.baselineId),
             showWbs: this.state.showWbs,
         });
-        applyWorkingCalendar(this.gantt, this.calendar);
+        applyWorkingCalendar(this.gantt, this.calendar, this.state.meta.tz);
         // Formulario de tarea con los campos reales de project.task.
         configureLightbox(this.gantt, {
             filters: this.state.options,
@@ -285,6 +313,7 @@ export class GanttAction extends Component {
                 onError: (error) => this.onSaveError(error),
                 defaultProjectId: () => this.state.selectedIds[0] || null,
                 rescheduleChain: () => this.state.rescheduleChain,
+                canEditProgress: Boolean(this.state.meta.can_edit_progress),
             });
         }
     }
@@ -365,7 +394,7 @@ export class GanttAction extends Component {
     }
 
     async onSelectAll() {
-        this.state.selectedIds = this.state.projects.map((project) => project.id);
+        this.state.selectedIds = this.state.availableProjects.map((project) => project.id);
         await this.reload();
     }
 
@@ -658,6 +687,11 @@ export class GanttAction extends Component {
 
     async reload() {
         await this.fetchData();
+        if (this.gantt && this.mountedSignature !== this.configSignature()) {
+            this.destroyGantt();
+            this.mountGantt();
+            return;
+        }
         this.parseData();
     }
 

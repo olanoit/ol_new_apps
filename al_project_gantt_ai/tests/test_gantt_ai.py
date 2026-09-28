@@ -118,6 +118,35 @@ class TestGanttAi(GanttCommon):
         self.assertEqual(len(context['tasks']), 1)
         self.assertTrue(context['truncated'])
 
+    def test_share_assignees_can_be_switched_off_from_the_settings(self):
+        """Desmarcar la opción en Ajustes tiene que llegar al asistente.
+
+        Con un Boolean ``config_parameter`` el False borraba el parámetro y el
+        asistente volvía a su valor por defecto (True): los nombres seguían
+        saliendo hacia el proveedor.
+        """
+        self.env['res.config.settings'].create({'al_gantt_ai_share_assignees': False}).set_values()
+        self.assertFalse(self.ai._get_config()['share_assignees'])
+        self.assertFalse(
+            self.env['res.config.settings'].create({}).al_gantt_ai_share_assignees,
+            "La pantalla de ajustes debe mostrar lo guardado",
+        )
+        self.env['res.config.settings'].create({'al_gantt_ai_share_assignees': True}).set_values()
+        self.assertTrue(self.ai._get_config()['share_assignees'])
+
+    def test_timeout_is_capped_below_the_worker_limit(self):
+        self._set_param('timeout', '600')
+        self.assertLessEqual(self.ai._get_config()['timeout'], 100)
+
+    def test_base_url_must_be_https(self):
+        from odoo.addons.al_project_gantt_ai.services import ai_provider
+        self.assertTrue(ai_provider.is_safe_base_url('https://gateway.example.com'))
+        self.assertTrue(ai_provider.is_safe_base_url('http://localhost:8080'))
+        self.assertFalse(ai_provider.is_safe_base_url('http://gateway.example.com'))
+        with self.assertRaises(UserError):
+            ai_provider.call_provider(self.env, self._config(base_url='http://evil.example.com'),
+                                      'system', [{'role': 'user', 'content': 'hola'}])
+
     def test_assignees_can_be_withheld(self):
         self.task_a.user_ids = [(6, 0, [self.gantt_user.id])]
         with_names = self.ai._build_context([self.task_a.id], self._config(share_assignees=True))
@@ -159,6 +188,8 @@ class TestGanttAi(GanttCommon):
         self.assertTrue(warnings)
 
     def test_proposal_with_start_after_end_is_dropped(self):
+        if not self.start_field:
+            self.skipTest("Sin campo de inicio la fecha de inicio propuesta se ignora")
         proposals, warnings = self._proposal([{
             'task_id': self.task_a.id, 'reason': 'r',
             'start': '2026-05-10T08:00:00Z', 'end': '2026-05-01T08:00:00Z',
@@ -167,12 +198,40 @@ class TestGanttAi(GanttCommon):
         self.assertTrue(warnings)
 
     def test_progress_is_clamped(self):
+        context = self.ai._build_context([self.task_a.id], self._config())
+        if not context['can_edit_progress']:
+            self.skipTest("El avance de esta instalación no se puede escribir")
         proposals, _warnings = self._proposal([
             {'task_id': self.task_a.id, 'reason': 'r', 'progress': 250},
         ])
         self.assertEqual(proposals[0]['values']['progress'], 100.0)
 
+    def test_progress_is_not_proposed_when_it_cannot_be_saved(self):
+        """El avance de hr_timesheet se calcula con las horas: proponerlo
+        produciría un cambio que se pierde al aplicarlo."""
+        context = self.ai._build_context([self.task_a.id], self._config())
+        context['can_edit_progress'] = False
+        proposals, warnings = self.ai._normalize_proposal(
+            {'changes': [{'task_id': self.task_a.id, 'reason': 'r', 'progress': 40}]}, context,
+        )
+        self.assertFalse(proposals)
+        self.assertTrue(warnings)
+
+    def test_start_is_not_proposed_without_a_start_field(self):
+        """Sin planificación (Community) solo se guarda la fecha límite."""
+        context = self.ai._build_context([self.task_a.id], self._config())
+        context['can_edit_start'] = False
+        proposals, _warnings = self.ai._normalize_proposal({'changes': [{
+            'task_id': self.task_a.id, 'reason': 'r',
+            'start': '2026-05-01T08:00:00Z', 'end': '2026-05-03T08:00:00Z',
+        }]}, context)
+        self.assertEqual(len(proposals), 1)
+        self.assertNotIn('start', proposals[0]['values'])
+        self.assertEqual(proposals[0]['values']['end'], '2026-05-03T08:00:00Z')
+
     def test_valid_dates_become_a_changeset_item(self):
+        if not self.start_field:
+            self.skipTest("Sin campo de inicio la fecha de inicio propuesta se ignora")
         proposals, warnings = self._proposal([{
             'task_id': self.task_a.id, 'reason': 'se solapa',
             'start': '2026-05-01T08:00:00Z', 'end': '2026-05-03T08:00:00Z',
@@ -443,3 +502,7 @@ class TestAiProviderErrors(GanttCommon):
 
     def test_non_json_body_does_not_crash(self):
         self.assertTrue(self._error(400))
+
+    def test_error_as_text_or_list_does_not_crash(self):
+        self.assertIn('cuota agotada', self._error(400, {'error': 'cuota agotada'}))
+        self.assertTrue(self._error(400, ['raro']))

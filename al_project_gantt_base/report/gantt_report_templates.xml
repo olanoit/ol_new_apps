@@ -102,11 +102,8 @@
                                     </t>
                                 </td>
                                 <td class="algantt-dates">
-                                    <t t-if="row['start'] and row['end']">
-                                        <t t-esc="row['start'][8:10]"/>/<t t-esc="row['start'][5:7]"/>
-                                        –
-                                        <t t-esc="row['end'][8:10]"/>/<t t-esc="row['end'][5:7]"/>
-                                    </t>
+                                    <!-- Días ya pasados a la zona del usuario en build_matrix. -->
+                                    <t t-esc="row['dates_label']"/>
                                 </td>
                                 <t t-foreach="row['cells']" t-as="cell">
                                     <td class="algantt-cell">

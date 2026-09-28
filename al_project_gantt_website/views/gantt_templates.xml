@@ -8,7 +8,7 @@
                     <div class="container-fluid">
                         <h1 class="mb-1">Gantt de Proyectos</h1>
                         <p class="text-muted small mb-0">
-                            Vista de solo lectura de los proyectos y tareas que tiene permitido ver.
+                            Proyectos y tareas que tiene permitido ver. Los cambios se guardan con sus permisos en Odoo.
                         </p>
                     </div>
                 </section>

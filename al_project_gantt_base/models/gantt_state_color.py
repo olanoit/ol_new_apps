@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 """Colores del Gantt por estado de tarea, administrables (no incrustados)."""
-from odoo import api, fields, models
+import re
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+
+#: Hexadecimal (#rgb, #rrggbb, con alfa) o un nombre CSS simple. Nada más:
+#: el valor acaba en atributos `style` (pantalla y PDF) y un `;` o un `url()`
+#: permitiría inyectar reglas o que wkhtmltopdf cargue recursos externos.
+COLOR_RE = re.compile(r'^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,30})$')
 
 #: Color de reserva para estados sin fila configurada.
 FALLBACK_COLOR = '#9e9e9e'
@@ -38,6 +46,22 @@ class GanttStateColor(models.Model):
         'UNIQUE(state_key, company_id)',
         'Ya existe un color para ese estado en esa compañía.',
     )
+    # En SQL dos NULL son distintos: la restricción anterior no impide dos
+    # colores globales (sin compañía) para el mismo estado.
+    _state_global_uniq = models.UniqueIndex(
+        '(state_key) WHERE company_id IS NULL',
+        'Ya existe un color global para ese estado.',
+    )
+
+    @api.constrains('color', 'text_color')
+    def _check_css_colors(self):
+        for record in self:
+            for value in (record.color, record.text_color):
+                if value and not COLOR_RE.match(value.strip()):
+                    raise ValidationError(_(
+                        "«%s» no es un color válido: use hexadecimal (#1a7d3d) o un nombre CSS (red).",
+                        value,
+                    ))
 
     @api.model
     def get_color_map(self):

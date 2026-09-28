@@ -12,7 +12,9 @@ de modo que las reglas de registro nativas de ``project`` — privacidad por
 seguidores, portal, multicompañía — se aplican tal cual, sin duplicarlas.
 """
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
+
+import pytz
 
 from odoo import _, api, models
 from odoo.exceptions import AccessError, UserError
@@ -38,7 +40,9 @@ ASSIGNABLE_USER_LIMIT = 500
 #:    actividades) y opciones de etapas/prioridades/etiquetas en `filters`.
 #: 5: `filters.assignable_users` — todas las personas asignables, aparte de
 #:    las que ya tienen tareas (`filters.users`, que alimenta el filtro).
-CONTRACT_VERSION = 5
+#: 6: `available_projects` — todos los proyectos visibles, aunque la consulta
+#:    se acote a unos pocos (la barra de proyectos se pinta con esta lista).
+CONTRACT_VERSION = 6
 
 
 class GanttData(models.AbstractModel):
@@ -79,11 +83,45 @@ class GanttData(models.AbstractModel):
         return min(limit, MAX_TASK_LIMIT)
 
     @api.model
+    def _normalize_ids(self, ids):
+        """Ids que llegan por RPC/JSON: lista, tupla, entero suelto o nada."""
+        if not ids:
+            return []
+        if not isinstance(ids, (list, tuple, set)):
+            ids = [ids]
+        try:
+            return [int(value) for value in ids]
+        except (TypeError, ValueError):
+            raise UserError(_("Lista de identificadores no válida."))
+
+    @api.model
     def _get_project_domain(self, project_ids=None, options=None):
         domain = [('is_template', '=', False)]
+        project_ids = self._normalize_ids(project_ids)
         if project_ids:
-            domain.append(('id', 'in', list(project_ids)))
+            domain.append(('id', 'in', project_ids))
         return domain
+
+    @api.model
+    def _local_to_utc(self, value):
+        """Límite de filtro en hora local del usuario -> cadena UTC naive.
+
+        Los ``<input type="date">`` dan el día del usuario; los campos son
+        Datetime en UTC. Sin la conversión, el rango se desplaza el huso.
+        """
+        if not value or not isinstance(value, str):
+            return value
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace('Z', '+00:00'))
+        except ValueError:
+            return value
+        if parsed.tzinfo is None:
+            try:
+                tz = pytz.timezone(self.env.user.tz or 'UTC')
+            except pytz.UnknownTimeZoneError:
+                tz = pytz.utc
+            parsed = tz.localize(parsed)
+        return parsed.astimezone(pytz.utc).replace(tzinfo=None).strftime('%Y-%m-%d %H:%M:%S')
 
     @api.model
     def _get_task_domain(self, project_ids, field_map, options, with_date_range=True):
@@ -106,8 +144,8 @@ class GanttData(models.AbstractModel):
         if not with_date_range:
             return domain
 
-        date_from = options.get('date_from')
-        date_to = options.get('date_to')
+        date_from = self._local_to_utc(options.get('date_from'))
+        date_to = self._local_to_utc(options.get('date_to'))
         start_field = field_map['date_start']
         end_field = field_map['date_end']
         # Una tarea entra en el rango si se solapa con él, no solo si empieza
@@ -156,11 +194,22 @@ class GanttData(models.AbstractModel):
         options = dict(options or {})
 
         field_map = self.env['al.gantt.field.map'].get_map()
-        projects = self._read_projects(project_ids, options)
+        project_ids = self._normalize_ids(project_ids)
+        # Todos los visibles para la barra de proyectos; los pedidos, para los
+        # datos. Sin la lista completa, desmarcar un proyecto lo haría
+        # desaparecer de la barra y no habría forma de volver a marcarlo.
+        available = self._read_projects(None, options)
+        requested = set(project_ids)
+        projects = (
+            [project for project in available if project['id'] in requested]
+            if requested else available
+        )
         accessible_ids = [project['id'] for project in projects]
 
         if not accessible_ids:
-            return self._empty_payload(field_map, projects)
+            payload = self._empty_payload(field_map, projects)
+            payload['available_projects'] = available
+            return payload
 
         tasks, meta = self._read_tasks(accessible_ids, field_map, options)
         task_ids = {task['id'] for task in tasks}
@@ -173,7 +222,7 @@ class GanttData(models.AbstractModel):
             if options.get('critical_path') else {'computed': False}
         )
         meta['baseline'] = (
-            self._apply_baseline(tasks, options['baseline_id'])
+            self._apply_baseline(tasks, options['baseline_id'], accessible_ids)
             if options.get('baseline_id') else {'applied': False}
         )
 
@@ -181,6 +230,7 @@ class GanttData(models.AbstractModel):
             'contract_version': CONTRACT_VERSION,
             'field_map': field_map,
             'projects': projects,
+            'available_projects': available,
             'tasks': tasks,
             'links': links,
             'milestones': self._read_milestones(accessible_ids),
@@ -188,10 +238,12 @@ class GanttData(models.AbstractModel):
                 'states': self.env['al.gantt.state.color'].get_color_map(),
                 'fallback': self.env['al.gantt.state.color'].get_fallback(),
             },
-            'filters': self._read_filter_options(accessible_ids),
+            'filters': self._read_filter_options(
+                accessible_ids, {tag_id for task in tasks for tag_id in task['tag_ids']},
+            ),
             'applied_filters': self._get_applied_filters(options),
             'baselines': self._read_baselines(accessible_ids),
-            'calendar': self._read_calendar(accessible_ids),
+            'calendar': self._read_calendar(accessible_ids, tasks),
             'meta': meta,
         }
         return payload
@@ -202,6 +254,7 @@ class GanttData(models.AbstractModel):
             'contract_version': CONTRACT_VERSION,
             'field_map': field_map,
             'projects': projects,
+            'available_projects': projects,
             'tasks': [],
             'links': [],
             'milestones': [],
@@ -218,6 +271,7 @@ class GanttData(models.AbstractModel):
                 'truncated': False, 'undated_count': 0,
                 'tz': self.env.user.tz or 'UTC', 'editable': False,
                 'can_create': False, 'can_reschedule_chain': False,
+                'can_edit_progress': False,
             },
         }
 
@@ -225,7 +279,20 @@ class GanttData(models.AbstractModel):
     # Opciones de filtrado
     # ------------------------------------------------------------------
     @api.model
-    def _read_filter_options(self, project_ids):
+    def _read_assignable_users(self, limit=ASSIGNABLE_USER_LIMIT):
+        """Personas que se pueden asignar: mismo dominio que ``user_ids`` de la
+        tarea (``share = False``, ``active = True``), acotado a las compañías
+        activas. La regla de ``res.users`` deja ver a **todos** los internos,
+        así que sin ese filtro se ofrecería gente de otras compañías.
+        """
+        return self.env['res.users'].search_read(
+            [('share', '=', False), ('active', '=', True),
+             ('company_ids', 'in', self.env.companies.ids)],
+            ['id', 'name'], order='name', limit=limit,
+        )
+
+    @api.model
+    def _read_filter_options(self, project_ids, tag_ids=None):
         """Valores disponibles para los desplegables de la interfaz.
 
         Se calculan en el servidor para que las dos UIs pinten lo mismo sin
@@ -254,14 +321,15 @@ class GanttData(models.AbstractModel):
             ['id', 'name'], order='sequence, id',
         ) if project_ids else []
         tags = self.env['project.tags'].search_read([], ['id', 'name'], order='name', limit=200)
+        # Las etiquetas que ya usan las tareas leídas se añaden aunque queden
+        # fuera del tope: si no, el formulario las mostraría como un id suelto.
+        missing_tag_ids = set(tag_ids or []) - {tag['id'] for tag in tags}
+        if missing_tag_ids:
+            tags += self.env['project.tags'].search_read(
+                [('id', 'in', list(missing_tag_ids))], ['id', 'name'], order='name',
+            )
 
-        # Mismo dominio que el campo user_ids de project.task. Sin sudo: las
-        # reglas de res.users acotan a las compañías del usuario, que es
-        # exactamente a quién puede asignar.
-        assignable = self.env['res.users'].search_read(
-            [('share', '=', False), ('active', '=', True)],
-            ['id', 'name'], order='name', limit=ASSIGNABLE_USER_LIMIT,
-        )
+        assignable = self._read_assignable_users()
 
         users = []
         if project_ids:
@@ -389,7 +457,9 @@ class GanttData(models.AbstractModel):
         editable_ids = set(Task.browse([record['id'] for record in records])
                            ._filtered_access('write').ids)
         user_names = self._read_user_names(records)
-        duration = timedelta(hours=self.env['al.gantt.field.map'].get_default_duration_hours())
+        FieldMap = self.env['al.gantt.field.map']
+        duration = timedelta(hours=FieldMap.get_default_duration_hours())
+        progress_factor = FieldMap.get_progress_factor(field_map)
         colors = self.env['al.gantt.state.color'].get_color_map()
         fallback = self.env['al.gantt.state.color'].get_fallback()
         present_ids = {record['id'] for record in records}
@@ -403,7 +473,7 @@ class GanttData(models.AbstractModel):
                 start_raw = end_raw - duration
                 start_inferred = True
 
-            progress, progress_derived = self._compute_progress(record, field_map)
+            progress, progress_derived = self._compute_progress(record, field_map, progress_factor)
             stage_id, stage_name = self._m2o(record.get('stage_id'))
             parent_id, _parent_name = self._m2o(record.get('parent_id'))
             project_id, project_name = self._m2o(record.get('project_id'))
@@ -463,9 +533,9 @@ class GanttData(models.AbstractModel):
             'editable': bool(editable_ids),
             'can_create': Task.has_access('create'),
             'can_reschedule_chain': bool(field_map['date_start'] and field_map['date_end']),
-            # El avance solo se puede editar si existe el campo real; si es
-            # derivado del estado, el formulario no debe ofrecerlo.
-            'can_edit_progress': bool(field_map['progress']),
+            # El avance solo se puede editar si existe el campo real y admite
+            # escritura: el de hr_timesheet es calculado y se recalcula solo.
+            'can_edit_progress': FieldMap.is_progress_writable(field_map),
         }
         return tasks, meta
 
@@ -486,10 +556,16 @@ class GanttData(models.AbstractModel):
         return {row['id']: row['name'] for row in rows}
 
     @api.model
-    def _compute_progress(self, record, field_map):
-        """Avance real si el campo existe (``hr_timesheet``); si no, derivado."""
+    def _compute_progress(self, record, field_map, factor=None):
+        """Avance real si el campo existe (``hr_timesheet``); si no, derivado.
+
+        Siempre en porcentaje: el de ``hr_timesheet`` se guarda como fracción
+        y se escala con ``get_progress_factor``.
+        """
         if field_map['progress']:
-            return record.get(field_map['progress']) or 0.0, False
+            if factor is None:
+                factor = self.env['al.gantt.field.map'].get_progress_factor(field_map)
+            return round((record.get(field_map['progress']) or 0.0) * factor, 2), False
         return (100.0 if record['state'] in CLOSED_STATES else 0.0), True
 
     # ------------------------------------------------------------------

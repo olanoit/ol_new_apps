@@ -12,6 +12,7 @@
  * `fullscreen`; el resto está implementado aquí sobre la API pública.
  */
 import { _t } from "@web/core/l10n/translation";
+import { toUserDate } from "@al_project_gantt_base/js/gantt_adapter";
 
 /** Marca vertical con el día de hoy. Requiere el plugin `marker`. */
 export function addTodayMarker(gantt) {
@@ -35,11 +36,13 @@ export function addTodayMarker(gantt) {
  * El sombreado se aprecia en la escala **Día**; en semana, mes o trimestre cada
  * celda agrupa varios días y no hay nada que distinguir.
  */
-export function applyWorkingCalendar(gantt, calendar) {
+export function applyWorkingCalendar(gantt, calendar, timeZone = null) {
     const workingDays = new Set(calendar?.working_days ?? [0, 1, 2, 3, 4]);
+    // Los feriados llegan en UTC; el diagrama pinta hora de pared del usuario
+    // de Odoo (`toUserDate`), así que se convierten igual que las tareas.
     const holidays = (calendar?.holidays || []).map((holiday) => ({
-        start: new Date(holiday.start),
-        end: new Date(holiday.end),
+        start: toUserDate(holiday.start, timeZone),
+        end: toUserDate(holiday.end, timeZone),
         name: holiday.name,
     }));
 

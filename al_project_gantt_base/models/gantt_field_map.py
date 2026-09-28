@@ -123,6 +123,41 @@ class GanttFieldMap(models.AbstractModel):
         }
 
     @api.model
+    def get_progress_factor(self, field_map, model_name='project.task'):
+        """Multiplicador que lleva el avance guardado a porcentaje (0-100).
+
+        El ``progress`` de ``hr_timesheet`` se guarda como **fracción**
+        (``horas / horas asignadas``: 0.5 es la mitad; su vista usa el widget
+        ``percentage``). El contrato del Gantt habla siempre en porcentaje, así
+        que ese campo se multiplica por 100. Cualquier otro campo configurado
+        se asume ya en porcentaje; ``progress_scale`` en el parámetro
+        ``al_gantt.field_map`` permite forzarlo.
+        """
+        if not field_map.get('progress'):
+            return 1.0
+        override = self._get_override().get('progress_scale')
+        if override:
+            try:
+                return float(override)
+            except (TypeError, ValueError):
+                _logger.warning("%s: progress_scale no es numérico; se ignora: %r", CONFIG_PARAM, override)
+        return 100.0 if field_map['progress'] == 'progress' else 1.0
+
+    @api.model
+    def is_progress_writable(self, field_map, model_name='project.task'):
+        """El avance solo se edita si el campo admite escritura de verdad.
+
+        Un calculado sin ``inverse`` (el de ``hr_timesheet``) acepta el
+        ``write``, pero el siguiente recálculo lo pisa: ofrecerlo en el
+        formulario sería guardar algo que se pierde.
+        """
+        name = field_map.get('progress')
+        field = self._get_model_fields(model_name).get(name) if name else None
+        if not field:
+            return False
+        return not (field.compute and not field.inverse)
+
+    @api.model
     def get_default_duration_hours(self):
         """Duración de la barra cuando la tarea solo tiene fecha de fin."""
         raw = self.env['ir.config_parameter'].sudo().get_param(DEFAULT_DURATION_PARAM)

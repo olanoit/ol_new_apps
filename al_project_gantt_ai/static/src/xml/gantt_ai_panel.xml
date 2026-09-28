@@ -69,7 +69,7 @@
                                                    t-on-change="() => this.toggleProposal(proposal)"/>
                                             <span class="flex-grow-1">
                                                 <span class="fw-bold small d-block" t-esc="proposal.task_name"/>
-                                                <t t-foreach="proposal.labels" t-as="label" t-key="label">
+                                                <t t-foreach="proposal.labels" t-as="label" t-key="label_index">
                                                     <span class="badge text-bg-light me-1 mb-1" t-esc="label"/>
                                                 </t>
                                                 <span class="d-block text-muted algantt-ai-reason"

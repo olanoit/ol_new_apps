@@ -80,17 +80,26 @@ class GanttWrite(models.AbstractModel):
 
     @api.model
     def _require_date_fields(self, field_map):
+        """Solo el fin es imprescindible.
+
+        Sin campo de inicio (``deadline_only``: Odoo sin ``project_enterprise``)
+        la barra se dibuja con un inicio *estimado*; ese inicio no tiene dónde
+        guardarse y se ignora, pero la fecha límite sí se guarda. Rechazar el
+        cambio entero dejaba la edición inutilizable en Community.
+        """
         if not field_map['date_end']:
             raise UserError(_(
                 "No se pueden guardar fechas: la instalación no tiene un campo "
                 "de fecha de fin configurado para las tareas."
             ))
-        if not field_map['date_start']:
-            raise UserError(_(
-                "No se pueden mover las barras: la instalación no tiene un campo "
-                "de fecha de inicio (lo aporta el módulo de planificación de "
-                "proyectos). Solo se puede editar la fecha límite."
-            ))
+
+    @api.model
+    def _check_readable(self, model_name, record_id):
+        """Un m2o del changeset no puede apuntar a un registro que el usuario
+        no puede leer: el ORM no lo comprueba al escribir la relación."""
+        if record_id:
+            self.env[model_name].browse(int(record_id)).check_access('read')
+        return int(record_id) if record_id else False
 
     # ------------------------------------------------------------------
     # Punto de entrada
@@ -149,6 +158,9 @@ class GanttWrite(models.AbstractModel):
             self._require_date_fields(field_map)
         start = self._parse_datetime(values.get('start'), _("fecha de inicio")) if has_start else None
         end = self._parse_datetime(values.get('end'), _("fecha de fin")) if has_end else None
+        if not field_map['date_start']:
+            # Inicio estimado en la interfaz: no hay campo donde guardarlo.
+            has_start, start = False, None
         if start and end and start > end:
             raise UserError(_("La fecha de inicio no puede ser posterior a la de fin."))
         if has_start:
@@ -156,13 +168,15 @@ class GanttWrite(models.AbstractModel):
         if has_end:
             orm_values[field_map['date_end']] = end
 
-        if 'progress' in values and field_map['progress']:
-            # El avance solo se guarda si el campo existe de verdad (hr_timesheet);
-            # si no, es un valor derivado del estado y no tiene dónde escribirse.
-            orm_values[field_map['progress']] = max(0.0, min(100.0, float(values['progress'] or 0.0)))
+        FieldMap = self.env['al.gantt.field.map']
+        if 'progress' in values and FieldMap.is_progress_writable(field_map):
+            # El avance solo se guarda si el campo existe y admite escritura; el
+            # contrato habla en porcentaje y el campo puede guardar fracción.
+            percent = max(0.0, min(100.0, float(values['progress'] or 0.0)))
+            orm_values[field_map['progress']] = percent / FieldMap.get_progress_factor(field_map)
 
         if 'parent_id' in values:
-            orm_values['parent_id'] = values['parent_id'] or False
+            orm_values['parent_id'] = self._check_readable('project.task', values['parent_id'])
 
         if 'user_ids' in values:
             orm_values['user_ids'] = [(6, 0, [int(user_id) for user_id in values['user_ids'] or []])]
@@ -171,10 +185,10 @@ class GanttWrite(models.AbstractModel):
             orm_values['tag_ids'] = [(6, 0, [int(tag_id) for tag_id in values['tag_ids'] or []])]
 
         if 'stage_id' in values:
-            orm_values['stage_id'] = int(values['stage_id']) if values['stage_id'] else False
+            orm_values['stage_id'] = self._check_readable('project.task.type', values['stage_id'])
 
         if 'partner_id' in values:
-            orm_values['partner_id'] = int(values['partner_id']) if values['partner_id'] else False
+            orm_values['partner_id'] = self._check_readable('res.partner', values['partner_id'])
 
         if 'description' in values:
             # El campo es HTML; el formulario del diagrama envía texto plano.
@@ -220,16 +234,18 @@ class GanttWrite(models.AbstractModel):
         if not updates:
             return self.env['project.task']
         Task = self.env['project.task']
-        task_ids = [item['id'] for item in updates if item.get('id')]
+        task_ids = self._normalize_ids([item['id'] for item in updates if item.get('id')])
         tasks = Task.browse(task_ids).exists()
         self._check_writable(tasks, 'write')
+        # Una sola consulta de existencia para todo el lote (no una por tarea).
+        by_id = {task.id: task for task in tasks}
 
         moved_ids = []
         for item in updates:
             if not item.get('id'):
                 continue
-            task = Task.browse(item['id'])
-            if not task.exists():
+            task = by_id.get(int(item['id']))
+            if not task:
                 result['warnings'].append(_("Una tarea ya no existe y se omitió."))
                 continue
             values = self._values_from_payload(item, field_map)
@@ -264,6 +280,8 @@ class GanttWrite(models.AbstractModel):
             if not target or not source:
                 result['warnings'].append(_("Se omitió una dependencia con tareas inexistentes."))
                 continue
+            # exists() no mira las reglas: la predecesora también debe ser visible.
+            source.check_access('read')
             self._check_writable(target, 'write')
             if source in target.depend_on_ids:
                 continue
@@ -298,7 +316,6 @@ class GanttWrite(models.AbstractModel):
 
         pending = list(moved_tasks)
         moves = 0
-        visited = set()
 
         while pending:
             task = pending.pop(0)
@@ -334,7 +351,9 @@ class GanttWrite(models.AbstractModel):
                     'start': self._iso(new_start),
                     'end': self._iso(new_end),
                 })
-                key = successor.id
-                if key not in visited:
-                    visited.add(key)
+                # Se vuelve a encolar aunque ya se hubiera procesado: si llega
+                # empujada por una segunda predecesora, sus propias sucesoras
+                # tienen que recalcularse con el fin nuevo. No hay bucle posible:
+                # project prohíbe dependencias cíclicas y MAX_CHAIN_MOVES topa.
+                if successor not in pending:
                     pending.append(successor)

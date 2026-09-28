@@ -21,7 +21,8 @@ Principios de diseño
   descripciones, adjuntos, mensajes ni datos de clientes.
 * **Proveedor configurable**: Anthropic (Claude), OpenAI o DeepSeek, con enlace
   directo a donde cada uno crea su clave. La clave se guarda como parámetro del
-  sistema y **nunca** llega al navegador.
+  sistema y solo la ve un administrador en Ajustes: nunca llega al navegador de
+  quien usa el asistente.
 * **Opcional de verdad**: sin clave configurada, el botón del panel no aparece y
   el Gantt funciona exactamente igual que sin este módulo.
     """,
@@ -29,7 +30,7 @@ Principios de diseño
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
-    'version': '2.20260817',
+    'version': '3.20260817',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',
@@ -44,10 +45,6 @@ Principios de diseño
             'al_project_gantt_ai/static/src/xml/**/*',
             'al_project_gantt_ai/static/src/scss/**/*',
         ],
-    },
-    'external_dependencies': {
-        # `requests` viene con Odoo; se declara por claridad, no añade nada nuevo.
-        'python': [],
     },
     'installable': True,
     'application': False,

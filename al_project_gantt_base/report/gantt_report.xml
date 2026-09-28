@@ -26,6 +26,9 @@
         <field name="print_report_name">'Gantt - %s' % (object.name or '')</field>
         <field name="binding_model_id" ref="project.model_project_project"/>
         <field name="binding_type">report</field>
+        <!-- El informe exige el grupo del Gantt (lo comprueba get_data): sin
+             esto, cualquier usuario de Proyecto lo vería en Imprimir y fallaría. -->
+        <field name="group_ids" eval="[Command.set([ref('al_project_gantt_base.group_gantt_user')])]"/>
     </record>
 
 </odoo>

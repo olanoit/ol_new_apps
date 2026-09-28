@@ -139,7 +139,16 @@ export function buildColumns(gantt, options = {}) {
     }
     return [
         ...(showWbs ? [wbsColumn(gantt)] : []),
-        { name: "text", label: _t("Tarea"), tree: true, width: "*", resize: true },
+        {
+            name: "text",
+            label: _t("Tarea"),
+            tree: true,
+            width: "*",
+            resize: true,
+            // Texto de usuario: se escapa. El saneado básico de la librería
+            // deja pasar <img src>, que haría peticiones a terceros.
+            template: (task) => escapeText(task.text),
+        },
         {
             name: "start_date",
             label: _t("Inicio"),
@@ -239,6 +248,8 @@ export function configureGantt(gantt, options = {}) {
         return classes.join(" ");
     };
     gantt.templates.tooltip_text = (start, end, task) => buildTooltip(gantt, task);
+    // El texto de la barra también es dato de usuario (ver columna «Tarea»).
+    gantt.templates.task_text = (start, end, task) => escapeText(task.text);
 
     applyZoom(gantt, zoom, false);
 }

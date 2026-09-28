@@ -11,10 +11,10 @@
                 <div class="algantt-toolbar d-flex flex-wrap align-items-center gap-3 p-2 border-bottom">
                     <div class="algantt-projects d-flex flex-wrap align-items-center gap-1">
                         <span class="fw-bold me-1">Proyectos:</span>
-                        <t t-if="!state.projects.length">
+                        <t t-if="!projectButtons.length">
                             <span class="text-muted">Ninguno visible</span>
                         </t>
-                        <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                        <t t-foreach="projectButtons" t-as="project" t-key="project.id">
                             <button type="button"
                                     class="btn btn-sm"
                                     t-att-class="isSelected(project.id) ? 'btn-primary' : 'btn-outline-secondary'"
@@ -24,7 +24,7 @@
                             </button>
                         </t>
                         <button type="button" class="btn btn-sm btn-link"
-                                t-if="!state.pinnedToProject and state.projects.length > 1"
+                                t-if="!state.pinnedToProject and state.availableProjects.length > 1"
                                 t-on-click="() => this.onSelectAll()">Todos</button>
                         <!-- Al llegar desde el botón inteligente del proyecto,
                              la vista viene acotada: se ofrece salir de ahí. -->

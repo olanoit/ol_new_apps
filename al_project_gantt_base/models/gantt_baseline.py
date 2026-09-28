@@ -4,6 +4,12 @@
 Sirve para comparar «lo que se planificó» contra «lo que hay ahora»: cada línea
 guarda las fechas y el avance de una tarea en el momento de la captura. Las
 líneas no se pueden modificar; si el plan cambia, se toma otra línea base.
+
+Seguridad: los usuarios del Gantt **no** tienen acceso directo a estos modelos.
+Su regla solo puede filtrar por compañía, y las líneas guardan nombre (vía el
+m2o ``task_id``), fechas y avance de las tareas: leerlas por ORM expondría
+tareas de proyectos privados. Todo pasa por el servicio (``al.gantt.data``),
+que primero resuelve qué proyectos ve el usuario y solo entonces usa ``sudo()``.
 """
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -32,6 +38,19 @@ class GanttBaseline(models.Model):
     )
     task_count = fields.Integer(string='Tareas', compute='_compute_task_count', store=True)
     company_id = fields.Many2one(related='project_id.company_id', store=True, index=True)
+
+    #: Lo único que se puede retocar de una línea base es su nombre.
+    _MUTABLE_FIELDS = {'name'}
+
+    def write(self, values):
+        """Inmutable salvo el nombre: cambiar el proyecto o la fecha de captura
+        dejaría las líneas describiendo otro plan."""
+        if set(values) - self._MUTABLE_FIELDS:
+            raise UserError(_(
+                "De una línea base solo se puede cambiar el nombre. "
+                "Capture una nueva si el plan cambió."
+            ))
+        return super().write(values)
 
     @api.depends('line_ids')
     def _compute_task_count(self):
@@ -81,10 +100,17 @@ class GanttBaselineService(models.AbstractModel):
         if not field_map['date_end']:
             raise UserError(_("No hay campo de fechas configurado: no se puede capturar una línea base."))
 
-        projects = self.env['project.project'].browse(list(project_ids or [])).exists()
+        projects = self.env['project.project'].browse(self._normalize_ids(project_ids)).exists()
         if not projects:
             raise UserError(_("Seleccione al menos un proyecto."))
         projects.check_access('read')
+        progress_factor = self.env['al.gantt.field.map'].get_progress_factor(field_map)
+        # sudo() justificado: los usuarios del Gantt no tienen ACL sobre las
+        # líneas base (ver el docstring del módulo). El permiso ya se comprobó
+        # arriba sobre el proyecto, y las tareas se leen SIN sudo: solo entran
+        # en la foto las que el usuario puede ver.
+        Baseline_sudo = self.env['al.gantt.baseline'].sudo()
+        BaselineLine_sudo = self.env['al.gantt.baseline.line'].sudo()
 
         created = []
         for project in projects:
@@ -92,30 +118,37 @@ class GanttBaselineService(models.AbstractModel):
                 ('project_id', '=', project.id),
                 (field_map['date_end'], '!=', False),
             ])
-            baseline = self.env['al.gantt.baseline'].create({
+            baseline_sudo = Baseline_sudo.create({
                 'name': name or _("Línea base %s", fields.Datetime.now().strftime('%d/%m/%Y %H:%M')),
                 'project_id': project.id,
+                'user_id': self.env.user.id,
             })
-            self.env['al.gantt.baseline.line'].create([{
-                'baseline_id': baseline.id,
+            BaselineLine_sudo.create([{
+                'baseline_id': baseline_sudo.id,
                 'task_id': task.id,
                 'date_start': task[field_map['date_start']] if field_map['date_start'] else False,
                 'date_end': task[field_map['date_end']],
-                'progress': task[field_map['progress']] if field_map['progress'] else 0.0,
+                # Siempre en porcentaje, como el resto del contrato.
+                'progress': (task[field_map['progress']] or 0.0) * progress_factor
+                if field_map['progress'] else 0.0,
             } for task in tasks])
             created.append({
-                'id': baseline.id,
-                'name': baseline.name,
+                'id': baseline_sudo.id,
+                'name': baseline_sudo.name,
                 'project_id': project.id,
-                'date': self._iso(baseline.date_captured),
+                'date': self._iso(baseline_sudo.date_captured),
                 'task_count': len(tasks),
             })
         return {'ok': True, 'baselines': created}
 
     @api.model
     def _read_baselines(self, project_ids):
-        """Líneas base disponibles para los proyectos consultados."""
-        records = self.env['al.gantt.baseline'].search_read(
+        """Líneas base disponibles para los proyectos consultados.
+
+        ``project_ids`` son los que el usuario ya puede leer (salen de
+        ``_read_projects``, sin sudo); el sudo() solo salva la falta de ACL.
+        """
+        records = self.env['al.gantt.baseline'].sudo().search_read(
             [('project_id', 'in', list(project_ids))],
             ['id', 'name', 'project_id', 'date_captured', 'task_count'],
         )
@@ -128,18 +161,31 @@ class GanttBaselineService(models.AbstractModel):
         } for record in records]
 
     @api.model
-    def _apply_baseline(self, tasks, baseline_id):
-        """Añade a cada tarea sus fechas de línea base y el desvío en días."""
+    def _apply_baseline(self, tasks, baseline_id, project_ids=None):
+        """Añade a cada tarea sus fechas de línea base y el desvío en días.
+
+        La línea base debe pertenecer a un proyecto que el usuario ve
+        (``project_ids``); sus líneas solo se cruzan con las tareas ya leídas
+        con sus permisos, así que el sudo() no expone nada más.
+        """
         for task in tasks:
             task['baseline_start'] = None
             task['baseline_end'] = None
             task['baseline_variance_days'] = None
-        baseline = self.env['al.gantt.baseline'].browse(int(baseline_id)).exists()
-        if not baseline:
+        try:
+            baseline_id = int(baseline_id)
+        except (TypeError, ValueError):
+            return {'applied': False}
+        domain = [('id', '=', baseline_id)]
+        if project_ids is not None:
+            domain.append(('project_id', 'in', list(project_ids)))
+        baseline_sudo = self.env['al.gantt.baseline'].sudo().search(domain, limit=1)
+        if not baseline_sudo:
             return {'applied': False}
 
-        lines = self.env['al.gantt.baseline.line'].search_read(
-            [('baseline_id', '=', baseline.id)], ['task_id', 'date_start', 'date_end'],
+        lines = self.env['al.gantt.baseline.line'].sudo().search_read(
+            [('baseline_id', '=', baseline_sudo.id), ('task_id', 'in', [task['id'] for task in tasks])],
+            ['task_id', 'date_start', 'date_end'],
         )
         by_task = {self._m2o(line['task_id'])[0]: line for line in lines}
         for task in tasks:
@@ -151,4 +197,4 @@ class GanttBaselineService(models.AbstractModel):
             if line['date_end'] and task['end']:
                 delta = self._from_iso(task['end']) - line['date_end']
                 task['baseline_variance_days'] = round(delta.total_seconds() / 86400.0, 2)
-        return {'applied': True, 'id': baseline.id, 'name': baseline.name}
+        return {'applied': True, 'id': baseline_sudo.id, 'name': baseline_sudo.name}

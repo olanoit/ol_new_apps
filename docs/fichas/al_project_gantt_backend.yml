@@ -230,6 +230,13 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: 12.20260818
+    fecha: 27/09/2026
+    cambios:
+      - "Al desmarcar un proyecto ya no desaparece de la barra: se puede volver a marcar, y «Todos» recupera todos los proyectos visibles."
+      - "Arrastrar una barra solo guarda sus fechas; ya no reescribe responsables, etiquetas ni horas con lo que había en pantalla."
+      - "Al cambiar de proyecto, el formulario de la tarea ofrece las etapas y personas del proyecto nuevo."
+      - "Las tareas creadas desde la fila de un proyecto se crean en ese proyecto."
   - fecha: 25/08/2026
     cambios:
       - Licencia OPL-1 en toda la suite.

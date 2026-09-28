@@ -25,7 +25,7 @@ y el render usa el adaptador y la configuración compartidos del módulo base.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
-    'version': '10.20260818',
+    'version': '11.20260818',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',

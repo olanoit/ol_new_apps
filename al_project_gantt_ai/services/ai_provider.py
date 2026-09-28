@@ -18,6 +18,7 @@ La clave de API nunca se registra en el log ni se devuelve al cliente.
 """
 import json
 import logging
+from urllib.parse import urlparse
 
 import requests
 
@@ -161,7 +162,7 @@ def call_provider(env, config, system, messages):
 # Anthropic (Claude) — Messages API
 # ----------------------------------------------------------------------
 def _call_anthropic(env, config, system, messages):
-    url = _base(config, 'anthropic') + '/v1/messages'
+    url = _base(env, config, 'anthropic') + '/v1/messages'
     headers = {
         'x-api-key': config['api_key'],
         'anthropic-version': ANTHROPIC_VERSION,
@@ -227,7 +228,7 @@ def _call_openai_compatible(env, config, system, messages):
     """
     provider = config['provider']
     label = PROVIDER_LABEL[provider]
-    url = _base(config, provider) + '/v1/chat/completions'
+    url = _base(env, config, provider) + '/v1/chat/completions'
     headers = {
         'Authorization': 'Bearer %s' % config['api_key'],
         'content-type': 'application/json',
@@ -279,8 +280,22 @@ def _call_openai_compatible(env, config, system, messages):
 # ----------------------------------------------------------------------
 # Transporte común
 # ----------------------------------------------------------------------
-def _base(config, provider):
-    return (config.get('base_url') or DEFAULT_BASE_URL[provider]).rstrip('/')
+def is_safe_base_url(url):
+    """La clave viaja en cabecera: solo HTTPS (o HTTP a la propia máquina,
+    para una pasarela local)."""
+    parsed = urlparse((url or '').strip())
+    if parsed.scheme == 'https' and parsed.hostname:
+        return True
+    return parsed.scheme == 'http' and parsed.hostname in ('localhost', '127.0.0.1', '::1')
+
+
+def _base(env, config, provider):
+    base_url = config.get('base_url')
+    if base_url and not is_safe_base_url(base_url):
+        raise UserError(env._(
+            "La URL base del asistente debe usar https://. Revísela en Ajustes ▸ Gantt IA."
+        ))
+    return (base_url or DEFAULT_BASE_URL[provider]).rstrip('/')
 
 
 def _post(env, url, headers, body, config, label):
@@ -317,10 +332,18 @@ def _build_http_error(env, response, label):
     detail = ''
     try:
         payload = response.json()
-        error = payload.get('error') or {}
-        detail = error.get('message') or payload.get('message') or ''
     except ValueError:
+        payload = None
         detail = (response.text or '')[:200]
+    if isinstance(payload, dict):
+        # Cada pasarela da la forma que quiere: `error` puede ser un objeto o
+        # un texto, y el cuerpo ni siquiera tiene por qué ser un objeto.
+        error = payload.get('error')
+        if isinstance(error, dict):
+            detail = error.get('message') or ''
+        elif isinstance(error, str):
+            detail = error
+        detail = str(detail or payload.get('message') or '')[:500]
 
     status = response.status_code
     if status == 401:

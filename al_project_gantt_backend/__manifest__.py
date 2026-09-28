@@ -18,13 +18,14 @@ Aplicación propia (``ir.actions.client`` + menú raíz) que renderiza el Gantt 
 * Selección de proyectos, zoom (día/semana/mes/trimestre) y avisos de datos
   incompletos (tareas sin fecha, resultado truncado).
 
-Versión 1: solo lectura.
+Edición en el propio diagrama (arrastrar, formulario, dependencias, sangría),
+ruta crítica, líneas base y exportación a Excel y PDF.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
-    'version': '11.20260818',
+    'version': '12.20260818',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',

@@ -67,9 +67,21 @@ class TestGanttWebsiteController(HttpCase):
         self.assertEqual(response.status_code, 403)
 
     def test_public_visitor_is_sent_to_login(self):
+        # Sesión anónima CON base de datos: sin ella, en un servidor con varias
+        # bases (y sin dbfilter) la petición no elige base y la ruta ni
+        # siquiera existe (404), así que no se estaría probando nada.
+        self.authenticate(None, None)
         response = self.url_open('/gantt', allow_redirects=False)
         self.assertIn(response.status_code, (302, 303))
         self.assertIn('/web/login', response.headers.get('Location', ''))
+
+    def test_menu_is_only_for_gantt_users(self):
+        """El menú no se ofrece a visitantes ni a portal: solo al grupo."""
+        group = self.env.ref('al_project_gantt_base.group_gantt_user')
+        menus = self.env['website.menu'].search([('url', '=', '/gantt')])
+        self.assertTrue(menus)
+        for menu in menus:
+            self.assertIn(group, menu.group_ids)
 
     # ------------------------------------------------------------------
     # Endpoint de datos

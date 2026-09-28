@@ -7,3 +7,4 @@ from . import test_gantt_write
 from . import test_critical_path
 from . import test_baseline
 from . import test_export
+from . import test_review_fixes

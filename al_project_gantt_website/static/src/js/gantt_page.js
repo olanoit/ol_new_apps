@@ -112,6 +112,10 @@ export class GanttPage extends Interaction {
     }
 
     destroy() {
+        this.destroyGantt();
+    }
+
+    destroyGantt() {
         if (this.detachContextMenu) {
             this.detachContextMenu();
             this.detachContextMenu = null;
@@ -176,7 +180,7 @@ export class GanttPage extends Interaction {
             showBaseline: Boolean(this.baselineId),
             showWbs: this.showWbs,
         });
-        applyWorkingCalendar(this.gantt, this.payload.calendar);
+        applyWorkingCalendar(this.gantt, this.payload.calendar, meta.tz);
         configureLightbox(this.gantt, {
             filters: this.payload.filters || {},
             canEditProgress: Boolean(meta.can_edit_progress),
@@ -197,8 +201,10 @@ export class GanttPage extends Interaction {
                 onError: (error) => this.onSaveError(error),
                 defaultProjectId: () => this.selectedIds[0] || null,
                 rescheduleChain: () => this.rescheduleChain,
+                canEditProgress: Boolean(meta.can_edit_progress),
             });
         }
+        this.mountedSignature = this.configSignature();
         this.gantt.init(this.containerEl);
         parseGanttData(this.gantt, this.ganttData);
         addTodayMarker(this.gantt);
@@ -243,7 +249,9 @@ export class GanttPage extends Interaction {
         this.projectsEl.querySelectorAll(".algantt-project-btn, .algantt-all-btn").forEach(
             (node) => node.remove()
         );
-        const projects = this.payload.projects || [];
+        // Todos los visibles: `projects` solo trae los seleccionados, y con él
+        // un proyecto desmarcado desaparecía de la barra.
+        const projects = this.payload.available_projects || this.payload.projects || [];
         if (!projects.length) {
             const empty = document.createElement("span");
             empty.className = "algantt-project-btn text-muted";
@@ -550,6 +558,11 @@ export class GanttPage extends Interaction {
         return {
             projectIds: this.selectedIds.join(","),
             options: encodeURIComponent(JSON.stringify(options)),
+            // La ruta estándar de informes fusiona este JSON en la raíz de
+            // `data`; el informe lee `data.options` y `data.project_ids`.
+            reportData: encodeURIComponent(
+                JSON.stringify({ options, project_ids: this.selectedIds })
+            ),
         };
     }
 
@@ -562,11 +575,11 @@ export class GanttPage extends Interaction {
         }
         if (this.exportPdfEl) {
             this.addListener(this.exportPdfEl, "click", () => {
-                const { projectIds, options } = this.exportParams();
+                const { projectIds, reportData } = this.exportParams();
                 // Ruta estándar de informes de Odoo: el PDF se compone en el
                 // servidor con la misma matriz que el Excel.
                 window.open(
-                    `/report/pdf/al_project_gantt_base.report_gantt/${projectIds}?options=${options}`,
+                    `/report/pdf/al_project_gantt_base.report_gantt/${projectIds}?options=${reportData}`,
                     "_blank"
                 );
             });
@@ -597,17 +610,7 @@ export class GanttPage extends Interaction {
     async remount() {
         this.setLoading(true);
         await this.waitFor(this.fetchData());
-        if (this.editor) {
-            this.editor.detach();
-            this.editor = null;
-        }
-        if (this.gantt) {
-            this.gantt.clearAll();
-            if (typeof this.gantt.destructor === "function") {
-                this.gantt.destructor();
-            }
-            this.gantt = null;
-        }
+        this.destroyGantt();
         this.renderProjectButtons();
         this.renderFilterOptions();
         this.renderProTools();
@@ -685,13 +688,42 @@ export class GanttPage extends Interaction {
     }
 
     async onSelectAll() {
-        this.selectedIds = (this.payload.projects || []).map((project) => project.id);
+        this.selectedIds = (this.payload.available_projects || this.payload.projects || []).map(
+            (project) => project.id
+        );
         await this.reload();
+    }
+
+    /** Lo que se fija al montar (edición, formulario): si cambia, se remonta. */
+    configSignature() {
+        const meta = this.payload?.meta || {};
+        const filters = this.payload?.filters || {};
+        const ids = (items) => (items || []).map((item) => item.id ?? item.value);
+        return JSON.stringify([
+            Boolean(meta.editable),
+            Boolean(meta.can_edit_progress),
+            meta.tz,
+            ids(filters.stages),
+            ids(filters.assignable_users),
+            ids(filters.tags),
+        ]);
     }
 
     async reload() {
         this.setLoading(true);
         await this.waitFor(this.fetchData());
+        if (this.gantt && this.mountedSignature !== this.configSignature()) {
+            // Otros proyectos u otros permisos: el formulario y la edición se
+            // configuraron con los anteriores.
+            this.destroyGantt();
+            this.renderProjectButtons();
+            this.renderFilterOptions();
+            this.renderProTools();
+            this.renderNotices();
+            this.mountGantt();
+            this.setLoading(false);
+            return;
+        }
         this.renderProjectButtons();
         this.renderFilterOptions();
         this.renderProTools();

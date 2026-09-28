@@ -15,7 +15,7 @@ import io
 import logging
 from datetime import date, datetime, timedelta
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -58,6 +58,10 @@ class GanttExport(models.AbstractModel):
         periods, scale = self._build_periods(tasks, scale)
         for row in rows:
             row['cells'] = self._row_cells(row, periods)
+            start, end = self._to_date(row['start']), self._to_date(row['end'])
+            row['dates_label'] = (
+                f"{start.strftime('%d/%m')} – {end.strftime('%d/%m')}" if start and end else ''
+            )
 
         return {
             'rows': rows,
@@ -65,7 +69,8 @@ class GanttExport(models.AbstractModel):
             'scale': scale,
             'payload': payload,
             'title': self._export_title(payload),
-            'generated_on': self.env.cr.now(),
+            # En la hora del usuario: es lo que lee en la cabecera del documento.
+            'generated_on': fields.Datetime.context_timestamp(self, self.env.cr.now()),
         }
 
     @api.model
@@ -135,17 +140,27 @@ class GanttExport(models.AbstractModel):
 
     @api.model
     def _to_date(self, value):
+        """Día que ve el usuario.
+
+        Las fechas de tarea llegan como instantes UTC (``...Z``) y se pasan a
+        la zona del usuario antes de quedarse con el día: una fecha límite a
+        las 23:00 de Lima es las 04:00 UTC del día siguiente. Las fechas sin
+        hora (proyectos) se toman tal cual.
+        """
         if not value:
             return None
         if isinstance(value, datetime):
-            return value.date()
+            return fields.Datetime.context_timestamp(self, value).date()
         if isinstance(value, date):
             return value
-        text = str(value).replace('Z', '')
+        text = str(value)
         try:
-            return datetime.fromisoformat(text).date()
+            parsed = datetime.fromisoformat(text.replace('Z', ''))
         except ValueError:
             return None
+        if 'T' in text or ' ' in text:
+            return fields.Datetime.context_timestamp(self, parsed).date()
+        return parsed.date()
 
     @api.model
     def _build_periods(self, tasks, scale):
