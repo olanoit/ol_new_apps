@@ -12,8 +12,7 @@
                        invisible="not l10n_pe_revaluation_rate_visible">
                     <field name="l10n_pe_revaluation_rate_visible" invisible="1"/>
                     <field name="l10n_pe_revaluation_rate_type"
-                           widget="radio" options="{'horizontal': true}"
-                           required="l10n_pe_revaluation_rate_visible"/>
+                           widget="radio" options="{'horizontal': true}"/>
                 </group>
             </xpath>
         </field>

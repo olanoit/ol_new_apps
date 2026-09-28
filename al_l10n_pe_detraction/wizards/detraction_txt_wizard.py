@@ -11,8 +11,10 @@ Estructura en ``services/bn_txt.py``.
 import base64
 import re
 
+from markupsafe import Markup
+
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from ..services import bn_txt
 
@@ -45,7 +47,11 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     date_to = fields.Date(string='Hasta', required=True)
     move_ids = fields.Many2many(
         'account.move', string='Comprobantes',
-        domain="[('l10n_pe_detraction_applies', '=', True)]")
+        domain="[('l10n_pe_detraction_applies', '=', True),"
+               " ('state', '=', 'posted'),"
+               " ('l10n_pe_detraction_number', '=', False),"
+               " ('move_type', '=', 'in_invoice' if mode == 'acquirer'"
+               " else 'out_invoice')]")
     file_name = fields.Char(readonly=True)
     file_data = fields.Binary(string='Archivo', readonly=True)
     excluded_html = fields.Html(string='Excluidos', readonly=True)
@@ -57,13 +63,17 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     def _default_batch_number(self):
         """Propone AANNNN con el correlativo siguiente del año en curso."""
         year = fields.Date.context_today(self).strftime('%y')
+        last = self.env.company.l10n_pe_detraction_last_batch or ''
+        if re.fullmatch(r'\d{6}', last) and last[:2] == year \
+                and last[2:] != '9999':
+            return '%s%04d' % (year, int(last[2:]) + 1)
         return '%s0001' % year
 
     @api.constrains('batch_number')
     def _check_batch_number(self):
         for wizard in self:
             if not re.fullmatch(r'\d{6}', wizard.batch_number or ''):
-                raise UserError(_(
+                raise ValidationError(_(
                     'El número de lote debe tener 6 dígitos con el formato '
                     'AANNNN (por ejemplo 260001).'))
 
@@ -72,7 +82,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         for wizard in self:
             if wizard.date_from and wizard.date_to and \
                     wizard.date_to < wizard.date_from:
-                raise UserError(_('La fecha «Hasta» no puede ser anterior a '
+                raise ValidationError(_('La fecha «Hasta» no puede ser anterior a '
                                   '«Desde».'))
 
     # ------------------------------------------------------------------
@@ -90,6 +100,8 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
             ('move_type', 'in', move_types),
             ('state', '=', 'posted'),
             ('l10n_pe_detraction_applies', '=', True),
+            # los ya depositados tienen constancia: no se depositan dos veces
+            ('l10n_pe_detraction_number', '=', False),
             ('invoice_date', '>=', self.date_from),
             ('invoice_date', '<=', self.date_to),
         ], order='invoice_date, name')
@@ -124,6 +136,21 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         """Motivo por el que un comprobante no puede incluirse, o ``None``."""
         party = self._identified_party(move)
         holder = self._account_holder(move)
+        # Los comprobantes elegidos a mano no pasan por el filtro del
+        # periodo: se validan aquí con los mismos criterios.
+        expected_type = ('in_invoice' if self.mode == 'acquirer'
+                         else 'out_invoice')
+        if move.company_id != self.company_id:
+            return _('pertenece a otra compañía')
+        if move.move_type != expected_type:
+            return _('no corresponde a la modalidad elegida')
+        if move.state != 'posted':
+            return _('no está publicado')
+        if not move.l10n_pe_detraction_applies:
+            return _('no está sujeto a detracción')
+        if move.l10n_pe_detraction_number:
+            return _('ya tiene la constancia de depósito %s',
+                     move.l10n_pe_detraction_number)
         if not move.l10n_pe_detraction_type_id:
             return _('sin tipo de detracción (catálogo 54)')
         if not move.l10n_pe_detraction_amount:
@@ -216,6 +243,13 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
                 (depositor.vat or '').strip(), self.batch_number),
             'excluded_html': self._excluded_html(excluded),
         })
+        # El correlativo del lote se guarda en la compañía para proponer
+        # el siguiente. sudo(): los contables no pueden escribir en
+        # res.company y aquí solo se anota el último lote generado.
+        company_sudo = self.company_id.sudo()
+        if self.batch_number > (company_sudo.l10n_pe_detraction_last_batch
+                                or ''):
+            company_sudo.l10n_pe_detraction_last_batch = self.batch_number
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
@@ -227,10 +261,10 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     def _excluded_html(self, excluded):
         if not excluded:
             return False
-        rows = ''.join(
-            '<tr><td>%s</td><td>%s</td></tr>' % (move.display_name, reason)
+        rows = Markup('').join(
+            Markup('<tr><td>%s</td><td>%s</td></tr>') % (move.display_name, reason)
             for move, reason in excluded)
-        return (
+        return Markup(
             '<p>%s</p><table class="table table-sm">'
             '<thead><tr><th>%s</th><th>%s</th></tr></thead>'
             '<tbody>%s</tbody></table>'

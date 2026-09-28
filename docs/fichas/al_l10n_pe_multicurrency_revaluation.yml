@@ -155,6 +155,11 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: 2.20260916
+    fecha: 27/09/2026
+    cambios:
+      - "Si se escribe a mano un tipo de cambio en el filtro del informe, ese valor se usa también en las cuentas marcadas con T.C. compra o venta."
+      - "El tipo de T.C. de la cuenta deja de ser obligatorio al editar la cuenta: sin elegirlo se usa el genérico del informe."
   - fecha: 16/09/2026
     cambios:
       - "Primera versión para Odoo 19: T.C. compra o venta por cuenta, columna T.C., cabecera en soles por unidad y etiqueta del asiento de ajuste."

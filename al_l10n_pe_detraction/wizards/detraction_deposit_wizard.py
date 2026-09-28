@@ -57,9 +57,20 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         move = self.move_id
+        if move.move_type not in ('out_invoice', 'in_invoice'):
+            raise UserError(self.env._(
+                'Solo se registra el depósito de facturas de venta o de '
+                'compra.'))
         if move.state != 'posted':
             raise UserError(self.env._(
                 'El comprobante debe estar publicado.'))
+        # El botón se oculta con constancia, pero la acción también llega
+        # por RPC: un segundo depósito duplicaría el pago.
+        if move.l10n_pe_detraction_number:
+            raise UserError(self.env._(
+                'La detracción de %(move)s ya tiene la constancia %(number)s.',
+                move=move.display_name,
+                number=move.l10n_pe_detraction_number))
         if self.amount <= 0:
             raise UserError(self.env._(
                 'El monto del depósito debe ser mayor a cero.'))

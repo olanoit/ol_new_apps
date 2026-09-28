@@ -64,26 +64,47 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
                 'Retenciones efectuadas.',
                 month=self.month, year=self.year,
                 company=self.company_id.display_name))
+        # Una fila por comprobante pagado, en soles: un pago puede cubrir
+        # varias facturas y estar en moneda extranjera.
         rows = []
+        total = 0.0
+        numbers = {}
         for line in lines:
-            payment = line.payment_id
-            invoice = (payment.invoice_ids or payment.reconciled_bill_ids)[:1]
-            rows.append('|'.join([
-                payment.partner_id.vat or '',
-                (payment.partner_id.name or '')[:100],
-                invoice.ref or invoice.name or '',
-                str(payment.date),
-                '%.2f' % payment.amount,
-                line.name or '',
-                '%.2f' % abs(line.amount),
-            ]))
+            numbers.setdefault(line.payment_id, []).append(line.name or '')
+        company = self.company_id
+        for payment, names in numbers.items():
+            documents = payment._l10n_pe_retention_documents()
+            if not documents:
+                # pago sin factura vinculada: una fila con el pago entero
+                def to_pen(amount):
+                    return company.currency_id.round(payment.currency_id._convert(
+                        amount, company.currency_id, company, payment.date))
+                retained = sum(to_pen(abs(line.amount)) for line in lines
+                               if line.payment_id == payment)
+                documents = [{
+                    'invoice': self.env['account.move'],
+                    'paid': to_pen(payment.amount),
+                    'retained': retained,
+                }]
+            for doc in documents:
+                invoice = doc['invoice']
+                rows.append('|'.join([
+                    payment.partner_id.vat or '',
+                    (payment.partner_id.name or '')[:100],
+                    invoice.ref or invoice.name or '',
+                    str(payment.date),
+                    '%.2f' % doc['paid'],
+                    ', '.join(name for name in names if name),
+                    '%.2f' % doc['retained'],
+                ]))
+                total += doc['retained']
         content = '\r\n'.join(rows) + '\r\n'
         self.write({
             'file_name': 'retenciones_626_%04d%s.txt' % (
                 self.year, self.month),
             'file_data': base64.b64encode(content.encode()),
-            'retention_count': len(lines),
-            'retention_total': sum(abs(line.amount) for line in lines),
+            'retention_count': len(rows),
+            'retention_total': total,
         })
         return {
             'type': 'ir.actions.act_window', 'name': _('Resumen de retenciones (626)'),

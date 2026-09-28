@@ -2,8 +2,11 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-# Boletas de venta (código 03): sin derecho a crédito fiscal → exceptuadas
-EXCLUDED_DOCUMENT_CODES = ('03',)
+# Exceptuados: recibo por honorarios (02, no lleva IGV) y boleta de venta
+# (03, sin derecho a crédito fiscal).
+EXCLUDED_DOCUMENT_CODES = ('02', '03')
+# Código SUNAT del IGV en los impuestos de l10n_pe
+IGV_TAX_CODE = '1000'
 
 
 class AccountMove(models.Model):
@@ -22,14 +25,44 @@ class AccountMove(models.Model):
         help='Estimación informativa (tasa sobre el total): la retención '
              'efectiva se calcula en cada pago.')
 
+    def _l10n_pe_retention_has_igv(self):
+        """La retención solo alcanza operaciones gravadas con IGV.
+
+        Se reconoce el IGV por su código SUNAT; un impuesto positivo sin
+        código (creado a mano) se toma como IGV para no dejar fuera
+        configuraciones antiguas.
+        """
+        self.ensure_one()
+        taxes = self.invoice_line_ids.filtered(
+            lambda l: l.display_type == 'product'
+        ).tax_ids.filtered(lambda t: not t.is_withholding_tax_on_payment)
+        return any(
+            tax.l10n_pe_edi_tax_code == IGV_TAX_CODE
+            or (not tax.l10n_pe_edi_tax_code and tax.amount > 0)
+            for tax in taxes)
+
     @api.depends('move_type', 'partner_id', 'amount_total_signed',
-                 'company_id', 'l10n_latam_document_type_id',
+                 'company_id', 'country_code', 'state',
+                 'company_id.l10n_pe_retention_agent',
+                 'company_id.l10n_pe_retention_min_amount',
+                 'company_id.l10n_pe_retention_tax_id',
+                 'l10n_latam_document_type_id',
                  'invoice_line_ids.product_id',
+                 'invoice_line_ids.tax_ids',
                  'commercial_partner_id.is_retention_agent',
                  'commercial_partner_id.is_good_taxpayer')
     def _compute_l10n_pe_retention(self):
         for move in self:
             company = move.company_id
+            if move.state == 'posted':
+                # Publicada, la decisión ya quedó en sus líneas: el impuesto
+                # de retención se inyectó solo si aplicaba. Así una
+                # actualización del padrón no reescribe facturas antiguas.
+                tax = company.l10n_pe_retention_tax_id
+                move.l10n_pe_retention_applies = bool(
+                    tax and move.move_type == 'in_invoice'
+                    and tax in move.invoice_line_ids.tax_ids)
+                continue
             applies = (
                 company.l10n_pe_retention_agent
                 and move.country_code == 'PE'
@@ -40,11 +73,12 @@ class AccountMove(models.Model):
                 and not move.commercial_partner_id.is_good_taxpayer
                 and (move.l10n_latam_document_type_id.code or '01')
                 not in EXCLUDED_DOCUMENT_CODES
+                and move._l10n_pe_retention_has_igv()
                 # exceptuada si la operación está sujeta a SPOT
                 # (campo presente solo con al_l10n_pe_detraction instalado)
                 and not getattr(move, 'l10n_pe_detraction_applies', False)
             )
-            move.l10n_pe_retention_applies = applies
+            move.l10n_pe_retention_applies = bool(applies)
 
     @api.depends('l10n_pe_retention_applies', 'amount_total_signed',
                  'company_id.l10n_pe_retention_rate')

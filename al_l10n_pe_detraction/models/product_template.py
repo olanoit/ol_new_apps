@@ -31,11 +31,14 @@ class ProductTemplate(models.Model):
 
     def _l10n_pe_sync_detraction(self):
         """Mantiene alineados los campos nativos con el catálogo."""
-        for product in self.filtered('l10n_pe_detraction_type_id'):
-            dtype = product.l10n_pe_detraction_type_id
-            if (product.l10n_pe_withhold_code != dtype.code
-                    or product.l10n_pe_withhold_percentage != dtype.percentage):
-                product.write({
-                    'l10n_pe_withhold_code': dtype.code,
-                    'l10n_pe_withhold_percentage': dtype.percentage,
-                })
+        outdated = self.filtered(
+            lambda p: p.l10n_pe_detraction_type_id and (
+                p.l10n_pe_withhold_code != p.l10n_pe_detraction_type_id.code
+                or p.l10n_pe_withhold_percentage
+                != p.l10n_pe_detraction_type_id.percentage))
+        for dtype, products in outdated.grouped(
+                'l10n_pe_detraction_type_id').items():
+            products.write({
+                'l10n_pe_withhold_code': dtype.code,
+                'l10n_pe_withhold_percentage': dtype.percentage,
+            })

@@ -11,6 +11,7 @@ class L10nPeRetentionReceived(models.Model):
     _name = 'l10n_pe.retention.received'
     _description = 'PE - Retención de IGV sufrida (cliente agente)'
     _order = 'date desc, id desc'
+    _check_company_auto = True
 
     name = fields.Char(
         string='Nº comprobante de retención', required=True, size=24,
@@ -22,9 +23,11 @@ class L10nPeRetentionReceived(models.Model):
         'res.company', required=True, default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
     partner_id = fields.Many2one(
-        'res.partner', string='Cliente (agente de retención)', required=True)
+        'res.partner', string='Cliente (agente de retención)', required=True,
+        check_company=True)
     move_id = fields.Many2one(
         'account.move', string='Factura de venta', required=True,
+        check_company=True,
         domain="[('move_type', '=', 'out_invoice'),"
                " ('state', '=', 'posted'),"
                " ('commercial_partner_id', '=', partner_id)]")
@@ -37,6 +40,11 @@ class L10nPeRetentionReceived(models.Model):
         [('draft', 'Borrador'), ('posted', 'Registrado')],
         default='draft', string='Estado', copy=False)
 
+    # Registrar dos veces el mismo comprobante duplicaría el crédito.
+    _name_partner_uniq = models.Constraint(
+        'UNIQUE(company_id, partner_id, name)',
+        'Ese comprobante de retención ya está registrado para el cliente.')
+
     @api.onchange('move_id')
     def _onchange_move_id(self):
         for record in self:
@@ -45,10 +53,34 @@ class L10nPeRetentionReceived(models.Model):
                     abs(record.move_id.amount_total_signed)
                     * record.company_id.l10n_pe_retention_rate / 100.0)
 
+    def _l10n_pe_check_postable(self):
+        """El dominio de la vista no basta: la acción llega también por RPC."""
+        self.ensure_one()
+        move = self.move_id
+        if move.move_type != 'out_invoice' or move.state != 'posted':
+            raise UserError(self.env._(
+                'La retención sufrida %(number)s debe vincularse a una factura '
+                'de venta publicada.', number=self.name))
+        if move.commercial_partner_id != self.partner_id.commercial_partner_id:
+            raise UserError(self.env._(
+                'La factura %(move)s no es del cliente %(partner)s.',
+                move=move.display_name, partner=self.partner_id.display_name))
+        if self.company_id.currency_id.compare_amounts(self.amount, 0.0) <= 0:
+            raise UserError(self.env._(
+                'El monto retenido debe ser mayor a cero.'))
+        receivable = move.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable'
+            and not l.reconciled)
+        if not receivable:
+            raise UserError(self.env._(
+                'La factura %(move)s ya no tiene saldo por cobrar: no hay '
+                'dónde aplicar la retención.', move=move.display_name))
+
     def action_post(self):
         for record in self:
             if record.state != 'draft':
                 continue
+            record._l10n_pe_check_postable()
             company = record.company_id
             account = company.l10n_pe_retention_received_account_id
             if not account:
@@ -88,6 +120,13 @@ class L10nPeRetentionReceived(models.Model):
                 (receivable + entry_receivable).reconcile()
             record.write({'entry_id': entry.id, 'state': 'posted'})
         return True
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_posted(self):
+        if any(record.state == 'posted' for record in self):
+            raise UserError(self.env._(
+                'No se puede eliminar una retención sufrida registrada: '
+                'pásela primero a borrador.'))
 
     def action_draft(self):
         for record in self.filtered(lambda r: r.state == 'posted'):

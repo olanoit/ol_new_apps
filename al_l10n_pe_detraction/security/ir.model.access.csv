@@ -6,3 +6,4 @@ access_detraction_deposit_wizard,l10n_pe.detraction.deposit.wizard,model_l10n_pe
 access_detraction_txt_wizard,l10n_pe.detraction.txt.wizard,model_l10n_pe_detraction_txt_wizard,account.group_account_user,1,1,1,1
 access_detraction_check_manager,l10n_pe.detraction.check manager,model_l10n_pe_detraction_check,account.group_account_manager,1,1,1,1
 access_detraction_check_line_manager,l10n_pe.detraction.check.line manager,model_l10n_pe_detraction_check_line,account.group_account_manager,1,1,1,1
+access_detraction_type_employee,l10n_pe.detraction.type employee,model_l10n_pe_detraction_type,base.group_user,1,0,0,0

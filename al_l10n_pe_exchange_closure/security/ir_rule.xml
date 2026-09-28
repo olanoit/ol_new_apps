@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Multicompañía: cada compañía ve solo sus cierres de T.C. -->
+        <record id="rule_exchange_closure_company" model="ir.rule">
+            <field name="name">Cierre de tipo de cambio: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_exchange_closure"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_exchange_closure_line_company" model="ir.rule">
+            <field name="name">Detalle del cierre de tipo de cambio: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_exchange_closure_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

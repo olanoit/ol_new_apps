@@ -29,6 +29,13 @@ from odoo.fields import Command
 
 from .analytic_tools import merge_analytic_distributions
 
+# Campos de cabecera que cambian el cálculo: tocarlos con el cierre ya
+# calculado deja el detalle desfasado, así que el cierre vuelve a borrador.
+RECOMPUTE_FIELDS = {
+    'company_id', 'currency_id', 'month', 'year', 'rate_day',
+    'rate_purchase', 'rate_sale', 'analytic_source', 'analytic_distribution',
+}
+
 MONTHS = [
     ('01', 'Enero'), ('02', 'Febrero'), ('03', 'Marzo'), ('04', 'Abril'),
     ('05', 'Mayo'), ('06', 'Junio'), ('07', 'Julio'), ('08', 'Agosto'),
@@ -272,7 +279,11 @@ class L10nPeExchangeClosure(models.Model):
             if not closure.rate_date:
                 raise UserError(_('Indique primero el mes y el año.'))
             rate = closure._find_rate_record()
-            if not rate or rate.name != closure.rate_date:
+            # la descarga de al_l10n_pe_currency solo trae el dólar: para
+            # otra moneda se usa lo registrado
+            if ((not rate or rate.name != closure.rate_date)
+                    and closure.currency_id == self.env.ref(
+                        'base.USD', raise_if_not_found=False)):
                 closure.currency_id.l10n_pe_update_date_apis(closure.rate_date)
                 rate = closure._find_rate_record()
             if not rate:
@@ -304,7 +315,8 @@ class L10nPeExchangeClosure(models.Model):
         self.ensure_one()
         domain = [
             ('parent_state', '=', 'posted'),
-            ('company_id', '=', self.company_id.id),
+            # incluye las sucursales: sus apuntes llevan la compañía hija
+            ('company_id', 'child_of', self.company_id.id),
             ('date', '<=', self.date),
             ('currency_id', '=', self.currency_id.id),
             ('account_id.l10n_pe_exchange_closing', '!=', False),
@@ -543,6 +555,21 @@ class L10nPeExchangeClosure(models.Model):
 
     def action_cancel(self):
         for closure in self:
+            if closure.state == 'posted':
+                # el mismo orden cronológico que exige el cálculo: los
+                # cierres posteriores se apoyan en este ajuste
+                later = self.search([
+                    ('company_id', '=', closure.company_id.id),
+                    ('currency_id', '=', closure.currency_id.id),
+                    ('state', '=', 'posted'),
+                    ('date', '>', closure.date),
+                    ('id', 'not in', self.ids),
+                ], limit=1)
+                if later:
+                    raise UserError(_(
+                        'Existe un cierre posterior contabilizado (%s): '
+                        'cancélelo antes de cancelar %s.',
+                        later.name, closure.name))
             if closure.move_id and closure.move_id.state != 'cancel':
                 closure.move_id.button_draft()
                 closure.move_id.button_cancel()
@@ -556,12 +583,27 @@ class L10nPeExchangeClosure(models.Model):
                 raise UserError(_(
                     'Cancele primero el cierre %s: su asiento sigue '
                     'contabilizado.', closure.name))
-            closure.move_id = False
-            if move:
-                move.button_draft()
-                move.unlink()
-            closure.state = 'draft'
+            # El asiento cancelado se conserva (y queda enlazado al cierre
+            # por su campo propio): borrar un asiento que ya estuvo
+            # publicado rompe la pista de auditoría restrictiva y deja
+            # huecos en la secuencia.
+            if move and move.state == 'draft':
+                move.button_cancel()
+            closure.write({'move_id': False, 'state': 'draft'})
         return True
+
+    def write(self, vals):
+        stale = (self.filtered(lambda c: c.state == 'computed')
+                 if RECOMPUTE_FIELDS & set(vals) else self.browse())
+        res = super().write(vals)
+        if stale:
+            stale.line_ids.unlink()
+            super(L10nPeExchangeClosure, stale).write({'state': 'draft'})
+            for closure in stale:
+                closure.message_post(body=_(
+                    'Se modificó un dato del cálculo: el cierre vuelve a '
+                    'borrador y debe calcularse de nuevo.'))
+        return res
 
     def action_open_move(self):
         self.ensure_one()

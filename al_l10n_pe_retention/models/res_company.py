@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 
 class ResCompany(models.Model):
@@ -41,6 +43,22 @@ class ResCompany(models.Model):
         help='Cuenta transitoria de pagos que el wizard propone al '
              'registrar pagos con retención cuando el método de pago no '
              'tiene cuenta propia (el campo es obligatorio en el pago).')
+
+    @api.constrains('l10n_pe_retention_rate', 'l10n_pe_retention_tax_id')
+    def _check_l10n_pe_retention_rate(self):
+        """La tasa estimada en la factura y la del impuesto que retiene en
+        el pago deben ser la misma."""
+        for company in self:
+            tax = company.l10n_pe_retention_tax_id
+            if (tax and tax.amount_type == 'percent'
+                    and float_compare(abs(tax.amount),
+                                      company.l10n_pe_retention_rate,
+                                      precision_digits=2)):
+                raise ValidationError(_(
+                    'La tasa de retención (%(rate)s %%) no coincide con la del '
+                    'impuesto %(tax)s (%(tax_rate)s %%).',
+                    rate=company.l10n_pe_retention_rate, tax=tax.name,
+                    tax_rate=abs(tax.amount)))
 
 
 class ResConfigSettings(models.TransientModel):

@@ -249,3 +249,40 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
                               date_to=date(2026, 7, 31))
         with self.assertRaises(UserError):
             wizard.action_generate()
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (19.0.12)
+    # ------------------------------------------------------------------
+    def test_deposited_moves_are_skipped(self):
+        """Un comprobante con constancia no se deposita dos veces."""
+        bill = self._create_bill()
+        bill.write({'l10n_pe_detraction_number': '2026-000001',
+                    'l10n_pe_detraction_date': date(2026, 3, 15)})
+        wizard = self._wizard()
+        with self.assertRaises(UserError):
+            wizard.action_generate()
+
+    def test_manual_moves_are_validated(self):
+        """Los comprobantes elegidos a mano pasan las mismas validaciones."""
+        posted = self._create_bill()
+        draft = self._create_bill(post=False)
+        wizard = self._wizard(move_ids=[(6, 0, (posted | draft).ids)])
+        wizard.action_generate()
+        lines = [line for line in self._content(wizard).split('\r\n') if line]
+        self.assertEqual(len(lines), 2, 'solo entra el publicado')
+        self.assertIn('no está publicado', wizard.excluded_html)
+
+    def test_batch_number_proposes_the_next_one(self):
+        from odoo import fields
+        year = fields.Date.context_today(self.env.user).strftime('%y')
+        self.company.l10n_pe_detraction_last_batch = '%s0007' % year
+        wizard = self.env['l10n_pe.detraction.txt.wizard'].with_company(
+            self.company).create({
+                'company_id': self.company.id,
+                'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31)})
+        self.assertEqual(wizard.batch_number, '%s0008' % year)
+        self._create_bill()
+        wizard.batch_number = '%s0009' % year
+        wizard.action_generate()
+        self.assertEqual(self.company.l10n_pe_detraction_last_batch,
+                         '%s0009' % year)

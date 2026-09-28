@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, models
+from odoo import _, models
 
 
 class AccountMulticurrencyRevaluationWizard(models.TransientModel):
     _inherit = 'account.multicurrency.revaluation.wizard'
 
-    @api.model
     def _get_move_vals(self):
         """Cita en cada línea de provisión el T.C. realmente aplicado.
 

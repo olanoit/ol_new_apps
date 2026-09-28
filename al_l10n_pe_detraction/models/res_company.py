@@ -27,6 +27,10 @@ class ResCompany(models.Model):
         help='Compras: cuenta donde se registra la detracción a depositar '
              'a nombre del proveedor (p. ej. 424001 Detracciones por '
              'pagar).')
+    l10n_pe_detraction_last_batch = fields.Char(
+        string='Último lote de depósito masivo', copy=False,
+        help='Último número de lote (AANNNN) generado para el Banco de la '
+             'Nación: el asistente propone el siguiente.')
 
 
 class ResConfigSettings(models.TransientModel):

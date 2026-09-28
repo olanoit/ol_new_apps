@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='other_info']" position="after">
                 <page string="Detracción" name="l10n_pe_detraction"
-                      invisible="not l10n_pe_detraction_applies">
+                      invisible="not l10n_pe_detraction_applies and not l10n_pe_detraction_type_id">
                     <group>
                         <group string="Cálculo">
                             <field name="l10n_pe_detraction_type_id"

@@ -690,3 +690,74 @@ class TestExchangeClosure(TransactionCase):
         closure = self._closure('01', 2024, purchase=3.80, sale=3.82)
         with self.assertRaises(UserError):
             closure.action_post()
+
+    # ------------------------------------------------------------------ #
+    # Correcciones de la auditoría (19.0.4)                               #
+    # ------------------------------------------------------------------ #
+    def test_editing_a_computed_closure_resets_it(self):
+        """Cambiar un dato del cálculo no deja contabilizar el detalle viejo."""
+        self._entry('2024-01-15', [
+            (self.acc_bank, 1000.0, 3700.0, None),
+            (self.acc_other, -1000.0, -3700.0, None),
+        ])
+        closure = self._closure('01', 2024, purchase=3.80, sale=3.82)
+        closure.action_compute()
+        self.assertEqual(closure.state, 'computed')
+        closure.rate_purchase = 3.90
+        self.assertEqual(closure.state, 'draft')
+        self.assertFalse(closure.line_ids)
+        with self.assertRaises(UserError):
+            closure.action_post()
+        closure.action_compute()
+        self.assertAlmostEqual(
+            self._line_of(closure, self.acc_bank).adjustment, 200.0)
+
+    def test_changing_the_journal_keeps_the_computation(self):
+        self._entry('2024-01-15', [
+            (self.acc_bank, 1000.0, 3700.0, None),
+            (self.acc_other, -1000.0, -3700.0, None),
+        ])
+        closure = self._closure('01', 2024, purchase=3.80, sale=3.82)
+        closure.action_compute()
+        closure.journal_id = self.journal
+        self.assertEqual(closure.state, 'computed')
+
+    def test_cancel_must_follow_chronological_order(self):
+        self._entry('2024-01-15', [
+            (self.acc_bank, 1000.0, 3700.0, None),
+            (self.acc_other, -1000.0, -3700.0, None),
+        ])
+        january = self._closure('01', 2024, purchase=3.80, sale=3.82)
+        january.action_compute()
+        january.action_post()
+        february = self._closure('02', 2024, purchase=3.90, sale=3.92)
+        february.action_compute()
+        february.action_post()
+        with self.assertRaises(UserError):
+            january.action_cancel()
+        february.action_cancel()
+        january.action_cancel()
+        self.assertEqual(january.state, 'cancel')
+
+    def test_draft_keeps_the_cancelled_move(self):
+        """Volver a borrador no borra el asiento cancelado (auditoría)."""
+        self._entry('2024-01-15', [
+            (self.acc_bank, 1000.0, 3700.0, None),
+            (self.acc_other, -1000.0, -3700.0, None),
+        ])
+        closure = self._closure('01', 2024, purchase=3.80, sale=3.82)
+        closure.action_compute()
+        closure.action_post()
+        move = closure.move_id
+        closure.action_cancel()
+        closure.action_draft()
+        self.assertFalse(closure.move_id)
+        self.assertTrue(move.exists())
+        self.assertEqual(move.state, 'cancel')
+        self.assertEqual(move.l10n_pe_exchange_closure_id, closure)
+
+    def test_multicompany_rules(self):
+        for xmlid in ('rule_exchange_closure_company',
+                      'rule_exchange_closure_line_company'):
+            rule = self.env.ref('al_l10n_pe_exchange_closure.%s' % xmlid)
+            self.assertIn('company_ids', rule.domain_force)

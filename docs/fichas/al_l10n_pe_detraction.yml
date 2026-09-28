@@ -582,6 +582,17 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 12.20260827
+    fecha: 27/09/2026
+    cambios:
+      - "Con la detracción separada en el asiento, las cuotas de la factura electrónica a crédito ya no incluyen la detracción ni la restan dos veces."
+      - "El depósito masivo del Banco de la Nación deja fuera los comprobantes que ya tienen constancia, y valida también los elegidos a mano (publicados, de la compañía y de la modalidad)."
+      - "No se puede registrar dos veces el depósito de una misma detracción."
+      - "El tipo de operación se fija según el código: 1002 recursos hidrobiológicos, 1003 transporte de pasajeros, 1004 transporte de carga; los demás, 1001."
+      - "Corregir a mano el tipo o el porcentaje de detracción recalcula el monto y ya no se pierde; el XML usa esos mismos valores."
+      - "Al registrar el pago de una factura con reparto se propone solo el neto: la detracción se registra con «Registrar depósito»."
+      - "Si la cuota mayor no alcanza para separar la detracción, la factura avisa al publicarse en vez de quedar sin separar."
+      - "El número de lote del depósito masivo propone el siguiente correlativo del año."
   - fecha: 16/09/2026
     cambios:
       - "Aplicar un contraste antiguo ya no falla con «El código del catálogo 54 debe ser único»: los códigos que ya existen se vinculan y los porcentajes que ya coinciden no se tocan."

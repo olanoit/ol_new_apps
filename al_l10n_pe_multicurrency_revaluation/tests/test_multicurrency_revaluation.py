@@ -254,3 +254,23 @@ class TestMulticurrencyRevaluation(TransactionCase):
         self.assertAlmostEqual(lines[0]['credit'], 2.0, places=2)
         self.assertEqual(lines[1]['account_id'], self.expense.id)
         self.assertAlmostEqual(lines[1]['debit'], 2.0, places=2)
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (19.0.2)
+    # ------------------------------------------------------------------
+    def test_custom_rate_wins_over_purchase_rate(self):
+        """El T.C. escrito a mano en el filtro manda sobre compra/venta."""
+        self.payable.l10n_pe_revaluation_rate_type = 'purchase'
+        self._post_entry(self.payable, -100.0, -370.0)
+        report = self.report.with_company(self.company)
+        options = report.get_options({
+            'selected_variant_id': self.report.id,
+            'date': {'date_from': DATE, 'date_to': DATE, 'mode': 'range', 'filter': 'custom'},
+            'unfold_all': True,
+            'currency_rates': {str(self.usd.id): {'rate': 0.25}},  # S/ 4.000
+        })
+        self.assertTrue(options['custom_rate'])
+        line = self._account_line(self._lines(options), self.payable)
+        self.assertAlmostEqual(self._value(line, options, 'balance_current'), -400.0, places=2)
+        self.assertAlmostEqual(self._value(line, options, 'adjustment'), -30.0, places=2)
+        self.assertEqual(self._value(line, options, 'rate_used'), 'S/ 4.000')

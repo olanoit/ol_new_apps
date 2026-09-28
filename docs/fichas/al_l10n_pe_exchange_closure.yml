@@ -440,6 +440,14 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 4.20260828
+    fecha: 27/09/2026
+    cambios:
+      - "Si se cambia el mes, la moneda, los tipos de cambio o la analítica de un cierre ya calculado, vuelve a borrador y hay que calcularlo de nuevo: ya no se puede contabilizar un cálculo desfasado."
+      - "Un cierre solo se puede cancelar si no hay cierres posteriores contabilizados."
+      - "Volver un cierre a borrador conserva su asiento cancelado en lugar de borrarlo, como exige la pista de auditoría."
+      - "Cada compañía ve solo sus cierres, y el cierre incluye los apuntes de sus sucursales."
+      - "El T.C. solo se descarga automáticamente para el dólar; para otras monedas se usa el registrado."
   - fecha: 14/09/2026
     cambios:
       - Menús de la app Perú reordenados.

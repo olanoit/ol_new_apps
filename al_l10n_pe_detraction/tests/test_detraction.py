@@ -327,3 +327,91 @@ class TestDetraction(TransactionCase):
                          'La deuda con el proveedor sigue viva')
         self.assertAlmostEqual(abs(linea_prov.amount_residual), neto, 2)
         self.assertAlmostEqual(move.amount_residual, neto, 2)
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (19.0.12)
+    # ------------------------------------------------------------------
+    def test_operation_type_follows_catalog_51(self):
+        """El tipo de operación 100x depende del código (catálogo 51)."""
+        cargo = self.env['product.product'].create({
+            'name': 'Transporte de carga Test', 'type': 'service',
+            'l10n_pe_detraction_type_id':
+                self.env.ref('al_l10n_pe_detraction.detraction_027').id})
+        move = self._invoice('out_invoice', 1000.0, products=[cargo])
+        move.action_post()
+        self.assertEqual(move.l10n_pe_edi_operation_type, '1004')
+
+    def test_manual_type_drives_percent_and_applies(self):
+        """Elegir el tipo a mano recalcula el porcentaje y la aplicabilidad."""
+        plain = self.env['product.product'].create({
+            'name': 'Servicio sin SPOT Test', 'type': 'service'})
+        move = self._invoice('out_invoice', 1000.0, products=[plain])
+        self.assertFalse(move.l10n_pe_detraction_applies)
+        move.l10n_pe_detraction_type_id = self.dtype_4
+        self.assertEqual(move.l10n_pe_detraction_percent, 4.0)
+        self.assertTrue(move.l10n_pe_detraction_applies)
+        self.assertEqual(move.l10n_pe_detraction_amount, 47.0)  # 1180 × 4 %
+
+    def test_spot_follows_invoice_percent(self):
+        """El bloque «Detraccion» del XML usa el % corregido en la factura."""
+        move = self._invoice('out_invoice', 1000.0)
+        move.l10n_pe_detraction_percent = 10.0
+        move.l10n_pe_edi_operation_type = '1001'
+        self.assertEqual(move.l10n_pe_detraction_amount, 118.0)
+        spot = move._l10n_pe_edi_get_spot()
+        self.assertEqual(spot['payment_percent'], 10.0)
+        self.assertEqual(spot['amount'], 118.0)
+        self.assertEqual(spot['payment_means_id'], self.dtype_12.code)
+
+    def test_split_edi_installments_exclude_detraction(self):
+        """Con reparto, las cuotas del XML de crédito son solo el neto."""
+        self._enable_split()
+        move = self._invoice('out_invoice', 1000.0)  # total 1180, det 142
+        move.invoice_date_due = date(2025, 7, 10)
+        move.action_post()
+        node = {}
+        self.env['account.edi.xml.ubl_pe']._add_invoice_payment_terms_nodes(
+            node, {'invoice': move})
+        cuotas = [term for term in node['cac:PaymentTerms']
+                  if str(term['cbc:PaymentMeansID']['_text']).startswith('Cuota')]
+        self.assertEqual(len(cuotas), 1)
+        self.assertEqual(float(cuotas[0]['cbc:Amount']['_text']), 1038.0)
+
+    def test_split_raises_when_installment_smaller_than_detraction(self):
+        self._enable_split()
+        term = self.env['account.payment.term'].create({
+            'name': '10 cuotas Test',
+            'line_ids': [(0, 0, {'value': 'percent', 'value_amount': 10.0,
+                                 'nb_days': 30 * (i + 1)})
+                         for i in range(10)],
+        })
+        move = self._invoice('out_invoice', 1000.0)
+        move.invoice_payment_term_id = term
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            move.action_post()
+
+    def test_deposit_wizard_refuses_second_deposit(self):
+        from odoo.exceptions import UserError
+        move = self._invoice('in_invoice', 1000.0)
+        move.action_post()
+        values = {
+            'move_id': move.id, 'journal_id': self.journal_bank.id,
+            'payment_date': date(2025, 6, 15),
+            'constancy_number': '2025-000777'}
+        Wizard = self.env['l10n_pe.detraction.deposit.wizard']
+        Wizard.create(values).action_confirm()
+        with self.assertRaises(UserError):
+            Wizard.create(dict(values, constancy_number='2025-000778')
+                          ).action_confirm()
+
+    def test_register_payment_leaves_detraction_out(self):
+        """Pagar la factura con reparto no incluye la línea de detracción."""
+        _receivable, payable = self._enable_split()
+        move = self._invoice('in_invoice', 1000.0)
+        move.action_post()
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move', active_ids=move.ids).create({})
+        self.assertTrue(wizard.line_ids)
+        self.assertNotIn(payable, wizard.line_ids.account_id)
+        self.assertAlmostEqual(wizard.amount, 1038.0, 2)

@@ -9,6 +9,7 @@ cada una restringida a sus cuentas con ``forced_domain`` y con sus propias
 tasas, y se suman los resultados por clave de agrupación.
 """
 from odoo import api, models
+from odoo.tools import float_is_zero
 
 RATE_COLUMN = 'rate_used'
 
@@ -35,6 +36,17 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
         date_to = options['date']['date_to']
         currencies = self.env['res.currency'].browse(
             int(currency_id) for currency_id in options['currency_rates'])
+        # Una tasa escrita a mano en el filtro del informe manda sobre la de
+        # compra o venta: se detecta igual que el nativo (``custom_rate``).
+        custom = set()
+        if options.get('custom_rate'):
+            db_rates = (currencies | company.currency_id)._get_rates(company, date_to)
+            company_rate = db_rates[company.currency_id.id]
+            custom = {
+                key for key, values in options['currency_rates'].items()
+                if not float_is_zero(
+                    float(values['rate']) - db_rates[int(key)] / company_rate, 20)
+            }
         Account = self.env['account.account'].with_company(company)
         groups = []
         for rate_type in ('purchase', 'sale'):
@@ -45,6 +57,8 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
             if not accounts:
                 continue
             values = currencies._l10n_pe_revaluation_rates(company, date_to, rate_type)
+            values = {currency_id: value for currency_id, value in values.items()
+                      if str(currency_id) not in custom}
             groups.append({
                 'rate_type': rate_type,
                 'account_ids': accounts.ids,

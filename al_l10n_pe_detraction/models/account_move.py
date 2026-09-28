@@ -4,6 +4,13 @@ from odoo.exceptions import UserError
 from odoo.tools import float_round
 
 DETRACTION_OPERATION_TYPES = ('1001', '1002', '1003', '1004')
+# Catálogo 51 de SUNAT: tipo de operación 100x según el código del
+# catálogo 54 (los demás van con 1001).
+DETRACTION_OPERATION_BY_CODE = {
+    '004': '1002',  # recursos hidrobiológicos
+    '026': '1003',  # transporte de pasajeros
+    '027': '1004',  # transporte de bienes (carga)
+}
 DEFAULT_MIN_AMOUNT = 700.0
 
 # Tabla 5.5 del instructivo de depósito masivo del Banco de la Nación:
@@ -32,15 +39,17 @@ class AccountMove(models.Model):
 
     l10n_pe_detraction_applies = fields.Boolean(
         string='Sujeta a detracción',
-        compute='_compute_l10n_pe_detraction', store=True)
+        compute='_compute_l10n_pe_detraction_applies', store=True)
     l10n_pe_detraction_type_id = fields.Many2one(
         'l10n_pe.detraction.type', string='Tipo de detracción',
-        compute='_compute_l10n_pe_detraction', store=True, readonly=False,
+        compute='_compute_l10n_pe_detraction_type_id', store=True,
+        readonly=False,
         help='Código dominante (mayor porcentaje) entre los productos de '
              'la factura; puede corregirse manualmente en borrador.')
     l10n_pe_detraction_percent = fields.Float(
         string='% detracción', digits=(5, 2),
-        compute='_compute_l10n_pe_detraction', store=True, readonly=False)
+        compute='_compute_l10n_pe_detraction_percent', store=True,
+        readonly=False)
     l10n_pe_detraction_amount = fields.Monetary(
         string='Monto de detracción',
         currency_field='company_currency_id',
@@ -54,29 +63,60 @@ class AccountMove(models.Model):
         help='Importe total en soles menos la detracción: lo que se '
              'cobra/paga a la contraparte fuera del Banco de la Nación.')
 
-    @api.depends('invoice_line_ids.product_id', 'amount_total_signed',
-                 'move_type', 'company_id')
-    def _compute_l10n_pe_detraction(self):
+    def _l10n_pe_detraction_eligible(self):
+        self.ensure_one()
+        return (self.move_type in ('out_invoice', 'in_invoice')
+                and self.country_code == 'PE')
+
+    @staticmethod
+    def _l10n_pe_product_detraction_percent(product):
+        dtype = product.l10n_pe_detraction_type_id
+        return dtype.percentage if dtype else product.l10n_pe_withhold_percentage
+
+    # Cadena de cálculo en tres pasos (tipo → porcentaje → aplicabilidad):
+    # así el tipo o el porcentaje corregidos a mano en borrador arrastran
+    # al resto en vez de perderse con el siguiente recálculo del importe.
+    # No se depende de los campos del catálogo: cambiar un porcentaje no
+    # debe reescribir facturas ya publicadas.
+    @api.depends('invoice_line_ids.product_id', 'move_type', 'company_id',
+                 'country_code')
+    def _compute_l10n_pe_detraction_type_id(self):
         for move in self:
             best_type = self.env['l10n_pe.detraction.type']
-            best_percent = 0.0
-            min_amount = DEFAULT_MIN_AMOUNT
-            if (move.move_type in ('out_invoice', 'in_invoice')
-                    and move.country_code == 'PE'):
+            if move._l10n_pe_detraction_eligible():
+                best_percent = 0.0
                 for product in move.invoice_line_ids.product_id:
-                    dtype = product.l10n_pe_detraction_type_id
-                    percent = (dtype.percentage if dtype
-                               else product.l10n_pe_withhold_percentage)
+                    percent = self._l10n_pe_product_detraction_percent(product)
                     if percent > best_percent:
                         best_percent = percent
-                        best_type = dtype
-                        min_amount = (dtype.min_amount if dtype
-                                      else DEFAULT_MIN_AMOUNT)
-            base = abs(move.amount_total_signed)
-            applies = bool(best_percent) and base > min_amount
-            move.l10n_pe_detraction_applies = applies
-            move.l10n_pe_detraction_type_id = best_type if applies else False
-            move.l10n_pe_detraction_percent = best_percent if applies else 0.0
+                        best_type = product.l10n_pe_detraction_type_id
+            move.l10n_pe_detraction_type_id = best_type
+
+    @api.depends('l10n_pe_detraction_type_id', 'invoice_line_ids.product_id',
+                 'move_type', 'country_code')
+    def _compute_l10n_pe_detraction_percent(self):
+        for move in self:
+            percent = 0.0
+            if move._l10n_pe_detraction_eligible():
+                if move.l10n_pe_detraction_type_id:
+                    percent = move.l10n_pe_detraction_type_id.percentage
+                else:
+                    percent = max(
+                        (self._l10n_pe_product_detraction_percent(product)
+                         for product in move.invoice_line_ids.product_id),
+                        default=0.0)
+            move.l10n_pe_detraction_percent = percent
+
+    @api.depends('l10n_pe_detraction_percent', 'l10n_pe_detraction_type_id',
+                 'amount_total_signed', 'move_type', 'country_code')
+    def _compute_l10n_pe_detraction_applies(self):
+        for move in self:
+            dtype = move.l10n_pe_detraction_type_id
+            min_amount = dtype.min_amount if dtype else DEFAULT_MIN_AMOUNT
+            move.l10n_pe_detraction_applies = bool(
+                move._l10n_pe_detraction_eligible()
+                and move.l10n_pe_detraction_percent
+                and abs(move.amount_total_signed) > min_amount)
 
     @api.depends('l10n_pe_detraction_applies', 'l10n_pe_detraction_percent',
                  'amount_total_signed')
@@ -112,7 +152,9 @@ class AccountMove(models.Model):
                     and move.move_type == 'out_invoice'
                     and move.l10n_pe_edi_operation_type
                     not in DETRACTION_OPERATION_TYPES):
-                move.l10n_pe_edi_operation_type = '1001'
+                move.l10n_pe_edi_operation_type = (
+                    DETRACTION_OPERATION_BY_CODE.get(
+                        move.l10n_pe_detraction_type_id.code, '1001'))
             if (move.company_id.l10n_pe_detraction_split
                     and move.state == 'draft'
                     and move.move_type in ('out_invoice', 'in_invoice')):
@@ -198,7 +240,15 @@ class AccountMove(models.Model):
             return
         main = max(term_lines, key=lambda l: abs(l.balance))
         if abs(main.balance) <= det_amount:
-            return  # término menor a la detracción (multi-cuota atípica)
+            # repartir en silencio dejaría la factura sin separar sin que
+            # nadie lo note: se avisa para ajustar el plazo de pago
+            raise UserError(self.env._(
+                'No se puede separar la detracción de %(move)s: su cuota '
+                'mayor (%(term)s) no supera la detracción (%(det)s). Ajuste '
+                'el plazo de pago o desactive el reparto en Ajustes ▸ Perú.',
+                move=self.display_name,
+                term=self.company_currency_id.format(abs(main.balance)),
+                det=self.company_currency_id.format(det_amount)))
         sign = 1 if main.balance > 0 else -1
         det_balance = sign * det_amount
         ratio = det_balance / main.balance
@@ -224,6 +274,26 @@ class AccountMove(models.Model):
                 'display_type': 'payment_term',
             }),
         ]})
+
+    def _l10n_pe_edi_get_spot(self):
+        # El XML nativo toma el mayor porcentaje de los productos; se alinea
+        # con el tipo, el porcentaje y el monto de la factura, que pueden
+        # haberse corregido a mano y son los que van a la contabilidad.
+        spot = super()._l10n_pe_edi_get_spot()
+        if spot and self.l10n_pe_detraction_applies:
+            percent = self.l10n_pe_detraction_percent
+            pen = self.env.ref('base.PEN')
+            spot.update({
+                'payment_means_id': (self.l10n_pe_detraction_type_id.code
+                                     or spot['payment_means_id']),
+                'payment_percent': percent,
+                'amount': self.l10n_pe_detraction_amount,
+                'spot_amount': float_round(
+                    self.amount_total * percent / 100.0,
+                    precision_rounding=(1 if self.currency_id == pen
+                                        else self.currency_id.rounding)),
+            })
+        return spot
 
     def action_open_detraction_deposit(self):
         self.ensure_one()

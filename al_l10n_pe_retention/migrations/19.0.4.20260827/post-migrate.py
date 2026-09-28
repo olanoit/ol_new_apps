@@ -17,6 +17,8 @@ antiguas siguen en la tabla y se leen por SQL.
 """
 import logging
 
+from odoo.tools import SQL
+
 _logger = logging.getLogger(__name__)
 
 PARES = [
@@ -37,10 +39,12 @@ def migrate(cr, version):
                 'al_l10n_pe_retention: %s o %s no existe, nada que volcar.',
                 viejo, nuevo)
             continue
-        cr.execute("""
-            UPDATE res_partner SET {nuevo} = TRUE
-             WHERE {viejo} IS TRUE AND {nuevo} IS DISTINCT FROM TRUE
-        """.format(viejo=viejo, nuevo=nuevo))
+        cr.execute(SQL(
+            """
+            UPDATE res_partner SET %(nuevo)s = TRUE
+             WHERE %(viejo)s IS TRUE AND %(nuevo)s IS DISTINCT FROM TRUE
+            """,
+            viejo=SQL.identifier(viejo), nuevo=SQL.identifier(nuevo)))
         _logger.info(
             'al_l10n_pe_retention: %s contactos volcados de %s a %s.',
             cr.rowcount, viejo, nuevo)

@@ -29,7 +29,7 @@ class L10nPeDetractionType(models.Model):
     _code_uniq = models.Constraint(
         'unique (code)', 'El código del catálogo 54 debe ser único.')
 
-    @api.depends('code')
+    @api.depends('code', 'name')
     def _compute_display_name(self):
         for record in self:
             record.display_name = '[%s] %s' % (record.code, record.name)
@@ -52,10 +52,11 @@ class L10nPeDetractionType(models.Model):
     def action_sync_products(self):
         """Reaplica el % vigente del catálogo a los productos vinculados
         (campos nativos que usa el XML UBL)."""
-        for record in self:
-            products = self.env['product.template'].search(
-                [('l10n_pe_detraction_type_id', '=', record.id)])
-            products.write({
+        products = self.env['product.template'].search(
+            [('l10n_pe_detraction_type_id', 'in', self.ids)])
+        for record, record_products in products.grouped(
+                'l10n_pe_detraction_type_id').items():
+            record_products.write({
                 'l10n_pe_withhold_code': record.code,
                 'l10n_pe_withhold_percentage': record.percentage,
             })

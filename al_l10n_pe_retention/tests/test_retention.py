@@ -373,3 +373,174 @@ class TestRetentionApplies(TransactionCase):
         })
         self.assertTrue(bill.l10n_pe_detraction_applies)
         self.assertFalse(bill.l10n_pe_retention_applies)
+
+    # ------------------------------------------------------------------
+    # Correcciones de la auditoría (19.0.8)
+    # ------------------------------------------------------------------
+    def test_not_applies_without_igv(self):
+        """Una compra sin IGV (exonerada, inafecta) no sufre retención."""
+        bill = self._bill(1000.0)
+        bill.invoice_line_ids.tax_ids = False
+        self.assertFalse(bill.l10n_pe_retention_applies)
+
+    def test_not_applies_fee_receipt(self):
+        """El recibo por honorarios (02) está fuera del régimen."""
+        bill = self._bill(1000.0)
+        doc_type = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '02'), ('country_id.code', '=', 'PE')], limit=1)
+        if not doc_type:
+            self.skipTest('sin tipo de documento 02')
+        bill.l10n_latam_document_type_id = doc_type
+        self.assertFalse(bill.l10n_pe_retention_applies)
+
+    def test_posted_bill_keeps_flag_after_partner_update(self):
+        """El padrón no reescribe la marca de una factura ya publicada."""
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        self.assertTrue(bill.l10n_pe_retention_applies)
+        self.partner.is_good_taxpayer = True
+        self.assertTrue(bill.l10n_pe_retention_applies)
+        self.partner.is_good_taxpayer = False
+
+    def test_rate_must_match_the_tax(self):
+        from odoo.exceptions import ValidationError
+        self._setup_retention_tax()
+        with self.assertRaises(ValidationError):
+            self.company.l10n_pe_retention_rate = 6.0
+
+    def _cre_xml(self, payment):
+        payment.action_l10n_pe_generate_cre_xml()
+        attachment = self.env['ir.attachment'].search(
+            [('res_model', '=', 'account.payment'),
+             ('res_id', '=', payment.id),
+             ('mimetype', '=', 'application/xml')],
+            limit=1, order='id desc')
+        return attachment.raw.decode()
+
+    def test_cre_xml_one_document_per_invoice(self):
+        """Un pago de dos facturas reparte pago y retención entre ellas."""
+        self._setup_retention_tax()
+        bills = self._bill(1000.0) | self._bill(1000.0)
+        bills.action_post()
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move', active_ids=bills.ids).create(
+                {'group_payment': True})
+        payment = wizard._create_payments()
+        self.assertEqual(len(payment), 1)
+        xml = self._cre_xml(payment)
+        self.assertEqual(xml.count('<sac:SUNATRetentionDocumentReference>'), 2)
+        self.assertEqual(
+            xml.count('<cbc:PaidAmount currencyID="PEN">1180.00</cbc:PaidAmount>'), 2)
+        self.assertEqual(xml.count(
+            '<sac:SUNATRetentionAmount currencyID="PEN">35.40'
+            '</sac:SUNATRetentionAmount>'), 2)
+        self.assertIn('<cbc:TotalInvoiceAmount currencyID="PEN">70.80'
+                      '</cbc:TotalInvoiceAmount>', xml)
+
+    def test_cre_xml_foreign_currency(self):
+        """Factura en dólares: importes del documento en USD, retención en
+        soles y tipo de cambio en el XML."""
+        self._setup_retention_tax()
+        usd = self.env.ref('base.USD')
+        usd.active = True
+        Rate = self.env['res.currency.rate']
+        rate_vals = {'currency_id': usd.id, 'name': date(2025, 6, 1),
+                     'company_id': self.company.root_id.id}
+        rate = Rate.search([(k, '=', v) for k, v in rate_vals.items()])
+        if rate:
+            rate.rate = 1 / 3.75
+        else:
+            Rate.create(dict(rate_vals, rate=1 / 3.75))
+        bill = self._bill(1000.0)
+        bill.currency_id = usd
+        bill.action_post()
+        wizard = self._register_payment(bill)
+        wizard.payment_date = date(2025, 6, 15)
+        payment = wizard._create_payments()
+        xml = self._cre_xml(payment)
+        self.assertIn('<cbc:PaidAmount currencyID="USD">1180.00', xml)
+        self.assertIn('<cbc:SourceCurrencyCode>USD</cbc:SourceCurrencyCode>', xml)
+        # 35.40 USD × 3.75 = 132.75 soles
+        self.assertIn('<sac:SUNATRetentionAmount currencyID="PEN">132.75', xml)
+
+    def test_summary_626_one_row_per_invoice(self):
+        self._setup_retention_tax()
+        bills = self._bill(1000.0) | self._bill(1000.0)
+        bills.action_post()
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move', active_ids=bills.ids).create(
+                {'group_payment': True})
+        wizard.payment_date = date(2025, 6, 15)
+        wizard._create_payments()
+        summary = self.env['l10n_pe.retention.summary.wizard'].create({
+            'year': 2025, 'month': '06'})
+        summary.action_export()
+        self.assertEqual(summary.retention_count, 2)
+        self.assertAlmostEqual(summary.retention_total, 70.80, 2)
+
+    # ------------------------------------------------------------------
+    # Retenciones sufridas: validaciones
+    # ------------------------------------------------------------------
+    def _received(self, amount=70.80, name='R002-00000099'):
+        Account = self.env['account.account'].with_company(self.company)
+        account = Account.search([('code', '=', '401142')], limit=1) or \
+            Account.create({'code': '401142',
+                            'name': 'IGV Retenciones sufridas Test',
+                            'account_type': 'asset_current',
+                            'reconcile': False})
+        self.company.l10n_pe_retention_received_account_id = account
+        acc_inc = Account.search([('account_type', '=', 'income')], limit=1)
+        journal_sale = self.env['account.journal'].search(
+            [('code', '=', 'RETV'), ('company_id', '=', self.company.id)],
+            limit=1) or self.env['account.journal'].create({
+                'name': 'RET Ventas Test', 'code': 'RETV', 'type': 'sale',
+                'company_id': self.company.id,
+                'l10n_latam_use_documents': False})
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.partner.id,
+            'journal_id': journal_sale.id,
+            'invoice_date': date(2025, 6, 10),
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Venta', 'quantity': 1, 'price_unit': 2000.0,
+                'account_id': acc_inc.id})],
+        })
+        invoice.action_post()
+        return self.env['l10n_pe.retention.received'].create({
+            'name': name, 'date': date(2025, 6, 20),
+            'partner_id': self.partner.id, 'move_id': invoice.id,
+            'amount': amount})
+
+    def test_retention_received_requires_positive_amount(self):
+        received = self._received(amount=0.0)
+        with self.assertRaises(UserError):
+            received.action_post()
+
+    def test_retention_received_requires_sale_invoice(self):
+        received = self._received()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        received.move_id = bill
+        with self.assertRaises(UserError):
+            received.action_post()
+
+    def test_retention_received_is_unique(self):
+        from psycopg2 import IntegrityError
+        from odoo.tools import mute_logger
+        received = self._received(name='R002-00000100')
+        with mute_logger('odoo.sql_db'), self.assertRaises(IntegrityError):
+            received.copy({'name': 'R002-00000100'})
+            self.env.flush_all()
+
+    def test_retention_received_posted_cannot_be_deleted(self):
+        received = self._received(name='R002-00000101')
+        received.action_post()
+        with self.assertRaises(UserError):
+            received.unlink()
+
+    def test_retention_received_multicompany_rule(self):
+        rule = self.env.ref(
+            'al_l10n_pe_retention.rule_retention_received_company')
+        self.assertIn('company_ids', rule.domain_force)
+        self.assertTrue(self.env['l10n_pe.retention.received']
+                        ._check_company_auto)
