@@ -177,16 +177,21 @@ class HrLoan(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_not_applied(self):
-        """``saldo_final != amount`` indica cuotas ya aplicadas a alguna
-        boleta; eliminar el préstamo dejaría descuentos sin fuente."""
-        if any(loan.saldo_final != loan.amount for loan in self):
+        """Una cuota ya aplicada a alguna boleta impide borrar el
+        préstamo: dejaría descuentos sin fuente. (v18 comparaba
+        ``saldo_final != amount``, que falla por redondeo aunque no se
+        haya pagado nada.)"""
+        if any(line.validation == 'paid out'
+               for line in self.line_ids):
             raise UserError(self.env._(
                 'No puede eliminar un préstamo que ya fue aplicado.'))
 
     def get_fees(self):
         """Genera el cronograma: monto ÷ nº de cuotas (redondeo
         ``custom_round``), cada cuota vence el último día del mes y el
-        saldo ``debt`` decrece cuota a cuota. Puede llamarse de nuevo si
+        saldo ``debt`` decrece cuota a cuota. La última cuota absorbe el
+        residuo del redondeo para que la suma sea exactamente el monto
+        (100 / 3 → 33.33, 33.33, 33.34). Puede llamarse de nuevo si
         cambia el monto o el número de cuotas (regenera todo)."""
         self.ensure_one()
         if not (self.date and self.amount and self.fees_number > 0):
@@ -200,8 +205,12 @@ class HrLoan(models.Model):
                 current = current + relativedelta(months=1)
             current = current.replace(day=calendar.monthrange(
                 current.year, current.month)[1])
-            fee_amount = custom_round(self.amount / self.fees_number, 2)
-            debt -= fee_amount
+            if fee == self.fees_number:
+                fee_amount = custom_round(debt, 2)
+            else:
+                fee_amount = custom_round(
+                    self.amount / self.fees_number, 2)
+            debt = custom_round(debt - fee_amount, 2)
             self.env['hr.loan.line'].create({
                 'loan_id': self.id,
                 'fee': fee,
@@ -284,15 +293,20 @@ class HrPayslip(models.Model):
                 ('state', '=', 'paid out'),
                 ('advance_type_id', 'in', special_ids),
             ])
+            # Solo se aplica (y se marca pagado) lo que tiene input: un
+            # tipo sin input nunca llega a descontarse en la boleta.
+            pending = pending.filtered(
+                lambda advance: advance.advance_type_id.input_id)
             amounts = defaultdict(float)
             for advance in pending:
                 amounts[advance.advance_type_id.input_id] += advance.amount
+            # La regularización se suma una sola vez (v18 la repetía en
+            # cada tipo de input).
             regularization = sum(paid_special.mapped('amount'))
             for input_type, amount in amounts.items():
-                if not input_type:
-                    continue
                 slip._set_pe_input_amount(
                     input_type, amount + regularization)
+                regularization = 0.0
             pending.turn_paid_out()
             if amounts:
                 log += '%s\n' % slip.employee_id.display_name
@@ -327,15 +341,16 @@ class HrPayslip(models.Model):
                 ('validation', '=', 'paid out'),
                 ('loan_type_id', 'in', special_ids),
             ])
+            pending = pending.filtered(
+                lambda line: line.loan_type_id.input_id)
             amounts = defaultdict(float)
             for line in pending:
                 amounts[line.loan_type_id.input_id] += line.amount
             regularization = sum(paid_special.mapped('amount'))
             for input_type, amount in amounts.items():
-                if not input_type:
-                    continue
                 slip._set_pe_input_amount(
                     input_type, amount + regularization)
+                regularization = 0.0
             pending.turn_paid_out()
             if amounts:
                 log += '%s\n' % slip.employee_id.display_name

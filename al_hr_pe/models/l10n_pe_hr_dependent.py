@@ -297,6 +297,22 @@ class L10nPeHrDependent(models.Model):
     # ------------------------------------------------------------------
     # Acciones
     # ------------------------------------------------------------------
+    @api.model
+    def _cron_refresh_date_dependent(self):
+        """Recalcula cada día lo que caduca solo con la fecha.
+
+        ``state`` y ``gives_family_allowance`` se guardan (sirven para
+        agrupar y filtrar) pero dependen de *hoy*: sin este recálculo, un
+        hijo que cumple 18 años seguía marcado como fuente de asignación y
+        un vínculo con fecha de fin pasada seguía «Vigente».
+        """
+        dependents = self.with_context(active_test=False).search([])
+        fnames = ['state', 'gives_family_allowance']
+        for fname in fnames:
+            self.env.add_to_compute(self._fields[fname], dependents)
+        dependents._recompute_recordset(fnames)
+        return True
+
     def action_set_end(self):
         """Marca la baja con la fecha de hoy si no se indicó otra."""
         today = fields.Date.context_today(self)

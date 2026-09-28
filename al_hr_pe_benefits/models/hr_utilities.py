@@ -10,7 +10,10 @@ multiplicada por el % legal del giro se reparte:
   configurada (``rule_total_income``).
 
 El descuadre por redondeo de ambos repartos se ajusta contra la última
-línea (paridad v18). El total por trabajador se exporta como input
+línea (paridad v18). La participación de cada trabajador se limita a 18
+remuneraciones mensuales vigentes al cierre del ejercicio (D.L. 892,
+art. 2); el exceso no se reparte (va al FONDOEMPLEO) y queda registrado
+en la línea. El total por trabajador se exporta como input
 (``hr_input_for_results``) al lote de nóminas del pago.
 
 Cambios v19: ``account.fiscal.year`` (eliminado) → campo entero
@@ -126,6 +129,16 @@ class HrUtilities(models.Model):
                 'Principales de Nómina: %(fields)s.',
                 fields=', '.join(missing)))
 
+    @api.model
+    def _closing_remuneration(self, employee, version, param, on_date):
+        """Remuneración mensual vigente al cierre del ejercicio (base
+        del tope de 18 remuneraciones): sueldo de la versión vigente más
+        la asignación familiar si corresponde en esa fecha."""
+        amount = version.wage or 0.0
+        if employee._l10n_pe_has_family_allowance(on_date):
+            amount += param.family_allowance
+        return amount
+
     def _distribute(self):
         """Reparte 50 % por remuneraciones y 50 % por días laborados y
         ajusta el descuadre de redondeo en la última línea (v18)."""
@@ -163,9 +176,18 @@ class HrUtilities(models.Model):
             last.for_number_of_days = custom_round(
                 last.for_number_of_days + (half - total_days), 2)
             for line in lines:
-                if line.for_salary and line.for_number_of_days:
-                    line.total_utilities = custom_round(
-                        line.for_salary + line.for_number_of_days, 2)
+                total = custom_round(
+                    line.for_salary + line.for_number_of_days, 2)
+                # Tope D.L. 892 art. 2: 18 remuneraciones mensuales
+                # vigentes al cierre; el exceso va al FONDOEMPLEO.
+                cap = custom_round(18 * line.monthly_remuneration, 2) \
+                    if line.monthly_remuneration > 0 else 0.0
+                if cap and total > cap:
+                    line.excess_utilities = custom_round(total - cap, 2)
+                    total = cap
+                else:
+                    line.excess_utilities = 0.0
+                line.total_utilities = total
 
     # ------------------------------------------------------------------
     # Cálculo y exportación
@@ -175,18 +197,22 @@ class HrUtilities(models.Model):
         regla de remuneración afecta) y ejecuta el reparto."""
         self.ensure_one()
         Line = self.env['hr.utilities.line']
-        self.utilities_line_ids.filtered(
-            lambda line: not line.preserve_record).unlink()
+        preserved = self.utilities_line_ids.filtered('preserve_record')
+        (self.utilities_line_ids - preserved).unlink()
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         self._check_configuration(param)
         rule = getattr(param, 'rule_total_income')
         wd_dtrab = getattr(param, 'wd_dtrab')
         wd_falt = getattr(param, 'wd_falt')
+        # Solo boletas cerradas y sin las quincenales (su neto ya viaja
+        # en la mensual; contarlas duplicaría sueldo y días).
         slips = self.env['hr.payslip'].search([
             ('date_to', '>=', date(self.year, 1, 1)),
             ('date_to', '<=', date(self.year, 12, 31)),
             ('company_id', '=', self.company_id.id),
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
         ])
         data = {}
         for slip in slips:
@@ -204,13 +230,19 @@ class HrUtilities(models.Model):
             bucket['days'] -= sum(worked_days.filtered(
                 lambda line: line.work_entry_type_id in wd_falt
             ).mapped('number_of_days'))
+        closing_date = date(self.year, 12, 31)
         for employee in sorted(data, key=lambda emp: emp.id):
             bucket = data[employee]
-            if not bucket['has_rule']:
+            # Las líneas marcadas «No recalcular» se conservan: no se
+            # crea otra para ese trabajador (antes se creaba y se borraba
+            # DESPUÉS del reparto, que ya lo había contado dos veces).
+            if not bucket['has_rule'] \
+                    or employee in preserved.employee_id:
                 continue
             # TODO(fase3-revisar): distribution_id (distribución
             # analítica del contrato v18) sin equivalente en hr.version.
             first_version = param.get_first_version(employee)
+            closing_version = employee._get_version(closing_date)
             Line.create({
                 'main_id': self.id,
                 'employee_document': employee.identification_id or '',
@@ -220,13 +252,10 @@ class HrUtilities(models.Model):
                 'admission_date': first_version.contract_date_start,
                 'salary': bucket['salary'],
                 'number_of_days': bucket['days'],
+                'monthly_remuneration': self._closing_remuneration(
+                    employee, closing_version, param, closing_date),
             })
         self._distribute()
-        preserved_employees = self.utilities_line_ids.filtered(
-            'preserve_record').employee_id
-        self.utilities_line_ids.filtered(
-            lambda line: not line.preserve_record
-            and line.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
     def export_utilities(self):
@@ -280,6 +309,15 @@ class HrUtilitiesLine(models.Model):
         string='Por días laborados', digits=(12, 2))
     total_utilities = fields.Float(
         string='Total utilidades', digits=(12, 2))
+    monthly_remuneration = fields.Float(
+        string='Rem. mensual al cierre', digits=(12, 2),
+        help='Remuneración mensual vigente al cierre del ejercicio. La '
+             'participación no puede superar 18 veces este importe '
+             '(D.L. 892, art. 2).')
+    excess_utilities = fields.Float(
+        string='Exceso (FONDOEMPLEO)', digits=(12, 2),
+        help='Parte de la participación que supera el tope de 18 '
+             'remuneraciones: no se paga al trabajador.')
     preserve_record = fields.Boolean(string='No recalcular')
 
     @api.depends('employee')

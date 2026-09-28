@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sin noupdate a propósito: en cada actualización lleva las reglas
+         PE (noupdate) a la fórmula vigente, solo si no se retocaron a mano.
+         Ver hr.salary.rule._l10n_pe_sync_formulas. -->
+    <function model="hr.salary.rule" name="_l10n_pe_sync_formulas"/>
+</odoo>

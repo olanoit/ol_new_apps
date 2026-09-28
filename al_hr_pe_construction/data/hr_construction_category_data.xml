@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <!-- noupdate: el BUC y la BAE los ajusta el cliente a su convenio;
+         actualizar el módulo no debe pisarlo. -->
+    <data noupdate="1">
         <!-- Categorías del régimen. El BUC lo fija la convención
              colectiva: 32 % para el operario y 30 % para oficial y peón. -->
         <record id="category_operario" model="l10n_pe.hr.construction.category">

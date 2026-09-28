@@ -159,9 +159,9 @@ class TestFase3Benefits(BenefitsCaseBase):
         self.assertTrue(line, 'Gratificación sin línea del empleado')
         self.assertAlmostEqual(
             line.computable_remuneration, self.wage, places=1)
-        # Semestre Ene-Jun completo → 6/6
-        expected = round(self.wage / 6 * line.months, 1)
-        self.assertAlmostEqual(line.total_grat, expected, delta=2.0)
+        # Semestre Ene-Jun completo → 6/6 = computable
+        self.assertEqual(line.months, 6)
+        self.assertAlmostEqual(line.total_grat, self.wage, delta=0.05)
         if essalud and line.total_grat:
             self.assertAlmostEqual(
                 line.bonus_essalud,
@@ -176,8 +176,8 @@ class TestFase3Benefits(BenefitsCaseBase):
         # Ingreso 2025-01-01: primer año vacacional completo = 30 días
         full_year = rests.filtered(
             lambda r: r.date_from == date(2025, 1, 1))
-        if full_year:
-            self.assertAlmostEqual(full_year[0].days, 30.0, delta=0.1)
+        self.assertTrue(full_year, 'Falta el año vacacional 2025')
+        self.assertAlmostEqual(full_year[0].days, 30.0, delta=0.1)
 
     def test_multicompany_isolation(self):
         """El recálculo vacacional no borra saldos de otra compañía."""

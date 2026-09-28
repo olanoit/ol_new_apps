@@ -58,6 +58,11 @@ class HrPayslip(models.Model):
                  'employee_id.l10n_pe_dependent_ids.is_studying')
     def _compute_l10n_pe_family_allowance_ok(self):
         for payslip in self:
+            # Snapshot: al tocar los derechohabientes no se reescriben las
+            # boletas ya cerradas ni el ajuste manual que se hizo en ellas
+            # (sin asignar, el campo almacenado conserva su valor).
+            if payslip.id and payslip.state in ('validated', 'paid', 'cancel'):
+                continue
             employee = payslip.employee_id
             payslip.l10n_pe_family_allowance_ok = bool(
                 employee and employee._l10n_pe_has_family_allowance(
@@ -76,22 +81,42 @@ class HrPayslip(models.Model):
 
     @api.depends('date_from', 'company_id')
     def _compute_periodo_id(self):
-        Period = self.env['hr.period']
+        # Un solo search por compañía para todo el lote (antes, uno por
+        # boleta); la elección del periodo se hace en memoria.
+        todo = self.filtered(lambda s: not s.periodo_id and s.date_from)
+        candidates = {}
+        for company in todo.company_id:
+            slips = todo.filtered(lambda s, c=company: s.company_id == c)
+            candidates[company] = self.env['hr.period'].search([
+                ('company_id', '=', company.id),
+                ('date_start', '<=', max(slips.mapped('date_from'))),
+                ('date_end', '>=', min(
+                    s.date_to or s.date_from for s in slips)),
+            ])
         for slip in self:
-            if slip.periodo_id or not slip.date_from:
+            if slip not in todo:
                 slip.periodo_id = slip.periodo_id
                 continue
             # El más ajustado que contenga la boleta entera: con semanas
             # y meses conviviendo, una boleta semanal cabe en ambos.
-            slip.periodo_id = Period._get_period_for_payslip(
-                slip.company_id, slip.date_from, slip.date_to)
+            date_to = slip.date_to or slip.date_from
+            periods = candidates.get(slip.company_id, self.env['hr.period'])
+            periods = periods.filtered(
+                lambda p, d_from=slip.date_from, d_to=date_to:
+                p.date_start <= d_from and p.date_end >= d_to)
+            slip.periodo_id = min(periods, key=lambda p: p.duration_days) \
+                if periods else False
 
     @api.depends('version_id', 'company_id', 'date_from')
     def _compute_l10n_pe_snapshot(self):
-        Param = self.env['hr.main.parameter']
+        # Parámetros de todas las compañías del lote en un solo search.
+        params = {
+            param.company_id: param
+            for param in self.env['hr.main.parameter'].search(
+                [('company_id', 'in', self.company_id.ids)])
+        }
         for slip in self:
-            param = Param.search(
-                [('company_id', '=', slip.company_id.id)], limit=1)
+            param = params.get(slip.company_id)
             slip.rmv = param.rmv if param else 0.0
             slip.family_allowance = param.family_allowance if param else 0.0
             membership = slip.version_id.membership_id
@@ -153,12 +178,20 @@ class HrPayslip(models.Model):
         # del periodo. La convención peruana trabaja el mes completo
         # (DLAB + DOM + ausencias = días del mes); el motor nativo solo
         # cuenta días laborables del calendario.
+        # Las horas extra (tipos «is_extra_hours», como el OVERTIME nativo
+        # y HE25/HE35/HE100) son tiempo AÑADIDO a la jornada: el motor
+        # nativo también las excluye de las horas de asistencia. Si
+        # contaran aquí, cada 8 h extra restarían un día de descanso y el
+        # básico se prorratearía a la baja.
         dom = self.env.ref('al_hr_pe.wd_DOM', raise_if_not_found=False)
         if dom and self.date_from and self.date_to:
             period_days = (self.date_to - self.date_from).days + 1
+            WorkEntryType = self.env['hr.work.entry.type']
             other_days = sum(
                 vals.get('number_of_days', 0.0) for vals in res
-                if vals.get('work_entry_type_id') != dom.id)
+                if vals.get('work_entry_type_id') != dom.id
+                and not WorkEntryType.browse(
+                    vals.get('work_entry_type_id')).is_extra_hours)
             for vals in res:
                 if vals.get('work_entry_type_id') == dom.id:
                     vals['number_of_days'] = max(

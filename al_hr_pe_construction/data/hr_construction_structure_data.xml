@@ -212,6 +212,26 @@ result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
             <field name="struct_id" ref="construction_structure"/>
         </record>
 
+        <!-- Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9):
+             el día ya se paga con el jornal (FER está entre los días
+             pagados) y el feriado como descanso remunerado; esta regla
+             añade solo la sobretasa del 100 % sobre el jornal, como la
+             regla FER de BASE (mismo código SUNAT). -->
+        <record id="rule_FER100" model="hr.salary.rule">
+            <field name="name">Sobretasa 100% feriado o descanso laborado</field>
+            <field name="code">FER100</field>
+            <field name="sunat_code">0107</field>
+            <field name="sequence">72</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_rest_work_surcharge()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="construction_structure"/>
+        </record>
+
 
         <!-- ============ BENEFICIOS PAGADOS EN LA PLANILLA ============
              En este régimen la CTS, las vacaciones y la gratificación no
@@ -221,7 +241,7 @@ result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
         <record id="rule_INDEM" model="hr.salary.rule">
             <field name="name">Indemnización 15% (CTS)</field>
             <field name="code">INDEM</field>
-            <field name="sunat_code">0916</field>
+            <field name="sunat_code">0904</field>
             <field name="sequence">100</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -237,7 +257,7 @@ result = payslip._l10n_pe_construction_cts()
         <record id="rule_VAC10" model="hr.salary.rule">
             <field name="name">Vacaciones 10%</field>
             <field name="code">VAC10</field>
-            <field name="sunat_code">0400</field>
+            <field name="sunat_code">0118</field>
             <field name="sequence">110</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -269,7 +289,7 @@ result = payslip._l10n_pe_construction_gratification()
         <record id="rule_BEXT" model="hr.salary.rule">
             <field name="name">Bonificación extraordinaria Ley 30334</field>
             <field name="code">BEXT</field>
-            <field name="sunat_code">0906</field>
+            <field name="sunat_code">0312</field>
             <field name="sequence">130</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -382,7 +402,7 @@ result = payslip._l10n_pe_construction_sctr('pension', TREM)
                  metería dentro sin que nadie lo note. -->
             <field name="amount_python_compute">
 result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
-          + HE60 + HE100 + AESC)
+          + HE60 + HE100 + FER100 + AESC)
             </field>
             <field name="category_id" ref="al_hr_pe.SUB"/>
             <field name="struct_id" ref="construction_structure"/>
@@ -404,8 +424,10 @@ result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if payslip.membership_id.name == 'ONP':
-    result = -round(payslip.l10n_pe_retirement_fund / 100 * TREM, 2)
+# SNP: afiliación que no es AFP (ONP; «sin régimen» tiene tasa 0). Por
+# flag y tasas, nunca por el nombre de la entidad (igual que BASE).
+if payslip.membership_id and not payslip.membership_id.is_afp:
+    result = -payslip._l10n_pe_percent(TREM, payslip.l10n_pe_retirement_fund)
 else:
     result = 0
             </field>
@@ -423,8 +445,8 @@ else:
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
-if payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO'):
-    result = -round(payslip.l10n_pe_retirement_fund / 100 * afp_base, 2)
+if payslip.membership_id.is_afp:
+    result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_retirement_fund)
 else:
     result = 0
             </field>
@@ -443,8 +465,8 @@ else:
             <field name="amount_python_compute">
 afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
 if (version.l10n_pe_commission_type == 'flow'
-        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO')):
-    result = -round(payslip.l10n_pe_commission / 100 * afp_base, 2)
+        and payslip.membership_id.is_afp):
+    result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_commission)
 else:
     result = 0
             </field>
@@ -463,8 +485,8 @@ else:
             <field name="amount_python_compute">
 afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
 if (version.l10n_pe_commission_type == 'mixed'
-        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO', 'JUB. PROFUTURO TRÁNSITO')):
-    result = -round(payslip.l10n_pe_commission / 100 * afp_base, 2)
+        and payslip.membership_id.is_afp):
+    result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_commission)
 else:
     result = 0
             </field>
@@ -487,9 +509,8 @@ else:
 afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
 insured = min(afp_base, payslip.l10n_pe_insurable_remuneration or afp_base)
 if (not version.l10n_pe_is_older
-        and payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA',
-                                           'AFP PRIMA', 'AFP PROFUTURO')):
-    result = -round(payslip.l10n_pe_prima_insurance / 100 * insured, 2)
+        and payslip.membership_id.is_afp):
+    result = -payslip._l10n_pe_percent(insured, payslip.l10n_pe_prima_insurance)
 else:
     result = 0
             </field>

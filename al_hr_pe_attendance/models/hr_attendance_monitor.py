@@ -42,6 +42,7 @@ de 4 marcaciones: con varias ``hr.attendance`` por día la suma de
 que no necesita ver el horario de refrigerio planificado por columna.
 """
 from odoo import api, fields, models, tools
+from odoo.tools import SQL
 
 
 class HrLeaveType(models.Model):
@@ -70,12 +71,20 @@ class L10nPeHrAttendanceMonitor(models.Model):
     _auto = False
 
     employee_id = fields.Many2one('hr.employee', string='Empleado')
+    # Usuario del trabajador: lo usa la regla que limita al usuario de
+    # Planning a sus propias filas (sin recorrer hr.employee, que no
+    # puede leer).
+    user_id = fields.Many2one('res.users', string='Usuario')
     company_id = fields.Many2one('res.company', string='Compañía')
     work_location_id = fields.Many2one(
         'hr.work.location', string='Establecimiento')
+    # Documento de identidad: dato privado del trabajador (en hr.version
+    # es de RR. HH.); el usuario de Planning no lo ve.
     identification_type_id = fields.Many2one(
-        'l10n_latam.identification.type', string='Tipo doc.')
-    identification_id = fields.Char(string='N° documento')
+        'l10n_latam.identification.type', string='Tipo doc.',
+        groups='hr.group_hr_user')
+    identification_id = fields.Char(
+        string='N° documento', groups='hr.group_hr_user')
     fecha = fields.Date(string='Fecha')
     dia_semana = fields.Selection(
         selection=[
@@ -202,6 +211,7 @@ base AS (
 SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
            AS id,
        b.employee_id,
+       he.user_id,
        b.company_id,
        ver.work_location_id,
        he.l10n_latam_identification_type_id AS identification_type_id,
@@ -244,7 +254,11 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
        -- viven en hr.version en v19)
        SELECT v.identification_id, v.work_location_id
          FROM hr_version v
+        -- versión activa vigente en la fecha del día (no una archivada
+        -- ni una futura)
         WHERE v.employee_id = b.employee_id
+          AND v.active
+          AND v.date_version <= b.fecha
         ORDER BY v.date_version DESC
         LIMIT 1) ver ON TRUE
   LEFT JOIN att
@@ -281,9 +295,10 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
     def init(self):
         """Crea/recrea la vista SQL al instalar o actualizar el módulo."""
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(
-            'CREATE OR REPLACE VIEW %s AS (%s)'
-            % (self._table, self._get_monitor_sql()))
+        # El cuerpo es SQL estático del módulo (sin entrada de usuario).
+        self.env.cr.execute(SQL(
+            'CREATE OR REPLACE VIEW %s AS (%s)',
+            SQL.identifier(self._table), SQL(self._get_monitor_sql())))
 
     def action_set_justificante(self):
         """Abre una ausencia nueva prellenada para justificar la falta."""

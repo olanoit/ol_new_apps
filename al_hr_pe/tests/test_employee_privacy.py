@@ -128,6 +128,54 @@ class TestEmployeePrivacy(TransactionCase):
         for field in ADDRESS_FIELDS + ('identification_id', 'last_name'):
             self.assertIn(field, names)
 
+    def test_hr_officer_without_payroll_opens_the_form(self):
+        """Un oficial de RR. HH. sin nómina abre la ficha sin errores.
+
+        Los derechohabientes solo tienen ACL de nómina: si la ficha pidiera
+        su contador a un oficial de RR. HH., la lectura fallaría.
+        """
+        officer = self.env['res.users'].create({
+            'name': 'Oficial RR. HH. sin nómina', 'login': 'al_hr_pe_oficial',
+            'group_ids': [Command.set([self.env.ref('base.group_user').id,
+                                       self.env.ref('hr.group_hr_user').id])],
+        })
+        self.assertNotIn(self.env.ref('hr_payroll.group_hr_payroll_user'),
+                         officer.all_group_ids)
+        Employee = self.env['hr.employee'].with_user(officer)
+        view = Employee.get_view(
+            self.env.ref('hr.view_employee_form').id, 'form')
+        names = set(etree.fromstring(view['arch']).xpath('//field/@name'))
+        self.assertNotIn('l10n_pe_dependent_count', names)
+        ours = [
+            name for name in names
+            if name in Employee._fields
+            and (Employee._fields[name]._module or '').startswith(OUR_MODULES)
+        ]
+        # Con catálogos rellenos: leer su nombre exige ACL sobre el catálogo.
+        self.employee.write({
+            'l10n_pe_road_type_id': self.env['l10n_pe.hr.road.type'].search(
+                [], limit=1).id,
+            'l10n_pe_zone_type_id': self.env['l10n_pe.hr.zone.type'].search(
+                [], limit=1).id,
+        })
+        # No debe lanzar AccessError.
+        Employee.browse(self.employee.id).read(ours)
+
+    def test_version_fields_declare_the_group(self):
+        """Todo campo que la suite añade a hr.version lleva groups.
+
+        ``hr.employee`` hereda (``_inherits``) todos los campos de la
+        versión: sin grupo, quedan expuestos en la ficha como si fueran
+        públicos, a diferencia de los nativos de contrato y nómina.
+        """
+        offenders = [
+            name for name, field in self.env['hr.version']._fields.items()
+            if not field.groups
+            and (field.manual or (field._module or '').startswith(OUR_MODULES))
+        ]
+        self.assertFalse(offenders,
+                         'campos de hr.version sin groups: %s' % sorted(offenders))
+
     def test_public_profile_is_readable(self):
         """Leer el empleado como perfil público no da error de acceso."""
         public = self.env['hr.employee.public'].with_user(self.user).browse(

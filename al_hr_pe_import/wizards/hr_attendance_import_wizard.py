@@ -120,20 +120,24 @@ class AlImportHrAttendanceWizard(models.TransientModel):
         normalized = ' '.join(str(name or '').split())
         if not normalized:
             return self.env['hr.employee']
-        Employee = self.env['hr.employee'].sudo()
-        empleados = Employee.search([
+        # sudo: el oficial de asistencias no es usuario de RR. HH. y no
+        # puede leer hr.employee/hr.version (documento de identidad). La
+        # búsqueda queda acotada a la compañía del asistente, que el mixin
+        # valida contra las compañías permitidas del usuario; se devuelve
+        # el empleado sin sudo.
+        employees_sudo = self.env['hr.employee'].sudo().search([
             ('name', '=ilike', normalized),
             ('company_id', '=', self.company_id.id),
         ])
-        if not empleados:
+        if not employees_sudo:
             # El documento vive en hr.version, no en hr.employee.
             documento = self._clean_code(normalized)
-            versiones = self.env['hr.version'].sudo().search([
+            versions_sudo = self.env['hr.version'].sudo().search([
                 ('identification_id', '=', documento),
                 ('company_id', '=', self.company_id.id),
             ])
-            empleados = versiones.employee_id
-        return empleados
+            employees_sudo = versions_sudo.employee_id
+        return employees_sudo.sudo(False)
 
     # --------------------------------------------------------------------- #
     # Procesamiento de una fila                                             #
@@ -191,7 +195,9 @@ class AlImportHrAttendanceWizard(models.TransientModel):
                     'ya existe asistencia de "%(n)s" en %(d)s '
                     '(actualización deshabilitada)'
                 ) % {'n': emp_name, 'd': check_in}, existing
-            existing.write({'check_out': check_out})
+            # Una celda de salida vacía no borra la salida ya registrada.
+            if check_out:
+                existing.write({'check_out': check_out})
             return 'updated', self.env._(
                 'actualizada asistencia de "%(n)s" (entrada %(d)s)'
             ) % {'n': emp_name, 'd': check_in}, existing

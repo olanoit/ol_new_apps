@@ -233,7 +233,11 @@ class HrSubsidies(models.Model):
 
     def _get_dmed_history(self):
         """Días DMED por periodo en boletas BASE del año de la
-        contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18)."""
+        contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18).
+
+        Solo boletas cerradas y anteriores al mes de la contingencia: la
+        del propio mes (o posteriores) puede traer el DMED de esta misma
+        contingencia y contarlo dos veces."""
         self.ensure_one()
         base_struct = self.env.ref('al_hr_pe.base_structure')
         slips = self.env['hr.payslip'].search([
@@ -241,6 +245,10 @@ class HrSubsidies(models.Model):
             ('company_id', '=', self.company_id.id),
             ('struct_id', '=', base_struct.id),
             ('date_to', '>=', date(self.date_start.year, 1, 1)),
+            ('date_to', '<', date(self.date_start.year,
+                                  self.date_start.month, 1)),
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
         ])
         history = []
         for slip in slips:
@@ -267,6 +275,10 @@ class HrSubsidies(models.Model):
             ('struct_id', '=', base_struct.id),
             ('date_to', '>=', date_from),
             ('date_to', '<=', date_to),
+            # Boletas cerradas y sin quincenales (misma estructura BASE):
+            # canceladas o quincenas inflarían el promedio diario.
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
         ], order='date_to')
         vacation_sr = getattr(param, 'vacation_sr_id')
         otros_srs = getattr(param, 'otros_sr_ids')
@@ -383,9 +395,18 @@ class HrSubsidies(models.Model):
                 subsidized_days = \
                     contingency_days - (EMPLOYER_ILLNESS_DAYS - 1)
                 total_days = contingency_days + 1
+                # Nunca más días que los de la propia contingencia.
+                subsidized_days = min(
+                    subsidized_days,
+                    (self.date_end - self.date_start).days + 1)
             else:
                 subsidized_days = contingency_days + 1
                 total_days = contingency_days + EMPLOYER_ILLNESS_DAYS + 1
+            if subsidized_days <= 0:
+                raise UserError(self.env._(
+                    'El trabajador aún no supera los primeros %(limit)d '
+                    'días a cargo del empleador: no hay días '
+                    'subsidiados.', limit=EMPLOYER_ILLNESS_DAYS))
             date_start = self.date_end \
                 - relativedelta(days=subsidized_days - 1)
 
@@ -413,7 +434,9 @@ class HrSubsidies(models.Model):
                 period_days = last_day - date_start.day + 1
             elif count == months:
                 current = self.date_end
-                if self.type == 'illness' and count == 1:
+                if count == 1:
+                    # Contingencia dentro de un solo mes (enfermedad o
+                    # maternidad): días entre ambas fechas, no desde el 1.
                     period_days = self.date_end.day - date_start.day + 1
                 else:
                     period_days = self.date_end.day

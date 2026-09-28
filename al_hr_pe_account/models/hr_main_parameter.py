@@ -16,7 +16,7 @@ Cambios v19:
   hardcodeados en el SQL (``COMFI/COMMIX/SEGI/A_JUB``); por convención
   del proyecto ahora son configurables.
 """
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -52,6 +52,27 @@ class HrMainParameter(models.Model):
              'cuenta de crédito de la regla, con una línea por AFP. '
              'En v18 eran los códigos fijos COMFI, COMMIX, SEGI y '
              'A_JUB.')
+
+    @api.model
+    def check_rounding_difference(self, difference, line_count):
+        """Valida que un descuadre sea solo redondeo.
+
+        Cada grupo de líneas se redondea a 2 decimales por separado, así
+        que el descuadre legítimo es como mucho medio céntimo por línea.
+        Se tolera un céntimo por línea; por encima, el descuadre viene de
+        una cuenta sin configurar (regla con cuenta de cargo y sin la de
+        abono, o al revés, o importes que no cuadran en el origen) y
+        contabilizarlo contra la cuenta de ajuste escondería el error.
+        """
+        tolerance = round(0.01 * max(line_count, 1), 2)
+        if round(abs(difference), 2) <= tolerance:
+            return True
+        raise UserError(self.env._(
+            'El asiento no cuadra por %(diff)s y lo máximo atribuible al '
+            'redondeo es %(tol)s. Revise que las reglas salariales y los '
+            'Parámetros Principales tengan configuradas tanto la cuenta '
+            'de cargo como la de abono.',
+            diff='%.2f' % abs(difference), tol='%.2f' % tolerance))
 
     def check_batch_move_values(self):
         """Valida la configuración mínima del asiento de lote.

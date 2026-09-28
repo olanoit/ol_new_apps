@@ -13,6 +13,12 @@
 import { Component, useState, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
+
+// Tope de consultas (1 por segundo): pasado ese tiempo se deja de
+// consultar aunque el servidor no haya cerrado la importación. El
+// servidor marca además como error las importaciones sin avance.
+const MAX_POLLS = 3600;
 
 export class ImportPayrollProgressWidget extends Component {
     static template = "al_hr_pe_import.ImportPayrollProgressWidget";
@@ -33,7 +39,7 @@ export class ImportPayrollProgressWidget extends Component {
             skipped: 0,
             errors: 0,
             status: "pending",
-            message: "Preparando importación...",
+            message: _t("Preparando importación..."),
             percent: 0,
             error_detail: "",
             has_report: false,
@@ -44,6 +50,7 @@ export class ImportPayrollProgressWidget extends Component {
         });
 
         this._pollInterval = null;
+        this._pollCount = 0;
 
         onMounted(() => this._startPolling());
         onWillUnmount(() => this._stopPolling());
@@ -67,6 +74,11 @@ export class ImportPayrollProgressWidget extends Component {
 
     async _fetchProgress() {
         if (!this.recordId) return;
+        this._pollCount += 1;
+        if (this._pollCount > MAX_POLLS) {
+            this._stopPolling();
+            return;
+        }
         try {
             const data = await this.orm.call(
                 "al.import.payroll.progress",

@@ -78,11 +78,13 @@ class HrPayslipRun(models.Model):
     def _pe_get_batch_slips(self):
         """Boletas del lote que entran al asiento.
 
-        v18 tomaba todas las líneas del lote sin filtrar estado; aquí se
-        excluyen solo las anuladas.
+        v18 tomaba todas las líneas del lote sin filtrar estado; aquí solo
+        entran las boletas validadas o pagadas (un borrador puede cambiar
+        todavía y una anulada no se paga).
         """
         self.ensure_one()
-        return self.slip_ids.filtered(lambda slip: slip.state != 'cancel')
+        return self.slip_ids.filtered(
+            lambda slip: slip.state in ('validated', 'paid'))
 
     def _pe_prepare_batch_move_lines(self, with_analytic=None):
         """Agrega ``hr.payslip.line`` del lote en líneas de asiento.
@@ -300,6 +302,12 @@ class HrPayslipRun(models.Model):
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_batch_move_values()
+        drafts = self.slip_ids.filtered(lambda slip: slip.state == 'draft')
+        if drafts:
+            raise UserError(self.env._(
+                'El lote tiene boletas en borrador (%(slips)s): valídelas '
+                'o anúlelas antes de generar el asiento.',
+                slips=', '.join(drafts[:10].mapped('employee_id.name'))))
 
         lines = self._pe_prepare_batch_move_lines(
             with_analytic=with_analytic)
@@ -324,6 +332,7 @@ class HrPayslipRun(models.Model):
         } for line in lines]
 
         if not currency.is_zero(difference):
+            param.check_rounding_difference(difference, len(lines))
             if not adjust_account:
                 raise UserError(self.env._(
                     'El asiento no cuadra (diferencia %(diff)s): '

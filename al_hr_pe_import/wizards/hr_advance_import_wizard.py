@@ -97,7 +97,9 @@ class AlImportHrAdvanceWizard(models.TransientModel):
             return None
 
     def _find_employee_by_doc(self, identification):
-        return self.env['hr.employee'].sudo().search([
+        # Sin sudo: el asistente es de nómina (implica RR. HH.) y ya lee
+        # empleados; la compañía del asistente se valida en el mixin.
+        return self.env['hr.employee'].search([
             ('identification_id', '=', identification),
             ('company_id', '=', self.company_id.id),
         ])

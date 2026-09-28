@@ -16,6 +16,7 @@
                         <field name="difference"/>
                     </group>
                     <group>
+                        <field name="company_id" invisible="1"/>
                         <field name="account_id"
                                invisible="difference == 0"
                                required="difference > 0"/>

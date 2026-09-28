@@ -9,6 +9,7 @@ en BD.
 """
 from datetime import date, datetime
 
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.al_hr_pe_reports.models.hr_multipayment import (
@@ -475,7 +476,10 @@ class TestFase7MultipaymentOrigen(TransactionCase):
             'bank_id': cls.bank.id,
             'company_id': cls.company.id,
         })
-        cls.employee.primary_bank_account_id = cls.account
+        # primary_bank_account_id es un compute NO almacenado a partir de
+        # bank_account_ids: asignarlo solo llenaba la caché y se perdía en
+        # cuanto una escritura (p. ej. validar la boleta) la invalidaba.
+        cls.employee.bank_account_ids = [(6, 0, cls.account.ids)]
         cls.lote = cls.env['hr.payslip.run'].create({
             'name': 'Lote TXT origen',
             'date_start': date(2026, 4, 1),
@@ -514,6 +518,7 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         })
         self.slip.struct_id = estructura
         self.slip.compute_sheet()
+        self.slip.action_payslip_done()
 
         journal = self.env['account.journal'].create({
             'name': 'Banco neto', 'type': 'bank', 'code': 'BNET',
@@ -534,6 +539,8 @@ class TestFase7MultipaymentOrigen(TransactionCase):
             msg='debe usarse la regla peruana, no el neto nativo')
 
     def test_lineas_origen_del_lote(self):
+        # Solo se pagan boletas cerradas (ver test_borrador_no_se_paga).
+        self.slip.write({'state': 'validated'})
         journal = self.env['account.journal'].create({
             'name': 'Banco TXT', 'type': 'bank', 'code': 'BTXT',
             'company_id': self.company.id, 'bank_id': self.bank.id,
@@ -553,3 +560,47 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         self.assertEqual(linea['account'], self.account)
         # La referencia es el nombre de la boleta (v19 no tiene number).
         self.assertEqual(linea['reference'], self.slip.name)
+
+    def _pago(self, code):
+        journal = self.env['account.journal'].create({
+            'name': 'Banco %s' % code, 'type': 'bank', 'code': code,
+            'company_id': self.company.id, 'bank_id': self.bank.id,
+        })
+        return self.env['hr.automate.multipayment'].create({
+            'company_id': self.company.id,
+            'journal_id': journal.id,
+            'payment_date': date(2026, 5, 5),
+            'payslip_run_id': self.lote.id,
+            'subtype': 'G',
+            'subtype_banbif': '4',
+        })
+
+    def test_borrador_no_se_paga(self):
+        """Las boletas en borrador o anuladas no van al TXT bancario."""
+        pago = self._pago('BDRF')
+        for state in ('draft', 'cancel'):
+            self.slip.write({'state': state})
+            self.assertFalse(list(pago._iter_origin_lines()),
+                             'una boleta %s no debe pagarse' % state)
+        self.slip.write({'state': 'paid'})
+        self.assertEqual(len(list(pago._iter_origin_lines())), 1)
+
+    def test_lote_sin_validar_no_genera_pagos(self):
+        """Con el lote aún abierto no se generan los pagos bancarios."""
+        self.assertEqual(self.lote.state, '01_ready')
+        with self.assertRaises(UserError):
+            self.lote.generate_multipayments()
+
+    def test_moneda_distinta_a_la_de_cargo(self):
+        """En haberes, una cuenta destino en otra moneda queda fuera."""
+        self.slip.write({'state': 'validated'})
+        pago = self._pago('BMON')
+        pago.action_load_lines()
+        self.assertEqual(len(pago._get_txt_lines()), 1)
+        other = self.env.ref('base.USD')
+        if other == self.company.currency_id:
+            other = self.env.ref('base.EUR')
+        other.active = True
+        self.account.currency_id = other
+        self.assertFalse(pago._get_txt_lines(),
+                         'una cuenta en otra moneda no cabe en el TXT')

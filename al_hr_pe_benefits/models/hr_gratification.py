@@ -23,7 +23,8 @@ from datetime import date
 from odoo import api, fields, models
 
 from odoo.addons.al_hr_pe.tools import custom_round
-from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import (
+    ensure_draft, ensure_line_draft, notify_success)
 
 
 class HrGratification(models.Model):
@@ -41,7 +42,7 @@ class HrGratification(models.Model):
         default=lambda self: fields.Date.context_today(self).year,
         help='Año del pago (sustituye al año fiscal contable v18).')
     with_bonus = fields.Boolean(
-        string='Bono extraordinario', default=False,
+        string='Bono extraordinario', default=True,
         help='Añade el Bono Extraordinario Ley 29351 (% del seguro '
              'social sobre la gratificación).')
     months_and_days = fields.Boolean(
@@ -119,6 +120,7 @@ class HrGratification(models.Model):
         con overrides manuales (``preserve_record``).
         """
         self.ensure_one()
+        ensure_draft(self)
         self.line_ids.filtered(lambda line: not line.preserve_record).unlink()
         self.env['hr.main.parameter'].compute_benefits(self, self.type)
         preserved_employees = \
@@ -130,6 +132,7 @@ class HrGratification(models.Model):
 
     def compute_grati_line_all(self):
         """Recalcula todas las líneas del lote en una pasada."""
+        ensure_draft(self)
         self.line_ids.compute_grati_line()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
@@ -162,6 +165,7 @@ class HrGratification(models.Model):
     def export_gratification(self):
         """Exporta los montos al lote de nómina y cierra el registro."""
         self.ensure_one()
+        ensure_draft(self)
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_gratification_values()
@@ -213,7 +217,7 @@ class HrGratificationLine(models.Model):
     distribution_id = fields.Char(string='Distribución analítica')
     months = fields.Integer(string='Meses')
     days = fields.Integer(string='Días')
-    lacks = fields.Integer(string='Faltas')
+    lacks = fields.Float(string='Faltas', digits=(16, 2))
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
     commission = fields.Float(string='Prom. comisión')
@@ -235,6 +239,7 @@ class HrGratificationLine(models.Model):
 
     def compute_grati_line(self):
         """Recalcula la línea a partir de sus componentes editables."""
+        ensure_line_draft(self, 'gratification_id', 'liquidation_id')
         for record in self:
             record.computable_remuneration = (
                 record.wage + record.household_allowance + record.commission
@@ -265,9 +270,12 @@ class HrGratificationLine(models.Model):
         """Detalle histórico de planillas de los 6 meses computados."""
         self.ensure_one()
         self.gratification_line_ids.unlink()
+        # En una liquidación la línea no tiene fecha de pago: el cese.
+        date_calculate = (self.gratification_id.deposit_date
+                          or self.cessation_date
+                          or self.liquidation_id.payslip_run_id.date_end)
         history = self.env['hr.main.parameter'].get_salary_history(
-            self.employee_id, self.company_id,
-            self.gratification_id.deposit_date)
+            self.employee_id, self.company_id, date_calculate)
         Detalle = self.env['hr.gratification.line.detalle']
         for periodo, amounts in history.items():
             Detalle.create({

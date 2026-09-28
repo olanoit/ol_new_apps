@@ -21,7 +21,7 @@ Los campos del asiento de lote (``journal_id``, ``partner_id``,
 (asiento del lote de nómina); aquí solo se CONSUMEN vía ``getattr``
 con guardas (ver :meth:`get_benefits_move_config`).
 """
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -122,6 +122,46 @@ class HrMainParameter(models.Model):
         help='Si está activo, las líneas al haber del asiento de '
              'provisión mensual se generan una por trabajador (con su '
              'tercero); si no, se agrupan por cuenta contable.')
+
+    # ------------------------------------------------------------------
+    # Cuentas company_dependent leídas con la compañía del registro
+    # ------------------------------------------------------------------
+    # Un campo company_dependent se resuelve con ``env.company``, no con
+    # el ``company_id`` del registro. Como hay un registro de parámetros
+    # por compañía, se fija su compañía al leerlos y al guardarlos: así
+    # un asiento de la compañía B con la A activa usa las cuentas de B,
+    # y configurar los parámetros de B no escribe en los valores de A.
+    @api.model
+    def get_main_parameter(self, company=None):
+        param = super().get_main_parameter(company)
+        return param.with_company(param.company_id)
+
+    def web_read(self, specification):
+        if len(self.company_id) == 1 and self.company_id != self.env.company:
+            self = self.with_company(self.company_id)
+        return super().web_read(specification)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        dependent = {name for name, field in self._fields.items()
+                     if field.company_dependent}
+        split = [({k: v for k, v in vals.items() if k not in dependent},
+                  {k: v for k, v in vals.items() if k in dependent})
+                 for vals in vals_list]
+        records = super().create([plain for plain, _dep in split])
+        for record, (_plain, dep) in zip(records, split):
+            if dep:
+                record.write(dep)
+        return records
+
+    def write(self, vals):
+        if not any(self._fields[name].company_dependent
+                   for name in vals if name in self._fields):
+            return super().write(vals)
+        for param in self:
+            super(HrMainParameter, param.with_company(
+                param.company_id)).write(vals)
+        return True
 
     # ------------------------------------------------------------------
     # Helpers para los asientos de BBSS

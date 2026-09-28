@@ -566,6 +566,13 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 4.20260816
+    fecha: 27/09/2026
+    cambios:
+      - "Los asientos de CTS, gratificación, liquidación y provisiones usan siempre las cuentas de la compañía del documento, aunque la compañía activa sea otra; y configurar los parámetros de una compañía ya no cambia las cuentas de otra."
+      - "El «ajuste por redondeo» solo admite descuadres de céntimos: si falta una cuenta de cargo o de abono, el asiento avisa en lugar de mandar la diferencia a la cuenta de ajuste."
+      - "El asiento del lote solo contabiliza boletas validadas o pagadas y avisa si quedan boletas en borrador."
+      - "El asiento de beneficios sociales se calcula en el momento de generarlo, con los importes vigentes, y puede generarlo el personal de nómina sin permisos contables."
   - fecha: 18/08/2026
     cambios:
       - El menú pasa a llamarse Contabilidad y se ordena al final del flujo de Nómina.

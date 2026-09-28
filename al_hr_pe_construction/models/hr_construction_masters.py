@@ -58,6 +58,11 @@ class L10nPeHrConstructionCategory(models.Model):
     _code_company_uniq = models.Constraint(
         'UNIQUE(code, company_id)',
         'Ya existe una categoría con ese código.')
+    # UNIQUE(code, company_id) no ve los duplicados globales: en PostgreSQL
+    # dos NULL son distintos, así que hace falta un índice aparte.
+    _code_global_uniq = models.UniqueIndex(
+        '(code) WHERE company_id IS NULL',
+        'Ya existe una categoría global con ese código.')
 
 
 class L10nPeHrConstructionWageTable(models.Model):
@@ -100,12 +105,16 @@ class L10nPeHrConstructionWageTable(models.Model):
 
     @api.constrains('date_from', 'date_to', 'company_id', 'active')
     def _check_overlap(self):
-        """Dos tablas vigentes a la vez dejarían el jornal ambiguo."""
+        """Dos tablas vigentes a la vez dejarían el jornal ambiguo.
+
+        Solo se comparan tablas del mismo ámbito: la propia de una compañía
+        existe precisamente para solaparse con la global y sustituirla
+        (ver ``_get_table_for_date``).
+        """
         for table in self.filtered('active'):
             overlapping = self.search([
                 ('id', '!=', table.id),
-                ('company_id', 'in', (False, table.company_id.id)
-                 if table.company_id else (False,)),
+                ('company_id', '=', table.company_id.id),
                 ('date_from', '<=', table.date_to),
                 ('date_to', '>=', table.date_from),
             ], limit=1)
@@ -118,11 +127,15 @@ class L10nPeHrConstructionWageTable(models.Model):
     def _get_table_for_date(self, on_date, company=None):
         """Tabla vigente en esa fecha, propia de la compañía o global."""
         company = company or self.env.company
-        return self.search([
+        tables = self.search([
             ('company_id', 'in', (False, company.id)),
             ('date_from', '<=', on_date),
             ('date_to', '>=', on_date),
-        ], order='company_id desc, date_from desc', limit=1)
+        ], order='date_from desc')
+        # La propia de la compañía manda sobre la global. No se ordena por
+        # `company_id desc` en SQL: PostgreSQL pone los NULL primero en un
+        # orden descendente y la global ganaba siempre.
+        return (tables.filtered('company_id') or tables)[:1]
 
 
 class L10nPeHrConstructionWageLine(models.Model):
@@ -300,6 +313,9 @@ class L10nPeHrConstructionBonus(models.Model):
     _code_company_uniq = models.Constraint(
         'UNIQUE(code, company_id)',
         'Ya existe una bonificación con ese código.')
+    _code_global_uniq = models.UniqueIndex(
+        '(code) WHERE company_id IS NULL',
+        'Ya existe una bonificación global con ese código.')
 
     #: Regla que paga cada bonificación que trae el módulo. Se usa para
     #: rellenar el enlace en bases donde el registro se cargó antes de que

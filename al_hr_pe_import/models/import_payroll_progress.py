@@ -8,8 +8,15 @@ el widget OWL haga polling y muestre la barra de progreso en tiempo real.
 v19: se añade ``company_id`` (multicompañía; el historial se acota con
 una ir.rule por compañía).
 """
+from datetime import timedelta
+
 from odoo import fields, models
 from odoo.exceptions import UserError
+
+# Minutos sin avance tras los que una importación se da por abortada: el
+# hilo muere si el worker se recicla (límite de memoria o de peticiones) y
+# el registro quedaría «Procesando» para siempre.
+STALE_MINUTES = 30
 
 
 class ImportPayrollProgress(models.Model):
@@ -71,9 +78,29 @@ class ImportPayrollProgress(models.Model):
 
     # === API para el widget OWL =========================================== #
 
+    def _mark_stale(self):
+        """Marca como error las importaciones sin avance reciente."""
+        limit = fields.Datetime.now() - timedelta(minutes=STALE_MINUTES)
+        stale = self.filtered(
+            lambda p: p.status in ('pending', 'running')
+            and p.write_date and p.write_date < limit)
+        if stale:
+            stale.write({
+                'status': 'error',
+                'message': self.env._('Importación interrumpida.'),
+                'error_detail': self.env._(
+                    'No hubo avance en %s minutos: el proceso se '
+                    'interrumpió (p. ej. reinicio del servidor). Revise '
+                    'los registros ya importados y vuelva a lanzar el '
+                    'resto.') % STALE_MINUTES,
+                'date_end': fields.Datetime.now(),
+            })
+        return stale
+
     def get_progress_data(self):
         """Llamado vía RPC por el widget OWL cada segundo."""
         self.ensure_one()
+        self._mark_stale()
         percent = round(self.current / self.total * 100) if self.total else 0
         return {
             'total': self.total,

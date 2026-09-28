@@ -41,7 +41,13 @@ class PeruPublicHoliday(models.Model):
         required=True,
     )
     is_full_day = fields.Boolean(string="Full Day", default=True)
-    half_day_starts_at = fields.Float(string="Half Day Starts At", default=13.0)
+    # El descanso de medio día va de 00:00 hasta esta hora (ver
+    # ``_holiday_datetime_range``): la etiqueta antigua, «Half Day Starts
+    # At», decía justo lo contrario.
+    half_day_starts_at = fields.Float(
+        string="Half Day Rest Until", default=13.0,
+        help="Hora hasta la que dura el descanso de medio día; el descanso "
+             "empieza a las 00:00.")
     description = fields.Text(string="Description", translate=True)
     work_entry_type_id = fields.Many2one(
         "hr.work.entry.type",

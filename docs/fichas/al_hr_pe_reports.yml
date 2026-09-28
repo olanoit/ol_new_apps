@@ -482,6 +482,17 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 9.20260925
+    fecha: 27/09/2026
+    cambios:
+      - "El TXT bancario solo paga boletas validadas o pagadas, no se puede generar con el lote aún abierto y deja fuera las cuentas en una moneda distinta a la de la cuenta de cargo."
+      - "La cabecera del TXT cuenta solo a los trabajadores que se pagan, así el banco no rechaza el archivo cuando alguien tiene neto cero; generar de nuevo reemplaza el archivo anterior."
+      - "El aviso tras generar los pagos lista también a quienes tienen banco sin diario de pago masivo."
+      - "Generar el TXT, recargar líneas y finalizar quedan para el responsable de nómina."
+      - "El enlace del correo abre una página con el botón «Confirmar recepción»: la boleta ya no se da por recibida solo porque el correo o su antivirus abrieran el enlace."
+      - "Las plantillas de contrato se limpian de código peligroso al guardarlas; los campos {{...}} y los estilos se mantienen. El contrato se imprime solo desde el botón de la ficha."
+      - "El envío masivo de boletas sigue con las demás si una falla."
+      - "Los certificados y la carta de CTS salen con la compañía del trabajador; el certificado de 5ta no muestra renta imponible negativa ni suma boletas en borrador."
   - fecha: 24/09/2026
     cambios:
       - "El bloque de contrato de la ficha del trabajador se restringe al personal de nómina."

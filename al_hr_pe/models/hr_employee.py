@@ -35,13 +35,16 @@ class HrEmployee(models.Model):
         help='Cuenta de depósito de CTS; en Perú suele ser un banco '
              'distinto al de haberes.',
         groups='hr.group_hr_user')
+    # Derechohabientes: su ACL es solo de nómina (l10n_pe.hr.dependent), así
+    # que el grupo del campo también. Con hr.group_hr_user, un oficial de
+    # RR. HH. sin nómina recibía un error de acceso al abrir la ficha.
     l10n_pe_dependent_ids = fields.One2many(
         'l10n_pe.hr.dependent', 'employee_id', string='Derechohabientes',
-        groups='hr.group_hr_user')
+        groups='hr_payroll.group_hr_payroll_user')
     l10n_pe_dependent_count = fields.Integer(
         string='N° de derechohabientes',
         compute='_compute_l10n_pe_dependent_count',
-        groups='hr.group_hr_user')
+        groups='hr_payroll.group_hr_payroll_user')
 
     @api.depends('l10n_pe_dependent_ids.date_end')
     def _compute_l10n_pe_dependent_count(self):
@@ -62,10 +65,13 @@ class HrEmployee(models.Model):
         """
         self.ensure_one()
         on_date = on_date or fields.Date.context_today(self)
-        dependents = self.sudo().l10n_pe_dependent_ids
-        if dependents:
+        # sudo: el cálculo de la boleta lo dispara también quien no tiene
+        # ACL sobre l10n_pe.hr.dependent (p. ej. un oficial de RR. HH. sin
+        # nómina al crear la boleta); solo se lee el derecho, no se expone.
+        dependents_sudo = self.sudo().l10n_pe_dependent_ids
+        if dependents_sudo:
             return any(dependent._is_family_allowance_source(on_date)
-                       for dependent in dependents)
+                       for dependent in dependents_sudo)
         return bool(self.children)
 
     def action_open_l10n_pe_dependents(self):

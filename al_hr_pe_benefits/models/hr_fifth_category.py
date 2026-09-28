@@ -13,10 +13,11 @@ D.S. 122-94-EF Art. 40:
 3. Tabla escalonada de tramos ``hr.rate.limit`` (8/14/17/20/30 % sobre
    5/20/35/45/∞ UIT — se generan con ``generate_tramos``).
 4. Impuesto anual − retenciones previas (según ventanas del Art. 40) ÷
-   equivalencia de meses [12, 11, …, 1] = retención mensual.
-5. Reproyección: si existe la quinta del mes anterior
-   (``previous_line_id``), la retención anual parte del ``saldo_ret``
-   pendiente del empleado.
+   divisor del Art. 40 (ene-mar 12, abr 9, may-jul 8, ago 5, sep-nov 4,
+   dic 1) = retención mensual.
+5. Remuneraciones extraordinarias del mes (Art. 40 inc. c): se retiene
+   completa la diferencia entre el impuesto con y sin ellas, y se suma a
+   la retención ordinaria del mes.
 
 ``line_ids`` contiene los afectos; ``line_excluidos_ids`` los excluidos
 (retención proyectada ≤ 0). Estados: ``draft`` → ``verify`` →
@@ -29,7 +30,7 @@ para la Fase 7.
 """
 from datetime import date, timedelta
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -61,13 +62,18 @@ class HrMainParameter(models.Model):
     rate_limit_ids = fields.One2many(
         'hr.rate.limit', 'main_parameter_id', string='Tramos de 5ta')
 
-    def generate_tramos(self):
+    def generate_tramos(self, year=None):
         """Regenera los tramos del IR 5ta: tasas [8, 14, 17, 20, 30] %
         sobre límites [5, 20, 35, 45, ∞] × UIT (∞ se guarda como 0,
         semántica v18 de ``get_tax_proy``). La UIT sale del catálogo
-        ``l10n_pe.hr.uit`` del año en curso."""
+        ``l10n_pe.hr.uit`` del año indicado (por defecto, el en curso).
+
+        Los límites quedan multiplicados por la UIT de ese año; el cálculo
+        de cada boleta los reescala a la UIT del año de la boleta (ver
+        ``get_tax_proy``), así que regularizar diciembre en enero no
+        mezcla dos UIT."""
         self.ensure_one()
-        year = fields.Date.context_today(self).year
+        year = year or fields.Date.context_today(self).year
         uit = self.env['l10n_pe.hr.uit'].get_uit(year)
         self.rate_limit_ids.unlink()
         tasas = [8, 14, 17, 20, 30]
@@ -94,12 +100,13 @@ class HrMainParameter(models.Model):
             missing.append('R.S. Rem. extraordinaria afecta a quinta')
         if not self.proy_afect_sr_id:
             missing.append('R.S. Proyección de ingresos afectos')
-        if not self.gratification_sr_id:
-            missing.append('R.S. Gratificación julio y diciembre')
+        # La gratificación real sale de hr.gratification y la retención
+        # extraordinaria se vuelca al input de quinta junto con la
+        # ordinaria (la regla QUINTA solo lee ese input): ni
+        # ``gratification_sr_id`` ni ``ret_extraordinary_input_id`` son
+        # necesarios para calcular.
         if not self.fifth_category_input_id:
             missing.append('Input quinta categoría')
-        if not self.ret_extraordinary_input_id:
-            missing.append('Input retención extraordinaria')
         if not self.rate_limit_ids:
             missing.append('Tramos de quinta categoría')
         if missing:
@@ -199,22 +206,24 @@ class HrFifthCategory(models.Model):
 
     @api.depends('payslip_run_id', 'company_id')
     def _compute_previous_fifth_category_id(self):
-        """Quinta de la planilla anterior de la misma compañía (el lote
-        con ``date_end`` más reciente antes del inicio del actual)."""
-        Run = self.env['hr.payslip.run']
+        """Quinta anterior de la misma compañía: la de lote con
+        ``date_end`` más reciente antes del inicio del actual.
+
+        Se busca la quinta directamente y no el lote anterior: el lote
+        inmediatamente anterior puede ser de CTS, gratificación o
+        liquidación (misma fecha que el mensual) y no tener quinta."""
         for record in self:
             previous = False
             run = record.payslip_run_id
             if run and run.date_start:
-                previous_run = Run.search([
-                    ('date_end', '<', run.date_start),
+                candidates = self.search([
+                    ('payslip_run_id.date_end', '<', run.date_start),
                     ('company_id', '=', record.company_id.id),
-                ], order='date_end desc', limit=1)
-                if previous_run:
-                    previous = self.search([
-                        ('payslip_run_id', '=', previous_run.id),
-                        ('company_id', '=', record.company_id.id),
-                    ], limit=1)
+                    ('id', '!=', record._origin.id or 0),
+                ])
+                if candidates:
+                    previous = max(candidates, key=lambda fifth: (
+                        fifth.payslip_run_id.date_end, fifth.id))
             record.previous_fifth_category_id = previous
 
     def turn_draft(self):
@@ -249,8 +258,10 @@ class HrFifthCategory(models.Model):
 
         Por cada línea afecta escribe en su boleta:
 
-        * ``fifth_category_input_id`` ← ``monthly_ret``;
-        * ``ret_extraordinary_input_id`` ← ``ext_ret``.
+        * ``fifth_category_input_id`` ← ``monthly_ret + ext_ret``.
+
+        La regla QUINTA de la estructura BASE solo lee ese input: si la
+        extraordinaria fuera a un input aparte, nunca se descontaría.
 
         Crea la línea de input si la boleta no la tiene (patrón CTS
         v19). Marca el lote como ``exported``.
@@ -259,20 +270,19 @@ class HrFifthCategory(models.Model):
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_fifth_values()
+        input_type = param.fifth_category_input_id
         for line in self.line_ids:
             slip = line.slip_id
-            for input_type, amount in (
-                    (param.fifth_category_input_id, line.monthly_ret),
-                    (param.ret_extraordinary_input_id, line.ext_ret)):
-                input_line = slip.input_line_ids.filtered(
-                    lambda inp: inp.input_type_id == input_type)
-                if input_line:
-                    input_line.amount = amount
-                else:
-                    slip.write({'input_line_ids': [(0, 0, {
-                        'input_type_id': input_type.id,
-                        'amount': amount,
-                    })]})
+            amount = custom_round(line.monthly_ret + line.ext_ret, 2)
+            input_line = slip.input_line_ids.filtered(
+                lambda inp: inp.input_type_id == input_type)
+            if input_line:
+                input_line.amount = amount
+            else:
+                slip.write({'input_line_ids': [Command.create({
+                    'input_type_id': input_type.id,
+                    'amount': amount,
+                })]})
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
@@ -377,7 +387,9 @@ class HrFifthCategoryLine(models.Model):
         help='Remuneración neta anual + extraordinaria.')
     ext_ret = fields.Float(
         string='Ret. ext.',
-        help='Retención extraordinaria (ingreso manual, criterio v18).')
+        help='Retención por las remuneraciones extraordinarias del mes '
+             '(Art. 40 inc. c del Reglamento LIR): impuesto con ellas '
+             'menos impuesto sin ellas. Se retiene completa en el mes.')
     monthly_ret = fields.Float(
         string='Ret. mensual', help='Monto a retener en el mes.')
     saldo_ret = fields.Float(
@@ -388,20 +400,21 @@ class HrFifthCategoryLine(models.Model):
         compute='_compute_previous_line_id', store=True,
         help='Línea del mismo empleado en la quinta del mes anterior.')
 
-    @api.depends('annual_ret', 'monthly_ret', 'ext_ret')
+    @api.depends('annual_ret', 'monthly_ret')
     def _compute_saldo_ret(self):
-        """Saldo pendiente = retención anual − mensual − extraordinaria
-        (0 si algún valor es negativo, paridad v18)."""
+        """Saldo informativo del impuesto ordinario pendiente tras este
+        mes = retención anual − mensual (0 si alguno es negativo). La
+        extraordinaria no entra: sale de un impuesto aparte (Art. 40
+        inc. c) que ya se retiene completo en el mes."""
         for record in self:
-            values = (record.annual_ret, record.monthly_ret,
-                      record.ext_ret)
-            if any(value < 0 for value in values):
+            if record.annual_ret < 0 or record.monthly_ret < 0:
                 record.saldo_ret = 0.0
             else:
-                record.saldo_ret = (record.annual_ret - record.monthly_ret
-                                    - record.ext_ret)
+                record.saldo_ret = record.annual_ret - record.monthly_ret
 
     @api.depends('fifth_category_id.previous_fifth_category_id',
+                 'fifth_category_id.previous_fifth_category_id.line_ids'
+                 '.employee_id',
                  'employee_id')
     def _compute_previous_line_id(self):
         for line in self:
@@ -423,6 +436,10 @@ class HrFifthCategoryLine(models.Model):
         con ``.format()`` del v18 por ORM puro."""
         if not rules:
             return 0.0
+        # Solo boletas cerradas: una boleta en borrador o cancelada
+        # duplicaría renta y retenciones (también en el certificado de
+        # 5ta, que reutiliza este helper). Las quincenales no cuentan: su
+        # neto se descuenta en la mensual, que es la que declara.
         lines = self.env['hr.payslip.line'].search([
             ('slip_id.date_to', '>=', date_from),
             ('slip_id.date_to', '<', date_before),
@@ -430,6 +447,8 @@ class HrFifthCategoryLine(models.Model):
             ('salary_rule_id', 'in', rules.ids),
             ('slip_id.payslip_run_id', '!=', False),
             ('slip_id.company_id', '=', company.id),
+            ('slip_id.state', 'in', ('validated', 'paid')),
+            ('slip_id.fortnightly_id', '=', False),
         ])
         return sum(lines.mapped('total'))
 
@@ -465,14 +484,24 @@ class HrFifthCategoryLine(models.Model):
         return rem_ant + sum(other_past_rem.mapped('other_emp_proy_rem'))
 
     @api.model
-    def get_tax_proy(self, net_rent, lines):
+    def get_tax_proy(self, net_rent, lines, uit=None):
         """Impuesto proyectado por la tabla escalonada de tramos
-        (límite 0 = tramo final sin tope, paridad v18)."""
+        (límite 0 = tramo final sin tope, paridad v18).
+
+        Los límites se guardan ya multiplicados por la UIT del año en que
+        se generaron (el primero vale 5 UIT). Con ``uit`` se reescalan a
+        la UIT del año de la boleta."""
+        lines = lines.sorted('range')
+        factor = 1.0
+        first = lines[:1]
+        if uit and first.limit:
+            factor = 5 * uit / first.limit
         tax_proy = tax = 0
         for line in lines:
-            if net_rent > line.limit and line.limit > 0:
-                tax_proy += (line.limit - tax) * line.rate * 0.01
-                tax += line.limit - tax
+            limit = line.limit * factor
+            if net_rent > limit and limit > 0:
+                tax_proy += (limit - tax) * line.rate * 0.01
+                tax += limit - tax
             else:
                 tax_proy += (net_rent - tax) * line.rate * 0.01
                 break
@@ -480,19 +509,20 @@ class HrFifthCategoryLine(models.Model):
 
     def get_past_months_ret(self, slip, date_from):
         """Retenciones previas del año según las ventanas del Art. 40
-        del Reglamento (paridad v18, incluidos sus límites exclusivos):
+        del Reglamento:
 
         * ene-mar: 0;
         * abr, may, ago, sep, dic: QUINTA retenida hasta el mes previo;
         * jun-jul: QUINTA retenida de enero a abril;
         * oct-nov: QUINTA retenida de enero a agosto.
 
+        El tope es exclusivo sobre ``date_to``: se usa el día 1 del mes
+        siguiente para que entren las boletas de abril (30/04) y agosto
+        (31/08); v18 usaba el propio 30/04 y 31/08 y las dejaba fuera.
+
         Siempre se suman las retenciones de otros empleadores declaradas
         en quintas previas del año.
         """
-        # TODO(fase4-revisar): los límites '< 30/04' y '< 31/08' (v18)
-        # excluyen la boleta cuyo date_to cae exactamente ese día; se
-        # conserva por paridad exacta.
         company = slip.company_id
         other_past_ret = self.search([
             ('slip_id.date_to', '>=', date_from),
@@ -506,9 +536,9 @@ class HrFifthCategoryLine(models.Model):
         if slip.date_from.month in (4, 5, 8, 9, 12):
             date_before = slip.date_to
         elif slip.date_to.month in (6, 7):
-            date_before = date(date_from.year, 4, 30)
+            date_before = date(date_from.year, 5, 1)
         elif slip.date_to.month in (10, 11):
-            date_before = date(date_from.year, 8, 31)
+            date_before = date(date_from.year, 9, 1)
         else:
             return other_ret
         ret_ant = self._sum_payslip_rule_totals(
@@ -523,31 +553,26 @@ class HrFifthCategoryLine(models.Model):
 
     @api.model
     def get_month_equivalence_rent(self, month):
-        """Divisor de la retención anual según el mes (Art. 40)."""
-        month_equivalence = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+        """Divisor de la retención anual según el mes (Art. 40 inc. a
+        del Reglamento LIR): ene-mar 12, abr 9, may-jul 8, ago 5,
+        sep-nov 4 y dic 1 (regularización)."""
+        month_equivalence = [12, 12, 12, 9, 8, 8, 8, 5, 4, 4, 4, 1]
         return month_equivalence[month - 1]
 
     def _get_renta_anual_proyecta(self):
-        """Retención anual pendiente, con reproyección.
+        """Retención anual pendiente (Art. 40 inc. a): impuesto
+        proyectado − retenciones de meses anteriores (según las ventanas
+        del artículo, sobre lo realmente retenido en QUINTA) −
+        retenciones de otros empleadores.
 
-        Base: impuesto proyectado − retenciones de meses anteriores −
-        retenciones de otros empleadores. Si existe la línea del mes
-        anterior: con igual impuesto proyectado se arrastra su
-        ``saldo_ret``; si el impuesto cambió (reintegros, aumentos) se
-        reproyecta descontando lo ya retenido
-        (``tax_proy_ant − saldo_ret_ant``).
+        v18 sustituía este importe por el ``saldo_ret`` estimado del mes
+        anterior cuando había quinta previa: ignoraba las ventanas y
+        partía de una estimación, no de lo retenido. La línea anterior
+        queda solo como referencia informativa.
         """
         self.ensure_one()
-        annual_ret = ((self.tax_proy or 0.0) - (self.past_months_ret or 0.0)
-                      - (self.other_emp_ret or 0.0))
-        previous_line = self.previous_line_id
-        if previous_line:
-            if previous_line.tax_proy != self.tax_proy:
-                annual_ret = self.tax_proy - (
-                    previous_line.tax_proy - previous_line.saldo_ret)
-            else:
-                annual_ret = previous_line.saldo_ret
-        return annual_ret
+        return ((self.tax_proy or 0.0) - (self.past_months_ret or 0.0)
+                - (self.other_emp_ret or 0.0))
 
     def compute_fifth_line(self):
         """Calcula la línea completa (proyección → tramos → retención).
@@ -557,8 +582,11 @@ class HrFifthCategoryLine(models.Model):
         entero (``hr.gratification.year``) y todo filtrado por compañía.
         Si la retención mensual resulta ≤ 0 la línea pasa a excluidos.
         """
-        # Limpieza v18: líneas huérfanas creadas al descartar el editor.
+        # Limpieza v18: líneas huérfanas creadas al descartar el editor
+        # (solo de las compañías que se procesan, no de toda la base).
         self.search([('fifth_category_id', '=', False),
+                     ('slip_id.company_id', 'in',
+                      self.slip_id.company_id.ids),
                      ('id', 'not in', self.ids)]).unlink()
         GratLine = self.env['hr.gratification.line']
         Uit = self.env['l10n_pe.hr.uit']
@@ -631,7 +659,7 @@ class HrFifthCategoryLine(models.Model):
             record.seven_uit = 7 * uit
             record.net_rent = record.total_proy - record.seven_uit
             tax_proy = self.get_tax_proy(
-                record.net_rent, param.rate_limit_ids)
+                record.net_rent, param.rate_limit_ids, uit=uit)
             record.tax_proy = 0 if tax_proy < 0 else tax_proy
             record.past_months_ret = self.get_past_months_ret(
                 slip, year_start)
@@ -642,12 +670,20 @@ class HrFifthCategoryLine(models.Model):
                 lambda line: line.salary_rule_id == param.fifth_extr_sr_id
             ).mapped('total'))
             record.total_net_rent = record.ext_rem + record.net_rent
-            # La retención extraordinaria es de ingreso manual (criterio
-            # v18): la mensual descuenta la extraordinaria del anual.
+            # Art. 40 inc. c: la extraordinaria del mes se grava con la
+            # diferencia de impuesto con y sin ella, se retiene completa
+            # y se SUMA a la ordinaria (v18 la restaba de la anual).
+            if record.ext_rem > 0:
+                tax_with_ext = self.get_tax_proy(
+                    record.total_net_rent, param.rate_limit_ids, uit=uit)
+                record.ext_ret = custom_round(
+                    max(0.0, tax_with_ext - max(0.0, tax_proy)), 2)
+            else:
+                record.ext_ret = 0.0
             record.monthly_ret = custom_round(
-                (record.annual_ret - record.ext_ret) / rent_month, 2)
+                record.annual_ret / rent_month, 2)
 
-            if not record.monthly_ret > 0 \
+            if not (record.monthly_ret + record.ext_ret) > 0 \
                     and not self.env.context.get('line_form') \
                     and record.fifth_category_id.state == 'draft':
                 self.env['hr.fifth.category.line.excluidos'].create({

@@ -165,14 +165,11 @@ class HrPayslipRun(models.Model):
         # Códigos previsionales tratados aparte en la rama 2 del v18.
         pension_codes = ('0605', '0601')
         excluded_branch1 = ('0804', '0607', '0605', '0601')
-        # Afiliaciones que solo reportan 0605 (nombres literales v18).
-        # TODO(fase2-revisar): v18 comparaba hm.name IN ('ONP','SIN REGIMEN')
-        # — depende del nombre exacto del registro hr.membership; valorar
-        # sustituirlo por un flag is_afp (ONP/sin régimen = not is_afp).
-        onp_names = ('ONP', 'SIN REGIMEN')
-
+        # ONP y «sin régimen» solo reportan 0605. v18 comparaba el nombre
+        # ('ONP', 'SIN REGIMEN'), que no coincide con el dato «SIN RÉGIMEN»
+        # y emitía un 0601 en cero; el flag is_afp no depende del nombre.
         grouped = {}  # (nro_doc, codigo_sunat) -> dict acumulador
-        for slip in self.slip_ids:
+        for slip in self._l10n_pe_plame_slips():
             employee = slip.employee_id
             dni = employee.identification_id or ''
             doc_type = self._l10n_pe_doc_type(employee)
@@ -187,7 +184,7 @@ class HrPayslipRun(models.Model):
                         continue
                 elif code in pension_codes and membership:
                     # Rama 2: previsionales según afiliación.
-                    if membership.name in onp_names and code != '0605':
+                    if not membership.is_afp and code != '0605':
                         continue
                 else:
                     # 0804/0607 fuera de rama 1 y sin rama 2 aplicable,
@@ -253,7 +250,9 @@ class HrPayslipRun(models.Model):
         self._l10n_pe_check_single(self.env._(
             'Solo se puede procesar una planilla a la vez, '
             'seleccione una sola nómina'))
-        param = self.env['hr.main.parameter'].get_main_parameter()
+        # Parámetros de la compañía del LOTE, no de la activa.
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
         # v18 validaba la configuración de work entries dentro de
         # get_dlabs() vía check_voucher_values(); se conserva el control.
         param.check_voucher_values()
@@ -262,9 +261,10 @@ class HrPayslipRun(models.Model):
         ext_types = param.wd_ext
 
         output = io.StringIO()
-        slips = self.slip_ids.sorted(
-            key=lambda s: s.employee_id.identification_id or '')
-        for slip in slips:
+        # Un lote semanal declara el mes entero: una línea por trabajador
+        # con la suma de sus semanas (SUNAT rechaza documentos repetidos).
+        totals = {}  # employee -> [horas ordinarias, horas extra]
+        for slip in self._l10n_pe_plame_slips():
             relevant = slip.worked_days_line_ids.filtered(
                 lambda wd: wd.work_entry_type_id in gating_types)
             if not relevant:
@@ -276,12 +276,17 @@ class HrPayslipRun(models.Model):
             # v18: horas por día del calendario del contrato.
             hours_per_day = slip.version_id.resource_calendar_id.hours_per_day
             dlab = self._l10n_pe_get_dlabs(slip, param)
+            acc = totals.setdefault(slip.employee_id, [0.0, 0.0])
+            acc[0] += dlab * hours_per_day
+            acc[1] += hext
+        for employee in sorted(
+                totals, key=lambda e: e.identification_id or ''):
+            hlab, hext = totals[employee]
             # v18: modf() separa la parte entera y %d la trunca.
-            hlab = modf(dlab * hours_per_day)
             output.write('%s|%s|%d|0|%d|0|\r\n' % (
-                self._l10n_pe_doc_type(slip.employee_id),
-                slip.employee_id.identification_id or '',
-                hlab[1],
+                self._l10n_pe_doc_type(employee),
+                employee.identification_id or '',
+                modf(hlab)[1],
                 hext,
             ))
 
@@ -329,15 +334,18 @@ class HrPayslipRun(models.Model):
         Suspension = self.env['hr.work.suspension']
 
         output = io.StringIO()
-        for slip in self.slip_ids:
-            employee = slip.employee_id
+        # Suspensiones del mes declarado: un lote semanal toma también las
+        # registradas en cualquiera de las semanas del mes.
+        month = self.l10n_pe_plame_period_id or self.periodo_id
+        periods = month | month.child_ids
+        for employee in self._l10n_pe_plame_slips().employee_id:
             code = self._l10n_pe_doc_type(employee)
             # v18: sunat_code.rjust(2, '0') o '' si no hay tipo de doc.
             tdoc = code.rjust(2, '0') if code else ''
             ndoc = employee.identification_id or ''
             # Suspensiones del trabajador en el periodo del lote.
             lineas = Suspension.search([
-                ('periodo_id', '=', self.periodo_id.id),
+                ('periodo_id', 'in', periods.ids),
                 ('employee_id', '=', employee.id),
             ])
             memoria = []  # tipos ya emitidos (dedupe, como v18)
@@ -381,20 +389,23 @@ class HrPayslipRun(models.Model):
         6. ``condicion``: ``2`` si el empleado es «no domiciliado»,
            ``1`` en caso contrario.
 
-        Se emite una línea por cada línea de boleta cuya regla salarial
-        tenga código ``SVLEY`` (Seguro Vida Ley) con total ≠ 0, como el
-        SQL v18 (que seleccionaba el monto pero no lo volcaba).
+        Se emite una línea por trabajador con alguna línea de boleta de
+        regla ``SVLEY`` (Seguro Vida Ley) con total ≠ 0 en el mes
+        declarado (el SQL v18 seleccionaba el monto pero no lo volcaba).
         """
         self._l10n_pe_check_single(self.env._(
             'Solo se puede procesar una planilla a la vez, '
             'seleccione una sola nómina'))
 
         output = io.StringIO()
-        for slip in self.slip_ids:
-            employee = slip.employee_id
-            for line in slip.line_ids:
-                if line.salary_rule_id.code != 'SVLEY' or not line.total:
-                    continue
+        # Una línea por trabajador del mes declarado (en un lote semanal,
+        # el mismo trabajador tiene una boleta por semana).
+        slips = self._l10n_pe_plame_slips()
+        for employee in slips.employee_id:
+            svley = slips.filtered(
+                lambda s, e=employee: s.employee_id == e).line_ids.filtered(
+                lambda l: l.salary_rule_id.code == 'SVLEY' and l.total)
+            for line in svley[:1]:
                 # v18: CASE WHEN he.condition = 'not_domiciled'
                 #      THEN '2' ELSE '1' END
                 condition = '2' if employee.condition == 'not_domiciled' \
@@ -516,7 +527,8 @@ class HrPayslipRun(models.Model):
 
         self._l10n_pe_check_single(self.env._(
             'No se puede seleccionar más de un registro para este proceso'))
-        param = self.env['hr.main.parameter'].get_main_parameter()
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
         insurable_rule = param.insurable_remuneration
 
         workbook = Workbook()
@@ -536,8 +548,17 @@ class HrPayslipRun(models.Model):
             cell.font = number_font
             cell.alignment = number_align
 
+        # Una fila por trabajador del mes declarado: en un lote semanal se
+        # suma la remuneración asegurable de sus semanas y los datos de
+        # versión salen de su última boleta del mes.
+        slips = self._l10n_pe_plame_slips().sorted('date_to')
+        by_employee = {}
+        for slip in slips:
+            by_employee.setdefault(slip.employee_id, self.env['hr.payslip'])
+            by_employee[slip.employee_id] |= slip
         x = 0  # fila de salida (solo avanza con afiliados AFP, como v18)
-        for c, slip in enumerate(self.slip_ids):
+        for c, employee_slips in enumerate(by_employee.values()):
+            slip = employee_slips[-1]
             version = slip.version_id
             if not version.membership_id.is_afp:
                 continue
@@ -547,9 +568,10 @@ class HrPayslipRun(models.Model):
             # v18: hr.payslip.line de la regla de remuneración asegurable.
             # (v18 hacía search y accedía a .total: con >1 línea habría
             # reventado; aquí se toma la primera por seguridad.)
-            ir_line = slip.line_ids.filtered(
-                lambda l: l.salary_rule_id == insurable_rule)[:1] \
-                if insurable_rule else slip.line_ids.browse()
+            insurable = sum(
+                employee_slip.line_ids.filtered(
+                    lambda l: l.salary_rule_id == insurable_rule)[:1].total
+                for employee_slip in employee_slips) if insurable_rule else 0.0
 
             # Columna H — «¿devenga remuneración?» (lógica v18 literal):
             # con fecha fin de contrato: S si fin ≥ inicio del lote;
@@ -600,7 +622,7 @@ class HrPayslipRun(models.Model):
             worksheet.cell(row=row, column=10, value=cese)
             worksheet.cell(row=row, column=11,
                            value=version.l10n_pe_exception or '')
-            write_number(row, 12, ir_line.total if ir_line.total else 0.00)
+            write_number(row, 12, insurable or 0.00)
             write_number(row, 13, 0.00)
             write_number(row, 14, 0.00)
             write_number(row, 15, 0.00)

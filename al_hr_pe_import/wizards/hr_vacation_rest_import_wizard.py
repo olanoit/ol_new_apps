@@ -97,7 +97,9 @@ class AlImportVacationRestWizard(models.TransientModel):
     def _find_employee_by_doc(self, identification):
         # ``identification_id`` vive en hr.version; hr.employee lo expone
         # por _inherits sobre la versión vigente.
-        return self.env['hr.employee'].sudo().search([
+        # Sin sudo: el asistente es de nómina (implica RR. HH.) y ya lee
+        # empleados; la compañía del asistente se valida en el mixin.
+        return self.env['hr.employee'].search([
             ('identification_id', '=', identification),
             ('company_id', '=', self.company_id.id),
         ])

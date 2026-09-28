@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class HrWorkSuspension(models.Model):
@@ -41,5 +41,5 @@ class HrWorkSuspension(models.Model):
     def _check_days(self):
         for suspension in self:
             if suspension.days <= 0:
-                raise UserError(self.env._(
+                raise ValidationError(self.env._(
                     'Los días de suspensión deben ser positivos.'))

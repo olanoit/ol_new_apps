@@ -3,7 +3,7 @@
 
     <!-- v19: template standalone (ver hr_attendance_list_buttons.xml) -->
     <t t-name="al_hr_pe_import.HrSalaryRuleListView.Buttons">
-        <button type="button"
+        <button type="button" t-if="canImportPayroll"
                 class="btn btn-secondary o_al_import_payroll_btn"
                 t-on-click="() => this.onClickImportPayroll()">
             <i class="fa fa-file-excel-o me-1" role="img"

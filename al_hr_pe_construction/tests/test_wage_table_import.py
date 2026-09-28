@@ -17,7 +17,7 @@ from reportlab.pdfgen import canvas
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from odoo.tests.common import Form, TransactionCase
+from odoo.tests import Form, TransactionCase
 
 from ..models.hr_construction_wage_import import L10nPeHrConstructionWageTable
 from ..tools import wage_table_pdf

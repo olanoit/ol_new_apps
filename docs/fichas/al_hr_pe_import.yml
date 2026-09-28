@@ -515,6 +515,15 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
+  - version: 4.20260816
+    fecha: 27/09/2026
+    cambios:
+      - Solo se puede importar en una compañía a la que el usuario tiene acceso.
+      - Al importar datos de versiones, la AFP y los demás catálogos se toman de la compañía del asistente o globales, nunca de otra compañía.
+      - Una celda de salida vacía ya no borra la salida registrada al actualizar asistencias.
+      - Límite de 20 MB por archivo y 50 000 filas por hoja.
+      - Una importación sin avance durante 30 minutos se marca como interrumpida en vez de quedarse «Procesando».
+      - El botón «Importar desde Excel» solo aparece a quien puede usar el asistente.
   - version: 3.20260816
     fecha: 18/08/2026
     cambios:

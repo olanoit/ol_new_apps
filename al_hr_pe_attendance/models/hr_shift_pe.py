@@ -292,10 +292,19 @@ class L10nPeHrShiftCycleAssignment(models.Model):
                     end=assignment.date_end))
 
     def _template_duration_hours(self):
-        """Duración en horas de la plantilla, tolerando el cruce de medianoche."""
+        """Duración en horas de la plantilla, tolerando el cruce de medianoche.
+
+        En planning la hora de fin cae en el día ``duration_days`` del
+        turno (un 22:00 → 06:00 nativo tiene ``duration_days = 2``); sin
+        sumar los días, una plantilla de varios días generaba turnos
+        cortos.
+        """
         self.ensure_one()
         template = self.template_id
-        duration = (template.end_time - template.start_time) % 24.0
+        days = max(template.duration_days or 1, 1)
+        duration = (days - 1) * 24.0 + template.end_time - template.start_time
+        if duration <= 0:
+            duration = (template.end_time - template.start_time) % 24.0
         return duration or 24.0
 
     def _iter_work_dates(self):
@@ -332,7 +341,22 @@ class L10nPeHrShiftCycleAssignment(models.Model):
             start_time = float_to_time(template.start_time)
             vals_list = []
             conflicts = []
-            for work_date in assignment._iter_work_dates():
+            # Turnos existentes del trabajador en todo el rango, en una
+            # sola consulta (antes, un search_count por día del ciclo).
+            work_dates = list(assignment._iter_work_dates())
+            existing_slots = self.env['planning.slot']
+            if work_dates:
+                range_start = datetime.combine(
+                    min(work_dates), datetime.min.time()) - timedelta(days=1)
+                range_end = datetime.combine(
+                    max(work_dates), datetime.min.time()) + timedelta(
+                    days=2, hours=duration)
+                existing_slots = self.env['planning.slot'].search([
+                    ('employee_id', '=', assignment.employee_id.id),
+                    ('start_datetime', '<', range_end),
+                    ('end_datetime', '>', range_start),
+                ])
+            for work_date in work_dates:
                 start_local = tz.localize(
                     datetime.combine(work_date, start_time))
                 start_utc = start_local.astimezone(pytz.utc).replace(
@@ -340,11 +364,10 @@ class L10nPeHrShiftCycleAssignment(models.Model):
                 end_utc = start_utc + timedelta(
                     hours=int(duration),
                     minutes=round(math.modf(duration)[0] * 60))
-                existing = self.env['planning.slot'].search_count([
-                    ('employee_id', '=', assignment.employee_id.id),
-                    ('start_datetime', '<', end_utc),
-                    ('end_datetime', '>', start_utc),
-                ], limit=1)
+                existing = any(
+                    slot.start_datetime < end_utc
+                    and slot.end_datetime > start_utc
+                    for slot in existing_slots)
                 if existing:
                     conflicts.append(fields.Date.to_string(work_date))
                     continue

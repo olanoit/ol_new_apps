@@ -11,7 +11,7 @@ contexto (``benefits_model`` + ``benefits_id``) y los hooks
 ``_benefits_move_date_ref`` / ``_register_benefits_move`` del mixin
 resuelven lo específico de cada flujo.
 """
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -27,8 +27,10 @@ class HrBenefitsMoveWizard(models.TransientModel):
     credit = fields.Float(string='Total haber', readonly=True)
     difference = fields.Float(
         string='Diferencia', compute='_compute_difference')
+    company_id = fields.Many2one(
+        'res.company', string='Compañía', readonly=True)
     account_id = fields.Many2one(
-        'account.account', string='Cuenta de ajuste',
+        'account.account', string='Cuenta de ajuste', check_company=True,
         help='Cuenta contra la que se registra la línea «Ajuste por '
              'redondeo» cuando debe y haber no cuadran al céntimo.')
 
@@ -42,9 +44,11 @@ class HrBenefitsMoveWizard(models.TransientModel):
         """Propone la cuenta de ajuste configurada en los Parámetros
         Principales de la compañía del registro origen."""
         res = super().default_get(fields_list)
-        if 'account_id' in fields_list and not res.get('account_id'):
-            record = self._get_benefits_record()
-            if record:
+        record = self._get_benefits_record()
+        if record:
+            if 'company_id' in fields_list:
+                res['company_id'] = record.company_id.id
+            if 'account_id' in fields_list and not res.get('account_id'):
                 param = self.env['hr.main.parameter'].get_main_parameter(
                     record.company_id)
                 res['account_id'] = param.benefits_adjust_account_id.id
@@ -76,18 +80,26 @@ class HrBenefitsMoveWizard(models.TransientModel):
             record.company_id)
         journal, partner = param.get_benefits_move_config()
 
-        move_lines = list(self.env.context.get('move_lines') or [])
+        # Las líneas se recalculan al generar: las del contexto se
+        # calcularon al abrir el asistente, pasan por el cliente y pueden
+        # estar obsoletas si el registro cambió entretanto.
+        move_lines = record._get_move_lines()
         if not move_lines:
             raise UserError(self.env._(
                 'No hay líneas que contabilizar.'))
-        difference = custom_round(self.difference, 2)
+        total_debit = custom_round(
+            sum(line['debit'] for line in move_lines), 2)
+        total_credit = custom_round(
+            sum(line['credit'] for line in move_lines), 2)
+        difference = custom_round(abs(total_debit - total_credit), 2)
         if difference:
+            param.check_rounding_difference(difference, len(move_lines))
             if not self.account_id:
                 raise UserError(self.env._(
                     'Seleccione la cuenta de ajuste para registrar la '
                     'diferencia por redondeo.'))
             debit, credit = (0.0, difference) \
-                if self.debit > self.credit else (difference, 0.0)
+                if total_debit > total_credit else (difference, 0.0)
             move_lines.append({
                 'account_id': self.account_id.id,
                 'name': self.env._('Ajuste por redondeo'),
@@ -98,12 +110,15 @@ class HrBenefitsMoveWizard(models.TransientModel):
             })
 
         move_date, ref = record._benefits_move_date_ref()
-        move = self.env['account.move'].create({
+        # sudo, como el asiento de lote y el nativo de nómina
+        # (_create_account_move): quien gestiona los beneficios puede no
+        # tener permisos contables; ya pasó el ACL del registro origen.
+        move_sudo = self.env['account.move'].sudo().create({
             'journal_id': journal.id,
             'company_id': record.company_id.id,
             'date': move_date,
             'ref': ref,
-            'line_ids': [(0, 0, {
+            'line_ids': [Command.create({
                 'account_id': line['account_id'],
                 'debit': line['debit'],
                 'credit': line['credit'],
@@ -113,7 +128,7 @@ class HrBenefitsMoveWizard(models.TransientModel):
                     line.get('analytic_distribution') or False,
             }) for line in move_lines],
         })
-        move.action_post()
-        record._register_benefits_move(move)
+        move_sudo.action_post()
+        record._register_benefits_move(move_sudo)
         return notify_success(self.env._(
             'Generación de asiento exitosa.'))

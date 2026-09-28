@@ -171,6 +171,7 @@ class HrVersion(models.Model):
 
     l10n_pe_is_overtime = fields.Boolean(
         string='Sujeto a horas extras (PE)', default=False, tracking=True,
+        groups='hr.group_hr_user',
         help='El tareaje calcula sobretiempo (HE 25/35/100 %) para este '
              'trabajador. Desmarcar para personal de dirección y no '
              'sujeto a fiscalización inmediata, excluidos de la jornada '
@@ -241,10 +242,50 @@ class HrTareajeManager(models.Model):
     # ------------------------------------------------------------------
     def set_close(self):
         """Aplica el tareaje al periodo (las boletas lo leen al
-        refrescar los días trabajados)."""
+        refrescar los días trabajados).
+
+        La boleta suma TODOS los tareajes aplicados del periodo: dos
+        tareajes aplicados que se solapan en fechas y comparten
+        trabajadores duplicarían días, horas extra y faltas.
+        """
+        for record in self:
+            employees = record.tareaje_line_ids.employee_id
+            if not employees:
+                continue
+            overlapping = self.search([
+                ('id', '!=', record.id),
+                ('state', '=', 'done'),
+                ('company_id', '=', record.company_id.id),
+                ('date_start', '<=', record.date_end),
+                ('date_end', '>=', record.date_start),
+                ('tareaje_line_ids.employee_id', 'in', employees.ids),
+            ], limit=1)
+            if overlapping:
+                raise UserError(self.env._(
+                    'El tareaje «%(other)s» ya está aplicado en fechas que '
+                    'se solapan con «%(name)s» para los mismos '
+                    'trabajadores. Reabra uno de los dos antes de aplicar.',
+                    other=overlapping.name, name=record.name))
         self.write({'state': 'done'})
 
     def set_reopen(self):
+        """Vuelve a borrador si ninguna boleta cerrada lo consumió."""
+        for record in self.filtered(lambda t: t.state == 'done'):
+            employees = record.tareaje_line_ids.employee_id
+            if not employees:
+                continue
+            closed = self.env['hr.payslip'].search_count([
+                ('employee_id', 'in', employees.ids),
+                ('company_id', '=', record.company_id.id),
+                ('state', 'in', ('validated', 'paid')),
+                ('date_from', '<=', record.date_end),
+                ('date_to', '>=', record.date_start),
+            ], limit=1)
+            if closed:
+                raise UserError(self.env._(
+                    'No puede reabrir «%(name)s»: hay boletas validadas o '
+                    'pagadas del periodo que ya usaron este tareaje.',
+                    name=record.name))
         self.write({'state': 'draft'})
 
     @api.ondelete(at_uninstall=False)
@@ -337,9 +378,14 @@ class HrTareajeManager(models.Model):
           feriado → día de descanso (``dom``) — D.Leg. 713 arts. 1 y 5.
         * Marcación incompleta (solo entrada o solo salida) →
           inconsistencia (``incos``), sin clasificar horas.
-        * Descanso/feriado trabajado: ``fer`` computa el día (la regla
-          salarial FER paga el jornal con sobretasa — D.Leg. 713
-          arts. 3-4); ``he100`` computa las horas que exceden la salida
+        * Descanso/feriado trabajado: ``dom`` conserva el día de
+          descanso (su remuneración ya está en el sueldo mensual) y
+          ``fer`` computa ADEMÁS el día laborado, que la regla salarial
+          FER paga con la sobretasa (D.Leg. 713 arts. 3-4 y 9: se paga
+          «adicionalmente» la labor con sobretasa del 100 %). Sin
+          ``dom`` el Básico perdía el día y FER solo lo reponía, con lo
+          que la sobretasa salía en cero. ``he100`` computa las horas que
+          exceden la salida
           programada o, sin turno de referencia, la jornada legal de
           8 h (:data:`LEGAL_WORKDAY_HOURS`).
           TODO(fase6-revisar): validar con contabilidad el reparto
@@ -379,8 +425,10 @@ class HrTareajeManager(models.Model):
             sout = sched_out + 24.0 if sched_out <= sched_in else sched_out
 
         if day_kind in ('descanso', 'feriado'):
-            # D.Leg. 713 arts. 3-4: labor en día de descanso o feriado
-            # sin descanso sustitutorio → sobretasa del 100 %.
+            # D.Leg. 713 arts. 3-4 y 9: labor en día de descanso o feriado
+            # sin descanso sustitutorio → se paga ADEMÁS del descanso
+            # (dom, ya incluido en el sueldo) con sobretasa del 100 %.
+            result['dom'] = 1.0
             result['fer'] = 1.0
             if compute_overtime:
                 if has_schedule:
@@ -464,8 +512,11 @@ class HrTareajeManager(models.Model):
                 day_vals = []
                 calendar = employee.resource_calendar_id \
                     or record.company_id.resource_calendar_id
+                # Versión vigente al cierre del periodo tareado, no la
+                # actual (el flag puede haber cambiado después).
+                version = employee._get_version(record.date_end)
                 compute_he = record.is_compute_he and bool(
-                    employee.version_id.l10n_pe_is_overtime)
+                    version.l10n_pe_is_overtime)
                 day = record.date_start
                 while day <= record.date_end:
                     schedule = record._get_day_schedule(calendar, day)
@@ -527,11 +578,13 @@ class HrTareajeManager(models.Model):
             'horario': '%05.2f - %05.2f' % (schedule[0], schedule[1])
             if schedule else '',
             'mar_hora_ing': marks[0] if marks else 0.0,
-            'mar_hora_sal': marks[1] if marks else 0.0,
+            # Sin salida (marcación abierta u olvidada) → 0.
+            'mar_hora_sal': marks[1] if marks and marks[1] is not None
+            else 0.0,
             'worked_hours': custom_round(
                 max(0.0, (marks[1] if marks[1] > marks[0]
                           else marks[1] + 24.0) - marks[0]))
-            if marks else 0.0,
+            if marks and marks[1] is not None else 0.0,
             'state': state,
             **{key: values.get(key, 0.0) for key in TAREAJE_KEYS},
         }
@@ -560,33 +613,40 @@ class HrTareajeManager(models.Model):
             - timedelta(hours=14)
         end_dt = fields.Datetime.to_datetime(self.date_end) \
             + timedelta(days=1, hours=14)
+        # Las marcaciones sin salida también entran: sin ellas, quien
+        # olvidó marcar la salida quedaba como falta en vez de como
+        # marcación incompleta.
         attendances = self.env['hr.attendance'].search([
             ('employee_id.company_id', '=', self.company_id.id),
             ('check_in', '<=', end_dt),
-            ('check_out', '>=', start_dt),
+            '|', ('check_out', '=', False), ('check_out', '>=', start_dt),
         ])
         raw = defaultdict(lambda: defaultdict(list))
         for att in attendances:
             tz = pytz.timezone(att.employee_id.tz or 'America/Lima')
             local_in = pytz.utc.localize(att.check_in).astimezone(tz)
-            local_out = pytz.utc.localize(att.check_out).astimezone(tz)
             day = local_in.date()
             if not (self.date_start <= day <= self.date_end):
                 continue
             hour_in = local_in.hour + local_in.minute / 60.0 \
                 + local_in.second / 3600.0
-            hour_out = (local_out.date() - day).days * 24.0 \
-                + local_out.hour + local_out.minute / 60.0 \
-                + local_out.second / 3600.0
+            hour_out = None
+            if att.check_out:
+                local_out = pytz.utc.localize(att.check_out).astimezone(tz)
+                hour_out = (local_out.date() - day).days * 24.0 \
+                    + local_out.hour + local_out.minute / 60.0 \
+                    + local_out.second / 3600.0
             raw[att.employee_id][day].append((hour_in, hour_out))
         result = defaultdict(dict)
         for employee, days in raw.items():
             for day, pairs in days.items():
                 # Varias marcaciones el mismo día: primera entrada y
-                # última salida (consolidación v18).
+                # última salida (consolidación v18). Si alguna quedó sin
+                # salida, el día es una marcación incompleta.
+                outs = [pair[1] for pair in pairs]
                 result[employee][day] = (
                     min(pair[0] for pair in pairs),
-                    max(pair[1] for pair in pairs))
+                    None if None in outs else max(outs))
         return result
 
     @api.model
@@ -626,6 +686,12 @@ class HrTareajeManager(models.Model):
             for i in range(len(tramos) - 1))
         return (tramos[0][0], tramos[-1][1], break_hours)
 
+    @api.model
+    def _to_local_date(self, value, tz_name):
+        """Fecha local (``tz_name``) de un datetime UTC ingenuo."""
+        tz = pytz.timezone(tz_name or 'America/Lima')
+        return pytz.utc.localize(value).astimezone(tz).date()
+
     def _get_public_holidays(self):
         """Feriados (D.Leg. 713 arts. 5-9): descansos globales de los
         calendarios — ``{calendar_id o False: {fechas}}``."""
@@ -638,9 +704,17 @@ class HrTareajeManager(models.Model):
             ('date_to', '>=', fields.Datetime.to_datetime(self.date_start)),
         ])
         holidays = defaultdict(set)
+        default_tz = self.company_id.resource_calendar_id.tz \
+            or 'America/Lima'
         for leave in leaves:
-            day = max(leave.date_from.date(), self.date_start)
-            last = min(leave.date_to.date(), self.date_end)
+            # Las fechas se guardan en UTC: un feriado de 00:00 a 23:59
+            # hora de Lima termina a las 04:59 UTC del día siguiente, así
+            # que .date() en UTC marcaba también ese día como feriado.
+            tz = leave.calendar_id.tz or default_tz
+            day = max(self._to_local_date(leave.date_from, tz),
+                      self.date_start)
+            last = min(self._to_local_date(leave.date_to, tz),
+                       self.date_end)
             while day <= last:
                 holidays[leave.calendar_id.id or False].add(day)
                 day += timedelta(days=1)
@@ -659,8 +733,16 @@ class HrTareajeManager(models.Model):
         ])
         days = defaultdict(set)
         for leave in leaves:
-            day = max(leave.date_from.date(), self.date_start)
-            last = min(leave.date_to.date(), self.date_end)
+            # Fechas locales de la solicitud (no la conversión UTC de
+            # date_from/date_to, que corre un día en ausencias de día
+            # completo).
+            tz = leave.employee_id.tz or 'America/Lima'
+            day = max(leave.request_date_from
+                      or self._to_local_date(leave.date_from, tz),
+                      self.date_start)
+            last = min(leave.request_date_to
+                       or self._to_local_date(leave.date_to, tz),
+                       self.date_end)
             while day <= last:
                 days[leave.employee_id.id].add(day)
                 day += timedelta(days=1)
@@ -838,22 +920,13 @@ class HrPayslip(models.Model):
         if not param:
             return res
         wet_map = param.get_tareaje_wet_map()
-        # concepto → (días, horas) desde los totales del tareaje.
-        assignments = {
-            'dlab': (totals.get('dlab', 0.0), totals.get('htd', 0.0)),
-            'noct': (totals.get('dlabn', 0.0), totals.get('htn', 0.0)),
-            'dom': (totals.get('dom', 0.0), 0.0),
-            'fer': (totals.get('fer', 0.0), 0.0),
-            'fal': (totals.get('fal', 0.0), 0.0),
-            'tar': (0.0, totals.get('tar', 0.0)),
-            'he25': (0.0, totals.get('he25', 0.0)),
-            'he35': (0.0, totals.get('he35', 0.0)),
-            'he100': (0.0, totals.get('he100', 0.0)),
-        }
+        assignments = self._l10n_pe_tareaje_assignments(totals)
         for bucket, (days, hours) in assignments.items():
             wet = wet_map.get(bucket)
             if not wet:
                 continue  # p. ej. nocturnidad sin tipo configurado
+            if bucket == 'noct' and wet == wet_map.get('dlab'):
+                continue  # mismo tipo que DLAB: ya lleva esas horas
             found = False
             for vals in res:
                 if vals.get('work_entry_type_id') == wet.id:
@@ -868,3 +941,25 @@ class HrPayslip(models.Model):
                     'number_of_hours': hours,
                 })
         return res
+
+    @api.model
+    def _l10n_pe_tareaje_assignments(self, totals):
+        """Concepto del tareaje → ``(días, horas)`` para la boleta.
+
+        DLAB lleva el día COMPLETO asistido (parte diurna + nocturna): el
+        Básico solo cuenta DLAB, así que un turno de 22 a 06 dejaba el
+        Básico en cero. La nocturnidad queda solo informativa (horas, sin
+        días) hasta que exista la regla de sobretasa nocturna.
+        """
+        return {
+            'dlab': (totals.get('dlab', 0.0) + totals.get('dlabn', 0.0),
+                     totals.get('htd', 0.0) + totals.get('htn', 0.0)),
+            'noct': (0.0, totals.get('htn', 0.0)),
+            'dom': (totals.get('dom', 0.0), 0.0),
+            'fer': (totals.get('fer', 0.0), 0.0),
+            'fal': (totals.get('fal', 0.0), 0.0),
+            'tar': (0.0, totals.get('tar', 0.0)),
+            'he25': (0.0, totals.get('he25', 0.0)),
+            'he35': (0.0, totals.get('he35', 0.0)),
+            'he100': (0.0, totals.get('he100', 0.0)),
+        }

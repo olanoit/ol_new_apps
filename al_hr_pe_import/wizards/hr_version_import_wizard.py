@@ -77,7 +77,11 @@ class AlImportHrVersionWizard(models.TransientModel):
     # --------------------------------------------------------------------- #
 
     def _find_employee_by_doc(self, identification):
-        return self.env['hr.employee'].sudo().search([
+        # Sin sudo: el asistente es de nómina (implica RR. HH.), así que el
+        # usuario ya lee empleados y versiones. Con sudo, el write posterior
+        # sobre employee.version_id corría como superusuario y saltaba las
+        # reglas multicompañía.
+        return self.env['hr.employee'].search([
             ('identification_id', '=', identification),
             ('company_id', '=', self.company_id.id),
         ])
@@ -98,15 +102,27 @@ class AlImportHrVersionWizard(models.TransientModel):
         """Catálogos T08/T15: primero por código exacto, luego por
         nombre (patrón global-o-de-la-compañía de al_hr_pe)."""
         text = ' '.join((str(value)).split())
-        Model = self.env[model]
-        rec = Model.search([('code', '=', text)], limit=1)
+        rec = self._search_catalog(model, [('code', '=', text)])
         if not rec:
-            rec = Model.search([('name', '=ilike', text)], limit=1)
+            rec = self._search_catalog(model, [('name', '=ilike', text)])
         return rec
 
     def _find_by_name(self, model, value):
         text = ' '.join((str(value)).split())
-        return self.env[model].search([('name', '=ilike', text)], limit=1)
+        return self._search_catalog(model, [('name', '=ilike', text)])
+
+    def _search_catalog(self, model, domain):
+        """Catálogo global o de la compañía del asistente, con prioridad
+        para el registro propio (override por compañía de al_hr_pe). Sin
+        el filtro, podía tomarse la AFP propia de otra compañía, con
+        otras tasas."""
+        Model = self.env[model]
+        if 'company_id' in Model._fields:
+            domain = domain + [
+                ('company_id', 'in', [False, self.company_id.id])]
+            records = Model.search(domain)
+            return (records.filtered('company_id') or records)[:1]
+        return Model.search(domain, limit=1)
 
     # --------------------------------------------------------------------- #
     # Procesamiento de una fila                                             #

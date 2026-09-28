@@ -9,6 +9,7 @@ cada categoría); si uno solo no coincide al céntimo, no se importa nada.
 """
 import logging
 from decimal import Decimal
+from urllib.parse import urljoin, urlparse
 
 import requests
 from markupsafe import Markup, escape
@@ -38,6 +39,14 @@ DEFAULT_URLS = (
 )
 # El PDF de CAPECO pesa unos 8 MB.
 MAX_PDF_SIZE = 30 * 1024 * 1024
+MAX_REDIRECTS = 5
+# Solo se descarga de estos dominios (y sus subdominios): la dirección la
+# escribe un usuario y la acción planificada la visita como superusuario,
+# así que sin lista cerrada serviría para sondear la red interna (SSRF).
+# El administrador puede añadir otros, uno por línea, en el parámetro
+# del sistema ALLOWED_HOSTS_PARAM.
+ALLOWED_HOSTS_PARAM = 'al_hr_pe_construction.wage_table_hosts'
+DEFAULT_ALLOWED_HOSTS = ('capeco.org', 'ftccperu.com', 'gob.pe')
 WEEK_DAYS = 6
 
 
@@ -59,21 +68,63 @@ class L10nPeHrConstructionWageTable(models.Model):
                 if line.strip() and not line.strip().startswith('#')]
 
     @api.model
+    def _l10n_pe_allowed_hosts(self):
+        """Dominios de los que se acepta descargar la tabla."""
+        extra = self.env['ir.config_parameter'].sudo().get_param(
+            ALLOWED_HOSTS_PARAM) or ''
+        hosts = {host.strip().lower().lstrip('.')
+                 for host in extra.replace(',', '\n').splitlines()
+                 if host.strip()}
+        return hosts | set(DEFAULT_ALLOWED_HOSTS)
+
+    @api.model
+    def _l10n_pe_check_url(self, url):
+        """Solo https y solo dominios de la lista (ver ALLOWED_HOSTS_PARAM)."""
+        parsed = urlparse(url or '')
+        host = (parsed.hostname or '').lower()
+        if parsed.scheme != 'https' or not host:
+            raise UserError(_(
+                'La dirección %(url)s no es válida: debe empezar por https://.',
+                url=url))
+        allowed = self._l10n_pe_allowed_hosts()
+        if not any(host == domain or host.endswith('.' + domain)
+                   for domain in allowed):
+            raise UserError(_(
+                'No se descargan tablas de %(host)s. Dominios permitidos: '
+                '%(allowed)s. El administrador puede añadir otros en el '
+                'parámetro del sistema %(param)s.',
+                host=host, allowed=', '.join(sorted(allowed)),
+                param=ALLOWED_HOSTS_PARAM))
+        return url
+
+    @api.model
     def _l10n_pe_download_pdf(self, url):
+        current = url
         try:
-            # Sin un User-Agent de navegador, CAPECO responde 406.
-            response = requests.get(url, timeout=60, stream=True, headers={
-                'User-Agent': 'Mozilla/5.0 (compatible; Odoo)'})
-            response.raise_for_status()
-            content = b''
-            for chunk in response.iter_content(chunk_size=65536):
-                content += chunk
-                if len(content) > MAX_PDF_SIZE:
-                    raise UserError(_('El PDF de %(url)s supera los 30 MB.', url=url))
+            # Las redirecciones se siguen a mano para validar cada salto:
+            # si no, un dominio permitido podría reenviar a la red interna.
+            for _hop in range(MAX_REDIRECTS + 1):
+                self._l10n_pe_check_url(current)
+                # Sin un User-Agent de navegador, CAPECO responde 406.
+                with requests.get(current, timeout=60, stream=True,
+                                  allow_redirects=False, headers={
+                                      'User-Agent': 'Mozilla/5.0 (compatible; Odoo)'}
+                                  ) as response:
+                    if response.is_redirect:
+                        current = urljoin(current, response.headers['Location'])
+                        continue
+                    response.raise_for_status()
+                    content = bytearray()
+                    for chunk in response.iter_content(chunk_size=65536):
+                        content.extend(chunk)
+                        if len(content) > MAX_PDF_SIZE:
+                            raise UserError(_('El PDF de %(url)s supera los 30 MB.', url=url))
+                    return bytes(content)
         except requests.RequestException as error:
             raise UserError(_('No se pudo descargar %(url)s: %(error)s',
                               url=url, error=error)) from error
-        return content
+        raise UserError(_('Demasiadas redirecciones al descargar %(url)s.',
+                          url=url))
 
     # ------------------------------------------------------------------
     # Lectura y comprobación

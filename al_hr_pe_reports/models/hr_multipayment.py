@@ -158,7 +158,7 @@ def txt_field(value, kind, width=1, left=True, decimal_point=False):
 def _banbif_amount(amount):
     """Monto BanBif: 2 decimales sin punto, 14 posiciones con espacios a
     la izquierda (port literal del bloque ``ap/apf`` v18)."""
-    text = str(round(amount, 2))
+    text = '%.2f' % custom_round(amount, 2)
     if '.' in text:
         integer, decimals = text.split('.')
         if len(decimals) < 2:
@@ -903,9 +903,12 @@ class HrAutomateMultipayment(models.Model):
     def _get_wage_account(employee):
         """Cuenta de haberes del empleado: la principal nativa v19
         (primera de ``bank_account_ids``); v18: wage_bank_account_id."""
-        sudo_employee = employee.sudo()
-        return (sudo_employee.primary_bank_account_id
-                or sudo_employee.bank_account_ids[:1])
+        # sudo: las cuentas bancarias del empleado son datos privados de
+        # RR. HH.; quien genera el pago masivo es de nómina y solo las
+        # usa para componer el TXT.
+        employee_sudo = employee.sudo()
+        return (employee_sudo.primary_bank_account_id
+                or employee_sudo.bank_account_ids[:1])
 
     def _iter_origin_lines(self):
         """Genera dicts crudos (empleado, cuenta destino, montos,
@@ -925,7 +928,11 @@ class HrAutomateMultipayment(models.Model):
             # categoría NET de Odoo, que estas estructuras no usan.
             net_rule = param.net_fortnightly_sr_id \
                 if field_name == 'fortnightly_id' else param.net_to_pay_sr_id
-            for slip in origin.slip_ids:
+            # Solo se pagan boletas cerradas: un borrador aún puede
+            # cambiar y una anulada no se paga.
+            slips = origin.slip_ids.filtered(
+                lambda slip: slip.state in ('validated', 'paid'))
+            for slip in slips:
                 amount = slip.net_wage
                 if net_rule:
                     amount = sum(slip.line_ids.filtered(
@@ -1235,6 +1242,17 @@ class HrAutomateMultipayment(models.Model):
             currency = 'USD' if self.cts_dollars else 'PEN'
             lines = lines.filtered(
                 lambda l: l.bank_account_id.currency_id.name == currency)
+        else:
+            # Haberes, gratificación, quincena y vacaciones van en la
+            # moneda de la cuenta de cargo: una cuenta destino en otra
+            # moneda no cabe en el mismo archivo. Sin moneda en la cuenta
+            # se asume la de la compañía.
+            company_currency = self.company_id.currency_id
+            charge_currency = (self.charge_account_id.currency_id
+                               or company_currency)
+            lines = lines.filtered(
+                lambda l: (l.bank_account_id.currency_id
+                           or company_currency) == charge_currency)
         return lines
 
     def _download_attachment(self, filename, content):
@@ -1269,7 +1287,12 @@ class HrAutomateMultipayment(models.Model):
         lines = self._get_txt_lines()
         self._verify_fields(lines)
         header = self._header_dict()
+        # Los formatos omiten en el detalle los montos ≤ 0 pero los cuentan
+        # en la cabecera (rareza v18 de las funciones puras); se quitan
+        # antes para que cabecera y detalle cuadren y el banco no rechace
+        # el archivo.
         line_dicts = [self._line_dict(line) for line in lines]
+        line_dicts = [line for line in line_dicts if line['amount'] > 0]
         if self.cts_id:
             content = cts_fn(header, line_dicts)
             filename = '%s_CTS.txt' % label
@@ -1278,6 +1301,10 @@ class HrAutomateMultipayment(models.Model):
             # quincena y vacaciones (cambian monto y referencia).
             content = haberes_fn(header, line_dicts)
             filename = '%s_Haberes.txt' % label
+        # Cada generación reemplaza el TXT anterior del mismo nombre.
+        self.env['ir.attachment'].search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id),
+            ('name', '=', filename)]).unlink()
         return self._download_attachment(
             filename, content.encode('utf-8'))
 
@@ -1319,8 +1346,13 @@ class HrAutomateMultipayment(models.Model):
                 field_name: origin.id,
             })
             multipayment.action_load_lines()
+        # Fuera de todo TXT quedan quienes no tienen cuenta o banco con
+        # formato y quienes tienen un banco sin diario de pago masivo.
+        journal_formats = set(journals.mapped('bank_id.format_bank'))
+        journal_formats.discard(False)
         excluded = [raw['employee'].name for raw in raw_lines
-                    if not raw['account'].bank_id.format_bank]
+                    if raw['account'].bank_id.format_bank
+                    not in journal_formats]
         if excluded:
             return {
                 'type': 'ir.actions.client',
@@ -1329,7 +1361,8 @@ class HrAutomateMultipayment(models.Model):
                     'type': 'warning', 'sticky': True,
                     'message': self.env._(
                         'Se generó exitosamente, excepto los siguientes '
-                        'empleados sin banco con formato:\n%s'
+                        'empleados sin cuenta en un banco con formato y '
+                        'diario de pago masivo:\n%s'
                     ) % '\n'.join(excluded),
                 },
             }
@@ -1406,6 +1439,10 @@ class HrPayslipRun(models.Model):
     def generate_multipayments(self):
         """Crea los pagos masivos del lote (uno por diario/banco)."""
         self.ensure_one()
+        if self.state == '01_ready':
+            raise UserError(self.env._(
+                'Valide el lote antes de generar los pagos bancarios: sus '
+                'boletas aún pueden cambiar.'))
         periodo = self.periodo_id
         glosa = '%s-%s' % (periodo.code[4:6], periodo.code[0:4]) \
             if periodo and periodo.code else \

@@ -5,4 +5,6 @@ makeImportPayrollListView({
     jsClassName: "hr_salary_rule_import_list",
     buttonTemplate: "al_hr_pe_import.HrSalaryRuleListView.Buttons",
     actionXmlId: "al_hr_pe_import.action_al_import_hr_salary_rule_wizard",
+    // Mismo grupo que el ACL del asistente de reglas salariales.
+    groups: ["hr_payroll.group_hr_payroll_manager"],
 });

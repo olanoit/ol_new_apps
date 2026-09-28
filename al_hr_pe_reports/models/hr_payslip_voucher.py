@@ -356,13 +356,17 @@ class HrPayslip(models.Model):
                     '%(employee)s: sin correo laboral.',
                     employee=slip.employee_id.name))
                 continue
+            # Savepoint por boleta: si una falla (p. ej. error SQL al
+            # generar el PDF) se deshace solo lo suyo y el resto del lote
+            # sigue en una transacción sana.
             try:
-                template.send_mail(
-                    slip.id, force_send=False,
-                    email_layout_xmlid='mail.mail_notification_light')
-                slip.date_send = fields.Datetime.now()
+                with self.env.cr.savepoint():
+                    template.send_mail(
+                        slip.id, force_send=False,
+                        email_layout_xmlid='mail.mail_notification_light')
+                    slip.date_send = fields.Datetime.now()
                 sent += 1
-            except Exception:
+            except Exception:  # noqa: BLE001 — se informa por boleta
                 _logger.exception(
                     'Falló el envío de la boleta %s', slip.display_name)
                 issues.append(self.env._(

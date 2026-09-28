@@ -42,6 +42,12 @@ _logger = logging.getLogger(__name__)
 
 EXCEL_EXTS = ('.xlsx', '.xlsm')
 
+# Límites de seguridad: un .xlsx es un zip y todas las filas se cargan en
+# memoria antes de lanzar el hilo; sin tope, un archivo enorme (o una
+# bomba de descompresión) agota la memoria del worker.
+MAX_FILE_SIZE_MB = 20
+MAX_ROWS = 50000
+
 
 def _run_import_thread(dbname, uid, wizard_model, wizard_id, progress_id,
                        rows):
@@ -57,6 +63,16 @@ def _run_import_thread(dbname, uid, wizard_model, wizard_id, progress_id,
             env = api.Environment(cr, uid, {})
             progress = env['al.import.payroll.progress'].browse(progress_id)
             wizard = env[wizard_model].browse(wizard_id)
+            if wizard.exists():
+                # El hilo no hereda el contexto de la petición: sin
+                # allowed_company_ids, env.companies serían TODAS las del
+                # usuario y las búsquedas de catálogos podrían tomar
+                # registros propios de otra compañía.
+                company = wizard.company_id
+                env = env(context=dict(
+                    env.context, allowed_company_ids=company.ids))
+                progress = progress.with_env(env)
+                wizard = wizard.with_env(env)
             if not wizard.exists():
                 progress.write({
                     'status': 'error',
@@ -194,6 +210,7 @@ class ImportPayrollMixin(models.AbstractModel):
         'res.company',
         string='Compañía',
         default=lambda self: self.env.company,
+        domain=lambda self: [('id', 'in', self.env.companies.ids)],
         required=True,
     )
 
@@ -273,7 +290,21 @@ class ImportPayrollMixin(models.AbstractModel):
         también en el paso 1, impidiendo subir el archivo o descargar la
         plantilla). Los hijos hacen ``super()`` y lanzan ``UserError``.
         """
+        self._check_company_allowed()
         return True
+
+    def _check_company_allowed(self):
+        """La compañía del asistente debe ser una de las permitidas.
+
+        ``company_id`` es un campo editable del asistente: sin este
+        control, una llamada RPC podía fijar otra compañía y los
+        importadores buscaban o escribían registros ajenos.
+        """
+        for rec in self:
+            if rec.company_id not in self.env.companies:
+                raise UserError(self.env._(
+                    'No puede importar datos de la compañía %s.')
+                    % rec.company_id.display_name)
 
     # ====================================================================== #
     # Validaciones y onchange                                                 #
@@ -324,6 +355,10 @@ class ImportPayrollMixin(models.AbstractModel):
         if not self.file_data:
             raise UserError(self.env._('Cargue primero un archivo Excel.'))
         raw = base64.b64decode(self.file_data)
+        if len(raw) > MAX_FILE_SIZE_MB * 1024 * 1024:
+            raise UserError(self.env._(
+                'El archivo supera el tamaño máximo de %s MB. Divídalo en '
+                'varios archivos.') % MAX_FILE_SIZE_MB)
         try:
             return openpyxl.load_workbook(
                 io.BytesIO(raw), data_only=True, read_only=True,
@@ -415,6 +450,10 @@ class ImportPayrollMixin(models.AbstractModel):
             ):
                 if not any(c not in (None, '') for c in row):
                     continue
+                if len(rows) >= MAX_ROWS:
+                    raise UserError(self.env._(
+                        'La hoja supera el máximo de %s filas. Divida el '
+                        'archivo en varias importaciones.') % MAX_ROWS)
                 parsed = OrderedDict()
                 for fname, idx in col_map.items():
                     parsed[fname] = (
@@ -491,8 +530,10 @@ class ImportPayrollMixin(models.AbstractModel):
         })
 
         # Commit para que el hilo (otro cursor) pueda leer el progress
-        # y la transient del wizard.
-        self.env.cr.commit()
+        # y la transient del wizard. En tests el cursor es de savepoint y
+        # commitear está prohibido (mismo guard que _process_all_rows).
+        if not modules.module.current_test:
+            self.env.cr.commit()
 
         dbname = self.env.cr.dbname
         uid = self.env.uid
@@ -529,6 +570,7 @@ class ImportPayrollMixin(models.AbstractModel):
             aunque el lote aún esté en curso.
         """
         self.ensure_one()
+        self._check_company_allowed()
         counts = {'created': 0, 'updated': 0, 'skipped': 0, 'error': 0}
         log_lines = []
         results = []

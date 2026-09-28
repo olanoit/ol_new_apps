@@ -10,7 +10,7 @@ import calendar
 from datetime import date, timedelta
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 MONTH_NAMES_ES = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
@@ -76,7 +76,7 @@ class HrPeriod(models.Model):
             parent = period.parent_id
             if not (parent.date_start <= period.date_start
                     and period.date_end <= parent.date_end):
-                raise UserError(self.env._(
+                raise ValidationError(self.env._(
                     'El periodo %(name)s no cabe dentro de %(parent)s.',
                     name=period.display_name, parent=parent.display_name))
 
@@ -119,7 +119,7 @@ class HrPeriod(models.Model):
     def _check_dates(self):
         for period in self:
             if period.date_start > period.date_end:
-                raise UserError(self.env._(
+                raise ValidationError(self.env._(
                     'La fecha de inicio no puede ser mayor que la fecha '
                     'de fin.'))
 

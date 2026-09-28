@@ -12,6 +12,10 @@ El jornal se fotografía al calcular la boleta, como el resto de
 snapshots peruanos (RMV, tasas AFP): una boleta de marzo tiene que seguir
 mostrando el jornal de marzo aunque en abril entre un convenio nuevo.
 """
+from datetime import datetime, time, timedelta
+
+from pytz import UTC, timezone
+
 from odoo import api, fields, models
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -22,6 +26,13 @@ from .hr_construction_masters import round_percent
 #: El D.S.O. se calcula aparte: no es un día trabajado, es el descanso
 #: que genera trabajar seis.
 WORKED_DAY_CODES = ('DLAB', 'FER', 'DVAC', 'DMED', 'DPAT', 'LCGH')
+#: Días en que el trabajador acudió a la obra. La movilidad es condición de
+#: trabajo (6 pasajes urbanos a la semana, ver §2.1 del análisis): solo se
+#: paga el día que hay que desplazarse, no en vacaciones, descanso médico,
+#: licencias ni feriados no laborados.
+ATTENDED_DAY_CODES = ('DLAB', 'FER')
+#: Estados en los que la boleta ya no cambia: su snapshot queda congelado.
+FROZEN_STATES = ('validated', 'paid', 'cancel')
 
 
 class HrPayslip(models.Model):
@@ -41,18 +52,32 @@ class HrPayslip(models.Model):
         compute='_compute_l10n_pe_construction_snapshot', store=True,
         readonly=False)
     l10n_pe_construction_category_id = fields.Many2one(
-        related='version_id.l10n_pe_construction_category_id', store=True)
+        'l10n_pe.hr.construction.category', string='Categoría (construcción)',
+        compute='_compute_l10n_pe_construction_snapshot', store=True,
+        readonly=False,
+        help='Categoría con la que se calculó la boleta (snapshot).')
 
     @api.depends('version_id', 'date_to',
                  'version_id.l10n_pe_construction_category_id')
     def _compute_l10n_pe_construction_snapshot(self):
         for payslip in self:
+            if payslip.state in FROZEN_STATES:
+                # Boleta confirmada: el jornal, su línea y la categoría se
+                # quedan como se pagaron aunque luego cambie la versión (la
+                # reimpresión y el resumen CONAFOVICER deben cuadrar).
+                payslip.l10n_pe_wage_line_id = payslip.l10n_pe_wage_line_id
+                payslip.l10n_pe_daily_wage = payslip.l10n_pe_daily_wage
+                payslip.l10n_pe_construction_category_id = \
+                    payslip.l10n_pe_construction_category_id
+                continue
             version = payslip.version_id
             line = payslip.env['l10n_pe.hr.construction.wage.line']
             if version and version.l10n_pe_is_construction:
                 line = version._l10n_pe_get_wage_line(payslip.date_to)
             payslip.l10n_pe_wage_line_id = line
             payslip.l10n_pe_daily_wage = line.daily_wage if line else 0.0
+            payslip.l10n_pe_construction_category_id = \
+                version.l10n_pe_construction_category_id
 
     def _voucher_extra_hour_types(self, param, wd_types):
         """La boleta también cuenta como sobretiempo las extras al 60 %.
@@ -72,12 +97,75 @@ class HrPayslip(models.Model):
     # ------------------------------------------------------------------
     # Días y horas del periodo
     # ------------------------------------------------------------------
-    def _l10n_pe_construction_days(self):
-        """Días efectivamente pagados en el periodo."""
+    def _l10n_pe_construction_days(self, include_holidays=True):
+        """Días efectivamente pagados en el periodo.
+
+        Incluye los feriados no laborados (D.Leg. 713, arts. 5 y 6: son
+        descanso remunerado). Llegan como días de descanso (DOM), igual que
+        el domingo, así que se cuentan aparte en
+        ``_l10n_pe_construction_holiday_days``. Con ellos, una semana con
+        feriado sigue pagando el jornal y el dominical completos.
+        """
         self.ensure_one()
         lines = self.worked_days_line_ids.filtered(
             lambda wd: wd.work_entry_type_id.code in WORKED_DAY_CODES)
+        days = sum(lines.mapped('number_of_days'))
+        if include_holidays:
+            days += self._l10n_pe_construction_holiday_days()
+        return days
+
+    def _l10n_pe_construction_mobility_days(self):
+        """Días con derecho a movilidad: los que se acudió a la obra."""
+        self.ensure_one()
+        lines = self.worked_days_line_ids.filtered(
+            lambda wd: wd.work_entry_type_id.code in ATTENDED_DAY_CODES)
         return sum(lines.mapped('number_of_days'))
+
+    def _l10n_pe_construction_holiday_days(self):
+        """Feriados no laborados del periodo que caen en día laborable.
+
+        El feriado se aplica al calendario como descanso global con el
+        concepto «días de descanso» (DOM, ver al_hr_pe_public_holidays), de
+        modo que en los días trabajados de la boleta se mezcla con el
+        domingo. Se reconocen por el calendario: días laborables del
+        horario cubiertos por un descanso global DOM. Nunca más que los
+        días de descanso de la boleta (si el día no llegó como DOM, no es
+        un feriado que haya que pagar aquí).
+        """
+        self.ensure_one()
+        dom = self.env.ref('al_hr_pe.wd_DOM', raise_if_not_found=False)
+        calendar = self.version_id.resource_calendar_id
+        if not dom or not calendar or not self.date_from or not self.date_to:
+            return 0.0
+        rest_days = sum(self.worked_days_line_ids.filtered(
+            lambda wd: wd.work_entry_type_id == dom).mapped('number_of_days'))
+        if not rest_days:
+            return 0.0
+        working_weekdays = set(calendar.attendance_ids.mapped('dayofweek'))
+        if not working_weekdays:
+            return 0.0
+        tz = timezone(calendar.tz or 'UTC')
+        start = tz.localize(datetime.combine(self.date_from, time.min))
+        stop = tz.localize(datetime.combine(self.date_to, time.max))
+        leaves = self.env['resource.calendar.leaves'].search([
+            ('resource_id', '=', False),
+            ('work_entry_type_id', '=', dom.id),
+            '|', ('calendar_id', '=', calendar.id),
+            '&', ('calendar_id', '=', False),
+            ('company_id', '=', self.company_id.id),
+            ('date_from', '<=', stop.astimezone(UTC).replace(tzinfo=None)),
+            ('date_to', '>=', start.astimezone(UTC).replace(tzinfo=None)),
+        ])
+        holidays = set()
+        for leave in leaves:
+            day = UTC.localize(leave.date_from).astimezone(tz).date()
+            last = UTC.localize(leave.date_to).astimezone(tz).date()
+            while day <= last:
+                if (self.date_from <= day <= self.date_to
+                        and str(day.weekday()) in working_weekdays):
+                    holidays.add(day)
+                day += timedelta(days=1)
+        return float(min(len(holidays), rest_days))
 
     def _l10n_pe_construction_hours(self, code):
         """Horas de un concepto de sobretiempo."""
@@ -99,7 +187,10 @@ class HrPayslip(models.Model):
         line = self.l10n_pe_wage_line_id
         if not line:
             return 0.0
-        days = self._l10n_pe_construction_days() if days is None else days
+        if days is None:
+            days = (self._l10n_pe_construction_mobility_days()
+                    if concept == 'movilidad'
+                    else self._l10n_pe_construction_days())
         if not days:
             return 0.0
         # El snapshot manda sobre la tabla: si el usuario ajustó el jornal
@@ -124,6 +215,22 @@ class HrPayslip(models.Model):
         if not hours or not self.l10n_pe_daily_wage:
             return 0.0
         return custom_round(hours * (self.l10n_pe_daily_wage / 8.0) * rate)
+
+    def _l10n_pe_construction_rest_work_surcharge(self):
+        """Sobretasa del 100 % por trabajar en feriado o día de descanso.
+
+        D.Leg. 713, arts. 3-4 y 9: sin descanso sustitutorio, la labor se
+        paga con una sobretasa del 100 %. El día trabajado (FER) ya entra
+        en el jornal y el feriado se paga como descanso remunerado; aquí
+        solo se añade el recargo, sobre el jornal, como las horas extras.
+        """
+        self.ensure_one()
+        lines = self.worked_days_line_ids.filtered(
+            lambda wd: wd.work_entry_type_id.code == 'FER')
+        days = sum(lines.mapped('number_of_days'))
+        if not days or not self.l10n_pe_daily_wage:
+            return 0.0
+        return custom_round(self.l10n_pe_daily_wage * days)
 
     # ------------------------------------------------------------------
     # Beneficios que en este régimen se pagan con la planilla
@@ -212,8 +319,29 @@ class HrPayslip(models.Model):
             * self._l10n_pe_construction_accrual_days() * len(children))
 
     # ------------------------------------------------------------------
+    # Redondeo SUNAT para las reglas
+    # ------------------------------------------------------------------
+    def _l10n_pe_percent(self, base, rate):
+        """Porcentaje con el redondeo SUNAT (ROUND_HALF_UP), para las reglas.
+
+        ``round()`` de Python redondea al par y arrastra el error binario
+        del producto: las reglas de pensión deben redondear como el resto
+        del régimen (``round_percent``, en ``Decimal``).
+        """
+        return round_percent(base or 0.0, rate or 0.0)
+
+    # ------------------------------------------------------------------
     # CONAFOVICER
     # ------------------------------------------------------------------
+    def _l10n_pe_line_totals(self, codes):
+        """Totales ya calculados de la boleta por código de regla."""
+        self.ensure_one()
+        totals = dict.fromkeys(codes, 0.0)
+        for line in self.line_ids:
+            if line.code in totals:
+                totals[line.code] += line.total
+        return totals
+
     def _l10n_pe_construction_conafovicer_base(self):
         """Base del CONAFOVICER: jornal básico **más el dominical**.
 
@@ -280,7 +408,10 @@ class HrPayslip(models.Model):
         version = self.version_id
         if not version or not self.l10n_pe_daily_wage:
             return 0.0
-        days = self._l10n_pe_construction_days() if days is None else days
+        # Las bonificaciones por condiciones de trabajo (altitud, agua,
+        # altura…) se ganan trabajando: el feriado no laborado no las paga.
+        days = (self._l10n_pe_construction_days(include_holidays=False)
+                if days is None else days)
         if not days:
             return 0.0
         bonuses = version._l10n_pe_construction_bonuses().filtered(

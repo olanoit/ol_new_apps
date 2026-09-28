@@ -8,6 +8,11 @@ la URL lleva un token HMAC-SHA256 derivado de ``database.secret``
 (``ir.config_parameter``) que se valida con ``consteq`` antes de tocar el
 registro. Las páginas de respuesta se generan inline (sin dependencia de
 ``website`` ni templates QWeb públicos).
+
+El GET solo muestra la página con el botón de confirmar; la confirmación
+se registra con el POST de ese formulario. Así los escáneres de enlaces
+del correo (Safe Links y similares), que abren la URL por su cuenta, no
+dan por recibida una boleta que el trabajador no abrió.
 """
 import logging
 
@@ -45,12 +50,23 @@ _PAGE = """<!DOCTYPE html>
         }}
         .boleta-card h2 {{ margin: 0 0 12px 0; color: #333; }}
         .boleta-card p {{ margin: 0; color: #777; }}
+        .boleta-card button {{
+            margin-top: 20px;
+            padding: 10px 24px;
+            border: 0;
+            border-radius: 4px;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+        }}
     </style>
 </head>
 <body>
     <div class="boleta-card">
         <h2>{title}</h2>
         <p>{message}</p>
+        {form}
     </div>
 </body>
 </html>"""
@@ -59,19 +75,27 @@ _PAGE = """<!DOCTYPE html>
 class BoletaConfirmController(http.Controller):
 
     @staticmethod
-    def _page(title, message, status=200):
-        html = _PAGE.format(title=escape(title), message=escape(message))
+    def _page(title, message, status=200, form=''):
+        html = _PAGE.format(
+            title=escape(title), message=escape(message), form=form)
         return request.make_response(
             Markup(html), status=status,
             headers=[('Content-Type', 'text/html; charset=utf-8')])
 
+    # csrf=False: el POST no lleva sesión (el trabajador no es usuario);
+    # lo autentica el token HMAC de la URL, comprobado con consteq.
     @http.route('/boleta/confirmar/<int:payslip_id>/<string:token>',
-                type='http', auth='public', methods=['GET'], csrf=False)
+                type='http', auth='public', methods=['GET', 'POST'],
+                csrf=False)
     def confirm_voucher(self, payslip_id, token, **kwargs):
-        """Marca la boleta como recibida si el token HMAC es válido."""
-        payslip = request.env['hr.payslip'].sudo().browse(payslip_id).exists()
-        if not payslip or not consteq(
-                token, payslip._get_voucher_confirm_token()):
+        """GET: pide confirmar. POST: marca la boleta como recibida si el
+        token HMAC es válido."""
+        # sudo: ruta pública sin usuario; el acceso lo da el token HMAC,
+        # validado antes de leer o escribir nada del registro.
+        payslip_sudo = request.env['hr.payslip'].sudo().browse(
+            payslip_id).exists()
+        if not payslip_sudo or not consteq(
+                token, payslip_sudo._get_voucher_confirm_token()):
             _logger.info(
                 'Confirmación de boleta rechazada: id=%s token inválido.',
                 payslip_id)
@@ -80,12 +104,20 @@ class BoletaConfirmController(http.Controller):
                 'El enlace de confirmación no es válido o ha caducado. '
                 'Comuníquese con Gestión Humana.',
                 status=404)
-        if payslip.is_verified:
+        if payslip_sudo.is_verified:
             return self._page(
                 '¡Usted ya confirmó su boleta!',
                 'En caso de alguna observación, comuníquese con Gestión '
                 'Humana.')
-        payslip.write({
+        if request.httprequest.method != 'POST':
+            return self._page(
+                'Confirme la recepción de su boleta',
+                'Pulse el botón para confirmar que recibió su boleta de '
+                'pago.',
+                form=Markup(
+                    '<form method="post"><button type="submit">'
+                    'Confirmar recepción</button></form>'))
+        payslip_sudo.write({
             'is_verified': True,
             'date_confirmation': fields.Datetime.now(),
         })

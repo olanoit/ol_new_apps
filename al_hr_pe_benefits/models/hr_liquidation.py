@@ -34,7 +34,8 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models
 
 from odoo.addons.al_hr_pe.tools import custom_round
-from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import (
+    ensure_draft, ensure_line_draft, notify_success)
 
 
 class HrLiquidation(models.Model):
@@ -53,7 +54,7 @@ class HrLiquidation(models.Model):
         help='Año del cese (sustituye al año fiscal contable v18); lo '
              'usa el motor para delimitar los semestres truncos.')
     with_bonus = fields.Boolean(
-        string='Bono extraordinario', default=False,
+        string='Bono extraordinario', default=True,
         help='Añade el Bono Extraordinario Ley 29351 sobre la '
              'gratificación trunca.')
     months_and_days = fields.Boolean(
@@ -102,6 +103,21 @@ class HrLiquidation(models.Model):
         for record in self:
             record.employee_count = len(record.employee_ids)
 
+    @api.model
+    def _last_anniversary(self, admission_date, on_date):
+        """Último aniversario de ingreso ≤ ``on_date`` (el 29-feb cae el
+        28 en años no bisiestos). Dentro del primer año, el ingreso."""
+        if (on_date - admission_date).days <= 365:
+            return admission_date
+        year = on_date.year
+        while True:
+            day = min(admission_date.day,
+                      monthrange(year, admission_date.month)[1])
+            anniversary = date(year, admission_date.month, day)
+            if anniversary <= on_date:
+                return anniversary
+            year -= 1
+
     @api.onchange('payslip_run_id')
     def _get_type(self):
         """Deduce año, semestre de gratificación y de CTS del lote."""
@@ -148,12 +164,20 @@ class HrLiquidation(models.Model):
         (``preserve_record``), igual que ``hr.cts.get_cts``.
         """
         self.ensure_one()
+        ensure_draft(self)
         param = self.env['hr.main.parameter']
         for lines in (self.gratification_line_ids, self.cts_line_ids,
                       self.vacation_line_ids, self.liq_ext_concept_ids):
             lines.filtered(lambda line: not line.preserve_record).unlink()
         param.compute_benefits(self, self.gratification_type,
                                liquidation=self)
+        if self.gratification_type == '12' \
+                and self.payslip_run_id.date_start.month == 7:
+            # Cese en julio antes del pago de Fiestas Patrias (15-jul): sin
+            # trabajar a esa fecha no hay gratificación regular '07', así
+            # que ene-jun se paga como trunca (Ley 27735 art. 7). El motor
+            # la omite si ya se abonó en una gratificación regular.
+            param.compute_benefits(self, '07', liquidation=self)
         param.compute_benefits(self, self.cts_type, liquidation=self)
         self.get_vacation_lines()
         self.get_extra_concepts_lines()
@@ -171,6 +195,7 @@ class HrLiquidation(models.Model):
         «Recalcular»: útil si cambió el sueldo del cesado o se editaron
         los promedios de las líneas)."""
         self.ensure_one()
+        ensure_draft(self)
         self.gratification_line_ids.compute_grati_line()
         self.cts_line_ids.compute_cts_line()
         self.vacation_line_ids.compute_vacation_line()
@@ -215,10 +240,12 @@ class HrLiquidation(models.Model):
             if admission_date > month_slip.date_from:
                 continue
             cessation_date = version.contract_date_end
-            # Fecha de cómputo: último aniversario de ingreso (año - 1).
-            day = min(admission_date.day,
-                      monthrange(year - 1, admission_date.month)[1])
-            compute_date = date(year - 1, admission_date.month, day)
+            # Fecha de cómputo: último aniversario de ingreso anterior o
+            # igual al cese. Las truncas van desde ahí; los años ya
+            # cumplidos y no gozados son vacaciones devengadas (campo
+            # «Vac. devengadas»), no truncas.
+            compute_date = self._last_anniversary(
+                admission_date, cessation_date)
             dias_fracc = compute_date.day - 1
             if (cessation_date - admission_date).days <= 365:
                 compute_date = admission_date
@@ -242,18 +269,16 @@ class HrLiquidation(models.Model):
                 worked_days = lot.slip_ids.filtered(
                     lambda slip: slip.employee_id == employee
                 ).mapped('worked_days_line_ids')
-                working_wd = sum(worked_days.filtered(
-                    lambda line: line.work_entry_type_id
-                    in param.working_wd_ids).mapped('number_of_days'))
+                # Las faltas cuentan para el mes y se descuentan una vez.
+                counted, lot_lacks, _medical = \
+                    param._l10n_pe_month_computable_days(worked_days)
                 if lot.date_start < compute_date <= lot.date_end:
-                    working_wd -= dias_fracc
-                if working_wd >= (lot.date_end - lot.date_start).days + 1:
+                    counted -= dias_fracc
+                if counted >= (lot.date_end - lot.date_start).days + 1:
                     months += 1
                 else:
-                    days += working_wd
-                lacks += sum(worked_days.filtered(
-                    lambda line: line.work_entry_type_id
-                    in param.lack_wd_ids).mapped('number_of_days'))
+                    days += counted
+                lacks += lot_lacks
 
             # Ventana de conceptos variables: 6 meses previos al cese
             # (el mes de cese solo computa si termina en fin de mes).
@@ -278,7 +303,7 @@ class HrLiquidation(models.Model):
             ])
             employee_slips = var_lots.slip_ids.filtered(
                 lambda slip: slip.employee_id == employee)
-            bonus_months = len(employee_slips)
+            bonus_months = param._count_months(employee_slips)
             salary_rules = employee_slips.mapped('line_ids')
             commissions = salary_rules.filtered(
                 lambda line: line.salary_rule_id in param.commission_sr_ids
@@ -399,6 +424,7 @@ class HrLiquidation(models.Model):
         inputs de cada línea de conceptos extra. Marca ``exported``.
         """
         self.ensure_one()
+        ensure_draft(self)
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_liquidation_values()
@@ -408,14 +434,17 @@ class HrLiquidation(models.Model):
             return lot.slip_ids.filtered(
                 lambda slip: slip.employee_id == employee)
 
-        for line in self.gratification_line_ids:
-            slip = employee_slip(line.employee_id)
+        # Un cesado de julio puede tener dos truncas (ene-jun y jul): el
+        # input lleva la suma, no la última línea.
+        for employee, lines in \
+                self.gratification_line_ids.grouped('employee_id').items():
+            slip = employee_slip(employee)
             self._set_slip_input(
                 slip, param.truncated_gratification_input_id,
-                line.total_grat)
+                sum(lines.mapped('total_grat')))
             self._set_slip_input(
                 slip, param.truncated_bonus_nine_input_id,
-                line.bonus_essalud)
+                sum(lines.mapped('bonus_essalud')))
         for line in self.cts_line_ids:
             slip = employee_slip(line.employee_id)
             self._set_slip_input(
@@ -467,7 +496,7 @@ class HrLiquidationVacationLine(models.Model):
     distribution_id = fields.Char(string='Distribución analítica')
     months = fields.Integer(string='Meses')
     days = fields.Integer(string='Días')
-    lacks = fields.Integer(string='Faltas')
+    lacks = fields.Float(string='Faltas', digits=(16, 2))
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
     commission = fields.Float(string='Prom. comisión')
@@ -533,6 +562,7 @@ class HrLiquidationVacationLine(models.Model):
     def compute_vacation_line(self):
         """Recalcula la línea a partir de sus componentes editables
         (incluye adelantadas/devengadas capturadas a mano)."""
+        ensure_line_draft(self, 'liquidation_id')
         for record in self:
             month_slip = record.liquidation_id.payslip_run_id.slip_ids \
                 .filtered(lambda slip:

@@ -11,6 +11,10 @@ from odoo.exceptions import ValidationError
 class HrVersion(models.Model):
     _inherit = 'hr.version'
 
+    # Todos los campos llevan groups="hr.group_hr_user": hr.employee los
+    # hereda por _inherits y, como los nativos de contrato y nómina, son
+    # datos del trabajador que no deben salir fuera de Recursos Humanos.
+
     l10n_pe_labor_regime = fields.Selection(
         selection=[
             ('general', 'Régimen general'),
@@ -22,47 +26,60 @@ class HrVersion(models.Model):
         string='Régimen laboral (PE)', default='general', tracking=True,
         help='Régimen laboral peruano: determina divisores de CTS y '
              'gratificación (p. ej. pequeña empresa computa /24 y /12) y '
-             'derechos del trabajador.')
+             'derechos del trabajador.',
+        groups='hr.group_hr_user')
     l10n_pe_cuspp = fields.Char(
         string='CUSPP', size=12, tracking=True,
         help='Código Único del Sistema Privado de Pensiones del afiliado '
-             '(AFP). Vacío para afiliados a ONP.')
+             '(AFP). Vacío para afiliados a ONP.',
+        groups='hr.group_hr_user')
     l10n_pe_commission_type = fields.Selection(
         selection=[('flow', 'Comisión sobre flujo'),
                    ('mixed', 'Comisión mixta')],
         string='Tipo de comisión AFP (PE)', default='flow', tracking=True,
         help='Esquema de comisión del afiliado AFP: sobre la remuneración '
-             '(flujo) o mixta (flujo + saldo).')
+             '(flujo) o mixta (flujo + saldo).',
+        groups='hr.group_hr_user')
     membership_id = fields.Many2one(
         'hr.membership', string='Afiliación (AFP/ONP)', tracking=True,
-        help='Entidad previsional del trabajador.')
-    is_afp = fields.Boolean(related='membership_id.is_afp')
+        help='Entidad previsional del trabajador.', groups='hr.group_hr_user')
+    is_afp = fields.Boolean(
+        related='membership_id.is_afp', groups='hr.group_hr_user')
     social_insurance_id = fields.Many2one(
         'hr.social.insurance', string='Seguro social', tracking=True,
         help='EsSalud / EPS del trabajador (determina la tasa del aporte '
-             'del empleador y del bono extraordinario de gratificación).')
+             'del empleador y del bono extraordinario de gratificación).',
+        groups='hr.group_hr_user')
     worker_type_id = fields.Many2one(
-        'hr.worker.type', string='Tipo de trabajador (T08)', tracking=True)
+        'hr.worker.type', string='Tipo de trabajador (T08)', tracking=True,
+        groups='hr.group_hr_user')
     situation_id = fields.Many2one(
-        'hr.situation', string='Situación (T15)', tracking=True)
+        'hr.situation', string='Situación (T15)', tracking=True,
+        groups='hr.group_hr_user')
     situation_code = fields.Char(
-        related='situation_id.code', string='Código de situación')
+        related='situation_id.code', string='Código de situación',
+        groups='hr.group_hr_user')
     situation_reason_id = fields.Many2one(
-        'hr.reasons.leave', string='Motivo de baja (T17)', tracking=True)
+        'hr.reasons.leave', string='Motivo de baja (T17)', tracking=True,
+        groups='hr.group_hr_user')
     contributions_ids = fields.Many2many(
         'hr.contributions', string='Aportes adicionales',
         help='Aportes del empleador aplicables a este trabajador '
-             '(p. ej. SENATI, SCTR).')
+             '(p. ej. SENATI, SCTR).',
+        groups='hr.group_hr_user')
     l10n_pe_less_than_four = fields.Boolean(
-        string='Empleador con menos de 4 trabajadores')
+        string='Empleador con menos de 4 trabajadores',
+        groups='hr.group_hr_user')
     l10n_pe_other_employers = fields.Boolean(
         string='Ingresos de otros empleadores',
         help='Percibe rentas de 5ta de otro empleador (afecta la '
-             'proyección de renta anual).')
+             'proyección de renta anual).',
+        groups='hr.group_hr_user')
     l10n_pe_is_older = fields.Boolean(
         string='Mayor de 65 años', compute='_compute_l10n_pe_is_older',
         help='Los mayores de 65 no aportan prima de seguro AFP sobre el '
-             'tope asegurable.')
+             'tope asegurable.',
+        groups='hr.group_hr_user')
     l10n_pe_exception = fields.Selection(
         selection=[
             ('L', 'L — Trabajador de dirección'),
@@ -72,7 +89,7 @@ class HrVersion(models.Model):
             ('P', 'P — Servicio intermitente'),
             ('O', 'O — Otros'),
         ],
-        string='Excepción de jornada (PLAME)')
+        string='Excepción de jornada (PLAME)', groups='hr.group_hr_user')
     l10n_pe_work_type = fields.Selection(
         selection=[
             ('N', 'N — Normal'),
@@ -80,7 +97,7 @@ class HrVersion(models.Model):
             ('M', 'M — Minero'),
             ('P', 'P — Pesquero'),
         ],
-        string='Tipo de labor (PLAME)', default='N')
+        string='Tipo de labor (PLAME)', default='N', groups='hr.group_hr_user')
 
     # ------------------------------------------------------------------
     # T-Registro — estructura 05 «Datos del trabajador»
@@ -93,53 +110,64 @@ class HrVersion(models.Model):
         tracking=True,
         help='Régimen laboral tal como lo codifica SUNAT. Al elegirlo se '
              'ajusta la familia de cálculo de CTS, gratificación y '
-             'vacaciones.')
+             'vacaciones.',
+        groups='hr.group_hr_user')
     l10n_pe_education_level_id = fields.Many2one(
         'l10n_pe.hr.education.level', string='Situación educativa (T09)',
         help='Obligatorio en el T-Registro. Si es superior completa, SUNAT '
-             'pide además los datos de estudios concluidos (estructura 29).')
+             'pide además los datos de estudios concluidos (estructura 29).',
+        groups='hr.group_hr_user')
     l10n_pe_occupation_id = fields.Many2one(
         'l10n_pe.hr.occupation', string='Ocupación (T30)',
         help='Ocupación del trabajador según la tabla de SUNAT. Las '
-             'disponibles dependen de la categoría ocupacional.')
+             'disponibles dependen de la categoría ocupacional.',
+        groups='hr.group_hr_user')
     l10n_pe_occupational_category_id = fields.Many2one(
         'l10n_pe.hr.occupational.category',
-        string='Categoría ocupacional (T24)')
+        string='Categoría ocupacional (T24)', groups='hr.group_hr_user')
     l10n_pe_contract_type_id = fields.Many2one(
         'l10n_pe.hr.contract.type', string='Tipo de contrato (T12)',
-        tracking=True)
+        tracking=True, groups='hr.group_hr_user')
     l10n_pe_disability = fields.Boolean(
         string='Tiene discapacidad',
         help='Ley 29973: da derecho a la cuota de empleo y a la deducción '
-             'adicional del impuesto a la renta del empleador.')
+             'adicional del impuesto a la renta del empleador.',
+        groups='hr.group_hr_user')
     l10n_pe_sctr_pension = fields.Boolean(
         string='Cobertura SCTR pensión',
         help='Trabajador en actividad de riesgo del Anexo 5 del '
-             'D.S. 009-97-SA con cobertura de pensión por el SCTR.')
+             'D.S. 009-97-SA con cobertura de pensión por el SCTR.',
+        groups='hr.group_hr_user')
     l10n_pe_alternative_schedule = fields.Boolean(
         string='Sujeto a régimen alternativo',
         help='Jornada acumulativa, atípica o compensatoria '
-             '(art. 4 del D.S. 007-2002-TR).')
+             '(art. 4 del D.S. 007-2002-TR).',
+        groups='hr.group_hr_user')
     l10n_pe_max_working_day = fields.Boolean(
         string='Sujeto a jornada máxima', default=True,
         help='Desmarcar para el personal de dirección, sin fiscalización '
-             'inmediata o de servicio intermitente.')
+             'inmediata o de servicio intermitente.',
+        groups='hr.group_hr_user')
     l10n_pe_night_shift = fields.Boolean(
         string='Sujeto a horario nocturno',
         help='Trabajo entre las 22:00 y las 06:00: la remuneración no '
-             'puede ser menor a la RMV más una sobretasa del 35 %.')
-    l10n_pe_unionized = fields.Boolean(string='Es sindicalizado')
+             'puede ser menor a la RMV más una sobretasa del 35 %.',
+        groups='hr.group_hr_user')
+    l10n_pe_unionized = fields.Boolean(
+        string='Es sindicalizado', groups='hr.group_hr_user')
     l10n_pe_fifth_income = fields.Boolean(
-        string='Percibe rentas de 5ta categoría', default=True)
+        string='Percibe rentas de 5ta categoría', default=True,
+        groups='hr.group_hr_user')
     l10n_pe_pay_periodicity = fields.Selection(
         selection=[('1', '1 — Mensual'), ('2', '2 — Quincenal'),
                    ('3', '3 — Semanal'), ('4', '4 — Diaria'),
                    ('5', '5 — Otros')],
-        string='Periodicidad de la remuneración (T13)', default='1')
+        string='Periodicidad de la remuneración (T13)', default='1',
+        groups='hr.group_hr_user')
     l10n_pe_payment_type = fields.Selection(
         selection=[('1', '1 — Efectivo'), ('2', '2 — Depósito en cuenta'),
                    ('3', '3 — Otros')],
-        string='Tipo de pago (T16)', default='2')
+        string='Tipo de pago (T16)', default='2', groups='hr.group_hr_user')
     l10n_pe_special_situation = fields.Selection(
         selection=[
             ('0', '0 — Ninguna'),
@@ -152,17 +180,20 @@ class HrVersion(models.Model):
             ('7', '7 — Teletrabajo mixto'),
             ('8', '8 — Teletrabajo completo'),
         ],
-        string='Situación especial (T35)', default='0')
+        string='Situación especial (T35)', default='0',
+        groups='hr.group_hr_user')
     l10n_pe_double_taxation = fields.Selection(
         selection=[('0', '0 — Ninguno'), ('1', '1 — Canadá'),
                    ('2', '2 — Chile'), ('3', '3 — CAN'),
                    ('4', '4 — Brasil'), ('5', '5 — México'),
                    ('6', '6 — Corea'), ('7', '7 — Suiza'),
                    ('8', '8 — Portugal')],
-        string='Convenio de doble tributación (T25)', default='0')
+        string='Convenio de doble tributación (T25)', default='0',
+        groups='hr.group_hr_user')
     l10n_pe_cas_vat = fields.Char(
         string='RUC del trabajador (CAS)', size=11,
-        help='Solo para el régimen CAS (tipo de trabajador 67).')
+        help='Solo para el régimen CAS (tipo de trabajador 67).',
+        groups='hr.group_hr_user')
 
     @api.onchange('l10n_pe_labor_regime_id')
     def _onchange_l10n_pe_labor_regime_id(self):

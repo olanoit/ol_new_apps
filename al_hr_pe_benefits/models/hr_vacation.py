@@ -27,7 +27,6 @@ Adaptaciones v19:
 """
 import io
 from calendar import monthrange
-from collections import Counter
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
@@ -36,6 +35,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
+from .hr_benefits_engine import ensure_draft, ensure_line_draft
 
 LABOR_REGIMES_WITH_VACATION = ('general', 'small', 'micro')
 VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
@@ -105,23 +105,12 @@ class HrVacation(models.Model):
 
     @api.model
     def _calculate_average(self, admission_date, date_from, months, lines):
-        """Promedio de conceptos variables (port de
-        ``hr.main.parameter.calculate_bonus`` v18): por código de regla,
-        sólo si aparece en ≥3 boletas de la ventana de 6 meses; se divide
-        entre 6 (o entre los meses laborados si ingresó dentro de la
-        ventana)."""
-        codes = Counter(lines.mapped('code'))
-        total = 0.0
-        for code, count in codes.items():
-            if months >= 3 and count >= 3:
-                amount = sum(lines.filtered(
-                    lambda line: line.code == code).mapped('total'))
-                if admission_date > date_from:
-                    amount = custom_round(amount / months, 2)
-                else:
-                    amount = custom_round(amount / 6, 2)
-                total += amount
-        return total
+        """Promedio de conceptos variables: mismo criterio que
+        ``hr.main.parameter.calculate_bonus`` (≥3 MESES distintos con el
+        concepto en la ventana de 6 meses; ÷6, o ÷meses laborados si
+        ingresó dentro de la ventana)."""
+        return self.env['hr.main.parameter'].calculate_bonus(
+            admission_date, date_from, months, lines)
 
     @api.model
     def _check_configuration(self, param):
@@ -161,6 +150,7 @@ class HrVacation(models.Model):
     # ------------------------------------------------------------------
     def get_vacation(self):
         self.ensure_one()
+        ensure_draft(self)
         company = self.company_id
         param = self.env['hr.main.parameter'].get_main_parameter(company)
         self._check_configuration(param)
@@ -218,19 +208,21 @@ class HrVacation(models.Model):
                 if not leave.date_from:
                     continue
                 months = days = 0
-                compute_date = date(
-                    self.year, admission_date.month, admission_date.day)
-                if (leave.date_from - admission_date).days <= 365:
-                    compute_date = admission_date
+                # Último aniversario ≤ inicio del goce (dentro del primer
+                # año, el ingreso); el 29-feb cae el 28 en años comunes.
+                compute_date = self.env['hr.liquidation']._last_anniversary(
+                    admission_date, leave.date_from)
 
                 wage = version.wage
                 compute_af = getattr(param, 'compute_af_vac', True)
+                # Mismo criterio que la boleta (derechohabientes por edad).
                 household_allowance = month_slip.family_allowance \
-                    if compute_af and version.children > 0 else 0.0
+                    if compute_af and month_slip.l10n_pe_family_allowance_ok \
+                    else 0.0
 
                 # Récord (meses/días trabajados) desde el cómputo.
                 compute_payslip_date = date(
-                    self.year, compute_date.month, 1)
+                    compute_date.year, compute_date.month, 1)
                 lots = self.env['hr.payslip.run'].search([
                     ('company_id', '=', company.id),
                     ('date_end', '>=', compute_payslip_date),
@@ -268,7 +260,8 @@ class HrVacation(models.Model):
                 ])
                 average_slips = average_lots.mapped('slip_ids').filtered(
                     lambda s: s.employee_id == employee)
-                bonus_months = len(average_slips)
+                bonus_months = self.env['hr.main.parameter']._count_months(
+                    average_slips)
                 rule_lines = average_slips.mapped('line_ids').filtered(
                     lambda line: line.total > 0)
                 commission = self._calculate_average(
@@ -427,6 +420,7 @@ class HrVacation(models.Model):
 
     def export_vacation(self):
         self.ensure_one()
+        ensure_draft(self)
         self.set_amounts(self.line_ids, self.payslip_run_id)
         self.state = 'exported'
         return self._notify(self.env._('Se exportó exitosamente.'))
@@ -588,6 +582,7 @@ class HrVacationLine(models.Model):
         """Recalcula la línea a partir de sus componentes editables
         (port EXACTO del v18: aquí sí se ajusta por régimen laboral y la
         prima AFP se topa a la remuneración máxima asegurable)."""
+        ensure_line_draft(self, 'vacation_id')
         for record in self:
             lot = record.vacation_id.payslip_run_id
             month_slip = lot.slip_ids.filtered(
@@ -598,10 +593,10 @@ class HrVacationLine(models.Model):
             record.computable_remuneration = record.wage \
                 + record.household_allowance + record.commission \
                 + record.bonus + record.extra_hours
-            amount_per_month = record.computable_remuneration \
-                if version.l10n_pe_labor_regime == 'general' \
-                else record.computable_remuneration / 2.0
-            vacation = custom_round(amount_per_month, 2)
+            # Un día de vacaciones vale remuneración/30 en todo régimen:
+            # la pequeña empresa tiene la MITAD DE DÍAS (15), no la mitad
+            # de tarifa (igual que get_vacation).
+            vacation = custom_round(record.computable_remuneration, 2)
             advanced_vacation = vacation / 30.0 \
                 * int(record.accrued_vacation)
             record.total_vacation = custom_round(advanced_vacation, 2)

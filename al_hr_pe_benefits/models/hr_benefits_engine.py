@@ -39,6 +39,35 @@ def notify_success(message):
     }
 
 
+def ensure_draft(records):
+    """Bloquea recalcular o exportar un registro de BBSS ya exportado.
+
+    La vista oculta los botones, pero la regla vive en el servidor: un
+    recálculo tras exportar dejaría la boleta con importes distintos de
+    los del registro. Para rehacerlo hay que volver a borrador.
+    """
+    closed = records.filtered(lambda record: record.state != 'draft')
+    if closed:
+        raise UserError(records.env._(
+            '%(name)s ya está exportado: vuelva a borrador para '
+            'recalcularlo o exportarlo de nuevo.',
+            name=', '.join(
+                record.display_name or record._description
+                for record in closed)))
+
+
+def ensure_line_draft(lines, *header_fields):
+    """``ensure_draft`` sobre la cabecera (lote o liquidación) de cada
+    línea."""
+    # Cada campo apunta a un modelo distinto (hr.cts, hr.liquidation…):
+    # se valida por separado, no se pueden unir recordsets de modelos
+    # distintos.
+    for field_name in header_fields:
+        headers = lines.mapped(field_name)
+        if headers:
+            ensure_draft(headers)
+
+
 class HrMainParameter(models.Model):
     _inherit = 'hr.main.parameter'
 
@@ -241,58 +270,97 @@ class HrMainParameter(models.Model):
         return min(versions, key=lambda v: v.contract_date_start)
 
     @api.model
+    def _count_months(self, records):
+        """Meses calendario distintos de las boletas (o líneas de boleta)
+        de ``records``: la regla de las 3 apariciones y el divisor del
+        promedio cuentan MESES, no líneas ni boletas (dos boletas del
+        mismo mes —cambio de versión, dos lotes— son un solo mes)."""
+        slips = records.slip_id if records._name == 'hr.payslip.line' \
+            else records
+        return len({(slip.date_to.year, slip.date_to.month)
+                    for slip in slips if slip.date_to})
+
+    @api.model
     def calculate_bonus(self, admission_date, date_from, months, lines):
         """Promedio de variables (regla peruana de las 3 apariciones).
 
-        Cada código de regla que aparezca >= 3 veces en el semestre (y
-        con >= 3 meses laborados) promedia ÷6, o ÷meses trabajados si el
-        empleado ingresó después del inicio del semestre. Idéntico al
-        v18 (``calculate_bonus``).
+        Cada código de regla cobrado en >= 3 meses distintos del semestre
+        (y con >= 3 meses laborados) promedia ÷6, o ÷meses trabajados si
+        el empleado ingresó después del inicio del semestre.
         """
-        codes = Counter(lines.mapped('code'))
         total = 0.0
-        for key, value in codes.items():
-            if months >= 3 and value >= 3:
-                amount = sum(lines.filtered(
-                    lambda line: line.code == key).mapped('total'))
+        for code_lines in lines.grouped('code').values():
+            appearances = self._count_months(code_lines)
+            if months >= 3 and appearances >= 3:
+                amount = sum(code_lines.mapped('total'))
                 if admission_date > date_from:
                     amount = custom_round(amount / months, 2)
                 else:
                     amount = custom_round(amount / 6, 2)
-            else:
-                amount = 0.0
-            total += amount
+                total += amount
         return total
 
-    @api.model
-    def calculate_excess_medical_rest(self, year, employee, company,
-                                      cts_year=False):
-        """(días subsidiados computables, exceso sobre 60) del año.
+    def _l10n_pe_month_computable_days(self, worked_days):
+        """(días computables, faltas, descanso médico) de un mes.
 
-        El descanso médico computa para CTS hasta 60 días al año
-        (D.S. 001-97-TR art. 8); el exceso se descuenta como falta.
+        Las faltas (DLAB + DOM + FAL + … = días del mes) y el descanso
+        médico también son días del mes: cuentan para decidir si el mes
+        está completo y la falta se descuenta UNA sola vez (vía
+        ``amount_per_lack``). El descanso médico computa como laborado:
+        en la gratificación sin tope (Ley 27735 art. 7 y D.S. 005-2002-TR
+        art. 3, días subsidiados) y en la CTS hasta 60 días al año
+        (D.S. 001-97-TR art. 8; el exceso se descuenta aparte).
+        """
+        medical_types = self.medical_rest_wd_ids
+        working_types = self.working_wd_ids - medical_types
+
+        def total(types):
+            return sum(worked_days.filtered(
+                lambda line: line.work_entry_type_id in types
+            ).mapped('number_of_days'))
+
+        lacks = total(self.lack_wd_ids)
+        medical = total(medical_types)
+        return total(working_types) + lacks + medical, lacks, medical
+
+    @api.model
+    def calculate_excess_medical_rest(self, employee, company, date_from,
+                                      date_to, slips=None):
+        """(días de descanso médico del periodo, exceso sobre 60).
+
+        El descanso médico computa para CTS hasta 60 días por año CTS
+        (noviembre–octubre, D.S. 001-97-TR art. 8). El exceso del
+        periodo [date_from, date_to] es lo que supera el tope contando
+        lo ya consumido desde el 1 de noviembre anterior, así que el
+        segundo semestre no vuelve a abonar ni a descontar los días del
+        primero.
         """
         param = self.get_main_parameter(company)
-        if cts_year:
-            date_from = date(year - 1, 11, 1)
-            date_to = date(year, 11, 1)
-        else:
-            date_from = date(year, 1, 1)
-            date_to = date(year, 12, 1)
-        lots = self.env['hr.payslip.run'].search([
-            ('date_start', '>=', date_from),
-            ('date_start', '<=', date_to),
-            ('company_id', '=', company.id),
-        ])
-        worked_days = lots.slip_ids.filtered(
-            lambda slip: slip.employee_id == employee
-        ).mapped('worked_days_line_ids')
-        medical_rest = sum(worked_days.filtered(
-            lambda line: line.work_entry_type_id in param.medical_rest_wd_ids
-        ).mapped('number_of_days'))
-        if medical_rest >= 60:
-            return 60, medical_rest - 60
-        return medical_rest, 0
+        year_start = date_from if date_from.month == 11 \
+            else date(date_from.year - 1, 11, 1)
+        if slips is None:
+            slips = self.env['hr.payslip'].search([
+                ('employee_id', '=', employee.id),
+                ('company_id', '=', company.id),
+                ('payslip_run_id', '!=', False),
+                ('date_to', '>=', year_start),
+                ('date_to', '<=', date_to),
+            ])
+
+        def medical_days(start, stop):
+            return sum(slips.filtered(
+                lambda slip: slip.employee_id == employee
+                and start <= slip.date_to <= stop
+            ).worked_days_line_ids.filtered(
+                lambda line: line.work_entry_type_id
+                in param.medical_rest_wd_ids
+            ).mapped('number_of_days'))
+
+        before = medical_days(year_start, date_from - relativedelta(days=1)) \
+            if year_start < date_from else 0.0
+        current = medical_days(date_from, date_to)
+        excess = max(0.0, before + current - 60) - max(0.0, before - 60)
+        return current, excess
 
     @api.model
     def get_salary_history(self, employee, company, date_calculate):
@@ -431,6 +499,52 @@ class HrMainParameter(models.Model):
             ('date_end', '<=', date_to),
             ('company_id', '=', company.id),
         ])
+        # Navidad: los días laborados se cuentan sobre jul-dic, aunque los
+        # promedios de variables usan jun-nov (v18).
+        lots_wd = lots
+        if record_type == '12':
+            lots_wd = self.env['hr.payslip.run'].search([
+                ('date_end', '>=', date(year, 7, 1)),
+                ('date_end', '<=', date(year, 12, 31)),
+                ('company_id', '=', company.id),
+            ])
+        # Precarga única (evita recorrer las boletas de cada lote por
+        # empleado): boletas de los lotes agrupadas por trabajador.
+        Payslip = self.env['hr.payslip']
+        slips_by_employee = (lots | lots_wd).slip_ids.filtered(
+            lambda slip: slip.employee_id in employees
+        ).grouped('employee_id')
+
+        remaining_by_employee = {}
+        if record_type in ('05', '11'):
+            if record_type == '11':
+                last_date = {'year': year, 'type': '05'}
+            elif liquidation and payslip_month in (11, 12):
+                last_date = {'year': year, 'type': '11'}
+            else:
+                last_date = {'year': year - 1, 'type': '11'}
+            # Saldo reservado del semestre anterior (trabajador con menos
+            # de un mes: su CTS pasa al depósito siguiente).
+            for line in self.env['hr.cts.line'].search([
+                    ('employee_id', 'in', employees.ids),
+                    ('cts_id.year', '=', last_date['year']),
+                    ('cts_id.type', '=', last_date['type']),
+                    ('cts_id.company_id', '=', company.id),
+                    ('less_than_one_month', '=', True)]):
+                remaining_by_employee[line.employee_id] = \
+                    remaining_by_employee.get(line.employee_id, 0.0) \
+                    + line.total_cts
+            # Descanso médico del año CTS (1-nov anterior → fin del
+            # periodo) en una sola búsqueda.
+            medical_start = date_from if date_from.month == 11 \
+                else date(date_from.year - 1, 11, 1)
+            medical_slips = Payslip.search([
+                ('employee_id', 'in', employees.ids),
+                ('company_id', '=', company.id),
+                ('payslip_run_id', '!=', False),
+                ('date_to', '>=', medical_start),
+                ('date_to', '<=', date_to),
+            ])
 
         for employee in employees:
             months = days = lacks = 0
@@ -439,107 +553,56 @@ class HrMainParameter(models.Model):
             month_slip = filtered_slips.filtered(
                 lambda slip: slip.employee_id == employee)
             if len(month_slip) > 1:
-                # Desambiguación v18 (contrato vigente) → versión vigente.
-                month_slip = month_slip.filtered(
-                    lambda slip: slip.version_id == employee.version_id)[:1]
+                # Desambiguación v18 (contrato vigente) → versión vigente;
+                # si ninguna boleta es de la versión actual (recálculo de
+                # un semestre pasado), la más reciente del lote.
+                current = month_slip.filtered(
+                    lambda slip: slip.version_id == employee.version_id)
+                month_slip = (current or month_slip).sorted('date_to')[-1:]
             version = month_slip.version_id
             admission_date = \
                 self.get_first_version(employee).contract_date_start
-
-            remaining_wage = 0.0
-            if record_type in ('05', '11'):
-                if record_type == '11':
-                    last_date = {'year': year, 'type': '05'}
-                elif liquidation and payslip_month in (11, 12):
-                    last_date = {'year': year, 'type': '11'}
-                else:
-                    last_date = {'year': year - 1, 'type': '11'}
-                # Saldo reservado del semestre anterior (trabajador con
-                # menos de un mes: su CTS pasa al depósito siguiente).
-                remaining_wage = sum(self.env['hr.cts.line'].search([
-                    ('employee_id', '=', employee.id),
-                    ('cts_id.year', '=', last_date['year']),
-                    ('cts_id.type', '=', last_date['type']),
-                    ('cts_id.company_id', '=', company.id),
-                    ('less_than_one_month', '=', True),
-                ]).mapped('total_cts'))
+            remaining_wage = remaining_by_employee.get(employee, 0.0)
 
             wage = version.wage
-            household_allowance = \
-                param.family_allowance if version.children > 0 else 0.0
-            bonus_months = len(lots.slip_ids.filtered(
-                lambda slip: slip.employee_id == employee))
+            # Asignación familiar con el mismo criterio que la boleta
+            # (derechohabientes por edad, Ley 25129), no el campo manual
+            # ``children``.
+            household_allowance = param.family_allowance \
+                if month_slip.l10n_pe_family_allowance_ok else 0.0
+            employee_all_slips = slips_by_employee.get(employee, Payslip)
             admission_payslip_date = \
                 date(admission_date.year, admission_date.month, 1)
+            month_limit = month_slip.date_to
 
-            if record_type == '12':
-                # Navidad: los días laborados se cuentan sobre jul-dic,
-                # aunque los promedios de variables usan jun-nov (v18).
-                lots_wd = self.env['hr.payslip.run'].search([
-                    ('date_end', '>=', date(year, 7, 1)),
-                    ('date_end', '<=', date(year, 12, 31)),
-                    ('company_id', '=', company.id),
-                ])
-                for lot in lots_wd:
-                    employee_slips = lot.slip_ids.filtered(
-                        lambda slip: slip.employee_id == employee
-                        and slip.date_to >= admission_payslip_date
-                        and slip.date_to <= month_slip.date_to)
-                    worked_days = employee_slips.mapped(
-                        'worked_days_line_ids')
-                    working_wd = sum(worked_days.filtered(
-                        lambda line: line.work_entry_type_id
-                        in param.working_wd_ids).mapped('number_of_days'))
-                    if working_wd >= (lot.date_end - lot.date_start).days + 1:
-                        months += 1
-                    else:
-                        days += working_wd
-                    lacks += sum(worked_days.filtered(
-                        lambda line: line.work_entry_type_id
-                        in param.lack_wd_ids).mapped('number_of_days'))
-                for lot in lots:
-                    employee_slips = lot.slip_ids.filtered(
-                        lambda slip: slip.employee_id == employee
-                        and slip.date_to >= admission_payslip_date
-                        and slip.date_to <= month_slip.date_to)
-                    salary_rules = employee_slips.mapped('line_ids')
-                    commissions += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        in param.commission_sr_ids and line.total > 0)
-                    bonus_lines += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        in param.bonus_sr_ids and line.total > 0)
-                    extra_hours_lines += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        == param.extra_hours_sr_id and line.total > 0)
-            else:
-                for lot in lots:
-                    employee_slips = lot.slip_ids.filtered(
-                        lambda slip: slip.employee_id == employee
-                        and slip.date_to >= admission_payslip_date
-                        and slip.date_to <= month_slip.date_to)
-                    salary_rules = employee_slips.mapped('line_ids')
-                    worked_days = employee_slips.mapped(
-                        'worked_days_line_ids')
-                    working_wd = sum(worked_days.filtered(
-                        lambda line: line.work_entry_type_id
-                        in param.working_wd_ids).mapped('number_of_days'))
-                    if working_wd >= (lot.date_end - lot.date_start).days + 1:
-                        months += 1
-                    else:
-                        days += working_wd
-                    lacks += sum(worked_days.filtered(
-                        lambda line: line.work_entry_type_id
-                        in param.lack_wd_ids).mapped('number_of_days'))
-                    commissions += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        in param.commission_sr_ids and line.total > 0)
-                    bonus_lines += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        in param.bonus_sr_ids and line.total > 0)
-                    extra_hours_lines += salary_rules.filtered(
-                        lambda line: line.salary_rule_id
-                        == param.extra_hours_sr_id and line.total > 0)
+            def lot_slips(lot):
+                return employee_all_slips.filtered(
+                    lambda slip: slip.payslip_run_id == lot
+                    and admission_payslip_date <= slip.date_to <= month_limit)
+
+            bonus_months = self._count_months(employee_all_slips.filtered(
+                lambda slip: slip.payslip_run_id in lots))
+
+            for lot in lots_wd:
+                worked_days = lot_slips(lot).worked_days_line_ids
+                counted, lot_lacks, _medical = \
+                    param._l10n_pe_month_computable_days(worked_days)
+                if counted >= (lot.date_end - lot.date_start).days + 1:
+                    months += 1
+                else:
+                    days += counted
+                lacks += lot_lacks
+            for lot in lots:
+                salary_rules = lot_slips(lot).line_ids
+                commissions += salary_rules.filtered(
+                    lambda line: line.salary_rule_id
+                    in param.commission_sr_ids and line.total > 0)
+                bonus_lines += salary_rules.filtered(
+                    lambda line: line.salary_rule_id
+                    in param.bonus_sr_ids and line.total > 0)
+                extra_hours_lines += salary_rules.filtered(
+                    lambda line: line.salary_rule_id
+                    == param.extra_hours_sr_id and line.total > 0)
 
             if record_type in ('07', '12'):
                 if days >= 30:
@@ -650,17 +713,17 @@ class HrMainParameter(models.Model):
                     'bonus_essalud': bonus_essalud,
                     'total': custom_round(total_grat + bonus_essalud, 2),
                 })
-                if liquidation:
-                    grati = self.env['hr.gratification'].search([
-                        ('payslip_run_id', '=',
-                         liquidation.payslip_run_id.id),
-                        ('year', '=', liquidation.year),
-                        ('type', '=', record_type),
-                        ('company_id', '=', liquidation.company_id.id),
-                    ])
-                    if grati and grati.line_ids.filtered(
-                            lambda line: line.employee_id == employee):
-                        continue
+                # Trunca de cese: no se paga si el semestre ya se abonó en
+                # una gratificación regular (sea cual sea su lote).
+                if liquidation and self.env['hr.gratification.line'] \
+                        .search_count([
+                            ('employee_id', '=', employee.id),
+                            ('gratification_id.year', '=', year),
+                            ('gratification_id.type', '=', record_type),
+                            ('gratification_id.company_id', '=',
+                             company.id),
+                        ], limit=1):
+                    continue
                 self.env['hr.gratification.line'].create(vals)
             else:
                 if liquidation:
@@ -669,10 +732,13 @@ class HrMainParameter(models.Model):
                     vals['liquidation_id'] = record.id
                 else:
                     vals['cts_id'] = record.id
-                medical_days, excess_medical_rest = \
+                # Los días de descanso médico ya cuentan como computables
+                # mes a mes; aquí solo se descuenta lo que exceda los 60
+                # días del año CTS dentro de ESTE periodo.
+                _medical_days, excess_medical_rest = \
                     self.calculate_excess_medical_rest(
-                        year, employee, company, cts_year=True)
-                days += medical_days
+                        employee, company, date_from,
+                        min(date_to, month_limit), slips=medical_slips)
                 if days >= 30:
                     days, months = param.get_months_of_30_days(days, months)
                 amount_per_lack = \
@@ -689,6 +755,7 @@ class HrMainParameter(models.Model):
                     'less_than_one_month': bool(months == 0 and days > 0),
                     'exchange_type': record.exchange_type,
                     'excess_medical_rest': excess_medical_rest,
+                    'remaining_wage': remaining_wage,
                     'sixth_of_gratification': sixth_of_gratification,
                     'amount_per_lack': custom_round(amount_per_lack, 2),
                     'cts_per_month': cts_per_month,

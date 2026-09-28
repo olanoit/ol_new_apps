@@ -62,18 +62,30 @@ class HrAttendance(models.Model):
         correcta en cualquier zona horaria del recurso.
         """
         slot_model = self.env['planning.slot']
-        for attendance in self:
-            if not attendance.employee_id or not attendance.check_in:
-                continue
+        todo = self.filtered(lambda att: att.employee_id and att.check_in)
+        if not todo:
+            return
+        # Una sola consulta para todas las marcaciones (antes, un search
+        # por marcación: importar miles era miles de consultas).
+        window_start = fields.Datetime.subtract(
+            min(todo.mapped('check_in')), hours=_MATCH_WINDOW_HOURS)
+        window_end = fields.Datetime.add(
+            max(todo.mapped('check_in')), hours=_MATCH_WINDOW_HOURS)
+        all_slots = slot_model.search([
+            ('employee_id', 'in', todo.employee_id.ids),
+            ('state', '=', 'published'),
+            ('start_datetime', '>=', window_start),
+            ('start_datetime', '<=', window_end),
+        ])
+        slots_by_employee = all_slots.grouped('employee_id')
+        for attendance in todo:
             check_in = attendance.check_in
-            slots = slot_model.search([
-                ('employee_id', '=', attendance.employee_id.id),
-                ('state', '=', 'published'),
-                ('start_datetime', '>=', fields.Datetime.subtract(
-                    check_in, hours=_MATCH_WINDOW_HOURS)),
-                ('start_datetime', '<=', fields.Datetime.add(
-                    check_in, hours=_MATCH_WINDOW_HOURS)),
-            ])
+            low = fields.Datetime.subtract(
+                check_in, hours=_MATCH_WINDOW_HOURS)
+            high = fields.Datetime.add(check_in, hours=_MATCH_WINDOW_HOURS)
+            slots = slots_by_employee.get(
+                attendance.employee_id, slot_model).filtered(
+                lambda slot: low <= slot.start_datetime <= high)
             if slots:
                 nearest = min(slots, key=lambda slot: abs(
                     slot.start_datetime - check_in))

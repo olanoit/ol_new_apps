@@ -67,8 +67,12 @@ class L10nPeHrContractTemplate(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío = plantilla global visible por todas las compañías.')
+    # Saneado: lo edita el gestor de nómina y el widget lo pinta en el
+    # navegador de quien abra la plantilla (XSS almacenado si no). Los
+    # placeholders {{...}} son texto y sobreviven, y los estilos en línea
+    # del contrato (alineación, negrita, anchos) se conservan.
     body = fields.Html(
-        string='Cuerpo del contrato', sanitize=False,
+        string='Cuerpo del contrato', sanitize=True, sanitize_style=True,
         help='Texto del contrato con placeholders {{nombre_empleador}}, '
              '{{nombre_trabajador}}, {{salario}}, {{fecha_inicio}}, etc. '
              'Ver la lista completa en el formulario.')
@@ -217,7 +221,7 @@ class HrVersion(models.Model):
 
     l10n_pe_contract_template_id = fields.Many2one(
         'l10n_pe.hr.contract.template', string='Plantilla de contrato',
-        tracking=True,
+        tracking=True, groups='hr_payroll.group_hr_payroll_user',
         domain="['|', ('company_id', '=', False),"
                " ('company_id', '=', company_id)]",
         help='Plantilla HTML con la que se imprime el contrato de '
@@ -232,7 +236,7 @@ class HrVersion(models.Model):
             ('direccion', '12 meses (personal de dirección)'),
         ],
         string='Régimen de período de prueba (PE)', default='regular',
-        tracking=True,
+        tracking=True, groups='hr_payroll.group_hr_payroll_user',
         help='Duración del período de prueba según LPCL Art. 10. Los '
              'regímenes de 6 y 12 meses requieren pacto escrito en el '
              'contrato (Art. 43 LPCL).')

@@ -74,10 +74,10 @@ Con su código de la tabla 22 de SUNAT entre paréntesis:
 | `BAE` | Alta especialización (0300) | % según especialidad |
 | `BALTI` `BAGUA` `BCOTA` `BALTU` | Bonificaciones por condiciones | del catálogo, por puesto u obra |
 | `HE60` `HE100` | Horas extras (0105/0106) | valor hora × 1.6 / × 2 |
-| `INDEM` | Indemnización 15 % (0916) | 15 % de jornal + extras a valor simple |
-| `VAC10` | Vacaciones 10 % (0400) | 10 % del básico percibido |
+| `INDEM` | Indemnización 15 % (0904) | 15 % de jornal + extras a valor simple |
+| `VAC10` | Vacaciones 10 % (0118) | 10 % del básico percibido |
 | `GRAT` | Gratificación proporcional (0406/0407) | 40 jornales ÷ 210 o ÷ 150 |
-| `BEXT` | Bonif. extraordinaria Ley 30334 (0906) | 9 % de la gratificación |
+| `BEXT` | Bonif. extraordinaria Ley 30334 (0312) | 9 % de la gratificación |
 | `AESC` | Asignación escolar (0201) | 30 jornales al año por hijo |
 | `CONAF` | CONAFOVICER (0703) | 2 % de jornal + D.S.O. |
 | `TREM` | Remuneración computable | base afecta, **enumerada** |

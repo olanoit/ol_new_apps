@@ -92,6 +92,8 @@
                             <field name="number_of_days"/>
                             <field name="for_salary" readonly="1" force_save="1"/>
                             <field name="for_number_of_days" readonly="1" force_save="1"/>
+                            <field name="monthly_remuneration"/>
+                            <field name="excess_utilities" readonly="1" force_save="1"/>
                             <field name="total_utilities" readonly="1" force_save="1"/>
                         </group>
                     </group>
@@ -114,6 +116,8 @@
                 <field name="number_of_days" sum="Días laborados" optional="show"/>
                 <field name="for_salary" sum="Por sueldos" optional="show"/>
                 <field name="for_number_of_days" sum="Por días laborados" optional="show"/>
+                <field name="monthly_remuneration" optional="hide"/>
+                <field name="excess_utilities" sum="Exceso" optional="hide"/>
                 <field name="total_utilities" sum="Total utilidades" optional="show"/>
             </list>
         </field>

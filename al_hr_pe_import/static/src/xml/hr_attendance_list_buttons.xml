@@ -7,7 +7,7 @@
         standalone (en v18 se heredaba con xpath sobre .o_list_buttons).
     -->
     <t t-name="al_hr_pe_import.HrAttendanceListView.Buttons">
-        <button type="button"
+        <button type="button" t-if="canImportPayroll"
                 class="btn btn-secondary o_al_import_payroll_btn"
                 t-on-click="() => this.onClickImportPayroll()">
             <i class="fa fa-file-excel-o me-1" role="img"

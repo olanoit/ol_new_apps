@@ -13,44 +13,56 @@ from odoo.exceptions import ValidationError
 class HrVersion(models.Model):
     _inherit = 'hr.version'
 
+    # Datos privados del trabajador: `hr.employee` hereda estos campos por
+    # `_inherits`, así que llevan el grupo de RR. HH. como el resto de
+    # campos de la versión (no existen en `hr.employee.public`).
+
     l10n_pe_construction_category_id = fields.Many2one(
         'l10n_pe.hr.construction.category',
         string='Categoría (construcción)', tracking=True,
         help='Operario, oficial o peón. De ella salen el jornal y el '
-             'porcentaje de BUC.')
+             'porcentaje de BUC.',
+        groups='hr.group_hr_user')
     l10n_pe_construction_site_id = fields.Many2one(
         'l10n_pe.hr.construction.site', string='Obra',
         check_company=True, tracking=True,
-        help='En este régimen el vínculo es por obra determinada.')
+        help='En este régimen el vínculo es por obra determinada.',
+        groups='hr.group_hr_user')
     l10n_pe_construction_bae_id = fields.Many2one(
         'l10n_pe.hr.construction.bonus', string='Especialidad (BAE)',
         domain=[('bonus_type', '=', 'bae')],
         help='Solo para operarios: operador de equipo mediano o pesado, '
-             'electromecánico, topógrafo…')
+             'electromecánico, topógrafo…',
+        groups='hr.group_hr_user')
     l10n_pe_construction_bonus_ids = fields.Many2many(
         'l10n_pe.hr.construction.bonus',
         'l10n_pe_version_construction_bonus_rel', 'version_id', 'bonus_id',
         string='Bonificaciones del puesto',
         domain=[('bonus_type', '=', 'condition')],
         help='Las que dependen del puesto y no de la obra. Las de la obra '
-             'se suman solas.')
+             'se suman solas.',
+        groups='hr.group_hr_user')
 
     l10n_pe_sctr_health = fields.Boolean(
         string='Cobertura SCTR salud',
         help='El T-Registro solo pide la cobertura de pensión; la de '
-             'salud hace falta para calcular su aporte en planilla.')
+             'salud hace falta para calcular su aporte en planilla.',
+        groups='hr.group_hr_user')
     l10n_pe_daily_wage = fields.Monetary(
         string='Jornal básico', compute='_compute_l10n_pe_construction',
         currency_field='currency_id',
         help='Sale de la tabla salarial vigente a la fecha de la versión, '
-             'según la categoría.')
+             'según la categoría.',
+        groups='hr.group_hr_user')
     l10n_pe_wage_line_id = fields.Many2one(
         'l10n_pe.hr.construction.wage.line', string='Línea de la tabla',
         compute='_compute_l10n_pe_construction',
-        help='Fila del convenio de la que sale el jornal.')
+        help='Fila del convenio de la que sale el jornal.',
+        groups='hr.group_hr_user')
     l10n_pe_is_construction = fields.Boolean(
         string='Es construcción civil',
-        compute='_compute_l10n_pe_is_construction', store=True)
+        compute='_compute_l10n_pe_is_construction', store=True,
+        groups='hr.group_hr_user')
 
     @api.depends('l10n_pe_labor_regime')
     def _compute_l10n_pe_is_construction(self):

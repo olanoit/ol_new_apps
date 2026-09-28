@@ -677,6 +677,21 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 16.20260925
+    fecha: 27/09/2026
+    cambios:
+      - "AFP y ONP se calculan por el tipo de afiliación y sus tasas, no por el nombre de la entidad: renombrar una AFP ya no deja su aporte en cero."
+      - "El feriado o descanso laborado se paga doble (labor más sobretasa del 100 %, D.Leg. 713), además del sueldo del mes."
+      - "Las horas extra ya no restan días de descanso: antes, cada 8 horas extra rebajaban el básico en un día."
+      - "Los practicantes dejan de cobrar asignación familiar (no les corresponde por la Ley 25129)."
+      - "Récord vacacional: un periodo dentro de un mismo mes contaba los días como meses; ahora cuenta días."
+      - "PLAME y AFPNet de un lote semanal (construcción civil) declaran el mes completo, con una sola línea por trabajador; «Sin régimen» ya no declara la comisión AFP (0601); los parámetros salen de la compañía del lote."
+      - "Los archivos del T-Registro y de derechohabientes solo los puede descargar quien los generó: antes cualquier usuario interno podía abrirlos."
+      - "Un usuario de RR. HH. sin permiso de nómina vuelve a poder abrir la ficha del empleado; los derechohabientes quedan para nómina."
+      - "Los datos laborales peruanos de la versión del empleado quedan restringidos a Recursos Humanos."
+      - "Una boleta ya validada o pagada conserva su asignación familiar aunque luego se registre un hijo."
+      - "La situación de los derechohabientes y su derecho a asignación familiar se actualizan solos cada día."
+      - "Importe en letras corregido: del 21 al 29 se escribe «VEINTI…» (antes «VENTI…») y 100 000 sale «CIEN MIL» (antes «CIENMIL»)."
   - fecha: 24/09/2026
     cambios:
       - "Los datos privados del trabajador (identificación PLAME, domicilio, T-Registro y estudios) se restringen a Recursos Humanos, en la ficha y en la definición de cada campo: sin esa restricción, un usuario interno sin permiso recibía un error de acceso al abrir un empleado y el TPV no llegaba a abrir."

@@ -28,7 +28,7 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '15.20260925',
+    'version': '16.20260925',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
@@ -54,11 +54,13 @@ cero códigos hardcodeados (ver plan §5).
         'data/hr_work_entry_type_data.xml',
         'data/hr_payslip_input_type_data.xml',
         'data/hr_salary_rule_data.xml',
+        'data/hr_salary_rule_sync.xml',
         'data/hr_tregistro_catalogs.xml',
         'data/l10n_pe.hr.occupation.csv',
         'data/l10n_pe.hr.education.institution.csv',
         'data/l10n_pe.hr.education.career.csv',
         'data/hr_dependent_data.xml',
+        'data/ir_cron_data.xml',
         # Antes que nada: define el menú «Perú» y sus grupos, de los que
         # cuelgan los menús declarados en los demás archivos.
         'views/menus.xml',

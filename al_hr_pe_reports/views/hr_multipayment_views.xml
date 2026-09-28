@@ -10,11 +10,11 @@
         <field name="arch" type="xml">
             <form string="Pago masivo bancario">
                 <header>
-                    <button name="action_generate_txt" string="Generar TXT banco" type="object" class="oe_highlight"/>
-                    <button name="action_load_lines" string="Recargar líneas" type="object" invisible="state != 'draft'"/>
+                    <button name="action_generate_txt" string="Generar TXT banco" type="object" class="oe_highlight" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <button name="action_load_lines" string="Recargar líneas" type="object" invisible="state != 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
                     <button name="action_done" string="Finalizar" type="object" class="oe_highlight" invisible="state != 'draft'"
-                            confirm="Al finalizar se asume que el TXT ya se generó y los montos se pagaron. ¿Desea pasar a estado finalizado?"/>
-                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'done'"/>
+                            confirm="Al finalizar se asume que el TXT ya se generó y los montos se pagaron. ¿Desea pasar a estado finalizado?" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'done'" groups="hr_payroll.group_hr_payroll_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -175,7 +175,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
-                <button name="generate_multipayments" type="object" class="btn btn-secondary" string="Generar TXT banco"/>
+                <button name="generate_multipayments" type="object" class="btn btn-secondary" string="Generar TXT banco" groups="hr_payroll.group_hr_payroll_manager"/>
                 <button name="get_multipayments_view" type="object" class="btn btn-secondary" string="Pagos bancarios"/>
             </xpath>
         </field>
@@ -192,7 +192,7 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
                 <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
@@ -209,7 +209,7 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
                 <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
@@ -226,7 +226,7 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated or state == 'draft'"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated or state == 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
                 <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
@@ -243,7 +243,7 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated"/>
+                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
                 <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>

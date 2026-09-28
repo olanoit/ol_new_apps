@@ -29,5 +29,18 @@
             <field name="model_id" ref="model_l10n_pe_hr_conafovicer"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <!-- El detalle lleva DNI, bases y retenciones de cada trabajador:
+             sin su propia regla, se leía el de cualquier compañía. -->
+        <record id="conafovicer_line_company_rule" model="ir.rule">
+            <field name="name">Detalle CONAFOVICER: solo de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_conafovicer_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <!-- La línea de la tabla sigue la compañía de su tabla. -->
+        <record id="construction_wage_line_company_rule" model="ir.rule">
+            <field name="name">Jornal por categoría: global o de la compañía</field>
+            <field name="model_id" ref="model_l10n_pe_hr_construction_wage_line"/>
+            <field name="domain_force">['|', ('table_id.company_id', '=', False), ('table_id.company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

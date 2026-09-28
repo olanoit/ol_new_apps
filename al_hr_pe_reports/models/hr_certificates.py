@@ -86,7 +86,8 @@ class HrCertificateWizard(models.TransientModel):
     _description = 'Asistente de certificado de trabajo'
 
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado a certificar', required=True)
+        'hr.employee', string='Empleado a certificar', required=True,
+        check_company=True)
     des_empl = fields.Selection(
         TREATMENT_SELECTION, string='Tratamiento', default='el Sr.')
     date_ini = fields.Date(string='Fecha de ingreso')
@@ -120,9 +121,19 @@ class HrCertificateWizard(models.TransientModel):
                 'date_ini': date_ini,
                 'date_fin': date_fin,
                 'des_empl': self._default_treatment(employee),
+                # El certificado lo emite la compañía del trabajador (su
+                # membrete y firma), no la que esté activa.
+                'company_id': employee.company_id.id,
             })
+            if employee.company_id.city:
+                res.setdefault('city', employee.company_id.city)
         res.setdefault('city', self.env.company.city)
         return res
+
+    @api.onchange('employee_id')
+    def _onchange_employee_company(self):
+        if self.employee_id.company_id:
+            self.company_id = self.employee_id.company_id
 
     def export_certificate(self):
         """Valida los datos y lanza el reporte QWeb-PDF.
@@ -157,7 +168,8 @@ class HrLetterWizard(models.TransientModel):
     _description = 'Asistente de carta de retiro CTS'
 
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', required=True)
+        'hr.employee', string='Empleado', required=True,
+        check_company=True)
     des_empl = fields.Selection(
         TREATMENT_SELECTION, string='Tratamiento', default='el Sr.')
     date_fin = fields.Date(string='Fecha de cese')
@@ -186,9 +198,17 @@ class HrLetterWizard(models.TransientModel):
             res.update({
                 'date_fin': self._get_cese_dates(employee)[1],
                 'des_empl': self._default_treatment(employee),
+                'company_id': employee.company_id.id,
             })
+            if employee.company_id.city:
+                res.setdefault('city', employee.company_id.city)
         res.setdefault('city', self.env.company.city)
         return res
+
+    @api.onchange('employee_id')
+    def _onchange_employee_company(self):
+        if self.employee_id.company_id:
+            self.company_id = self.employee_id.company_id
 
     def export_letter(self):
         """Valida los datos y lanza el reporte QWeb-PDF.

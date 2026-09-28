@@ -22,6 +22,9 @@ Cambios v19:
   ``net_fortnightly_sr_id``, ``quin_advance_id``, ``quin_loan_id``)
   los añade ``hr_benefits_engine`` a `hr.main.parameter`; aquí se leen
   con ``getattr`` con guard.
+* Las boletas quincenales llevan ``fortnightly_id``: todos los
+  históricos de beneficios (5ta, utilidades, subsidios) las excluyen
+  para no contar dos veces lo que la mensual ya declara.
 * TODO(fase4-revisar): la estructura ADE_QUINCENAL y sus reglas *_AQ
   (BAS_AQ, TINGR_AQ, TAT_AQ, TDESN_AQ, NETO_AQ) aún no existen como
   data en v19; las boletas quincenales se generan con la estructura
@@ -282,11 +285,12 @@ class HrPayslip(models.Model):
                 ('state', '=', 'not payed'),
                 ('advance_type_id', '=', quin_advance.id),
             ])
-            if not pending:
+            # Sin input en el tipo no se descuenta nada: no marcar como
+            # pagado lo que nunca llegó a la boleta.
+            if not pending or not quin_advance.input_id:
                 continue
-            if quin_advance.input_id:
-                slip._set_pe_input_amount(
-                    quin_advance.input_id, sum(pending.mapped('amount')))
+            slip._set_pe_input_amount(
+                quin_advance.input_id, sum(pending.mapped('amount')))
             pending.turn_paid_out()
             log += '%s\n' % slip.employee_id.display_name
         if log:
@@ -315,11 +319,12 @@ class HrPayslip(models.Model):
                 ('validation', '=', 'not payed'),
                 ('loan_type_id', '=', quin_loan.id),
             ])
-            if not pending:
+            # Sin input en el tipo no se descuenta nada: no marcar como
+            # pagado lo que nunca llegó a la boleta.
+            if not pending or not quin_loan.input_id:
                 continue
-            if quin_loan.input_id:
-                slip._set_pe_input_amount(
-                    quin_loan.input_id, sum(pending.mapped('amount')))
+            slip._set_pe_input_amount(
+                quin_loan.input_id, sum(pending.mapped('amount')))
             pending.turn_paid_out()
             log += '%s\n' % slip.employee_id.display_name
         if log:

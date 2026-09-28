@@ -101,6 +101,14 @@ class TestFase1Masters(TransactionCase):
         self.assertEqual((days, months), (17, 2))
         # Normalización 30 días → 1 mes
         self.assertEqual(Param.get_months_of_30_days(31, 2), (1, 3))
+        # Mismo mes: días inclusive en la posición de DÍAS (antes salían
+        # 15 «meses» y el récord vacacional devengaba 37,5 días).
+        self.assertEqual(Param.get_months_days_difference(
+            date(2026, 3, 10), date(2026, 3, 25)), (16, 0))
+        self.assertEqual(Param.get_months_days_difference(
+            date(2026, 2, 1), date(2026, 2, 28)), (0, 1))
+        self.assertEqual(Param.get_months_days_difference(
+            date(2026, 3, 1), date(2026, 3, 30)), (0, 1))
 
     def test_number_to_letter(self):
         Param = self.env['hr.main.parameter']
@@ -110,6 +118,10 @@ class TestFase1Masters(TransactionCase):
                          'CERO CON 00/100')
         self.assertEqual(Param.number_to_letter(2500),
                          'DOS MIL QUINIENTOS CON 00/100')
+        self.assertEqual(Param.number_to_letter(21),
+                         'VEINTIUN CON 00/100')
+        self.assertEqual(Param.number_to_letter(100000),
+                         'CIEN MIL CON 00/100')
 
     def test_employee_plame_name(self):
         employee = self.env['hr.employee'].create({

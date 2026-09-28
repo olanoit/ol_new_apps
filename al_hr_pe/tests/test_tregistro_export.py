@@ -10,7 +10,8 @@ import io
 import zipfile
 from datetime import date
 
-from odoo.exceptions import UserError
+from odoo import Command
+from odoo.exceptions import AccessError, UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -203,10 +204,18 @@ class TestTregistroExport(TransactionCase):
     def test_zip_download(self):
         action = self.employee.action_l10n_pe_export_tregistro()
         self.assertEqual(action['type'], 'ir.actions.act_url')
-        attachment = self.env['ir.attachment'].search(
-            [('res_model', '=', 'res.company'),
-             ('res_id', '=', self.company.id)], order='id desc', limit=1)
+        attachment_id = int(action['url'].split('/')[3].split('?')[0])
+        attachment = self.env['ir.attachment'].browse(attachment_id)
         self.assertTrue(attachment.name.startswith('tregistro_alta_'))
+        # Lleva DNI, domicilio y cuentas: no puede colgar de un registro que
+        # cualquier usuario interno lee (antes, res.company).
+        self.assertFalse(attachment.res_model)
+        intern = self.env['res.users'].create({
+            'name': 'Interno T-Registro', 'login': 'al_hr_pe_tregistro_int',
+            'group_ids': [Command.set([self.env.ref('base.group_user').id])],
+        })
+        with self.assertRaises(AccessError):
+            attachment.with_user(intern).read(['datas'])
         import base64
         archive = zipfile.ZipFile(io.BytesIO(base64.b64decode(attachment.datas)))
         self.assertEqual(len(archive.namelist()), 4)

@@ -5,9 +5,9 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import fields
-from odoo.exceptions import UserError, ValidationError
-from odoo.tests import tagged
+from odoo import Command, fields
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tests import freeze_time, tagged
 from odoo.tests.common import TransactionCase
 
 
@@ -124,6 +124,19 @@ class TestDependents(TransactionCase):
             dependent._is_family_allowance_source(
                 birthday_18 - relativedelta(days=1)))
 
+    def test_daily_cron_refreshes_stored_flags(self):
+        """Los campos guardados que dependen de hoy se ponen al día solos."""
+        dependent = self._dependent(years=17)
+        dependent.date_end = self.today + relativedelta(months=2)
+        self.assertTrue(dependent.gives_family_allowance)
+        self.assertNotEqual(dependent.state, 'ended')
+        later = self.today + relativedelta(years=1)
+        with freeze_time(later):
+            self.env['l10n_pe.hr.dependent']._cron_refresh_date_dependent()
+            self.assertFalse(dependent.gives_family_allowance,
+                             'cumplió 18 y el vínculo terminó')
+            self.assertEqual(dependent.state, 'ended')
+
     def test_ended_link_does_not_give_allowance(self):
         dependent = self._dependent(years=10)
         dependent.date_end = self.today - relativedelta(days=1)
@@ -209,10 +222,17 @@ class TestDependents(TransactionCase):
         action = (alta | baja).action_export_tregistro_xlsx()
         self.assertEqual(action['type'], 'ir.actions.act_url')
 
-        attachment = self.env['ir.attachment'].search(
-            [('res_model', '=', 'res.company'),
-             ('res_id', '=', self.company.id)], order='id desc', limit=1)
+        attachment_id = int(action['url'].split('/')[3].split('?')[0])
+        attachment = self.env['ir.attachment'].browse(attachment_id)
         self.assertIn('derechohabientes_20512528458', attachment.name)
+        # Datos privados: no cuelga de res.company (legible por todos).
+        self.assertFalse(attachment.res_model)
+        intern = self.env['res.users'].create({
+            'name': 'Interno derechohab.', 'login': 'al_hr_pe_dep_int',
+            'group_ids': [Command.set([self.env.ref('base.group_user').id])],
+        })
+        with self.assertRaises(AccessError):
+            attachment.with_user(intern).read(['datas'])
 
         import base64
         workbook = load_workbook(io.BytesIO(base64.b64decode(attachment.datas)))

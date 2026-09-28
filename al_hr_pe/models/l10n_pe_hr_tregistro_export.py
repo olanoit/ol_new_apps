@@ -342,8 +342,10 @@ class HrEmployee(models.Model):
             'name': name,
             'type': 'binary',
             'datas': base64.b64encode(stream.getvalue()),
-            'res_model': 'res.company',
-            'res_id': company.id,
+            # Sin res_model/res_id a propósito: colgado de res.company lo
+            # podía descargar cualquier usuario interno (el acceso al
+            # adjunto se delega en la lectura de la compañía) y lleva DNI,
+            # domicilios y cuentas. Sin registro, solo lo lee quien lo creó.
         })
         return {
             'type': 'ir.actions.act_url',

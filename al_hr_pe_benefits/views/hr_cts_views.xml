@@ -60,6 +60,7 @@
                             <field name="cts_per_month" readonly="1"/>
                             <field name="cts_per_day" readonly="1"/>
                             <field name="amount_per_lack" readonly="1"/>
+                            <field name="remaining_wage" readonly="1"/>
                             <field name="cts_interest"/>
                             <field name="other_discounts"/>
                             <field name="total_cts" readonly="1" force_save="1"/>
@@ -104,6 +105,7 @@
                 <field name="cts_per_month" sum="CTS por meses" optional="hide"/>
                 <field name="cts_per_day" sum="CTS por días" optional="hide"/>
                 <field name="amount_per_lack" sum="Monto por faltas" optional="hide"/>
+                <field name="remaining_wage" optional="hide"/>
                 <field name="cts_interest" sum="Interés CTS" optional="hide"/>
                 <field name="other_discounts" sum="Otros descuentos" optional="hide"/>
                 <field name="total_cts" sum="Total CTS" optional="show" force_save="1"/>

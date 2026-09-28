@@ -48,7 +48,10 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = worked_days['FER'].number_of_days * (version.wage/30)
+# Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9): la
+# remuneración del día de descanso ya va en el sueldo (DOM); la labor se
+# paga ADEMÁS con una sobretasa del 100 %, es decir, doble.
+result = worked_days['FER'].number_of_days * (version.wage/30) * 2
             </field>
             <field name="category_id" ref="ING"/>
             <field name="struct_id" ref="base_structure"/>
@@ -174,7 +177,9 @@ result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH
                  criterio anterior (`children`) para no dejar sin
                  asignación a quien ya la cobraba. -->
             <field name="amount_python_compute">
-if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'fourth-fifth':
+# Ley 25129: no alcanza a los practicantes (modalidades formativas, Ley
+# 28518), que perciben una subvención y no una remuneración.
+if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'practicante':
     if worked_days['DVAC'].number_of_days ==30 or worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:
         result=0
     else:
@@ -521,7 +526,9 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if payslip.membership_id.name == 'ONP':
+# SNP: afiliación que no es AFP (ONP; «sin régimen» tiene tasa 0). Por
+# flag y tasas, nunca por el nombre de la entidad.
+if payslip.membership_id and not payslip.membership_id.is_afp:
     result = round((payslip.l10n_pe_retirement_fund/100) * AONP, 2)
 else:
     result = 0
@@ -538,20 +545,8 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if payslip.membership_id.name == 'ONP':
-    result = 0
-elif payslip.membership_id.name == 'AFP HABITAT':
+if payslip.membership_id.is_afp:
     result = round((payslip.l10n_pe_retirement_fund/100) * AAFP, 2)
-elif payslip.membership_id.name == 'AFP INTEGRA':
-    result = round((payslip.l10n_pe_retirement_fund/100) * AAFP, 2)
-elif payslip.membership_id.name == 'AFP PRIMA':
-    result = round((payslip.l10n_pe_retirement_fund/100) * AAFP, 2)
-elif payslip.membership_id.name == 'AFP PROFUTURO':
-    result = round((payslip.l10n_pe_retirement_fund/100) * AAFP, 2)
-elif payslip.membership_id.name == 'JUB. PROFUTURO TRÁNSITO':
-    result = round((payslip.l10n_pe_retirement_fund/100) * AAFP, 2)
-elif payslip.membership_id.name == 'SIN RÉGIMEN':
-    result = 0
 else:
     result = 0
             </field>
@@ -567,21 +562,8 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.l10n_pe_commission_type == 'flow':
-    if payslip.membership_id.name == 'ONP':
-        result = 0
-    elif payslip.membership_id.name == 'AFP HABITAT':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP INTEGRA':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP PRIMA':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP PROFUTURO':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'JUB. PROFUTURO TRÁNSITO':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    else:
-        result = 0
+if version.l10n_pe_commission_type == 'flow' and payslip.membership_id.is_afp:
+    result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
 else:
     result = 0
             </field>
@@ -597,21 +579,8 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.l10n_pe_commission_type == 'mixed':
-    if payslip.membership_id.name == 'ONP':
-        result = 0
-    elif payslip.membership_id.name == 'AFP HABITAT':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP INTEGRA':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP PRIMA':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'AFP PROFUTURO':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    elif payslip.membership_id.name == 'JUB. PROFUTURO TRÁNSITO':
-        result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
-    else:
-        result = 0
+if version.l10n_pe_commission_type == 'mixed' and payslip.membership_id.is_afp:
+    result = round((payslip.l10n_pe_commission/100) * AAFP, 2)
 else:
     result = 0
             </field>
@@ -627,20 +596,15 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.l10n_pe_is_older:
+# Prima de seguro sobre el afecto, con el tope asegurable de la SBS. Los
+# mayores de 65 no la pagan; las entidades sin prima (p. ej. jubilado en
+# tránsito) tienen tasa 0.
+if version.l10n_pe_is_older or not payslip.membership_id.is_afp:
     result = 0
+elif AAFP &lt; payslip.l10n_pe_insurable_remuneration:
+    result = round((payslip.l10n_pe_prima_insurance/100) * AAFP, 2)
 else:
-    if payslip.membership_id.name == 'ONP':
-        result = 0
-    elif payslip.membership_id.name in ('AFP HABITAT', 'AFP INTEGRA', 'AFP PRIMA', 'AFP PROFUTURO'):
-        if AAFP &lt; payslip.l10n_pe_insurable_remuneration:
-            result = round((payslip.l10n_pe_prima_insurance/100) * AAFP, 2)
-        else:
-            result = round((payslip.l10n_pe_prima_insurance/100) * payslip.l10n_pe_insurable_remuneration, 2)
-    elif payslip.membership_id.name == 'JUB. PROFUTURO TRÁNSITO':
-        result = 0
-    else:
-        result = 0
+    result = round((payslip.l10n_pe_prima_insurance/100) * payslip.l10n_pe_insurable_remuneration, 2)
             </field>
             <field name="category_id" ref="APOR_TRA"/>
             <field name="struct_id" ref="base_structure"/>
@@ -856,7 +820,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.l10n_pe_labor_regime not in ('fourth-fifth', 'practicante'):
+if version.l10n_pe_labor_regime != 'practicante':
     if version.social_insurance_id.name == 'EPS':
         result = AESSALUD * version.social_insurance_id.percent/100
     else:
@@ -977,6 +941,9 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
+# El neto de remuneraciones SIN el tope en cero de NETREMU se recalcula
+# aquí: antes se leía la variable local de otra regla.
+net_rem = TINGR-TDESN-VAC-VATRU-GRA_TRU-BON9_TRU-CTS_TRU-((TAT-QUINTA) * REMAFE)-QUINTA+ADE_VAC
 net_vac = VAC+VATRU-((TAT-QUINTA) * VACAFE)
 if net_rem &lt; 0:
     result = net_vac + net_rem

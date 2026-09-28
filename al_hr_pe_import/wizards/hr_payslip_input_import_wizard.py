@@ -21,6 +21,8 @@ boleta del empleado dentro del lote. Clave funcional: boleta + input
 """
 import logging
 
+from collections import defaultdict
+
 from odoo import fields, models
 from odoo.exceptions import UserError
 
@@ -90,11 +92,23 @@ class AlImportPayslipInputWizard(models.TransientModel):
         except (TypeError, ValueError):
             return None
 
-    def _find_slip(self, identification):
-        """Boleta del lote cuyo empleado tiene ese documento."""
-        return self.payslip_run_id.slip_ids.filtered(
-            lambda s: (s.employee_id.identification_id or '').strip()
-            == identification)
+    def _find_slip(self, identification, ctx=None):
+        """Boleta del lote cuyo empleado tiene ese documento.
+
+        El mapa documento → boletas se construye una sola vez por
+        importación (en ``ctx``): filtrar todas las boletas del lote en
+        cada fila era O(filas × boletas).
+        """
+        if ctx is None:
+            ctx = {}
+        slips_by_doc = ctx.get('slips_by_doc')
+        if slips_by_doc is None:
+            slips_by_doc = defaultdict(lambda: self.env['hr.payslip'])
+            for slip in self.payslip_run_id.slip_ids:
+                doc = (slip.employee_id.identification_id or '').strip()
+                slips_by_doc[doc] |= slip
+            ctx['slips_by_doc'] = slips_by_doc
+        return slips_by_doc.get(identification, self.env['hr.payslip'])
 
     # --------------------------------------------------------------------- #
     # Procesamiento de una fila                                             #
@@ -119,7 +133,7 @@ class AlImportPayslipInputWizard(models.TransientModel):
                 'el monto "%s" no es numérico') % (row.get('amount'),), empty
         amount = custom_round(amount, 2)
 
-        slips = self._find_slip(identification)
+        slips = self._find_slip(identification, ctx)
         if not slips:
             return 'error', self.env._(
                 'no hay boleta en el lote "%(l)s" para el documento '
@@ -135,9 +149,14 @@ class AlImportPayslipInputWizard(models.TransientModel):
                 'la boleta de %(e)s no está en borrador (estado: %(s)s)'
             ) % {'e': slip.employee_id.name, 's': slip.state}, empty
 
-        input_type = self.env['hr.payslip.input.type'].search([
-            ('code', '=', input_code),
-        ], limit=1)
+        # Primero entre los inputs de la estructura de la boleta: el código
+        # no es único entre países (varias localizaciones lo reutilizan).
+        input_type = slip.struct_id.input_line_type_ids.filtered(
+            lambda t: t.code == input_code)[:1]
+        if not input_type:
+            input_type = self.env['hr.payslip.input.type'].search([
+                ('code', '=', input_code),
+            ], limit=1)
         if not input_type:
             return 'error', self.env._(
                 'no existe un tipo de input con código "%s"'

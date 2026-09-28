@@ -20,6 +20,27 @@
             <field name="model_id" ref="model_l10n_pe_hr_attendance_monitor"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <!-- Monitor: el usuario de Planning solo ve sus propias filas
+             (marcaciones y ausencias ajenas son datos del trabajador);
+             el responsable de Planning y nómina ven toda la compañía. -->
+        <record id="l10n_pe_hr_attendance_monitor_planning_user_rule" model="ir.rule">
+            <field name="name">Monitor de asistencia: solo lo mío (Planning)</field>
+            <field name="model_id" ref="model_l10n_pe_hr_attendance_monitor"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('planning.group_planning_user'))]"/>
+        </record>
+        <record id="l10n_pe_hr_attendance_monitor_planning_manager_rule" model="ir.rule">
+            <field name="name">Monitor de asistencia: todo (responsable de Planning)</field>
+            <field name="model_id" ref="model_l10n_pe_hr_attendance_monitor"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('planning.group_planning_manager'))]"/>
+        </record>
+        <record id="l10n_pe_hr_attendance_monitor_payroll_rule" model="ir.rule">
+            <field name="name">Monitor de asistencia: todo (nómina)</field>
+            <field name="model_id" ref="model_l10n_pe_hr_attendance_monitor"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+        </record>
         <record id="hr_fotocheck_config_company_rule" model="ir.rule">
             <field name="name">Configuración de fotocheck: multicompañía</field>
             <field name="model_id" ref="model_hr_fotocheck_config"/>

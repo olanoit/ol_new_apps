@@ -263,8 +263,9 @@ pasos:
     ruta: Boleta ▸ Días trabajados
     texto: >-
       El régimen añade el tipo de entrada **HORAS EXTRAS 60% (CONSTRUCCIÓN)**.
-      Cuentan como días pagados los laborados, feriados, vacaciones, descanso
-      médico, paternidad y licencia con goce.
+      Cuentan como días pagados los laborados, feriados (trabajados o no),
+      vacaciones, descanso médico, paternidad y licencia con goce. La
+      movilidad solo se paga por los días en que se acude a la obra.
     imagen: screenshots/10-boleta-dias.png
 
   - titulo: Cálculo del salario
@@ -457,13 +458,14 @@ ejemplos:
       - ["BALTI, BAGUA, BCOTA, BALTU", Bonificaciones por condiciones de trabajo, "0300", "Importe fijo × días o % del jornal del periodo"]
       - [HE60, Horas extras 60%, "0105", "Horas × jornal ÷ 8 × 1,6"]
       - [HE100, Horas extras 100%, "0106", "Horas × jornal ÷ 8 × 2"]
-      - [INDEM, "Indemnización 15% (CTS)", "0916", "15 % de jornal del periodo + horas extras a valor simple"]
-      - [VAC10, Vacaciones 10%, "0400", 10 % del jornal del periodo]
+      - [FER100, Sobretasa 100% feriado o descanso laborado, "0107", "Jornal × días trabajados en feriado o descanso"]
+      - [INDEM, "Indemnización 15% (CTS)", "0904", "15 % de jornal del periodo + horas extras a valor simple"]
+      - [VAC10, Vacaciones 10%, "0118", 10 % del jornal del periodo]
       - [GRAT, Gratificación proporcional, "0406", "Jornal × 40 × días × 7/6 ÷ 210 (hasta julio) o ÷ 150"]
-      - [BEXT, Bonificación extraordinaria Ley 30334, "0906", "% de la compañía sobre GRAT"]
+      - [BEXT, Bonificación extraordinaria Ley 30334, "0312", "% de la compañía sobre GRAT"]
       - [AESC, Asignación escolar, "0201", "Jornal × 30 ÷ 360 × días × 7/6 × hijos con derecho"]
       - [CONAF, CONAFOVICER 2%, "0703", "−(% de la compañía sobre JOR + DSO)"]
-      - [TREM, Total remuneración computable, "—", "JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU + HE60 + HE100 + AESC"]
+      - [TREM, Total remuneración computable, "—", "JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU + HE60 + HE100 + FER100 + AESC"]
       - [ONP, ONP, "0607", "−(% del fondo sobre TREM), solo afiliados a la ONP"]
       - [A_JUB, AFP Aporte Fondo de Pensiones, "0608", "−(% del fondo sobre TREM), afiliados a una AFP"]
       - [COMFI, AFP Comisión sobre flujo, "0601", "−(% de comisión sobre TREM), comisión sobre flujo"]
@@ -596,6 +598,19 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 12.20260925
+    fecha: 27/09/2026
+    cambios:
+      - "El feriado no laborado se paga: entra en los días pagados con su jornal, D.S.O. y BUC (D.Leg. 713). Antes una semana con feriado cobraba un jornal de menos."
+      - "Trabajar en feriado o en el día de descanso paga la sobretasa del 100 % sobre el jornal (regla FER100, concepto SUNAT 0107)."
+      - "La movilidad solo se paga por los días en que se acude a la obra: ya no en vacaciones, descanso médico, licencias ni feriados no laborados."
+      - "Una tabla salarial propia de la compañía sustituye de verdad a la nacional en las mismas fechas; antes ganaba siempre la nacional."
+      - "Las boletas confirmadas conservan su jornal y su categoría aunque después cambie la ficha del trabajador; la boleta impresa muestra la categoría con la que se pagó."
+      - "El resumen CONAFOVICER deposita lo retenido en cada boleta, aunque la tasa haya cambiado después. Reabrir un resumen ya pagado queda reservado al responsable de nómina, y el detalle de cada compañía solo lo ve esa compañía."
+      - "ONP y AFP se reconocen por el tipo de afiliación y no por su nombre, y redondean como SUNAT (medio céntimo hacia arriba)."
+      - "Códigos SUNAT alineados con la planilla general: indemnización 0904, bonificación extraordinaria 0312 y vacaciones 0118."
+      - "La tabla del convenio solo se descarga por https y de dominios conocidos (CAPECO, FTCCP, gob.pe); el administrador puede añadir otros en el parámetro del sistema al_hr_pe_construction.wage_table_hosts."
+      - "Actualizar el módulo ya no restablece el BUC ni la BAE de las categorías que haya ajustado."
   - fecha: 24/09/2026
     cambios:
       - "Los datos de construcción civil de la ficha del trabajador se restringen al personal de nómina, en la vista y en cada campo: sin ello, un usuario sin ese permiso recibía un error de acceso al abrir un empleado."

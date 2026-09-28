@@ -224,7 +224,9 @@
               action="action_l10n_pe_dependent_end_reason"
               sequence="20"/>
 
-    <!-- Botón en la ficha del trabajador -->
+    <!-- Botón en la ficha del trabajador: solo nómina, que es quien tiene
+         acceso a los derechohabientes (un oficial de RR. HH. sin nómina no
+         debe cargar el contador o la ficha falla). -->
     <record id="view_employee_form_dependents" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.pe.dependents</field>
         <field name="model">hr.employee</field>
@@ -233,7 +235,7 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_open_l10n_pe_dependents" type="object"
                         class="oe_stat_button" icon="fa-users"
-                        groups="hr.group_hr_user">
+                        groups="hr_payroll.group_hr_payroll_user">
                     <field name="l10n_pe_dependent_count" widget="statinfo"
                            string="Derechohab."/>
                 </button>

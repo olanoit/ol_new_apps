@@ -19,17 +19,17 @@
                     <t t-elif="state.status === 'running'">
                         <i class="fa fa-spinner fa-spin mb-3 text-primary" style="font-size: 2.8rem;"/>
                         <h5 class="fw-semibold text-primary mb-1">Importando registros</h5>
-                        <small class="text-muted" t-esc="state.message"/>
+                        <small class="text-muted" t-out="state.message"/>
                     </t>
                     <t t-elif="state.status === 'done'">
                         <i class="fa fa-check-circle mb-3 text-success" style="font-size: 2.8rem;"/>
                         <h5 class="fw-semibold text-success mb-1">¡Importación completada!</h5>
-                        <small class="text-muted" t-esc="state.message"/>
+                        <small class="text-muted" t-out="state.message"/>
                     </t>
                     <t t-elif="state.status === 'error'">
                         <i class="fa fa-times-circle mb-3 text-danger" style="font-size: 2.8rem;"/>
                         <h5 class="fw-semibold text-danger mb-1">Error en la importación</h5>
-                        <small class="text-muted" t-esc="state.message"/>
+                        <small class="text-muted" t-out="state.message"/>
                     </t>
                 </div>
 
@@ -38,10 +38,10 @@
                     <div class="d-flex justify-content-between mb-1">
                         <small class="text-muted">Progreso</small>
                         <small class="fw-semibold text-muted">
-                            <t t-esc="state.current"/>
+                            <t t-out="state.current"/>
                             <span class="text-muted fw-normal"> de </span>
-                            <t t-esc="state.total"/>
-                            <span class="ms-1 text-muted fw-normal">(<t t-esc="state.percent"/>%)</span>
+                            <t t-out="state.total"/>
+                            <span class="ms-1 text-muted fw-normal">(<t t-out="state.percent"/>%)</span>
                         </small>
                     </div>
                     <div class="progress w-100" style="height: 12px; border-radius: 6px; background:#e9ecef;">
@@ -66,42 +66,42 @@
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#f8f9fa; border:1px solid #dee2e6;">
-                            <div class="fs-3 fw-bold text-secondary lh-1 mb-1" t-esc="state.total"/>
+                            <div class="fs-3 fw-bold text-secondary lh-1 mb-1" t-out="state.total"/>
                             <small class="text-uppercase text-muted" style="font-size:.68rem; letter-spacing:.05em;">Total</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#e8f0fe; border:1px solid #c2d4fb;">
-                            <div class="fs-3 fw-bold text-primary lh-1 mb-1" t-esc="state.current"/>
+                            <div class="fs-3 fw-bold text-primary lh-1 mb-1" t-out="state.current"/>
                             <small class="text-uppercase text-primary" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Procesados</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#e6f4ea; border:1px solid #a8d5b0;">
-                            <div class="fs-3 fw-bold text-success lh-1 mb-1" t-esc="state.created"/>
+                            <div class="fs-3 fw-bold text-success lh-1 mb-1" t-out="state.created"/>
                             <small class="text-uppercase text-success" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Creados</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#e3f2fd; border:1px solid #90caf9;">
-                            <div class="fs-3 fw-bold text-info lh-1 mb-1" t-esc="state.updated"/>
+                            <div class="fs-3 fw-bold text-info lh-1 mb-1" t-out="state.updated"/>
                             <small class="text-uppercase text-info" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Actualizados</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#fff8e1; border:1px solid #ffe082;">
-                            <div class="fs-3 fw-bold text-warning lh-1 mb-1" t-esc="state.skipped"/>
+                            <div class="fs-3 fw-bold text-warning lh-1 mb-1" t-out="state.skipped"/>
                             <small class="text-uppercase text-warning" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Omitidos</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="text-center rounded-3 py-3 h-100"
                              style="background:#ffebee; border:1px solid #ef9a9a;">
-                            <div class="fs-3 fw-bold text-danger lh-1 mb-1" t-esc="state.errors"/>
+                            <div class="fs-3 fw-bold text-danger lh-1 mb-1" t-out="state.errors"/>
                             <small class="text-uppercase text-danger" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Errores</small>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                         <div class="w-100">
                             <strong class="d-block mb-1">Detalle del error</strong>
                             <code style="white-space:pre-wrap; word-break:break-all;"
-                                  t-esc="state.error_detail"/>
+                                  t-out="state.error_detail"/>
                         </div>
                     </div>
                 </t>

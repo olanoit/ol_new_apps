@@ -16,7 +16,7 @@ destacados:
   - icono: "10"
     titulo: Diez años cargados
     texto: >-
-      170 feriados de 2026 a 2035, 17 por año, incluidos los de fecha móvil de
+      160 feriados de 2026 a 2035, 16 por año, incluidos los de fecha móvil de
       Semana Santa, que no hay que calcular a mano.
   - icono: "▦"
     titulo: Aplicación a los horarios
@@ -142,7 +142,7 @@ pasos:
   - titulo: Feriado de medio día
     ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ Nuevo
     texto: >-
-      Al desmarcar **Full Day** aparece **Half Day Starts At** (13:00 por
+      Al desmarcar **Full Day** aparece **Half Day Rest Until** (13:00 por
       defecto): el descanso irá desde las 00:00 hasta esa hora. Ninguno de los
       feriados cargados es de medio día.
     imagen: screenshots/04-medio-dia.png
@@ -234,7 +234,7 @@ campos:
       - [Date, Día del feriado., Vacío (obligatorio), Día del descanso]
       - [Type, "National, Religious o Memorial.", National, Filtros y color de la lista (religiosos en azul)]
       - [Full Day, Descanso de todo el día., Marcado, "Rango 00:00–23:59 en la zona del horario"]
-      - [Half Day Starts At, "Visible solo sin Full Day: hora en que termina el descanso.", "13:00", "Rango 00:00 hasta esa hora"]
+      - [Half Day Rest Until, "Visible solo sin Full Day: hora en que termina el descanso.", "13:00", "Rango 00:00 hasta esa hora"]
       - [Year, Año de la fecha., Calculado, Agrupación de la lista y selección de la tarea anual]
       - [Tipo de entrada de trabajo, Concepto con que la nómina computa el día; no permite crear uno nuevo desde aquí., "DIAS DE DESCANSO (si está al_hr_pe)", Lo hereda el descanso y de ahí la entrada de trabajo]
       - [Description, Texto libre., Vacío, Informativo]
@@ -252,8 +252,8 @@ campos:
       - [Usuario encargado de la planificación, Usuario con que corre., OdooBot, Aplica en los horarios de todas las compañías de ese usuario]
 
 funcionalidades:
-  - Feriados nacionales del Perú de 2026 a 2035 (17 por año).
-  - Fechas móviles de Jueves Santo, Viernes Santo y Domingo de Resurrección según la Pascua de cada año.
+  - Feriados nacionales del Perú de 2026 a 2035 (16 por año).
+  - Fechas móviles de Jueves Santo y Viernes Santo según la Pascua de cada año.
   - Aplicación masiva a los horarios de trabajo de las compañías activas.
   - Descansos idempotentes por feriado y horario, que se borran con el feriado.
   - Tipo de entrada de trabajo por feriado, heredado por el descanso (por defecto, días de descanso).
@@ -282,12 +282,12 @@ ejemplos:
 
   - titulo: Semana Santa, calculada para cada año
     tabla:
-      - [Año, Jueves Santo, Viernes Santo, Domingo de Resurrección]
-      - ["2026", 02/04, 03/04, 05/04]
-      - ["2027", 25/03, 26/03, 28/03]
-      - ["2028", 13/04, 14/04, 16/04]
-      - ["2030", 18/04, 19/04, 21/04]
-      - ["2035", 22/03, 23/03, 25/03]
+      - [Año, Jueves Santo, Viernes Santo]
+      - ["2026", 02/04, 03/04]
+      - ["2027", 25/03, 26/03]
+      - ["2028", 13/04, 14/04]
+      - ["2030", 18/04, 19/04]
+      - ["2035", 22/03, 23/03]
 
 configuracion:
   - Instale el módulo (requiere Vacaciones y Entradas de trabajo).
@@ -322,6 +322,11 @@ faq:
       compañías del usuario OdooBot.
 
 novedades:
+  - version: 4.20260827
+    fecha: 27/09/2026
+    cambios:
+      - "El Domingo de Resurrección deja de figurar como feriado: no es feriado legal en el Perú. Quedan 16 feriados por año y los descansos que ya se habían creado para ese domingo se borran al actualizar."
+      - "El campo de medio día pasa a llamarse **Half Day Rest Until**: indica la hora hasta la que dura el descanso, que empieza a las 00:00."
   - fecha: 27/08/2026
     cambios:
       - Los descansos ya no se desplazan cinco horas por la zona horaria del usuario que los aplica.

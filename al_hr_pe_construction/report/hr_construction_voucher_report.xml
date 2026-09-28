@@ -35,7 +35,7 @@
                    position="inside">
                 <tr>
                     <td class="bpe-k">Categoría</td>
-                    <td><span t-esc="v.l10n_pe_construction_category_id.name or '—'"/></td>
+                    <td><span t-esc="o.l10n_pe_construction_category_id.name or '—'"/></td>
                     <td class="bpe-k">Obra</td>
                     <td><span t-esc="v.l10n_pe_construction_site_id.name or '—'"/></td>
                 </tr>

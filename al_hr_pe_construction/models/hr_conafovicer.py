@@ -12,7 +12,7 @@ import io
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 
@@ -110,17 +110,20 @@ class L10nPeHrConafovicer(models.Model):
             summary.line_ids.unlink()
             vals = []
             for payslip in summary._get_payslips():
-                amount = payslip._l10n_pe_construction_conafovicer()
+                # Se deposita lo que se RETUVO en cada boleta, no un
+                # recálculo con la tasa o la tabla de hoy: si cambiaron
+                # después, el depósito dejaría de cuadrar con las boletas.
+                totals = payslip._l10n_pe_line_totals(('CONAF', 'JOR', 'DSO'))
+                amount = -totals['CONAF']
                 if not amount:
                     continue
                 vals.append(fields.Command.create({
                     'employee_id': payslip.employee_id.id,
                     'payslip_id': payslip.id,
                     'days': payslip._l10n_pe_construction_days(),
-                    'wage_amount': payslip._l10n_pe_construction_amount(
-                        'jornal'),
-                    'dso_amount': payslip._l10n_pe_construction_amount('dso'),
-                    'base': payslip._l10n_pe_construction_conafovicer_base(),
+                    'wage_amount': totals['JOR'],
+                    'dso_amount': totals['DSO'],
+                    'base': custom_round(totals['JOR'] + totals['DSO']),
                     'amount': amount,
                 }))
             summary.line_ids = vals
@@ -137,6 +140,14 @@ class L10nPeHrConafovicer(models.Model):
         return True
 
     def action_draft(self):
+        # Reabrir un resumen ya pagado borra la constancia del depósito:
+        # solo lo puede hacer el responsable de nómina.
+        if any(summary.state == 'paid' for summary in self) \
+                and not self.env.user.has_group(
+                    'hr_payroll.group_hr_payroll_manager'):
+            raise UserError(_(
+                'Solo el responsable de nómina puede reabrir un resumen de '
+                'CONAFOVICER ya pagado.'))
         self.write({'state': 'draft'})
         return True
 
@@ -240,6 +251,6 @@ class L10nPeHrConafovicerLine(models.Model):
         for line in self:
             expected = custom_round(line.wage_amount + line.dso_amount)
             if custom_round(line.base) != expected:
-                raise UserError(_(
+                raise ValidationError(_(
                     'La base de %(name)s no es el jornal más el D.S.O.',
                     name=line.employee_id.display_name))

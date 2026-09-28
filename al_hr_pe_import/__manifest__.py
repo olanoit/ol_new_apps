@@ -45,7 +45,7 @@ y regla de registro por compañía en el historial.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PLANILLAS/Apps',
-    'version': '3.20260816',
+    'version': '4.20260816',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',

@@ -134,9 +134,17 @@ class HrMainParameter(models.Model):
         """(días, meses) entre dos fechas con la convención del mes
         comercial: meses calendario completos + días sueltos de los
         extremos, normalizando 30 días → 1 mes. Portado idéntico de v18
-        (base de CTS/grati/vacaciones — no alterar sin fixture)."""
+        (base de CTS/grati/vacaciones — no alterar sin fixture).
+
+        Dentro de un mismo mes los días se cuentan inclusive y van en la
+        posición de días (v18 los devolvía como MESES: 10→25 de marzo
+        daba 15 meses); el mes entero cuenta como un mes."""
         if (date_from.year, date_from.month) == (date_to.year, date_to.month):
-            return 0, date_to.day - date_from.day
+            last_day = monthrange(date_to.year, date_to.month)[1]
+            if date_from.day == 1 and date_to.day == last_day:
+                return 0, 1
+            return self.get_months_of_30_days(
+                date_to.day - date_from.day + 1, 0)
         days = 0
         months = (date_to.year - date_from.year) * 12 \
             + (date_to.month - date_from.month - 1)
@@ -162,7 +170,7 @@ class HrMainParameter(models.Model):
         'OCHO ', 'NUEVE ', 'DIEZ ', 'ONCE ', 'DOCE ', 'TRECE ', 'CATORCE ',
         'QUINCE ', 'DIECISEIS ', 'DIECISIETE ', 'DIECIOCHO ', 'DIECINUEVE ',
         'VEINTE ')
-    DECENAS = ('VENTI', 'TREINTA ', 'CUARENTA ', 'CINCUENTA ', 'SESENTA ',
+    DECENAS = ('VEINTI', 'TREINTA ', 'CUARENTA ', 'CINCUENTA ', 'SESENTA ',
                'SETENTA ', 'OCHENTA ', 'NOVENTA ', 'CIEN ')
     CENTENAS = ('CIENTO ', 'DOSCIENTOS ', 'TRESCIENTOS ', 'CUATROCIENTOS ',
                 'QUINIENTOS ', 'SEISCIENTOS ', 'SETECIENTOS ', 'OCHOCIENTOS ',
@@ -172,7 +180,7 @@ class HrMainParameter(models.Model):
     def _convert_group(self, n):
         output = ''
         if n == '100':
-            output = 'CIEN'
+            output = 'CIEN '
         elif n[0] != '0':
             output = self.CENTENAS[int(n[0]) - 1]
         k = int(n[1:])

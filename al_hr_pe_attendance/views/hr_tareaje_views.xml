@@ -204,7 +204,26 @@
         <field name="inherit_id" ref="hr.hr_version_list_view"/>
         <field name="arch" type="xml">
             <xpath expr="//list" position="inside">
-                <field name="l10n_pe_is_overtime" optional="hide"/>
+                <field name="l10n_pe_is_overtime" optional="hide"
+                       groups="hr.group_hr_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- En la ficha del trabajador (pestaña de nómina): sin él a la vista
+         el flag quedaba en False y el tareaje nunca calculaba horas
+         extra. groups dentro del arch: el campo no existe en el perfil
+         público del empleado. -->
+    <record id="hr_employee_view_form_inherit_tareaje" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.tareaje</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='payroll_information']" position="inside">
+                <group name="l10n_pe_tareaje" string="Tareaje (Perú)"
+                       groups="hr_payroll.group_hr_payroll_user">
+                    <field name="l10n_pe_is_overtime"/>
+                </group>
             </xpath>
         </field>
     </record>

@@ -138,7 +138,6 @@ class HrBenefitsMoveMixin(models.AbstractModel):
                 'default_credit': _round(total_credit),
                 'benefits_model': self._name,
                 'benefits_id': self.id,
-                'move_lines': move_lines,
             },
             'target': 'new',
         }

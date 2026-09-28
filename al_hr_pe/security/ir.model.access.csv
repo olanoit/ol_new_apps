@@ -42,8 +42,10 @@ access_l10n_pe_labor_regime_user,l10n_pe.hr.labor.regime user,model_l10n_pe_hr_l
 access_l10n_pe_labor_regime_manager,l10n_pe.hr.labor.regime manager,model_l10n_pe_hr_labor_regime,hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_l10n_pe_road_type_user,l10n_pe.hr.road.type user,model_l10n_pe_hr_road_type,hr_payroll.group_hr_payroll_user,1,0,0,0
 access_l10n_pe_road_type_manager,l10n_pe.hr.road.type manager,model_l10n_pe_hr_road_type,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_l10n_pe_road_type_hr_user,l10n_pe.hr.road.type hr user,model_l10n_pe_hr_road_type,hr.group_hr_user,1,0,0,0
 access_l10n_pe_zone_type_user,l10n_pe.hr.zone.type user,model_l10n_pe_hr_zone_type,hr_payroll.group_hr_payroll_user,1,0,0,0
 access_l10n_pe_zone_type_manager,l10n_pe.hr.zone.type manager,model_l10n_pe_hr_zone_type,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_l10n_pe_zone_type_hr_user,l10n_pe.hr.zone.type hr user,model_l10n_pe_hr_zone_type,hr.group_hr_user,1,0,0,0
 access_l10n_pe_edu_institution_user,l10n_pe.hr.education.institution user,model_l10n_pe_hr_education_institution,hr_payroll.group_hr_payroll_user,1,0,0,0
 access_l10n_pe_edu_institution_manager,l10n_pe.hr.education.institution manager,model_l10n_pe_hr_education_institution,hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_l10n_pe_edu_career_user,l10n_pe.hr.education.career user,model_l10n_pe_hr_education_career,hr_payroll.group_hr_payroll_user,1,0,0,0

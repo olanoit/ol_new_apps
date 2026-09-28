@@ -24,7 +24,8 @@ from datetime import date
 from odoo import api, fields, models
 
 from odoo.addons.al_hr_pe.tools import custom_round
-from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import (
+    ensure_draft, ensure_line_draft, notify_success)
 
 
 class HrCts(models.Model):
@@ -116,6 +117,7 @@ class HrCts(models.Model):
         con overrides manuales (``preserve_record``).
         """
         self.ensure_one()
+        ensure_draft(self)
         self.line_ids.filtered(lambda line: not line.preserve_record).unlink()
         self.env['hr.main.parameter'].compute_benefits(self, self.type)
         preserved_employees = \
@@ -127,6 +129,7 @@ class HrCts(models.Model):
 
     def compute_cts_line_all(self):
         """Recalcula todas las líneas del lote en una pasada."""
+        ensure_draft(self)
         self.line_ids.compute_cts_line()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
@@ -157,6 +160,7 @@ class HrCts(models.Model):
     def export_cts(self):
         """Exporta los montos al lote de nómina y cierra el registro."""
         self.ensure_one()
+        ensure_draft(self)
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_cts_values()
@@ -209,8 +213,14 @@ class HrCtsLine(models.Model):
     distribution_id = fields.Char(string='Distribución analítica')
     months = fields.Integer(string='Meses')
     days = fields.Integer(string='Días')
-    lacks = fields.Integer(string='Faltas')
-    excess_medical_rest = fields.Integer(string='Exceso descanso médico')
+    # Float: las faltas y el descanso médico admiten medios días.
+    lacks = fields.Float(string='Faltas', digits=(16, 2))
+    excess_medical_rest = fields.Float(
+        string='Exceso descanso médico', digits=(16, 2))
+    remaining_wage = fields.Float(
+        string='(+) Saldo semestre anterior',
+        help='CTS reservada del semestre anterior (trabajador con menos '
+             'de un mes), que se abona en este depósito.')
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
     sixth_of_gratification = fields.Float(string='1/6 gratificación')
@@ -234,6 +244,7 @@ class HrCtsLine(models.Model):
 
     def compute_cts_line(self):
         """Recalcula la línea a partir de sus componentes editables."""
+        ensure_line_draft(self, 'cts_id', 'liquidation_id')
         for record in self:
             record.computable_remuneration = (
                 record.wage + record.household_allowance
@@ -244,15 +255,18 @@ class HrCtsLine(models.Model):
             else:
                 record.amount_per_month = record.computable_remuneration / 24
             record.amount_per_day = record.amount_per_month / 30
-            record.amount_per_lack = record.amount_per_day * record.lacks
+            # Mismas piezas que el motor: el exceso de descanso médico
+            # descuenta como falta y el saldo reservado se suma.
+            record.amount_per_lack = record.amount_per_day * (
+                record.lacks + record.excess_medical_rest)
             record.cts_per_month = custom_round(
                 record.amount_per_month * record.months, 2)
             record.cts_per_day = custom_round(
                 record.amount_per_day * record.days, 2)
-            record.total_cts = (
+            record.total_cts = custom_round(
                 record.cts_per_month + record.cts_per_day
-                - record.amount_per_lack + record.cts_interest
-                - record.other_discounts)
+                - record.amount_per_lack + record.remaining_wage
+                + record.cts_interest - record.other_discounts, 2)
             record.cts_soles = custom_round(record.total_cts, 2)
             exchange = record.exchange_type or 1.0
             record.cts_dollars = custom_round(
@@ -262,8 +276,11 @@ class HrCtsLine(models.Model):
         """Detalle histórico de planillas de los 6 meses computados."""
         self.ensure_one()
         self.cts_line_ids.unlink()
+        # En una liquidación la línea no tiene depósito: se toma el cese.
+        date_calculate = (self.cts_id.deposit_date or self.cessation_date
+                          or self.liquidation_id.payslip_run_id.date_end)
         history = self.env['hr.main.parameter'].get_salary_history(
-            self.employee_id, self.company_id, self.cts_id.deposit_date)
+            self.employee_id, self.company_id, date_calculate)
         Detalle = self.env['hr.cts.line.detalle']
         for periodo, amounts in history.items():
             Detalle.create({

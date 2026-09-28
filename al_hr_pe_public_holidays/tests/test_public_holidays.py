@@ -3,7 +3,7 @@
 
 Dos frentes:
 
-* **El dato**: los 17 feriados nacionales por año (Ley 31644 y sucesivas)
+* **El dato**: los 16 feriados nacionales por año (Ley 31644 y sucesivas)
   para 2026-2035, con los móviles de Semana Santa cuadrados contra el
   cómputo de la Pascua.
 * **La aplicación**: ``action_apply_to_calendars`` debe ser idempotente
@@ -67,8 +67,8 @@ class TestPeruPublicHolidays(TransactionCase):
         for year in range(2026, 2036):
             count = self.Holiday.search_count([('year', '=', year)])
             self.assertEqual(
-                count, 17,
-                'el año %s debe tener 17 feriados nacionales, tiene %s'
+                count, 16,
+                'el año %s debe tener 16 feriados nacionales, tiene %s'
                 % (year, count))
 
     def test_fixed_holidays_present_every_year(self):
@@ -92,6 +92,18 @@ class TestPeruPublicHolidays(TransactionCase):
                           'Jueves Santo %s ausente en %s' % (thursday, year))
             self.assertIn(friday, dates,
                           'Viernes Santo %s ausente en %s' % (friday, year))
+
+    def test_easter_sunday_is_not_a_holiday(self):
+        """El Domingo de Resurrección no es feriado legal en el Perú.
+
+        Cargarlo como feriado marcaba como tal un domingo que no lo es: el
+        tareaje le aplicaba la sobretasa del 100 % a quien trabajase ese día.
+        """
+        for year in range(2026, 2036):
+            easter = easter_sunday(year)
+            self.assertFalse(
+                self.Holiday.search_count([('date', '=', easter)]),
+                'el Domingo de Resurrección %s no es feriado' % easter)
 
     def test_no_duplicate_dates_within_year(self):
         """No hay dos feriados en la misma fecha (duplicaría el descanso)."""

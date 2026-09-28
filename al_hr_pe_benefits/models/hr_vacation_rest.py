@@ -117,39 +117,52 @@ class HrVacationRest(models.Model):
 
             # Asignación familiar de Parámetros Principales (10 % RMV),
             # nunca hardcodeada.
-            compute_af = getattr(param, 'compute_af_vac', True)
-            family_allowance = param.family_allowance \
-                if compute_af and version.children > 0 else 0.0
-            contract_amount = version.wage + family_allowance
-
             end_calculation_date = min(
                 today, version.contract_date_end or today)
+            compute_af = getattr(param, 'compute_af_vac', True)
+            # Mismo criterio que la boleta: derechohabientes por edad
+            # (Ley 25129), no el campo manual ``children``.
+            family_allowance = param.family_allowance \
+                if compute_af and employee._l10n_pe_has_family_allowance(
+                    end_calculation_date) else 0.0
+            contract_amount = version.wage + family_allowance
+            # Días por año vacacional: 30 en el régimen general y 15 en la
+            # pequeña y la microempresa (REMYPE, D.S. 013-2013-PRODUCE).
+            # Un día de vacaciones vale remuneración/30 en todos.
+            days_per_year = 30.0 \
+                if version.l10n_pe_labor_regime == 'general' else 15.0
+            monthly_rate = days_per_year / 12.0
+            year_amount = custom_round(
+                contract_amount * days_per_year / 30.0, 2)
             current_date = start_date
             while current_date < end_calculation_date:
                 period_end = current_date + relativedelta(years=1) \
                     - timedelta(days=1)
-                if period_end < today:
-                    # Año vacacional completo: 12 meses × 2.5 = 30 días.
+                if period_end <= end_calculation_date:
+                    # Año vacacional completo (cumplido hoy o antes del
+                    # cese): 12 meses × días/mes del régimen.
                     vals = {
                         'date_aplication': period_end,
                         'date_from': current_date,
                         'date_end': period_end,
                         'motive': 'Vacaciones devengadas %s'
                                   % current_date.year,
-                        'days': 30.0,
-                        'days_rest': 30.0,
-                        'amount': contract_amount,
-                        'amount_rest': contract_amount,
+                        'days': days_per_year,
+                        'days_rest': days_per_year,
+                        'amount': year_amount,
+                        'amount_rest': year_amount,
                     }
                 else:
-                    # Año vacacional en curso: devengue trunco a
-                    # 2.5 días/mes (helpers del mes comercial de 30 días).
+                    # Año vacacional en curso (o cortado por el cese):
+                    # devengue trunco a días/mes del régimen (helpers del
+                    # mes comercial de 30 días).
                     period_to = min(end_calculation_date, period_end)
                     days_diff, months_diff = \
                         param.get_months_days_difference(
                             current_date, period_to)
                     accrued_days = custom_round(
-                        months_diff * 2.5 + days_diff * (2.5 / 30.0), 2)
+                        months_diff * monthly_rate
+                        + days_diff * (monthly_rate / 30.0), 2)
                     if not accrued_days:
                         break
                     accrued_amount = custom_round(

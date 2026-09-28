@@ -23,6 +23,7 @@ wizard). Esta fase solo CALCULA: el asiento contable de provisión
 (cuentas debe/haber, ``account.move``) llega en la Fase 5 y el Excel
 en la Fase 7.
 """
+import calendar
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
@@ -68,15 +69,14 @@ class HrProvisiones(models.Model):
         'Ya existe una provisión de beneficios sociales para ese lote '
         'de nómina en la compañía (el acumulado la contaría doble).')
 
-    def unlink(self):
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_done(self):
         """Bloquea el borrado de provisiones cerradas (``done``):
         primero hay que volverlas a borrador."""
-        for record in self:
-            if record.state == 'done':
-                raise UserError(self.env._(
-                    'No puedes eliminar una provisión ya cerrada. '
-                    'Primero debes volverla a borrador.'))
-        return super().unlink()
+        if any(record.state == 'done' for record in self):
+            raise UserError(self.env._(
+                'No puedes eliminar una provisión ya cerrada. '
+                'Primero debes volverla a borrador.'))
 
     def close_provisiones(self):
         """Cierra la provisión y bloquea el recálculo."""
@@ -91,7 +91,9 @@ class HrProvisiones(models.Model):
 
         Regla v18: se suman las líneas de los 6 meses (lote actual y 5
         previos, solo boletas con lote) y cada concepto promedia ÷6
-        únicamente si aparece al menos 3 veces; si no, vale 0.
+        únicamente si se percibió en al menos 3 MESES distintos; si no,
+        vale 0. Se cuentan meses, no líneas: dos reglas del mismo
+        concepto o dos boletas en un mes son un solo mes.
         """
         lot = self.payslip_run_id
         date_from = lot.date_start - relativedelta(months=5)
@@ -101,9 +103,10 @@ class HrProvisiones(models.Model):
             ('date_from', '>=', date_from),
             ('date_to', '<=', lot.date_end),
             ('payslip_run_id', '!=', False),
+            ('state', 'in', ('validated', 'paid')),
         ])
         totals = {'commission': 0.0, 'bonus': 0.0, 'extra_hours': 0.0}
-        counts = {'commission': 0, 'bonus': 0, 'extra_hours': 0}
+        months = {'commission': set(), 'bonus': set(), 'extra_hours': set()}
         for line in slips.line_ids:
             if line.salary_rule_id in param.commission_sr_ids:
                 bucket = 'commission'
@@ -114,10 +117,12 @@ class HrProvisiones(models.Model):
             else:
                 continue
             totals[bucket] += line.total
-            counts[bucket] += 1
+            if line.total:
+                months[bucket].add(
+                    (line.slip_id.date_to.year, line.slip_id.date_to.month))
         return {
             bucket: custom_round(totals[bucket] / 6, 2)
-            if counts[bucket] >= 3 else 0.0
+            if len(months[bucket]) >= 3 else 0.0
             for bucket in totals
         }
 
@@ -125,12 +130,14 @@ class HrProvisiones(models.Model):
         """Genera las líneas de provisión del lote.
 
         Por cada trabajador con boleta y básico en el lote (regímenes
-        general/pequeña/micro, sin cesados del mes ni empleadores con
-        menos de 4 trabajadores):
+        general/pequeña/micro, sin cesados del mes):
 
         * microempresa → solo línea de vacaciones;
         * general/pequeña → CTS + vacaciones, y gratificación si el
-          contrato empezó antes del inicio del lote.
+          contrato empezó antes del inicio del lote;
+        * ``l10n_pe_less_than_four`` → sin CTS (D.Leg. 650, igual que el
+          motor de CTS) ni vacaciones (D.Leg. 713 exige 4 horas diarias);
+          la gratificación sí se provisiona (antes se saltaba todo).
         """
         self.ensure_one()
         param = self.env['hr.main.parameter'].get_main_parameter(
@@ -162,8 +169,7 @@ class HrProvisiones(models.Model):
                     and lot.date_start <= version.contract_date_end \
                     <= lot.date_end:
                 continue
-            if version.l10n_pe_less_than_four:
-                continue
+            less_than_four = version.l10n_pe_less_than_four
             averages = self._get_variable_averages(param, employee)
             common_vals = {
                 'provision_id': self.id,
@@ -171,8 +177,10 @@ class HrProvisiones(models.Model):
                 'version_id': version.id,
                 'fecha_ingreso': version.contract_date_start,
                 'basico': version.wage,
+                # Mismo criterio que la regla AF de la boleta
+                # (derechohabientes por edad, Ley 25129).
                 'asignacion': param.family_allowance
-                if version.children > 0 else 0.0,
+                if slip.l10n_pe_family_allowance_ok else 0.0,
                 'commission': averages['commission'],
                 'bonus': averages['bonus'],
                 'extra_hours': averages['extra_hours'],
@@ -180,16 +188,18 @@ class HrProvisiones(models.Model):
             # TODO(fase4-revisar): distribution_id (distribución
             # analítica del contrato v18) sin equivalente en hr.version.
             if version.l10n_pe_labor_regime == 'micro':
-                VacaLine.create(common_vals)
+                if not less_than_four:
+                    VacaLine.create(common_vals)
                 continue
-            grati_line = self.gratificacion_id.line_ids.filtered(
-                lambda line: line.employee_id == employee)[:1]
-            CtsLine.create(dict(
-                common_vals,
-                un_sexto_grati=custom_round(grati_line.total_grat / 6, 2)
-                if grati_line else 0.0,
-            ))
-            VacaLine.create(common_vals)
+            if not less_than_four:
+                grati_line = self.gratificacion_id.line_ids.filtered(
+                    lambda line: line.employee_id == employee)[:1]
+                CtsLine.create(dict(
+                    common_vals,
+                    un_sexto_grati=custom_round(grati_line.total_grat / 6, 2)
+                    if grati_line else 0.0,
+                ))
+                VacaLine.create(common_vals)
             if version.contract_date_start \
                     and version.contract_date_start <= lot.date_start:
                 GratiLine.create(dict(
@@ -197,6 +207,13 @@ class HrProvisiones(models.Model):
                     tasa=version.social_insurance_id.percent or 0.0,
                 ))
         return notify_success(self.env._('Se actualizó exitosamente.'))
+
+    @staticmethod
+    def _anniversary(admission_date, year):
+        """Aniversario de ingreso en ``year`` (29/02 → 28/02)."""
+        day = min(admission_date.day,
+                  calendar.monthrange(year, admission_date.month)[1])
+        return date(year, admission_date.month, day)
 
     def compute_acumulado(self):
         """Acumulado provisionado por empleado (ORM, sin SQL).
@@ -254,10 +271,12 @@ class HrProvisiones(models.Model):
         for record in self.vaca_lines:
             admission_date = Param.get_first_version(
                 record.employee_id).contract_date_start
-            date_from_vac = admission_date.replace(year=year - 1) \
-                if not (admission_date.month == 2
-                        and admission_date.day == 29) \
-                else date(year - 1, 2, 28)
+            # Último aniversario de ingreso <= fin del lote: el de este
+            # año si ya pasó, si no el del año anterior (v18 tomaba
+            # siempre el anterior y acumulaba hasta 21 meses).
+            date_from_vac = self._anniversary(admission_date, year)
+            if date_from_vac > lot.date_end:
+                date_from_vac = self._anniversary(admission_date, year - 1)
             lines = VacaLine.search(
                 base_domain(date_from_vac)
                 + [('employee_id', '=', record.employee_id.id)])

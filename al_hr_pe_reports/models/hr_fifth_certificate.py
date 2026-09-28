@@ -138,6 +138,7 @@ class HrFifthCertificateWizard(models.TransientModel):
         fifth_lines = Line.search([
             ('slip_id.date_to', '>=', date_from),
             ('slip_id.date_to', '<', date_before),
+            ('slip_id.state', 'in', ('validated', 'paid')),
             ('employee_id', '=', employee.id),
             ('company_id', '=', company.id),
         ])
@@ -155,7 +156,7 @@ class HrFifthCertificateWizard(models.TransientModel):
             'other_emp_rem': other_emp_rem,
             'rem_total': rem_total,
             'seven_uit': seven_uit,
-            'renta_imponible': rem_total - seven_uit,
+            'renta_imponible': max(rem_total - seven_uit, 0.0),
             'impuesto': retencion,
             'retencion': retencion,
             'saldo': 0.0,
