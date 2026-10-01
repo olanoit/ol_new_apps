@@ -1,0 +1,187 @@
+/* ====================================================================
+   Vale de requerimiento de obra (al_construction_material_request) — A4.
+   Mismo lenguaje visual que los reportes PE de la suite (blanco y negro,
+   cajas con esquinas de 6px, cabeceras de tabla en gris muy claro,
+   recuadro del documento arriba a la derecha), con prefijo .rqo- propio
+   para que el módulo se instale de forma independiente.
+
+   Solo propiedades compatibles con wkhtmltopdf (WebKit antiguo): tablas
+   en vez de grid/flex, sin variables CSS y sin radio en tablas (solo en
+   cajas div, que sí se dibujan nítidas).
+   ==================================================================== */
+
+.rqo-a4 {
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: #111;
+}
+
+.rqo-a4 table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* Bootstrap 5 deja tr/td/th con border-style: solid y ancho 0: el WebKit
+   de wkhtmltopdf dibuja con eso líneas fantasma. Se neutraliza aquí y
+   cada tabla redeclara sus bordes. */
+.rqo-a4 table,
+.rqo-a4 thead,
+.rqo-a4 tbody,
+.rqo-a4 tr,
+.rqo-a4 td,
+.rqo-a4 th {
+    border: none;
+}
+
+.rqo-fig {
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    white-space: nowrap;
+}
+
+/* --- Encabezado: logo | compañía | recuadro del documento --- */
+.rqo-header td {
+    vertical-align: middle;
+}
+.rqo-header-logo {
+    width: 22%;
+}
+.rqo-header-logo img {
+    max-height: 60px;
+    max-width: 150px;
+}
+.rqo-company-name {
+    font-size: 13px;
+    font-weight: bold;
+}
+.rqo-company-info {
+    color: #444;
+    font-size: 9.5px;
+}
+.rqo-doc {
+    width: 32%;
+}
+.rqo-doc-inner {
+    border: 1.5px solid #000;
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+}
+.rqo-doc-type {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.rqo-doc-number {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+.rqo-doc-state {
+    margin-top: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.rqo-urgent {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 8px;
+    border: 1px solid #000;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* --- Cajas --- */
+.rqo-box {
+    border: 1px solid #000;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 10px;
+    page-break-inside: avoid;
+}
+.rqo-title {
+    font-size: 8.5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 12px 0 4px 0;
+}
+.rqo-box .rqo-title {
+    margin-top: 0;
+}
+.rqo-info td {
+    padding: 1px 4px 1px 0;
+    vertical-align: top;
+}
+.rqo-k {
+    width: 17%;
+    color: #444;
+}
+.rqo-k-wide {
+    width: 24%;
+    color: #444;
+}
+
+/* --- Tablas de datos: rejilla clásica --- */
+.rqo-grid th {
+    background-color: #f5f5f5;
+    border: 1px solid #000;
+    padding: 4px 5px;
+    font-size: 9px;
+    font-weight: bold;
+    text-align: left;
+}
+.rqo-grid td {
+    border: 1px solid #000;
+    padding: 4px 5px;
+    vertical-align: top;
+}
+.rqo-grid .rqo-num {
+    text-align: right;
+}
+.rqo-grid tr {
+    page-break-inside: avoid;
+}
+.rqo-sub {
+    color: #555;
+    font-size: 8.5px;
+}
+.rqo-note {
+    color: #444;
+    font-size: 9.5px;
+}
+
+/* --- Firmas --- */
+.rqo-signs {
+    margin-top: 40px;
+    page-break-inside: avoid;
+}
+.rqo-signs td {
+    width: 25%;
+    padding: 0 8px;
+    text-align: center;
+    vertical-align: top;
+}
+.rqo-sign-line {
+    border-top: 1px solid #000 !important;
+    padding-top: 3px;
+    font-weight: bold;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.rqo-sign-name {
+    font-size: 9.5px;
+    color: #333;
+    min-height: 13px;
+}
+.rqo-footer {
+    margin-top: 14px;
+    font-size: 8.5px;
+    color: #666;
+    text-align: right;
+}

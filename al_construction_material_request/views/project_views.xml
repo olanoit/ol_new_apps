@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_project_view_form_construction" model="ir.ui.view">
+        <field name="name">project.project.form.construction.request</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_requests" type="object"
+                        class="oe_stat_button" icon="fa-cubes"
+                        invisible="not is_construction_site"
+                        groups="al_construction_material_request.group_construction_requester">
+                    <field name="construction_request_count" widget="statinfo" string="Req. de obra"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='settings']/group" position="before">
+                <group string="Obra" name="construction_site"
+                       groups="al_construction_material_request.group_construction_requester">
+                    <group>
+                        <field name="is_construction_site"/>
+                        <field name="construction_location_id" invisible="not is_construction_site"
+                               readonly="not is_construction_site"
+                               groups="al_construction_material_request.group_construction_logistics"
+                               options="{'no_create': True}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_construction" model="ir.ui.view">
+        <field name="name">project.task.form.construction.request</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_requests" type="object"
+                        class="oe_stat_button" icon="fa-cubes"
+                        invisible="not construction_request_count"
+                        groups="al_construction_material_request.group_construction_requester">
+                    <field name="construction_request_count" widget="statinfo" string="Req. de obra"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_construction_sites" model="ir.actions.act_window">
+        <field name="name">Obras</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_construction_site', '=', True)]</field>
+        <field name="context">{'default_is_construction_site': True}</field>
+    </record>
+
+</odoo>

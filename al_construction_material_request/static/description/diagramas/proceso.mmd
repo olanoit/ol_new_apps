@@ -1,0 +1,17 @@
+flowchart TD
+  A[Residente crea el requerimiento<br/>obra, materiales, fecha] --> B[Solicitar aprobación]
+  B --> C{¿Aprobado?}
+  C -- Rechazado --> D[Rechazado<br/>Volver a borrador]
+  C -- Sí --> E[Logística: Procesar]
+  E --> F{Por línea:<br/>¿hay stock libre?}
+  F -- "Sí, todo" --> G[Transferencia a OBRAS/obra<br/>confirmada y reservada]
+  F -- "Parte" --> G
+  F -- "Parte o nada" --> H[Requerimiento de compra<br/>ya aprobado]
+  H --> I[Compras genera la OC]
+  I --> J{¿Cómo llega?}
+  J -- Vía almacén central --> K[Recepción en el central<br/>y salida ya reservada a la obra]
+  J -- Directo a obra --> L[Recepción en<br/>la ubicación de la obra]
+  G --> M[Material en la obra]
+  K --> M
+  L --> M
+  M --> N[Requerimiento Hecho]

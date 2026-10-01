@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Odoo 19 agrupa los grupos por res.groups.privilege. -->
+        <record id="res_groups_privilege_construction_request" model="res.groups.privilege">
+            <field name="name">Requerimientos de obra</field>
+            <field name="sequence">40</field>
+            <field name="category_id" ref="base.module_category_services"/>
+        </record>
+
+        <record id="group_construction_requester" model="res.groups">
+            <field name="name">Solicitante</field>
+            <field name="sequence">10</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
+            <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+            <field name="comment">Residente, maestro de obra o almacenero de obra: pide materiales para las obras que sigue o dirige.</field>
+        </record>
+
+        <record id="group_construction_approver" model="res.groups">
+            <field name="name">Aprobador</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_requester'))]"/>
+            <field name="comment">Además, aprueba los requerimientos según las reglas de aprobación.</field>
+        </record>
+
+        <!-- Logística procesa: crea transferencias y requerimientos de compra. -->
+        <record id="group_construction_logistics" model="res.groups">
+            <field name="name">Logística</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_approver')), Command.link(ref('stock.group_stock_user')), Command.link(ref('purchase_request.group_purchase_request_user'))]"/>
+            <field name="comment">Ve todos los requerimientos, los procesa, cambia la ubicación de obra y cancela.</field>
+        </record>
+
+        <record id="group_construction_manager" model="res.groups">
+            <field name="name">Administrador</field>
+            <field name="sequence">40</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_logistics'))]"/>
+            <field name="user_ids" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+            <field name="comment">Además, configura el módulo.</field>
+        </record>
+
+        <!-- Revisor del segundo nivel de aprobación (monto). Fuera del
+             privilegio: se suma a cualquier nivel del usuario. -->
+        <record id="group_construction_operations_manager" model="res.groups">
+            <field name="name">Requerimientos de obra: gerencia de operaciones</field>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_approver'))]"/>
+            <field name="comment">Aprueba los requerimientos que superan el umbral de la regla de aprobación por monto.</field>
+        </record>
+
+    </data>
+</odoo>

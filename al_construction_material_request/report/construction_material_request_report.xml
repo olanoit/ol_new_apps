@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_construction_request" model="report.paperformat">
+        <field name="name">Vale de requerimiento de obra: A4</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_construction_request" model="ir.actions.report">
+        <field name="name">Vale de requerimiento de obra</field>
+        <field name="model">construction.material.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_material_request.report_construction_request</field>
+        <field name="report_file">al_construction_material_request.report_construction_request</field>
+        <field name="print_report_name">'Vale %s' % object.name.replace('/', '-')</field>
+        <field name="paperformat_id" ref="paperformat_construction_request"/>
+        <field name="binding_model_id" ref="model_construction_material_request"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Patrón estándar: plantilla contenedora + plantilla por registro. Todo
+         el estilo vive en static/src/css/report_material_request.css. -->
+    <template id="report_construction_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_construction_material_request.report_construction_request_document"
+                   t-lang="o.requested_by.lang or o.env.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_construction_request_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="processed" t-value="o.state in ('in_progress', 'done', 'cancel')"/>
+        <t t-set="lines" t-value="o.line_ids"/>
+        <t t-set="review_states" t-value="{'approved': 'Aprobado', 'pending': 'Pendiente', 'waiting': 'En espera', 'rejected': 'Rechazado', 'cancel': 'Cancelado'}"/>
+        <t t-set="approver" t-value="o.review_ids.filtered(lambda r: r.status == 'approved').sorted('sequence')[-1:].done_by"/>
+        <!-- La clase «article» es obligatoria: _prepare_html() solo envuelve en
+             web.minimal_layout (charset UTF-8 y CSS) los div .article. -->
+        <div class="article rqo-a4"
+             t-att-data-oe-model="o._name"
+             t-att-data-oe-id="o.id"
+             t-att-data-oe-lang="o.env.context.get('lang')">
+
+            <!-- Encabezado -->
+            <table class="rqo-header">
+                <tr>
+                    <td class="rqo-header-logo">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    </td>
+                    <td>
+                        <div class="rqo-company-name" t-out="company.name"/>
+                        <div class="rqo-company-info">
+                            <div t-if="company.vat">RUC <t t-out="company.vat"/></div>
+                            <div t-if="company.street" t-out="company.street"/>
+                        </div>
+                    </td>
+                    <td class="rqo-doc">
+                        <div class="rqo-doc-inner">
+                            <div class="rqo-doc-type">Vale de requerimiento de obra</div>
+                            <div class="rqo-doc-number" t-out="o.name"/>
+                            <div class="rqo-doc-state">
+                                Estado: <span t-field="o.state"/>
+                            </div>
+                            <div t-if="o.priority == '1'" class="rqo-urgent">Urgente</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Datos del requerimiento -->
+            <div class="rqo-box">
+                <div class="rqo-title">Datos del requerimiento</div>
+                <table class="rqo-info">
+                    <tr>
+                        <td class="rqo-k">Obra</td>
+                        <td><strong t-out="o.project_id.display_name"/></td>
+                        <td class="rqo-k">Solicitado por</td>
+                        <td t-out="o.requested_by.name"/>
+                    </tr>
+                    <tr>
+                        <td class="rqo-k">Ubicación de obra</td>
+                        <td t-out="o.location_dest_id.display_name"/>
+                        <td class="rqo-k">Fecha</td>
+                        <td><span t-field="o.date_request"/></td>
+                    </tr>
+                    <tr>
+                        <td class="rqo-k">Jefe de proyecto</td>
+                        <td t-out="o.project_manager_id.name or '—'"/>
+                        <td class="rqo-k">Fecha requerida</td>
+                        <td><strong t-if="o.date_required" t-field="o.date_required"/><t t-else="">—</t></td>
+                    </tr>
+                    <tr>
+                        <td class="rqo-k">Tarea</td>
+                        <td t-out="o.task_id.name or '—'"/>
+                        <td class="rqo-k">Valor estimado</td>
+                        <td class="rqo-fig"><span t-field="o.amount_estimated"
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Materiales -->
+            <div class="rqo-title">Materiales</div>
+            <table class="rqo-grid">
+                <thead>
+                    <tr>
+                        <th style="width: 4%;">#</th>
+                        <th>Material</th>
+                        <th class="rqo-num" style="width: 10%;">Cantidad</th>
+                        <th style="width: 9%;">Unidad</th>
+                        <t t-if="processed">
+                            <th class="rqo-num" style="width: 10%;">Disponible al procesar</th>
+                            <th class="rqo-num" style="width: 10%;">A despachar</th>
+                            <th class="rqo-num" style="width: 10%;">A comprar</th>
+                            <th class="rqo-num" style="width: 10%;">Recibido en obra</th>
+                        </t>
+                        <t t-else="">
+                            <th class="rqo-num" style="width: 12%;">Disponible en central</th>
+                        </t>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="lines" t-as="line">
+                        <td class="rqo-num" t-out="line_index + 1"/>
+                        <td>
+                            <div t-out="line.product_id.display_name"/>
+                            <div class="rqo-sub" t-if="line._get_report_analytic_label() or line.task_id">
+                                <t t-out="line._get_report_analytic_label()"/>
+                                <t t-if="line.task_id"> · Tarea: <t t-out="line.task_id.name"/></t>
+                            </div>
+                            <div class="rqo-sub" t-if="processed and line.qty_to_purchase">
+                                Compra: <t t-out="dict(line._fields['supply_mode']._description_selection(line.env))[line.supply_mode].lower()"/>
+                            </div>
+                        </td>
+                        <td class="rqo-num rqo-fig"><span t-field="line.product_qty"/></td>
+                        <td t-out="line.product_uom_id.name"/>
+                        <t t-if="processed">
+                            <td class="rqo-num rqo-fig"><span t-field="line.qty_available_at_approval"/></td>
+                            <td class="rqo-num rqo-fig"><span t-field="line.qty_to_dispatch"/></td>
+                            <td class="rqo-num rqo-fig"><span t-field="line.qty_to_purchase"/></td>
+                            <td class="rqo-num rqo-fig"><span t-field="line.qty_received_on_site"/></td>
+                        </t>
+                        <t t-else="">
+                            <td class="rqo-num rqo-fig"><span t-field="line.qty_available_now"/></td>
+                        </t>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Aprobaciones -->
+            <div class="rqo-title">Aprobaciones</div>
+            <table class="rqo-grid" t-if="o.review_ids">
+                <thead>
+                    <tr>
+                        <th style="width: 34%;">Nivel</th>
+                        <th style="width: 24%;">Revisor</th>
+                        <th style="width: 12%;">Estado</th>
+                        <th style="width: 14%;">Fecha</th>
+                        <th>Comentario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.review_ids.sorted('sequence')" t-as="review">
+                        <td t-out="review.name"/>
+                        <td t-out="review.done_by.name or review.todo_by"/>
+                        <td t-out="review_states.get(review.status, review.status)"/>
+                        <td><span t-if="review.reviewed_date" t-field="review.reviewed_date"
+                                  t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"/></td>
+                        <td t-out="review.comment or ''"/>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="rqo-note">
+                <t t-if="o.state in ('approved', 'in_progress', 'done')">Aprobado sin reglas de aprobación aplicables.</t>
+                <t t-else="">Sin aprobaciones registradas.</t>
+            </div>
+
+            <!-- Documentos relacionados -->
+            <t t-set="related" t-value="o._get_report_related_documents()"/>
+            <div class="rqo-box" t-if="related">
+                <div class="rqo-title">Documentos relacionados</div>
+                <table class="rqo-info">
+                    <tr t-foreach="related" t-as="doc">
+                        <td class="rqo-k-wide" t-out="doc[0]"/>
+                        <td t-out="doc[1]"/>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="rqo-box" t-if="not is_html_empty(o.note)">
+                <div class="rqo-title">Notas</div>
+                <div class="rqo-note" t-field="o.note"/>
+            </div>
+
+            <!-- Firmas -->
+            <table class="rqo-signs">
+                <tr>
+                    <td><div class="rqo-sign-name" t-out="o.requested_by.name"/></td>
+                    <td><div class="rqo-sign-name" t-out="approver.name or ''"/></td>
+                    <td><div class="rqo-sign-name"/></td>
+                    <td><div class="rqo-sign-name"/></td>
+                </tr>
+                <tr>
+                    <td><div class="rqo-sign-line">Solicitado por</div></td>
+                    <td><div class="rqo-sign-line">Aprobado por</div></td>
+                    <td><div class="rqo-sign-line">Despachado por (almacén)</div></td>
+                    <td><div class="rqo-sign-line">Recibido en obra</div></td>
+                </tr>
+            </table>
+
+            <div class="rqo-footer">
+                Impreso el <t t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+            </div>
+        </div>
+    </template>
+
+</odoo>

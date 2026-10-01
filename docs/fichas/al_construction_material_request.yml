@@ -1,0 +1,441 @@
+titulo: Requerimientos de materiales de obra
+subtitulo: >-
+  El personal de obra pide materiales desde el ERP, el pedido se aprueba por
+  niveles y logística lo resuelve en un clic: lo que hay en el almacén central
+  sale a la obra y lo que falta pasa a compras, con trazabilidad completa.
+categoria: Construcción · Inventario y compras
+etiquetas: [Requerimiento de obra, Aprobación por niveles, "Stock o compra", Almacén central, Ubicación por obra, Analítica por partida]
+portada: screenshots/05-procesado.png
+
+destacados_intro: >-
+  Sustituye el correo y el Excel entre la obra, el almacén y compras por un
+  solo documento que sigue el material hasta que llega a la obra.
+destacados:
+  - icono: "📋"
+    titulo: Pedido desde la obra
+    texto: >-
+      El residente elige la obra, los materiales y la fecha requerida, y ve
+      cuánto hay libre en el almacén central antes de enviar.
+  - icono: "✓✓"
+    titulo: Aprobación por niveles
+    texto: >-
+      Reglas configurables: jefe de proyecto de la obra y, por encima de un
+      monto, gerencia de operaciones. En orden, con aviso a cada revisor.
+  - icono: "⇄"
+    titulo: División automática
+    texto: >-
+      Por cada línea, lo disponible sale por transferencia reservada y el
+      faltante va a un requerimiento de compra ya aprobado.
+  - icono: "🏗"
+    titulo: Una ubicación por obra
+    texto: >-
+      Al marcar un proyecto como obra se crea su ubicación bajo OBRAS: el stock
+      de cada obra se ve por separado.
+  - icono: "🚚"
+    titulo: Compra al central o directo a obra
+    texto: >-
+      Lo comprado llega al almacén central y sale ya reservado a la obra, o el
+      proveedor lo entrega directamente en la obra. Se elige por línea.
+  - icono: "🔗"
+    titulo: Trazabilidad completa
+    texto: >-
+      Requerimiento, transferencias, requerimiento de compra, orden de compra y
+      recepción, enlazados con botones y con el resumen en el chatter.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En una constructora el material se pide desde la obra, pero el stock y las
+    compras se gestionan en la oficina. Sin un documento común, el pedido viaja
+    por correo o en una hoja de cálculo, nadie sabe si se aprobó, el almacén
+    despacha sin reservar y compras vuelve a comprar lo que ya había.
+
+
+    Este módulo da al personal de obra una pantalla para pedir (también desde
+    el celular), deja constancia de quién aprobó y automatiza la decisión
+    **stock o compra** por línea. El pedido pasa a **Hecho** cuando todo lo
+    pedido está en la ubicación de la obra.
+  nota: >-
+    **Divide por línea, no por pedido.** Con 60 bolsas disponibles y 100
+    pedidas, salen 60 por transferencia y 40 van a compras. La regla estándar
+    «tomar de stock y, si no hay, activar otra regla» no deja la foto de
+    disponibilidad ni un requerimiento de compra por pedido: por eso la
+    división la hace el módulo.
+
+flujos_intro: >-
+  El recorrido completo del material, de la obra al almacén y de vuelta a la
+  obra.
+flujos:
+  - id: proceso
+    titulo: Del pedido a la obra
+    texto: >-
+      Logística procesa el requerimiento aprobado. Cada línea se reparte entre
+      lo libre en el almacén central, sumando sus sububicaciones por familia,
+      y lo que hay que comprar.
+    mermaid: |
+      flowchart TD
+        A[Residente crea el requerimiento<br/>obra, materiales, fecha] --> B[Solicitar aprobación]
+        B --> C{¿Aprobado?}
+        C -- Rechazado --> D[Rechazado<br/>Volver a borrador]
+        C -- Sí --> E[Logística: Procesar]
+        E --> F{Por línea:<br/>¿hay stock libre?}
+        F -- "Sí, todo" --> G[Transferencia a OBRAS/obra<br/>confirmada y reservada]
+        F -- "Parte" --> G
+        F -- "Parte o nada" --> H[Requerimiento de compra<br/>ya aprobado]
+        H --> I[Compras genera la OC]
+        I --> J{¿Cómo llega?}
+        J -- Vía almacén central --> K[Recepción en el central<br/>y salida ya reservada a la obra]
+        J -- Directo a obra --> L[Recepción en<br/>la ubicación de la obra]
+        G --> M[Material en la obra]
+        K --> M
+        L --> M
+        M --> N[Requerimiento Hecho]
+    pie: "Si al reservar otro documento ya tomó el stock, la diferencia pasa a compra y queda anotado en el chatter."
+  - id: aprobacion
+    titulo: Aprobación por niveles
+    texto: >-
+      Las reglas de aprobación deciden quién revisa. Con la regla por monto,
+      un pedido grande pasa por dos revisores, en orden.
+    mermaid: |
+      flowchart TD
+        A[Solicitar aprobación] --> B{¿Alguna regla aplica?}
+        B -- No --> C[Aprobado]
+        B -- Sí --> D[Nivel 1: jefe de proyecto de la obra]
+        D --> E{¿Valor estimado sobre el umbral?}
+        E -- No --> C
+        E -- Sí --> F[Nivel 2: gerencia de operaciones]
+        F --> C
+        D -- Rechaza --> G[Rechazado]
+        F -- Rechaza --> G
+        G --> H[Volver a borrador:<br/>se borran las revisiones]
+
+pasos_intro: >-
+  Todas las funciones del módulo con los datos de demostración «DEMO RQO»: dos
+  obras, cinco materiales y un requerimiento en cada estado.
+pasos:
+  - seccion: Configuración
+    texto: Una sola vez. Al instalar, el módulo deja todo listo con el primer almacén de la compañía.
+  - titulo: Almacén central, obras y tipos de operación
+    ruta: Requerimientos de obra ▸ Configuración ▸ Ajustes
+    texto: >-
+      La app tiene su propia sección en Ajustes. **Origen** es la ubicación de existencias del almacén central; la
+      disponibilidad incluye sus sububicaciones por familia (cementos,
+      fierros…). **Padre de obras** es la ubicación OBRAS, bajo la que se
+      crea una por obra. **Despacho a obra** es el tipo de transferencia
+      interna, con numeración propia, y **Recepción de compras**, el tipo de
+      recepción de los requerimientos de compra.
+    puntos:
+      - "**Completar configuración** rellena lo que falte sin cambiar lo ya elegido."
+      - "**Reglas de aprobación** abre las reglas de este documento."
+    imagen: screenshots/13-ajustes.png
+  - titulo: Marcar el proyecto como obra
+    ruta: Proyecto ▸ Proyectos ▸ (proyecto) ▸ Ajustes ▸ Obra
+    texto: >-
+      Al marcar **Es obra** se crea su ubicación `ACL/OBRAS/<proyecto>`, que
+      Logística puede cambiar. El botón **Req. de obra** del proyecto lista
+      sus requerimientos.
+    imagen: screenshots/12-proyecto-obra.png
+  - titulo: Reglas de aprobación
+    ruta: Requerimientos de obra ▸ Configuración ▸ Reglas de aprobación
+    texto: >-
+      Cada regla indica quién revisa y a qué requerimientos se aplica. El
+      nivel 1 usa el campo **Jefe de proyecto** del requerimiento; el nivel 2,
+      el grupo **Gerencia de operaciones**, con el dominio «valor estimado
+      mayor que 10 000». **Aprobar por secuencia** obliga a respetar el orden.
+    puntos:
+      - "Sin ninguna regla que aplique, el requerimiento se aprueba al solicitarlo."
+      - Los revisores necesitan al menos el grupo **Aprobador**.
+    imagen: screenshots/14-regla-aprobacion.png
+
+  - seccion: Pedir materiales
+    texto: Lo hace el personal de obra, en el escritorio o en el celular.
+  - titulo: Crear el requerimiento
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Nuevo
+    texto: >-
+      Elija la **Obra**: la **Ubicación de obra** y la analítica se completan
+      solas. Agregue los materiales con su cantidad. La columna **Disponible
+      en central** muestra lo que hay libre hoy, en la unidad de la línea. La
+      estrella marca el pedido como urgente.
+    puntos:
+      - "Cada línea admite **Tarea** y **Distribución analítica** propias (proyecto, disciplina y partida)."
+      - "En **Si hay que comprar** se elige, por línea, si la compra llega vía almacén central o directo a obra."
+      - "El **Valor estimado** es la cantidad por el costo del material y lo usan las reglas de aprobación."
+    imagen: screenshots/03-borrador.png
+    pie: "Requerimiento DEMO: 2.000 ladrillos (sin stock) y 10 kg de clavos (50 kg libres). Valor estimado S/ 2.268,00."
+  - titulo: Desde el celular
+    ruta: Requerimientos de obra ▸ Requerimientos
+    texto: >-
+      El mismo formulario en la vista móvil de Odoo. El residente pide sin
+      pasar por la oficina.
+    imagen: screenshots/15-movil-borrador.png
+  - titulo: Materiales en el celular
+    ruta: Requerimiento ▸ Materiales
+    texto: >-
+      En el celular cada material es una tarjeta con la cantidad pedida y lo
+      que hay en el almacén central, y un toque abre el formulario de la línea.
+    imagen: screenshots/16-movil-materiales.png
+  - titulo: Lista y tablero
+    ruta: Requerimientos de obra ▸ Requerimientos
+    texto: >-
+      Lista con prioridad, obra, solicitante, fecha requerida y estado, y
+      tablero por estado. Filtros **Mis requerimientos**, **Necesita mi
+      revisión**, **Urgentes** y por estado. Agrupación por obra, estado o
+      solicitante.
+    imagen: screenshots/01-lista.png
+  - titulo: Tablero por estado
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Kanban
+    texto: >-
+      Tarjetas con prioridad, obra, valor estimado, número, fecha requerida,
+      actividades, estado y solicitante.
+    imagen: screenshots/02-kanban.png
+  - titulo: Calendario de fechas requeridas
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Calendario
+    texto: >-
+      Cada requerimiento en su fecha requerida, con color por obra: logística
+      ve qué tiene que llegar cada día.
+    imagen: screenshots/19-calendario.png
+
+  - seccion: Aprobar
+    texto: Lo hacen el jefe de proyecto y, si corresponde, la gerencia.
+  - titulo: Requerimiento en aprobación
+    ruta: Requerimiento ▸ Solicitar aprobación
+    texto: >-
+      El aviso superior indica quién debe revisar ahora. El revisor ve los
+      botones **Validar** y **Rechazar** y puede dejar un comentario. En el
+      bloque **Revisiones** queda cada nivel con su estado, quién lo hizo y
+      cuándo.
+    puntos:
+      - Durante la revisión solo se cambian la ubicación de obra y la fecha requerida (Logística) y la prioridad.
+      - "**Volver a borrador** retira el pedido y borra las revisiones."
+    imagen: screenshots/04-en-aprobacion.png
+    pie: "400 bolsas de cemento: S/ 11.800,00. El jefe de proyecto ya aprobó; falta la gerencia de operaciones."
+
+  - seccion: Procesar
+    texto: Lo hace Logística con el requerimiento aprobado.
+  - titulo: Procesar el requerimiento
+    ruta: Requerimiento ▸ Procesar
+    texto: >-
+      El módulo calcula por línea la cantidad libre en el almacén central y
+      la guarda (**Disponible al procesar**). Lo disponible sale en una
+      transferencia **Despacho a obra**, reservada, y el faltante va a un
+      **requerimiento de compra** ya aprobado. Los botones superiores llevan a
+      las transferencias, al requerimiento de compra y a las órdenes de
+      compra.
+    imagen: screenshots/05-procesado.png
+    pie: "100 bolsas de cemento con 60 libres, 50 fierros con 200 libres y 8 m³ de arena con 5 libres."
+  - titulo: Resumen de la división en el chatter
+    ruta: Requerimiento ▸ Chatter
+    texto: >-
+      Por material: lo pedido, lo disponible, lo que sale del almacén y lo que
+      va a compra (y cómo llega), con enlaces a la transferencia, a la
+      transferencia en espera de la compra y al requerimiento de compra.
+    imagen: screenshots/06-chatter-division.png
+  - titulo: Transferencia al almacén de obra
+    ruta: Requerimiento ▸ Transferencias
+    texto: >-
+      Transferencia interna del almacén central a `OBRAS/<obra>`, con el
+      requerimiento como documento origen, el proyecto y el motivo de
+      traslado «Traslado entre establecimientos de la misma empresa» para la
+      guía de remisión electrónica. El almacén la valida al despachar.
+    imagen: screenshots/07-despacho.png
+  - titulo: Transferencia en espera de la compra
+    ruta: Requerimiento ▸ Transferencias
+    texto: >-
+      Para las líneas que llegan vía almacén central, se crea además una
+      transferencia central → obra **en espera de otra operación**, enlazada a
+      la compra. Cuando se recibe la orden de compra queda reservada con
+      exactamente lo recibido, sin competir con otros pedidos.
+    imagen: screenshots/08-pendiente-compra.png
+    pie: Las 40 bolsas que faltan esperan la recepción de la compra.
+
+  - titulo: Imprimir el vale de requerimiento
+    ruta: Requerimiento ▸ Imprimir vale
+    texto: >-
+      PDF en A4 para llevar a la obra o al almacén: obra, solicitante, fechas
+      y valor estimado; los materiales con su analítica y, una vez procesado,
+      lo disponible, lo que sale del almacén, lo que va a compra y lo recibido;
+      las aprobaciones con revisor y fecha; los documentos relacionados y las
+      firmas de quien solicita, aprueba, despacha y recibe en obra.
+    puntos:
+      - Antes de procesar muestra la columna **Disponible en central**.
+      - "El residente puede imprimir su vale aunque no tenga acceso a inventario ni a compras."
+    imagen: screenshots/20-vale.png
+    pie: Vale del requerimiento DEMO de las 100 bolsas, ya procesado.
+
+  - seccion: Comprar y recibir
+    texto: Compras trabaja desde el requerimiento de compra.
+  - titulo: Requerimiento de compra generado
+    ruta: Requerimiento ▸ Req. de compra
+    texto: >-
+      Nace **aprobado**, con el número del requerimiento de obra como origen,
+      la fecha requerida y la analítica de cada línea. Compras lo convierte en
+      orden de compra con su asistente habitual.
+    imagen: screenshots/09-requerimiento-compra.png
+  - titulo: Aviso de la orden de compra
+    ruta: Requerimiento de compra ▸ Chatter
+    texto: >-
+      Al confirmar la orden de compra, el requerimiento de compra recibe el
+      detalle por material: cantidad pedida y fecha de llegada prevista.
+    imagen: screenshots/17-chatter-compra.png
+  - titulo: Orden de compra
+    ruta: Requerimiento ▸ Órdenes de compra
+    texto: >-
+      Las líneas directo a obra llevan la obra como destino final y no se
+      mezclan en la misma línea con compras para el almacén central. Al
+      recibir, la mercadería entra en la ubicación de la obra.
+    imagen: screenshots/10-orden-compra.png
+  - titulo: Requerimiento Hecho
+    ruta: Requerimientos de obra ▸ Requerimientos
+    texto: >-
+      Cuando todo lo pedido está en la ubicación de la obra, el requerimiento
+      pasa solo a **Hecho**. La columna **Recibido en obra** suma lo
+      despachado y lo recibido directo del proveedor.
+    imagen: screenshots/11-hecho.png
+
+  - seccion: Cancelar
+    texto: Solo Logística.
+  - titulo: Cancelar un requerimiento en proceso
+    ruta: Requerimiento ▸ Cancelar
+    texto: >-
+      Anula las transferencias pendientes y las líneas de compra que aún no
+      están en una orden de compra. Lo ya despachado queda en la obra. Si hay
+      compras ya pedidas al proveedor, no se tocan y el chatter lo avisa.
+
+campos_intro: >-
+  Cada campo del requerimiento y de los modelos que el módulo amplía.
+campos:
+  - grupo: Requerimiento de obra
+    ruta: Requerimientos de obra ▸ Requerimientos
+    campos:
+      - [Número, "Secuencia RQO/año/#####.", Automático, "Documento origen de transferencias y compras"]
+      - [Obra, Proyecto marcado como obra., Vacío, Define la ubicación de obra y la analítica]
+      - [Tarea, Tarea del proyecto., Vacío, Se copia a las líneas nuevas]
+      - [Ubicación de obra, Destino de los despachos., Ubicación de la obra, "Editable solo por Logística"]
+      - [Solicitado por, Quien pide., Usuario actual, Regla de acceso del solicitante]
+      - [Fecha requerida, Para cuándo se necesita., Vacío, "Fecha programada de la transferencia y fecha de la compra"]
+      - [Valor estimado, Cantidad por costo de cada material., Calculado, Lo usan las reglas de aprobación]
+      - [Origen, Almacén desde el que se despacha., De Ajustes, Visible con varias ubicaciones]
+      - [Distribución analítica, Analítica por defecto de las líneas., Analítica del proyecto, "Se copia a las líneas"]
+  - grupo: Línea de material
+    ruta: Requerimiento ▸ Materiales
+    campos:
+      - [Material, Producto de tipo bienes., Vacío, "—"]
+      - ["Cantidad y unidad", "Unidad del producto o una compatible.", Unidad del producto, La división se hace en esta unidad]
+      - [Disponible en central, Stock libre hoy en el origen y sus sububicaciones., Calculado, Informativo para el solicitante]
+      - [Si hay que comprar, Vía almacén central o directo a obra., Vía almacén central, Destino de la recepción de la compra]
+      - [Disponible al procesar, Foto del stock libre al procesar., Al procesar, Auditoría]
+      - ["A despachar / A comprar", Resultado de la división., Al procesar, "Transferencia y requerimiento de compra"]
+      - ["Despachado / Comprado / Recibido en obra", Avance real., Calculado, "Al completarse todo, pasa a Hecho"]
+      - [Situación, "Pendiente, Despachado, En compra, Parcial, Completo o Cancelado.", Calculado, "—"]
+  - grupo: Proyecto
+    ruta: Proyecto ▸ Ajustes ▸ Obra
+    campos:
+      - [Es obra, Habilita los requerimientos., Desmarcado, Crea la ubicación de obra]
+      - [Ubicación de obra, "Sububicación bajo OBRAS.", Creada al marcar, "Destino por defecto de los requerimientos"]
+  - grupo: Ajustes
+    ruta: Requerimientos de obra ▸ Configuración ▸ Ajustes
+    campos:
+      - [Origen, Existencias del almacén central., Existencias del primer almacén, "Stock que se ofrece"]
+      - [Padre de obras, Ubicación OBRAS., Creada al instalar, Donde se crean las obras]
+      - [Despacho a obra, Tipo de transferencia interna., Creado al instalar, Numeración de los despachos]
+      - [Recepción de compras, Tipo de recepción., Recepciones del almacén, Recepción de los requerimientos de compra]
+
+funcionalidades:
+  - grupo: Pedido y aprobación
+    items:
+      - Requerimiento por obra con líneas, tarea, analítica por línea, prioridad y fecha requerida.
+      - Disponibilidad del almacén central visible al pedir.
+      - Aprobación por niveles configurable, en orden y con comentarios.
+      - Aprobación directa cuando ninguna regla aplica.
+      - Rechazo y vuelta a borrador con las revisiones reiniciadas.
+  - grupo: Procesamiento
+    items:
+      - División stock o compra por línea, con varias líneas del mismo material repartiéndose el stock.
+      - Disponibilidad sumando las sububicaciones por familia y en la unidad de la línea.
+      - Transferencia interna reservada con proyecto, analítica y motivo de traslado para la guía de remisión.
+      - Si al reservar el stock ya no está, la diferencia pasa a compra y queda anotada.
+      - Requerimiento de compra por requerimiento de obra, ya aprobado.
+      - "Vale de requerimiento de obra en PDF: materiales, división, aprobaciones y firmas."
+  - grupo: Compra y cierre
+    items:
+      - Compra vía almacén central con salida a la obra encadenada y reservada.
+      - Compra con entrega directa en la obra.
+      - Cierre automático cuando todo está en la obra.
+      - Cancelación que conserva lo despachado y lo ya pedido al proveedor.
+  - grupo: Seguridad
+    items:
+      - "Grupos Solicitante, Aprobador, Logística y Administrador, y el grupo aparte Gerencia de operaciones."
+      - El solicitante ve sus requerimientos y los de las obras que sigue o dirige.
+      - Cada revisor ve lo que tiene por revisar. Logística ve todo.
+      - Multicompañía en todos los documentos.
+
+ejemplos_intro: Los requerimientos de los datos de demostración, con sus cifras.
+ejemplos:
+  - titulo: 100 bolsas pedidas, 60 en el almacén
+    texto: >-
+      Requerimiento para el Colegio A. El cemento está en la sububicación
+      Cementos del almacén central.
+    tabla:
+      - [Material, Pedido, Libre al procesar, Transferencia, Compra, Llega]
+      - [Cemento bolsa 42.5 kg, "100", "60", "60", "40", Vía almacén central]
+      - [Fierro 1/2", "50", "200", "50", "0", "—"]
+      - [Arena gruesa, "8 m³", "5 m³", "5 m³", "3 m³", Directo a obra]
+    nota: "Valor estimado: 100 × 29,50 + 50 × 46,00 + 8 × 65,00 = S/ 5.770,00."
+  - titulo: Cuántos niveles de aprobación
+    tabla:
+      - [Requerimiento, Valor estimado, Niveles]
+      - [2.000 ladrillos y 10 kg de clavos, "S/ 2.268,00", Jefe de proyecto]
+      - [400 bolsas de cemento, "S/ 11.800,00", Jefe de proyecto y gerencia de operaciones]
+    nota: "El umbral de S/ 10 000 es el de los datos de demostración; se ajusta en la regla."
+
+configuracion_intro: >-
+  El módulo incluye un script de demostración
+  (`tools/construction_demo_data.py`) que crea obras, materiales, stock,
+  reglas de aprobación y un requerimiento en cada estado.
+configuracion:
+  - Instale el módulo desde Aplicaciones.
+  - "Revise **Requerimientos de obra ▸ Configuración ▸ Ajustes**: origen, OBRAS y tipos de operación."
+  - "Marque **Es obra** en cada proyecto de obra y asigne su **jefe de proyecto**."
+  - "Cree las reglas en **Requerimientos de obra ▸ Configuración ▸ Reglas de aprobación**."
+  - "Asigne los grupos: **Solicitante** al personal de obra, **Aprobador** a los jefes de proyecto, **Logística** al almacén y **Gerencia de operaciones** a quien apruebe por monto."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. En un traslado del almacén central a la
+  obra (interno a interno) Odoo no genera asiento ni líneas analíticas; la
+  analítica queda guardada en el movimiento para cuando se registre el
+  consumo en obra.
+
+faq:
+  - pregunta: "¿Por qué no se pidió aprobación?"
+    respuesta: >-
+      Ninguna regla aplicó: no hay reglas para el modelo, la obra no tiene
+      jefe de proyecto o el valor no supera el umbral. Sin reglas, el
+      requerimiento se aprueba al solicitarlo.
+  - pregunta: "¿El requerimiento de compra vuelve a aprobarse?"
+    respuesta: >-
+      No. Nace aprobado porque el requerimiento de obra ya pasó por su
+      aprobación.
+  - pregunta: "¿Qué pasa si otro pedido se lleva el stock antes de procesar?"
+    respuesta: >-
+      La disponibilidad descuenta lo ya reservado. Y si al reservar se consigue
+      menos de lo calculado, la diferencia pasa a compra y el chatter lo
+      indica.
+  - pregunta: "¿Puedo pedir en una unidad distinta a la del material?"
+    respuesta: >-
+      Sí, en cualquier unidad compatible (por ejemplo, docenas). La
+      disponibilidad, la transferencia y la compra se expresan en esa unidad.
+  - pregunta: "¿Quién ve cada requerimiento?"
+    respuesta: >-
+      El solicitante ve los suyos y los de las obras que sigue o dirige. Cada
+      revisor, además, los que tiene por revisar. Logística ve todos.
+
+novedades:
+  - fecha: 30/09/2026
+    cambios:
+      - "Primera versión: requerimiento de obra, aprobación por niveles, división stock o compra por línea, compra vía almacén central o directo a obra, y cierre y cancelación automáticos."
+      - "Ajustes propios de la app y menú de reglas de aprobación."
+      - "Materiales como tarjetas en el celular; calendario por fecha requerida y vista de actividades."
+      - "Mensajes del chatter legibles, también los del requerimiento de compra al confirmar la orden de compra."
+      - "Vale de requerimiento de obra en PDF (botón «Imprimir vale»)."
+      - "Interfaz completamente en español, incluidos los campos de actividades, seguidores y aprobación."
+
+relacionados: [al_hr_pe_construction, al_l10n_pe_delivery_guide_report, al_project_gantt_backend]

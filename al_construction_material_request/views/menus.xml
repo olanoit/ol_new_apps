@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_construction_root" name="Requerimientos de obra"
+              web_icon="al_construction_material_request,static/description/icon.png"
+              groups="group_construction_requester" sequence="46"/>
+
+    <menuitem id="menu_construction_requests" name="Requerimientos"
+              parent="menu_construction_root" action="action_construction_material_request"
+              sequence="10"/>
+
+    <menuitem id="menu_construction_request_lines" name="Materiales pedidos"
+              parent="menu_construction_root" action="action_construction_material_request_line"
+              groups="group_construction_logistics" sequence="20"/>
+
+    <!-- Configuración propia de la app, como Proyecto: Ajustes primero. -->
+    <menuitem id="menu_construction_config" name="Configuración"
+              parent="menu_construction_root" groups="group_construction_manager" sequence="100">
+        <menuitem id="menu_construction_settings" name="Ajustes"
+                  action="action_construction_settings" groups="base.group_system" sequence="0"/>
+        <menuitem id="menu_construction_sites" name="Obras"
+                  action="action_construction_sites" sequence="10"/>
+        <menuitem id="menu_construction_tier_definitions" name="Reglas de aprobación"
+                  action="action_construction_tier_definition" sequence="20"/>
+    </menuitem>
+
+</odoo>

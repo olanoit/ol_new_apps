@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Mensajes del chatter con el patrón nativo (p. ej.
+         purchase.track_po_line_template): título en negrita y lista. Los
+         enlaces a registros usan data-oe-model / data-oe-id, como
+         mail.message_origin_link, para abrirse dentro del cliente web. -->
+
+    <template id="message_process_result">
+        <div>
+            <strong>Requerimiento procesado</strong>
+            <ul class="mb-2">
+                <li t-foreach="rows" t-as="row">
+                    <strong t-out="row['product']"/>:
+                    <t t-out="row['ordered']"/> pedidos,
+                    <t t-out="row['available']"/> disponibles en el almacén central.
+                    <br/>
+                    <span t-if="row['dispatch']">Sale del almacén: <strong t-out="row['dispatch_txt']"/></span>
+                    <t t-if="row['dispatch'] and row['purchase']"> · </t>
+                    <span t-if="row['purchase']">A compra: <strong t-out="row['purchase_txt']"/>
+                        (<t t-out="row['mode']"/>)</span>
+                </li>
+            </ul>
+            <div t-if="picking">
+                Transferencia a la obra:
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="picking.id" t-out="picking.name"/>
+            </div>
+            <div t-if="pending_picking">
+                En espera de la compra:
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="pending_picking.id" t-out="pending_picking.name"/>
+            </div>
+            <div t-if="purchase_request">
+                Requerimiento de compra:
+                <a href="#" data-oe-model="purchase.request" t-att-data-oe-id="purchase_request.id" t-out="purchase_request.name"/>
+            </div>
+            <div t-if="shortages" class="mt-2 text-warning">
+                <i class="fa fa-exclamation-triangle"/>
+                Otro documento reservó stock antes que este requerimiento; pasó a compra:
+                <t t-out="shortages"/>.
+            </div>
+        </div>
+    </template>
+
+    <!-- Sustituye el mensaje OCA de purchase_request al confirmar la OC: en
+         Odoo 19 sumaba HTML en texto plano a una traducción Markup y el
+         chatter mostraba las etiquetas escapadas. -->
+    <template id="message_purchase_request_po_confirmed">
+        <div>
+            <strong>
+                Orden de compra
+                <a href="#" data-oe-model="purchase.order" t-att-data-oe-id="order.id" t-out="order.name"/>
+            </strong>
+            <ul class="mb-0">
+                <li t-foreach="lines" t-as="line">
+                    <strong t-out="line['name']"/>:
+                    <t t-out="line['qty']"/> pedidos<t t-if="line['date']">, llegada prevista el <t t-out="line['date']"/></t>.
+                </li>
+            </ul>
+        </div>
+    </template>
+
+    <template id="message_purchase_request_received">
+        <div>
+            <strong>Recepción asignada a este requerimiento de compra</strong>
+            <ul class="mb-0">
+                <li><strong t-out="product"/>: <t t-out="qty"/> recibidos.</li>
+            </ul>
+        </div>
+    </template>
+
+</odoo>

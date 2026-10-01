@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Multicompañía (reglas globales). -->
+        <record id="rule_construction_request_company" model="ir.rule">
+            <field name="name">Requerimiento de obra: multicompañía</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_request_line_company" model="ir.rule">
+            <field name="name">Línea de requerimiento de obra: multicompañía</field>
+            <field name="model_id" ref="model_construction_material_request_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Solicitante y aprobador: lo suyo y lo de las obras que siguen o
+             dirigen (en 19.0 project.project no tiene «miembros»). -->
+        <record id="rule_construction_request_own_sites" model="ir.rule">
+            <field name="name">Requerimiento de obra: propios y de mis obras</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="domain_force">['|', '|',
+                ('requested_by', '=', user.id),
+                ('project_id.user_id', '=', user.id),
+                ('project_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_requester'))]"/>
+        </record>
+        <record id="rule_construction_request_line_own_sites" model="ir.rule">
+            <field name="name">Línea de requerimiento de obra: propios y de mis obras</field>
+            <field name="model_id" ref="model_construction_material_request_line"/>
+            <field name="domain_force">['|', '|',
+                ('request_id.requested_by', '=', user.id),
+                ('request_id.project_id.user_id', '=', user.id),
+                ('request_id.project_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_requester'))]"/>
+        </record>
+
+        <!-- Aprobador: además, los que tiene que revisar (tier validation). -->
+        <record id="rule_construction_request_reviewer" model="ir.rule">
+            <field name="name">Requerimiento de obra: por revisar</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="domain_force">[('review_ids.reviewer_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_approver'))]"/>
+        </record>
+        <record id="rule_construction_request_line_reviewer" model="ir.rule">
+            <field name="name">Línea de requerimiento de obra: por revisar</field>
+            <field name="model_id" ref="model_construction_material_request_line"/>
+            <field name="domain_force">[('request_id.review_ids.reviewer_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_approver'))]"/>
+        </record>
+
+        <!-- Logística: todos (dentro de sus compañías). -->
+        <record id="rule_construction_request_all" model="ir.rule">
+            <field name="name">Requerimiento de obra: todos</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_logistics'))]"/>
+        </record>
+        <record id="rule_construction_request_line_all" model="ir.rule">
+            <field name="name">Línea de requerimiento de obra: todas</field>
+            <field name="model_id" ref="model_construction_material_request_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_logistics'))]"/>
+        </record>
+
+    </data>
+</odoo>

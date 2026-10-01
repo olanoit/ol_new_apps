@@ -1,0 +1,11 @@
+flowchart TD
+  A[Solicitar aprobación] --> B{¿Alguna regla aplica?}
+  B -- No --> C[Aprobado]
+  B -- Sí --> D[Nivel 1: jefe de proyecto de la obra]
+  D --> E{¿Valor estimado sobre el umbral?}
+  E -- No --> C
+  E -- Sí --> F[Nivel 2: gerencia de operaciones]
+  F --> C
+  D -- Rechaza --> G[Rechazado]
+  F -- Rechaza --> G
+  G --> H[Volver a borrador:<br/>se borran las revisiones]

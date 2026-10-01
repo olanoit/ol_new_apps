@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DATOS DEMO FICTICIOS: obras, materiales, costos, existencias y umbral de
+     aprobación son inventados. Todo lleva el prefijo [DEMO]. -->
+<odoo>
+
+    <!-- Analítica: planes «disciplina» y «partida» (el plan «proyecto» es el
+         de Odoo). -->
+    <record id="demo_plan_discipline" model="account.analytic.plan">
+        <field name="name">[DEMO] Disciplina</field>
+    </record>
+    <record id="demo_plan_item" model="account.analytic.plan">
+        <field name="name">[DEMO] Partida</field>
+    </record>
+    <record id="demo_discipline_structures" model="account.analytic.account">
+        <field name="name">[DEMO] Estructuras</field>
+        <field name="plan_id" ref="demo_plan_discipline"/>
+    </record>
+    <record id="demo_discipline_architecture" model="account.analytic.account">
+        <field name="name">[DEMO] Arquitectura</field>
+        <field name="plan_id" ref="demo_plan_discipline"/>
+    </record>
+    <record id="demo_item_concrete" model="account.analytic.account">
+        <field name="name">[DEMO] 02.01 Concreto simple</field>
+        <field name="plan_id" ref="demo_plan_item"/>
+    </record>
+    <record id="demo_item_masonry" model="account.analytic.account">
+        <field name="name">[DEMO] 03.01 Muros de albañilería</field>
+        <field name="plan_id" ref="demo_plan_item"/>
+    </record>
+
+    <!-- Materiales -->
+    <record id="demo_product_cement" model="product.product">
+        <field name="name">[DEMO] Cemento Portland tipo I, bolsa 42.5 kg</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="standard_price">29.50</field>
+    </record>
+    <record id="demo_product_rebar" model="product.product">
+        <field name="name">[DEMO] Fierro corrugado 1/2" x 9 m</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="standard_price">46.00</field>
+    </record>
+    <record id="demo_product_sand" model="product.product">
+        <field name="name">[DEMO] Arena gruesa</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="uom_id" ref="uom.product_uom_cubic_meter"/>
+        <field name="standard_price">65.00</field>
+    </record>
+    <record id="demo_product_brick" model="product.product">
+        <field name="name">[DEMO] Ladrillo King Kong 18 huecos</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="standard_price">1.10</field>
+    </record>
+    <record id="demo_product_nails" model="product.product">
+        <field name="name">[DEMO] Clavo para madera 3"</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="standard_price">6.80</field>
+    </record>
+
+    <!-- Almacén central: sububicaciones por familia -->
+    <record id="demo_location_cement" model="stock.location">
+        <field name="name">[DEMO] Cementos</field>
+        <field name="usage">internal</field>
+        <field name="location_id" model="stock.location"
+               eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+    </record>
+    <record id="demo_location_steel" model="stock.location">
+        <field name="name">[DEMO] Fierros</field>
+        <field name="usage">internal</field>
+        <field name="location_id" model="stock.location"
+               eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+    </record>
+
+    <!-- Existencias parciales: el caso de las 100 bolsas con 60 disponibles -->
+    <record id="demo_quant_cement" model="stock.quant">
+        <field name="product_id" ref="demo_product_cement"/>
+        <field name="location_id" ref="demo_location_cement"/>
+        <field name="inventory_quantity">60</field>
+    </record>
+    <record id="demo_quant_rebar" model="stock.quant">
+        <field name="product_id" ref="demo_product_rebar"/>
+        <field name="location_id" ref="demo_location_steel"/>
+        <field name="inventory_quantity">200</field>
+    </record>
+    <record id="demo_quant_sand" model="stock.quant">
+        <field name="product_id" ref="demo_product_sand"/>
+        <field name="location_id" model="stock.location"
+               eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        <field name="inventory_quantity">5</field>
+    </record>
+    <record id="demo_quant_nails" model="stock.quant">
+        <field name="product_id" ref="demo_product_nails"/>
+        <field name="location_id" model="stock.location"
+               eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        <field name="inventory_quantity">50</field>
+    </record>
+    <function model="stock.quant" name="action_apply_inventory">
+        <function eval="[[('id', 'in', (ref('demo_quant_cement'), ref('demo_quant_rebar'),
+                                        ref('demo_quant_sand'), ref('demo_quant_nails')))]]"
+                  model="stock.quant" name="search"/>
+    </function>
+
+    <!-- Obras (crean su ubicación OBRAS/<obra> al guardarse) -->
+    <record id="demo_site_school" model="project.project">
+        <field name="name">[DEMO] Colegio A</field>
+        <field name="is_construction_site" eval="True"/>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+    <record id="demo_site_clinic" model="project.project">
+        <field name="name">[DEMO] Posta médica B</field>
+        <field name="is_construction_site" eval="True"/>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <!-- Reglas de aprobación. Umbral S/ 10 000 INVENTADO: a confirmar con CREVAL. -->
+    <record id="demo_tier_project_manager" model="tier.definition">
+        <field name="name">[DEMO] Nivel 1: jefe de proyecto de la obra</field>
+        <field name="model_id" ref="model_construction_material_request"/>
+        <field name="review_type">field</field>
+        <field name="reviewer_field_id" ref="field_construction_material_request__project_manager_id"/>
+        <field name="definition_domain">[]</field>
+        <field name="sequence">20</field>
+        <field name="approve_sequence" eval="True"/>
+        <field name="notify_on_create" eval="True"/>
+        <field name="has_comment" eval="True"/>
+    </record>
+    <record id="demo_tier_operations" model="tier.definition">
+        <field name="name">[DEMO] Nivel 2: gerencia de operaciones (más de S/ 10 000)</field>
+        <field name="model_id" ref="model_construction_material_request"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="group_construction_operations_manager"/>
+        <field name="definition_domain">[('amount_estimated', '>', 10000)]</field>
+        <field name="sequence">10</field>
+        <field name="approve_sequence" eval="True"/>
+        <field name="notify_on_create" eval="True"/>
+    </record>
+
+    <!-- Un requerimiento en borrador: 100 bolsas de cemento para el Colegio A -->
+    <record id="demo_request_school" model="construction.material.request">
+        <field name="project_id" ref="demo_site_school"/>
+        <field name="priority">1</field>
+        <field name="note">[DEMO] Vaciado de zapatas del bloque A.</field>
+    </record>
+    <record id="demo_request_school_line_cement" model="construction.material.request.line">
+        <field name="request_id" ref="demo_request_school"/>
+        <field name="product_id" ref="demo_product_cement"/>
+        <field name="product_qty">100</field>
+        <!-- 100 % a disciplina Estructuras + partida 02.01 (clave "id,id"). -->
+        <field name="analytic_distribution"
+               eval="{'%s,%s' % (ref('demo_discipline_structures'), ref('demo_item_concrete')): 100}"/>
+    </record>
+
+</odoo>

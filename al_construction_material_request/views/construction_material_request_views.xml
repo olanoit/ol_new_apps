@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Patrones de las vistas nativas de Compras 19.0 (purchase_views.xml):
+         atajos de teclado, líneas list + kanban móvil, sample, actividades. -->
+
+    <record id="construction_material_request_view_form" model="ir.ui.view">
+        <field name="name">construction.material.request.form</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <form string="Requerimiento de obra">
+                <header>
+                    <button name="action_request_approval" type="object" string="Solicitar aprobación"
+                            class="oe_highlight" invisible="state != 'draft'" data-hotkey="q"/>
+                    <button name="action_process" type="object" string="Procesar" class="oe_highlight"
+                            invisible="state != 'approved'" data-hotkey="v"
+                            groups="al_construction_material_request.group_construction_logistics"
+                            confirm="Se reservará lo disponible en el almacén central y el faltante pasará a compras. ¿Continuar?"/>
+                    <button name="%(al_construction_material_request.action_report_construction_request)d"
+                            type="action" string="Imprimir vale" data-hotkey="k"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state not in ('to_approve', 'rejected', 'cancel')" data-hotkey="o"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state in ('done', 'cancel')" data-hotkey="x"
+                            groups="al_construction_material_request.group_construction_logistics"
+                            confirm="Se cancelarán las transferencias y compras pendientes. Lo despachado se conserva. ¿Continuar?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,approved,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"
+                         groups="al_construction_material_request.group_construction_logistics">
+                        <button name="action_view_pickings" type="object" class="oe_stat_button"
+                                icon="fa-truck" invisible="not picking_count">
+                            <field name="picking_count" widget="statinfo" string="Transferencias"/>
+                        </button>
+                        <button name="action_view_purchase_requests" type="object" class="oe_stat_button"
+                                icon="fa-file-text-o" invisible="not purchase_request_count">
+                            <field name="purchase_request_count" widget="statinfo" string="Req. de compra"/>
+                        </button>
+                        <button name="action_view_purchase_orders" type="object" class="oe_stat_button"
+                                icon="fa-shopping-cart" invisible="not purchase_order_count">
+                            <field name="purchase_order_count" widget="statinfo" string="Órdenes de compra"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <span class="o_form_label">Requerimiento de obra</span>
+                        <h1 class="d-flex">
+                            <field name="priority" widget="priority" class="me-3"/>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <field name="user_is_logistics" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <group name="site">
+                            <field name="project_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}" placeholder="¿Para qué obra?"/>
+                            <field name="task_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}" invisible="not project_id"/>
+                            <field name="location_dest_id"
+                                   readonly="not user_is_logistics or state in ('done', 'cancel')"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group name="dates">
+                            <field name="requested_by" readonly="state != 'draft'"
+                                   widget="many2one_avatar_user"/>
+                            <field name="date_request" readonly="state != 'draft'"/>
+                            <field name="date_required"
+                                   readonly="state != 'draft' and (not user_is_logistics or state in ('done', 'cancel'))"/>
+                            <field name="amount_estimated" widget="monetary"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Materiales" name="lines">
+                            <field name="line_ids" mode="list,kanban" readonly="state != 'draft'"
+                                   context="{'default_task_id': task_id}">
+                                <list editable="bottom" decoration-muted="line_state == 'cancel'">
+                                    <control>
+                                        <create name="add_line_control" string="Agregar material"/>
+                                    </control>
+                                    <field name="company_id" column_invisible="1"/>
+                                    <field name="allowed_uom_ids" column_invisible="1"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="task_id" optional="hide" options="{'no_create': True}"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution"
+                                           optional="show" groups="analytic.group_analytic_accounting"
+                                           options="{'product_field': 'product_id'}"/>
+                                    <field name="supply_mode" optional="hide"/>
+                                    <field name="qty_available_now" optional="show"
+                                           column_invisible="parent.state not in ('draft', 'to_approve', 'approved')"
+                                           decoration-danger="qty_available_now &lt; product_qty"
+                                           decoration-success="qty_available_now &gt;= product_qty"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_id" groups="uom.group_uom" widget="many2one_uom"
+                                           options="{'no_create': True, 'no_open': True, 'quantity_field': 'product_qty'}"/>
+                                    <field name="qty_to_dispatch" optional="show"
+                                           column_invisible="parent.state in ('draft', 'to_approve', 'approved', 'rejected')"/>
+                                    <field name="qty_to_purchase" optional="show"
+                                           column_invisible="parent.state in ('draft', 'to_approve', 'approved', 'rejected')"/>
+                                    <field name="qty_received_on_site" optional="show"
+                                           column_invisible="parent.state in ('draft', 'to_approve', 'approved', 'rejected')"/>
+                                    <field name="line_state" widget="badge" optional="show" width="120px"
+                                           column_invisible="parent.state in ('draft', 'to_approve', 'approved', 'rejected')"
+                                           decoration-success="line_state == 'done'"
+                                           decoration-info="line_state in ('dispatched', 'partial')"
+                                           decoration-warning="line_state == 'purchasing'"
+                                           decoration-muted="line_state == 'cancel'"/>
+                                </list>
+                                <form string="Material">
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="allowed_uom_ids" invisible="1"/>
+                                    <group>
+                                        <group>
+                                            <field name="product_id" options="{'no_create': True}"/>
+                                            <label for="product_qty"/>
+                                            <div class="o_row">
+                                                <field name="product_qty"/>
+                                                <field name="product_uom_id" groups="uom.group_uom" widget="many2one_uom"
+                                                       options="{'no_create': True, 'no_open': True}"/>
+                                            </div>
+                                            <field name="qty_available_now"/>
+                                            <field name="supply_mode" widget="radio"/>
+                                        </group>
+                                        <group>
+                                            <field name="task_id" options="{'no_create': True}"/>
+                                            <field name="analytic_distribution" widget="analytic_distribution"
+                                                   groups="analytic.group_analytic_accounting"/>
+                                            <field name="line_state" invisible="line_state in (False, 'pending')"/>
+                                            <field name="qty_to_dispatch" invisible="not qty_to_dispatch"/>
+                                            <field name="qty_to_purchase" invisible="not qty_to_purchase"/>
+                                            <field name="qty_received_on_site" invisible="line_state in (False, 'pending')"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <!-- Tarjeta para el celular (el residente pide desde la obra). -->
+                                <kanban class="o_kanban_mobile">
+                                    <field name="line_state"/>
+                                    <templates>
+                                        <t t-name="card">
+                                            <div class="d-flex">
+                                                <field name="product_id" class="fw-bold"/>
+                                                <field name="line_state" widget="badge" class="ms-auto"
+                                                       invisible="line_state in (False, 'pending')"/>
+                                            </div>
+                                            <div class="d-flex text-muted">
+                                                <span>
+                                                    Cantidad: <field name="product_qty"/>
+                                                    <field name="product_uom_id" groups="uom.group_uom" class="small"/>
+                                                </span>
+                                                <span class="ms-auto">
+                                                    En central: <field name="qty_available_now"/>
+                                                </span>
+                                            </div>
+                                            <div class="text-muted" t-if="record.qty_received_on_site.raw_value">
+                                                Recibido en obra: <field name="qty_received_on_site"/>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string="Otra información" name="other">
+                            <group>
+                                <group name="stock">
+                                    <field name="location_src_id"
+                                           readonly="not user_is_logistics or state not in ('draft', 'to_approve', 'approved')"
+                                           groups="stock.group_stock_multi_locations"
+                                           options="{'no_create': True}"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution"
+                                           readonly="state != 'draft'"
+                                           groups="analytic.group_analytic_accounting"/>
+                                </group>
+                                <group name="company">
+                                    <field name="company_id" groups="base.group_multi_company"
+                                           readonly="state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="project_manager_id" widget="many2one_avatar_user"/>
+                                </group>
+                            </group>
+                            <field name="note" placeholder="Indicaciones para logística: acceso a la obra, horario de recepción…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_material_request_view_list" model="ir.ui.view">
+        <field name="name">construction.material.request.list</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <list string="Requerimientos de obra" sample="1"
+                  decoration-muted="state == 'cancel'">
+                <field name="priority" widget="priority" optional="show" nolabel="1"/>
+                <field name="name" decoration-bf="1"/>
+                <field name="project_id"/>
+                <field name="requested_by" widget="many2one_avatar_user" optional="show"/>
+                <field name="date_request" optional="hide"/>
+                <field name="date_required" optional="show" widget="remaining_days"
+                       invisible="state in ('done', 'cancel')"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="amount_estimated" sum="Total" widget="monetary" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('to_approve', 'approved')"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_material_request_view_kanban" model="ir.ui.view">
+        <field name="name">construction.material.request.kanban</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1" quick_create="false">
+                <field name="currency_id"/>
+                <progressbar field="activity_state"
+                             colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex align-items-baseline">
+                            <field name="priority" widget="priority" class="mt-1 me-1"/>
+                            <field name="project_id" class="fw-bolder fs-5 me-2"/>
+                            <field name="amount_estimated" widget="monetary" class="fw-bolder ms-auto flex-shrink-0"/>
+                        </div>
+                        <footer class="align-items-end">
+                            <div class="d-flex flex-wrap gap-1 text-nowrap">
+                                <field name="name"/>
+                                <field name="date_required"/>
+                                <field name="activity_ids" widget="kanban_activity"/>
+                            </div>
+                            <div class="d-flex align-items-center ms-auto gap-1">
+                                <field name="state" widget="label_selection"
+                                       options="{'classes': {'draft': 'default', 'to_approve': 'info', 'approved': 'info', 'in_progress': 'warning', 'done': 'success', 'rejected': 'danger', 'cancel': 'default'}}"/>
+                                <field name="requested_by" widget="many2one_avatar_user"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="construction_material_request_view_calendar" model="ir.ui.view">
+        <field name="name">construction.material.request.calendar</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <calendar string="Fechas requeridas" date_start="date_required" color="project_id"
+                      hide_time="true" event_limit="5" mode="month" quick_create="0">
+                <field name="currency_id" invisible="1"/>
+                <field name="project_id" filters="1"/>
+                <field name="requested_by"/>
+                <field name="amount_estimated" widget="monetary"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="construction_material_request_view_activity" model="ir.ui.view">
+        <field name="name">construction.material.request.activity</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <activity string="Requerimientos de obra">
+                <field name="currency_id"/>
+                <templates>
+                    <div t-name="activity-box" class="d-block">
+                        <div class="d-flex justify-content-between">
+                            <field name="name" display="full" class="o_text_block o_text_bold"/>
+                            <div class="m-1"/>
+                            <field name="amount_estimated" widget="monetary"/>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <field name="project_id" muted="1" display="full" class="o_text_block"/>
+                            <div class="m-1"/>
+                            <field name="state" widget="badge"
+                                   decoration-info="state in ('to_approve', 'approved')"
+                                   decoration-warning="state == 'in_progress'"
+                                   decoration-success="state == 'done'"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+    <record id="construction_material_request_view_search" model="ir.ui.view">
+        <field name="name">construction.material.request.search</field>
+        <field name="model">construction.material.request</field>
+        <field name="arch" type="xml">
+            <search string="Requerimientos de obra">
+                <field name="name" string="Requerimiento"
+                       filter_domain="['|', ('name', 'ilike', self), ('project_id', 'ilike', self)]"/>
+                <field name="project_id"/>
+                <field name="requested_by"/>
+                <field name="line_ids" string="Material" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+                <filter name="my_requests" string="Mis requerimientos"
+                        domain="[('requested_by', '=', uid)]"/>
+                <filter name="needs_my_review" string="Necesita mi revisión"
+                        domain="[('can_review', '=', True)]"/>
+                <filter name="urgent" string="Urgentes" domain="[('priority', '=', '1')]"/>
+                <separator/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="to_approve" string="En aprobación" domain="[('state', '=', 'to_approve')]"/>
+                <filter name="to_process" string="Por procesar" domain="[('state', '=', 'approved')]"/>
+                <filter name="in_progress" string="En proceso" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Hechos" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="filter_date_required" string="Fecha requerida" date="date_required"/>
+                <filter name="late" string="Atrasados"
+                        domain="[('date_required', '&lt;', context_today().strftime('%Y-%m-%d')), ('state', 'not in', ('done', 'cancel'))]"/>
+                <separator/>
+                <filter name="my_activities" string="Mis actividades"
+                        domain="[('activity_user_id', '=', uid)]"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_requested_by" string="Solicitante" context="{'group_by': 'requested_by'}"/>
+                    <filter name="group_date_required" string="Fecha requerida"
+                            context="{'group_by': 'date_required:week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_material_request" model="ir.actions.act_window">
+        <field name="name">Requerimientos de obra</field>
+        <field name="res_model">construction.material.request</field>
+        <field name="view_mode">list,kanban,form,calendar,activity</field>
+        <field name="search_view_id" ref="construction_material_request_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Pida materiales para su obra</p>
+            <p>
+                Indique la obra, los materiales y la fecha requerida. Una vez aprobado,
+                logística despacha lo que hay en el almacén central y el resto pasa a compras.
+            </p>
+        </field>
+    </record>
+
+    <!-- Materiales pedidos: seguimiento por material y obra -->
+
+    <record id="construction_material_request_line_view_list" model="ir.ui.view">
+        <field name="name">construction.material.request.line.list</field>
+        <field name="model">construction.material.request.line</field>
+        <field name="arch" type="xml">
+            <list string="Materiales pedidos" create="0" edit="0" sample="1"
+                  decoration-muted="line_state == 'cancel'">
+                <field name="request_id" decoration-bf="1"/>
+                <field name="project_id" optional="show"/>
+                <field name="product_id"/>
+                <field name="product_qty" sum="Total"/>
+                <field name="product_uom_id" groups="uom.group_uom" optional="show"/>
+                <field name="qty_to_dispatch" optional="show" sum="Total"/>
+                <field name="qty_to_purchase" optional="show" sum="Total"/>
+                <field name="qty_dispatched" optional="hide" sum="Total"/>
+                <field name="qty_purchased" optional="hide" sum="Total"/>
+                <field name="qty_received_on_site" sum="Total"/>
+                <field name="date_required" optional="show"/>
+                <field name="line_state" widget="badge"
+                       decoration-success="line_state == 'done'"
+                       decoration-info="line_state in ('dispatched', 'partial')"
+                       decoration-warning="line_state == 'purchasing'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_material_request_line_view_pivot" model="ir.ui.view">
+        <field name="name">construction.material.request.line.pivot</field>
+        <field name="model">construction.material.request.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Materiales pedidos" sample="1">
+                <field name="project_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="line_state" type="col"/>
+                <field name="product_qty" type="measure"/>
+                <field name="qty_received_on_site" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_material_request_line_view_search" model="ir.ui.view">
+        <field name="name">construction.material.request.line.search</field>
+        <field name="model">construction.material.request.line</field>
+        <field name="arch" type="xml">
+            <search string="Materiales pedidos">
+                <field name="product_id"/>
+                <field name="request_id"/>
+                <field name="project_id"/>
+                <filter name="open" string="Pendientes de llegar"
+                        domain="[('line_state', 'not in', ('done', 'cancel')), ('state', '=', 'in_progress')]"/>
+                <filter name="purchasing" string="En compra" domain="[('line_state', '=', 'purchasing')]"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_product" string="Material" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_line_state" string="Situación" context="{'group_by': 'line_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_material_request_line" model="ir.actions.act_window">
+        <field name="name">Materiales pedidos</field>
+        <field name="res_model">construction.material.request.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="construction_material_request_line_view_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+
+    <!-- Reglas de aprobación de este modelo (acceso directo desde Ajustes y
+         Configuración, sin pasar por Ajustes ▸ Técnico). -->
+    <record id="action_construction_tier_definition" model="ir.actions.act_window">
+        <field name="name">Reglas de aprobación</field>
+        <field name="res_model">tier.definition</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('model', '=', 'construction.material.request')]</field>
+        <field name="context" eval="{'default_model_id': ref('al_construction_material_request.model_construction_material_request')}"/>
+    </record>
+
+</odoo>

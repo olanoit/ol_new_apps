@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_construction_request_requester,construction.material.request requester,model_construction_material_request,group_construction_requester,1,1,1,1
+access_construction_request_line_requester,construction.material.request.line requester,model_construction_material_request_line,group_construction_requester,1,1,1,1

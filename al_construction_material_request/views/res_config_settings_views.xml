@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Sección propia en Ajustes, como las apps nativas (p. ej. Proyecto):
+         aparece en la barra lateral con el icono del módulo. -->
+    <record id="res_config_settings_view_form_construction" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.request</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="60"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Requerimientos de obra" string="Requerimientos de obra"
+                     name="al_construction_material_request"
+                     groups="al_construction_material_request.group_construction_manager">
+                    <block title="Almacén central y obras" name="construction_locations">
+                        <setting id="construction_src_location" string="Origen de los despachos"
+                                 help="Existencias del almacén central. La disponibilidad suma sus sububicaciones por familia (cementos, fierros…).">
+                            <field name="construction_src_location_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting id="construction_sites_location" string="Ubicación padre de las obras"
+                                 help="Rama OBRAS: al marcar un proyecto como obra se crea aquí su ubicación.">
+                            <field name="construction_sites_location_id" options="{'no_create': True}"/>
+                        </setting>
+                    </block>
+                    <block title="Operaciones" name="construction_operations">
+                        <setting id="construction_dispatch_type" string="Despacho a obra"
+                                 help="Transferencia interna del almacén central a la obra, con numeración propia.">
+                            <field name="construction_dispatch_type_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting id="construction_pr_picking_type" string="Recepción de compras"
+                                 help="Tipo de recepción de los requerimientos de compra generados.">
+                            <field name="construction_pr_picking_type_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting id="construction_setup" string="Configuración por defecto"
+                                 help="Crea lo que falte (OBRAS, «Despacho a obra») con el primer almacén de la compañía, sin cambiar lo ya elegido.">
+                            <button name="action_al_construction_setup" type="object"
+                                    string="Completar configuración" icon="oi-arrow-right"
+                                    class="btn-link"/>
+                        </setting>
+                    </block>
+                    <block title="Aprobación" name="construction_approval">
+                        <setting id="construction_tiers" string="Reglas de aprobación"
+                                 help="Quién aprueba cada requerimiento: jefe de proyecto, gerencia por monto, etc. Sin reglas que apliquen, se aprueba al solicitarlo.">
+                            <button name="%(al_construction_material_request.action_construction_tier_definition)d"
+                                    type="action" string="Reglas de aprobación" icon="oi-arrow-right"
+                                    class="btn-link"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_construction_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_construction_material_request', 'bin_size': False}</field>
+    </record>
+
+</odoo>
