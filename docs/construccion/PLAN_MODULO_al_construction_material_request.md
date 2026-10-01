@@ -443,3 +443,22 @@ sin respuesta: no se añadió.
   base de datos: los assets dan 404 y el PDF sale sin estilos (artefacto
   del entorno).
 - **35 tests en verde.** Ficha regenerada con la captura `20-vale.png`.
+
+---
+
+## Cantidades y entregas alineadas con Odoo (01/10/2026)
+
+Revisado en el código 19.0 de `purchase`, `purchase_stock` y `stock`, y
+aplicado:
+
+| Aspecto | Referencia nativa | En el módulo |
+|---|---|---|
+| Cantidad en la UdM del producto | `purchase.order.line.product_uom_qty` (`purchase_order_line.py:500`), `stock.move.product_qty` (`stock_move.py:381`) | `product_uom_qty` almacenado; solo convierte con material y unidad. Lo usan el valor estimado y la división |
+| Reparto stock / compra | `stock.move._prepare_procurement_qty` (`mts_else_mto`) | `free_qty` leído en lote; todo en la UdM del producto; lo ya asignado se descuenta por producto; a comprar = faltante convertido con `HALF-UP`; a despachar = pedido − a comprar |
+| Recibido | `purchase_stock` `_prepare_qty_received`: movimientos hechos con `HALF-UP`; las devoluciones restan | Igual: lo que sale de la obra hacia el almacén resta de recibido y de despachado |
+| Comparaciones | `uom.compare/is_zero` sobre registros guardados; los computes se protegen si falta el producto (`stock_move.py:502`) | Igual: la situación de la línea queda «Pendiente» sin material o unidad, y después usa `uom.compare` |
+| Movimientos | `purchase.order.line._prepare_stock_move_vals` | Añadidos `date_deadline`, `warehouse_id`, `sequence` y `reference_ids` |
+| Referencia | `purchase.order._prepare_picking` crea un `stock.reference` con el nombre del documento | `stock_reference_id` del requerimiento en todos sus movimientos. En 19.0 `stock.picking.reference_ids` es related de los movimientos |
+
+Versión `4.20261001`. 45 tests en verde (nuevos: cantidad en la UdM del
+producto, reparto con docenas no exactas y devolución de obra a almacén).

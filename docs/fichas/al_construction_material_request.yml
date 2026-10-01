@@ -431,6 +431,12 @@ faq:
 novedades:
   - fecha: 01/10/2026
     cambios:
+      - "El reparto entre stock y compra sigue el algoritmo de la regla nativa «tomar de stock; si no hay, activar otra regla»: cálculo en la unidad del producto y el resto en la unidad de la línea, de modo que lo despachado más lo comprado siempre da lo pedido."
+      - "Lo recibido en obra se calcula como en Compras: conversión con redondeo al medio y las devoluciones de la obra al almacén restan."
+      - "Las transferencias del requerimiento comparten una referencia de inventario, como las de una orden de compra."
+  - version: 3.20261001
+    fecha: 01/10/2026
+    cambios:
       - "Corregido el error al agregar un material en un requerimiento nuevo (Expected singleton: uom.uom())."
   - version: 2.20260930
     fecha: 30/09/2026

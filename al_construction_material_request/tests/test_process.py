@@ -126,6 +126,12 @@ class TestProcess(ConstructionRequestCommon):
         self.assertEqual(pr_line.analytic_distribution, distribution)
         self.assertEqual(pr_line.construction_request_line_id, request.line_ids)
         self.assertEqual(self._pending_picking(request).move_ids.product_uom_qty, 40)
+        # referencia de inventario común, como las OC (stock.reference)
+        reference = request.stock_reference_id
+        self.assertEqual(reference.name, request.name)
+        self.assertEqual(request.picking_ids.reference_ids, reference)
+        self.assertEqual(request.picking_ids.move_ids.reference_ids, reference)
+        self.assertEqual(picking.move_ids.warehouse_id, self.warehouse)
         self.assertIn('Requerimiento procesado', request.message_ids[0].body)
 
     def test_stock_in_two_family_sublocations(self):
@@ -157,6 +163,51 @@ class TestProcess(ConstructionRequestCommon):
         pr_line = request.purchase_request_ids.line_ids
         self.assertEqual((pr_line.product_qty, pr_line.product_uom_id), (2.5, uom_dozen))
 
+    def test_product_uom_qty_in_product_unit(self):
+        request = self._new_request(lines=[(self.cement, 5)])
+        line = request.line_ids
+        self.assertEqual(line.product_uom_qty, 5)
+        line.product_uom_id = self.env.ref('uom.product_uom_dozen')
+        self.assertEqual(line.product_uom_qty, 60)
+        self.assertEqual(request.amount_estimated, 60 * 30.0)
+
+    def test_split_with_non_exact_uom(self):
+        """Como la regla nativa mts_else_mto: el faltante se calcula en la UdM
+        del producto y se convierte a la de la línea con HALF-UP; lo
+        despachado es el resto, así la suma siempre da lo pedido."""
+        self._set_stock(self.cement, self.stock, 31)
+        request = self._new_request(lines=[(self.cement, 5)], user=self.requester)
+        request.line_ids.product_uom_id = self.env.ref('uom.product_uom_dozen')
+        request.action_request_approval()
+        request.with_user(self.approver).validate_tier()
+        request = request.with_env(self.env)
+        self._process(request)
+        line = request.line_ids
+        self.assertAlmostEqual(line.qty_to_purchase, 2.42)  # 29 u = 2,4167 dz
+        self.assertAlmostEqual(line.qty_to_dispatch + line.qty_to_purchase, 5)
+        self.assertAlmostEqual(line.qty_available_at_approval, 2.58)  # 31 u
+
+    def test_return_from_site_reduces_received(self):
+        """Como purchase_stock con las devoluciones al proveedor: lo que vuelve
+        de la obra al almacén resta de lo recibido y de lo despachado."""
+        self._set_stock(self.cement, self.stock, 150)
+        request = self._approved_request()
+        self._process(request)
+        picking = self._dispatch_picking(request)
+        self._validate(picking)
+        self.assertEqual(request.line_ids.qty_received_on_site, 100)
+        wizard = self.env['stock.return.picking'].with_context(
+            active_id=picking.id, active_ids=picking.ids, active_model='stock.picking').create({})
+        wizard.product_return_moves.quantity = 30
+        action = wizard.action_create_returns()
+        return_picking = self.env['stock.picking'].browse(action['res_id'])
+        self.assertEqual(return_picking.move_ids.construction_request_line_id, request.line_ids)
+        self._validate(return_picking)
+        line = request.line_ids
+        self.assertEqual(line.qty_received_on_site, 70)
+        self.assertEqual(line.qty_dispatched, 70)
+        self.assertEqual(line.line_state, 'partial')
+
     def test_two_lines_same_product_share_stock(self):
         self._set_stock(self.cement, self.stock, 60)
         request = self._approved_request(lines=[(self.cement, 50), (self.cement, 50)])
@@ -180,7 +231,8 @@ class TestProcess(ConstructionRequestCommon):
         self._set_stock(self.cement, self.stock, 60)
         request = self._approved_request()
         Request = type(self.env['construction.material.request'])
-        with patch.object(Request, '_get_free_qty', return_value=100.0):
+        with patch.object(Request, '_get_free_qty_by_product',
+                          lambda self, products: {p.id: 100.0 for p in products}):
             self._process(request)
         line = request.line_ids
         self.assertEqual((line.qty_to_dispatch, line.qty_to_purchase), (60, 40))
@@ -192,7 +244,8 @@ class TestProcess(ConstructionRequestCommon):
     def test_race_condition_nothing_reserved(self):
         request = self._approved_request()
         Request = type(self.env['construction.material.request'])
-        with patch.object(Request, '_get_free_qty', return_value=100.0):
+        with patch.object(Request, '_get_free_qty_by_product',
+                          lambda self, products: {p.id: 100.0 for p in products}):
             self._process(request)
         self.assertEqual(self._dispatch_picking(request).move_ids.state, 'cancel')
         self.assertEqual(request.purchase_request_ids.line_ids.product_qty, 100)

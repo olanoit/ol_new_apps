@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools import float_compare, float_is_zero
 
 LINE_STATES = [
     ('pending', 'Pendiente'),
@@ -39,6 +38,11 @@ class ConstructionMaterialRequestLine(models.Model):
         domain="[('id', 'in', allowed_uom_ids)]")
     product_qty = fields.Float(
         string='Cantidad', required=True, default=1.0, digits='Product Unit')
+    # Como purchase.order.line.product_uom_qty / stock.move.product_qty: la
+    # cantidad en la UdM del producto, base de stock y valorización.
+    product_uom_qty = fields.Float(
+        string='Cantidad en unidad del producto', compute='_compute_product_uom_qty',
+        store=True)
     task_id = fields.Many2one(
         'project.task', string='Tarea', check_company=True,
         compute='_compute_task_id', store=True, readonly=False, precompute=True,
@@ -112,16 +116,16 @@ class ConstructionMaterialRequestLine(models.Model):
             if not line.analytic_distribution:
                 line.analytic_distribution = line.request_id.analytic_distribution
 
-    # Comparaciones de cantidades con la precisión «Product Unit», la misma
-    # que usan uom.compare/is_zero en 19.0, pero sin exigir una unidad: en
-    # el onchange de una línea nueva la unidad todavía está vacía.
-    def _qty_compare(self, value1, value2):
-        digits = self.env['decimal.precision'].precision_get('Product Unit')
-        return float_compare(value1, value2, precision_digits=digits)
-
-    def _qty_is_zero(self, value):
-        digits = self.env['decimal.precision'].precision_get('Product Unit')
-        return float_is_zero(value, precision_digits=digits)
+    @api.depends('product_id', 'product_uom_id', 'product_qty')
+    def _compute_product_uom_qty(self):
+        # Patrón de purchase.order.line._compute_product_uom_qty: solo se
+        # convierte con material y unidad (en el onchange pueden faltar).
+        for line in self:
+            if line.product_id and line.product_uom_id and line.product_id.uom_id != line.product_uom_id:
+                line.product_uom_qty = line.product_uom_id._compute_quantity(
+                    line.product_qty, line.product_id.uom_id, rounding_method='HALF-UP')
+            else:
+                line.product_uom_qty = line.product_qty
 
     @api.constrains('product_id', 'product_uom_id')
     def _check_uom(self):
@@ -157,13 +161,24 @@ class ConstructionMaterialRequestLine(models.Model):
             site = line.request_id.location_dest_id
             source = line.request_id.location_src_id
             dispatched = received = 0.0
+            # Como purchase_stock (_prepare_qty_received): movimientos hechos
+            # convertidos a la UdM de la línea con HALF-UP; lo que sale de la
+            # obra (devolución al almacén) resta.
             for move in line.move_ids.filtered(lambda m: m.state == 'done'):
-                if not site or not move.location_dest_id._child_of(site):
+                if not site or not line.product_uom_id:
                     continue
-                qty = move.product_uom._compute_quantity(move.quantity, line.product_uom_id)
-                received += qty
-                if source and move.location_id._child_of(source):
-                    dispatched += qty
+                qty = move.product_uom._compute_quantity(
+                    move.quantity, line.product_uom_id, rounding_method='HALF-UP')
+                into_site = move.location_dest_id._child_of(site)
+                out_of_site = move.location_id._child_of(site) and not into_site
+                if into_site and not move.location_id._child_of(site):
+                    received += qty
+                    if source and move.location_id._child_of(source):
+                        dispatched += qty
+                elif out_of_site:
+                    received -= qty
+                    if source and move.location_dest_id._child_of(source):
+                        dispatched -= qty
             if line.supply_mode == 'direct':
                 # Entrega directa: lo recibido sale de las asignaciones OCA
                 # (una línea de OC puede juntar varias líneas de compra).
@@ -176,16 +191,18 @@ class ConstructionMaterialRequestLine(models.Model):
                  'qty_received_on_site', 'move_ids.state', 'purchase_request_line_ids')
     def _compute_line_state(self):
         for line in self:
+            uom = line.product_uom_id
             if line.cancelled:
                 line.line_state = 'cancel'
-            elif not line.product_id or line._qty_is_zero(line.product_qty):
-                # Línea a medio rellenar (onchange de una línea nueva).
+            elif not line.product_id or not uom or uom.is_zero(line.product_qty):
+                # Línea a medio rellenar (onchange de una línea nueva): como en
+                # stock.move, sin material no se compara nada.
                 line.line_state = 'pending'
-            elif line._qty_compare(line.qty_received_on_site, line.product_qty) >= 0:
+            elif uom.compare(line.qty_received_on_site, line.product_qty) >= 0:
                 line.line_state = 'done'
-            elif line._qty_compare(line.qty_received_on_site, 0.0) > 0:
+            elif uom.compare(line.qty_received_on_site, 0.0) > 0:
                 line.line_state = 'partial'
-            elif line.purchase_request_line_ids and line._qty_is_zero(line.qty_to_dispatch):
+            elif line.purchase_request_line_ids and uom.is_zero(line.qty_to_dispatch):
                 line.line_state = 'purchasing'
             elif line.move_ids.filtered(lambda m: m.state != 'cancel'):
                 line.line_state = 'dispatched'

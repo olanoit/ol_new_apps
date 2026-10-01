@@ -22,7 +22,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECT/Apps',
-    'version': '3.20261001',
+    'version': '4.20261001',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [

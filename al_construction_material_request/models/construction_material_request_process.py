@@ -5,7 +5,7 @@ from datetime import datetime, time
 import pytz
 
 
-from odoo import _, fields, models
+from odoo import Command, _, fields, models
 from odoo.tools import formatLang
 from odoo.exceptions import UserError
 
@@ -30,39 +30,42 @@ class ConstructionMaterialRequest(models.Model):
         self.write({'state': 'in_progress'})
         return True
 
-    def _get_free_qty(self, product):
-        """Cantidad libre (UdM del producto) en el origen y sus sububicaciones."""
+    def _get_free_qty_by_product(self, products):
+        """Cantidad libre (UdM de cada producto) en el origen y sus
+        sububicaciones, leída en lote como stock.move._prepare_procurement_qty."""
         self.ensure_one()
-        return product.with_context(location=self.location_src_id.id).free_qty
+        products = products.with_context(location=self.location_src_id.id)
+        return {product.id: product.free_qty for product in products}
 
     def _process_split(self):
+        """Reparte cada línea entre stock y compra con el mismo algoritmo que
+        la regla nativa «tomar de stock; si no hay, activar otra regla»
+        (stock.move._prepare_procurement_qty): todo en la UdM del producto,
+        lo ya asignado a líneas anteriores se descuenta por producto y solo
+        la cantidad a comprar se convierte a la UdM de la línea (HALF-UP)."""
         self.ensure_one()
         lines = self.line_ids.filtered(lambda l: not l.cancelled)
+        free_by_product = self._get_free_qty_by_product(lines.product_id)
         consumed = defaultdict(float)  # por producto, en su UdM
-        free_by_product = {}
         for line in lines:
             product = line.product_id
-            if product not in free_by_product:
-                free_by_product[product] = self._get_free_qty(product)
-            free = max(free_by_product[product] - consumed[product], 0.0)
-            # Lo libre se expresa en la UdM de la línea redondeando hacia abajo:
-            # nunca se promete más de lo que hay.
-            free_line = product.uom_id._compute_quantity(
-                free, line.product_uom_id, rounding_method='DOWN')
-            to_dispatch = min(line.product_qty, free_line)
+            free = max(free_by_product.get(product.id, 0.0) - consumed[product.id], 0.0)
+            to_purchase = max(line.product_uom_qty - free, 0.0)
+            qty_to_purchase = product.uom_id._compute_quantity(
+                to_purchase, line.product_uom_id, rounding_method='HALF-UP')
             line.write({
-                'qty_available_at_approval': free_line,
-                'qty_to_dispatch': to_dispatch,
-                'qty_to_purchase': line.product_qty - to_dispatch,
+                'qty_available_at_approval': product.uom_id._compute_quantity(
+                    free, line.product_uom_id, rounding_method='HALF-UP'),
+                'qty_to_purchase': qty_to_purchase,
+                'qty_to_dispatch': line.product_qty - qty_to_purchase,
             })
-            consumed[product] += line.product_uom_id._compute_quantity(
-                to_dispatch, product.uom_id)
+            consumed[product.id] += min(line.product_uom_qty, free)
 
         picking = self._create_dispatch_picking(
-            lines.filtered(lambda l: not l._qty_is_zero(l.qty_to_dispatch)))
+            lines.filtered(lambda l: not l.product_uom_id.is_zero(l.qty_to_dispatch)))
         shortages = picking and self._reserve_and_adjust(picking) or {}
         purchase_request, pending_picking = self._create_purchase_request(
-            lines.filtered(lambda l: not l._qty_is_zero(l.qty_to_purchase)))
+            lines.filtered(lambda l: not l.product_uom_id.is_zero(l.qty_to_purchase)))
         self._post_split_message(lines, picking, purchase_request, pending_picking, shortages)
 
     # --- transferencia de lo disponible ---------------------------------
@@ -75,6 +78,14 @@ class ConstructionMaterialRequest(models.Model):
         tz = pytz.timezone(self.env.user.tz or 'America/Lima')
         local = tz.localize(datetime.combine(self.date_required, time.min))
         return local.astimezone(pytz.utc).replace(tzinfo=None)
+
+    def _get_stock_reference(self):
+        """Referencia de inventario del requerimiento, creada la primera vez
+        (patrón de purchase.order._prepare_picking)."""
+        self.ensure_one()
+        if not self.stock_reference_id:
+            self.stock_reference_id = self.env['stock.reference'].create({'name': self.name})
+        return self.stock_reference_id
 
     def _prepare_picking_vals(self):
         self.ensure_one()
@@ -96,6 +107,7 @@ class ConstructionMaterialRequest(models.Model):
         return vals
 
     def _prepare_move_vals(self, line, qty, picking, procure_method='make_to_stock'):
+        # Campos como purchase.order.line._prepare_stock_move_vals.
         return {
             'product_id': line.product_id.id,
             'product_uom': line.product_uom_id.id,
@@ -108,6 +120,11 @@ class ConstructionMaterialRequest(models.Model):
             'origin': self.name,
             'procure_method': procure_method,
             'date': picking.scheduled_date,
+            'date_deadline': self.date_required and picking.scheduled_date,
+            'warehouse_id': picking.picking_type_id.warehouse_id.id,
+            # En 19.0 picking.reference_ids es related de los movimientos.
+            'reference_ids': [Command.set(self._get_stock_reference().ids)],
+            'sequence': line.sequence,
             'construction_request_line_id': line.id,
             'construction_analytic_distribution': line.analytic_distribution,
         }
@@ -224,9 +241,9 @@ class ConstructionMaterialRequest(models.Model):
             'product': line.product_id.display_name,
             'ordered': self._format_qty(line.product_qty, line.product_uom_id),
             'available': self._format_qty(line.qty_available_at_approval, line.product_uom_id),
-            'dispatch': not line._qty_is_zero(line.qty_to_dispatch),
+            'dispatch': not line.product_uom_id.is_zero(line.qty_to_dispatch),
             'dispatch_txt': self._format_qty(line.qty_to_dispatch, line.product_uom_id),
-            'purchase': not line._qty_is_zero(line.qty_to_purchase),
+            'purchase': not line.product_uom_id.is_zero(line.qty_to_purchase),
             'purchase_txt': self._format_qty(line.qty_to_purchase, line.product_uom_id),
             'mode': modes[line.supply_mode].lower(),
         } for line in lines]
@@ -274,7 +291,7 @@ class ConstructionMaterialRequest(models.Model):
         (pr_lines - with_po).filtered(lambda l: not l.cancelled).do_cancel()
         purchase_requests_sudo.check_auto_reject()
         for line in self.line_ids:
-            if line._qty_compare(line.qty_received_on_site, line.product_qty) < 0:
+            if line.product_uom_id.compare(line.qty_received_on_site, line.product_qty) < 0:
                 line.cancelled = True
         if with_po:
             self.message_post(body=_(

@@ -79,6 +79,10 @@ class ConstructionMaterialRequest(models.Model):
 
     picking_ids = fields.One2many(
         'stock.picking', 'construction_request_id', string='Transferencias')
+    # Como purchase.order.reference_ids: agrupa transferencias y movimientos
+    # del requerimiento (en 19.0 sustituye al grupo de abastecimiento).
+    stock_reference_id = fields.Many2one(
+        'stock.reference', string='Referencia de inventario', copy=False, readonly=True)
     picking_count = fields.Integer(string='Nº de transferencias', compute='_compute_counts')
     purchase_request_ids = fields.One2many(
         'purchase.request', 'construction_request_id',
@@ -119,17 +123,14 @@ class ConstructionMaterialRequest(models.Model):
                     request.project_id._get_analytic_distribution()
                     or request.analytic_distribution)
 
-    @api.depends('line_ids.product_qty', 'line_ids.product_uom_id',
-                 'line_ids.product_id', 'company_id')
+    @api.depends('line_ids.product_uom_qty', 'line_ids.product_id', 'company_id')
     def _compute_amount_estimated(self):
+        # Costo × cantidad en la UdM del producto (como purchase con
+        # product_uom_qty): el costo estándar está en esa unidad.
         for request in self:
-            total = 0.0
-            for line in request.line_ids.filtered('product_id'):
-                product = line.product_id.with_company(request.company_id)
-                qty = line.product_uom_id._compute_quantity(
-                    line.product_qty, product.uom_id, raise_if_failure=False)
-                total += qty * product.standard_price
-            request.amount_estimated = total
+            request.amount_estimated = sum(
+                line.product_uom_qty * line.product_id.with_company(request.company_id).standard_price
+                for line in request.line_ids.filtered('product_id'))
 
     def _compute_counts(self):
         for request in self:
