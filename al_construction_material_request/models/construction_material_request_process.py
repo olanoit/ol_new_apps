@@ -59,10 +59,10 @@ class ConstructionMaterialRequest(models.Model):
                 to_dispatch, product.uom_id)
 
         picking = self._create_dispatch_picking(
-            lines.filtered(lambda l: not l.product_uom_id.is_zero(l.qty_to_dispatch)))
+            lines.filtered(lambda l: not l._qty_is_zero(l.qty_to_dispatch)))
         shortages = picking and self._reserve_and_adjust(picking) or {}
         purchase_request, pending_picking = self._create_purchase_request(
-            lines.filtered(lambda l: not l.product_uom_id.is_zero(l.qty_to_purchase)))
+            lines.filtered(lambda l: not l._qty_is_zero(l.qty_to_purchase)))
         self._post_split_message(lines, picking, purchase_request, pending_picking, shortages)
 
     # --- transferencia de lo disponible ---------------------------------
@@ -224,9 +224,9 @@ class ConstructionMaterialRequest(models.Model):
             'product': line.product_id.display_name,
             'ordered': self._format_qty(line.product_qty, line.product_uom_id),
             'available': self._format_qty(line.qty_available_at_approval, line.product_uom_id),
-            'dispatch': not line.product_uom_id.is_zero(line.qty_to_dispatch),
+            'dispatch': not line._qty_is_zero(line.qty_to_dispatch),
             'dispatch_txt': self._format_qty(line.qty_to_dispatch, line.product_uom_id),
-            'purchase': not line.product_uom_id.is_zero(line.qty_to_purchase),
+            'purchase': not line._qty_is_zero(line.qty_to_purchase),
             'purchase_txt': self._format_qty(line.qty_to_purchase, line.product_uom_id),
             'mode': modes[line.supply_mode].lower(),
         } for line in lines]
@@ -274,7 +274,7 @@ class ConstructionMaterialRequest(models.Model):
         (pr_lines - with_po).filtered(lambda l: not l.cancelled).do_cancel()
         purchase_requests_sudo.check_auto_reject()
         for line in self.line_ids:
-            if line.product_uom_id.compare(line.qty_received_on_site, line.product_qty) < 0:
+            if line._qty_compare(line.qty_received_on_site, line.product_qty) < 0:
                 line.cancelled = True
         if with_po:
             self.message_post(body=_(

@@ -429,7 +429,11 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
-  - fecha: 30/09/2026
+  - fecha: 01/10/2026
+    cambios:
+      - "Corregido el error al agregar un material en un requerimiento nuevo (Expected singleton: uom.uom())."
+  - version: 2.20260930
+    fecha: 30/09/2026
     cambios:
       - "Primera versión: requerimiento de obra, aprobación por niveles, división stock o compra por línea, compra vía almacén central o directo a obra, y cierre y cancelación automáticos."
       - "Ajustes propios de la app y menú de reglas de aprobación."

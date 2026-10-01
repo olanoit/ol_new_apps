@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare, float_is_zero
 
 LINE_STATES = [
     ('pending', 'Pendiente'),
@@ -111,10 +112,21 @@ class ConstructionMaterialRequestLine(models.Model):
             if not line.analytic_distribution:
                 line.analytic_distribution = line.request_id.analytic_distribution
 
+    # Comparaciones de cantidades con la precisión «Product Unit», la misma
+    # que usan uom.compare/is_zero en 19.0, pero sin exigir una unidad: en
+    # el onchange de una línea nueva la unidad todavía está vacía.
+    def _qty_compare(self, value1, value2):
+        digits = self.env['decimal.precision'].precision_get('Product Unit')
+        return float_compare(value1, value2, precision_digits=digits)
+
+    def _qty_is_zero(self, value):
+        digits = self.env['decimal.precision'].precision_get('Product Unit')
+        return float_is_zero(value, precision_digits=digits)
+
     @api.constrains('product_id', 'product_uom_id')
     def _check_uom(self):
         for line in self:
-            if line.product_id and not line.product_uom_id._has_common_reference(
+            if line.product_id and line.product_uom_id and not line.product_uom_id._has_common_reference(
                     line.product_id.uom_id):
                 raise ValidationError(_(
                     'La unidad %(uom)s no es compatible con la del material %(product)s.',
@@ -133,7 +145,7 @@ class ConstructionMaterialRequestLine(models.Model):
             product_sudo = line.product_id.sudo()
             free = product_sudo.with_context(location=location.id).free_qty
             line.qty_available_now = line.product_id.uom_id._compute_quantity(
-                free, line.product_uom_id, rounding_method='HALF-UP')
+                free, line.product_uom_id or line.product_id.uom_id, rounding_method='HALF-UP')
 
     @api.depends('move_ids.state', 'move_ids.quantity', 'move_ids.location_id',
                  'move_ids.location_dest_id', 'supply_mode',
@@ -164,14 +176,16 @@ class ConstructionMaterialRequestLine(models.Model):
                  'qty_received_on_site', 'move_ids.state', 'purchase_request_line_ids')
     def _compute_line_state(self):
         for line in self:
-            uom = line.product_uom_id
             if line.cancelled:
                 line.line_state = 'cancel'
-            elif uom.compare(line.qty_received_on_site, line.product_qty) >= 0:
+            elif not line.product_id or line._qty_is_zero(line.product_qty):
+                # Línea a medio rellenar (onchange de una línea nueva).
+                line.line_state = 'pending'
+            elif line._qty_compare(line.qty_received_on_site, line.product_qty) >= 0:
                 line.line_state = 'done'
-            elif uom.compare(line.qty_received_on_site, 0.0) > 0:
+            elif line._qty_compare(line.qty_received_on_site, 0.0) > 0:
                 line.line_state = 'partial'
-            elif line.purchase_request_line_ids and uom.is_zero(line.qty_to_dispatch):
+            elif line.purchase_request_line_ids and line._qty_is_zero(line.qty_to_dispatch):
                 line.line_state = 'purchasing'
             elif line.move_ids.filtered(lambda m: m.state != 'cancel'):
                 line.line_state = 'dispatched'
