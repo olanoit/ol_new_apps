@@ -1,0 +1,13 @@
+flowchart TD
+  A[Abrir el TPV de una caja] --> B{¿La caja tiene nombre de marca?}
+  B -- Sí --> C[Nombre de la caja]
+  B -- No --> D[Nombre de la compañía]
+  A --> E{¿La caja tiene logo?}
+  E -- Sí --> F[Logo de la caja]
+  E -- No --> G{¿La compañía tiene logo?}
+  G -- Sí --> H[Logo de la compañía]
+  G -- No --> I[Nombre de la marca como texto]
+  A --> J[Colores de la caja<br/>o paleta neutra]
+  J --> K{¿Modo oscuro?}
+  K -- Sí --> L[Colores aclarados hasta<br/>leerse sobre fondo oscuro]
+  K -- No --> M[Colores tal cual]

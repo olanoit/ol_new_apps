@@ -31,6 +31,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def module_dir(module):
+    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
+    (la que tenga __manifest__.py)."""
+    path = ROOT / module
+    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+
 LINK_CLASS = 'al-ficha-link'
 LINK_CSS = '.%s { display: none; }' % LINK_CLASS
 LINK_HTML = (
@@ -101,9 +108,14 @@ def sync_footer(html, module, manifest):
 
 def main(check=False):
     changed = 0
-    for index in sorted(ROOT.glob('*/static/description/index.html')):
+    # Módulos de tools/ solo si tienen ficha propia (docs/fichas/<módulo>.yml):
+    # los de terceros (p. ej. prt_report_attachment_preview) no se tocan.
+    indexes = list(ROOT.glob('*/static/description/index.html')) + [
+        p for p in ROOT.glob('tools/*/static/description/index.html')
+        if (ROOT / 'docs' / 'fichas' / ('%s.yml' % p.parts[-4])).exists()]
+    for index in sorted(indexes):
         module = index.parts[-4]
-        manifest_path = ROOT / module / '__manifest__.py'
+        manifest_path = module_dir(module) / '__manifest__.py'
         manifest = ast.literal_eval(manifest_path.read_text()) \
             if manifest_path.exists() else {}
         original = index.read_text(encoding='utf-8')

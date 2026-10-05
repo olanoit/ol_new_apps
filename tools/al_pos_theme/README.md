@@ -39,7 +39,7 @@ las vistas y los assets; el PdV vuelve al aspecto estándar sin rastros.
 
 ## 2. Personalizar marca y colores (sin tocar código)
 
-*Punto de Venta → Configuración → Ajustes → elegir la caja (arriba) →
+*Punto de venta ▸ Configuración ▸ Ajustes ▸ elegir la caja (arriba) ▸
 sección **Apariencia***. Cada caja (`TPV 1`, `TPV 2`…) tiene su propia marca.
 
 | Campo | Efecto |
@@ -73,8 +73,8 @@ Desde tablet horizontal / escritorio (`lg`, ≥ 992px):
 ```
 
 - **Riel de categorías PdV** a la izquierda (sólo si hay categorías),
-  **catálogo** al centro con los **principios activos en una fila horizontal**
-  encima, y **orden, totales, numpad y Pagar** a la derecha.
+  **catálogo** al centro con los **chips de etiquetas** de
+  `al_pos_product_view` encima (si está instalado), y **orden, totales, numpad y Pagar** a la derecha.
 - La **barra superior sigue las mismas columnas**: logo, Registrar/Órdenes y
   pestañas sobre el catálogo; el **buscador**, escáner, cajero y menú sobre
   el panel de la orden, con su mismo ancho (400px en tablet, 450px desde

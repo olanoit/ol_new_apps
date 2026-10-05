@@ -30,6 +30,13 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def module_dir(module):
+    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
+    (la que tenga __manifest__.py)."""
+    path = ROOT / module
+    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+
 SRC = ROOT / 'docs' / 'fichas'
 
 _spec = importlib.util.spec_from_file_location(
@@ -128,7 +135,7 @@ def inline(text):
 
 
 # Donde buscar el manifest de las dependencias (nombre legible en la ficha).
-ADDONS_PATHS = [ROOT] + [
+ADDONS_PATHS = [ROOT, ROOT / 'tools'] + [
     ROOT.parents[1] / sub for sub in ('addons', 'ee19', 'odoo/addons')]
 
 
@@ -489,7 +496,7 @@ def render_related(data):
         if not manifest:
             continue
         icon = ''
-        if (ROOT / module / 'static' / 'description' / 'icon.png').exists():
+        if (module_dir(module) / 'static' / 'description' / 'icon.png').exists():
             icon = ('<img src="/%s/static/description/icon.png" alt="" style="width:40px;'
                     'height:40px;border-radius:8px;margin-bottom:10px;"/>' % module)
         cards += (
@@ -663,7 +670,7 @@ def diagram_width(module, flow):
     """Ancho en CSS del diagrama: su tamaño real, no el de sus píxeles."""
     from PIL import Image
 
-    path = ROOT / module / 'static' / 'description' / diagram_path(flow)
+    path = module_dir(module) / 'static' / 'description' / diagram_path(flow)
     with Image.open(path) as image:
         return int(image.size[0] / DIAGRAM_SCALE)
 
@@ -801,7 +808,7 @@ def build(module, check=False):
     source = SRC / ('%s.yml' % module)
     data = yaml.safe_load(source.read_text(encoding='utf-8'))
     manifest = manifest_of(module)
-    target = ROOT / module / 'static' / 'description' / 'index.html'
+    target = module_dir(module) / 'static' / 'description' / 'index.html'
     _check_diagrams(module, data)
     content = render(module, data)
     content = fichas.sync_footer(
@@ -809,7 +816,7 @@ def build(module, check=False):
     _check_diagrams(module, data)
     missing = [
         img for img in _images(data)
-        if not (ROOT / module / 'static' / 'description' / img).exists()]
+        if not (module_dir(module) / 'static' / 'description' / img).exists()]
     if missing:
         raise SystemExit('%s: faltan imágenes %s' % (module, missing))
     current = target.read_text(encoding='utf-8') if target.exists() else ''
@@ -829,7 +836,7 @@ def _images(data):
 
 def _check_diagrams(module, data):
     """Cada diagrama debe estar dibujado desde el texto Mermaid actual."""
-    base = ROOT / module / 'static' / 'description'
+    base = module_dir(module) / 'static' / 'description'
     for flow in data.get('flujos') or []:
         source = base / ('diagramas/%s.mmd' % flow['id'])
         if not source.exists() or source.read_text(encoding='utf-8') != flow['mermaid']:

@@ -1,0 +1,241 @@
+titulo: Tema y marca blanca del TPV
+subtitulo: >-
+  El Punto de Venta con la marca de su empresa: nombre, logo y colores por
+  caja, un diseño más limpio y el cobro dentro del panel de la orden, sin
+  rastros de Odoo a la vista del cajero ni del cliente.
+categoria: Punto de venta · Diseño
+etiquetas: [Marca blanca, Colores por caja, Modo oscuro, Pago en el panel, Pantalla del cliente, Sin rastros de Odoo]
+portada: screenshots/03-venta.png
+
+destacados_intro: >-
+  Cambia la apariencia del TPV, no su lógica: precios, impuestos,
+  comprobantes, sincronización y modo sin conexión funcionan igual que en el
+  TPV estándar.
+destacados:
+  - icono: "Aa"
+    titulo: Su marca, por caja
+    texto: >-
+      Nombre, logo, icono de la pestaña y cuatro colores se configuran en los
+      ajustes de cada caja, sin tocar código.
+  - icono: "◐"
+    titulo: Contraste automático
+    texto: >-
+      El color del texto sobre los botones y los tonos al pasar el mouse se
+      calculan solos para que todo se lea bien, también en modo oscuro.
+  - icono: "▤"
+    titulo: Pago sin cambiar de pantalla
+    texto: >-
+      En escritorio y tablet horizontal, el panel de la orden se convierte en
+      el panel de pago y el catálogo queda a la vista.
+  - icono: "✓"
+    titulo: Sin rastros de Odoo
+    texto: >-
+      Título y favicon de la pestaña, app instalable, pantalla de bloqueo,
+      recibo y mensajes del sistema muestran su marca, no la de Odoo.
+  - icono: "◑"
+    titulo: Modo claro y oscuro
+    texto: >-
+      Cada cajero elige el modo oscuro en su navegador y los colores de la
+      caja se adaptan.
+  - icono: "▣"
+    titulo: Marca neutra por defecto
+    texto: >-
+      Sin configurar nada, el TPV usa el nombre y el logo de la compañía y una
+      paleta azul y pizarra.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El TPV estándar muestra el nombre, el logo y el morado de Odoo en la
+    pestaña del navegador, en la pantalla de bloqueo, en el recibo y en los
+    mensajes de error. Para una cadena de tiendas o una franquicia, la caja es
+    la cara de la marca frente al cliente.
+
+
+    Este módulo sustituye todos esos puntos por la marca de cada caja y
+    rediseña la pantalla de venta con un sistema de colores, tipografía y
+    espaciado propio, pensado para pantallas táctiles.
+  nota: >-
+    **Solo apariencia.** El tema no modifica cálculos, impuestos, pagos ni
+    comprobantes: el panel de pago es el del TPV estándar, con sus
+    validaciones y las de los demás módulos instalados (vendedor y
+    comprobante electrónico incluidos).
+
+flujos_intro: >-
+  De dónde sale la marca que ve el cajero.
+flujos:
+  - id: marca
+    titulo: Marca de cada caja
+    texto: >-
+      La marca se toma de la caja; lo que falte se completa con los datos de la
+      compañía o con los valores neutros del módulo.
+    mermaid: |
+      flowchart TD
+        A[Abrir el TPV de una caja] --> B{¿La caja tiene nombre de marca?}
+        B -- Sí --> C[Nombre de la caja]
+        B -- No --> D[Nombre de la compañía]
+        A --> E{¿La caja tiene logo?}
+        E -- Sí --> F[Logo de la caja]
+        E -- No --> G{¿La compañía tiene logo?}
+        G -- Sí --> H[Logo de la compañía]
+        G -- No --> I[Nombre de la marca como texto]
+        A --> J[Colores de la caja<br/>o paleta neutra]
+        J --> K{¿Modo oscuro?}
+        K -- Sí --> L[Colores aclarados hasta<br/>leerse sobre fondo oscuro]
+        K -- No --> M[Colores tal cual]
+
+pasos_intro: >-
+  Todas las funciones del módulo sobre el punto de venta de demostración
+  «DEMO TPV Vendedores».
+pasos:
+  - seccion: Configuración
+    texto: Por cada caja, sin tocar código.
+  - titulo: Marca y colores de la caja
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes ▸ Apariencia
+    texto: >-
+      Elija la caja en la parte superior de los ajustes. En **Marca** indique
+      el **Nombre**, el **Logo** y el **Icono de pestaña**; en **Colores**, el
+      **Primario**, el **Secundario**, el **Acento** y el **Fondo**.
+    puntos:
+      - "Vacíos, se usan el nombre y el logo de la compañía y el icono del módulo."
+      - "Los colores se escriben como #RRGGBB; un valor no válido se rechaza."
+      - Los cambios se ven al volver a abrir el TPV, sin actualizar el módulo.
+    imagen: screenshots/01-ajustes.png
+
+  - seccion: Venta
+    texto: La pantalla de la caja con la marca neutra por defecto.
+  - titulo: Pantalla de bloqueo
+    ruta: Punto de venta ▸ Abrir caja
+    texto: >-
+      Fondo con el degradado de los colores secundario y primario, el logo de
+      la marca arriba a la derecha y el botón para desbloquear la caja.
+    imagen: screenshots/02-bloqueo.png
+  - titulo: Pantalla de venta
+    ruta: Punto de venta ▸ Abrir caja ▸ Registrar
+    texto: >-
+      Tres columnas en escritorio: categorías, catálogo y orden. La barra
+      superior sigue las mismas columnas: logo, Registrar y Órdenes sobre el
+      catálogo; buscador, cajero y menú sobre la orden. El botón **Pago**
+      lleva el degradado de la marca.
+    imagen: screenshots/03-venta.png
+  - titulo: Con el catálogo en lista
+    ruta: Punto de venta ▸ Abrir caja ▸ Registrar
+    texto: >-
+      Con `al_pos_product_view` instalado, los chips de etiquetas, la vista de
+      lista y los botones de información toman los colores de la marca.
+    imagen: screenshots/04-lista.png
+  - titulo: Pago dentro del panel de la orden
+    ruta: Pantalla de venta ▸ Pago
+    texto: >-
+      El panel derecho pasa a mostrar el total a pagar, los métodos de pago,
+      el cambio, el cliente y el teclado. El catálogo queda atenuado y
+      bloqueado mientras se cobra. La flecha vuelve a la orden sin perder las
+      líneas de pago.
+    puntos:
+      - "Los botones de otros módulos siguen ahí: vendedor (`al_pos_vendedor`) y boleta o factura (`al_l10n_pe_edi_pos`)."
+      - En teléfono y tablet vertical el pago sigue en su propia pantalla, como en el TPV estándar.
+    imagen: screenshots/05-pago.png
+  - titulo: Órdenes
+    ruta: Punto de venta ▸ Abrir caja ▸ Órdenes
+    texto: La lista de órdenes y su detalle con el mismo diseño.
+    imagen: screenshots/06-ordenes.png
+
+  - seccion: Modos y dispositivos
+  - titulo: Modo oscuro
+    ruta: "Menú ☰ ▸ Cambiar al modo oscuro"
+    texto: >-
+      Cada cajero lo activa en su navegador y queda recordado. Si el color
+      primario de la caja no se lee sobre el fondo oscuro, se aclara solo.
+    puntos:
+      - La opción del menú la aporta la edición Enterprise del TPV.
+    imagen: screenshots/07-oscuro.png
+  - titulo: En el teléfono
+    ruta: Punto de venta ▸ Abrir caja
+    texto: >-
+      En pantallas pequeñas la barra muestra solo el icono de la marca y el
+      pie lleva los botones **Pagar** y **Carrito**.
+    imagen: screenshots/10-movil.png
+
+  - seccion: Ejemplo de marca propia
+    texto: >-
+      La misma caja con una marca de ejemplo: nombre «DEMO Botica Central»,
+      primario verde azulado, secundario verde oscuro y acento ámbar.
+  - titulo: Bloqueo con la marca propia
+    ruta: Punto de venta ▸ Abrir caja
+    texto: El degradado y los botones cambian a los colores de la caja.
+    imagen: screenshots/08-marca-propia-bloqueo.png
+  - titulo: Venta con la marca propia
+    ruta: Punto de venta ▸ Abrir caja ▸ Registrar
+    texto: >-
+      Precios, cantidades en el carrito, total y botón de pago con los colores
+      de la caja. El título de la pestaña pasa a «DEMO Botica Central · DEMO
+      TPV Vendedores».
+    imagen: screenshots/09-marca-propia.png
+
+campos_intro: >-
+  Los campos que el módulo añade a cada caja.
+campos:
+  - grupo: Apariencia de la caja
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes ▸ Apariencia
+    campos:
+      - [Nombre, "Pestaña del navegador, app instalada y mensajes del sistema.", Vacío, "Si está vacío, nombre de la compañía"]
+      - [Logo, Barra superior y pantalla de bloqueo., Vacío, "Si está vacío, logo de la compañía o el nombre como texto"]
+      - [Icono de pestaña, Favicon e icono de la barra en el teléfono., Vacío, "Si está vacío, icono del módulo"]
+      - [Primario, "Botones principales, precios, selección y enlaces.", "#2563EB", Texto encima calculado solo]
+      - [Secundario, Títulos e inicio del degradado de la pantalla de bloqueo., "#1E293B", "Conviene un tono oscuro"]
+      - [Acento, "Descuentos, avisos y filo de las tarjetas.", "#0EA5E9", "—"]
+      - [Fondo, Fondo general en modo claro., "#F8FAFC", En modo oscuro se usa el fondo oscuro del tema]
+
+funcionalidades:
+  - grupo: Marca
+    items:
+      - Nombre, logo, icono y cuatro colores configurables por caja.
+      - Nombre y logo de la compañía cuando la caja no tiene los suyos.
+      - "Título y favicon de la pestaña con la marca, también en la pantalla del cliente."
+      - App instalable con el nombre de la caja y sus colores.
+      - Recibo y pantalla del cliente sin «Powered by Odoo».
+      - Mensajes de error del sistema con el nombre de la marca.
+  - grupo: Diseño
+    items:
+      - "Sistema de colores, tipografía (Inter y Manrope, incluidas en el módulo) y espaciado propio."
+      - Contraste del texto sobre los botones calculado automáticamente.
+      - Modo claro y oscuro.
+      - Pantalla de venta en tres columnas en escritorio y tablet horizontal.
+      - Pago dentro del panel de la orden.
+  - grupo: Compatibilidad
+    items:
+      - Solo depende del Punto de venta estándar.
+      - "Estilos para al_pos_product_view: chips de etiquetas, vista de lista y botón de información."
+      - Funciona junto a al_pos_vendedor y al_l10n_pe_edi_pos sin configuración.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones y reinicie el servidor.
+  - "Abra cada caja desde el backend (Punto de venta ▸ Continuar vendiendo) para que recargue sus datos."
+  - "Configure la marca en **Punto de venta ▸ Configuración ▸ Ajustes ▸ Apariencia**, caja por caja."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. La opción de modo oscuro del menú del TPV
+  la aporta Enterprise. Al desinstalarlo, el TPV vuelve al aspecto estándar.
+
+faq:
+  - pregunta: "¿Cambia algo en los cálculos o en los comprobantes?"
+    respuesta: >-
+      No. Solo cambia la apariencia: el panel de pago es el del TPV estándar,
+      con sus validaciones y las de los demás módulos.
+  - pregunta: "No veo los cambios de color en la caja."
+    respuesta: >-
+      Vuelva a abrir el TPV: la marca se carga al abrir la página de la caja.
+  - pregunta: "¿Qué pasa si no subo un logo?"
+    respuesta: >-
+      Se usa el logo de la compañía y, si tampoco hay, el nombre de la marca
+      como texto.
+  - pregunta: "¿Puedo tener una marca distinta en cada tienda?"
+    respuesta: >-
+      Sí. La marca se configura por caja: cada punto de venta puede tener su
+      nombre, logo y colores.
+
+novedades:
+  - fecha: 05/10/2026
+    cambios:
+      - "Primera versión en la suite: marca neutra por defecto, textos en español y compatibilidad con los módulos TPV de la suite."
+
+relacionados: [al_pos_product_view, al_pos_vendedor, al_l10n_pe_edi_pos]

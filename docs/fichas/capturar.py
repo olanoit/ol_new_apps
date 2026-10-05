@@ -24,6 +24,13 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def module_dir(module):
+    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
+    (la que tenga __manifest__.py)."""
+    path = ROOT / module
+    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+
 URL = os.environ.get('FICHAS_URL', 'http://127.0.0.1:19730')
 DB = os.environ.get('FICHAS_DB', 'ol_pe_v19')
 USER = os.environ.get('FICHAS_USER', 'admin')
@@ -39,7 +46,7 @@ class Captura:
     def __init__(self, module, viewport=None, lang=None):
         self.module = module
         self.viewport = viewport or VIEWPORT
-        self.out = ROOT / module / 'static' / 'description' / 'screenshots'
+        self.out = module_dir(module) / 'static' / 'description' / 'screenshots'
         self.out.mkdir(parents=True, exist_ok=True)
 
     # -- sesión ---------------------------------------------------------

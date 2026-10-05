@@ -21,6 +21,13 @@ import yaml
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def module_dir(module):
+    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
+    (la que tenga __manifest__.py)."""
+    path = ROOT / module
+    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+
 CHROME = '/usr/bin/google-chrome'
 MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js'
 
@@ -63,7 +70,7 @@ def draw(module):
     if not flows:
         print('%s: sin flujos' % module)
         return
-    out = ROOT / module / 'static' / 'description' / 'diagramas'
+    out = module_dir(module) / 'static' / 'description' / 'diagramas'
     out.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as pw:
         browser = pw.chromium.launch(executable_path=CHROME, args=['--no-sandbox'])
