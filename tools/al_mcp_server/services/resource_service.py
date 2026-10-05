@@ -1,15 +1,15 @@
 """
-MCP Resources — business context exposed as readable resources.
+Recursos MCP — contexto de negocio expuesto como recursos de lectura.
 
-Claude reads these once at session start to understand the Odoo instance
-without needing multiple tool calls to discover schemas and company info.
+Claude los lee una vez al iniciar la sesión para entender la instancia de Odoo
+sin necesitar varias llamadas a herramientas para descubrir esquemas y datos de la compañía.
 
-Resources:
-  odoo://context              Company, user, installed modules, server date
-  odoo://catalog              All installed models with names
-  odoo://model/{name}         Field definitions for a specific model
-  odoo://chatter/{model}/{id} Last 20 chatter messages for a record
-  odoo://attachment/{id}      Attachment metadata + content preview
+Recursos:
+  odoo://context              compañía, usuario, módulos instalados, fecha del servidor
+  odoo://catalog              todos los modelos instalados con sus nombres
+  odoo://model/{name}         definiciones de campos de un modelo concreto
+  odoo://chatter/{model}/{id} últimos 20 mensajes del chatter de un registro
+  odoo://attachment/{id}      metadatos del adjunto y vista previa del contenido
 """
 
 import base64
@@ -23,13 +23,13 @@ from . import schema_cache
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Resource & template definitions (returned by resources/list)
+# Definiciones de recursos y plantillas (las devuelve resources/list)
 # ---------------------------------------------------------------------------
 
 RESOURCES = [
     {
         "uri": "odoo://context",
-        "name": "Contexto de Negocio de Odoo",
+        "name": "Contexto de negocio de Odoo",
         "description": (
             "Información de la compañía (nombre, moneda, zona horaria), usuario actual, "
             "lista de módulos instalados y fecha del servidor. "
@@ -39,7 +39,7 @@ RESOURCES = [
     },
     {
         "uri": "odoo://catalog",
-        "name": "Catálogo de Modelos de Odoo",
+        "name": "Catálogo de modelos de Odoo",
         "description": (
             "Todos los modelos de Odoo disponibles con su nombre técnico y etiqueta para mostrar. "
             "Úselo para encontrar el nombre de modelo correcto antes de consultar."
@@ -51,7 +51,7 @@ RESOURCES = [
 RESOURCE_TEMPLATES = [
     {
         "uriTemplate": "odoo://model/{name}",
-        "name": "Esquema de Modelo de Odoo",
+        "name": "Esquema de modelo de Odoo",
         "description": (
             "Definiciones de campos (etiqueta, tipo, obligatorio, valores de selección, modelo relacionado) "
             "para cualquier modelo de Odoo. Léalo antes de usar odoo_search_read u odoo_create "
@@ -61,7 +61,7 @@ RESOURCE_TEMPLATES = [
     },
     {
         "uriTemplate": "odoo://chatter/{model}/{id}",
-        "name": "Chatter de Registro de Odoo",
+        "name": "Chatter de registro de Odoo",
         "description": (
             "Los últimos 20 mensajes del chatter de un registro específico — comentarios, correos, "
             "notas internas y registros de actividad. "
@@ -85,7 +85,7 @@ RESOURCE_TEMPLATES = [
 
 
 # ---------------------------------------------------------------------------
-# Resource dispatcher
+# Distribuidor de recursos
 # ---------------------------------------------------------------------------
 
 def _enforce_model(env, model_name: str) -> None:
@@ -95,7 +95,7 @@ def _enforce_model(env, model_name: str) -> None:
 
 
 def read_resource(uri: str, env) -> str:
-    """Resolve a resource URI and return its JSON content as a string."""
+    """Resuelve la URI de un recurso y devuelve su contenido JSON como cadena."""
     if uri == "odoo://context":
         return _context(env)
     if uri == "odoo://catalog":
@@ -118,7 +118,7 @@ def read_resource(uri: str, env) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Resource implementations
+# Implementación de los recursos
 # ---------------------------------------------------------------------------
 
 def _context(env) -> str:
@@ -290,11 +290,11 @@ def _attachment(attachment_id: str, env) -> str:
         "download_url": rec.url or f"/web/content/{rec.id}?download=1",
     }
 
-    # Include content preview for readable text formats only
+    # Solo se incluye vista previa del contenido en formatos de texto legibles
     _TEXT_MIMES = ("text/", "application/json", "application/xml",
                    "application/csv", "application/javascript")
     is_text = rec.mimetype and any(rec.mimetype.startswith(m) for m in _TEXT_MIMES)
-    size_ok = rec.file_size and rec.file_size < 50 * 1024  # 50 KB limit
+    size_ok = rec.file_size and rec.file_size < 50 * 1024  # límite de 50 KB
 
     if is_text and size_ok and rec.datas:
         try:
@@ -317,11 +317,11 @@ def _attachment(attachment_id: str, env) -> str:
 
 
 # ---------------------------------------------------------------------------
-# HTML helper
+# Utilidad HTML
 # ---------------------------------------------------------------------------
 
 def _strip_html(html: str) -> str:
-    """Strip HTML tags for clean chatter body display."""
+    """Quita las etiquetas HTML para mostrar limpio el cuerpo del chatter."""
     if not html:
         return ""
     html = re.sub(r'<(script|style)[^>]*>.*?</(script|style)>', '', html,

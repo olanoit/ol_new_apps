@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-Public HTML artifact controller.
+Controlador público de artefactos HTML.
 
-Routes:
-  GET /mcp-artifact/<slug>        — host page with sandboxed iframe (full chrome)
-  GET /mcp-artifact/<slug>/embed  — host page with sandboxed iframe (no chrome)
-  GET /mcp-artifact/<slug>/raw    — raw sandboxed document (intended for iframe srcdoc only)
+Rutas:
+  GET /mcp-artifact/<slug>        — página contenedora con iframe aislado (con marco completo)
+  GET /mcp-artifact/<slug>/embed  — página contenedora con iframe aislado (sin marco)
+  GET /mcp-artifact/<slug>/raw    — documento aislado en bruto (pensado solo para el srcdoc de un iframe)
 
-The artifact body is assembled server-side from the html / css / js fields and
-served inside an iframe declared with ``sandbox="allow-scripts"`` (no
-``allow-same-origin``). A strict Content-Security-Policy meta tag is injected
-to limit script-src / style-src to a small set of trusted CDNs and to block
+El cuerpo del artefacto se arma en el servidor a partir de los campos html / css / js
+y se sirve dentro de un iframe declarado con ``sandbox="allow-scripts"`` (sin
+``allow-same-origin``). Se inyecta una etiqueta meta Content-Security-Policy estricta
+que limita script-src / style-src a un pequeño conjunto de CDN de confianza y bloquea
 ``connect-src``.
 """
 
@@ -46,7 +46,7 @@ _CSP_POLICY = (
 
 
 def _build_sandbox_document(artifact) -> str:
-    """Assemble the inner sandboxed HTML document for an artifact."""
+    """Arma el documento HTML interno y aislado de un artefacto."""
     title = html_lib.escape(artifact.name or "Artefacto")
     css = artifact.css or ""
     js = artifact.js or ""
@@ -106,11 +106,11 @@ class McpArtifactController(http.Controller):
         csrf=False,
     )
     def artifact_raw(self, slug, **kwargs):
-        """Serve the inner sandboxed document directly.
+        """Sirve directamente el documento interno aislado.
 
-        Intended for advanced embedding cases. The iframe-in-host approach is
-        preferred (see ``artifact_page``) because it lets us declare the sandbox
-        attribute on the iframe.
+        Pensado para casos avanzados de incrustación. Se prefiere el enfoque del
+        iframe dentro de la página contenedora (ver ``artifact_page``) porque
+        permite declarar el atributo sandbox en el iframe.
         """
         art = self._get_artifact_or_404(slug)
         if art is None:

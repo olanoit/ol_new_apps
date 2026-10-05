@@ -6,10 +6,10 @@ from markupsafe import Markup
 
 
 def odoo_json_default(obj):
-    """JSON serializer for types produced by Odoo ORM that are not JSON-native.
+    """Serializador JSON para los tipos del ORM de Odoo que no son nativos de JSON.
 
-    Handles: recordsets, datetime/date, Decimal, bytes, Markup, set/frozenset.
-    Falls back to str() for anything else so dumps() never raises.
+    Admite: recordsets, datetime/date, Decimal, bytes, Markup, set/frozenset.
+    Para cualquier otro tipo recurre a str(), de modo que dumps() nunca falla.
     """
     if hasattr(obj, "_name") and hasattr(obj, "ids"):
         if len(obj) == 1:

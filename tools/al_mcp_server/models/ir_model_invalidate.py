@@ -1,14 +1,15 @@
 """
-Cache invalidation hooks for MCP schema cache.
+Ganchos de invalidación de la caché de esquema MCP.
 
-When ir.model or ir.model.fields records are created, updated, or deleted
-(e.g. a module is installed/upgraded or a custom field is added via Studio),
-the schema cache must be cleared so the next MCP request reflects current state.
+Cuando se crean, modifican o eliminan registros de ir.model o ir.model.fields
+(p. ej., al instalar/actualizar un módulo o añadir un campo personalizado con
+Studio), hay que vaciar la caché de esquema para que la siguiente solicitud MCP
+refleje el estado actual.
 
-Using broad invalidation (clear everything) is intentional — partial
-invalidation would require tracking per-model dependencies in the cache key,
-and model/field changes are rare compared to the benefit of not serving stale
-schema data.
+La invalidación total (vaciar todo) es intencionada: una invalidación parcial
+exigiría registrar las dependencias por modelo en la clave de caché, y los
+cambios de modelos/campos son poco frecuentes frente a la ventaja de no servir
+datos de esquema obsoletos.
 """
 
 import logging
@@ -23,7 +24,7 @@ _logger = logging.getLogger(__name__)
 def _invalidate_all(label: str) -> None:
     count = schema_cache.invalidate()
     if count:
-        _logger.debug("MCP schema cache: cleared %d entries after %s", count, label)
+        _logger.debug("Caché de esquema MCP: %d entradas vaciadas tras %s", count, label)
 
 
 class IrModelInvalidate(models.Model):

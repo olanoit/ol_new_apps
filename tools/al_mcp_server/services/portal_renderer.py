@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-Portal page renderer — pure functions that convert widget specs into display-ready dicts.
+Renderizador de páginas de portal: funciones puras que convierten las especificaciones
+de widgets en dicts listos para mostrar.
 
-Each public function accepts:
-  - env:            an Odoo Environment (may be with_user() for governance)
-  - widget_spec:    a single widget dict from the page spec
-  - filter_values:  dict of filter name → value from query string
+Cada función pública recibe:
+  - env:            un Environment de Odoo (puede venir con with_user() por gobierno)
+  - widget_spec:    el dict de un widget de la especificación de la página
+  - filter_values:  dict nombre de filtro → valor tomado de la query string
 
-Return shape per widget type:
+Forma del resultado según el tipo de widget:
 
   KPI:
     {
       "type": "kpi",
       "title": str,
       "value": float|int,
-      "formatted": str,        # e.g. "$1,234.56"
-      "icon": str,             # fa-* class
-      "color": str,            # hex color
-      "error": str|None,       # set if computation failed
+      "formatted": str,        # p. ej. "$1,234.56"
+      "icon": str,             # clase fa-*
+      "color": str,            # color hexadecimal
+      "error": str|None,       # se rellena si el cálculo falló
     }
 
   Chart:
@@ -26,7 +27,7 @@ Return shape per widget type:
       "type": "chart",
       "title": str,
       "chart_type": str,
-      "echarts_option": dict,  # full ECharts option, JSON-safe
+      "echarts_option": dict,  # opción ECharts completa, serializable a JSON
       "error": str|None,
     }
 
@@ -49,15 +50,15 @@ _FILTER_PLACEHOLDER_RE = re.compile(r"\{\{filters\.(\w+)\}\}")
 
 
 # ---------------------------------------------------------------------------
-# Public entry point
+# Punto de entrada público
 # ---------------------------------------------------------------------------
 
 
 def compute_widget(env, widget_spec: dict, filter_values: dict) -> dict:
-    """Compute render data for a single widget.
+    """Calcula los datos de renderizado de un widget.
 
-    Never raises — errors are captured in result["error"] so the page can
-    still render the other widgets.
+    Nunca lanza excepciones: los errores se guardan en result["error"] para que
+    la página pueda seguir mostrando los demás widgets.
     """
     wtype = widget_spec.get("type", "")
     try:
@@ -70,7 +71,7 @@ def compute_widget(env, widget_spec: dict, filter_values: dict) -> dict:
             return _compute_table(env, resolved_spec)
         return {"type": wtype, "title": widget_spec.get("title", ""), "error": f"Tipo de widget desconocido: {wtype!r}"}
     except Exception as exc:
-        _logger.warning("portal_renderer: widget %r failed: %s", widget_spec.get("title"), exc, exc_info=True)
+        _logger.warning("portal_renderer: falló el widget %r: %s", widget_spec.get("title"), exc, exc_info=True)
         return {
             "type": wtype,
             "title": widget_spec.get("title", ""),
@@ -79,7 +80,7 @@ def compute_widget(env, widget_spec: dict, filter_values: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# KPI
+# Indicador KPI
 # ---------------------------------------------------------------------------
 
 
@@ -106,7 +107,7 @@ def _compute_kpi(env, spec: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Chart
+# Gráfico
 # ---------------------------------------------------------------------------
 
 
@@ -133,7 +134,7 @@ def _compute_chart(env, spec: dict) -> dict:
 
 
 def _build_echarts_option(chart_type: str, groupby: list, agg_fields: list, rows: list, spec: dict) -> dict:
-    """Build a full ECharts option dict from grouped data rows."""
+    """Construye el dict de opciones ECharts completo a partir de las filas agrupadas."""
     label_key = groupby[0].split(":")[0] if groupby else None
     value_key = agg_fields[0].split(":")[0] if agg_fields else None
 
@@ -206,7 +207,7 @@ def _build_echarts_option(chart_type: str, groupby: list, agg_fields: list, rows
             }],
         }
 
-    # Fallback
+    # Respaldo
     return {
         "tooltip": {"trigger": "axis"},
         "xAxis": {"type": "category", "data": labels},
@@ -216,7 +217,7 @@ def _build_echarts_option(chart_type: str, groupby: list, agg_fields: list, rows
 
 
 # ---------------------------------------------------------------------------
-# Table
+# Tabla
 # ---------------------------------------------------------------------------
 
 
@@ -230,8 +231,8 @@ def _compute_table(env, spec: dict) -> dict:
 
     _check_model(env, model_name)
 
-    # When there is no groupby, use search_read (plain list — no aggregates needed).
-    # When groupby is present, use _read_group (aggregated rows).
+    # Sin groupby se usa search_read (lista simple, sin agregados).
+    # Con groupby se usa _read_group (filas agregadas).
     if not groupby:
         plain_fields = [f.split(":")[0] for f in agg_fields]
         kw = {"limit": limit}
@@ -239,14 +240,14 @@ def _compute_table(env, spec: dict) -> dict:
             kw["order"] = orderby
         records = env[model_name].search_read(domain, plain_fields, **kw)
 
-        headers = [f.replace("_", " ").title() for f in plain_fields]
+        headers = [_field_label(env, model_name, f) for f in plain_fields]
         table_rows = []
         for rec in records:
             row = []
             for key in plain_fields:
                 val = rec.get(key)
                 if isinstance(val, (list, tuple)) and len(val) == 2:
-                    # Many2one returns [id, display_name]
+                    # Many2one devuelve [id, display_name]
                     val = val[1]
                 elif val is None or val is False:
                     val = ""
@@ -259,10 +260,10 @@ def _compute_table(env, spec: dict) -> dict:
 
         headers = []
         for gb in groupby:
-            headers.append(gb.split(":")[0].replace("_", " ").title())
+            headers.append(_field_label(env, model_name, gb.split(":")[0]))
         for af in agg_fields:
             parts = af.split(":")
-            label = parts[0].replace("_", " ").title()
+            label = _field_label(env, model_name, parts[0])
             if len(parts) > 1:
                 label = f"{label} ({parts[1].upper()})"
             headers.append(label)
@@ -292,12 +293,21 @@ def _compute_table(env, spec: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# ORM helpers — these use _read_group for aggregation (no Python sum loops)
+# Utilidades del ORM: usan _read_group para agregar (sin bucles de suma en Python)
 # ---------------------------------------------------------------------------
 
 
+def _field_label(env, model_name: str, fname: str) -> str:
+    """Etiqueta del campo en el idioma del usuario (como las cabeceras de las
+    listas de Odoo). Si el campo no existe, se deriva del nombre técnico."""
+    field = env[model_name]._fields.get(fname)
+    if field:
+        return field._description_string(env) or fname
+    return fname.replace("_", " ").capitalize()
+
+
 def _aggregate_field(env, model_name: str, field: str, domain: list, aggregate: str) -> float:
-    """Return a single aggregate value for *field* on *model_name*."""
+    """Devuelve un único valor agregado de *field* en *model_name*."""
     agg_expr = f"{field}:{aggregate}"
     rows = env[model_name]._read_group(
         domain=domain,
@@ -313,7 +323,7 @@ def _aggregate_field(env, model_name: str, field: str, domain: list, aggregate: 
 
 def _run_read_group(env, model_name: str, domain: list, groupby: list, agg_fields: list,
                     limit: int = 80, orderby: str = "") -> list:
-    """Run _read_group and return a list of serializable dicts."""
+    """Ejecuta _read_group y devuelve una lista de dicts serializables."""
     kw = {"limit": limit}
     if orderby:
         # En Odoo 19 el parámetro de _read_group se llama ``order``.
@@ -347,12 +357,12 @@ def _run_read_group(env, model_name: str, domain: list, groupby: list, agg_field
 
 
 # ---------------------------------------------------------------------------
-# Filter substitution
+# Sustitución de filtros
 # ---------------------------------------------------------------------------
 
 
 def _substitute_filters(spec: dict, filter_values: dict) -> dict:
-    """Return a deep copy of *spec* with {{filters.<name>}} placeholders replaced."""
+    """Devuelve una copia profunda de *spec* con los marcadores {{filters.<name>}} sustituidos."""
     if not filter_values:
         return spec
     import copy
@@ -372,12 +382,12 @@ def _deep_substitute(obj, filter_values: dict):
 
 
 # ---------------------------------------------------------------------------
-# Formatting helpers
+# Utilidades de formato
 # ---------------------------------------------------------------------------
 
 
 def _format_value(value: float, fmt: str, currency_code: str, env) -> str:
-    """Format a numeric value as a human-readable string."""
+    """Formatea un valor numérico como texto legible."""
     if fmt == "integer":
         return f"{int(value):,}"
     if fmt == "percent":
@@ -385,14 +395,14 @@ def _format_value(value: float, fmt: str, currency_code: str, env) -> str:
     if fmt == "currency":
         symbol = _get_currency_symbol(env, currency_code)
         return f"{symbol}{value:,.2f}"
-    # default: number
+    # por defecto: number
     if value == int(value):
         return f"{int(value):,}"
     return f"{value:,.2f}"
 
 
 def _get_currency_symbol(env, currency_code: str) -> str:
-    """Return the symbol for *currency_code*, defaulting to company currency."""
+    """Devuelve el símbolo de *currency_code*; por defecto, el de la moneda de la compañía."""
     try:
         if currency_code:
             cur = env["res.currency"].search([("name", "=", currency_code)], limit=1)
@@ -405,11 +415,11 @@ def _get_currency_symbol(env, currency_code: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Guard
+# Protección
 # ---------------------------------------------------------------------------
 
 
 def _check_model(env, model_name: str) -> None:
-    """Raise ValueError if *model_name* is not in the registry."""
+    """Lanza ValueError si *model_name* no está en el registro."""
     if model_name not in env.registry:
         raise ValueError(f"Modelo {model_name!r} no encontrado en el registro de Odoo.")

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<template id="portal_page" name="MCP Portal Page">
+<template id="portal_page" name="Página de portal MCP">
 <t t-set="theme_class" t-value="page.theme == 'dark' and 'theme-dark' or (page.theme == 'auto' and 'theme-auto') or 'theme-light'"/>
 <t t-set="spec_title" t-value="spec.get('title') or page.name"/>
 <t t-set="spec_subtitle" t-value="spec.get('subtitle') or ''"/>
 <t t-set="spec_filters" t-value="spec.get('filters') or []"/>
-<html t-attf-class="#{theme_class}" lang="en">
+<html t-attf-class="#{theme_class}" lang="es">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="robots" content="noindex, nofollow"/>
     <title><t t-esc="page.name"/> &#8212; Portal MCP</title>
     <style>
-        /* ---- Reset &amp; base ---- */
+        /* ---- Reinicio y base ---- */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif; font-size: 16px; }
 
-        /* ---- Theme variables ---- */
+        /* ---- Variables del tema ---- */
         .theme-light {
             --bg: #f4f6f9;
             --surface: #ffffff;
@@ -70,7 +70,7 @@
 
         body { background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        /* ---- Layout ---- */
+        /* ---- Maquetación ---- */
         .mcp-wrapper { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
         .mcp-header {
             background: var(--header-bg);
@@ -83,7 +83,7 @@
         .mcp-title-block h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); }
         .mcp-title-block p  { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem; }
 
-        /* ---- Filter bar ---- */
+        /* ---- Barra de filtros ---- */
         .mcp-filter-bar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
         .mcp-filter-item label  { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.25rem; }
         .mcp-filter-item input, .mcp-filter-item select {
@@ -102,7 +102,7 @@
         }
         .mcp-apply-btn:hover { background: #4f46e5; }
 
-        /* ---- Widget grid ---- */
+        /* ---- Cuadrícula de widgets ---- */
         .mcp-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -128,11 +128,11 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-        /* Wide widgets span full row */
+        /* Los widgets anchos ocupan toda la fila */
         .mcp-widget-full  { grid-column: 1 / -1; }
         .mcp-widget-half  { grid-column: span 2; }
 
-        /* ---- KPI tile ---- */
+        /* ---- Tarjeta KPI ---- */
         .mcp-kpi { padding: 1.25rem 1rem; display: flex; align-items: center; gap: 1rem; }
         .mcp-kpi-icon {
             width: 48px; height: 48px; border-radius: 10px;
@@ -145,11 +145,11 @@
         .mcp-kpi-label { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.15rem; }
         .mcp-kpi-error  { font-size: 0.8125rem; color: #ef4444; padding: 1rem; }
 
-        /* ---- Chart ---- */
+        /* ---- Gráfico ---- */
         .mcp-chart-container { padding: 0.75rem 0.5rem 0.5rem; }
         .mcp-echart { width: 100%; height: 280px; }
 
-        /* ---- Table ---- */
+        /* ---- Tabla ---- */
         .mcp-table-outer { overflow-x: auto; }
         table.mcp-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
         table.mcp-table th {
@@ -170,7 +170,7 @@
         table.mcp-table .sort-asc::after  { content: " \25B2"; font-size: 0.65em; }
         table.mcp-table .sort-desc::after { content: " \25BC"; font-size: 0.65em; }
 
-        /* ---- Error banner ---- */
+        /* ---- Aviso de error ---- */
         .mcp-error-banner {
             background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
             border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8125rem;
@@ -178,7 +178,7 @@
         }
         .theme-dark .mcp-error-banner { background: #3b1818; border-color: #7f1d1d; color: #fca5a5; }
 
-        /* ---- Footer ---- */
+        /* ---- Pie de página ---- */
         .mcp-footer {
             text-align: center; color: var(--text-muted); font-size: 0.75rem;
             padding: 1.5rem 0 2rem; border-top: 1px solid var(--border); margin-top: 1rem;
@@ -188,14 +188,14 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Cabecera -->
     <header class="mcp-header">
         <div class="mcp-wrapper">
             <div class="mcp-title-block">
                 <h1 t-esc="spec_title"/>
                 <p t-if="spec_subtitle" t-esc="spec_subtitle"/>
             </div>
-            <!-- Filter bar (only shown when filters are defined) -->
+            <!-- Barra de filtros (solo si hay filtros definidos) -->
             <t t-if="spec_filters">
                 <form class="mcp-filter-bar" method="GET" id="mcp-filter-form">
                     <t t-foreach="spec_filters" t-as="flt" t-key="flt.get('name', flt_index)">
@@ -230,11 +230,11 @@
         </div>
     </header>
 
-    <!-- Widget grid -->
+    <!-- Cuadrícula de widgets -->
     <main class="mcp-wrapper">
         <div class="mcp-grid">
             <t t-foreach="widgets" t-as="w" t-key="w_index">
-                <!-- KPI widget -->
+                <!-- Widget KPI -->
                 <t t-if="w.get('type') == 'kpi'">
                     <div class="mcp-widget">
                         <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
@@ -258,7 +258,7 @@
                     </div>
                 </t>
 
-                <!-- Chart widget -->
+                <!-- Widget de gráfico -->
                 <t t-elif="w.get('type') == 'chart'">
                     <div class="mcp-widget mcp-widget-half">
                         <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
@@ -273,7 +273,7 @@
                     </div>
                 </t>
 
-                <!-- Table widget -->
+                <!-- Widget de tabla -->
                 <t t-elif="w.get('type') == 'table'">
                     <div class="mcp-widget mcp-widget-full">
                         <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
@@ -313,12 +313,12 @@
                     </div>
                 </t>
 
-                <!-- Unknown widget type fallback -->
+                <!-- Respaldo para tipos de widget desconocidos -->
                 <t t-else="">
                     <div class="mcp-widget">
                         <div class="mcp-widget-header" t-esc="w.get('title', 'Widget')"/>
                         <div class="mcp-error-banner">
-                            Tipo de widget no soportado: <t t-esc="w.get('type', '(desconocido)')"/>
+                            Tipo de widget no admitido: <t t-esc="w.get('type', '(desconocido)')"/>
                         </div>
                     </div>
                 </t>
@@ -326,7 +326,7 @@
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Pie de página -->
     <footer class="mcp-footer">
         <div class="mcp-wrapper">
             <t t-if="page.last_viewed">
@@ -336,13 +336,13 @@
         </div>
     </footer>
 
-    <!-- Font Awesome (for KPI icons) -->
+    <!-- Font Awesome (para los iconos KPI) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" crossorigin="anonymous"/>
 
-    <!-- ECharts CDN -->
+    <!-- CDN de ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" crossorigin="anonymous"/>
 
-    <!-- Chart initialisation — one block per chart widget -->
+    <!-- Inicialización de gráficos: un bloque por widget de gráfico -->
     <script>
     (function() {
         var theme = document.documentElement.className.indexOf('theme-dark') >= 0 ? 'dark' : null;
@@ -355,7 +355,7 @@
             window.addEventListener('resize', function() { chart.resize(); });
         });
 
-        // Client-side table sort
+        // Ordenación de tablas en el cliente
         document.querySelectorAll('.mcp-table').forEach(function(tbl) {
             tbl.querySelectorAll('th').forEach(function(th, colIdx) {
                 th.addEventListener('click', function() {

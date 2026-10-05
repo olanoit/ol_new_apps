@@ -10,19 +10,19 @@
                 <app string="Servidor MCP" name="al_mcp_server"
                      logo="/al_mcp_server/static/description/icon.png">
 
-                    <block title="Retención del Registro de Auditoría" name="mcp_retention">
-                        <setting string="Retención de Sesiones (días)"
+                    <block title="Retención del registro de auditoría" name="mcp_retention">
+                        <setting string="Retención de sesiones (días)"
                                  help="Cuánto tiempo conservar los registros de sesión MCP antes de que el cron de limpieza los elimine.">
                             <field name="mcp_session_retention_days"/>
                         </setting>
-                        <setting string="Retención de Registros (días)"
+                        <setting string="Retención de registros (días)"
                                  help="Cuánto tiempo conservar los registros de llamadas a herramientas MCP antes de que el cron de limpieza los elimine.">
                             <field name="mcp_log_retention_days"/>
                         </setting>
                     </block>
 
                     <block title="Límite de tasa" name="mcp_rate_limit">
-                        <setting string="Máx. Solicitudes por Ventana"
+                        <setting string="Máx. de solicitudes por ventana"
                                  help="Número máximo de solicitudes MCP permitidas por ventana de tiempo. Los tokens individuales pueden anular este valor.">
                             <field name="mcp_rate_limit_per_minute"/>
                         </setting>
@@ -30,7 +30,7 @@
                                  help="Duración de la ventana del límite de tasa en segundos.">
                             <field name="mcp_rate_limit_window_seconds"/>
                         </setting>
-                        <setting string="Usar Redis para el Límite de tasa"
+                        <setting string="Usar Redis para el límite de tasa"
                                  help="Distribuir los contadores del límite de tasa mediante Redis para que todos los workers de Odoo compartan la misma ventana. Requiere una instancia de Redis en ejecución y el paquete redis-py.">
                             <field name="mcp_enable_redis_rate_limit"/>
                             <div class="content-group mt8" invisible="not mcp_enable_redis_rate_limit">
@@ -43,7 +43,7 @@
                                 <div class="row mt8">
                                     <div class="col-lg-12">
                                         <button type="object" name="action_test_redis"
-                                                string="Probar Conexión con Redis"
+                                                string="Probar conexión con Redis"
                                                 class="btn btn-secondary"/>
                                     </div>
                                 </div>
@@ -52,20 +52,20 @@
                     </block>
 
                     <block title="Caché de esquema" name="mcp_schema_cache">
-                        <setting string="Activar Caché de esquema"
+                        <setting string="Activar caché de esquema"
                                  help="Almacenar en memoria los metadatos de modelos/campos de Odoo para evitar la introspección repetida del ORM en cada llamada a odoo_fields_get.">
                             <field name="mcp_enable_schema_cache"/>
                             <div class="content-group mt8" invisible="not mcp_enable_schema_cache">
                                 <div class="row">
                                     <label for="mcp_schema_cache_ttl_seconds"
                                            class="col-lg-6 o_light_label"
-                                           string="TTL de la Caché (segundos)"/>
+                                           string="TTL de la caché (segundos)"/>
                                     <field name="mcp_schema_cache_ttl_seconds" class="col-lg-6"/>
                                 </div>
                                 <div class="row mt8">
                                     <div class="col-lg-12">
                                         <button type="object" name="action_clear_schema_cache"
-                                                string="Vaciar Caché de esquema"
+                                                string="Vaciar caché de esquema"
                                                 class="btn btn-secondary"/>
                                     </div>
                                 </div>
@@ -73,17 +73,17 @@
                         </setting>
                     </block>
 
-                    <block title="Generador de Módulos" name="mcp_module_generator">
-                        <setting string="Activar Generador de Módulos"
+                    <block title="Generador de módulos" name="mcp_module_generator">
+                        <setting string="Activar generador de módulos"
                                  help="Permitir que los tokens MCP con alcance de administrador generen módulos de Odoo instalables mediante la herramienta odoo_generate_module. Desactivado de forma predeterminada. Actívelo solo en entornos de confianza.">
                             <field name="mcp_enable_module_generator"/>
                             <div class="content-group mt8" invisible="not mcp_enable_module_generator">
                                 <div class="row">
                                     <label for="mcp_generated_modules_path"
                                            class="col-lg-4 o_light_label"
-                                           string="Ruta de Módulos Generados"/>
+                                           string="Ruta de módulos generados"/>
                                     <field name="mcp_generated_modules_path" class="col-lg-8"
-                                           placeholder="/path/to/custom/addons"/>
+                                           placeholder="/ruta/a/addons/personalizados"/>
                                 </div>
                             </div>
                         </setting>

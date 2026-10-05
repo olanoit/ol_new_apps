@@ -3,10 +3,10 @@
     <data noupdate="0">
 
         <!--
-            mcp.token record rules
-            ─────────────────────
-            group_user  → sees ONLY own tokens (user_id = uid)
-            group_system → sees ALL tokens (ORed with group_user rule = admin wins)
+            Reglas de registro de mcp.token
+            ───────────────────────────────
+            group_user  → ve SOLO sus propios tokens (user_id = uid)
+            group_system → ve TODOS los tokens (se combina con OR con la regla de group_user: prevalece el administrador)
         -->
         <record id="rule_mcp_token_user_own" model="ir.rule">
             <field name="name">Token MCP: los usuarios solo ven sus propios tokens</field>
@@ -31,10 +31,10 @@
         </record>
 
         <!--
-            mcp.session record rules
-            ────────────────────────
-            group_user  → sees ONLY own sessions (read-only)
-            group_system → sees ALL sessions (full access)
+            Reglas de registro de mcp.session
+            ─────────────────────────────────
+            group_user  → ve SOLO sus propias sesiones (solo lectura)
+            group_system → ve TODAS las sesiones (acceso completo)
         -->
         <record id="rule_mcp_session_user_own" model="ir.rule">
             <field name="name">Sesión MCP: los usuarios solo ven sus propias sesiones</field>
@@ -59,10 +59,10 @@
         </record>
 
         <!--
-            mcp.job record rules
-            ────────────────────
-            group_user  → sees ONLY own jobs (user_id = uid)
-            group_system → sees ALL jobs (ORed with group_user rule = admin wins)
+            Reglas de registro de mcp.job
+            ─────────────────────────────
+            group_user  → ve SOLO sus propios trabajos (user_id = uid)
+            group_system → ve TODOS los trabajos (se combina con OR con la regla de group_user: prevalece el administrador)
         -->
         <record id="rule_mcp_job_user_own" model="ir.rule">
             <field name="name">Trabajo MCP: los usuarios solo ven sus propios trabajos</field>
@@ -87,13 +87,13 @@
         </record>
 
         <!--
-            mcp.portal.page record rules
-            ────────────────────────────
-            group_user  → sees ONLY own pages (created_by = uid)
-            group_system → sees ALL pages (ORed with group_user rule = admin wins)
+            Reglas de registro de mcp.portal.page
+            ─────────────────────────────────────
+            group_user  → ve SOLO sus propias páginas (created_by = uid)
+            group_system → ve TODAS las páginas (se combina con OR con la regla de group_user: prevalece el administrador)
         -->
         <record id="rule_mcp_portal_page_user_own" model="ir.rule">
-            <field name="name">Página de Portal MCP: los usuarios solo ven sus propias páginas</field>
+            <field name="name">Página de portal MCP: los usuarios solo ven sus propias páginas</field>
             <field name="model_id" ref="model_mcp_portal_page"/>
             <field name="domain_force">[('created_by', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
@@ -104,7 +104,7 @@
         </record>
 
         <record id="rule_mcp_portal_page_admin_all" model="ir.rule">
-            <field name="name">Página de Portal MCP: el administrador ve todas</field>
+            <field name="name">Página de portal MCP: el administrador ve todas</field>
             <field name="model_id" ref="model_mcp_portal_page"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('base.group_system'))]"/>
@@ -115,8 +115,8 @@
         </record>
 
         <!--
-            mcp.session.log record rules
-            ────────────────────────────
+            Reglas de registro de mcp.session.log
+            ─────────────────────────────────────
             group_user  → solo lee sus propias llamadas (los payloads pueden llevar PII)
             group_system → ve todo
         -->
@@ -135,8 +135,8 @@
         </record>
 
         <!--
-            mcp.html.artifact record rules
-            ──────────────────────────────
+            Reglas de registro de mcp.html.artifact
+            ───────────────────────────────────────
             group_user  → solo sus propios artefactos (created_by = uid)
             group_system → todos
         -->

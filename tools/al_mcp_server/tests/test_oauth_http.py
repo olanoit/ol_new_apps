@@ -17,6 +17,9 @@ class TestMcpOAuthHttp(HttpCase):
         super().setUp()
         self.user = new_test_user(self.env, login="mcp_oauth_user", password=_PASSWORD,
                                   groups="base.group_user")
+        # Sesión anónima: sin ella, con varias bases en el clúster, el servidor
+        # de test no sabe qué base usar y responde 404 «No database».
+        self.authenticate(None, None)
 
     def _register(self, uris):
         return self.url_open("/oauth/register", json={"client_name": "Test", "redirect_uris": uris})
@@ -103,6 +106,8 @@ class TestMcpPublicPagesHttp(HttpCase):
         self.artifact = self.env["mcp.html.artifact"].create({
             "name": "Privado", "html": "<p>secreto</p>", "is_public": False,
         })
+        # Sesión anónima con base de datos (ver TestMcpOAuthHttp.setUp).
+        self.authenticate(None, None)
 
     def test_raw_artifact_is_sandboxed(self):
         self.artifact.is_public = True

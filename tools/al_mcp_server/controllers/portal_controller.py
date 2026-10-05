@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-Public portal page controller.
+Controlador de páginas públicas del portal.
 
-Routes:
-  GET /mcp-page/<slug>        — full page render (HTML)
-  GET /mcp-page/<slug>/data   — live widget data (JSON)
-  GET /mcp-page/<slug>/embed  — iframe-embeddable render (no Odoo chrome)
+Rutas:
+  GET /mcp-page/<slug>        — renderizado de la página completa (HTML)
+  GET /mcp-page/<slug>/data   — datos en vivo de los widgets (JSON)
+  GET /mcp-page/<slug>/embed  — renderizado incrustable en iframe (sin el marco de Odoo)
 
-Authentication rules (applied in order):
-  1. If page.is_public → allow everyone.
-  2. If request has ?token=<access_token> matching the page → allow.
-  3. If the logged-in user is the page owner or a system administrator → allow.
-  4. Other logged-in users → 404; anonymous → redirect to /web/login.
+Reglas de autenticación (se aplican en orden):
+  1. Si page.is_public → se permite a todos.
+  2. Si la petición trae ?token=<access_token> que coincide con la página → se permite.
+  3. Si el usuario con sesión es el dueño de la página o un administrador del sistema → se permite.
+  4. Otros usuarios con sesión → 404; anónimos → redirección a /web/login.
 
-Widget data is always computed using page.created_by as the execution user,
-restricting data access to what the page owner can see. This prevents a
-public page from leaking data the viewing user should not see.
+Los datos de los widgets siempre se calculan con page.created_by como usuario de
+ejecución, lo que limita el acceso a lo que puede ver el dueño de la página. Así una
+página pública no filtra datos que el usuario que la mira no debería ver.
 """
 
 import json
@@ -38,7 +38,7 @@ _logger = logging.getLogger(__name__)
 class McpPortalController(http.Controller):
 
     # ------------------------------------------------------------------
-    # Main page render
+    # Renderizado de la página principal
     # ------------------------------------------------------------------
 
     @http.route(
@@ -73,7 +73,7 @@ class McpPortalController(http.Controller):
         )
 
     # ------------------------------------------------------------------
-    # Embed route (no Odoo chrome — for iframes)
+    # Ruta incrustable (sin el marco de Odoo, para iframes)
     # ------------------------------------------------------------------
 
     @http.route(
@@ -104,7 +104,7 @@ class McpPortalController(http.Controller):
         )
 
     # ------------------------------------------------------------------
-    # Live JSON data endpoint
+    # Endpoint de datos JSON en vivo
     # ------------------------------------------------------------------
 
     @http.route(
@@ -137,11 +137,11 @@ class McpPortalController(http.Controller):
         )
 
     # ------------------------------------------------------------------
-    # Internal helpers
+    # Utilidades internas
     # ------------------------------------------------------------------
 
     def _get_page_or_404(self, slug: str):
-        """Return the mcp.portal.page record for *slug*, or None."""
+        """Devuelve el registro mcp.portal.page de *slug*, o None."""
         page = request.env["mcp.portal.page"].sudo().search(
             [("slug", "=", slug), ("enabled", "=", True)],
             limit=1,
@@ -149,7 +149,7 @@ class McpPortalController(http.Controller):
         return page or None
 
     def _check_auth(self, page, token: str):
-        """Return a redirect/error response if access is denied, else None."""
+        """Devuelve una respuesta de redirección o error si se deniega el acceso; si no, None."""
         if page.is_public:
             return None
         if token and page.access_token and consteq(token, page.access_token):
@@ -161,25 +161,25 @@ class McpPortalController(http.Controller):
             if page.created_by == user or user.has_group("base.group_system"):
                 return None
             return request.not_found()
-        # Redirect to login, preserving return URL
+        # Redirige al inicio de sesión conservando la URL de retorno
         login_url = f"/web/login?redirect=/mcp-page/{page.slug}"
         if token:
             login_url += f"?token={token}"
         return request.redirect(login_url, code=302)
 
     def _render_widgets(self, page, filter_values: dict) -> list:
-        """Compute render data for every widget in the page spec."""
+        """Calcula los datos de renderizado de cada widget de la especificación de la página."""
         spec = self._parse_spec_safe(page)
         widgets_spec = spec.get("widgets") or []
 
-        # Compute filter defaults merged with query-string values
+        # Calcula los valores por defecto de los filtros combinados con los de la query string
         resolved_filters = {}
         for f in spec.get("filters") or []:
             name = f.get("name", "")
             default = f.get("default", "")
             resolved_filters[name] = filter_values.get(name, default)
 
-        # Run as created_by user — governance boundary
+        # Se ejecuta como el usuario created_by — límite de gobierno
         env_as_owner = request.env["mcp.portal.page"].with_user(page.created_by.id).env
 
         result = []
@@ -189,7 +189,7 @@ class McpPortalController(http.Controller):
         return result
 
     def _build_qcontext(self, page, spec: dict, widget_data: list, token: str, embed: bool) -> dict:
-        """Build the template context, including pre-serialized ECharts option JSON."""
+        """Arma el contexto de la plantilla, incluido el JSON de opciones de ECharts ya serializado."""
         charts_data = []
         for idx, w in enumerate(widget_data):
             if w.get("type") == "chart" and not w.get("error") and w.get("echarts_option"):
@@ -207,7 +207,7 @@ class McpPortalController(http.Controller):
         }
 
     def _parse_spec_safe(self, page) -> dict:
-        """Parse page.spec JSON, returning {} on error."""
+        """Interpreta el JSON de page.spec; devuelve {} si hay un error."""
         try:
             return json.loads(page.spec or "{}")
         except Exception:
@@ -215,7 +215,7 @@ class McpPortalController(http.Controller):
 
 
 # ---------------------------------------------------------------------------
-# Response helpers
+# Utilidades de respuesta
 # ---------------------------------------------------------------------------
 
 
@@ -231,7 +231,7 @@ def _json_error(code: str, message: str, status: int) -> Response:
 
 
 def _json_default(obj):
-    """Fallback serializer for non-JSON-native types from ORM."""
+    """Serializador de respaldo para los tipos del ORM que no son nativos de JSON."""
     import datetime
     if isinstance(obj, (datetime.datetime, datetime.date)):
         return obj.isoformat()
@@ -239,6 +239,6 @@ def _json_default(obj):
 
 
 def fields_now():
-    """Return current datetime via Odoo fields (avoids direct import at module level)."""
+    """Devuelve la fecha y hora actual mediante fields de Odoo (evita importarlo a nivel de módulo)."""
     from odoo import fields
     return fields.Datetime.now()

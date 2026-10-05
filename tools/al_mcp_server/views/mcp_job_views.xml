@@ -2,13 +2,13 @@
 <odoo>
 
     <!-- ================================================================
-         List view
+         Vista de lista
     ================================================================ -->
     <record id="mcp_job_list_view" model="ir.ui.view">
         <field name="name">mcp.job.list</field>
         <field name="model">mcp.job</field>
         <field name="arch" type="xml">
-            <list string="Trabajos Asíncronos MCP" default_order="id desc"
+            <list string="Trabajos asíncronos MCP" default_order="id desc"
                   decoration-success="state == 'done'"
                   decoration-warning="state == 'running'"
                   decoration-danger="state == 'failed'"
@@ -33,16 +33,16 @@
     </record>
 
     <!-- ================================================================
-         Form view
+         Vista de formulario
     ================================================================ -->
     <record id="mcp_job_form_view" model="ir.ui.view">
         <field name="name">mcp.job.form</field>
         <field name="model">mcp.job</field>
         <field name="arch" type="xml">
-            <form string="Trabajo Asíncrono MCP">
+            <form string="Trabajo asíncrono MCP">
                 <header>
                     <button name="action_run"
-                            string="Ejecutar Ahora"
+                            string="Ejecutar ahora"
                             type="object"
                             class="btn-primary"
                             invisible="state != 'pending'"/>
@@ -55,7 +55,7 @@
                             type="object"
                             invisible="state != 'failed'"/>
                     <button name="action_open_attachment"
-                            string="Descargar Exportación"
+                            string="Descargar exportación"
                             type="object"
                             invisible="not attachment_id"/>
                     <field name="state" widget="statusbar"
@@ -66,7 +66,7 @@
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
-                        <group string="Información del Trabajo">
+                        <group string="Información del trabajo">
                             <field name="operation" readonly="1"/>
                             <field name="user_id" readonly="1"/>
                             <field name="token_id" readonly="1"/>
@@ -91,7 +91,7 @@
                                        widget="text"/>
                             </group>
                         </page>
-                        <page string="Carga Útil">
+                        <page string="Carga útil">
                             <field name="payload" readonly="1" widget="code"
                                    options="{'mode': 'js'}"/>
                         </page>
@@ -99,7 +99,7 @@
                             <field name="result" readonly="1" widget="code"
                                    options="{'mode': 'js'}"/>
                             <field name="mcp_restrictions" readonly="1" widget="code"
-                                   options="{'mode': 'js'}" string="Instantánea de Restricciones"/>
+                                   options="{'mode': 'js'}" string="Instantánea de restricciones"/>
                         </page>
                         <page string="Registro">
                             <field name="message_ids" widget="mail_thread" readonly="1"/>
@@ -116,13 +116,13 @@
     </record>
 
     <!-- ================================================================
-         Search view
+         Vista de búsqueda
     ================================================================ -->
     <record id="mcp_job_search_view" model="ir.ui.view">
         <field name="name">mcp.job.search</field>
         <field name="model">mcp.job</field>
         <field name="arch" type="xml">
-            <search string="Buscar Trabajos">
+            <search string="Buscar trabajos">
                 <field name="name"/>
                 <field name="user_id"/>
                 <separator/>
@@ -143,7 +143,7 @@
                         domain="[('state','=','cancelled')]"/>
                 <separator/>
                 <filter name="filter_my_jobs"
-                        string="Mis Trabajos"
+                        string="Mis trabajos"
                         domain="[('user_id','=',uid)]"/>
                 <separator/>
                 <filter name="filter_bulk_update"
@@ -152,7 +152,7 @@
                 <filter name="filter_export"
                         string="Exportaciones"
                         domain="[('operation','in',['export_csv','export_xlsx'])]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_operation" string="Operación" context="{'group_by': 'operation'}"/>
                     <filter name="group_user" string="Usuario" context="{'group_by': 'user_id'}"/>
@@ -162,10 +162,10 @@
     </record>
 
     <!-- ================================================================
-         Action
+         Acción
     ================================================================ -->
     <record id="mcp_job_action" model="ir.actions.act_window">
-        <field name="name">Trabajos Asíncronos</field>
+        <field name="name">Trabajos asíncronos</field>
         <field name="res_model">mcp.job</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="mcp_job_search_view"/>

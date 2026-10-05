@@ -1,19 +1,19 @@
 """
-MCP Module Generator — build_zip + validate_spec
-=================================================
+Generador de módulos MCP — build_zip + validate_spec
+====================================================
 
-This service generates installable Odoo 18 modules from a JSON spec.
-It is the backend engine for the ``odoo_generate_module`` MCP tool.
+Este servicio genera módulos Odoo 18 instalables a partir de una especificación JSON.
+Es el motor de la herramienta MCP ``odoo_generate_module``.
 
-Spec Format
------------
+Formato de la especificación
+----------------------------
 ::
 
     {
       "technical_name": "my_module",
       "name": "My Module",
-      "summary": "Short description",
-      "description": "Long description",
+      "summary": "Descripción breve",
+      "description": "Descripción larga",
       "category": "Productivity",
       "version": "17.0.1.0.0",
       "depends": ["base", "mail"],
@@ -21,7 +21,7 @@ Spec Format
       "models": [
         {
           "name": "my.module.task",
-          "description": "A task in my module",
+          "description": "Una tarea de mi módulo",
           "inherit": null,
           "fields": [
             {"name": "name", "type": "char", "string": "Name", "required": true},
@@ -59,17 +59,17 @@ Spec Format
       "demo_data": []
     }
 
-Field type allowlist
---------------------
+Tipos de campo permitidos
+-------------------------
 char, text, html, integer, float, monetary, boolean, date, datetime,
 selection, many2one, one2many, many2many, binary
 
-Notes
+Notas
 -----
-- Generated Python files are parsed by ``ast`` to catch syntax errors.
-- ZIP uses deflate compression.
-- ``validate_spec`` returns a list of human-readable error strings.
-  An empty list means the spec is valid.
+- Los archivos Python generados se analizan con ``ast`` para detectar errores de sintaxis.
+- El ZIP usa compresión deflate.
+- ``validate_spec`` devuelve una lista de mensajes de error legibles.
+  Una lista vacía significa que la especificación es válida.
 """
 
 import ast
@@ -84,7 +84,7 @@ from xml.sax.saxutils import escape as _sax_escape
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Constants
+# Constantes
 # ---------------------------------------------------------------------------
 
 _VALID_LICENSES = {"OPL-1", "LGPL-3", "AGPL-3"}
@@ -117,16 +117,16 @@ def _int(value, default: int = 10) -> int:
 
 
 def _normalize_model_name(name):
-    """Coerce a model name to Odoo dotted-lowercase convention.
+    """Fuerza un nombre de modelo a la convención de Odoo (minúsculas con puntos).
 
-    Examples:
-        'office.asset'  -> 'office.asset' (already valid)
+    Ejemplos:
+        'office.asset'  -> 'office.asset' (ya es válido)
         'OfficeAsset'   -> 'office.asset' (CamelCase)
         'officeAsset'   -> 'office.asset' (lowerCamelCase)
-        'office_asset'  -> 'office.asset' (snake_case, no dot)
+        'office_asset'  -> 'office.asset' (snake_case, sin punto)
 
-    Names that cannot be split unambiguously (e.g. 'officeasset')
-    are returned unchanged and rejected by validate_spec.
+    Los nombres que no se pueden separar sin ambigüedad (p. ej. 'officeasset')
+    se devuelven sin cambios y validate_spec los rechaza.
     """
     if not isinstance(name, str) or not name:
         return name
@@ -158,19 +158,19 @@ _RELATIONAL_TYPES = frozenset({"many2one", "one2many", "many2many"})
 
 
 # ---------------------------------------------------------------------------
-# Public API
+# API pública
 # ---------------------------------------------------------------------------
 
 
 def validate_spec(spec: dict) -> list[str]:
-    """Validate a module spec dict.
+    """Valida el diccionario de especificación de un módulo.
 
-    Returns a list of human-readable error strings.  An empty list means
-    the spec is valid and ``build_zip`` can proceed.
+    Devuelve una lista de mensajes de error legibles. Una lista vacía significa
+    que la especificación es válida y ``build_zip`` puede continuar.
     """
     errors = []
 
-    # ---- top-level required fields ----------------------------------------
+    # ---- campos obligatorios de primer nivel ------------------------------
     tech = spec.get("technical_name", "")
     if not tech:
         errors.append("technical_name es obligatorio.")
@@ -215,7 +215,7 @@ def validate_spec(spec: dict) -> list[str]:
                         f"Cada entrada de depends debe ser una cadena no vacía; se obtuvo {dep!r}."
                     )
 
-    # ---- models -------------------------------------------------------------
+    # ---- modelos ------------------------------------------------------------
     models_spec = spec.get("models") or []
     if not isinstance(models_spec, list):
         errors.append("models debe ser una lista.")
@@ -296,8 +296,8 @@ def validate_spec(spec: dict) -> list[str]:
                         f"{fprefix}: el campo selection {fname!r} requiere la lista 'selection'."
                     )
 
-    # ---- security: accept top-level access_rights/groups (Claude convention)
-    # and merge into spec.security.* so downstream generators see one schema.
+    # ---- seguridad: acepta access_rights/groups de primer nivel (convención de
+    # Claude) y los fusiona en spec.security.* para que los generadores vean un solo esquema.
     top_ars = spec.get("access_rights")
     top_groups = spec.get("groups")
     if isinstance(top_ars, list) or isinstance(top_groups, list):
@@ -312,7 +312,7 @@ def validate_spec(spec: dict) -> list[str]:
             existing = sec.get("groups") if isinstance(sec.get("groups"), list) else []
             sec["groups"] = existing + top_groups
 
-    # ---- security: normalize model refs (no validation, just coercion) -----
+    # ---- seguridad: normaliza referencias a modelos (sin validar, solo ajusta)
     sec = spec.get("security")
     if isinstance(sec, dict):
         ars = sec.get("access_rights")
@@ -321,7 +321,7 @@ def validate_spec(spec: dict) -> list[str]:
                 if isinstance(ar, dict) and "model" in ar:
                     ar["model"] = _normalize_model_name(ar["model"])
 
-    # ---- security: validate references that end up in XML / CSV ------------
+    # ---- seguridad: valida las referencias que acaban en el XML / CSV -------
     sec = spec.get("security")
     if isinstance(sec, dict):
         for i, grp in enumerate(sec.get("groups") or []):
@@ -362,13 +362,13 @@ def validate_spec(spec: dict) -> list[str]:
 
 
 def build_zip(spec: dict) -> tuple[bytes, list[str]]:
-    """Generate an installable Odoo 18 module ZIP from *spec*.
+    """Genera el ZIP de un módulo Odoo 18 instalable a partir de *spec*.
 
-    Returns ``(zip_bytes, warnings)`` where *zip_bytes* is the raw ZIP
-    content and *warnings* is a list of non-fatal advisory strings.
+    Devuelve ``(zip_bytes, warnings)``, donde *zip_bytes* es el contenido
+    del ZIP y *warnings* es una lista de avisos no bloqueantes.
 
-    Raises ``ValueError`` if the spec fails validation or a generated
-    Python file contains a syntax error.
+    Lanza ``ValueError`` si la especificación no supera la validación o si
+    un archivo Python generado contiene un error de sintaxis.
     """
     errors = validate_spec(spec)
     if errors:
@@ -390,7 +390,7 @@ def build_zip(spec: dict) -> tuple[bytes, list[str]]:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
 
-        # __init__.py (root)
+        # __init__.py (raíz)
         root_init = _gen_init_root(models_spec)
         _write_py(zf, f"{tech}/__init__.py", root_init, tech)
 
@@ -412,7 +412,7 @@ def build_zip(spec: dict) -> tuple[bytes, list[str]]:
         access_csv = _gen_access_csv(spec)
         zf.writestr(f"{tech}/security/ir.model.access.csv", access_csv)
 
-        # security/security.xml (groups)
+        # security/security.xml (grupos)
         groups = security.get("groups") or []
         if groups:
             security_xml = _gen_security_groups(spec, tech)
@@ -439,7 +439,7 @@ def build_zip(spec: dict) -> tuple[bytes, list[str]]:
 
 
 # ---------------------------------------------------------------------------
-# Internal generators
+# Generadores internos
 # ---------------------------------------------------------------------------
 
 
@@ -505,7 +505,7 @@ def _gen_manifest(spec: dict) -> str:
 def _gen_init_root(models_spec: list) -> str:
     if models_spec:
         return "from . import models\n"
-    return "# Nothing to import\n"
+    return "# Nada que importar\n"
 
 
 def _gen_init_models(models_spec: list) -> str:
@@ -530,14 +530,14 @@ def _gen_model(model_spec: dict) -> str:
     for fld in fields:
         field_lines.extend(_gen_field_lines(fld))
 
-    # Determine inheritance pattern:
-    #   - inherit is a STRING and != model_name  -> extending existing model (no _name)
-    #   - inherit is a LIST                      -> mixin pattern (NEW model + _name + _inherit)
-    #   - inherit is None or empty               -> plain new model
+    # Determina el patrón de herencia:
+    #   - inherit es una CADENA y != model_name  -> extiende un modelo existente (sin _name)
+    #   - inherit es una LISTA                   -> patrón mixin (modelo NUEVO + _name + _inherit)
+    #   - inherit es None o vacío                -> modelo nuevo simple
     is_extending = isinstance(inherit, str) and inherit and inherit != model_name
 
     if is_extending:
-        # Inheriting an existing model — extension pattern
+        # Hereda de un modelo existente: patrón de extensión
         if inherits_mail:
             chain = [inherit, "mail.thread", "mail.activity.mixin"]
         else:
@@ -548,7 +548,7 @@ def _gen_model(model_spec: dict) -> str:
             else "    _inherit = [" + ", ".join(repr(x) for x in chain) + "]"
         )
     else:
-        # New model — collect mixin inherits (either from inherit-as-list or inherits_mail_thread flag)
+        # Modelo nuevo: reúne los mixins heredados (de inherit como lista o del indicador inherits_mail_thread)
         mixins: list = []
         if isinstance(inherit, list):
             mixins.extend(x for x in inherit if isinstance(x, str) and x and x != model_name)
@@ -561,7 +561,7 @@ def _gen_model(model_spec: dict) -> str:
             if mixins else ""
         )
 
-    # Compose class body
+    # Compone el cuerpo de la clase
     parts: list[str] = []
     parts.append("from odoo import api, fields, models, _")
     parts.append("")
@@ -584,7 +584,7 @@ def _gen_model(model_spec: dict) -> str:
     for line in field_lines:
         parts.append("    " + line if line else "")
 
-    # Remove trailing blank lines
+    # Elimina las líneas en blanco finales
     while parts and parts[-1].strip() == "":
         parts.pop()
 
@@ -592,7 +592,7 @@ def _gen_model(model_spec: dict) -> str:
 
 
 def _gen_field_lines(fld: dict) -> list[str]:
-    """Return list of source lines for one field (no leading indent)."""
+    """Devuelve la lista de líneas de código de un campo (sin sangría inicial)."""
     fname = fld["name"]
     ftype = fld["type"]
     string = fld.get("string", fname.replace("_", " ").title())
@@ -717,7 +717,7 @@ def _gen_access_csv(spec: dict) -> str:
             group = str(ar.get("group", "base.group_user"))
             if not _MODEL_NAME_RE.match(model) or not _XMLID_RE.match(group):
                 raise ValueError(f"Regla de acceso no válida: {ar!r}")
-            # Accept both Odoo-CSV-style keys (perm_*) and short keys
+            # Acepta tanto las claves al estilo CSV de Odoo (perm_*) como las cortas
             r = _perm(ar.get("perm_read", ar.get("read", 1)))
             w = _perm(ar.get("perm_write", ar.get("write", 1)))
             c = _perm(ar.get("perm_create", ar.get("create", 1)))
@@ -729,7 +729,7 @@ def _gen_access_csv(spec: dict) -> str:
             row_name = str(ar.get("name") or f"{model} ({group})")
             writer.writerow([row_id, row_name, model_xml_id, group, r, w, c, u])
     else:
-        # Auto-generate one admin-only line per model
+        # Genera automáticamente una línea solo para administradores por modelo
         for model in models_spec:
             mname = model["name"]
             model_xml_id = "model_" + mname.replace(".", "_")
@@ -740,22 +740,22 @@ def _gen_access_csv(spec: dict) -> str:
 
 
 def _gen_view(model_spec: dict, spec: dict) -> str:
-    """Generate list + form + search views + ir.actions.act_window."""
+    """Genera las vistas de lista, formulario y búsqueda, más la ir.actions.act_window."""
     model_name = model_spec["name"]
     tech = spec["technical_name"]
     fields = model_spec.get("fields") or []
     inherits_mail = model_spec.get("inherits_mail_thread", False)
     menus = spec.get("menus") or []
 
-    # Derive IDs
+    # Deriva los ID
     safe = model_name.replace(".", "_")
     list_id = f"{safe}_list_view"
     form_id = f"{safe}_form_view"
     search_id = f"{safe}_search_view"
     action_id = f"{safe}_action"
 
-    # ---- list view ---------------------------------------------------------
-    # First 6 scalar (non-relational, non-binary) fields
+    # ---- vista de lista ----------------------------------------------------
+    # Primeros 6 campos escalares (ni relacionales ni binarios)
     scalar_types = {"char", "text", "integer", "float", "monetary", "boolean",
                     "date", "datetime", "selection"}
     list_fields = [f for f in fields if f.get("type") in scalar_types][:6]
@@ -766,8 +766,8 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
     if not list_field_lines:
         list_field_lines = ""
 
-    # ---- form view ---------------------------------------------------------
-    # Left column: char, many2one, text; right column: date, datetime, selection
+    # ---- vista de formulario -----------------------------------------------
+    # Columna izquierda: char, many2one, text; columna derecha: date, datetime, selection
     left_types = {"char", "many2one", "text", "html"}
     right_types = {"date", "datetime", "selection", "integer", "float",
                    "monetary", "boolean"}
@@ -784,7 +784,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
     if inherits_mail:
         chatter_block = "\n        <chatter/>"
 
-    # ---- search view -------------------------------------------------------
+    # ---- vista de búsqueda -------------------------------------------------
     search_char_fields = [f for f in fields
                           if f.get("type") in ("char", "text")][:4]
     selection_fields = [f for f in fields if f.get("type") == "selection"]
@@ -798,8 +798,8 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
         for f in selection_fields
     )
 
-    # ---- menu actions ------------------------------------------------------
-    # Build menu XML for any menu entry that references this model
+    # ---- acciones de menú --------------------------------------------------
+    # Construye el XML de menú de cada entrada que referencia este modelo
     menu_xml_parts: list[str] = []
     model_menus = _collect_model_menus(model_name, menus, tech)
     for entry in model_menus:
@@ -812,7 +812,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
     xml = f"""<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- List view -->
+    <!-- Vista de lista -->
     <record id="{list_id}" model="ir.ui.view">
         <field name="name">{model_name}.list</field>
         <field name="model">{model_name}</field>
@@ -823,7 +823,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
         </field>
     </record>
 
-    <!-- Form view -->
+    <!-- Vista de formulario -->
     <record id="{form_id}" model="ir.ui.view">
         <field name="name">{model_name}.form</field>
         <field name="model">{model_name}</field>
@@ -843,7 +843,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
         </field>
     </record>
 
-    <!-- Search view -->
+    <!-- Vista de búsqueda -->
     <record id="{search_id}" model="ir.ui.view">
         <field name="name">{model_name}.search</field>
         <field name="model">{model_name}</field>
@@ -855,7 +855,7 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Acción -->
     <record id="{action_id}" model="ir.actions.act_window">
         <field name="name">{_x(model_spec.get("description", model_name))}</field>
         <field name="res_model">{model_name}</field>
@@ -868,24 +868,24 @@ def _gen_view(model_spec: dict, spec: dict) -> str:
 
 
 def _gen_demo_data(spec: dict) -> str:
-    """Generate a stub demo.xml — actual records must be filled in post-generation."""
+    """Genera un demo.xml vacío: los registros reales se completan después de generar."""
     tech = spec["technical_name"]
     lines = [
         '<?xml version="1.0" encoding="utf-8"?>',
         "<odoo>",
-        "    <!-- Demo data -->",
+        "    <!-- Datos de demostración -->",
         "</odoo>",
     ]
     return "\n".join(lines) + "\n"
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# Utilidades internas
 # ---------------------------------------------------------------------------
 
 
 def _write_py(zf: zipfile.ZipFile, arcname: str, source: str, tech: str) -> None:
-    """Write *source* to *arcname* in *zf*, raising ValueError on syntax errors."""
+    """Escribe *source* en *arcname* dentro de *zf*; lanza ValueError si hay errores de sintaxis."""
     try:
         ast.parse(source)
     except SyntaxError as exc:
@@ -897,22 +897,22 @@ def _write_py(zf: zipfile.ZipFile, arcname: str, source: str, tech: str) -> None
 
 
 def _model_name_to_file(model_name: str) -> str:
-    """Convert 'my.module.task' -> 'my_module_task'."""
+    """Convierte 'my.module.task' -> 'my_module_task'."""
     return model_name.replace(".", "_")
 
 
 def _model_name_to_class(model_name: str) -> str:
-    """Convert 'my.module.task' -> 'MyModuleTask'."""
+    """Convierte 'my.module.task' -> 'MyModuleTask'."""
     return "".join(part.capitalize() for part in model_name.split("."))
 
 
 def _to_xml_id(name: str) -> str:
-    """Convert a display name to a safe XML ID fragment."""
+    """Convierte un nombre visible en un fragmento de XML-ID seguro."""
     return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
 
 
 def _collect_model_menus(model_name: str, menus: list, tech: str) -> list[str]:
-    """Build ir.ui.menu XML strings for any menu entry whose action_model == model_name."""
+    """Construye el XML de ir.ui.menu de cada entrada de menú cuyo action_model == model_name."""
     result: list[str] = []
     safe = model_name.replace(".", "_")
     action_id = f"{safe}_action"
@@ -923,8 +923,8 @@ def _collect_model_menus(model_name: str, menus: list, tech: str) -> list[str]:
         seq = _int(top.get("sequence", 10))
         children = top.get("children") or []
 
-        # Emit the top-level menu only if not already emitted
-        # (first model referencing it wins; others will reference existing id)
+        # Emite el menú de primer nivel solo si aún no se ha emitido
+        # (gana el primer modelo que lo referencia; los demás usan el id existente)
         matching_children = [c for c in children
                              if c.get("action_model") == model_name]
         if not matching_children:

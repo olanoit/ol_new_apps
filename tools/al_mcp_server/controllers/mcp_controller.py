@@ -20,9 +20,9 @@ _logger = logging.getLogger(__name__)
 _workers = int(_odoo_config.get("workers", 0) or 0)
 if _workers > 1:
     _logger.warning(
-        "MCP Server: workers=%s detected. SSE sessions are stored in-memory per-worker. "
-        "POST /mcp/messages may land on a different worker and return 404. "
-        "Configure nginx with 'ip_hash' or sticky sessions to fix this.",
+        "Servidor MCP: se detectaron workers=%s. Las sesiones SSE se guardan en memoria en cada worker. "
+        "Un POST /mcp/messages puede llegar a otro worker y devolver 404. "
+        "Configure nginx con 'ip_hash' o sesiones persistentes (sticky sessions) para evitarlo.",
         _workers,
     )
 
@@ -32,13 +32,13 @@ _CORS_HEADERS = {
     "Access-Control-Allow-Headers": "Content-Type, Authorization, Mcp-Session-Id",
 }
 
-# N2: HTTPS enforcement — set mcp_require_https = true in odoo.conf to enable.
-# Automatically skipped in dev mode (workers=0 with dev_mode flag).
+# N2: exigir HTTPS — active mcp_require_https = true en odoo.conf.
+# Se omite automáticamente en modo desarrollo (workers=0 con la opción dev_mode).
 _REQUIRE_HTTPS = str(_odoo_config.get("mcp_require_https", "false")).lower() in ("1", "true", "yes")
 
 
 def _https_guard() -> Response | None:
-    """Return 400 if HTTPS is required but the request arrived over HTTP. None if OK."""
+    """Devuelve 400 si se exige HTTPS y la petición llegó por HTTP; None si todo está bien."""
     if not _REQUIRE_HTTPS:
         return None
     if _odoo_config.get("dev_mode"):
@@ -56,10 +56,10 @@ def _https_guard() -> Response | None:
 
 
 def _ip_guard(user_info: dict, ip: str) -> Response | None:
-    """Return 403 if the client IP is blocked by the token's IP rules. None if OK.
+    """Devuelve 403 si las reglas de IP del token bloquean la IP del cliente; None si todo está bien.
 
-    Loads the mcp.token record to call is_ip_allowed(). This read is cheap since
-    the record is already in the ORM cache from validate_token's sudo search.
+    Carga el registro mcp.token para llamar a is_ip_allowed(). La lectura es barata
+    porque el registro ya está en la caché del ORM tras la búsqueda con sudo de validate_token.
     """
     token_id = user_info.get("token_id")
     if not token_id:
@@ -77,12 +77,12 @@ def _ip_guard(user_info: dict, ip: str) -> Response | None:
             return blocked
         if not token_sudo.is_ip_allowed(ip):
             _logger.warning(
-                "MCP: IP %r blocked by token %s (client=%s)", ip, token_id, user_info.get("client_name")
+                "MCP: IP %r bloqueada por el token %s (cliente=%s)", ip, token_id, user_info.get("client_name")
             )
             return blocked
     except Exception:
         # Ante un error se deniega (fail-closed), nunca se deja pasar.
-        _logger.exception("MCP: IP check failed for token %s", token_id)
+        _logger.exception("MCP: falló la comprobación de IP del token %s", token_id)
         return blocked
     return None
 
@@ -90,7 +90,7 @@ def _ip_guard(user_info: dict, ip: str) -> Response | None:
 class McpController(http.Controller):
 
     # ------------------------------------------------------------------
-    # OPTIONS — CORS preflight for all MCP endpoints
+    # OPTIONS — verificación previa CORS de todos los endpoints MCP
     # ------------------------------------------------------------------
 
     @http.route(["/mcp", "/mcp/sse", "/mcp/messages"], type="http", auth="public",
@@ -99,9 +99,9 @@ class McpController(http.Controller):
         return Response("", status=200, headers=_CORS_HEADERS)
 
     # ------------------------------------------------------------------
-    # POST /mcp  – Streamable HTTP transport (MCP spec 2025-03-26)
-    # Recommended transport for Claude CLI, VSCode extension, and all
-    # modern MCP clients. Stateless: no SSE session needed.
+    # POST /mcp  – transporte Streamable HTTP (especificación MCP 2025-03-26)
+    # Transporte recomendado para Claude CLI, la extensión de VSCode y todos
+    # los clientes MCP modernos. Sin estado: no necesita sesión SSE.
     # ------------------------------------------------------------------
 
     @http.route("/mcp", type="http", auth="public", methods=["POST"], csrf=False)
@@ -109,7 +109,7 @@ class McpController(http.Controller):
         return self._handle_streamable_http()
 
     # ------------------------------------------------------------------
-    # POST /mcp/sse  – Streamable HTTP transport (legacy URL alias)
+    # POST /mcp/sse  – transporte Streamable HTTP (alias de la URL antigua)
     # ------------------------------------------------------------------
 
     @http.route("/mcp/sse", type="http", auth="public", methods=["POST"], csrf=False)
@@ -117,8 +117,8 @@ class McpController(http.Controller):
         return self._handle_streamable_http()
 
     def _handle_streamable_http(self):
-        """Stateless JSON-RPC over HTTP POST. Finds or creates a persistent HTTP
-        audit session per token so message_count and tool call logs are recorded."""
+        """JSON-RPC sin estado sobre HTTP POST. Busca o crea una sesión HTTP de auditoría
+        persistente por token para registrar message_count y las llamadas a herramientas."""
         guard = _https_guard()
         if guard:
             return guard
@@ -130,7 +130,7 @@ class McpController(http.Controller):
         try:
             user_info = validate_token(token, request.env)
         except Exception:
-            _logger.exception("MCP HTTP: token validation failed")
+            _logger.exception("MCP HTTP: falló la validación del token")
             return unauthorized(_base_url())
 
         if not user_info:
@@ -151,7 +151,7 @@ class McpController(http.Controller):
             body = json.loads(request.httprequest.data or b"{}")
         except json.JSONDecodeError:
             return _json_resp(
-                {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "Parse error"}},
+                {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "Error de análisis"}},
                 400,
             )
 
@@ -161,7 +161,7 @@ class McpController(http.Controller):
         restrictions = user_info.get("restrictions")
         capture_payloads = user_info.get("capture_payloads", False)
 
-        # Find or create a persistent HTTP session record for this token
+        # Busca o crea un registro persistente de sesión HTTP para este token
         session_db_id = _get_or_create_http_session(
             request.env, uid, token_id, ip
         )
@@ -207,15 +207,15 @@ class McpController(http.Controller):
                     return Response("", status=202, headers=_CORS_HEADERS)
                 return _json_resp(response)
         except Exception:
-            _logger.exception("MCP HTTP: processing error uid=%s", uid)
+            _logger.exception("MCP HTTP: error de procesamiento uid=%s", uid)
             msg_id = body.get("id") if isinstance(body, dict) else None
             return _json_resp(
-                {"jsonrpc": "2.0", "id": msg_id, "error": {"code": -32603, "message": "Internal error"}},
+                {"jsonrpc": "2.0", "id": msg_id, "error": {"code": -32603, "message": "Error interno"}},
                 500,
             )
 
     # ------------------------------------------------------------------
-    # GET /mcp/sse  – Legacy SSE transport (MCP spec pre-2025-03-26)
+    # GET /mcp/sse  – transporte SSE antiguo (especificación MCP anterior a 2025-03-26)
     # ------------------------------------------------------------------
 
     @http.route("/mcp/sse", type="http", auth="public", methods=["GET"], csrf=False)
@@ -231,7 +231,7 @@ class McpController(http.Controller):
         try:
             user_info = validate_token(token, request.env)
         except Exception:
-            _logger.exception("MCP SSE: token validation failed")
+            _logger.exception("MCP SSE: falló la validación del token")
             return unauthorized(_base_url())
 
         if not user_info:
@@ -258,19 +258,19 @@ class McpController(http.Controller):
         mcp_session = session_manager.create(uid, db, ip)
         session_id = mcp_session.session_id
 
-        # Store governance context on the in-memory session so the POST handler
-        # (mcp_messages) can recover scope/restrictions without re-validating the token.
+        # Guarda el contexto de gobierno en la sesión en memoria para que el manejador
+        # POST (mcp_messages) recupere scope/restricciones sin volver a validar el token.
         mcp_session.scope = scope
         mcp_session.restrictions = restrictions
         mcp_session.capture_payloads = capture_payloads
         mcp_session.token_id = token_id
 
         _logger.info(
-            "MCP SSE: new connection uid=%s scope=%s session=%s ip=%s",
+            "MCP SSE: nueva conexión uid=%s scope=%s sesión=%s ip=%s",
             uid, scope, session_id, ip,
         )
 
-        # Audit log — commit before streaming starts so cursor is clean
+        # Registro de auditoría — commit antes de empezar el streaming para dejar limpio el cursor
         try:
             rec = request.env["mcp.session"].sudo().create({
                 "session_id": session_id,
@@ -283,7 +283,7 @@ class McpController(http.Controller):
             request.env.cr.commit()
             mcp_session.db_id = rec.id
         except Exception:
-            _logger.warning("Could not create mcp.session audit record")
+            _logger.warning("No se pudo crear el registro de auditoría mcp.session")
 
         messages_url = f"{_base_url()}/mcp/messages?session_id={session_id}"
 
@@ -299,9 +299,9 @@ class McpController(http.Controller):
                     except queue.Empty:
                         yield ": ping\n\n"
             except Exception:
-                _logger.exception("MCP SSE: generator error session=%s", session_id)
+                _logger.exception("MCP SSE: error del generador, sesión=%s", session_id)
             finally:
-                _logger.info("MCP SSE: session %s closed", session_id)
+                _logger.info("MCP SSE: sesión %s cerrada", session_id)
                 session_manager.remove(session_id)
 
         return Response(
@@ -316,14 +316,14 @@ class McpController(http.Controller):
         )
 
     # ------------------------------------------------------------------
-    # POST /mcp/messages  – Legacy SSE message channel
+    # POST /mcp/messages  – canal de mensajes del transporte SSE antiguo
     # ------------------------------------------------------------------
 
     @http.route("/mcp/messages", type="http", auth="public", methods=["POST"], csrf=False)
     def mcp_messages(self, session_id=None, **_kwargs):
         mcp_session = session_manager.get(session_id)
         if not mcp_session:
-            _logger.warning("MCP messages: session not found: %s", session_id)
+            _logger.warning("Mensajes MCP: sesión no encontrada: %s", session_id)
             return _json_resp({"error": "Sesión no encontrada o caducada"}, 404)
 
         # El session_id no sustituye al token: si se revocó, caducó o la IP ya
@@ -344,9 +344,9 @@ class McpController(http.Controller):
         if not isinstance(body, dict):
             return _json_resp({"error": "Se esperaba un objeto JSON-RPC"}, 400)
 
-        _logger.debug("MCP message: session=%s method=%s", session_id, body.get("method"))
+        _logger.debug("Mensaje MCP: sesión=%s método=%s", session_id, body.get("method"))
 
-        # Recover governance context stored during SSE handshake
+        # Recupera el contexto de gobierno guardado durante el handshake SSE
         scope = getattr(mcp_session, "scope", "write")
         restrictions = getattr(mcp_session, "restrictions", None)
         capture_payloads = getattr(mcp_session, "capture_payloads", False)
@@ -364,14 +364,14 @@ class McpController(http.Controller):
             if response is not None:
                 mcp_session.put(response)
         except Exception:
-            _logger.exception("MCP message processing error session=%s", session_id)
+            _logger.exception("Error al procesar el mensaje MCP, sesión=%s", session_id)
             mcp_session.put({
                 "jsonrpc": "2.0",
                 "id": body.get("id"),
-                "error": {"code": -32603, "message": "Internal error"},
+                "error": {"code": -32603, "message": "Error interno"},
             })
 
-        # Update DB audit record (non-critical)
+        # Actualiza el registro de auditoría en la base de datos (no crítico)
         try:
             env = request.env(user=mcp_session.uid)
             audit = env["mcp.session"].sudo().browse(mcp_session.db_id)
@@ -382,7 +382,7 @@ class McpController(http.Controller):
                 })
                 env.cr.commit()
         except Exception:
-            _logger.debug("mcp.session audit update failed for session=%s", session_id)
+            _logger.debug("Falló la actualización de auditoría de mcp.session, sesión=%s", session_id)
 
         return Response("", status=202, headers=_CORS_HEADERS)
 
@@ -401,26 +401,26 @@ def _session_token_still_valid(mcp_session, ip: str) -> bool:
     try:
         return token_sudo.is_ip_allowed(ip)
     except Exception:
-        _logger.exception("MCP: IP check failed for token %s", token_id)
+        _logger.exception("MCP: falló la comprobación de IP del token %s", token_id)
         return False
 
 
 # ---------------------------------------------------------------------------
-# HTTP session helpers
+# Utilidades de sesión HTTP
 # ---------------------------------------------------------------------------
 
 def _get_or_create_http_session(env, uid: int, token_id: int, ip: str) -> int | None:
-    """Return the mcp.session DB id for an HTTP transport token.
+    """Devuelve el ID en base de datos de mcp.session para un token del transporte HTTP.
 
-    Checks the in-memory cache first (O(1), no DB hit on repeat requests).
-    Falls back to DB search + create only on first request per token per worker.
+    Primero consulta la caché en memoria (O(1), sin acceso a la base en peticiones repetidas).
+    Solo busca y crea en la base en la primera petición de cada token en cada worker.
     """
-    # Fast path: in-memory cache hit
+    # Camino rápido: acierto en la caché en memoria
     cached = session_manager.get_http_session_db_id(token_id)
     if cached:
         return cached
 
-    # Slow path: DB search or create (only happens once per token per worker)
+    # Camino lento: búsqueda o creación en la base (solo una vez por token y worker)
     try:
         env_sudo = env["mcp.session"].sudo()
         existing = env_sudo.search(
@@ -443,12 +443,12 @@ def _get_or_create_http_session(env, uid: int, token_id: int, ip: str) -> int | 
         session_manager.set_http_session_db_id(token_id, rec.id)
         return rec.id
     except Exception:
-        _logger.debug("Could not find/create HTTP session record")
+        _logger.debug("No se pudo buscar ni crear el registro de sesión HTTP")
         return None
 
 
 def _update_http_session(env, session_db_id: int | None, message_delta: int) -> None:
-    """Increment message_count and update last_activity for an HTTP session."""
+    """Incrementa message_count y actualiza last_activity de una sesión HTTP."""
     if not session_db_id:
         return
     try:
@@ -459,11 +459,11 @@ def _update_http_session(env, session_db_id: int | None, message_delta: int) -> 
         )
         env.cr.commit()
     except Exception:
-        _logger.debug("Could not update HTTP session stats db_id=%s", session_db_id)
+        _logger.debug("No se pudieron actualizar las estadísticas de la sesión HTTP db_id=%s", session_db_id)
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Utilidades
 # ---------------------------------------------------------------------------
 
 def _base_url() -> str:

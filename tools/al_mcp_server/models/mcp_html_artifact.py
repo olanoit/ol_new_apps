@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-MCP HTML Artifact model.
+Modelo de artefacto HTML MCP.
 
-An artifact is a free-form interactive HTML snippet (HTML + optional CSS + JS)
-produced by an AI client and served through a strictly sandboxed iframe. Unlike
-mcp.portal.page, the content is opaque to the server: no spec, no widgets, just
-raw markup that the client wants to render to a viewer.
+Un artefacto es un fragmento HTML interactivo libre (HTML + CSS y JS opcionales)
+generado por un cliente de IA y servido dentro de un iframe estrictamente
+aislado. A diferencia de mcp.portal.page, el contenido es opaco para el
+servidor: sin especificación ni widgets, solo el marcado en bruto que el
+cliente quiere mostrar a quien lo vea.
 
-Security model
---------------
-* Content is wrapped in an iframe with ``sandbox="allow-scripts"`` (no
-  same-origin), so script inside the artifact cannot read the parent page,
-  cookies, or storage.
-* A strict Content-Security-Policy is injected as a ``<meta http-equiv>`` tag
-  inside the iframe srcdoc. ``connect-src`` defaults to ``'none'``, blocking
-  any outbound network calls from the artifact.
-* Only a small allowlist of CDNs is permitted for ``script-src`` and
-  ``style-src`` (jsDelivr, unpkg, cdnjs, Google Fonts).
+Modelo de seguridad
+-------------------
+* El contenido se envuelve en un iframe con ``sandbox="allow-scripts"`` (sin
+  same-origin), de modo que los scripts del artefacto no pueden leer la página
+  principal, las cookies ni el almacenamiento.
+* Se inyecta una Content-Security-Policy estricta como etiqueta
+  ``<meta http-equiv>`` dentro del srcdoc del iframe. ``connect-src`` vale
+  ``'none'`` por defecto y bloquea cualquier llamada de red saliente del artefacto.
+* Solo se permite una pequeña lista de CDN en ``script-src`` y ``style-src``
+  (jsDelivr, unpkg, cdnjs, Google Fonts).
 """
 
 import logging
@@ -30,7 +31,7 @@ from odoo.exceptions import AccessError, UserError
 _logger = logging.getLogger(__name__)
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
-_MAX_HTML_BYTES = 512 * 1024  # 512 KiB hard cap per artifact field
+_MAX_HTML_BYTES = 512 * 1024  # Límite estricto de 512 KiB por campo del artefacto
 
 
 def _slugify(text: str) -> str:
@@ -68,7 +69,7 @@ class McpHtmlArtifact(models.Model):
              "De lo contrario, se requiere una sesión de Odoo activa o un parámetro ?token= válido.",
     )
     access_token = fields.Char(
-        string="Token de Incrustación",
+        string="Token de incrustación",
         readonly=True,
         copy=False,
         default=lambda self: secrets.token_urlsafe(24),
@@ -76,7 +77,7 @@ class McpHtmlArtifact(models.Model):
     )
     created_by = fields.Many2one(
         "res.users",
-        string="Creado Por",
+        string="Creado por",
         default=lambda self: self.env.uid,
         ondelete="restrict",
         index=True,
@@ -92,7 +93,7 @@ class McpHtmlArtifact(models.Model):
     html = fields.Text(
         string="Cuerpo HTML",
         required=True,
-        default="<h1>Hello, world!</h1>",
+        default="<h1>¡Hola, mundo!</h1>",
         help="Marcado HTML colocado dentro del <body> del documento aislado. "
              "Puede contener etiquetas <style> y <script> en línea.",
     )
@@ -107,10 +108,10 @@ class McpHtmlArtifact(models.Model):
     )
 
     view_count = fields.Integer(string="Vistas", default=0, readonly=True)
-    last_viewed = fields.Datetime(string="Última Visualización", readonly=True)
+    last_viewed = fields.Datetime(string="Última visualización", readonly=True)
 
-    artifact_url = fields.Char(string="URL del Artefacto", compute="_compute_urls")
-    embed_url = fields.Char(string="URL de Incrustación", compute="_compute_urls")
+    artifact_url = fields.Char(string="URL del artefacto", compute="_compute_urls")
+    embed_url = fields.Char(string="URL de incrustación", compute="_compute_urls")
 
     _slug_unique = models.Constraint(
         "UNIQUE(slug)",
@@ -167,7 +168,7 @@ class McpHtmlArtifact(models.Model):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("Token Regenerado"),
+                "title": _("Token regenerado"),
                 "message": _(
                     "El token de incrustación se ha regenerado. "
                     "Los enlaces de incrustación anteriores ya no son válidos."

@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-MCP Portal Page model.
+Modelo de página de portal MCP.
 
-Each portal page is defined by a JSON *spec* that drives server-side rendering.
+Cada página de portal se define con una *especificación* JSON que guía el
+renderizado en el servidor.
 
-Spec format
------------
+Formato de la especificación
+----------------------------
 .. code-block:: json
 
     {
-      "title": "Sales Dashboard",
-      "subtitle": "Optional subtitle",
+      "title": "Tablero de ventas",
+      "subtitle": "Subtítulo opcional",
       "filters": [
-        {"name": "date_from", "type": "date", "label": "From", "default": "2026-01-01"},
-        {"name": "date_to",   "type": "date", "label": "To"}
+        {"name": "date_from", "type": "date", "label": "Desde", "default": "2026-01-01"},
+        {"name": "date_to",   "type": "date", "label": "Hasta"}
       ],
       "widgets": [
         {
           "type": "kpi",
-          "title": "Total Revenue",
+          "title": "Ingresos totales",
           "model": "sale.order",
           "domain": [["state", "in", ["sale", "done"]]],
           "field": "amount_total",
@@ -31,7 +32,7 @@ Spec format
         },
         {
           "type": "chart",
-          "title": "Monthly Sales",
+          "title": "Ventas mensuales",
           "chart_type": "bar",
           "model": "sale.order",
           "domain": [["state", "=", "sale"]],
@@ -40,7 +41,7 @@ Spec format
         },
         {
           "type": "table",
-          "title": "Top 10 Customers",
+          "title": "10 mejores clientes",
           "model": "sale.order",
           "domain": [],
           "groupby": ["partner_id"],
@@ -51,17 +52,17 @@ Spec format
       ]
     }
 
-Supported widget types: kpi, chart, table.
-Supported chart_type:   bar, line, pie, area, donut.
-Supported aggregate:    sum, count, avg, min, max.
-Supported format:       currency, number, percent, integer.
+Tipos de widget admitidos: kpi, chart, table.
+chart_type admitidos:      bar, line, pie, area, donut.
+aggregate admitidos:       sum, count, avg, min, max.
+format admitidos:          currency, number, percent, integer.
 
-Filter substitution
--------------------
-Domain string values of the form ``{{filters.date_from}}`` are replaced with
-the matching query-string parameter when the page is rendered. This allows
-date-range pickers on the portal page to narrow widget data without rebuilding
-the spec.
+Sustitución de filtros
+----------------------
+Los valores de texto del dominio con la forma ``{{filters.date_from}}`` se
+sustituyen por el parámetro de la query string correspondiente al renderizar la
+página. Así, los selectores de rango de fechas del portal pueden acotar los
+datos de los widgets sin reconstruir la especificación.
 """
 
 import json
@@ -82,7 +83,7 @@ _VALID_FORMATS = frozenset({"currency", "number", "percent", "integer"})
 
 
 def _slugify(text: str) -> str:
-    """Convert *text* to a URL-safe lowercase slug."""
+    """Convierte *text* en un slug en minúsculas apto para URL."""
     try:
         from odoo.tools import slugify as _odoo_slugify
         return _odoo_slugify(text, allow_slash=False)
@@ -94,12 +95,12 @@ def _slugify(text: str) -> str:
 
 class McpPortalPage(models.Model):
     _name = "mcp.portal.page"
-    _description = "Página de Portal MCP"
+    _description = "Página de portal MCP"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "create_date desc"
 
     # ------------------------------------------------------------------
-    # Core identity fields
+    # Campos de identidad
     # ------------------------------------------------------------------
 
     name = fields.Char(
@@ -122,7 +123,7 @@ class McpPortalPage(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Access control fields
+    # Campos de control de acceso
     # ------------------------------------------------------------------
 
     is_public = fields.Boolean(
@@ -133,7 +134,7 @@ class McpPortalPage(models.Model):
              "De lo contrario, se requiere una sesión de Odoo activa o un parámetro ?token= válido.",
     )
     access_token = fields.Char(
-        string="Token de Incrustación",
+        string="Token de incrustación",
         readonly=True,
         copy=False,
         default=lambda self: secrets.token_urlsafe(24),
@@ -142,7 +143,7 @@ class McpPortalPage(models.Model):
     )
     created_by = fields.Many2one(
         "res.users",
-        string="Creado Por",
+        string="Creado por",
         default=lambda self: self.env.uid,
         ondelete="restrict",
         index=True,
@@ -150,7 +151,7 @@ class McpPortalPage(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Appearance
+    # Apariencia
     # ------------------------------------------------------------------
 
     theme = fields.Selection(
@@ -160,41 +161,41 @@ class McpPortalPage(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Content
+    # Contenido
     # ------------------------------------------------------------------
 
     spec = fields.Text(
-        string="Especificación de Página (JSON)",
+        string="Especificación de la página (JSON)",
         required=True,
-        default='{\n  "title": "Mi Tablero",\n  "widgets": []\n}',
+        default='{\n  "title": "Mi tablero",\n  "widgets": []\n}',
         help="Especificación JSON que define el diseño, los filtros y los widgets. "
              "Consulte el docstring del módulo para la referencia completa del formato.",
     )
 
     # ------------------------------------------------------------------
-    # Analytics
+    # Analítica
     # ------------------------------------------------------------------
 
     view_count = fields.Integer(string="Vistas", default=0, readonly=True)
-    last_viewed = fields.Datetime(string="Última Visualización", readonly=True)
+    last_viewed = fields.Datetime(string="Última visualización", readonly=True)
 
     # ------------------------------------------------------------------
-    # Computed / virtual fields
+    # Campos calculados / virtuales
     # ------------------------------------------------------------------
 
     page_url = fields.Char(
-        string="URL de la Página",
+        string="URL de la página",
         compute="_compute_urls",
         help="URL pública de esta página de portal.",
     )
     embed_url = fields.Char(
-        string="URL de Incrustación",
+        string="URL de incrustación",
         compute="_compute_urls",
         help="URL autenticada por token para incrustar sin iniciar sesión.",
     )
 
     # ------------------------------------------------------------------
-    # Constraints
+    # Restricciones
     # ------------------------------------------------------------------
 
     _slug_unique = models.Constraint(
@@ -203,7 +204,7 @@ class McpPortalPage(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # ORM overrides
+    # Sobrescrituras del ORM
     # ------------------------------------------------------------------
 
     @api.model_create_multi
@@ -227,7 +228,7 @@ class McpPortalPage(models.Model):
             raise AccessError(_("Solo un administrador puede cambiar el propietario."))
 
     # ------------------------------------------------------------------
-    # Computed field implementations
+    # Implementación de los campos calculados
     # ------------------------------------------------------------------
 
     @api.depends("slug", "access_token")
@@ -242,11 +243,11 @@ class McpPortalPage(models.Model):
             )
 
     # ------------------------------------------------------------------
-    # Business methods
+    # Métodos de negocio
     # ------------------------------------------------------------------
 
     def action_preview(self):
-        """Open the portal page in a new browser tab."""
+        """Abre la página de portal en una pestaña nueva del navegador."""
         self.ensure_one()
         base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
         url = f"{base}/mcp-page/{self.slug}"
@@ -257,14 +258,14 @@ class McpPortalPage(models.Model):
         }
 
     def action_regenerate_token(self):
-        """Roll the embed access token, invalidating all existing embed links."""
+        """Renueva el token de incrustación e invalida todos los enlaces de incrustación existentes."""
         for rec in self:
             rec.access_token = secrets.token_urlsafe(24)
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("Token Regenerado"),
+                "title": _("Token regenerado"),
                 "message": _(
                     "El token de incrustación se ha regenerado. "
                     "Los enlaces de incrustación anteriores ya no son válidos."
@@ -276,10 +277,10 @@ class McpPortalPage(models.Model):
 
     @api.model
     def parse_spec(self, spec_text: str) -> dict:
-        """Validate and parse a page spec JSON string.
+        """Valida e interpreta el texto JSON de la especificación de una página.
 
-        Returns the parsed dict on success. Raises UserError with a descriptive
-        message on any structural or JSON parse error.
+        Devuelve el dict interpretado si todo va bien. Lanza UserError con un
+        mensaje descriptivo ante cualquier error de estructura o de JSON.
         """
         if not spec_text or not spec_text.strip():
             raise UserError(_("La especificación de página no puede estar vacía."))
@@ -307,7 +308,7 @@ class McpPortalPage(models.Model):
 
     @api.model
     def _validate_widget_spec(self, widget: dict, idx: int) -> None:
-        """Raise UserError if a single widget spec is structurally invalid."""
+        """Lanza UserError si la especificación de un widget tiene una estructura no válida."""
         if not isinstance(widget, dict):
             raise UserError(_("El widget n.º %d debe ser un objeto JSON.") % idx)
 
@@ -345,11 +346,11 @@ class McpPortalPage(models.Model):
                 )
 
     # ------------------------------------------------------------------
-    # Internal helpers
+    # Utilidades internas
     # ------------------------------------------------------------------
 
     def _unique_slug(self, name: str) -> str:
-        """Generate a slug from *name* that does not collide with existing slugs."""
+        """Genera a partir de *name* un slug que no choque con los existentes."""
         base = _slugify(name)
         candidate = base
         suffix = 1

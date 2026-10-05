@@ -9,18 +9,18 @@ from odoo.fields import Datetime
 
 _logger = logging.getLogger(__name__)
 
-# Only write last_used to DB if this much time has elapsed since the last update.
-# Prevents a write transaction per request under high load.
+# Solo se escribe last_used en la base si ha pasado este tiempo desde la última actualización.
+# Evita una transacción de escritura por petición cuando hay mucha carga.
 _LAST_USED_THROTTLE_MINUTES = 5
 
 
 def _hash_token(raw: str) -> str:
-    """SHA-256 hash of a raw Bearer token — mirrors mcp_token.py hashing."""
+    """Hash SHA-256 de un token Bearer en claro — replica el hash de mcp_token.py."""
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
 def extract_bearer(request) -> str | None:
-    """Extract Bearer token from Authorization header."""
+    """Extrae el token Bearer de la cabecera Authorization."""
     auth = request.httprequest.headers.get("Authorization", "")
     if auth.startswith("Bearer "):
         return auth[7:].strip()
@@ -29,28 +29,28 @@ def extract_bearer(request) -> str | None:
 
 def validate_token(token: str, env) -> dict | None:
     """
-    Validate a Bearer token. Hashes the raw token before DB lookup so the
-    database never stores or compares raw token values.
+    Valida un token Bearer. Calcula el hash del token en claro antes de buscarlo
+    para que la base de datos nunca guarde ni compare tokens en claro.
 
-    Returns a dict with:
-        uid             – Odoo user id
-        client_name     – token display name
-        token_id        – mcp.token record id
-        token_hash      – used by rate limiter, never logged
-        rate_limit      – per-user override (0 = use global default)
+    Devuelve un diccionario con:
+        uid             – ID del usuario de Odoo
+        client_name     – nombre visible del token
+        token_id        – ID del registro mcp.token
+        token_hash      – lo usa el limitador de peticiones; nunca se registra en el log
+        rate_limit      – límite propio del usuario (0 = usar el valor global)
         scope           – 'read' | 'write' | 'admin'
-        capture_payloads – bool, whether to capture tool args/results in audit log
-        restrictions    – dict ready for env.context['mcp_restrictions']:
+        capture_payloads – bool, si se capturan argumentos y resultados en el registro de auditoría
+        restrictions    – diccionario listo para env.context['mcp_restrictions']:
             {
-                'allowed_models': set of model names (empty = all allowed),
-                'denied_models':  set of model names (empty = none denied),
-                'field_restrictions': dict {model_name: [field, ...]} (empty = all allowed),
+                'allowed_models': conjunto de nombres de modelo (vacío = todos permitidos),
+                'denied_models':  conjunto de nombres de modelo (vacío = ninguno denegado),
+                'field_restrictions': dict {nombre_modelo: [campo, ...]} (vacío = todos permitidos),
             }
 
-    Returns None if the token is invalid, expired, or revoked.
+    Devuelve None si el token no es válido, ha caducado o fue revocado.
 
-    last_used is throttled: written at most once every 5 minutes to avoid
-    a write transaction on every single HTTP request under high load.
+    last_used se limita: se escribe como mucho una vez cada 5 minutos para evitar
+    una transacción de escritura en cada petición HTTP cuando hay mucha carga.
     """
     if not token:
         return None
@@ -69,12 +69,12 @@ def validate_token(token: str, env) -> dict | None:
         rec.write({"state": "expired"})
         return None
 
-    # Throttle: only update last_used if never set OR stale by > threshold
+    # Limitación: solo se actualiza last_used si nunca se fijó o si supera el umbral
     threshold = now - timedelta(minutes=_LAST_USED_THROTTLE_MINUTES)
     if not rec.last_used or rec.last_used < threshold:
         rec.write({"last_used": now})
 
-    # Build model restrictions set — load once here so tool_executor never re-queries
+    # Arma los conjuntos de restricciones de modelos — se cargan una sola vez aquí para que tool_executor no vuelva a consultar
     allowed_models = set(rec.allowed_model_ids.mapped("model")) if rec.allowed_model_ids else set()
     denied_models = set(rec.denied_model_ids.mapped("model")) if rec.denied_model_ids else set()
 
@@ -86,15 +86,15 @@ def validate_token(token: str, env) -> dict | None:
                 field_restrictions = {k: v for k, v in parsed.items() if isinstance(v, list)}
         except (json.JSONDecodeError, TypeError):
             _logger.warning(
-                "MCP token %s: invalid JSON in field_restrictions — ignoring", rec.id
+                "Token MCP %s: JSON no válido en field_restrictions — se ignora", rec.id
             )
 
     return {
         "uid": rec.user_id.id,
         "client_name": rec.name,
         "token_id": rec.id,
-        "token_hash": token_hash,        # passed to rate limiter — never logged
-        "rate_limit": rec.user_id.mcp_rate_limit or 0,  # N5: 0 = use global default
+        "token_hash": token_hash,        # se pasa al limitador de peticiones — nunca se registra en el log
+        "rate_limit": rec.user_id.mcp_rate_limit or 0,  # N5: 0 = usar el valor global
         "scope": rec.scope or "write",
         "capture_payloads": bool(rec.capture_payloads),
         "restrictions": {
@@ -107,8 +107,8 @@ def validate_token(token: str, env) -> dict | None:
 
 def unauthorized(base_url: str) -> Response:
     """
-    Return 401 with WWW-Authenticate pointing to OAuth discovery.
-    Claude Code CLI auto-triggers OAuth flow when it sees this header.
+    Devuelve 401 con WWW-Authenticate apuntando al descubrimiento OAuth.
+    Claude Code CLI inicia automáticamente el flujo OAuth al ver esta cabecera.
     """
     return Response(
         json.dumps({"error": "unauthorized", "error_description": "Se requiere un token Bearer válido."}),

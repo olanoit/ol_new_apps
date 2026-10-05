@@ -42,16 +42,16 @@ class McpOauthClient(models.Model):
     _rec_name = "client_name"
 
     client_id = fields.Char(
-        string="ID de Cliente", required=True, readonly=True, index=True, copy=False,
+        string="ID de cliente", required=True, readonly=True, index=True, copy=False,
         default=lambda self: secrets.token_urlsafe(16),
     )
-    client_name = fields.Char(string="Nombre del Cliente", default="MCP Client")
+    client_name = fields.Char(string="Nombre del cliente", default="Cliente MCP")
     redirect_uris = fields.Text(
-        string="URIs de Redirección",
+        string="URIs de redirección",
         required=True,
         help="Una URI por línea. Deben ser HTTPS, o HTTP hacia localhost/127.0.0.1.",
     )
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string="Activo", default=True)
 
     _client_id_unique = models.Constraint(
         "UNIQUE(client_id)",

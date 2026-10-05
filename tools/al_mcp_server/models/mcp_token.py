@@ -30,43 +30,43 @@ _GOVERNANCE_FIELDS = (
 
 
 def _hash_token(raw: str) -> str:
-    """SHA-256 hash of a raw token — only the hash is stored in DB."""
+    """Hash SHA-256 de un token en claro: en la base de datos solo se guarda el hash."""
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
 class McpToken(models.Model):
     _name = "mcp.token"
-    _description = "Token Bearer MCP"
-    _inherit = ["mail.thread", "mail.activity.mixin"]        # N3: chatter + audit trail
+    _description = "Token bearer MCP"
+    _inherit = ["mail.thread", "mail.activity.mixin"]        # N3: chatter + pista de auditoría
     _order = "create_date desc"
     _rec_name = "name"
 
-    name = fields.Char(string="Cliente", default="MCP Client")
-    token = fields.Char(string="Hash de Token (SHA-256)", readonly=True, index=True, copy=False)
+    name = fields.Char(string="Cliente", default="Cliente MCP")
+    token = fields.Char(string="Hash del token (SHA-256)", readonly=True, index=True, copy=False)
     user_id = fields.Many2one("res.users", string="Usuario", required=True, ondelete="cascade", readonly=True)
     token_type = fields.Selection(
-        [("oauth", "OAuth 2.0"), ("pat", "Token de Acceso Personal")],
+        [("oauth", "OAuth 2.0"), ("pat", "Token de acceso personal")],
         string="Tipo", default="oauth", readonly=True,
     )
     state = fields.Selection(
         [("active", "Activo"), ("revoked", "Revocado"), ("expired", "Caducado")],
-        default="active", readonly=True,
-        tracking=True,                  # N3: log state changes in chatter
+        string="Estado", default="active", readonly=True,
+        tracking=True,                  # N3: registra los cambios de estado en el chatter
     )
-    expires_at = fields.Datetime(string="Caduca El", readonly=True)
-    last_used = fields.Datetime(string="Último Uso", readonly=True)
+    expires_at = fields.Datetime(string="Caduca el", readonly=True)
+    last_used = fields.Datetime(string="Último uso", readonly=True)
 
-    # N1: refresh token fields (OAuth only — PAT has no refresh token)
+    # N1: campos del token de refresco (solo OAuth; el PAT no tiene token de refresco)
     refresh_token = fields.Char(
-        string="Hash de Token de Refresco", readonly=True, index=True, copy=False,
+        string="Hash del token de refresco", readonly=True, index=True, copy=False,
     )
-    refresh_token_expires_at = fields.Datetime(string="Caducidad del Refresco", readonly=True)
+    refresh_token_expires_at = fields.Datetime(string="Caducidad del refresco", readonly=True)
 
     # ------------------------------------------------------------------
-    # Feature 1: Per-token scope
+    # Funcionalidad 1: alcance por token
     # ------------------------------------------------------------------
     scope = fields.Selection(
-        [("read", "Solo lectura"), ("write", "Lectura + Escritura"), ("admin", "Acceso Completo")],
+        [("read", "Solo lectura"), ("write", "Lectura y escritura"), ("admin", "Acceso completo")],
         string="Alcance",
         default="write",
         required=True,
@@ -74,7 +74,7 @@ class McpToken(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Feature 2: IP allowlist / denylist
+    # Funcionalidad 2: lista de IP permitidas / denegadas
     # ------------------------------------------------------------------
     ip_allowlist = fields.Text(
         string="Lista de IP permitidas",
@@ -90,14 +90,14 @@ class McpToken(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Feature 3: Model and field restrictions
+    # Funcionalidad 3: restricciones de modelos y campos
     # ------------------------------------------------------------------
     allowed_model_ids = fields.Many2many(
         "ir.model",
         "mcp_token_allowed_model_rel",
         "token_id",
         "model_id",
-        string="Modelos Permitidos",
+        string="Modelos permitidos",
         help="Restringe este token a modelos específicos de Odoo. "
              "Deje vacío para permitir el acceso a todos los modelos.",
         tracking=True,
@@ -107,13 +107,13 @@ class McpToken(models.Model):
         "mcp_token_denied_model_rel",
         "token_id",
         "model_id",
-        string="Modelos Denegados",
+        string="Modelos denegados",
         help="Bloquea este token para modelos específicos de Odoo. "
              "La lista de denegados se evalúa antes que la lista de permitidos.",
         tracking=True,
     )
     field_restrictions = fields.Text(
-        string="Restricciones de Campos (JSON)",
+        string="Restricciones de campos (JSON)",
         help='Objeto JSON que asigna nombres de modelos a listas de campos permitidos. Ejemplo:\n'
              '{"sale.order": ["name", "partner_id", "amount_total"],\n'
              ' "res.partner": ["name", "email"]}\n\n'
@@ -123,10 +123,10 @@ class McpToken(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Feature 4: Payload capture opt-in
+    # Funcionalidad 4: captura opcional de cargas útiles
     # ------------------------------------------------------------------
     capture_payloads = fields.Boolean(
-        string="Capturar Cargas Útiles",
+        string="Capturar cargas útiles",
         default=False,
         help="Cuando está activado, los argumentos y respuestas de las llamadas a herramientas se almacenan en el registro de auditoría "
              "(tras ocultar PII). Desactivado por defecto por rendimiento.",
@@ -135,6 +135,7 @@ class McpToken(models.Model):
 
     can_edit_governance = fields.Boolean(
         compute="_compute_can_edit_governance",
+        string="Puede editar el gobierno",
         help="Técnico: el usuario actual puede editar el alcance y las restricciones.",
     )
 
@@ -166,30 +167,38 @@ class McpToken(models.Model):
                     "Solo un administrador puede modificar estos campos del token MCP: %(fields)s",
                     fields=", ".join(sorted(protected)),
                 ))
+            # El seguimiento del chatter lee los modelos permitidos/denegados
+            # (ir.model), que en 19.0 un usuario interno no puede leer. Tras
+            # validar los campos y el permiso de escritura (reglas incluidas:
+            # solo sus tokens), se escribe como superusuario. sudo() conserva
+            # el usuario, así que el autor del cambio en el chatter es el dueño.
+            self.check_access("write")
+            tokens_sudo = self.sudo()
+            return super(McpToken, tokens_sudo).write(vals)
         return super().write(vals)
 
     # ------------------------------------------------------------------
-    # Token issuance
+    # Emisión de tokens
     # ------------------------------------------------------------------
 
     @api.model
-    def issue(self, uid: int, client_name: str = "MCP Client",
+    def issue(self, uid: int, client_name: str = "Cliente MCP",
               token_type: str = "oauth") -> str:
-        """Issue a new access token. Returns raw access token (shown once, not stored).
-        For OAuth flows with refresh token, use issue_oauth() instead."""
+        """Emite un token de acceso nuevo. Devuelve el token en claro (se muestra una vez y no se guarda).
+        Para flujos OAuth con token de refresco, use issue_oauth()."""
         raw, _ = self._issue_pair(uid, client_name, token_type)
         return raw
 
     @api.model
-    def issue_oauth(self, uid: int, client_name: str = "MCP Client") -> tuple[str, str]:
-        """Issue access + refresh token pair for OAuth flows.
-        Returns (raw_access_token, raw_refresh_token)."""
+    def issue_oauth(self, uid: int, client_name: str = "Cliente MCP") -> tuple[str, str]:
+        """Emite el par de tokens de acceso y de refresco para flujos OAuth.
+        Devuelve (raw_access_token, raw_refresh_token)."""
         return self._issue_pair(uid, client_name, "oauth")
 
     @api.model
     def _issue_pair(self, uid: int, client_name: str,
                     token_type: str) -> tuple[str, str | None]:
-        """Internal: create mcp.token record, return (raw_access, raw_refresh|None)."""
+        """Interno: crea el registro mcp.token y devuelve (raw_access, raw_refresh|None)."""
         raw_access = secrets.token_urlsafe(32)
         now = fields.Datetime.now()
         vals = {
@@ -208,13 +217,13 @@ class McpToken(models.Model):
         # sudo: la emisión la invoca el flujo OAuth (usuario público) o el botón
         # de PAT; el propio usuario no tiene permiso de crear tokens (ver create()).
         token_sudo = self.with_user(uid).sudo().create(vals)
-        token_sudo.message_post(body=f"Token Bearer MCP emitido — cliente: {client_name}")
+        token_sudo.message_post(body=f"Token bearer MCP emitido; cliente: {client_name}")
         return raw_access, raw_refresh
 
     @api.model
     def refresh(self, raw_refresh_token: str) -> tuple[str, str] | None:
-        """Exchange a refresh token for a new access + refresh token pair (rotation).
-        Old token is expired. Returns (new_access, new_refresh) or None if invalid."""
+        """Canjea un token de refresco por un nuevo par de tokens de acceso y refresco (rotación).
+        El token anterior caduca. Devuelve (new_access, new_refresh) o None si no es válido."""
         token_hash = _hash_token(raw_refresh_token)
         rec = self.search(
             [("refresh_token", "=", token_hash), ("state", "=", "active")],
@@ -228,7 +237,7 @@ class McpToken(models.Model):
             rec.write({"state": "expired"})
             return None
 
-        # Issue replacement tokens — conservando alcance y restricciones del token
+        # Emite los tokens de reemplazo conservando alcance y restricciones del token
         # original (si no, un token restringido se "ampliaría" al refrescarse).
         new_raw_access = secrets.token_urlsafe(32)
         new_raw_refresh = secrets.token_urlsafe(32)
@@ -245,19 +254,19 @@ class McpToken(models.Model):
             "denied_model_ids": [(6, 0, rec.denied_model_ids.ids)],
         })
         self.create(vals)
-        # Expire the used token (rotation — prevent reuse)
+        # Caduca el token usado (rotación: impide su reutilización)
         rec.write({"state": "expired"})
         return new_raw_access, new_raw_refresh
 
     # ------------------------------------------------------------------
-    # Actions
+    # Acciones
     # ------------------------------------------------------------------
 
     def action_revoke(self):
         self.write({"state": "revoked"})
 
     def action_generate_pat(self):
-        """Issue a PAT for the current user and open one-time display wizard."""
+        """Emite un PAT para el usuario actual y abre el asistente de visualización única."""
         raw = self.issue(
             self.env.uid,
             client_name=f"PAT — {self.env.user.name}",
@@ -278,27 +287,27 @@ class McpToken(models.Model):
             "res_id": wizard.id,
             "view_mode": "form",
             "target": "new",
-            "name": "Token de Acceso Personal — Guárdelo Ahora",
+            "name": "Token de acceso personal: guárdelo ahora",
         }
 
     # ------------------------------------------------------------------
-    # Governance helpers (called from token_service / tool_executor)
+    # Utilidades de gobierno (llamadas desde token_service / tool_executor)
     # ------------------------------------------------------------------
 
     def is_ip_allowed(self, ip: str) -> bool:
-        """Return True if *ip* is permitted by this token's IP rules.
+        """Devuelve True si las reglas de IP de este token permiten *ip*.
 
-        Evaluation order: denylist checked first, then allowlist.
-        - If IP is in denylist → False
-        - If allowlist is non-empty and IP is NOT in allowlist → False
-        - Otherwise → True
+        Orden de evaluación: primero la lista de denegadas y luego la de permitidas.
+        - Si la IP está en la lista de denegadas → False
+        - Si la lista de permitidas no está vacía y la IP NO está en ella → False
+        - En otro caso → True
         """
         self.ensure_one()
         try:
             client = ipaddress.ip_address(ip)
         except ValueError:
-            # Unparseable IP — fail safe (deny)
-            _logger.warning("MCP token %s: could not parse client IP %r", self.id, ip)
+            # IP no interpretable: se deniega por seguridad
+            _logger.warning("Token MCP %s: no se pudo interpretar la IP del cliente %r", self.id, ip)
             return False
 
         if self.ip_denylist:
@@ -310,16 +319,16 @@ class McpToken(models.Model):
             for entry in self._parse_ip_lines(self.ip_allowlist):
                 if client in entry:
                     return True
-            # Allowlist is non-empty but no match
+            # La lista de permitidas no está vacía y no hay coincidencia
             return False
 
         return True
 
     def is_model_allowed(self, model_name: str) -> bool:
-        """Return True if *model_name* is accessible under this token's model restrictions.
+        """Devuelve True si *model_name* es accesible según las restricciones de modelos del token.
 
-        Denied models are checked first. If allowed_model_ids is non-empty, the
-        model must appear in it. Empty allowed_model_ids means all models are allowed.
+        Primero se revisan los modelos denegados. Si allowed_model_ids no está vacío,
+        el modelo debe figurar en él. Un allowed_model_ids vacío permite todos los modelos.
         """
         self.ensure_one()
         if self.denied_model_ids:
@@ -333,10 +342,10 @@ class McpToken(models.Model):
         return True
 
     def get_allowed_fields(self, model_name: str) -> list | None:
-        """Return the list of allowed field names for *model_name*, or None if all are allowed.
+        """Devuelve la lista de campos permitidos de *model_name*, o None si se permiten todos.
 
-        Returns None (not an empty list) to distinguish "no restriction" from
-        "restriction exists but produces empty set" (the latter would be a misconfiguration).
+        Devuelve None (no una lista vacía) para distinguir «sin restricción» de
+        «hay restricción pero da un conjunto vacío» (esto último sería un error de configuración).
         """
         self.ensure_one()
         if not self.field_restrictions:
@@ -345,7 +354,7 @@ class McpToken(models.Model):
             restrictions = json.loads(self.field_restrictions)
         except (json.JSONDecodeError, TypeError):
             _logger.warning(
-                "MCP token %s: invalid JSON in field_restrictions — treating as no restriction",
+                "Token MCP %s: JSON no válido en field_restrictions; se trata como sin restricción",
                 self.id,
             )
             return None
@@ -359,15 +368,15 @@ class McpToken(models.Model):
         return [str(f) for f in model_fields]
 
     # ------------------------------------------------------------------
-    # Internal helpers
+    # Utilidades internas
     # ------------------------------------------------------------------
 
     @staticmethod
     def _parse_ip_lines(text: str):
-        """Parse multi-line IP/CIDR text, yield ipaddress network/address objects.
+        """Interpreta un texto multilínea de IP/CIDR y genera objetos de red ipaddress.
 
-        Blank lines and lines starting with # are skipped. Malformed entries are
-        logged and skipped so one bad line does not break the entire check.
+        Se omiten las líneas en blanco y las que empiezan por #. Las entradas mal
+        formadas se registran y se omiten para que una línea errónea no rompa toda la comprobación.
         """
         for raw_line in text.splitlines():
             line = raw_line.strip()
@@ -377,9 +386,9 @@ class McpToken(models.Model):
                 yield ipaddress.ip_network(line, strict=False)
             except ValueError:
                 try:
-                    # Single address not in CIDR notation
+                    # Dirección individual sin notación CIDR
                     yield ipaddress.ip_network(
                         str(ipaddress.ip_address(line)), strict=False
                     )
                 except ValueError:
-                    _logger.warning("MCP token: could not parse IP entry %r — skipping", line)
+                    _logger.warning("Token MCP: no se pudo interpretar la entrada de IP %r; se omite", line)

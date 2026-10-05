@@ -12,11 +12,11 @@ from . import job_tools
 from . import portal_tools
 from . import artifact_tools
 from . import module_tools
-from .json_utils import odoo_json_default  # noqa: F401 — re-exported for callers
+from .json_utils import odoo_json_default  # noqa: F401 — se reexporta para quienes lo importan
 
 _logger = logging.getLogger(__name__)
 
-# Tools allowed under 'read' scope — everything else is write-gated
+# Herramientas permitidas con el alcance 'read'; el resto exige alcance de escritura
 _READ_ONLY_TOOLS = frozenset({
     # Core
     "odoo_get_models",
@@ -28,7 +28,7 @@ _READ_ONLY_TOOLS = frozenset({
     "odoo_get_views",
     "odoo_default_get",
     "odoo_print_report",
-    # BI tools — all read-only
+    # Herramientas BI — todas de solo lectura
     "odoo_pivot",
     "odoo_time_series",
     "odoo_top_n",
@@ -36,31 +36,31 @@ _READ_ONLY_TOOLS = frozenset({
     "odoo_funnel",
     "odoo_export_csv",
     "odoo_export_xlsx",
-    # Job inspection
+    # Consulta de trabajos
     "odoo_job_status",
     "odoo_job_list",
-    # Portal read
+    # Lectura del portal
     "odoo_list_portal_pages",
-    # Artifact read
+    # Lectura de artefactos
     "odoo_list_html_artifacts",
     "odoo_get_html_artifact",
-    # Module generator read
+    # Lectura del generador de módulos
     "odoo_validate_module_spec",
     "odoo_list_generated_modules",
-    # Context tool (available to all scopes)
+    # Herramienta de contexto (disponible en todos los alcances)
     "odoo_get_context",
 })
 
-# Tools blocked for 'write' scope (admin required)
+# Herramientas bloqueadas con el alcance 'write' (requieren admin)
 _WRITE_SCOPE_BLOCKED_TOOLS = frozenset({
     "odoo_unlink",
-    "odoo_call_method",   # call_method can do anything — admin only
+    "odoo_call_method",   # call_method puede hacer cualquier cosa — solo admin
     "odoo_generate_module",
     "odoo_install_generated_module",
 })
 
-# External tool handlers merged from satellite modules.
-# module_tools uses a single dispatcher function (see _MODULE_TOOL_NAMES below).
+# Handlers de herramientas externas fusionados desde los módulos satélite.
+# module_tools usa una única función despachadora (ver _MODULE_TOOL_NAMES más abajo).
 _EXTERNAL_HANDLERS = {
     **bi_tools.TOOL_HANDLERS,
     **job_tools.TOOL_HANDLERS,
@@ -72,11 +72,11 @@ _MODULE_TOOL_NAMES = frozenset(t["name"] for t in module_tools.TOOL_DEFINITIONS)
 
 
 def execute_tool(env, tool_name: str, args: dict):
-    """Dispatch a tool call to its implementation and return a serializable result.
+    """Despacha una llamada de herramienta a su implementación y devuelve un resultado serializable.
 
-    Scope enforcement is applied before dispatching. Scope is read from
-    env.context['mcp_scope'] (set by the controller before calling process_message).
-    Model/field restrictions are read from env.context['mcp_restrictions'].
+    El alcance se comprueba antes de despachar. Se lee de env.context['mcp_scope']
+    (lo fija el controlador antes de llamar a process_message). Las restricciones
+    de modelos y campos se leen de env.context['mcp_restrictions'].
     """
     _enforce_scope(env, tool_name)
     _enforce_model_access(env, tool_name, args)
@@ -90,29 +90,29 @@ def execute_tool(env, tool_name: str, args: dict):
         "odoo_execute_wizard": _execute_wizard,
         "odoo_unlink": _unlink,
         "odoo_call_method": _call_method,
-        # Analytics tools
+        # Herramientas de análisis
         "odoo_count": _count,
         "odoo_name_search": _name_search,
         "odoo_read_group": _read_group,
-        # Workflow & form tools
+        # Herramientas de flujo de trabajo y formularios
         "odoo_message_post": _message_post,
         "odoo_default_get": _default_get,
         "odoo_get_views": _get_views,
         "odoo_onchange": _onchange,
         "odoo_print_report": _print_report,
         "odoo_create_attachment": _create_attachment,
-        # Context & catalog as tools — for clients that don't support MCP Resources (e.g. ChatGPT)
+        # Contexto y catálogo como herramientas — para clientes sin soporte de MCP Resources (p. ej. ChatGPT)
         "odoo_get_context": _get_context,
     }
     handler = handlers.get(tool_name)
     if handler:
         return handler(env, args)
 
-    # Module generator tools share a single dispatcher (feature-flag + scope inside)
+    # Las herramientas del generador de módulos comparten un despachador (con flag de función y alcance dentro)
     if tool_name in _MODULE_TOOL_NAMES:
         return module_tools.execute_module_tool(env, tool_name, args)
 
-    # BI / job / portal tools from satellite modules
+    # Herramientas BI, de trabajos y de portal de los módulos satélite
     external = _EXTERNAL_HANDLERS.get(tool_name)
     if external:
         return external(env, args)
@@ -121,16 +121,16 @@ def execute_tool(env, tool_name: str, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Governance helpers
+# Utilidades de gobierno
 # ---------------------------------------------------------------------------
 
 
 def _enforce_scope(env, tool_name: str) -> None:
-    """Raise PermissionError if the current MCP scope does not permit *tool_name*."""
+    """Lanza PermissionError si el alcance MCP actual no permite *tool_name*."""
     scope = env.context.get("mcp_scope", "write")
 
     if scope == "admin":
-        return  # admin may call everything
+        return  # admin puede llamar a todo
 
     if scope == "read":
         if tool_name not in _READ_ONLY_TOOLS:
@@ -141,7 +141,7 @@ def _enforce_scope(env, tool_name: str) -> None:
             )
         return
 
-    # scope == 'write' (default)
+    # scope == 'write' (por defecto)
     if tool_name in _WRITE_SCOPE_BLOCKED_TOOLS:
         raise PermissionError(
             f"La herramienta {tool_name!r} requiere el alcance 'admin'. "
@@ -151,14 +151,14 @@ def _enforce_scope(env, tool_name: str) -> None:
 
 
 def _enforce_model_access(env, tool_name: str, args: dict) -> None:
-    """Raise PermissionError if the model in *args* is blocked by token restrictions."""
+    """Lanza PermissionError si las restricciones del token bloquean el modelo de *args*."""
     restrictions = env.context.get("mcp_restrictions")
     if not restrictions:
         return
 
     model_name = args.get("model")
     if not model_name:
-        return  # tools like odoo_get_models have no model arg
+        return  # herramientas como odoo_get_models no reciben el argumento model
 
     denied_models = restrictions.get("denied_models") or set()
     allowed_models = restrictions.get("allowed_models") or set()
@@ -174,12 +174,12 @@ def _enforce_model_access(env, tool_name: str, args: dict) -> None:
 
 
 def _get_field_restrictions(env, model_name: str) -> list | None:
-    """Return allowed field list for *model_name* from context restrictions, or None."""
+    """Devuelve la lista de campos permitidos de *model_name* según las restricciones del contexto, o None."""
     restrictions = env.context.get("mcp_restrictions")
     if not restrictions:
         return None
     field_map = restrictions.get("field_restrictions") or {}
-    return field_map.get(model_name)  # None if model not in map
+    return field_map.get(model_name)  # None si el modelo no está en el mapa
 
 
 def _domain_field_names(domain) -> set:
@@ -260,7 +260,7 @@ def enforce_job_operation(env, operation: str, args: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Individual tool implementations
+# Implementación de cada herramienta
 # ---------------------------------------------------------------------------
 
 
@@ -313,7 +313,7 @@ def _fields_get(env, args: dict):
 
     result = dict(raw)
 
-    # Silently drop fields outside the allowlist (per-request restriction — never cached)
+    # Descarta en silencio los campos fuera de la lista permitida (restricción por petición — nunca se cachea)
     allowed = _get_field_restrictions(env, model_name)
     if allowed is not None:
         result = {k: v for k, v in result.items() if k in allowed}
@@ -329,12 +329,12 @@ def _search_read(env, args: dict):
     offset = args.get("offset", 0)
     order = args.get("order")
 
-    # Silently intersect requested fields with allowlist
+    # Intersecta en silencio los campos pedidos con la lista permitida
     allowed = _get_field_restrictions(env, model_name)
     if allowed is not None and fields:
         fields = [f for f in fields if f in allowed]
     elif allowed is not None and not fields:
-        # No explicit field list — auto-restrict to allowlist only
+        # Sin lista de campos explícita — se limita automáticamente a la lista permitida
         fields = list(allowed)
 
     _check_read_fields(env, model_name, domain=domain, order=order)
@@ -359,17 +359,17 @@ def _create(env, args: dict):
     model_name = args["model"]
     values = args["values"]
 
-    # Reject writes to fields outside the allowlist
+    # Rechaza escrituras en campos fuera de la lista permitida
     _check_write_fields(env, model_name, values)
 
-    # Validate required fields before hitting the DB
+    # Valida los campos obligatorios antes de ir a la base de datos
     _check_required_fields(env, model_name, values)
 
     record = _resolve_model(env, model_name).create(values)
     return {"id": record.id, "model": model_name}
 
 
-_MAX_IDS = 200  # safety cap: prevent AI from mass-updating/deleting in one call
+_MAX_IDS = 200  # tope de seguridad: evita que la IA actualice o borre en masa en una sola llamada
 
 
 def _write(env, args: dict):
@@ -382,7 +382,7 @@ def _write(env, args: dict):
             f"Divida en varias llamadas o use un dominio más específico."
         )
 
-    # Reject writes to fields outside the allowlist
+    # Rechaza escrituras en campos fuera de la lista permitida
     _check_write_fields(env, model_name, values)
 
     _resolve_model(env, model_name).browse(ids).write(values)
@@ -390,7 +390,7 @@ def _write(env, args: dict):
 
 
 def _execute_wizard(env, args: dict):
-    """Create a TransientModel wizard and execute a method on it atomically."""
+    """Crea un asistente TransientModel y ejecuta en él un método de forma atómica."""
     model_name = args["model"]
     values = args.get("values") or {}
     method_name = args["method"]
@@ -449,14 +449,14 @@ def _unlink(env, args: dict):
 
 
 _CALL_METHOD_DENYLIST = frozenset({
-    # Privilege escalation — would bypass ACL or switch execution context
+    # Escalada de privilegios — saltaría las ACL o cambiaría el contexto de ejecución
     "sudo", "with_user", "with_company", "with_context", "with_env",
-    # Raw DB access
+    # Acceso directo a la base de datos
     "execute", "execute_kw",
-    # Use dedicated tools instead (odoo_search_read, odoo_create, etc.)
+    # Use en su lugar las herramientas dedicadas (odoo_search_read, odoo_create, etc.)
     "search", "search_read", "search_count", "read", "create", "write", "unlink",
     "read_group", "_read_group", "name_search", "name_get", "default_get",
-    # ORM internals
+    # Internos del ORM
     "browse", "exists", "ensure_one", "mapped", "filtered", "sorted", "invalidate_recordset",
 })
 
@@ -561,10 +561,10 @@ def _print_report(env, args: dict):
     Report = env["ir.actions.report"]
 
     if report_ref:
-        # Find by technical report_name (e.g. "sale.report_saleorder")
+        # Busca por el report_name técnico (p. ej. "sale.report_saleorder")
         report = Report.search([("report_name", "=", report_ref)], limit=1)
         if not report:
-            # Fallback: try as XML ID
+            # Alternativa: probar como XML ID
             try:
                 report = env.ref(report_ref)
             except Exception:
@@ -578,13 +578,13 @@ def _print_report(env, args: dict):
                 f"para la lista completa."
             )
     else:
-        # Auto-detect: first PDF report for this model
+        # Detección automática: primer informe PDF de este modelo
         report = Report.search(
             [("model", "=", model_name), ("report_type", "in", ["qweb-pdf", "qweb-html"])],
             limit=1,
         )
         if not report:
-            # Return all available reports so Claude can suggest one
+            # Devuelve todos los informes disponibles para que Claude pueda sugerir uno
             available = Report.search_read(
                 [("model", "=", model_name)],
                 ["name", "report_name", "report_type"],
@@ -597,7 +597,7 @@ def _print_report(env, args: dict):
     ids_str = ",".join(str(i) for i in ids)
     download_url = f"/report/pdf/{report.report_name}/{ids_str}"
 
-    # Read record display names so Claude can confirm content to the user
+    # Lee los nombres de los registros para que Claude pueda confirmar el contenido al usuario
     model_obj = _resolve_model(env, model_name)
     records = model_obj.browse(ids)
     record_names = [
@@ -605,7 +605,7 @@ def _print_report(env, args: dict):
         for r in records if r.exists()
     ]
 
-    # List other available reports for this model
+    # Lista los demás informes disponibles de este modelo
     other_reports = Report.search_read(
         [("model", "=", model_name), ("id", "!=", report.id)],
         ["name", "report_name"],
@@ -627,7 +627,7 @@ def _print_report(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Analytics tools
+# Herramientas de análisis
 # ---------------------------------------------------------------------------
 
 
@@ -678,7 +678,7 @@ def _read_group(env, args: dict):
         **kw,
     )
 
-    # _read_group returns list of tuples — serialize to dicts
+    # _read_group devuelve una lista de tuplas — se serializa a diccionarios
     def _serialize_group(row):
         result = {}
         for i, key in enumerate(groupby):
@@ -702,7 +702,7 @@ def _read_group(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Workflow & form tools
+# Herramientas de flujo de trabajo y formularios
 # ---------------------------------------------------------------------------
 
 
@@ -719,14 +719,14 @@ def _message_post(env, args: dict):
     if not hasattr(record, "message_post"):
         raise ValueError(f"El modelo {model_name!r} no admite chatter (no es mail.thread)")
 
-    # Always escape the body through Odoo's sanitizer — never trust raw HTML
-    # from an AI client. bleach/html_sanitize strips dangerous tags/attributes.
+    # Pasa siempre el cuerpo por el saneador de Odoo — nunca confíes en HTML en
+    # bruto de un cliente de IA. bleach/html_sanitize elimina etiquetas y atributos peligrosos.
     from odoo.tools import html_sanitize
     if body and not body.strip().startswith("<"):
         # Plain text: se escapa al interpolar en el Markup (nunca f-string).
         safe_body = Markup("<p>%s</p>") % body
     else:
-        # HTML input: run through Odoo's sanitizer to strip XSS vectors
+        # Entrada HTML: se pasa por el saneador de Odoo para quitar vectores XSS
         safe_body = Markup(html_sanitize(body))
 
     msg = record.message_post(
@@ -749,7 +749,7 @@ def _default_get(env, args: dict):
 
     model = _resolve_model(env, model_name)
     if not field_names:
-        # Auto-discover scalar fields when no list given
+        # Descubre automáticamente los campos escalares si no se da una lista
         all_fields = model.fields_get(attributes=["type"])
         field_names = [
             fname for fname, fdef in all_fields.items()
@@ -758,7 +758,7 @@ def _default_get(env, args: dict):
 
     defaults = model.default_get(field_names)
 
-    # Serialize Many2one tuples/records
+    # Serializa las tuplas o registros Many2one
     serialized = {}
     for k, v in defaults.items():
         if isinstance(v, tuple):
@@ -792,7 +792,7 @@ def _get_views(env, args: dict):
 def _get_views_raw(env, model_name: str) -> dict:
     model = _resolve_model(env, model_name)
 
-    # Walk MRO to collect action_* / button_* methods with their source class.
+    # Recorre el MRO para reunir los métodos action_* / button_* con su clase de origen.
     seen: set = set()
     callable_methods = []
     for cls in type(model).__mro__:
@@ -868,7 +868,7 @@ def _onchange(env, args: dict):
     }
     result = model.onchange(values, field_onchange, onchange_spec)
 
-    # Serialize result — skip one2many command lists to avoid context explosion
+    # Serializa el resultado — omite las listas de comandos one2many para no inflar el contexto
     raw_values = result.get("value", {})
     computed = {}
     for key, val in raw_values.items():
@@ -891,26 +891,26 @@ def _onchange(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Context & catalog tools (for clients that don't support MCP Resources)
+# Herramientas de contexto y catálogo (para clientes sin soporte de MCP Resources)
 # ---------------------------------------------------------------------------
 
 
 def _get_context(env, _args: dict):
-    """Return Odoo business context as a dict (same data as odoo://context resource)."""
+    """Devuelve el contexto de negocio de Odoo como diccionario (los mismos datos que el recurso odoo://context)."""
     from . import resource_service
     return {"context": json.loads(resource_service._context(env))}
 
 
 # ---------------------------------------------------------------------------
-# Write field restriction helper
+# Utilidad de restricción de campos en escritura
 # ---------------------------------------------------------------------------
 
 
 def _check_write_fields(env, model_name: str, values: dict) -> None:
-    """Raise PermissionError if *values* contains fields outside the token's field allowlist."""
+    """Lanza PermissionError si *values* contiene campos fuera de la lista permitida del token."""
     allowed = _get_field_restrictions(env, model_name)
     if allowed is None:
-        return  # no restriction
+        return  # sin restricción
     blocked = [k for k in values if k not in allowed]
     if blocked:
         raise PermissionError(
@@ -920,10 +920,10 @@ def _check_write_fields(env, model_name: str, values: dict) -> None:
 
 
 def _check_required_fields(env, model_name: str, values: dict) -> None:
-    """Raise ValueError listing required fields missing from *values* with no runtime default.
+    """Lanza ValueError con los campos obligatorios que faltan en *values* y no tienen valor por defecto.
 
-    Calls default_get() so fields that have a server-side default (e.g. sequences,
-    current user) are not flagged as missing.
+    Llama a default_get() para que los campos con valor por defecto en el servidor
+    (p. ej. secuencias, usuario actual) no se marquen como faltantes.
     """
     model = _resolve_model(env, model_name)
     field_defs = model.fields_get(attributes=["required"])
@@ -951,7 +951,7 @@ def _check_required_fields(env, model_name: str, values: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Helper
+# Utilidad
 # ---------------------------------------------------------------------------
 
 

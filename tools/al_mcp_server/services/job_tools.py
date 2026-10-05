@@ -1,14 +1,14 @@
 """
-MCP tool definitions and handlers for the async job queue.
+Definiciones y manejadores de herramientas MCP para la cola de trabajos asíncronos.
 
-This file is intentionally self-contained. It will be merged into the main
-tool registry by the consolidation agent. Do NOT modify tool_executor.py or
-mcp_tool_registry.py — append/patch from here.
+Este archivo es autocontenido a propósito. El agente de consolidación lo
+fusionará con el registro principal de herramientas. NO modifiques
+tool_executor.py ni mcp_tool_registry.py: añade o parchea desde aquí.
 
-Scope enforcement:
-  - read scope  : odoo_job_status and odoo_job_list only
-  - write scope : all four tools
-  - admin scope : all four tools
+Control de alcance:
+  - alcance read  : solo odoo_job_status y odoo_job_list
+  - alcance write : las cuatro herramientas
+  - alcance admin : las cuatro herramientas
 """
 import json
 import logging
@@ -18,7 +18,7 @@ from .json_utils import odoo_json_default
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Tool schema definitions — advertised via tools/list
+# Esquemas de las herramientas, anunciados vía tools/list
 # ---------------------------------------------------------------------------
 
 TOOL_DEFINITIONS = [
@@ -138,7 +138,7 @@ TOOL_DEFINITIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Scope gate helper
+# Utilidad de control de alcance
 # ---------------------------------------------------------------------------
 
 _JOB_READ_TOOLS = frozenset({"odoo_job_status", "odoo_job_list"})
@@ -146,14 +146,14 @@ _JOB_WRITE_TOOLS = frozenset({"odoo_submit_job", "odoo_job_cancel"})
 
 
 def _check_job_scope(env, tool_name: str) -> None:
-    """Raise PermissionError if the current MCP scope does not permit *tool_name*."""
+    """Lanza PermissionError si el alcance MCP actual no permite *tool_name*."""
     scope = env.context.get("mcp_scope", "write")
     if scope == "admin":
         return
     if scope == "read" and tool_name in _JOB_WRITE_TOOLS:
         raise PermissionError(
-            f"Tool {tool_name!r} requires at least 'write' scope. "
-            f"This token is restricted to 'read' (read-only) scope."
+            f"La herramienta {tool_name!r} requiere al menos el alcance 'write'. "
+            f"Este token está limitado al alcance 'read' (solo lectura)."
         )
 
 
@@ -166,18 +166,18 @@ def _is_job_admin(env) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Handlers
+# Manejadores
 # ---------------------------------------------------------------------------
 
 def _submit_job(env, args: dict) -> dict:
-    """Create an mcp.job record and return its id immediately."""
+    """Crea un registro mcp.job y devuelve su id de inmediato."""
     _check_job_scope(env, "odoo_submit_job")
 
     operation = args.get("operation")
     job_args = args.get("args") or {}
 
     if not operation:
-        raise ValueError("odoo_submit_job requires 'operation'")
+        raise ValueError("odoo_submit_job requiere 'operation'")
 
     valid_ops = {
         "bulk_update", "bulk_create", "bulk_unlink",
@@ -185,13 +185,13 @@ def _submit_job(env, args: dict) -> dict:
         "call_method", "custom",
     }
     if operation not in valid_ops:
-        raise ValueError(f"Unknown operation {operation!r}. Valid: {sorted(valid_ops)}")
+        raise ValueError(f"Operación desconocida {operation!r}. Válidas: {sorted(valid_ops)}")
 
     # Rechazo temprano: la misma comprobación se repite al ejecutar en el cron.
     from .tool_executor import enforce_job_operation
     enforce_job_operation(env, operation, job_args)
 
-    # Snapshot governance context into payload so async runner uses same rules
+    # Copia el contexto de gobierno en el payload para que el ejecutor asíncrono aplique las mismas reglas
     scope = env.context.get("mcp_scope", "write")
     restrictions = env.context.get("mcp_restrictions")
 
@@ -209,7 +209,7 @@ def _submit_job(env, args: dict) -> dict:
         "mcp_restrictions": json.dumps(restrictions, default=odoo_json_default) if restrictions else False,
     }
 
-    # Optionally link session/token from context
+    # Enlaza opcionalmente la sesión y el token del contexto
     session_id = env.context.get("mcp_session_db_id")
     if session_id:
         job_vals["session_id"] = session_id
@@ -232,12 +232,12 @@ def _submit_job(env, args: dict) -> dict:
 
 
 def _job_status(env, args: dict) -> dict:
-    """Return current status of a job."""
+    """Devuelve el estado actual de un trabajo."""
     _check_job_scope(env, "odoo_job_status")
 
     job_id = args.get("job_id")
     if not job_id:
-        raise ValueError("odoo_job_status requires 'job_id'")
+        raise ValueError("odoo_job_status requiere 'job_id'")
 
     # sudo: el trabajo lo creó el servidor; se filtra por dueño salvo para un
     # administrador real (alcance admin + grupo de sistema).
@@ -246,7 +246,7 @@ def _job_status(env, args: dict) -> dict:
         domain.append(("user_id", "=", env.uid))
     job_sudo = env["mcp.job"].sudo().search(domain, limit=1)
     if not job_sudo:
-        raise ValueError(f"Job {job_id} not found or not accessible.")
+        raise ValueError(f"Trabajo {job_id} no encontrado o no accesible.")
     job = job_sudo
 
     result = {
@@ -281,7 +281,7 @@ def _job_status(env, args: dict) -> dict:
 
 
 def _job_list(env, args: dict) -> dict:
-    """List recent MCP jobs."""
+    """Lista los trabajos MCP recientes."""
     _check_job_scope(env, "odoo_job_list")
 
     state = args.get("state")
@@ -307,7 +307,7 @@ def _job_list(env, args: dict) -> dict:
         limit=limit,
     )
 
-    # Serialize datetimes
+    # Serializa las fechas y horas
     for j in jobs:
         for dt_field in ("create_date", "started_at", "finished_at"):
             if j.get(dt_field):
@@ -322,27 +322,27 @@ def _job_list(env, args: dict) -> dict:
 
 
 def _job_cancel(env, args: dict) -> dict:
-    """Cancel a pending job."""
+    """Cancela un trabajo pendiente."""
     _check_job_scope(env, "odoo_job_cancel")
 
     job_id = args.get("job_id")
     if not job_id:
-        raise ValueError("odoo_job_cancel requires 'job_id'")
+        raise ValueError("odoo_job_cancel requiere 'job_id'")
 
     job = env["mcp.job"].sudo().search(
         [("id", "=", job_id), ("user_id", "=", env.uid)],
         limit=1,
     )
     if not job:
-        # Admins can cancel any job
+        # Los administradores pueden cancelar cualquier trabajo
         if _is_job_admin(env):
             job = env["mcp.job"].sudo().search([("id", "=", job_id)], limit=1)
         if not job:
-            raise ValueError(f"Job {job_id} not found or you do not own it.")
+            raise ValueError(f"Trabajo {job_id} no encontrado o no es suyo.")
 
     if job.state != "pending":
         raise ValueError(
-            f"Job {job_id} cannot be cancelled: state is '{job.state}' (must be 'pending')."
+            f"El trabajo {job_id} no se puede cancelar: su estado es '{job.state}' (debe ser 'pending')."
         )
 
     job.write({"state": "cancelled"})
@@ -355,7 +355,7 @@ def _job_cancel(env, args: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Handler dispatch table — consumed by consolidation agent
+# Tabla de despacho de manejadores, usada por el agente de consolidación
 # ---------------------------------------------------------------------------
 
 TOOL_HANDLERS = {

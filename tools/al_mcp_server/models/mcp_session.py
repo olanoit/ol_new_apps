@@ -9,7 +9,7 @@ class McpSession(models.Model):
     _order = 'create_date desc'
     _rec_name = 'session_id'
 
-    session_id = fields.Char(string='ID de Sesión', readonly=True, index=True)
+    session_id = fields.Char(string='ID de sesión', readonly=True, index=True)
     user_id = fields.Many2one('res.users', string='Usuario', readonly=True, ondelete='set null')
     token_id = fields.Many2one('mcp.token', string='Token', readonly=True, ondelete='set null')
     transport = fields.Selection(
@@ -22,10 +22,10 @@ class McpSession(models.Model):
     ], string='Estado', default='active', readonly=True)
     ip_address = fields.Char(string='Dirección IP', readonly=True)
     message_count = fields.Integer(string='Mensajes', default=0, readonly=True)
-    last_activity = fields.Datetime(string='Última Actividad', readonly=True)
-    log_ids = fields.One2many('mcp.session.log', 'session_id', string='Llamadas a Herramientas', readonly=True)
+    last_activity = fields.Datetime(string='Última actividad', readonly=True)
+    log_ids = fields.One2many('mcp.session.log', 'session_id', string='Llamadas a herramientas', readonly=True)
     tool_call_count = fields.Integer(
-        string='Llamadas a Herramientas', compute='_compute_tool_call_count', store=True,
+        string='Nº de llamadas a herramientas', compute='_compute_tool_call_count', store=True,
     )
 
     @api.depends('log_ids')
@@ -38,10 +38,10 @@ class McpSession(models.Model):
 
     @api.model
     def _vacuum_old_sessions(self):
-        """Delete closed or inactive sessions and tool call logs beyond configurable retention.
+        """Elimina las sesiones cerradas o inactivas y los registros de llamadas fuera del periodo de retención.
 
-        Retention windows are read from ir.config_parameter so they can be tuned
-        via Settings → MCP Server without touching code.
+        Los periodos de retención se leen de ir.config_parameter para poder
+        ajustarlos desde Ajustes → Servidor MCP sin tocar el código.
         """
         ICP = self.env["ir.config_parameter"].sudo()
 
@@ -64,7 +64,7 @@ class McpSession(models.Model):
         ])
         old_sessions.unlink()
 
-        # Logs on long-lived HTTP sessions accumulate indefinitely — prune separately.
+        # Los registros de sesiones HTTP de larga duración se acumulan sin límite: se depuran aparte.
         cutoff_log = now - timedelta(days=log_days)
         old_logs = self.env["mcp.session.log"].sudo().search([
             ("create_date", "<", cutoff_log),

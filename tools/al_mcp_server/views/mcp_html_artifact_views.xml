@@ -2,9 +2,9 @@
 <odoo>
 
     <!-- ================================================================
-         Public host template (renders the sandboxed iframe)
+         Plantilla pública anfitriona (renderiza el iframe aislado)
     ================================================================ -->
-    <template id="artifact_page" name="MCP HTML Artifact">
+    <template id="artifact_page" name="Artefacto HTML MCP">
         <html t-att-lang="artifact.created_by.lang or 'en'">
             <head>
                 <meta charset="utf-8"/>
@@ -47,7 +47,7 @@
     </template>
 
     <!-- ================================================================
-         Backend list view
+         Vista de lista del backend
     ================================================================ -->
     <record id="mcp_html_artifact_list_view" model="ir.ui.view">
         <field name="name">mcp.html.artifact.list</field>
@@ -67,7 +67,7 @@
     </record>
 
     <!-- ================================================================
-         Backend form view
+         Vista de formulario del backend
     ================================================================ -->
     <record id="mcp_html_artifact_form_view" model="ir.ui.view">
         <field name="name">mcp.html.artifact.form</field>
@@ -76,15 +76,15 @@
             <form string="Artefacto HTML">
                 <header>
                     <button name="action_preview"
-                            string="Vista previa del Artefacto"
+                            string="Vista previa del artefacto"
                             type="object"
                             icon="fa-external-link"
                             class="oe_highlight"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Título del Artefacto"/>
-                        <h1><field name="name" placeholder="Mi Artefacto Interactivo"/></h1>
+                        <label for="name" string="Título del artefacto"/>
+                        <h1><field name="name" placeholder="Mi artefacto interactivo"/></h1>
                     </div>
                     <group>
                         <group string="Configuración">
@@ -94,7 +94,7 @@
                             <field name="is_public"/>
                             <field name="enabled"/>
                         </group>
-                        <group string="Acceso y Estadísticas">
+                        <group string="Acceso y estadísticas">
                             <field name="created_by" readonly="1"/>
                             <field name="view_count" readonly="1"/>
                             <field name="last_viewed" readonly="1"/>
@@ -103,7 +103,7 @@
                             <div colspan="2">
                                 <field name="access_token" readonly="1" class="o_field_copy"/>
                                 <button name="action_regenerate_token"
-                                        string="Regenerar Token de Incrustación"
+                                        string="Regenerar token de incrustación"
                                         type="object"
                                         class="btn btn-secondary btn-sm mt-1"
                                         confirm="Regenerar el token invalidará todos los enlaces de incrustación existentes. ¿Continuar?"/>
@@ -144,13 +144,13 @@
     </record>
 
     <!-- ================================================================
-         Search view
+         Vista de búsqueda
     ================================================================ -->
     <record id="mcp_html_artifact_search_view" model="ir.ui.view">
         <field name="name">mcp.html.artifact.search</field>
         <field name="model">mcp.html.artifact</field>
         <field name="arch" type="xml">
-            <search string="Buscar Artefactos HTML">
+            <search string="Buscar artefactos HTML">
                 <field name="name" string="Título"/>
                 <field name="slug"/>
                 <field name="created_by"/>
@@ -161,8 +161,8 @@
                 <filter string="Público" name="public" domain="[('is_public','=',True)]"/>
                 <filter string="Privado" name="private" domain="[('is_public','=',False)]"/>
                 <separator/>
-                <filter string="Mis Artefactos" name="my_artifacts" domain="[('created_by','=',uid)]"/>
-                <group expand="0" string="Agrupar por">
+                <filter string="Mis artefactos" name="my_artifacts" domain="[('created_by','=',uid)]"/>
+                <group>
                     <filter string="Propietario" name="group_owner" context="{'group_by': 'created_by'}"/>
                     <filter string="Tema" name="group_theme" context="{'group_by': 'theme'}"/>
                 </group>
@@ -171,7 +171,7 @@
     </record>
 
     <!-- ================================================================
-         Window action
+         Acción de ventana
     ================================================================ -->
     <record id="mcp_html_artifact_action" model="ir.actions.act_window">
         <field name="name">Artefactos HTML</field>
@@ -184,7 +184,7 @@
                 Cree su primer artefacto HTML
             </p>
             <p>
-                Los artefactos HTML son mini-aplicaciones interactivas generadas por IA que se renderizan dentro de un
+                Los artefactos HTML son miniaplicaciones interactivas generadas por IA que se renderizan dentro de un
                 iframe estrictamente aislado. Los clientes de IA pueden crear artefactos automáticamente
                 a través de la herramienta MCP <code>odoo_create_html_artifact</code>.
             </p>

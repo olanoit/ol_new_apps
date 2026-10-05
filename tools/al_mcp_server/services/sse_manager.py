@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class McpServerSession:
-    """Represents an active MCP client connection with its SSE message queue."""
+    """Representa una conexión activa de un cliente MCP con su cola de mensajes SSE."""
 
     def __init__(self, uid: int, db: str, ip: str | None = None):
         self.session_id: str = str(uuid.uuid4())
@@ -15,7 +15,7 @@ class McpServerSession:
         self.message_count: int = 0
         self.last_activity: datetime = datetime.utcnow()
         self._queue: queue.Queue = queue.Queue()
-        self.db_id: int | None = None  # mcp.session DB record id, set after audit create
+        self.db_id: int | None = None  # ID del registro mcp.session en la base; se fija tras crear la auditoría
         self.token_id: int | None = None  # mcp.token que abrió la sesión (se revalida por mensaje)
 
     def put(self, data: dict) -> None:
@@ -31,22 +31,22 @@ class McpServerSession:
 
 
 class SseSessionManager:
-    """Thread-safe registry for active MCP SSE sessions and HTTP session id cache.
+    """Registro seguro entre hilos de las sesiones MCP SSE activas y caché de IDs de sesión HTTP.
 
-    HTTP sessions are stateless — each POST /mcp is independent — but we maintain
-    a persistent mcp.session DB record per token for audit/logging. To avoid one
-    extra DB search on every request we cache the token_id → session_db_id mapping
-    in memory (per worker, which is fine for audit purposes).
+    Las sesiones HTTP no tienen estado — cada POST /mcp es independiente — pero se mantiene
+    un registro mcp.session persistente por token para auditoría y registro. Para evitar una
+    búsqueda adicional en la base en cada petición, la correspondencia token_id → session_db_id
+    se guarda en memoria (por worker, lo cual basta para la auditoría).
     """
 
     def __init__(self):
         self._sessions: dict[str, McpServerSession] = {}
-        # HTTP session cache: token_id (int) → mcp.session.id (int)
+        # Caché de sesiones HTTP: token_id (int) → mcp.session.id (int)
         self._http_cache: dict[int, int] = {}
         self._lock = threading.Lock()
 
     # ------------------------------------------------------------------
-    # SSE session registry
+    # Registro de sesiones SSE
     # ------------------------------------------------------------------
 
     def create(self, uid: int, db: str, ip: str | None = None) -> McpServerSession:
@@ -68,24 +68,24 @@ class SseSessionManager:
             return len(self._sessions)
 
     # ------------------------------------------------------------------
-    # HTTP session DB-id cache
+    # Caché de IDs en base de datos de las sesiones HTTP
     # ------------------------------------------------------------------
 
     def get_http_session_db_id(self, token_id: int) -> int | None:
-        """Return cached mcp.session DB id for this token, or None if not cached."""
+        """Devuelve el ID de mcp.session en caché para este token, o None si no está en caché."""
         with self._lock:
             return self._http_cache.get(token_id)
 
     def set_http_session_db_id(self, token_id: int, session_db_id: int) -> None:
-        """Cache the mcp.session DB id for this token."""
+        """Guarda en caché el ID de mcp.session de este token."""
         with self._lock:
             self._http_cache[token_id] = session_db_id
 
     def invalidate_http_session(self, token_id: int) -> None:
-        """Remove a token from the HTTP session cache (e.g. on token revoke)."""
+        """Quita un token de la caché de sesiones HTTP (p. ej. al revocar el token)."""
         with self._lock:
             self._http_cache.pop(token_id, None)
 
 
-# Module-level singleton shared across all requests in this worker
+# Instancia única del módulo, compartida por todas las peticiones de este worker
 session_manager = SseSessionManager()

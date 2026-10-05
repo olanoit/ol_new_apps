@@ -1,18 +1,18 @@
 """
-Redis-backed distributed rate limiter using sorted-set sliding-window algorithm.
+Limitador de peticiones distribuido con Redis, basado en una ventana deslizante sobre sorted sets.
 
-Falls back to the in-memory RateLimiter transparently on any Redis error so that
-a Redis outage never blocks MCP requests.
+Ante cualquier error de Redis pasa de forma transparente al RateLimiter en memoria, para que
+una caída de Redis nunca bloquee las peticiones MCP.
 
-Algorithm (per key):
+Algoritmo (por clave):
   1. ZADD  mcp:ratelimit:{key}  score=now  member=uuid
-  2. ZREMRANGEBYSCORE  ...  0  (now - window_seconds)   -- evict expired entries
-  3. ZCARD  ...                                          -- count active entries
-  4. EXPIRE ...  window_seconds                          -- auto-GC the key
-  Steps 2-4 are wrapped in a pipeline for atomicity (no MULTI/EXEC needed here
-  because ZADD is idempotent on replay; true atomicity would require a Lua script,
-  but the pipeline reduces RTT to one round trip which is sufficient for this use
-  case — worst-case over-count by 1 under race, acceptable for rate limiting).
+  2. ZREMRANGEBYSCORE  ...  0  (now - window_seconds)   -- descarta las entradas caducadas
+  3. ZCARD  ...                                          -- cuenta las entradas activas
+  4. EXPIRE ...  window_seconds                          -- la clave se limpia sola
+  Los pasos 2-4 van en un pipeline por atomicidad (aquí no hace falta MULTI/EXEC
+  porque ZADD es idempotente al repetirse; la atomicidad real exigiría un script Lua,
+  pero el pipeline reduce la latencia a un solo viaje de ida y vuelta, suficiente para
+  este caso — en el peor caso, con carrera, se cuenta 1 de más, aceptable para limitar peticiones).
 """
 
 import logging
@@ -21,7 +21,7 @@ import uuid
 
 _logger = logging.getLogger(__name__)
 
-# Lazy import — redis-py is optional
+# Importación diferida — redis-py es opcional
 _redis_mod = None
 _redis_import_failed = False
 
@@ -39,9 +39,9 @@ def _import_redis():
     except ImportError:
         _redis_import_failed = True
         _logger.warning(
-            "MCP Server: redis-py package not installed. "
-            "Install it with: pip install redis  "
-            "Falling back to in-memory rate limiter."
+            "Servidor MCP: el paquete redis-py no está instalado. "
+            "Instálelo con: pip install redis  "
+            "Se usa el limitador de peticiones en memoria."
         )
         return None
 
@@ -50,10 +50,10 @@ _KEY_PREFIX = "mcp:ratelimit:"
 
 
 class RedisRateLimiter:
-    """Distributed sliding-window rate limiter backed by Redis sorted sets.
+    """Limitador de peticiones distribuido con ventana deslizante sobre sorted sets de Redis.
 
-    The interface is identical to RateLimiter so it can be used as a drop-in
-    replacement in the controller.
+    Su interfaz es idéntica a la de RateLimiter, así que puede sustituirlo
+    directamente en el controlador.
     """
 
     def __init__(self, redis_url: str, max_requests: int, window_seconds: int):
@@ -61,7 +61,7 @@ class RedisRateLimiter:
         self.window_seconds = window_seconds
         self._redis_url = redis_url
         self._client = None
-        self._fallback = None  # set on first connection failure
+        self._fallback = None  # se fija en el primer fallo de conexión
 
         redis_mod = _import_redis()
         if redis_mod is None:
@@ -69,20 +69,20 @@ class RedisRateLimiter:
             return
 
         try:
-            # decode_responses=False keeps scores as floats, members as bytes — fine
+            # decode_responses=False mantiene las puntuaciones como float y los miembros como bytes — es correcto
             self._client = redis_mod.from_url(
                 redis_url,
                 socket_connect_timeout=1,
                 socket_timeout=1,
                 decode_responses=True,
             )
-            # Verify connectivity immediately so we fail fast at startup
+            # Verifica la conexión de inmediato para fallar pronto al arrancar
             self._client.ping()
-            _logger.info("MCP Server: Redis rate limiter connected to %s", redis_url)
+            _logger.info("Servidor MCP: limitador de peticiones con Redis conectado a %s", redis_url)
         except Exception as exc:
             _logger.warning(
-                "MCP Server: cannot connect to Redis (%s). "
-                "Falling back to in-memory rate limiter.", exc
+                "Servidor MCP: no se puede conectar a Redis (%s). "
+                "Se usa el limitador de peticiones en memoria.", exc
             )
             self._client = None
             self._init_fallback()
@@ -95,9 +95,9 @@ class RedisRateLimiter:
         )
 
     def check(self, key: str, max_override: int = 0) -> tuple[bool, int]:
-        """Check rate limit. Returns (allowed, remaining).
+        """Comprueba el límite de peticiones. Devuelve (permitido, restantes).
 
-        On any Redis error, falls back to the in-memory limiter.
+        Ante cualquier error de Redis, pasa al limitador en memoria.
         """
         if self._fallback is not None:
             return self._fallback.check(key, max_override=max_override)
@@ -117,9 +117,9 @@ class RedisRateLimiter:
             pipe.expire(redis_key, self.window_seconds + 1)
             results = pipe.execute()
 
-            count = results[2]  # result of ZCARD
+            count = results[2]  # resultado de ZCARD
             if count > effective_max:
-                # Already over limit — remove the member we just added
+                # Ya se superó el límite — se elimina el miembro recién añadido
                 self._client.zrem(redis_key, member)
                 return False, 0
 
@@ -128,8 +128,8 @@ class RedisRateLimiter:
 
         except Exception as exc:
             _logger.warning(
-                "MCP Server: Redis rate-limit check failed (%s). "
-                "Activating in-memory fallback.", exc
+                "Servidor MCP: falló la comprobación del límite en Redis (%s). "
+                "Se activa el limitador en memoria.", exc
             )
             self._init_fallback()
             return self._fallback.check(key, max_override=max_override)
@@ -141,7 +141,7 @@ class RedisRateLimiter:
             self._fallback.reconfigure(max_requests, window_seconds)
 
     def ping(self) -> bool:
-        """Return True if Redis is reachable. Used for the admin health-check button."""
+        """Devuelve True si Redis responde. Lo usa el botón de comprobación de estado del administrador."""
         if self._client is None:
             return False
         try:

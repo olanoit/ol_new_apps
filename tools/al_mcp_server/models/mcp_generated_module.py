@@ -17,21 +17,21 @@ _TECH_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 class McpGeneratedModule(models.Model):
     _name = "mcp.generated.module"
-    _description = "Módulo Generado MCP"
+    _description = "Módulo generado MCP"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "create_date desc"
 
     # ------------------------------------------------------------------
-    # Fields
+    # Campos
     # ------------------------------------------------------------------
 
     name = fields.Char(
-        string="Nombre para Mostrar",
+        string="Nombre para mostrar",
         required=True,
         tracking=True,
     )
     technical_name = fields.Char(
-        string="Nombre Técnico",
+        string="Nombre técnico",
         required=True,
         index=True,
         help="Nombre Python/de carpeta del módulo (snake_case).",
@@ -63,6 +63,7 @@ class McpGeneratedModule(models.Model):
             ("installed", "Instalado"),
             ("failed", "Fallido"),
         ],
+        string="Estado",
         default="draft",
         tracking=True,
         required=True,
@@ -74,24 +75,24 @@ class McpGeneratedModule(models.Model):
         ondelete="set null",
     )
     generation_log = fields.Text(
-        string="Registro de Generación",
+        string="Registro de generación",
         readonly=True,
         help="Advertencias y errores capturados durante la generación del ZIP.",
     )
     created_by = fields.Many2one(
         "res.users",
-        string="Creado Por",
+        string="Creado por",
         default=lambda self: self.env.uid,
         readonly=True,
         ondelete="set null",
     )
     installed_at = fields.Datetime(
-        string="Instalado El",
+        string="Instalado el",
         readonly=True,
     )
 
     # ------------------------------------------------------------------
-    # Constraints
+    # Restricciones
     # ------------------------------------------------------------------
 
     _technical_name_unique = models.Constraint(
@@ -112,21 +113,21 @@ class McpGeneratedModule(models.Model):
                 ))
 
     # ------------------------------------------------------------------
-    # Validation
+    # Validación
     # ------------------------------------------------------------------
 
     @api.model
     def validate_spec(self, spec_dict: dict) -> list:
-        """Return list of validation error strings (empty = valid)."""
+        """Devuelve la lista de errores de validación (vacía = válida)."""
         from ..services import module_generator
         return module_generator.validate_spec(spec_dict)
 
     # ------------------------------------------------------------------
-    # Actions
+    # Acciones
     # ------------------------------------------------------------------
 
     def action_generate(self):
-        """Validate spec, build ZIP, store as ir.attachment, set state=generated."""
+        """Valida la especificación, construye el ZIP, lo guarda como ir.attachment y pasa a state=generated."""
         self.ensure_one()
         from ..services import module_generator
 
@@ -167,13 +168,13 @@ class McpGeneratedModule(models.Model):
                 "state": "failed",
                 "generation_log": log_msg,
             })
-            _logger.exception("Unexpected error generating module %s", self.technical_name)
+            _logger.exception("Error inesperado al generar el módulo %s", self.technical_name)
             raise UserError(_(
                 "La generación del módulo falló con un error inesperado:\n%(error)s",
                 error=str(exc),
             ))
 
-        # Remove old attachment if any
+        # Elimina el adjunto anterior, si lo hay
         if self.attachment_id:
             self.attachment_id.sudo().unlink()
 
@@ -204,7 +205,7 @@ class McpGeneratedModule(models.Model):
         return True
 
     def action_download(self):
-        """Return ir.actions.act_url to download the generated ZIP."""
+        """Devuelve un ir.actions.act_url para descargar el ZIP generado."""
         self.ensure_one()
         if not self.attachment_id:
             raise UserError(_("No hay archivo ZIP disponible. Genere el módulo primero."))
@@ -215,10 +216,10 @@ class McpGeneratedModule(models.Model):
         }
 
     def action_install(self):
-        """Extract ZIP to configured addons path and install via Odoo module manager.
+        """Extrae el ZIP en la ruta de addons configurada y lo instala con el gestor de módulos de Odoo.
 
-        Requires ir.config_parameter 'mcp_server.generated_modules_path' to be set.
-        Path must exist, be writable, and must NOT be inside community/ or enterprise/.
+        Requiere que esté definido el ir.config_parameter 'mcp_server.generated_modules_path'.
+        La ruta debe existir, admitir escritura y NO estar dentro de community/ ni enterprise/.
         """
         self.ensure_one()
         if self.state != "generated":
@@ -234,7 +235,7 @@ class McpGeneratedModule(models.Model):
         if not base_path:
             raise UserError(_(
                 "La ruta de módulos generados no está configurada. "
-                "Vaya a Configuración > Servidor MCP y establezca primero 'Ruta de Módulos Generados'."
+                "Vaya a Configuración > Servidor MCP y establezca primero 'Ruta de módulos generados'."
             ))
 
         base_path = os.path.abspath(base_path)
@@ -242,7 +243,7 @@ class McpGeneratedModule(models.Model):
 
         target_dir = self._safe_target_dir(base_path)
 
-        # Fetch ZIP bytes
+        # Obtiene los bytes del ZIP
         att_sudo = self.attachment_id.sudo()  # sudo: adjunto interno del registro
         zip_bytes = base64.b64decode(att_sudo.datas)
         with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
@@ -254,7 +255,7 @@ class McpGeneratedModule(models.Model):
                         path=member,
                     ))
 
-        # Atomic: remove existing dir if present, extract fresh
+        # Atómico: elimina la carpeta existente, si la hay, y extrae de cero
         if os.path.exists(target_dir):
             shutil.rmtree(target_dir)
 
@@ -262,7 +263,7 @@ class McpGeneratedModule(models.Model):
             with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
                 zf.extractall(base_path)
         except Exception as exc:
-            # Rollback: remove partially extracted directory
+            # Reversión: elimina la carpeta extraída parcialmente
             if os.path.exists(target_dir):
                 shutil.rmtree(target_dir, ignore_errors=True)
             raise UserError(_(
@@ -270,7 +271,7 @@ class McpGeneratedModule(models.Model):
                 error=str(exc),
             ))
 
-        # Update module list
+        # Actualiza la lista de módulos
         try:
             self.env["ir.module.module"].sudo().update_list()
         except Exception as exc:
@@ -280,7 +281,7 @@ class McpGeneratedModule(models.Model):
                 error=str(exc),
             ))
 
-        # Find and install
+        # Busca e instala
         module_rec = self.env["ir.module.module"].sudo().search(
             [("name", "=", self.technical_name)], limit=1
         )
@@ -313,7 +314,7 @@ class McpGeneratedModule(models.Model):
         return True
 
     def action_reset_to_draft(self):
-        """Reset to draft (only from generated or failed). Clears attachment."""
+        """Vuelve a borrador (solo desde generado o fallido). Elimina el adjunto."""
         for rec in self:
             if rec.state not in ("generated", "failed"):
                 raise UserError(_(
@@ -332,7 +333,7 @@ class McpGeneratedModule(models.Model):
         return True
 
     # ------------------------------------------------------------------
-    # Internal helpers
+    # Utilidades internas
     # ------------------------------------------------------------------
 
     def _safe_target_dir(self, base_path: str) -> str:
@@ -345,7 +346,7 @@ class McpGeneratedModule(models.Model):
         return target
 
     def _validate_install_path(self, path: str) -> None:
-        """Raise UserError if *path* is not safe for module extraction."""
+        """Lanza UserError si *path* no es segura para extraer el módulo."""
         if not os.path.isdir(path):
             raise UserError(_(
                 "La ruta de módulos generados %(path)s no existe o no es un directorio.",
@@ -357,7 +358,7 @@ class McpGeneratedModule(models.Model):
                 path=path,
             ))
 
-        # Refuse paths inside Odoo upstream directories
+        # Rechaza rutas dentro de los directorios oficiales de Odoo
         _BLOCKED_SEGMENTS = ("community", "enterprise")
         norm = path.lower().replace("\\", "/")
         for seg in _BLOCKED_SEGMENTS:

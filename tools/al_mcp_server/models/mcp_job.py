@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class McpJob(models.Model):
     _name = "mcp.job"
-    _description = "Trabajo Asíncrono MCP"
+    _description = "Trabajo asíncrono MCP"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "create_date desc"
     _rec_name = "name"
@@ -22,12 +22,12 @@ class McpJob(models.Model):
     )
     operation = fields.Selection(
         [
-            ("bulk_update", "Actualización Masiva"),
-            ("bulk_create", "Creación Masiva"),
-            ("bulk_unlink", "Eliminación Masiva"),
+            ("bulk_update", "Actualización masiva"),
+            ("bulk_create", "Creación masiva"),
+            ("bulk_unlink", "Eliminación masiva"),
             ("export_csv", "Exportar CSV"),
             ("export_xlsx", "Exportar XLSX"),
-            ("call_method", "Llamar Método"),
+            ("call_method", "Llamar método"),
             ("custom", "Personalizado"),
         ],
         string="Operación",
@@ -72,19 +72,19 @@ class McpJob(models.Model):
         string="Progreso (%)",
         default=0,
     )
-    total_records = fields.Integer(string="Registros Totales", default=0)
-    processed_records = fields.Integer(string="Registros Procesados", default=0)
+    total_records = fields.Integer(string="Registros totales", default=0)
+    processed_records = fields.Integer(string="Registros procesados", default=0)
     payload = fields.Text(
-        string="Carga Útil (JSON)",
+        string="Carga útil (JSON)",
         help="Argumentos de entrada del trabajo, incluidas las instantáneas de mcp_scope y mcp_restrictions.",
     )
     result = fields.Text(
         string="Resultado (JSON)",
         help="Salida o resumen del trabajo (PII ocultada).",
     )
-    error_message = fields.Text(string="Mensaje de Error")
-    started_at = fields.Datetime(string="Iniciado El", readonly=True)
-    finished_at = fields.Datetime(string="Finalizado El", readonly=True)
+    error_message = fields.Text(string="Mensaje de error")
+    started_at = fields.Datetime(string="Iniciado el", readonly=True)
+    finished_at = fields.Datetime(string="Finalizado el", readonly=True)
     duration_ms = fields.Integer(
         string="Duración (ms)",
         compute="_compute_duration_ms",
@@ -92,11 +92,11 @@ class McpJob(models.Model):
     )
     attachment_id = fields.Many2one(
         "ir.attachment",
-        string="Archivo de Exportación",
+        string="Archivo de exportación",
         ondelete="set null",
         readonly=True,
     )
-    # Governance snapshots — populated at submit time
+    # Instantáneas de gobierno: se rellenan al enviar el trabajo
     mcp_scope = fields.Char(
         string="Alcance MCP",
         readonly=True,
@@ -109,7 +109,7 @@ class McpJob(models.Model):
     )
 
     # ------------------------------------------------------------------
-    # Compute
+    # Cálculos
     # ------------------------------------------------------------------
 
     @api.depends("operation")
@@ -118,7 +118,7 @@ class McpJob(models.Model):
         for rec in self:
             label = op_labels.get(rec.operation, rec.operation or "")
             job_id = rec._origin.id or rec.id
-            rec.name = f"Trabajo #{job_id} — {label}" if job_id else f"Nuevo Trabajo — {label}"
+            rec.name = f"Trabajo #{job_id} — {label}" if job_id else f"Nuevo trabajo — {label}"
 
     @api.depends("started_at", "finished_at")
     def _compute_duration_ms(self):
@@ -130,7 +130,7 @@ class McpJob(models.Model):
                 rec.duration_ms = 0
 
     # ------------------------------------------------------------------
-    # ORM overrides
+    # Sobrescrituras del ORM
     # ------------------------------------------------------------------
 
     # Qué se ejecuta, con qué usuario y con qué alcance: lo fija el servidor al
@@ -152,11 +152,11 @@ class McpJob(models.Model):
         return super().write(vals)
 
     # ------------------------------------------------------------------
-    # Public actions
+    # Acciones públicas
     # ------------------------------------------------------------------
 
     def action_run(self):
-        """Synchronously execute this job. Idempotent — refuses to run if state != pending."""
+        """Ejecuta este trabajo de forma síncrona. Idempotente: no se ejecuta si state != pending."""
         self.ensure_one()
         if self.state != "pending":
             raise UserError(
@@ -169,11 +169,11 @@ class McpJob(models.Model):
             result = self._execute()
             self._set_done(result)
         except Exception as exc:
-            _logger.exception("MCP job %s failed", self.id)
+            _logger.exception("El trabajo MCP %s falló", self.id)
             self._set_failed(str(exc))
 
     def action_cancel(self):
-        """Cancel a pending job."""
+        """Cancela un trabajo pendiente."""
         self.ensure_one()
         if self.state != "pending":
             raise UserError(
@@ -182,7 +182,7 @@ class McpJob(models.Model):
         self.write({"state": "cancelled"})
 
     def action_retry(self):
-        """Reset a failed job to pending so the cron picks it up again."""
+        """Devuelve un trabajo fallido a pendiente para que el cron lo vuelva a tomar."""
         self.ensure_one()
         if self.state != "failed":
             raise UserError(
@@ -191,7 +191,7 @@ class McpJob(models.Model):
         self.write({"state": "pending", "error_message": False, "progress": 0})
 
     def action_open_attachment(self):
-        """Return an act_url action to download the job's export attachment."""
+        """Devuelve una acción act_url para descargar el adjunto de exportación del trabajo."""
         self.ensure_one()
         if not self.attachment_id:
             raise UserError(_("No hay adjunto disponible para este trabajo."))
@@ -202,7 +202,7 @@ class McpJob(models.Model):
         }
 
     # ------------------------------------------------------------------
-    # Internal state transitions
+    # Transiciones internas de estado
     # ------------------------------------------------------------------
 
     def _set_running(self):
@@ -235,14 +235,14 @@ class McpJob(models.Model):
         })
 
     # ------------------------------------------------------------------
-    # Core execution dispatcher
+    # Despachador principal de ejecución
     # ------------------------------------------------------------------
 
     def _execute(self) -> dict:
-        """Dispatch to the appropriate runner. Restores governance context before executing."""
+        """Delega en el ejecutor adecuado. Restaura el contexto de gobierno antes de ejecutar."""
         self.ensure_one()
 
-        # Parse payload
+        # Interpreta la carga útil
         try:
             payload = json.loads(self.payload or "{}")
         except (json.JSONDecodeError, TypeError):
@@ -250,7 +250,7 @@ class McpJob(models.Model):
 
         args = payload.get("args") or {}
 
-        # Restore scope + restrictions snapshots into env.context — security-critical
+        # Restaura en env.context las instantáneas de alcance y restricciones (crítico para la seguridad)
         ctx_updates = {
             "mcp_scope": self.mcp_scope or payload.get("mcp_scope") or "write",
         }
@@ -285,30 +285,30 @@ class McpJob(models.Model):
         if op in ("call_method", "custom"):
             return job_runner.run_custom(job_env, args, self)
 
-        raise ValueError(f"Unknown operation type: {op!r}")
+        raise ValueError(f"Tipo de operación desconocido: {op!r}")
 
     # ------------------------------------------------------------------
-    # Cron entry point
+    # Punto de entrada del cron
     # ------------------------------------------------------------------
 
     @api.model
     def _process_pending_jobs(self, limit: int = 10):
-        """Pick up to *limit* pending jobs and execute each in isolation.
+        """Toma hasta *limit* trabajos pendientes y ejecuta cada uno de forma aislada.
 
-        Called by the ir.cron record. Partial failure in one job does not
-        prevent remaining jobs from running.
+        Lo invoca el registro ir.cron. El fallo de un trabajo no impide que se
+        ejecuten los demás.
 
-        Note: SAVEPOINT is intentionally avoided — PGBouncer in transaction
-        pooling mode does not support server-side SAVEPOINT commands.
-        action_run() already handles its own exception isolation internally.
+        Nota: se evita SAVEPOINT a propósito, porque PGBouncer en modo de pool
+        por transacción no admite comandos SAVEPOINT en el servidor.
+        action_run() ya aísla internamente sus propias excepciones.
         """
         pending = self.search([("state", "=", "pending")], order="id asc", limit=limit)
         for job in pending:
             try:
                 job.action_run()
             except Exception as exc:
-                _logger.exception("MCP cron: job %s raised outside action_run", job.id)
+                _logger.exception("Cron MCP: el trabajo %s lanzó una excepción fuera de action_run", job.id)
                 try:
                     job.sudo().write({"state": "failed", "error_message": str(exc)})
                 except Exception:
-                    _logger.exception("MCP cron: could not fail job %s", job.id)
+                    _logger.exception("Cron MCP: no se pudo marcar como fallido el trabajo %s", job.id)

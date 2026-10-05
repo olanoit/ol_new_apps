@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="ir_cron_vacuum_auth_codes" model="ir.cron">
-            <field name="name">MCP: Limpieza de Códigos de Autorización Caducados</field>
+            <field name="name">MCP: limpieza de códigos de autorización caducados</field>
             <field name="model_id" ref="model_mcp_auth_code"/>
             <field name="state">code</field>
             <field name="code">model._vacuum_expired()</field>
@@ -14,7 +14,7 @@
         </record>
 
         <record id="ir_cron_vacuum_sessions" model="ir.cron">
-            <field name="name">MCP: Limpieza de Sesiones Antiguas</field>
+            <field name="name">MCP: limpieza de sesiones antiguas</field>
             <field name="model_id" ref="model_mcp_session"/>
             <field name="state">code</field>
             <field name="code">model._vacuum_old_sessions()</field>
@@ -25,7 +25,7 @@
         </record>
 
         <record id="ir_cron_process_mcp_jobs" model="ir.cron">
-            <field name="name">MCP: Procesar Trabajos Pendientes</field>
+            <field name="name">MCP: procesar trabajos pendientes</field>
             <field name="model_id" ref="model_mcp_job"/>
             <field name="state">code</field>
             <field name="code">model._process_pending_jobs()</field>

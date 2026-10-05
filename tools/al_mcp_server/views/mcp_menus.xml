@@ -46,7 +46,7 @@
               sequence="4"/>
 
     <menuitem id="mcp_menu_portal_pages"
-              name="Páginas de Portal"
+              name="Páginas de portal"
               parent="mcp_menu_tools"
               action="mcp_portal_page_action"
               sequence="8"/>
@@ -58,7 +58,7 @@
               sequence="10"/>
 
     <menuitem id="mcp_menu_generated_modules"
-              name="Módulos Generados"
+              name="Módulos generados"
               parent="mcp_menu_tools"
               action="mcp_generated_module_action"
               groups="base.group_system"

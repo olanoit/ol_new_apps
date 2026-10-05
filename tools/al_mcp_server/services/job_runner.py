@@ -1,13 +1,13 @@
 """
-MCP async job runner — execution logic for each operation type.
+Ejecutor de trabajos asíncronos MCP: lógica de ejecución de cada tipo de operación.
 
-Each public function receives:
-  env     — Odoo Environment (already has mcp_scope + mcp_restrictions in context)
-  args    — dict of operation-specific arguments
-  job     — mcp.job recordset (single record) for incremental progress updates
+Cada función pública recibe:
+  env     — Environment de Odoo (ya lleva mcp_scope + mcp_restrictions en el contexto)
+  args    — diccionario con los argumentos propios de la operación
+  job     — recordset de mcp.job (un solo registro) para ir actualizando el progreso
 
-All functions return a dict that will be JSON-serialised and stored in job.result.
-Per-record errors are accumulated rather than aborting the whole batch.
+Todas las funciones devuelven un diccionario que se serializa a JSON y se guarda en job.result.
+Los errores por registro se acumulan en lugar de abortar todo el lote.
 """
 import csv
 import io
@@ -22,15 +22,15 @@ _DEFAULT_BATCH_SIZE = 100
 
 
 # ---------------------------------------------------------------------------
-# Progress helper
+# Utilidad de progreso
 # ---------------------------------------------------------------------------
 
 def _update_progress(job, processed: int, total: int):
-    """Write progress percentage back to the job record and commit.
+    """Guarda el porcentaje de progreso en el registro del trabajo y hace commit.
 
-    Commit is intentional here — long-running jobs must release row locks
-    in the batch table and make intermediate progress visible to polling clients.
-    Acceptable in cron context per CLAUDE.md guidelines.
+    El commit es intencionado: los trabajos largos deben liberar los bloqueos de
+    fila de la tabla del lote y hacer visible el progreso intermedio a los clientes
+    que consultan el estado. Es aceptable en contexto de cron según CLAUDE.md.
     """
     if total > 0:
         pct = min(99, int(processed / total * 100))
@@ -40,11 +40,11 @@ def _update_progress(job, processed: int, total: int):
         job.write({"progress": pct, "processed_records": processed, "total_records": total})
         job.env.cr.commit()
     except Exception:
-        _logger.debug("MCP job_runner: could not update progress for job %s", job.id)
+        _logger.debug("MCP job_runner: no se pudo actualizar el progreso del trabajo %s", job.id)
 
 
 # ---------------------------------------------------------------------------
-# Bulk update
+# Actualización masiva
 # ---------------------------------------------------------------------------
 
 def run_bulk_update(env, args: dict, job) -> dict:
@@ -72,7 +72,7 @@ def run_bulk_update(env, args: dict, job) -> dict:
         try:
             batch.write(values)
         except Exception as exc:
-            _logger.warning("bulk_update batch error (ids %s): %s", batch.ids, exc)
+            _logger.warning("bulk_update: error en el lote (ids %s): %s", batch.ids, exc)
             errors.append({"ids": batch.ids, "error": str(exc)})
         processed += len(batch)
         _update_progress(job, processed, total)
@@ -86,7 +86,7 @@ def run_bulk_update(env, args: dict, job) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Bulk create
+# Creación masiva
 # ---------------------------------------------------------------------------
 
 def run_bulk_create(env, args: dict, job) -> dict:
@@ -114,7 +114,7 @@ def run_bulk_create(env, args: dict, job) -> dict:
             created = model.create(batch)
             created_ids.extend(created.ids)
         except Exception as exc:
-            _logger.warning("bulk_create batch error (offset %d): %s", i, exc)
+            _logger.warning("bulk_create: error en el lote (desplazamiento %d): %s", i, exc)
             errors.append({"offset": i, "count": len(batch), "error": str(exc)})
         _update_progress(job, min(i + batch_size, total), total)
 
@@ -122,13 +122,13 @@ def run_bulk_create(env, args: dict, job) -> dict:
         "model": model_name,
         "total_requested": total,
         "created": len(created_ids),
-        "created_ids": created_ids[:500],  # cap to avoid oversized result
+        "created_ids": created_ids[:500],  # límite para no generar un resultado demasiado grande
         "errors": errors,
     }
 
 
 # ---------------------------------------------------------------------------
-# Bulk unlink
+# Eliminación masiva
 # ---------------------------------------------------------------------------
 
 def run_bulk_unlink(env, args: dict, job) -> dict:
@@ -154,7 +154,7 @@ def run_bulk_unlink(env, args: dict, job) -> dict:
             batch.unlink()
             deleted += len(batch)
         except Exception as exc:
-            _logger.warning("bulk_unlink batch error (ids %s): %s", batch.ids, exc)
+            _logger.warning("bulk_unlink: error en el lote (ids %s): %s", batch.ids, exc)
             errors.append({"ids": batch.ids, "error": str(exc)})
         _update_progress(job, i + len(batch), total)
 
@@ -167,13 +167,13 @@ def run_bulk_unlink(env, args: dict, job) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Export CSV
+# Exportar CSV
 # ---------------------------------------------------------------------------
 
 def run_export_csv(env, args: dict, job) -> dict:
     """args: {model, domain, fields}
-    Creates an ir.attachment and sets job.attachment_id.
-    Returns {attachment_id, row_count}.
+    Crea un ir.attachment y asigna job.attachment_id.
+    Devuelve {attachment_id, row_count}.
     """
     model_name = args.get("model")
     domain = args.get("domain") or []
@@ -201,11 +201,11 @@ def run_export_csv(env, args: dict, job) -> dict:
     writer = csv.DictWriter(buf, fieldnames=field_names, extrasaction="ignore")
     writer.writeheader()
     for i, row in enumerate(records):
-        # Serialize non-string values
+        # Serializa los valores que no son cadenas
         clean = {}
         for k, v in row.items():
             if isinstance(v, (list, tuple)) and len(v) == 2 and isinstance(v[0], int):
-                clean[k] = v[1]  # Many2one — take display name
+                clean[k] = v[1]  # Many2one: toma el nombre visible
             elif isinstance(v, list):
                 clean[k] = ";".join(str(x) for x in v)
             elif v is None or v is False:
@@ -241,18 +241,18 @@ def run_export_csv(env, args: dict, job) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Export XLSX
+# Exportar XLSX
 # ---------------------------------------------------------------------------
 
 def run_export_xlsx(env, args: dict, job) -> dict:
     """args: {model, domain, fields}
-    Uses xlsxwriter if available; falls back to CSV otherwise.
+    Usa xlsxwriter si está disponible; si no, recurre a CSV.
     """
     try:
-        import xlsxwriter  # noqa: F401 — check availability only
+        import xlsxwriter  # noqa: F401 — solo comprueba que esté disponible
         return _export_xlsx_native(env, args, job)
     except ImportError:
-        _logger.info("xlsxwriter not available — falling back to CSV export")
+        _logger.info("xlsxwriter no está disponible: se exporta a CSV")
         return run_export_csv(env, args, job)
 
 
@@ -329,12 +329,12 @@ def _export_xlsx_native(env, args: dict, job) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Custom / call_method
+# Personalizado / call_method
 # ---------------------------------------------------------------------------
 
 def run_custom(env, args: dict, job) -> dict:
     """args: {model, method, ids, args, kwargs}
-    Mirrors the logic of tool_executor._call_method but runs async.
+    Replica la lógica de tool_executor._call_method, pero en modo asíncrono.
     """
     model_name = args.get("model")
     method_name = args.get("method")
@@ -349,7 +349,7 @@ def run_custom(env, args: dict, job) -> dict:
     if model_name not in env.registry:
         raise ValueError(f"Modelo {model_name!r} no encontrado en el registro de Odoo")
 
-    # Honour the same denylist as the synchronous tool
+    # Respeta la misma lista de bloqueo que la herramienta síncrona
     _DENYLIST = frozenset({
         "sudo", "with_user", "with_company", "with_context", "with_env",
         "execute", "execute_kw",

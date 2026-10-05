@@ -8,14 +8,14 @@ Servidor MCP para Odoo — Guía técnica
 Descripción general
 -------------------
 
-Servidor MCP para Odoo expone tu instancia de Odoo 19 como un servidor
+El servidor MCP para Odoo expone tu instancia de Odoo 19 como un servidor
 `Model Context Protocol (MCP) <https://modelcontextprotocol.io>`_.
 Los clientes de IA — Claude, ChatGPT, Gemini, Cursor, n8n, LangChain, crewAI — se conectan
 a datos en vivo de Odoo a través de un único endpoint HTTP con autenticación OAuth 2.0 o
 token Bearer.
 
 - **Protocolo:** MCP 2025-03-26 (Streamable HTTP) + SSE heredado
-- **Autenticación:** OAuth 2.0 Código de autorización + PKCE S256, tokens Bearer PAT
+- **Autenticación:** código de autorización OAuth 2.0 + PKCE S256, tokens Bearer PAT
 - **Herramientas:** 34+ herramientas MCP (CRUD, analítica, BI, páginas de portal, trabajos asíncronos, generador de módulos)
 - **Versión de Odoo:** 19.0 (Community y Enterprise)
 - **Licencia:** OPL-1
@@ -63,7 +63,7 @@ Instalar desde la tienda de Apps de Odoo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Inicia sesión en tu instancia de Odoo como Administrador.
-2. Ve a **Aplicaciones** → busca **MCP Server**.
+2. Ve a **Aplicaciones** → busca **Servidor MCP**.
 3. Haz clic en **Instalar**.
 4. El módulo se instala automáticamente con todas sus dependencias.
 
@@ -91,7 +91,7 @@ Actualizar
 Configuración
 -------------
 
-Accede a la configuración del Servidor MCP en **Ajustes → MCP Server** (sección Técnico).
+Accede a la configuración del servidor MCP en **Ajustes → Servidor MCP**.
 
 Configuración general
 ~~~~~~~~~~~~~~~~~~~~~
@@ -175,7 +175,7 @@ Endpoints OAuth 2.0
 +--------------------------------------------------+------------------------------------------+
 | ``POST /oauth/register``                         | Registro dinámico de clientes (RFC 7591) |
 +--------------------------------------------------+------------------------------------------+
-| ``GET  /oauth/authorize``                        | Inicio del Código de autorización        |
+| ``GET  /oauth/authorize``                        | Inicio del código de autorización        |
 +--------------------------------------------------+------------------------------------------+
 | ``POST /oauth/token``                            | Intercambio y refresco de tokens         |
 +--------------------------------------------------+------------------------------------------+
@@ -198,7 +198,7 @@ Endpoints del portal
 Autenticación
 -------------
 
-Token de Acceso Personal (PAT)
+Token de acceso personal (PAT)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Los PAT son el método de autenticación más simple para herramientas de CLI, scripts e
@@ -206,7 +206,7 @@ integraciones servidor a servidor.
 
 **Generar un PAT:**
 
-1. Ve a **MCP Server → Tokens**.
+1. Ve a **Servidor MCP → Gestión → Tokens**.
 2. Haz clic en **Generar PAT**.
 3. Copia el token del diálogo — se muestra **solo una vez**.
 4. Guárdalo de forma segura (gestor de contraseñas, secretos de CI/CD).
@@ -227,7 +227,7 @@ integraciones servidor a servidor.
    Authorization: Bearer <your-PAT>
    Content-Type: application/json
 
-OAuth 2.0 Código de autorización + PKCE
+Código de autorización OAuth 2.0 + PKCE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 OAuth 2.0 lo usan los clientes con interfaz gráfica (Claude Web, Claude Desktop, Cursor) que
@@ -254,7 +254,7 @@ Gobernanza de tokens
 ~~~~~~~~~~~~~~~~~~~~
 
 Cada token admite restricciones granulares, configurables en
-**MCP Server → Tokens → [token]**:
+**Servidor MCP → Gestión → Tokens → [token]**:
 
 +-----------------------------+-----------------------------------------------------------------------------------------+
 | Ajuste                      | Efecto                                                                                  |
@@ -450,7 +450,7 @@ Despliegue en producción
 Proxy inverso Nginx
 ~~~~~~~~~~~~~~~~~~~
 
-El Servidor MCP usa streaming HTTP (SSE / transferencia por fragmentos) y requiere cabeceras CORS
+El servidor MCP usa streaming HTTP (SSE / transferencia por fragmentos) y requiere cabeceras CORS
 para que los clientes de IA basados en navegador (Claude Web, ChatGPT, etc.) puedan conectarse. La
 configuración siguiente es la referencia probada en producción.
 
@@ -572,7 +572,7 @@ configuración siguiente es la referencia probada en producción.
 Configuración multi-worker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-El Servidor MCP es sin estado por diseño — no requiere sesiones persistentes (sticky sessions).
+El servidor MCP no guarda estado por diseño — no requiere sesiones persistentes (sticky sessions).
 
 **Configuración de Odoo (``odoo.conf``):**
 
@@ -590,7 +590,7 @@ El Servidor MCP es sin estado por diseño — no requiere sesiones persistentes 
 
 .. code-block:: ini
 
-   # No hace falta cambiar odoo.conf — configúralo en Ajustes → MCP Server
+   # No hace falta cambiar odoo.conf — configúralo en Ajustes → Servidor MCP
    # Ejemplo de URL de Redis:
    # redis://localhost:6379/0
    # redis://:password@redis-cluster:6379/0
@@ -611,15 +611,17 @@ Si Cloudflare (u otra CDN) está delante de Odoo:
 Trabajos programados
 --------------------
 
-Se instalan automáticamente dos trabajos cron:
+Se instalan automáticamente tres trabajos cron:
 
-+-------------------------------------+-----------------------+----------------------------------------------------------------+
-| Trabajo                             | Intervalo por defecto | Acción                                                         |
-+=====================================+=======================+================================================================+
-| MCP Server: Purge expired sessions  | Diario                | Elimina sesiones con más antigüedad que el ajuste de retención |
-+-------------------------------------+-----------------------+----------------------------------------------------------------+
-| MCP Server: Process async job queue | Cada 5 minutos        | Ejecuta los registros ``mcp.job`` pendientes                   |
-+-------------------------------------+-----------------------+----------------------------------------------------------------+
++-------------------------------------------------------+-----------------------+----------------------------------------------------------------+
+| Trabajo                                               | Intervalo por defecto | Acción                                                         |
++=======================================================+=======================+================================================================+
+| MCP: Limpieza de códigos de autorización caducados    | Cada hora             | Elimina los códigos de autorización OAuth caducados            |
++-------------------------------------------------------+-----------------------+----------------------------------------------------------------+
+| MCP: Limpieza de sesiones antiguas                    | Diario                | Elimina sesiones con más antigüedad que el ajuste de retención |
++-------------------------------------------------------+-----------------------+----------------------------------------------------------------+
+| MCP: Procesar trabajos pendientes                     | Cada minuto           | Ejecuta los registros ``mcp.job`` pendientes                   |
++-------------------------------------------------------+-----------------------+----------------------------------------------------------------+
 
 Configura los intervalos de cron en **Ajustes → Técnico → Acciones planificadas**.
 
@@ -629,7 +631,7 @@ Mantenimiento
 Revocar tokens
 ~~~~~~~~~~~~~~
 
-Ve a **MCP Server → Tokens**, abre el token y haz clic en **Revocar**. El token
+Ve a **Servidor MCP → Gestión → Tokens**, abre el token y haz clic en **Revocar token**. El token
 se rechaza en la siguiente solicitud. Las sesiones activas que usen ese token no se
 terminan de inmediato, pero todas las solicitudes posteriores fallan.
 
@@ -641,14 +643,14 @@ purga inmediata, ejecuta desde un shell de Odoo:
 
 .. code-block:: python
 
-   env['mcp.session'].sudo()._purge_expired()
+   env['mcp.session'].sudo()._vacuum_old_sessions()
 
 Limpiar la caché de esquema
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tras instalar o actualizar módulos:
 
-1. Ve a **Ajustes → MCP Server**.
+1. Ve a **Ajustes → Servidor MCP**.
 2. Haz clic en **Limpiar caché de esquema**.
 
 O desde un shell de Odoo:
@@ -727,7 +729,7 @@ Extiende el registro de herramientas heredando de ``mcp.tool.registry``:
            return base_tools + [
                {
                    "name": "odoo_my_custom_tool",
-                   "description": "My custom tool description",
+                   "description": "Descripción de mi herramienta personalizada",
                    "inputSchema": {
                        "type": "object",
                        "properties": {

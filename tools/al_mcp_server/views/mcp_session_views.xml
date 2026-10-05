@@ -19,7 +19,7 @@
                        decoration-muted="state == 'closed'"/>
                 <field name="ip_address"/>
                 <field name="message_count" string="Solicitudes"/>
-                <field name="tool_call_count" string="Llamadas a Herramientas"/>
+                <field name="tool_call_count" string="Llamadas a herramientas"/>
                 <field name="last_activity"/>
                 <field name="create_date" string="Conectado el"/>
             </list>
@@ -32,7 +32,7 @@
         <field name="arch" type="xml">
             <form string="Sesión MCP" create="false">
                 <header>
-                    <button name="action_close" string="Cerrar Sesión"
+                    <button name="action_close" string="Cerrar sesión"
                             type="object" class="btn-secondary"
                             invisible="state == 'closed'"/>
                     <field name="state" widget="statusbar"
@@ -40,7 +40,7 @@
                 </header>
                 <sheet>
                     <group>
-                        <group string="Información de la Sesión">
+                        <group string="Información de la sesión">
                             <field name="session_id"/>
                             <field name="user_id"/>
                             <field name="token_id"/>
@@ -49,14 +49,14 @@
                         </group>
                         <group string="Actividad">
                             <field name="message_count" string="Solicitudes (total)"/>
-                            <field name="tool_call_count" string="Llamadas a Herramientas"/>
+                            <field name="tool_call_count" string="Llamadas a herramientas"/>
                             <field name="last_activity"/>
                             <field name="create_date" string="Conectado el"/>
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Llamadas a Herramientas" name="tool_calls">
+                        <page string="Llamadas a herramientas" name="tool_calls">
                             <field name="log_ids" readonly="1">
                                 <list decoration-danger="is_error == True"
                                       decoration-success="is_error == False"
@@ -85,15 +85,15 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Log record form — shown when opening a row in the Tool Calls inline list -->
+    <!-- Formulario del registro de llamada: se muestra al abrir una fila de la lista de llamadas a herramientas -->
     <record id="mcp_session_log_view_form" model="ir.ui.view">
         <field name="name">mcp.session.log.form</field>
         <field name="model">mcp.session.log</field>
         <field name="arch" type="xml">
-            <form string="Registro de Llamada a Herramienta" create="false">
+            <form string="Registro de llamada a herramienta" create="false">
                 <sheet>
                     <group>
-                        <group string="Información de la Llamada">
+                        <group string="Información de la llamada">
                             <field name="create_date" string="Hora" readonly="1"/>
                             <field name="tool_name" readonly="1"/>
                             <field name="odoo_model" string="Modelo" readonly="1"/>
@@ -105,16 +105,16 @@
                             <field name="record_count" string="Registros" readonly="1"/>
                             <field name="duration_ms" string="Duración (ms)" readonly="1"/>
                             <field name="is_error" string="Error" readonly="1"/>
-                            <field name="error_message" string="Detalle del Error" readonly="1"
+                            <field name="error_message" string="Detalle del error" readonly="1"
                                    invisible="not is_error"/>
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Carga Útil de la Solicitud" name="request_payload">
+                        <page string="Carga útil de la solicitud" name="request_payload">
                             <div class="text-muted mb-2">
-                                Argumentos de la herramienta (PII ocultado). Solo se captura cuando el token
-                                tiene "Capturar Cargas Útiles" activado.
+                                Argumentos de la herramienta (PII ocultada). Solo se captura cuando el token
+                                tiene "Capturar cargas útiles" activado.
                             </div>
                             <field name="request_payload" readonly="1" nolabel="1"
                                    widget="code" colspan="2"
@@ -123,10 +123,10 @@
                                 No se capturó carga útil para esta llamada.
                             </p>
                         </page>
-                        <page string="Carga Útil de la Respuesta" name="response_payload">
+                        <page string="Carga útil de la respuesta" name="response_payload">
                             <div class="text-muted mb-2">
-                                Resultado de la herramienta (PII ocultado). Solo se captura cuando el token
-                                tiene "Capturar Cargas Útiles" activado.
+                                Resultado de la herramienta (PII ocultada). Solo se captura cuando el token
+                                tiene "Capturar cargas útiles" activado.
                             </div>
                             <field name="response_payload" readonly="1" nolabel="1"
                                    widget="code" colspan="2"

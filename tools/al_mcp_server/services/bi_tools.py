@@ -1,15 +1,16 @@
 """
-BI Reporting Tools for the MCP Server.
+Herramientas de informes BI para el servidor MCP.
 
-Provides 7 advanced analytics tools that AI clients can call in a single
-request to get sophisticated pivot tables, time series, rankings, cohort
-analysis, funnel conversions, and data exports (CSV/XLSX).
+Ofrece 7 herramientas de análisis avanzado que los clientes de IA pueden
+llamar en una sola petición para obtener tablas dinámicas, series temporales,
+rankings, análisis de cohortes, conversiones de embudo y exportaciones de
+datos (CSV/XLSX).
 
-All tools are READ-ONLY and safe under 'read' scope.
-All tools enforce model and field restrictions from env.context['mcp_restrictions'].
+Todas las herramientas son de SOLO LECTURA y seguras con el alcance 'read'.
+Todas aplican las restricciones de modelos y campos de env.context['mcp_restrictions'].
 
-Consolidation agent: merge TOOL_DEFINITIONS into mcp_tool_registry._TOOL_DEFINITIONS
-and TOOL_HANDLERS into the handlers dict in tool_executor.execute_tool.
+Agente de consolidación: fusionar TOOL_DEFINITIONS en mcp_tool_registry._TOOL_DEFINITIONS
+y TOOL_HANDLERS en el diccionario de handlers de tool_executor.execute_tool.
 """
 
 import base64
@@ -23,12 +24,12 @@ from dateutil.relativedelta import relativedelta
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Governance helpers
+# Utilidades de gobierno
 # ---------------------------------------------------------------------------
 
 
 def _check_model_access(env, model_name: str) -> None:
-    """Raise PermissionError if model is blocked by token restrictions."""
+    """Lanza PermissionError si las restricciones del token bloquean el modelo."""
     restrictions = env.context.get("mcp_restrictions")
     if not restrictions:
         return
@@ -38,11 +39,11 @@ def _check_model_access(env, model_name: str) -> None:
 
     if denied_models and model_name in denied_models:
         raise PermissionError(
-            f"Access to model {model_name!r} is denied for this token."
+            f"El acceso al modelo {model_name!r} está denegado para este token."
         )
     if allowed_models and model_name not in allowed_models:
         raise PermissionError(
-            f"Access to model {model_name!r} is not permitted by this token's model allowlist."
+            f"El acceso al modelo {model_name!r} no está permitido por la lista de modelos permitidos de este token."
         )
 
 
@@ -53,11 +54,11 @@ def _check_read_restrictions(env, model_name: str, domain, field_names) -> None:
 
 
 def _filter_fields(env, model_name: str, requested_fields: list) -> list:
-    """Return filtered list of fields based on token's field_restrictions.
+    """Devuelve la lista de campos filtrada según field_restrictions del token.
 
-    If the token has no field restrictions for this model, the original list
-    is returned unchanged. Disallowed fields are silently dropped (BI tools
-    are read-only).
+    Si el token no tiene restricciones de campos para este modelo, se devuelve
+    la lista original sin cambios. Los campos no permitidos se descartan en
+    silencio (las herramientas BI son de solo lectura).
     """
     restrictions = env.context.get("mcp_restrictions")
     if not restrictions:
@@ -70,35 +71,35 @@ def _filter_fields(env, model_name: str, requested_fields: list) -> list:
 
 
 def _resolve_model(env, model_name: str):
-    """Validate model exists in registry, return env[model_name].
+    """Valida que el modelo exista en el registro y devuelve env[model_name].
 
-    Raises ValueError with a descriptive message when not found.
+    Lanza ValueError con un mensaje descriptivo si no se encuentra.
     """
     if model_name not in env.registry:
         raise ValueError(
-            f"Model {model_name!r} not found in Odoo registry. "
-            f"Use odoo_get_models to list available models."
+            f"El modelo {model_name!r} no se encontró en el registro de Odoo. "
+            f"Use odoo_get_models para listar los modelos disponibles."
         )
     return env[model_name]
 
 
 def _validate_field_exists(model, model_name: str, field_name: str) -> None:
-    """Raise ValueError if *field_name* does not exist on *model*."""
+    """Lanza ValueError si *field_name* no existe en *model*."""
     bare = field_name.split(":")[0]
     if bare not in model._fields:
         raise ValueError(
-            f"Field {bare!r} does not exist on model {model_name!r}. "
-            f"Use odoo_fields_get(model='{model_name}') to see available fields."
+            f"El campo {bare!r} no existe en el modelo {model_name!r}. "
+            f"Use odoo_fields_get(model='{model_name}') para ver los campos disponibles."
         )
 
 
 # ---------------------------------------------------------------------------
-# Serialization helpers (mirrors tool_executor.odoo_json_default for tuples)
+# Utilidades de serialización (equivalen a tool_executor.odoo_json_default para tuplas)
 # ---------------------------------------------------------------------------
 
 
 def _serialize_value(val):
-    """Serialize a single ORM value to a JSON-safe type."""
+    """Serializa un único valor del ORM a un tipo compatible con JSON."""
     if hasattr(val, "_name") and hasattr(val, "ids"):
         if len(val) == 1:
             return {"id": val.id, "display_name": str(val.display_name)}
@@ -111,7 +112,7 @@ def _serialize_value(val):
 
 
 def _serialize_group_row(row, groupby: list, aggregates: list) -> dict:
-    """Convert a _read_group result tuple into a plain dict."""
+    """Convierte una tupla de resultado de _read_group en un diccionario simple."""
     result = {}
     for i, key in enumerate(groupby):
         field_name = key.split(":")[0]
@@ -124,7 +125,7 @@ def _serialize_group_row(row, groupby: list, aggregates: list) -> dict:
 
 
 def _row_key(row_dict: dict, key_fields: list) -> str:
-    """Build a stable string key from selected fields of a serialized row dict."""
+    """Construye una clave de texto estable a partir de los campos elegidos de una fila serializada."""
     parts = []
     for f in key_fields:
         bare = f.split(":")[0]
@@ -139,7 +140,7 @@ def _row_key(row_dict: dict, key_fields: list) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Date / interval helpers
+# Utilidades de fechas e intervalos
 # ---------------------------------------------------------------------------
 
 _INTERVAL_STEP = {
@@ -154,20 +155,20 @@ _DATE_FORMAT = {
     "day": "%Y-%m-%d",
     "week": "%Y-W%W",
     "month": "%Y-%m",
-    "quarter": None,  # handled separately
+    "quarter": None,  # se trata aparte
     "year": "%Y",
 }
 
 
 def _parse_date_str(value) -> datetime.date | None:
-    """Parse a date string or date/datetime object returned by _read_group."""
+    """Interpreta una cadena de fecha o un objeto date/datetime devuelto por _read_group."""
     if value is None:
         return None
     if isinstance(value, datetime.datetime):
         return value.date()
     if isinstance(value, datetime.date):
         return value
-    # String form returned by Odoo: "2026-01-01 00:00:00", "2026-01-01", "2026", "2026-01"...
+    # Forma de texto que devuelve Odoo: "2026-01-01 00:00:00", "2026-01-01", "2026", "2026-01"...
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%Y-%m", "%Y"):
         try:
             return datetime.datetime.strptime(str(value), fmt).date()
@@ -177,7 +178,7 @@ def _parse_date_str(value) -> datetime.date | None:
 
 
 def _format_date_for_interval(dt: datetime.date, interval: str) -> str:
-    """Format a date for a given interval key."""
+    """Da formato a una fecha según la clave de intervalo indicada."""
     if interval == "quarter":
         q = (dt.month - 1) // 3 + 1
         return f"{dt.year}-Q{q}"
@@ -186,7 +187,7 @@ def _format_date_for_interval(dt: datetime.date, interval: str) -> str:
 
 
 def _floor_date_to_interval(dt: datetime.date, interval: str) -> datetime.date:
-    """Truncate *dt* to the start of its interval period."""
+    """Trunca *dt* al inicio del periodo de su intervalo."""
     if interval == "day":
         return dt
     if interval == "week":
@@ -202,7 +203,7 @@ def _floor_date_to_interval(dt: datetime.date, interval: str) -> datetime.date:
 
 
 def _date_range(start: datetime.date, end: datetime.date, interval: str) -> list[datetime.date]:
-    """Generate all period-start dates from *start* to *end* inclusive."""
+    """Genera todas las fechas de inicio de periodo desde *start* hasta *end*, ambas incluidas."""
     step = _INTERVAL_STEP.get(interval)
     if not step:
         return []
@@ -216,12 +217,12 @@ def _date_range(start: datetime.date, end: datetime.date, interval: str) -> list
 
 
 # ---------------------------------------------------------------------------
-# Tool 1: odoo_pivot
+# Herramienta 1: odoo_pivot
 # ---------------------------------------------------------------------------
 
 
 def _odoo_pivot(env, args: dict):
-    """Pivot-table aggregation across row x column dimensions."""
+    """Agregación de tabla dinámica sobre las dimensiones fila x columna."""
     model_name = args["model"]
     _check_model_access(env, model_name)
     model = _resolve_model(env, model_name)
@@ -233,12 +234,12 @@ def _odoo_pivot(env, args: dict):
     limit = int(args.get("limit") or 1000)
     orderby = args.get("orderby")
 
-    # Validate measure fields exist
+    # Valida que existan los campos de medida
     for m in measures_input:
         _validate_field_exists(model, model_name, m["field"])
 
-    # Build aggregates list for _read_group
-    agg_map = {}  # measure_key -> (field, aggregate)
+    # Construye la lista de agregados para _read_group
+    agg_map = {}  # clave_medida -> (campo, agregado)
     aggregates = []
     for m in measures_input:
         field = m["field"]
@@ -262,7 +263,7 @@ def _odoo_pivot(env, args: dict):
         **kw,
     )
 
-    # Serialize rows and collect unique row/column keys
+    # Serializa las filas y recoge las claves únicas de fila y columna
     unique_rows: dict[str, dict] = {}
     unique_cols: dict[str, dict] = {}
     cells: dict[str, dict] = {}
@@ -273,13 +274,13 @@ def _odoo_pivot(env, args: dict):
         ck = _row_key(serialized, col_fields)
         cell_key = f"{rk}|{ck}"
 
-        # Capture dimension labels
+        # Recoge las etiquetas de las dimensiones
         if rk not in unique_rows:
             unique_rows[rk] = {f.split(":")[0]: serialized[f.split(":")[0]] for f in row_fields}
         if ck not in unique_cols:
             unique_cols[ck] = {f.split(":")[0]: serialized[f.split(":")[0]] for f in col_fields}
 
-        # Capture measure values for cell
+        # Recoge los valores de medida de la celda
         cell_values = {}
         for i, m in enumerate(measures_input):
             field = m["field"]
@@ -287,7 +288,7 @@ def _odoo_pivot(env, args: dict):
             cell_values[f"{field}_{agg}"] = serialized[field]
         cells[cell_key] = cell_values
 
-    # Compute row totals (sum over all columns for each row)
+    # Calcula los totales por fila (suma de todas las columnas de cada fila)
     row_totals: dict[str, dict] = {}
     for rk in unique_rows:
         totals = {}
@@ -301,7 +302,7 @@ def _odoo_pivot(env, args: dict):
             totals[mkey] = sum(vals)
         row_totals[rk] = totals
 
-    # Compute column totals (sum over all rows for each column)
+    # Calcula los totales por columna (suma de todas las filas de cada columna)
     col_totals: dict[str, dict] = {}
     for ck in unique_cols:
         totals = {}
@@ -315,7 +316,7 @@ def _odoo_pivot(env, args: dict):
             totals[mkey] = sum(vals)
         col_totals[ck] = totals
 
-    # Grand total
+    # Total general
     grand_total: dict[str, float] = {}
     for m in measures_input:
         mkey = f"{m['field']}_{m.get('aggregate', 'sum')}"
@@ -342,12 +343,12 @@ def _odoo_pivot(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Tool 2: odoo_time_series
+# Herramienta 2: odoo_time_series
 # ---------------------------------------------------------------------------
 
 
 def _odoo_time_series(env, args: dict):
-    """Time series aggregation with optional gap filling."""
+    """Agregación de serie temporal con relleno opcional de huecos."""
     model_name = args["model"]
     _check_model_access(env, model_name)
     model = _resolve_model(env, model_name)
@@ -363,8 +364,8 @@ def _odoo_time_series(env, args: dict):
 
     if interval not in _INTERVAL_STEP:
         raise ValueError(
-            f"Invalid interval {interval!r}. "
-            f"Allowed: {sorted(_INTERVAL_STEP.keys())}"
+            f"Intervalo no válido {interval!r}. "
+            f"Permitidos: {sorted(_INTERVAL_STEP.keys())}"
         )
 
     _validate_field_exists(model, model_name, date_field)
@@ -405,7 +406,7 @@ def _odoo_time_series(env, args: dict):
             "series": [],
         }
 
-    # Determine the full date range
+    # Determina el rango de fechas completo
     date_from = None
     date_to = None
     if date_from_str:
@@ -419,7 +420,7 @@ def _odoo_time_series(env, args: dict):
         range_start = min(date_from, data_min) if date_from else data_min
         range_end = max(date_to, data_max) if date_to else data_max
     else:
-        # fill_gaps=True but no data — use provided date range
+        # fill_gaps=True pero sin datos: usa el rango de fechas indicado
         if date_from and date_to:
             range_start = date_from
             range_end = date_to
@@ -441,7 +442,7 @@ def _odoo_time_series(env, args: dict):
                 "value": data_points.get(key, fill_value),
             })
     else:
-        # Return only dates that have data, sorted
+        # Devuelve solo las fechas con datos, ordenadas
         for period_start in _date_range(range_start, range_end, interval):
             key = _format_date_for_interval(period_start, interval)
             if key in data_points:
@@ -459,12 +460,12 @@ def _odoo_time_series(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Tool 3: odoo_top_n
+# Herramienta 3: odoo_top_n
 # ---------------------------------------------------------------------------
 
 
 def _odoo_top_n(env, args: dict):
-    """Top-N ranking across a grouped dataset."""
+    """Ranking de los N primeros sobre un conjunto de datos agrupado."""
     model_name = args["model"]
     _check_model_access(env, model_name)
     model = _resolve_model(env, model_name)
@@ -484,7 +485,7 @@ def _odoo_top_n(env, args: dict):
     aggregate_expr = f"{agg_field}:{agg_func}"
     _check_read_restrictions(env, model_name, domain, [group_field, agg_field])
 
-    # Fetch all groups — no limit here so we can compute "Others" accurately
+    # Obtiene todos los grupos, sin límite, para calcular "Otros" con exactitud
     rows_raw = model._read_group(
         domain=domain,
         groupby=[group_field],
@@ -492,19 +493,19 @@ def _odoo_top_n(env, args: dict):
         limit=False,
     )
 
-    # Serialize and sort
+    # Serializa y ordena
     all_rows = []
     for raw_row in rows_raw:
         dim_val = _serialize_value(raw_row[0])
         measure_val = raw_row[1]
         if measure_val is None:
             measure_val = 0
-        # Extract label
+        # Extrae la etiqueta
         if isinstance(dim_val, dict):
             label = dim_val.get("display_name") or str(dim_val.get("id", ""))
             key = str(dim_val.get("id", label))
         elif dim_val is None:
-            label = "(empty)"
+            label = "(vacío)"
             key = ""
         else:
             label = str(dim_val)
@@ -551,20 +552,20 @@ def _odoo_top_n(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Tool 4: odoo_cohort
+# Herramienta 4: odoo_cohort
 # ---------------------------------------------------------------------------
 
 
 def _odoo_cohort(env, args: dict):
-    """Cohort retention analysis.
+    """Análisis de retención por cohortes.
 
-    Performance note: this tool loads individual record values for the
-    cohort_field and activity_field. For large datasets (>50k records)
-    consider adding an appropriate domain filter to scope the analysis.
+    Nota de rendimiento: esta herramienta carga los valores de cada registro
+    para cohort_field y activity_field. Con conjuntos grandes (>50k registros)
+    conviene añadir un filtro de dominio adecuado para acotar el análisis.
 
-    V1 limitation: cohort_field and activity_field must both be on the
-    same model. Cross-model cohort analysis (e.g. partners + their orders)
-    is a planned V2 feature.
+    Limitación de la V1: cohort_field y activity_field deben estar en el
+    mismo modelo. El análisis de cohortes entre modelos (p. ej. contactos y
+    sus pedidos) está previsto para la V2.
     """
     model_name = args["model"]
     _check_model_access(env, model_name)
@@ -580,8 +581,8 @@ def _odoo_cohort(env, args: dict):
 
     if interval not in _INTERVAL_STEP:
         raise ValueError(
-            f"Invalid interval {interval!r}. "
-            f"Allowed: {sorted(_INTERVAL_STEP.keys())}"
+            f"Intervalo no válido {interval!r}. "
+            f"Permitidos: {sorted(_INTERVAL_STEP.keys())}"
         )
 
     _validate_field_exists(model, model_name, cohort_field)
@@ -589,23 +590,23 @@ def _odoo_cohort(env, args: dict):
     if measure_field:
         _validate_field_exists(model, model_name, measure_field)
 
-    # Determine which fields to read
+    # Determina qué campos leer
     read_fields = list({cohort_field, activity_field})
     if measure_field and measure_field not in read_fields:
         read_fields.append(measure_field)
 
-    # Apply field filter (silently drop disallowed fields)
+    # Aplica el filtro de campos (descarta en silencio los no permitidos)
     read_fields = _filter_fields(env, model_name, read_fields)
     if cohort_field not in read_fields or activity_field not in read_fields:
         raise PermissionError(
-            f"cohort_field {cohort_field!r} or activity_field {activity_field!r} "
-            f"is not accessible under this token's field restrictions."
+            f"cohort_field {cohort_field!r} o activity_field {activity_field!r} "
+            f"no es accesible con las restricciones de campos de este token."
         )
 
-    # Load records — cap at 50000 to protect memory
+    # Carga los registros, con un tope de 50000 para proteger la memoria
     records = model.search_read(domain, read_fields, limit=50000, order=f"{cohort_field} asc")
 
-    # Group records by cohort period
+    # Agrupa los registros por periodo de cohorte
     cohort_map: dict[str, list] = {}
     for rec in records:
         cv = rec.get(cohort_field)
@@ -632,7 +633,7 @@ def _odoo_cohort(env, args: dict):
 
         period_results = []
         for p in range(periods):
-            # Period window: [cohort_start + p*step, cohort_start + (p+1)*step)
+            # Ventana del periodo: [cohort_start + p*step, cohort_start + (p+1)*step)
             window_start = (
                 datetime.datetime.combine(cohort_start, datetime.time.min)
                 + step * p
@@ -650,7 +651,7 @@ def _odoo_cohort(env, args: dict):
                 )
                 value = count
             else:
-                # sum of measure_field values
+                # suma de los valores de measure_field
                 value = sum(
                     (m["measure_val"] or 0) for m in members
                     if m["activity_date"] is not None
@@ -681,20 +682,20 @@ def _odoo_cohort(env, args: dict):
         "measure_type": measure_type,
         "record_count_loaded": len(records),
         "note": (
-            "V1: cohort_field and activity_field must be on the same model. "
-            "Records capped at 50,000 — add domain filters for large datasets."
+            "V1: cohort_field y activity_field deben estar en el mismo modelo. "
+            "Registros limitados a 50.000; añada filtros de dominio para conjuntos de datos grandes."
         ),
         "cohorts": cohorts_out,
     }
 
 
 # ---------------------------------------------------------------------------
-# Tool 5: odoo_funnel
+# Herramienta 5: odoo_funnel
 # ---------------------------------------------------------------------------
 
 
 def _odoo_funnel(env, args: dict):
-    """Funnel conversion tracking across ordered stages."""
+    """Seguimiento de la conversión de un embudo a lo largo de etapas ordenadas."""
     model_name = args["model"]
     _check_model_access(env, model_name)
     model = _resolve_model(env, model_name)
@@ -704,11 +705,11 @@ def _odoo_funnel(env, args: dict):
     measure_field = args.get("measure_field")
 
     if not stages_input:
-        raise ValueError("'stages' must contain at least one stage definition.")
+        raise ValueError("'stages' debe contener al menos una definición de etapa.")
 
     if measure_type == "sum":
         if not measure_field:
-            raise ValueError("'measure_field' is required when measure_type is 'sum'.")
+            raise ValueError("'measure_field' es obligatorio cuando measure_type es 'sum'.")
         _validate_field_exists(model, model_name, measure_field)
 
     stage_results = []
@@ -720,7 +721,7 @@ def _odoo_funnel(env, args: dict):
         if measure_type == "count":
             value = model.search_count(stage_domain)
         else:
-            # sum: use read_group to get total
+            # sum: usa read_group para obtener el total
             rows = model._read_group(
                 domain=stage_domain,
                 groupby=[],
@@ -734,7 +735,7 @@ def _odoo_funnel(env, args: dict):
 
         stage_results.append({"name": stage_name, "value": value})
 
-    # Compute conversion metrics
+    # Calcula las métricas de conversión
     first_value = stage_results[0]["value"] if stage_results else 0
     funnel_out = []
     prev_value = None
@@ -767,7 +768,7 @@ def _odoo_funnel(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Export helpers
+# Utilidades de exportación
 # ---------------------------------------------------------------------------
 
 _EXPORT_BATCH_SIZE = 1000
@@ -775,7 +776,7 @@ _EXPORT_MAX_LIMIT = 10000
 
 
 def _read_records_batched(model, domain: list, fields: list, limit: int) -> list:
-    """Read up to *limit* records in batches to avoid large memory spikes."""
+    """Lee hasta *limit* registros por lotes para evitar picos grandes de memoria."""
     records = []
     offset = 0
     batch_size = min(_EXPORT_BATCH_SIZE, limit)
@@ -797,7 +798,7 @@ def _read_records_batched(model, domain: list, fields: list, limit: int) -> list
 
 
 def _create_attachment(env, filename: str, content_bytes: bytes, mimetype: str) -> dict:
-    """Create an ir.attachment from raw bytes. Returns a summary dict."""
+    """Crea un ir.attachment a partir de bytes en bruto. Devuelve un diccionario resumen."""
     content_b64 = base64.b64encode(content_bytes).decode()
     attachment = env["ir.attachment"].create({
         "name": filename,
@@ -813,7 +814,7 @@ def _create_attachment(env, filename: str, content_bytes: bytes, mimetype: str) 
 
 
 def _serialize_cell_for_export(val) -> str:
-    """Convert any ORM value to a plain string suitable for CSV/XLSX export."""
+    """Convierte cualquier valor del ORM en texto plano apto para exportar a CSV/XLSX."""
     if val is None:
         return ""
     if isinstance(val, bool):
@@ -823,7 +824,7 @@ def _serialize_cell_for_export(val) -> str:
     if isinstance(val, datetime.date):
         return val.isoformat()
     if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[0], int):
-        # Many2one tuple (id, display_name)
+        # Tupla Many2one (id, display_name)
         return str(val[1])
     if isinstance(val, list):
         return ";".join(str(v) for v in val)
@@ -831,12 +832,12 @@ def _serialize_cell_for_export(val) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Tool 6: odoo_export_csv
+# Herramienta 6: odoo_export_csv
 # ---------------------------------------------------------------------------
 
 
 def _odoo_export_csv(env, args: dict):
-    """Export records to CSV and store as ir.attachment."""
+    """Exporta registros a CSV y los guarda como ir.attachment."""
     model_name = args["model"]
     _check_model_access(env, model_name)
     model = _resolve_model(env, model_name)
@@ -849,30 +850,30 @@ def _odoo_export_csv(env, args: dict):
     if not filename.lower().endswith(".csv"):
         filename += ".csv"
 
-    # Validate and filter fields
+    # Valida y filtra los campos
     if not requested_fields:
         raise ValueError(
-            "The 'fields' parameter is required for odoo_export_csv. "
-            "Use odoo_fields_get to discover available fields, then specify which to export."
+            "El parámetro 'fields' es obligatorio para odoo_export_csv. "
+            "Use odoo_fields_get para descubrir los campos disponibles e indique cuáles exportar."
         )
     fields = _filter_fields(env, model_name, requested_fields)
     if not fields:
         raise PermissionError(
-            f"None of the requested fields are accessible for model {model_name!r} "
-            f"under this token's field restrictions."
+            f"Ninguno de los campos solicitados es accesible en el modelo {model_name!r} "
+            f"con las restricciones de campos de este token."
         )
 
     records = _read_records_batched(model, domain, fields, limit)
     row_count = len(records)
 
-    # Build CSV in memory
+    # Construye el CSV en memoria
     buf = io.StringIO()
     writer = csv.writer(buf, quoting=csv.QUOTE_MINIMAL)
     writer.writerow(fields)
     for rec in records:
         writer.writerow([_serialize_cell_for_export(rec.get(f)) for f in fields])
 
-    csv_bytes = buf.getvalue().encode("utf-8-sig")  # utf-8-sig for Excel BOM compatibility
+    csv_bytes = buf.getvalue().encode("utf-8-sig")  # utf-8-sig para compatibilidad con el BOM de Excel
 
     result = _create_attachment(env, filename, csv_bytes, "text/csv")
     result["row_count"] = row_count
@@ -882,15 +883,15 @@ def _odoo_export_csv(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Tool 7: odoo_export_xlsx
+# Herramienta 7: odoo_export_xlsx
 # ---------------------------------------------------------------------------
 
 
 def _odoo_export_xlsx(env, args: dict):
-    """Export records to XLSX and store as ir.attachment.
+    """Exporta registros a XLSX y los guarda como ir.attachment.
 
-    Falls back to CSV if xlsxwriter is not installed, adding a 'warning' key
-    to the response so the caller knows the format changed.
+    Si xlsxwriter no está instalado recurre a CSV y añade la clave 'warning'
+    a la respuesta para que quien llama sepa que cambió el formato.
     """
     model_name = args["model"]
     _check_model_access(env, model_name)
@@ -900,35 +901,35 @@ def _odoo_export_xlsx(env, args: dict):
     requested_fields = list(args.get("fields") or [])
     filename = args.get("filename") or f"{model_name.replace('.', '_')}_export.xlsx"
     limit = min(int(args.get("limit") or _EXPORT_MAX_LIMIT), _EXPORT_MAX_LIMIT)
-    sheet_name = args.get("sheet_name") or model_name[:31]  # Excel sheet name max 31 chars
+    sheet_name = args.get("sheet_name") or model_name[:31]  # El nombre de hoja de Excel admite 31 caracteres como máximo
 
     if not filename.lower().endswith(".xlsx"):
         filename += ".xlsx"
 
     if not requested_fields:
         raise ValueError(
-            "The 'fields' parameter is required for odoo_export_xlsx. "
-            "Use odoo_fields_get to discover available fields, then specify which to export."
+            "El parámetro 'fields' es obligatorio para odoo_export_xlsx. "
+            "Use odoo_fields_get para descubrir los campos disponibles e indique cuáles exportar."
         )
     fields = _filter_fields(env, model_name, requested_fields)
     if not fields:
         raise PermissionError(
-            f"None of the requested fields are accessible for model {model_name!r} "
-            f"under this token's field restrictions."
+            f"Ninguno de los campos solicitados es accesible en el modelo {model_name!r} "
+            f"con las restricciones de campos de este token."
         )
 
     records = _read_records_batched(model, domain, fields, limit)
     row_count = len(records)
 
-    # Try xlsxwriter; fall back to CSV on ImportError
+    # Intenta usar xlsxwriter; recurre a CSV si hay ImportError
     try:
-        import xlsxwriter  # noqa: PLC0415 — lazy import intentional
+        import xlsxwriter  # noqa: PLC0415 — importación diferida a propósito
     except ImportError:
         _logger.warning(
-            "xlsxwriter not installed; odoo_export_xlsx falling back to CSV. "
-            "Install xlsxwriter: pip install xlsxwriter"
+            "xlsxwriter no está instalado; odoo_export_xlsx recurre a CSV. "
+            "Instale xlsxwriter: pip install xlsxwriter"
         )
-        # Rewrite filename to .csv and delegate to CSV builder
+        # Cambia la extensión a .csv y genera el CSV
         csv_filename = filename.replace(".xlsx", ".csv")
         buf = io.StringIO()
         writer = csv.writer(buf, quoting=csv.QUOTE_MINIMAL)
@@ -941,18 +942,18 @@ def _odoo_export_xlsx(env, args: dict):
         result["model"] = model_name
         result["fields_exported"] = fields
         result["warning"] = (
-            "xlsxwriter is not installed on this Odoo server. "
-            "The file was exported as CSV instead. "
-            "Ask your administrator to run: pip install xlsxwriter"
+            "xlsxwriter no está instalado en este servidor Odoo. "
+            "El archivo se exportó como CSV en su lugar. "
+            "Pida a su administrador que ejecute: pip install xlsxwriter"
         )
         return result
 
-    # Build XLSX in memory
+    # Construye el XLSX en memoria
     buf = io.BytesIO()
     workbook = xlsxwriter.Workbook(buf, {"in_memory": True})
     worksheet = workbook.add_worksheet(sheet_name)
 
-    # Formats
+    # Formatos
     header_fmt = workbook.add_format({
         "bold": True,
         "bg_color": "#F2F2F2",
@@ -961,14 +962,14 @@ def _odoo_export_xlsx(env, args: dict):
     })
     cell_fmt = workbook.add_format({"border": 0})
 
-    # Header row
+    # Fila de encabezado
     for col_idx, field_name in enumerate(fields):
         worksheet.write(0, col_idx, field_name, header_fmt)
 
-    # Freeze first row
+    # Inmoviliza la primera fila
     worksheet.freeze_panes(1, 0)
 
-    # Data rows
+    # Filas de datos
     for row_idx, rec in enumerate(records, start=1):
         for col_idx, field_name in enumerate(fields):
             raw_val = rec.get(field_name)
@@ -977,7 +978,7 @@ def _odoo_export_xlsx(env, args: dict):
             else:
                 worksheet.write(row_idx, col_idx, _serialize_cell_for_export(raw_val), cell_fmt)
 
-    # Auto-fit columns (heuristic: max of header and first 20 rows)
+    # Ajusta el ancho de las columnas (heurística: máximo del encabezado y las primeras 20 filas)
     for col_idx, field_name in enumerate(fields):
         max_len = len(field_name)
         for rec in records[:20]:
@@ -1000,7 +1001,7 @@ def _odoo_export_xlsx(env, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# TOOL_DEFINITIONS — MCP JSON Schema advertised to AI clients
+# TOOL_DEFINITIONS — JSON Schema MCP que se anuncia a los clientes de IA
 # ---------------------------------------------------------------------------
 
 TOOL_DEFINITIONS = [
@@ -1333,7 +1334,7 @@ TOOL_DEFINITIONS = [
             "Limitado a 10.000 filas por llamada. "
             "Ejemplo: exportar pedidos de compra a Excel — "
             "model='purchase.order', fields=['name','partner_id','date_order','amount_total'], "
-            "sheet_name='PO Report'."
+            "sheet_name='Informe OC'."
         ),
         "inputSchema": {
             "type": "object",
@@ -1365,7 +1366,7 @@ TOOL_DEFINITIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# TOOL_HANDLERS — name -> handler callable (merged by consolidation agent)
+# TOOL_HANDLERS — nombre -> función que la atiende (fusionado por el agente de consolidación)
 # ---------------------------------------------------------------------------
 
 TOOL_HANDLERS = {

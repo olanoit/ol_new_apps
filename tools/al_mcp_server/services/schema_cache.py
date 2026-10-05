@@ -1,14 +1,14 @@
 """
-In-process schema cache for MCP Server.
+Caché de esquemas en el propio proceso del servidor MCP.
 
-Stores computed values (model schemas, catalog, fields_get results) so that
-repeated AI requests within the TTL window do not hit the ORM.
+Guarda valores ya calculados (esquemas de modelos, catálogo, resultados de fields_get)
+para que las peticiones repetidas de la IA dentro de la ventana TTL no consulten el ORM.
 
-Design:
-- Module-level dict protected by a threading.RLock.
-- LRU eviction at MAX_ENTRIES via a deque of insertion-ordered keys.
-- Hit/miss counters for observability.
-- Full cache clear on ir.model / ir.model.fields mutations (see ir_model_invalidate.py).
+Diseño:
+- Diccionario a nivel de módulo protegido por un threading.RLock.
+- Expulsión LRU al llegar a MAX_ENTRIES mediante un deque de claves en orden de inserción.
+- Contadores de aciertos y fallos para la observabilidad.
+- Vaciado completo de la caché al modificar ir.model / ir.model.fields (ver ir_model_invalidate.py).
 """
 
 import logging
@@ -23,16 +23,16 @@ _MAX_ENTRIES = 1000
 _lock = threading.RLock()
 # {cache_key: (timestamp_float, value)}
 _store: dict[str, tuple[float, object]] = {}
-# Ordered insertion keys — used for LRU eviction (leftmost = oldest)
+# Claves en orden de inserción — se usan para la expulsión LRU (la de la izquierda es la más antigua)
 _order: deque[str] = deque()
 
-# Hit/miss counters (approximate under concurrency — good enough for ops)
+# Contadores de aciertos y fallos (aproximados con concurrencia — suficiente para operación)
 _hits = 0
 _misses = 0
 
 
 # ---------------------------------------------------------------------------
-# Config helpers (read from env on every call — cheap, avoids stale config)
+# Utilidades de configuración (se leen de env en cada llamada — es barato y evita configuración obsoleta)
 # ---------------------------------------------------------------------------
 
 def _cache_enabled(env) -> bool:
@@ -59,13 +59,13 @@ def scoped_key(env, key: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Core operations
+# Operaciones principales
 # ---------------------------------------------------------------------------
 
 def get_or_compute(key: str, ttl_seconds: int, compute_fn):
-    """Return cached value if present and fresh; otherwise call compute_fn() and cache it.
+    """Devuelve el valor en caché si existe y está vigente; si no, llama a compute_fn() y lo guarda.
 
-    Not env-aware by design — callers check _cache_enabled() before calling this.
+    No depende de env a propósito — quien llama comprueba _cache_enabled() antes.
     """
     global _hits, _misses
 
@@ -76,14 +76,14 @@ def get_or_compute(key: str, ttl_seconds: int, compute_fn):
             if time.monotonic() - ts <= ttl_seconds:
                 _hits += 1
                 return value
-            # Stale — remove from store and order deque
+            # Caducado — se quita del almacén y del deque de orden
             del _store[key]
             try:
                 _order.remove(key)
             except ValueError:
                 pass
 
-    # Compute outside the lock to avoid holding it during potentially slow ORM work
+    # Se calcula fuera del bloqueo para no retenerlo durante un trabajo del ORM que puede ser lento
     _misses += 1
     value = compute_fn()
 
@@ -96,10 +96,10 @@ def get_or_compute(key: str, ttl_seconds: int, compute_fn):
 
 
 def invalidate(prefix: str | None = None) -> int:
-    """Clear cache entries.
+    """Vacía entradas de la caché.
 
-    If prefix is given, only entries whose key starts with that prefix are removed.
-    Returns the number of entries removed.
+    Si se indica prefix, solo se eliminan las entradas cuya clave empieza por ese prefijo.
+    Devuelve el número de entradas eliminadas.
     """
     with _lock:
         if prefix is None:
@@ -119,7 +119,7 @@ def invalidate(prefix: str | None = None) -> int:
 
 
 def get_stats() -> dict:
-    """Return current cache statistics for the admin UI."""
+    """Devuelve las estadísticas actuales de la caché para la interfaz de administración."""
     with _lock:
         total = len(_store)
         hits = _hits
@@ -137,11 +137,11 @@ def get_stats() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# Utilidades internas
 # ---------------------------------------------------------------------------
 
 def _evict_if_needed() -> None:
-    """Remove the oldest entry when the store is at capacity. Called under _lock."""
+    """Elimina la entrada más antigua cuando el almacén está lleno. Se llama con _lock adquirido."""
     while len(_store) >= _MAX_ENTRIES and _order:
         oldest = _order.popleft()
         _store.pop(oldest, None)

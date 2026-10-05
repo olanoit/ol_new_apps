@@ -1,10 +1,10 @@
-# Servidor MCP para Odoo — Guía del Usuario
+# Servidor MCP para Odoo — Guía del usuario
 
-> **Versión:** 3.20260825 · **Licencia:** OPL-1 · **Autor:** CRISTÓBAL OCH &lt;olanoit@gmail.com&gt;
+> **Versión:** 5.20261005 · **Licencia:** OPL-1 · **Autor:** CRISTÓBAL OCH &lt;olanoit@gmail.com&gt;
 
 Convierte Odoo en un servidor de herramientas listo para IA. Conecta Claude, ChatGPT, Gemini, Cursor, n8n, LangChain y cualquier cliente compatible con MCP a datos en vivo de Odoo — con gobernanza OAuth 2.0, registros de auditoría, herramientas de BI, páginas de portal, trabajos asíncronos y generación de módulos impulsada por IA.
 
-> **Para instrucciones de instalación y conexión, consulta [docs/index.rst](docs/index.rst).**
+> **Para las instrucciones de instalación y conexión, consulta [doc/index.rst](doc/index.rst).**
 
 ---
 
@@ -13,44 +13,44 @@ Convierte Odoo en un servidor de herramientas listo para IA. Conecta Claude, Cha
 Una vez conectado, tu asistente de IA puede comunicarse con Odoo en lenguaje natural:
 
 ```
-"Show me all unpaid invoices over 30 days old."
-"Create a sales order for PT ABC, 5 units of Laptop Pro at 15 million each."
-"What is my total revenue by customer this quarter?"
-"Generate a PDF for sales order SO/2026/00201."
-"Post an internal note on ticket #45 saying the issue is resolved."
+"Muéstrame todas las facturas impagas con más de 30 días de antigüedad."
+"Crea una orden de venta para Comercial Andina S.A.C., 5 unidades de Laptop Pro a S/ 4,500 cada una."
+"¿Cuáles son mis ingresos totales por cliente en este trimestre?"
+"Genera el PDF de la orden de venta SO/2026/00201."
+"Publica una nota interna en el ticket #45 indicando que el problema está resuelto."
 ```
 
 La IA asigna automáticamente tu lenguaje natural a los modelos, campos y métodos correctos de Odoo. No necesitas conocer los nombres técnicos de los campos.
 
 ---
 
-## Tabla de Contenidos
+## Tabla de contenidos
 
-1. [Primeros Pasos — Darle Contexto a Claude](#1-primeros-pasos--darle-contexto-a-claude)
-2. [Referencia de Recursos MCP](#2-referencia-de-recursos-mcp)
-3. [Las 34+ Herramientas — Referencia Rápida](#3-las-34-herramientas--referencia-rápida)
-4. [Flujos de Trabajo de Negocio](#4-flujos-de-trabajo-de-negocio)
-   - [Órdenes de Venta](#41-órdenes-de-venta)
-   - [Facturación y Pagos](#42-facturación-y-pagos)
-   - [Órdenes de Compra](#43-órdenes-de-compra)
-   - [Inventario y Entregas](#44-inventario-y-entregas)
-   - [CRM y Pipeline](#45-crm-y-pipeline)
-5. [Analítica y Reportes de BI](#5-analítica-y-reportes-de-bi)
-6. [Páginas de Portal (Tableros Compartibles)](#6-páginas-de-portal-tableros-compartibles)
-7. [Cola de Trabajos Asíncronos (Operaciones Masivas)](#7-cola-de-trabajos-asíncronos-operaciones-masivas)
-8. [Generador de Módulos con IA](#8-generador-de-módulos-con-ia)
-9. [Chatter y Comunicación](#9-chatter-y-comunicación)
-10. [Consejos de Prompting Efectivo](#10-consejos-de-prompting-efectivo)
-11. [Solución de Problemas para Usuarios Finales](#11-solución-de-problemas-para-usuarios-finales)
+1. [Primeros pasos — darle contexto a Claude](#1-primeros-pasos--darle-contexto-a-claude)
+2. [Referencia de recursos MCP](#2-referencia-de-recursos-mcp)
+3. [Las 34+ herramientas — referencia rápida](#3-las-34-herramientas--referencia-rápida)
+4. [Flujos de trabajo de negocio](#4-flujos-de-trabajo-de-negocio)
+   - [Órdenes de venta](#41-órdenes-de-venta)
+   - [Facturación y pagos](#42-facturación-y-pagos)
+   - [Órdenes de compra](#43-órdenes-de-compra)
+   - [Inventario y entregas](#44-inventario-y-entregas)
+   - [CRM y pipeline](#45-crm-y-pipeline)
+5. [Analítica y reportes de BI](#5-analítica-y-reportes-de-bi)
+6. [Páginas de portal (tableros compartibles)](#6-páginas-de-portal-tableros-compartibles)
+7. [Cola de trabajos asíncronos (operaciones masivas)](#7-cola-de-trabajos-asíncronos-operaciones-masivas)
+8. [Generador de módulos con IA](#8-generador-de-módulos-con-ia)
+9. [Chatter y comunicación](#9-chatter-y-comunicación)
+10. [Consejos para escribir buenos prompts](#10-consejos-para-escribir-buenos-prompts)
+11. [Solución de problemas para usuarios finales](#11-solución-de-problemas-para-usuarios-finales)
 
 ---
 
-## 1. Primeros Pasos — Darle Contexto a Claude
+## 1. Primeros pasos — darle contexto a Claude
 
 Cuando conectas Claude a Odoo por primera vez, no conoce la configuración de tu compañía. Lo primero que debes decir en cada nueva sesión:
 
 ```
-Read odoo://context and odoo://catalog so you understand my Odoo instance before we start.
+Lee odoo://context y odoo://catalog para que entiendas mi instancia de Odoo antes de empezar.
 ```
 
 Después de leer estos recursos, Claude conoce:
@@ -61,34 +61,34 @@ Después de leer estos recursos, Claude conoce:
 
 **Apertura de sesión recomendada:**
 ```
-Read odoo://context and odoo://catalog. Tell me briefly what modules I have installed
-and what you can help me with today.
+Lee odoo://context y odoo://catalog. Dime brevemente qué módulos tengo instalados
+y en qué puedes ayudarme hoy.
 ```
 
 ---
 
-## 2. Referencia de Recursos MCP
+## 2. Referencia de recursos MCP
 
 Los recursos son instantáneas de solo lectura que Claude carga bajo demanda.
 
-| URI del Recurso | Qué contiene | Cuándo usarlo |
+| URI del recurso | Qué contiene | Cuándo usarlo |
 |---|---|---|
-| `odoo://context` | Información de la compañía, detalles del usuario, módulos instalados, fecha del servidor | Al inicio de cada sesión |
+| `odoo://context` | Información de la compañía, datos del usuario, módulos instalados, fecha del servidor | Al inicio de cada sesión |
 | `odoo://catalog` | Todos los modelos instalados con sus nombres técnicos | Al explorar qué datos existen |
-| `odoo://model/{name}` | Definiciones completas de campos de un modelo | Antes de crear o actualizar registros |
+| `odoo://model/{name}` | Definiciones completas de los campos de un modelo | Antes de crear o actualizar registros |
 | `odoo://chatter/{model}/{id}` | Los últimos 20 mensajes del chatter de un registro | Antes de responder a clientes o revisar el historial |
 | `odoo://attachment/{id}` | Metadatos del archivo + vista previa del contenido (archivos de texto < 50 KB) | Al verificar archivos subidos |
 
 **Ejemplos:**
 ```
-Read odoo://model/sale.order — what fields does a Sales Order have?
-Read odoo://chatter/helpdesk.ticket/45 — what did the customer say last?
-Read odoo://attachment/107 — how many rows are in this CSV?
+Lee odoo://model/sale.order — ¿qué campos tiene una orden de venta?
+Lee odoo://chatter/helpdesk.ticket/45 — ¿qué dijo el cliente por última vez?
+Lee odoo://attachment/107 — ¿cuántas filas tiene este CSV?
 ```
 
 ---
 
-## 3. Las 34+ Herramientas — Referencia Rápida
+## 3. Las 34+ herramientas — referencia rápida
 
 ### Herramientas CRUD
 
@@ -102,7 +102,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_unlink` | Elimina registros de forma permanente |
 | `odoo_call_method` | Llama a cualquier método `action_*` o `button_*` |
 
-### Herramientas de Flujo de Trabajo y Formularios
+### Herramientas de flujo de trabajo y formularios
 
 | Herramienta | Qué hace |
 |---|---|
@@ -113,7 +113,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_create_attachment` | Sube un archivo a Odoo |
 | `odoo_print_report` | Obtiene la URL de descarga de un reporte PDF/HTML |
 
-### Herramientas de Analítica
+### Herramientas de analítica
 
 | Herramienta | Qué hace |
 |---|---|
@@ -121,7 +121,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_name_search` | Encuentra registros por su nombre visible (autocompletado) |
 | `odoo_read_group` | Agregación GROUP BY (equivalente al GROUP BY de SQL) |
 
-### Herramientas de Reportes de BI
+### Herramientas de reportes de BI
 
 | Herramienta | Qué hace |
 |---|---|
@@ -133,7 +133,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_export_csv` | Exporta los resultados de una consulta como descarga CSV |
 | `odoo_export_xlsx` | Exporta los resultados de una consulta como descarga XLSX |
 
-### Herramientas de Trabajos Asíncronos
+### Herramientas de trabajos asíncronos
 
 | Herramienta | Qué hace |
 |---|---|
@@ -142,7 +142,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_job_list` | Lista los trabajos recientes |
 | `odoo_job_cancel` | Cancela un trabajo pendiente |
 
-### Herramientas de Páginas de Portal
+### Herramientas de páginas de portal
 
 | Herramienta | Qué hace |
 |---|---|
@@ -150,7 +150,7 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 | `odoo_list_portal_pages` | Lista las páginas de portal existentes |
 | `odoo_update_portal_page` | Actualiza la especificación de una página de portal |
 
-### Herramientas del Generador de Módulos *(requiere alcance de administrador)*
+### Herramientas del generador de módulos *(requiere alcance de administrador)*
 
 | Herramienta | Qué hace |
 |---|---|
@@ -161,14 +161,15 @@ Read odoo://attachment/107 — how many rows are in this CSV?
 
 ---
 
-## 4. Flujos de Trabajo de Negocio
+## 4. Flujos de trabajo de negocio
 
-### 4.1 Órdenes de Venta
+### 4.1 Órdenes de venta
 
 **Crear y confirmar una orden de venta:**
 ```
-Create a confirmed sales order for PT Maju Sejahtera for 2 units of Laptop Pro 15
-at 15,000,000 each. Add an internal note that delivery is expected by end of month.
+Crea una orden de venta confirmada para Distribuidora del Sur S.A.C. por 2 unidades de
+Laptop Pro 15 a S/ 4,500 cada una. Agrega una nota interna indicando que la entrega
+se espera para fin de mes.
 ```
 
 Claude hará automáticamente lo siguiente:
@@ -181,106 +182,106 @@ Claude hará automáticamente lo siguiente:
 
 **Otros prompts útiles:**
 ```
-Show me all confirmed sales orders this month, sorted by amount descending.
-What is the total value of open quotations for customer Acme Corporation?
-Print the PDF for sales order SO/2026/00201.
-Send a customer-facing message on SO/2026/00201 saying the order is being prepared.
+Muéstrame todas las órdenes de venta confirmadas de este mes, ordenadas por monto de mayor a menor.
+¿Cuál es el valor total de las cotizaciones abiertas del cliente Comercial Andina S.A.C.?
+Imprime el PDF de la orden de venta SO/2026/00201.
+Envía un mensaje visible para el cliente en SO/2026/00201 indicando que el pedido se está preparando.
 ```
 
 ---
 
-### 4.2 Facturación y Pagos
+### 4.2 Facturación y pagos
 
 **Revisar facturas vencidas:**
 ```
-Show all customer invoices that are more than 30 days overdue.
-Include customer name, invoice number, amount, and days overdue.
+Muestra todas las facturas de clientes con más de 30 días de vencidas.
+Incluye el nombre del cliente, el número de factura, el monto y los días de atraso.
 ```
 
 **Publicar (validar) una factura:**
 ```
-Post (validate) invoice INV/2026/00088.
+Publica (valida) la factura F001-00000088.
 ```
 
 **Revisar el estado de pago por cliente:**
 ```
-How much does Acme Corporation still owe us? List all unpaid invoices.
+¿Cuánto nos debe todavía Comercial Andina S.A.C.? Lista todas sus facturas impagas.
 ```
 
 **Restablecer a borrador y corregir:**
 ```
-Reset invoice INV/2026/00088 to draft — I need to add a line item.
+Restablece la factura F001-00000088 a borrador — necesito agregar una línea.
 ```
 
 **Reporte de antigüedad de saldos:**
 ```
-Show me accounts receivable aging — total owed grouped by whether it's current,
-1-30 days overdue, 31-60 days, or 60+ days overdue.
+Muéstrame la antigüedad de las cuentas por cobrar — el total adeudado agrupado en
+por vencer, 1-30 días vencido, 31-60 días o más de 60 días vencido.
 ```
 
 ---
 
-### 4.3 Órdenes de Compra
+### 4.3 Órdenes de compra
 
 **Crear y aprobar una orden de compra:**
 ```
-Create a purchase order for Supplier ABC for 100 units of Raw Material A at 50,000 each.
-Then approve it.
+Crea una orden de compra al Proveedor ABC por 100 unidades de Materia prima A a S/ 15 cada una.
+Luego apruébala.
 ```
 
 **Revisar recepciones pendientes:**
 ```
-Which purchase orders have been confirmed but not yet received?
+¿Qué órdenes de compra están confirmadas pero todavía no se han recibido?
 ```
 
 ---
 
-### 4.4 Inventario y Entregas
+### 4.4 Inventario y entregas
 
 **Revisar niveles de stock:**
 ```
-What is the current stock level for all products in the main warehouse?
-Show anything below 10 units first.
+¿Cuál es el stock actual de todos los productos en el almacén principal?
+Muestra primero los que tengan menos de 10 unidades.
 ```
 
 **Validar una entrega:**
 ```
-Validate delivery order WH/OUT/00055.
+Valida la orden de entrega WH/OUT/00055.
 ```
 
 **Encontrar productos que necesitan reabastecimiento:**
 ```
-Show all products where available quantity is below 5 units.
+Muestra todos los productos cuya cantidad disponible sea menor a 5 unidades.
 ```
 
 ---
 
-### 4.5 CRM y Pipeline
+### 4.5 CRM y pipeline
 
 **Revisar el pipeline:**
 ```
-Show all opportunities in the "Proposal" stage worth more than 50 million,
-sorted by expected revenue descending.
+Muestra todas las oportunidades en la etapa "Propuesta" por más de S/ 50,000,
+ordenadas por ingreso esperado de mayor a menor.
 ```
 
 **Avanzar un negocio:**
 ```
-Move opportunity #77 to stage "Won" and post a note saying the contract was signed today.
+Mueve la oportunidad #77 a la etapa "Ganado" y publica una nota indicando que el contrato se firmó hoy.
 ```
 
 **Resumen del pipeline:**
 ```
-Give me a summary of the sales pipeline: total value and count by stage.
+Dame un resumen del pipeline de ventas: valor total y cantidad por etapa.
 ```
 
 ---
 
-## 5. Analítica y Reportes de BI
+## 5. Analítica y reportes de BI
 
-### read_group — Agregación de negocio
+### read_group — agregación de negocio
 
 ```
-Total sales by customer this year:
+Ventas totales por cliente en este año:
 
 odoo_read_group(
   model="sale.order",
@@ -295,7 +296,7 @@ odoo_read_group(
 ### Tabla dinámica
 
 ```
-Show me a pivot table of invoice amounts: rows = customer, columns = month, values = total invoiced.
+Muéstrame una tabla dinámica de los montos facturados: filas = cliente, columnas = mes, valores = total facturado.
 ```
 
 Claude usa `odoo_pivot` para construir una tabla cruzada a través de dos dimensiones.
@@ -303,7 +304,7 @@ Claude usa `odoo_pivot` para construir una tabla cruzada a través de dos dimens
 ### Series de tiempo con tendencia
 
 ```
-Show monthly sales revenue for the last 12 months with trend direction.
+Muestra los ingresos por ventas mensuales de los últimos 12 meses con la dirección de la tendencia.
 ```
 
 Claude usa `odoo_time_series` con relleno automático de huecos para los meses sin datos.
@@ -311,7 +312,7 @@ Claude usa `odoo_time_series` con relleno automático de huecos para los meses s
 ### Ranking Top-N
 
 ```
-Top 10 products by revenue this quarter with share percentage.
+Los 10 productos con más ingresos de este trimestre, con su porcentaje de participación.
 ```
 
 Claude usa `odoo_top_n` y devuelve el % del total de cada elemento.
@@ -319,31 +320,31 @@ Claude usa `odoo_top_n` y devuelve el % del total de cada elemento.
 ### Retención por cohorte
 
 ```
-Show me a cohort analysis of new customers acquired in Q1 2026 —
-what % are still buying 1 month, 2 months, 3 months later?
+Muéstrame un análisis de cohortes de los clientes nuevos captados en el primer trimestre de 2026 —
+¿qué % sigue comprando 1, 2 y 3 meses después?
 ```
 
 ### Exportar a CSV/XLSX
 
 ```
-Export all unpaid invoices over 60 days to an Excel file.
+Exporta a un archivo Excel todas las facturas impagas con más de 60 días.
 ```
 
 Claude usa `odoo_export_xlsx` y devuelve una URL de descarga del archivo.
 
 ---
 
-## 6. Páginas de Portal (Tableros Compartibles)
+## 6. Páginas de portal (tableros compartibles)
 
 Las páginas de portal son URLs públicas respaldadas por datos en vivo de Odoo — no requieren inicio de sesión para verse.
 
 **Crear un tablero de KPIs:**
 ```
-Create a portal page at /mcp-page/sales-dashboard with:
-- KPI tile: total confirmed sales orders this month
-- KPI tile: total revenue this month
-- Bar chart: revenue by salesperson this month
-- Table: top 10 customers by revenue
+Crea una página de portal en /mcp-page/sales-dashboard con:
+- Tarjeta KPI: total de órdenes de venta confirmadas este mes
+- Tarjeta KPI: ingresos totales de este mes
+- Gráfico de barras: ingresos por vendedor este mes
+- Tabla: los 10 clientes con más ingresos
 ```
 
 **Acceder a la página:**
@@ -351,83 +352,83 @@ Create a portal page at /mcp-page/sales-dashboard with:
 https://your-odoo.com/mcp-page/sales-dashboard
 ```
 
-Las páginas son responsivas para móviles, se renderizan del lado del servidor y siempre muestran los datos actuales. Pueden incrustarse en herramientas externas usando una URL firmada de `odoo_create_portal_page`.
+Las páginas se adaptan a móviles, se renderizan del lado del servidor y siempre muestran los datos actuales. Pueden incrustarse en herramientas externas usando una URL firmada de `odoo_create_portal_page`.
 
 ---
 
-## 7. Cola de Trabajos Asíncronos (Operaciones Masivas)
+## 7. Cola de trabajos asíncronos (operaciones masivas)
 
-Para operaciones pesadas que agotarían el tiempo de espera como una solicitud normal, usa la cola asíncrona.
+Para operaciones pesadas que agotarían el tiempo de espera de una solicitud normal, usa la cola asíncrona.
 
 **Enviar una actualización masiva:**
 ```
-Submit a background job to update the pricelist for all active customers
-in the "Retail" category to "Retail Price List 2026".
+Envía un trabajo en segundo plano para cambiar la lista de precios de todos los clientes
+activos de la categoría "Minorista" a "Lista de precios minorista 2026".
 ```
 
 Claude usa `odoo_submit_job`, devuelve un `job_id` y puedes consultar el estado:
 
 ```
-Check the status of job #42.
+Revisa el estado del trabajo #42.
 ```
 
 **Exportación masiva:**
 ```
-Submit a background job to export all sales order lines from January 2026 to an XLSX file.
-Notify me when it is done.
+Envía un trabajo en segundo plano para exportar a un archivo XLSX todas las líneas de
+órdenes de venta de enero de 2026. Avísame cuando termine.
 ```
 
 Cuando el trabajo se completa, `odoo_job_status` devuelve una URL de descarga del archivo.
 
 ---
 
-## 8. Generador de Módulos con IA
+## 8. Generador de módulos con IA
 
-> **Requiere:** token con alcance de administrador + el generador de módulos activado en la Configuración.
+> **Requiere:** token con alcance de administrador + el generador de módulos activado en los Ajustes.
 
 El generador de módulos permite que Claude diseñe un módulo completo de Odoo a partir de una descripción —modelos, vistas, reglas de seguridad y menús— y produzca un ZIP instalable.
 
 **Ejemplo de conversación:**
 ```
-You: Design an Odoo module for managing theme park attractions.
-     Each attraction has a name, category (ride/show/restaurant),
-     capacity, and maintenance status. Include a kanban view and access groups.
+Tú: Diseña un módulo de Odoo para gestionar las atracciones de un parque temático.
+    Cada atracción tiene nombre, categoría (juego/espectáculo/restaurante),
+    capacidad y estado de mantenimiento. Incluye una vista kanban y grupos de acceso.
 
-Claude: I'll validate the spec first, then generate the ZIP.
-        [uses odoo_validate_module_spec → odoo_generate_module]
-        Done. Download: /web/content/42?download=1
+Claude: Primero validaré la especificación y luego generaré el ZIP.
+        [usa odoo_validate_module_spec → odoo_generate_module]
+        Listo. Descarga: /web/content/42?download=1
 ```
 
 **Instalar el módulo generado:**
 ```
-Install generated module #42. I confirm this is intentional.
+Instala el módulo generado #42. Confirmo que es intencional.
 ```
 
 Claude usa `odoo_install_generated_module` con `confirm: true`.
 
-> **Advertencia:** La instalación reinicia el registro de módulos de Odoo. Úsalo solo en entornos
+> **Advertencia:** la instalación reinicia el registro de módulos de Odoo. Úsalo solo en entornos
 > que no sean de producción, a menos que estés seguro de que el módulo generado es seguro.
 
 ---
 
-## 9. Chatter y Comunicación
+## 9. Chatter y comunicación
 
-Cada registro con un chatter (mail.thread) puede leerse y recibir publicaciones.
+Todo registro con chatter (mail.thread) puede leerse y recibir publicaciones.
 
 **Leer el historial de conversación:**
 ```
-Read the chatter on sales order SO/2026/00201 and summarize what has happened so far.
+Lee el chatter de la orden de venta SO/2026/00201 y resume lo que ha pasado hasta ahora.
 ```
 
 **Responder a un cliente:**
 ```
-On invoice INV/2026/00088, post a customer-facing message:
-"Your payment of IDR 25,000,000 is 15 days overdue. Please remit by this Friday."
+En la factura F001-00000088, publica un mensaje visible para el cliente:
+"Su pago de S/ 8,500.00 tiene 15 días de atraso. Por favor, realice el abono antes de este viernes."
 ```
 
 **Nota interna:**
 ```
-On helpdesk ticket #45, post an internal note that the issue was escalated to the dev team.
+En el ticket de soporte #45, publica una nota interna indicando que el problema se escaló al equipo de desarrollo.
 ```
 
 | Subtipo | Visible para | Cuándo usarlo |
@@ -437,75 +438,75 @@ On helpdesk ticket #45, post an internal note that the issue was escalated to th
 
 ---
 
-## 10. Consejos de Prompting Efectivo
+## 10. Consejos para escribir buenos prompts
 
-### Siempre empieza con contexto
+### Empieza siempre con contexto
 ```
-Read odoo://context and odoo://catalog first, then help me with [task].
+Lee primero odoo://context y odoo://catalog y luego ayúdame con [tarea].
 ```
 
 ### Sé específico sobre lo que quieres
 ```
-✅ Show all confirmed sales orders from January 2026, sorted by amount descending,
-   with customer name, order date, and total amount.
+✅ Muestra todas las órdenes de venta confirmadas de enero de 2026, ordenadas por monto
+   de mayor a menor, con el nombre del cliente, la fecha de la orden y el monto total.
 
-❌ Show me sales data.
+❌ Muéstrame datos de ventas.
 ```
 
 ### Pide a Claude que verifique antes de crear
 ```
-Before creating the invoice, read odoo://model/account.move so you know
-the required fields and correct defaults.
+Antes de crear la factura, lee odoo://model/account.move para que conozcas
+los campos obligatorios y los valores por defecto correctos.
 ```
 
 ### Encadena operaciones en un solo prompt
 ```
-Find customer "PT Sentosa", create a quotation for 3 units of Product A at 5,000,000,
-add an internal note "requested by sales manager", and confirm the order.
+Busca el cliente "Inversiones Pacífico S.A.C.", crea una cotización por 3 unidades del Producto A
+a S/ 1,500, agrega la nota interna "solicitado por el gerente de ventas" y confirma la orden.
 ```
 
-### Usa read_group para resúmenes, search_read para detalles
+### Usa read_group para resúmenes y search_read para detalles
 ```
-✅ For "how much total?" → use odoo_read_group
-✅ For "show me the list" → use odoo_search_read
+✅ Para "¿cuánto en total?" → usa odoo_read_group
+✅ Para "muéstrame la lista" → usa odoo_search_read
 ```
 
 ---
 
-## 11. Solución de Problemas para Usuarios Finales
+## 11. Solución de problemas para usuarios finales
 
-**"Claude no conoce mis modelos de Odoo"**
+**«Claude no conoce mis modelos de Odoo»**
 
 Ejecuta el cargador de contexto al inicio de cada sesión:
 ```
-Read odoo://context and odoo://catalog.
+Lee odoo://context y odoo://catalog.
 ```
 
-**Error "Access Denied" (Acceso Denegado)**
+**Error "Access Denied" (acceso denegado)**
 
 Tu usuario de Odoo no tiene permiso para ese modelo o registro.
 Pide a tu administrador que revise tus derechos de acceso en
-**Configuración → Usuarios → [tu usuario] → Derechos de Acceso**.
+**Ajustes → Usuarios → [tu usuario] → Derechos de acceso**.
 
-**"Method is blocked" (Método bloqueado)**
+**"Method is blocked" (método bloqueado)**
 
 El método comienza con `_` (privado) o es un método de escalada de privilegios.
 Usa `odoo_get_views(model=...)` para ver qué métodos pueden invocarse de forma segura.
 
-**"Required field missing" (Falta un campo obligatorio) al crear registros**
+**"Required field missing" (falta un campo obligatorio) al crear registros**
 
 Pide a Claude:
 ```
-Before creating a [model], use odoo_default_get and odoo_onchange
-to check all required fields and defaults first.
+Antes de crear un [modelo], usa odoo_default_get y odoo_onchange
+para revisar primero todos los campos obligatorios y los valores por defecto.
 ```
 
-**"La URL del reporte PDF no funciona"**
+**«La URL del reporte PDF no funciona»**
 
 Debes haber iniciado sesión en Odoo en tu navegador para acceder a las URLs de los reportes.
 La URL no es de acceso público.
 
-**"Rate limit exceeded" (Se excedió el límite de tasa)**
+**"Rate limit exceeded" (se excedió el límite de tasa)**
 
 Demasiadas solicitudes por minuto. Haz una pausa breve o pide a tu administrador que
-aumente el límite de tasa en **Configuración → Servidor MCP → Límite de tasa por minuto**.
+aumente el límite de tasa en **Ajustes → Servidor MCP → Límite de tasa por minuto**.

@@ -1,21 +1,21 @@
 """
-MCP Module Generator Tool Handlers
-====================================
+Manejadores de las herramientas MCP del generador de módulos
+============================================================
 
-Defines the four MCP tools for AI-driven module generation:
+Define las cuatro herramientas MCP para generar módulos con IA:
 
-- odoo_generate_module      (admin scope required)
-- odoo_validate_module_spec (any scope)
-- odoo_list_generated_modules (any scope)
-- odoo_install_generated_module (admin scope required)
+- odoo_generate_module      (requiere alcance admin)
+- odoo_validate_module_spec (cualquier alcance)
+- odoo_list_generated_modules (cualquier alcance)
+- odoo_install_generated_module (requiere alcance admin)
 
-Scope enforcement mirrors tool_executor._enforce_scope pattern:
-read env.context['mcp_scope'] and raise PermissionError when the
-operation requires a higher scope than the token grants.
+El control de alcance sigue el patrón de tool_executor._enforce_scope:
+lee env.context['mcp_scope'] y lanza PermissionError cuando la operación
+requiere un alcance mayor que el que concede el token.
 
-Feature flag: if ir.config_parameter 'mcp_server.enable_module_generator'
-is falsy, all four handlers return an error dict instead of performing
-the operation.
+Indicador de función: si el ir.config_parameter 'mcp_server.enable_module_generator'
+es falso, los cuatro manejadores devuelven un diccionario de error en lugar de
+realizar la operación.
 """
 
 import logging
@@ -23,7 +23,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Tool definitions (advertised to AI clients via tools/list)
+# Definiciones de herramientas (anunciadas a los clientes de IA vía tools/list)
 # ---------------------------------------------------------------------------
 
 TOOL_DEFINITIONS = [
@@ -123,15 +123,15 @@ TOOL_DEFINITIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Tool handlers (called by execute_module_tool)
+# Manejadores de herramientas (llamados por execute_module_tool)
 # ---------------------------------------------------------------------------
 
 
 def execute_module_tool(env, tool_name: str, args: dict):
-    """Dispatch a module-generator tool call.
+    """Despacha una llamada a una herramienta del generador de módulos.
 
-    Called from tool_executor.execute_tool after it delegates module tools here.
-    Scope enforcement and feature flag check are performed here.
+    Se llama desde tool_executor.execute_tool, que delega aquí las herramientas de módulos.
+    Aquí se controlan el alcance y el indicador de función.
     """
     if not _feature_enabled(env):
         return {
@@ -154,7 +154,7 @@ def execute_module_tool(env, tool_name: str, args: dict):
 
 
 # ---------------------------------------------------------------------------
-# Feature flag helper
+# Utilidad del indicador de función
 # ---------------------------------------------------------------------------
 
 
@@ -166,7 +166,7 @@ def _feature_enabled(env) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Scope enforcement
+# Control de alcance
 # ---------------------------------------------------------------------------
 
 _ADMIN_ONLY_TOOLS = frozenset({
@@ -192,7 +192,7 @@ def _enforce_module_scope(env, tool_name: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Individual handlers
+# Manejadores individuales
 # ---------------------------------------------------------------------------
 
 
@@ -206,7 +206,7 @@ def _handle_generate(env, args: dict) -> dict:
     if errors:
         return {"error": "La especificación no es válida.", "errors": errors, "state": "failed"}
 
-    display_name = args.get("name") or spec.get("name") or spec.get("technical_name", "Módulo Generado")
+    display_name = args.get("name") or spec.get("name") or spec.get("technical_name", "Módulo generado")
 
     rec = env["mcp.generated.module"].sudo().create({
         "name": display_name,
@@ -281,7 +281,7 @@ def _handle_list(env, args: dict) -> dict:
         order="create_date desc",
     )
 
-    # Enrich with download URLs
+    # Añade las URL de descarga
     for rec in recs:
         att = rec.get("attachment_id")
         if att and att[0]:
@@ -332,7 +332,7 @@ def _handle_install(env, args: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Helper
+# Utilidad
 # ---------------------------------------------------------------------------
 
 

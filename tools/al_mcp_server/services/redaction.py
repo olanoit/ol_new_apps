@@ -1,18 +1,18 @@
 """
-Redaction helper for MCP audit log payload capture.
+Utilidad para ocultar datos sensibles al capturar contenido en el registro de auditoría MCP.
 
-Performs a deep traversal of dicts and lists, replacing the values of any
-key matching a configurable set of sensitive names with the literal string
-"[REDACTED]". Keys are matched case-insensitively.
+Recorre en profundidad diccionarios y listas y sustituye el valor de cualquier
+clave que coincida con un conjunto configurable de nombres sensibles por la cadena
+literal "[OCULTO]". Las claves se comparan sin distinguir mayúsculas de minúsculas.
 
-Pure stdlib — no Odoo dependency so this module is trivially unit-testable.
+Solo usa la biblioteca estándar — sin dependencia de Odoo, así que es fácil de probar.
 
 Example:
     >>> from services.redaction import redact
     >>> redact({"username": "alice", "password": "s3cr3t"})
-    {'username': 'alice', 'password': '[REDACTED]'}
+    {'username': 'alice', 'password': '[OCULTO]'}
     >>> redact([{"api_key": "abc", "data": [{"token": "xyz"}]}])
-    [{'api_key': '[REDACTED]', 'data': [{'token': '[REDACTED]'}]}]
+    [{'api_key': '[OCULTO]', 'data': [{'token': '[OCULTO]'}]}]
 """
 
 _DEFAULT_SENSITIVE_KEYS = frozenset({
@@ -27,21 +27,21 @@ _DEFAULT_SENSITIVE_KEYS = frozenset({
     "cvv",
 })
 
-_REDACTED = "[REDACTED]"
+_REDACTED = "[OCULTO]"
 
 
 def redact(obj, sensitive_keys=None):
     """
-    Deep-traverse *obj* (dict/list/primitive) and replace sensitive values.
+    Recorre en profundidad *obj* (dict/list/primitivo) y sustituye los valores sensibles.
 
     Args:
-        obj: Any JSON-serializable value (dict, list, str, int, etc.).
-        sensitive_keys: Optional iterable of lowercase key names to redact.
-                        Defaults to the built-in sensitive key set.
+        obj: cualquier valor serializable a JSON (dict, list, str, int, etc.).
+        sensitive_keys: iterable opcional de nombres de clave en minúsculas que se ocultan.
+                        Por defecto, el conjunto de claves sensibles incorporado.
 
     Returns:
-        A new object with the same structure but sensitive values replaced.
-        Non-dict/non-list scalars are returned unchanged.
+        Un objeto nuevo con la misma estructura pero con los valores sensibles sustituidos.
+        Los escalares que no son dict ni list se devuelven sin cambios.
     """
     if sensitive_keys is None:
         keys = _DEFAULT_SENSITIVE_KEYS

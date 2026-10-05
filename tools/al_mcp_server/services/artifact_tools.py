@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-MCP tool definitions and handlers for HTML artifact management.
+Definiciones y manejadores de herramientas MCP para gestionar artefactos HTML.
 
-Artifacts are free-form interactive HTML snippets (HTML + optional CSS + JS)
-served through a strictly sandboxed iframe. They differ from portal pages:
-portal pages are spec-driven dashboards over live Odoo data, while artifacts
-are opaque AI-generated markup (visualizations, mini-apps, prototypes).
+Los artefactos son fragmentos HTML interactivos libres (HTML + CSS y JS
+opcionales) servidos dentro de un iframe estrictamente aislado. Se diferencian
+de las páginas de portal: estas son tableros guiados por una especificación
+sobre datos de Odoo en vivo, mientras que los artefactos son marcado opaco
+generado por IA (visualizaciones, miniaplicaciones, prototipos).
 
-Scope enforcement:
-  - 'read'  → only odoo_list_html_artifacts, odoo_get_html_artifact
-  - 'write' → create + list + get + update
-  - 'admin' → all (same as write for artifact tools)
+Control de alcance:
+  - 'read'  → solo odoo_list_html_artifacts y odoo_get_html_artifact
+  - 'write' → crear + listar + obtener + actualizar
+  - 'admin' → todo (igual que write en las herramientas de artefactos)
 """
 
 import logging
@@ -28,7 +29,7 @@ TOOL_DEFINITIONS = [
         "name": "odoo_create_html_artifact",
         "description": (
             "Crea un artefacto HTML interactivo renderizado dentro de un iframe estrictamente aislado (sandbox). "
-            "Use esto cuando un usuario pida 'crear una mini-app', 'renderizar un gráfico', 'crear una "
+            "Use esto cuando un usuario pida 'crear una miniaplicación', 'renderizar un gráfico', 'crear una "
             "calculadora', 'mostrar una visualización', 'hacer una demo interactiva' o desee cualquier "
             "página HTML interactiva de forma libre. Devuelve la URL pública y la URL de incrustación. "
             "Seguridad: el artefacto se ejecuta sin acceso a la página principal de Odoo (sin cookies, "
@@ -41,7 +42,7 @@ TOOL_DEFINITIONS = [
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Título para mostrar del artefacto (p. ej. 'Tip Calculator').",
+                    "description": "Título para mostrar del artefacto (p. ej. 'Calculadora de propinas').",
                 },
                 "description": {
                     "type": "string",

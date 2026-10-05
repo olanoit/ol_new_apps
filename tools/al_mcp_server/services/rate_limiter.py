@@ -1,20 +1,20 @@
 """
-Sliding-window rate limiter — zero external dependencies.
+Limitador de peticiones con ventana deslizante — sin dependencias externas.
 
-Configuration (via odoo.conf):
-    mcp_rate_limit = 60          # total requests per window across all workers
-    mcp_rate_window = 60         # window size in seconds
+Configuración (en odoo.conf):
+    mcp_rate_limit = 60          # total de peticiones por ventana entre todos los workers
+    mcp_rate_window = 60         # tamaño de la ventana en segundos
 
-With multiple Odoo workers, the per-worker limit is automatically divided so the
-total effective rate across all workers stays close to mcp_rate_limit.
+Con varios workers de Odoo, el límite se reparte automáticamente entre ellos para que
+la tasa efectiva total de todos los workers se mantenga cerca de mcp_rate_limit.
 
-Example (odoo.conf, workers=4, mcp_rate_limit=120):
-    each worker allows 30 req/60s → total ≈ 120 req/60s
+Ejemplo (odoo.conf, workers=4, mcp_rate_limit=120):
+    cada worker permite 30 pet./60 s → total ≈ 120 pet./60 s
 
-Buckets are cleaned up automatically when they expire to prevent memory leaks.
+Los contenedores (buckets) se limpian solos al caducar para evitar fugas de memoria.
 
-get_rate_limiter(env) returns a Redis-backed limiter when configured and available,
-otherwise returns the module-level in-memory singleton.
+get_rate_limiter(env) devuelve un limitador respaldado por Redis si está configurado y
+disponible; si no, devuelve la instancia única en memoria del módulo.
 """
 
 import logging
@@ -27,17 +27,17 @@ from odoo.tools import config as _odoo_config
 _logger = logging.getLogger(__name__)
 
 _DEFAULT_MAX = 60
-_DEFAULT_WINDOW = 60  # seconds
+_DEFAULT_WINDOW = 60  # segundos
 
 
 def _resolve_limits() -> tuple[int, int]:
-    """Compute per-worker rate limit from odoo.conf, adjusted for worker count."""
+    """Calcula el límite por worker a partir de odoo.conf, ajustado al número de workers."""
     total_max = int(_odoo_config.get("mcp_rate_limit", _DEFAULT_MAX) or _DEFAULT_MAX)
     window = int(_odoo_config.get("mcp_rate_window", _DEFAULT_WINDOW) or _DEFAULT_WINDOW)
     workers = int(_odoo_config.get("workers", 0) or 0)
 
-    # Divide by worker count so total effective limit stays correct.
-    # Single-process (workers=0): no adjustment needed.
+    # Se divide entre el número de workers para que el límite efectivo total sea correcto.
+    # Proceso único (workers=0): no hace falta ajustar.
     per_worker = max(10, total_max // max(1, workers)) if workers > 1 else total_max
     return per_worker, window
 
@@ -57,9 +57,9 @@ class RateLimiter:
         self._last_cleanup = time.monotonic()
 
     def check(self, key: str, max_override: int = 0) -> tuple[bool, int]:
-        """Check whether `key` is within rate limit. Returns (allowed, remaining).
+        """Comprueba si `key` está dentro del límite. Devuelve (permitido, restantes).
 
-        max_override: per-user limit (> 0 overrides global default, 0 = use global).
+        max_override: límite por usuario (> 0 sustituye al valor global, 0 = usar el global).
         """
         now = time.monotonic()
         cutoff = now - self.window_seconds
@@ -79,14 +79,14 @@ class RateLimiter:
             return True, effective_max - len(bucket)
 
     def reconfigure(self, max_requests: int, window_seconds: int) -> None:
-        """Update limits at runtime (e.g. from ir.config_parameter)."""
+        """Actualiza los límites en tiempo de ejecución (p. ej. desde ir.config_parameter)."""
         with self._lock:
             self.max_requests = max_requests
             self.window_seconds = window_seconds
             self._buckets.clear()
 
     def _maybe_cleanup(self, now: float) -> None:
-        """Purge fully-expired buckets every 5 minutes to avoid memory leak."""
+        """Elimina cada 5 minutos los contenedores totalmente caducados para evitar fugas de memoria."""
         if now - self._last_cleanup < 300:
             return
         cutoff = now - self.window_seconds
@@ -96,26 +96,26 @@ class RateLimiter:
         self._last_cleanup = now
 
 
-# Module-level singleton — shared across all requests in this worker.
-# Limits are resolved from odoo.conf at startup and worker-count-adjusted automatically.
+# Instancia única del módulo — compartida por todas las peticiones de este worker.
+# Los límites se leen de odoo.conf al arrancar y se ajustan solos al número de workers.
 rate_limiter = RateLimiter()
 
 # ------------------------------------------------------------------ #
-# Redis-backed limiter cache: keyed by redis_url so reconfiguration  #
-# is cheap (reconnect only when the URL changes).                     #
+# Caché de limitadores con Redis: indexada por redis_url para que     #
+# reconfigurar sea barato (solo se reconecta si cambia la URL).       #
 # ------------------------------------------------------------------ #
 _redis_limiter_cache: dict[str, object] = {}
 _redis_cache_lock = threading.Lock()
 
 
 def get_rate_limiter(env=None):
-    """Return the active rate limiter for this request.
+    """Devuelve el limitador de peticiones activo para esta petición.
 
-    If env is provided and Redis rate limiting is enabled in ir.config_parameter,
-    returns a RedisRateLimiter instance (shared, one per redis_url per worker).
-    On any configuration error or missing redis-py, returns the in-memory singleton.
+    Si se pasa env y la limitación con Redis está activada en ir.config_parameter,
+    devuelve una instancia de RedisRateLimiter (compartida, una por redis_url y worker).
+    Ante cualquier error de configuración o si falta redis-py, devuelve la instancia en memoria.
 
-    The Redis instance is cached at module level to avoid reconnecting per request.
+    La instancia de Redis se guarda en caché a nivel de módulo para no reconectar en cada petición.
     """
     if env is None:
         return rate_limiter
@@ -129,8 +129,8 @@ def get_rate_limiter(env=None):
         redis_url = ICP.get_param("mcp_server.redis_url", "") or ""
         if not redis_url:
             _logger.warning(
-                "MCP Server: Redis rate limiting enabled but mcp_server.redis_url is not set. "
-                "Using in-memory limiter."
+                "Servidor MCP: la limitación con Redis está activada pero mcp_server.redis_url no está definido. "
+                "Se usa el limitador en memoria."
             )
             return rate_limiter
 
@@ -140,7 +140,7 @@ def get_rate_limiter(env=None):
         with _redis_cache_lock:
             cached = _redis_limiter_cache.get(redis_url)
             if cached is not None:
-                # Update limits in case they were changed in settings
+                # Actualiza los límites por si se cambiaron en los ajustes
                 cached.reconfigure(max_req, window)
                 return cached
 
@@ -151,6 +151,6 @@ def get_rate_limiter(env=None):
 
     except Exception:
         _logger.exception(
-            "MCP Server: error resolving rate limiter from config. Using in-memory fallback."
+            "Servidor MCP: error al obtener el limitador desde la configuración. Se usa el limitador en memoria."
         )
         return rate_limiter

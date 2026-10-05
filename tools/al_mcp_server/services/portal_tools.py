@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 # Parte de al_mcp_server. Ver LICENSE del repositorio para detalles.
 """
-MCP tool definitions and handlers for portal page management.
+Definiciones y manejadores de herramientas MCP para gestionar páginas de portal.
 
-These tools allow AI clients to create, list, and update shareable portal
-pages that display live Odoo data via KPI tiles, charts, and tables.
+Estas herramientas permiten a los clientes de IA crear, listar y actualizar
+páginas de portal compartibles que muestran datos de Odoo en vivo mediante
+tarjetas KPI, gráficos y tablas.
 
-Scope enforcement:
-  - 'read'  → only odoo_list_portal_pages is permitted
-  - 'write' → create + list + update
-  - 'admin' → all (same as write for portal tools)
+Control de alcance:
+  - 'read'  → solo se permite odoo_list_portal_pages
+  - 'write' → crear + listar + actualizar
+  - 'admin' → todo (igual que write en las herramientas de portal)
 
-Handlers are called by the consolidation layer (tool_executor.py or its
-replacement) via TOOL_HANDLERS dispatch table.
+La capa de consolidación (tool_executor.py o su sustituto) llama a los
+manejadores a través de la tabla de despacho TOOL_HANDLERS.
 """
 
 import json
@@ -21,14 +22,14 @@ import logging
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Scope sets
+# Conjuntos por alcance
 # ---------------------------------------------------------------------------
 
 _PORTAL_READ_TOOLS = frozenset({"odoo_list_portal_pages"})
 _PORTAL_WRITE_TOOLS = frozenset({"odoo_create_portal_page", "odoo_update_portal_page"})
 
 # ---------------------------------------------------------------------------
-# Tool schema definitions (MCP tool manifest)
+# Definiciones del esquema de herramientas (manifiesto de herramientas MCP)
 # ---------------------------------------------------------------------------
 
 TOOL_DEFINITIONS = [
@@ -47,7 +48,7 @@ TOOL_DEFINITIONS = [
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Título para mostrar de la página de portal (p. ej. 'Sales Dashboard Q1 2026').",
+                    "description": "Título para mostrar de la página de portal (p. ej. 'Tablero de ventas T1 2026').",
                 },
                 "description": {
                     "type": "string",
@@ -72,8 +73,8 @@ TOOL_DEFINITIONS = [
                     "description": (
                         "Especificación del diseño de la página. Debe incluir un arreglo 'widgets'. "
                         "Tipos de widget: 'kpi', 'chart', 'table'. "
-                        "Ejemplo: {\"title\": \"Revenue\", \"widgets\": [{\"type\": \"kpi\", "
-                        "\"title\": \"Total Revenue\", \"model\": \"sale.order\", "
+                        "Ejemplo: {\"title\": \"Ingresos\", \"widgets\": [{\"type\": \"kpi\", "
+                        "\"title\": \"Ingresos totales\", \"model\": \"sale.order\", "
                         "\"domain\": [[\"state\",\"in\",[\"sale\",\"done\"]]], "
                         "\"field\": \"amount_total\", \"aggregate\": \"sum\", "
                         "\"format\": \"currency\"}]}"
@@ -159,7 +160,7 @@ TOOL_DEFINITIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Handler implementations
+# Implementación de los manejadores
 # ---------------------------------------------------------------------------
 
 
@@ -187,7 +188,7 @@ def _check_widget_restrictions(env, spec_obj: dict) -> None:
 
 
 def _handle_create_portal_page(env, args: dict) -> dict:
-    """Create a new mcp.portal.page record and return its URLs."""
+    """Crea un registro mcp.portal.page nuevo y devuelve sus URL."""
     _check_scope(env, "odoo_create_portal_page")
 
     name = args.get("name", "").strip()
@@ -202,7 +203,7 @@ def _handle_create_portal_page(env, args: dict) -> dict:
 
     spec_text = json.dumps(spec_obj, ensure_ascii=False, indent=2)
 
-    # Validate spec via model method
+    # Valida la especificación con el método del modelo
     Page = env["mcp.portal.page"]
     Page.parse_spec(spec_text)
     _check_widget_restrictions(env, spec_obj)
@@ -236,7 +237,7 @@ def _handle_create_portal_page(env, args: dict) -> dict:
 
 
 def _handle_list_portal_pages(env, args: dict) -> dict:
-    """Return a list of portal pages owned by the current user."""
+    """Devuelve la lista de páginas de portal del usuario actual."""
     enabled_only = args.get("enabled_only", True)
     limit = min(int(args.get("limit", 20)), 100)
 
@@ -265,7 +266,7 @@ def _handle_list_portal_pages(env, args: dict) -> dict:
 
 
 def _handle_update_portal_page(env, args: dict) -> dict:
-    """Update fields on an existing portal page."""
+    """Actualiza campos de una página de portal existente."""
     _check_scope(env, "odoo_update_portal_page")
 
     page_id = int(args.get("id", 0))
@@ -313,12 +314,12 @@ def _handle_update_portal_page(env, args: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Scope guard
+# Control de alcance
 # ---------------------------------------------------------------------------
 
 
 def _check_scope(env, tool_name: str) -> None:
-    """Raise PermissionError if the current MCP scope does not allow *tool_name*."""
+    """Lanza PermissionError si el alcance MCP actual no permite *tool_name*."""
     scope = env.context.get("mcp_scope", "write")
     if scope == "admin" or scope == "write":
         return
@@ -330,7 +331,7 @@ def _check_scope(env, tool_name: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Dispatch table — consumed by the consolidation layer
+# Tabla de despacho: la consume la capa de consolidación
 # ---------------------------------------------------------------------------
 
 TOOL_HANDLERS = {

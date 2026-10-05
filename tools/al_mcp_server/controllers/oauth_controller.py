@@ -1,17 +1,17 @@
 """
-OAuth 2.0 Authorization Server — MCP spec compliant.
+Servidor de autorización OAuth 2.0 — conforme a la especificación MCP.
 
 Endpoints:
-  GET  /.well-known/oauth-authorization-server  discovery metadata
-  GET  /.well-known/oauth-protected-resource    resource metadata
-  GET  /oauth/register                          registration capability metadata
-  POST /oauth/register                          dynamic client registration (RFC 7591)
-  GET  /oauth/authorize                         show Odoo login form
-  POST /oauth/authorize                         authenticate + issue authorization code
-  POST /oauth/token                             exchange code for Bearer token (PKCE S256)
-  POST /oauth/revoke                            revoke a Bearer token
+  GET  /.well-known/oauth-authorization-server  metadatos de descubrimiento
+  GET  /.well-known/oauth-protected-resource    metadatos del recurso
+  GET  /oauth/register                          metadatos de capacidades de registro
+  POST /oauth/register                          registro dinámico de clientes (RFC 7591)
+  GET  /oauth/authorize                         muestra el formulario de inicio de sesión de Odoo
+  POST /oauth/authorize                         autentica y emite el código de autorización
+  POST /oauth/token                             canjea el código por un token Bearer (PKCE S256)
+  POST /oauth/revoke                            revoca un token Bearer
 
-Auth is delegated entirely to Odoo res.users — no separate user database.
+La autenticación se delega por completo en res.users de Odoo: no hay una base de usuarios aparte.
 """
 
 import json
@@ -29,10 +29,10 @@ from ..models.mcp_token import _hash_token
 
 _logger = logging.getLogger(__name__)
 
-# CORS is handled entirely by nginx. Do NOT add headers here to avoid duplicates.
+# nginx gestiona todo el CORS. NO añada cabeceras aquí para evitar duplicados.
 
 # ---------------------------------------------------------------------------
-# HTML helpers
+# Utilidades HTML
 # ---------------------------------------------------------------------------
 
 _CSS = """
@@ -114,15 +114,15 @@ def _login_page(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Autorizar — Odoo MCP Server</title>
+  <title>Autorizar — Servidor MCP de Odoo</title>
   <style>{_CSS}</style>
 </head>
 <body>
   <div class="card">
-    <div class="brand">Odoo MCP Server</div>
+    <div class="brand">Servidor MCP de Odoo</div>
     <h1>Autorizar acceso</h1>
     <p class="sub">
-      <strong>{_esc(client_name or "MCP Client")}</strong>
+      <strong>{_esc(client_name or "Cliente MCP")}</strong>
       está solicitando acceso a su cuenta de Odoo.<br>
       Tras autorizar, volverá a <strong>{_esc(redirect_host)}</strong>.
     </p>
@@ -182,14 +182,14 @@ def _base_url() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Controller
+# Controlador
 # ---------------------------------------------------------------------------
 
 
 class OAuthController(http.Controller):
 
     # ------------------------------------------------------------------
-    # Discovery endpoints (MCP spec requirement for auto-discovery)
+    # Endpoints de descubrimiento (exigidos por la especificación MCP para el autodescubrimiento)
     # ------------------------------------------------------------------
 
     @http.route(
@@ -215,11 +215,11 @@ class OAuthController(http.Controller):
         type="http", auth="public", methods=["GET"], csrf=False,
     )
     def openid_configuration(self, **_kw):
-        """OpenID Connect discovery — required by ChatGPT and other OIDC clients.
+        """Descubrimiento OpenID Connect — lo exigen ChatGPT y otros clientes OIDC.
 
-        Maps our OAuth 2.0 server metadata to the OpenID Connect Discovery 1.0
-        format so clients that probe /.well-known/openid-configuration can
-        auto-configure without error.
+        Traduce los metadatos de nuestro servidor OAuth 2.0 al formato OpenID Connect
+        Discovery 1.0 para que los clientes que consultan /.well-known/openid-configuration
+        se configuren solos sin errores.
         """
         base = _base_url()
         return _json_resp({
@@ -255,9 +255,9 @@ class OAuthController(http.Controller):
         })
 
     # ------------------------------------------------------------------
-    # Dynamic client registration (RFC 7591) — stateless, public clients
-    # GET: capability metadata (Claude.ai checks this before POST)
-    # POST: register and receive client_id
+    # Registro dinámico de clientes (RFC 7591) — sin estado, clientes públicos
+    # GET: metadatos de capacidades (Claude.ai lo consulta antes del POST)
+    # POST: registra el cliente y devuelve el client_id
     # ------------------------------------------------------------------
 
     @http.route(
@@ -280,7 +280,7 @@ class OAuthController(http.Controller):
                 "code_challenge_methods_supported": ["S256"],
             })
 
-        # POST — issue a new client_id (stateless, public client)
+        # POST — emite un nuevo client_id (sin estado, cliente público)
         try:
             body = json.loads(request.httprequest.data or b"{}")
         except json.JSONDecodeError:
@@ -300,7 +300,7 @@ class OAuthController(http.Controller):
                 "error_description": "redirect_uris debe ser una lista de URIs HTTPS "
                                      "(o HTTP hacia localhost).",
             }, 400)
-        client_name = str(body.get("client_name") or "MCP Client")[:128]
+        client_name = str(body.get("client_name") or "Cliente MCP")[:128]
 
         # sudo: registro dinámico público (RFC 7591); el modelo solo es de sistema.
         client_sudo = request.env["mcp.oauth.client"].sudo().create({
@@ -320,7 +320,7 @@ class OAuthController(http.Controller):
         )
 
     # ------------------------------------------------------------------
-    # Authorization endpoint — shows Odoo login form
+    # Endpoint de autorización — muestra el formulario de inicio de sesión de Odoo
     # ------------------------------------------------------------------
 
     @http.route(
@@ -397,7 +397,7 @@ class OAuthController(http.Controller):
         except AccessDenied:
             return _error("Usuario o contraseña no válidos.")
         except Exception as exc:
-            _logger.warning("OAuth authorize auth error for %r: %s", login, exc)
+            _logger.warning("OAuth authorize: error de autenticación para %r: %s", login, exc)
             return _error("Error de autenticación. Inténtelo de nuevo.")
 
         if not uid:
@@ -408,11 +408,11 @@ class OAuthController(http.Controller):
         user_sudo = request.env["res.users"].sudo().browse(uid)  # sudo: leer la config MFA
         if auth_info.get("mfa") != "skip" and user_sudo._mfa_url():
             return _error(
-                "Su usuario tiene verificación en dos pasos. Genere un Token de Acceso "
-                "Personal en Odoo y úselo en su cliente MCP."
+                "Su usuario tiene verificación en dos pasos. Genere un token de acceso "
+                "personal en Odoo y úselo en su cliente MCP."
             )
 
-        # Issue authorization code (stored in mcp.auth.code)
+        # Emite el código de autorización (se guarda en mcp.auth.code)
         code = request.env["mcp.auth.code"].sudo().create_code(
             uid=uid,
             client_id=client_id,
@@ -424,7 +424,7 @@ class OAuthController(http.Controller):
         return _redirect(redirect_uri, {"code": code, "state": state})
 
     # ------------------------------------------------------------------
-    # Token endpoint — exchange authorization code for Bearer token
+    # Endpoint de token — canjea el código de autorización por un token Bearer
     # ------------------------------------------------------------------
 
     @http.route(
@@ -445,7 +445,7 @@ class OAuthController(http.Controller):
         redirect_uri = form.get("redirect_uri", "")
         code_verifier = form.get("code_verifier", "")
         client_id = form.get("client_id", "")
-        client_name = form.get("client_name", "MCP Client")
+        client_name = form.get("client_name", "Cliente MCP")
 
         if not code or not redirect_uri or not code_verifier or not client_id:
             return _json_resp(
@@ -480,7 +480,7 @@ class OAuthController(http.Controller):
         })
 
     def _handle_refresh_token(self, form):
-        """Exchange a refresh_token for new access + refresh tokens (rotation)."""
+        """Canjea un refresh_token por nuevos tokens de acceso y de refresco (rotación)."""
         raw_refresh = form.get("refresh_token", "")
         if not raw_refresh:
             return _json_resp(
@@ -506,7 +506,7 @@ class OAuthController(http.Controller):
         })
 
     # ------------------------------------------------------------------
-    # Revoke endpoint
+    # Endpoint de revocación
     # ------------------------------------------------------------------
 
     @http.route(
@@ -529,5 +529,5 @@ class OAuthController(http.Controller):
             if token_sudo:
                 token_sudo.action_revoke()
 
-        # RFC 7009: always return 200 regardless of whether token existed
+        # RFC 7009: siempre devuelve 200, exista o no el token
         return _json_resp({})

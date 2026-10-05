@@ -5,7 +5,7 @@ class ResUsersMcp(models.Model):
     _inherit = "res.users"
 
     mcp_rate_limit = fields.Integer(
-        string="Límite de Tasa MCP",
+        string="Límite de tasa MCP",
         default=0,
         help=(
             "Límite personalizado de solicitudes MCP por minuto para este usuario. "

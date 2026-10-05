@@ -21,19 +21,19 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
                     restrictions: dict | None = None,
                     capture_payloads: bool = False) -> dict | None:
     """
-    Process one JSON-RPC 2.0 MCP message and return the response dict,
-    or None for notifications that require no reply.
+    Procesa un mensaje MCP JSON-RPC 2.0 y devuelve el diccionario de respuesta,
+    o None para las notificaciones que no requieren respuesta.
 
-    session_db_id:    DB id of mcp.session record (for tool call logging).
-    transport:        'sse' or 'http' — recorded in mcp.session.log.
-    scope:            Token scope — 'read' | 'write' | 'admin'.
-                      Injected into env.context['mcp_scope'] so tool_executor
-                      can enforce it without an extra DB lookup.
-    restrictions:     Dict with 'allowed_models', 'denied_models',
-                      'field_restrictions' — loaded once during token validation.
-                      Injected into env.context['mcp_restrictions'].
-    capture_payloads: When True, tool args and results are stored in audit log
-                      (after PII redaction + truncation).
+    session_db_id:    ID en base de datos del registro mcp.session (para registrar las llamadas a herramientas).
+    transport:        'sse' o 'http' — se guarda en mcp.session.log.
+    scope:            alcance del token — 'read' | 'write' | 'admin'.
+                      Se inyecta en env.context['mcp_scope'] para que tool_executor
+                      lo aplique sin otra consulta a la base de datos.
+    restrictions:     diccionario con 'allowed_models', 'denied_models' y
+                      'field_restrictions' — se carga una vez al validar el token.
+                      Se inyecta en env.context['mcp_restrictions'].
+    capture_payloads: si es True, los argumentos y resultados de las herramientas se
+                      guardan en el registro de auditoría (tras ocultar datos personales y truncar).
     """
     if not isinstance(msg, dict):
         return _err(None, -32600, "Solicitud no válida")
@@ -42,15 +42,15 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
     msg_id = msg.get("id")
     params = msg.get("params") or {}
 
-    # Inject governance context so all downstream calls (tool_executor, etc.)
-    # can read it without carrying extra parameters through every call stack.
+    # Inyecta el contexto de gobierno para que todas las llamadas posteriores (tool_executor, etc.)
+    # lo lean sin arrastrar parámetros adicionales por toda la pila de llamadas.
     ctx_updates = {"mcp_scope": scope}
     if restrictions:
         ctx_updates["mcp_restrictions"] = restrictions
     env = env.with_context(**ctx_updates)
 
     # ------------------------------------------------------------------
-    # Lifecycle
+    # Ciclo de vida
     # ------------------------------------------------------------------
     if method == "initialize":
         return _ok(
@@ -72,7 +72,7 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
         return _ok(msg_id, {})
 
     # ------------------------------------------------------------------
-    # Tools
+    # Herramientas
     # ------------------------------------------------------------------
     if method == "tools/list":
         from ..models.mcp_tool_registry import get_tool_definitions
@@ -84,7 +84,7 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
         )
 
     # ------------------------------------------------------------------
-    # Resources
+    # Recursos
     # ------------------------------------------------------------------
     if method == "resources/list":
         return _ok(msg_id, {"resources": resource_service.RESOURCES})
@@ -96,7 +96,7 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
         return _handle_resource_read(env, msg_id, params)
 
     # ------------------------------------------------------------------
-    # Prompts (not implemented — return empty list for client compatibility)
+    # Prompts (no implementados — se devuelve una lista vacía por compatibilidad con los clientes)
     # ------------------------------------------------------------------
     if method == "prompts/list":
         return _ok(msg_id, {"prompts": []})
@@ -105,7 +105,7 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
         return _err(msg_id, -32602, "No hay prompts definidos en este servidor.")
 
     # ------------------------------------------------------------------
-    # Unknown
+    # Desconocido
     # ------------------------------------------------------------------
     if msg_id is not None:
         return _err(msg_id, -32601, f"Método no encontrado: {method}")
@@ -114,7 +114,7 @@ def process_message(env, msg: dict, session_db_id: int | None = None,
 
 
 # ---------------------------------------------------------------------------
-# Tool call handler
+# Manejador de llamadas a herramientas
 # ---------------------------------------------------------------------------
 
 def _handle_tool_call(env, msg_id, params: dict,
@@ -145,7 +145,7 @@ def _handle_tool_call(env, msg_id, params: dict,
         _log_tool_call(env, session_db_id, transport, tool_name, tool_input,
                        {}, duration_ms, is_error=True, error_message=str(exc),
                        request_payload=req_payload, response_payload=None)
-        _logger.exception("MCP tool %r error", tool_name)
+        _logger.exception("Error en la herramienta MCP %r", tool_name)
         return _ok(
             msg_id,
             {"content": [{"type": "text", "text": str(exc)}], "isError": True},
@@ -153,7 +153,7 @@ def _handle_tool_call(env, msg_id, params: dict,
 
 
 def _build_payloads(capture: bool, args: dict, result) -> tuple[str | None, str | None]:
-    """Return (request_payload_str, response_payload_str) when capture=True, else (None, None)."""
+    """Devuelve (request_payload_str, response_payload_str) si capture=True; si no, (None, None)."""
     if not capture:
         return None, None
     try:
@@ -178,7 +178,7 @@ def _build_payloads(capture: bool, args: dict, result) -> tuple[str | None, str 
 def _log_tool_call(env, session_db_id, transport, tool_name, tool_input,
                    result, duration_ms, is_error=False, error_message="",
                    request_payload=None, response_payload=None):
-    """Create mcp.session.log record. Non-critical — silently ignored on failure."""
+    """Crea el registro mcp.session.log. No es crítico: si falla, se ignora en silencio."""
     try:
         odoo_model = tool_input.get("model") or ""
         record_count = 0
@@ -209,11 +209,11 @@ def _log_tool_call(env, session_db_id, transport, tool_name, tool_input,
 
         env["mcp.session.log"].sudo().create(vals)
     except Exception:
-        _logger.debug("Failed to create mcp.session.log", exc_info=True)
+        _logger.debug("No se pudo crear mcp.session.log", exc_info=True)
 
 
 # ---------------------------------------------------------------------------
-# Resource read handler
+# Manejador de lectura de recursos
 # ---------------------------------------------------------------------------
 
 def _handle_resource_read(env, msg_id, params: dict) -> dict:
@@ -229,12 +229,12 @@ def _handle_resource_read(env, msg_id, params: dict) -> dict:
             },
         )
     except Exception as exc:
-        _logger.exception("MCP resource read error: %s", uri)
+        _logger.exception("Error al leer el recurso MCP: %s", uri)
         return _err(msg_id, -32002, str(exc))
 
 
 # ---------------------------------------------------------------------------
-# JSON-RPC helpers
+# Utilidades JSON-RPC
 # ---------------------------------------------------------------------------
 
 def _ok(msg_id, result: dict) -> dict:

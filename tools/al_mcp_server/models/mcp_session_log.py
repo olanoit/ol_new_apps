@@ -3,7 +3,7 @@ from odoo import models, fields
 
 class McpSessionLog(models.Model):
     _name = 'mcp.session.log'
-    _description = 'Registro de Llamadas a Herramientas MCP'
+    _description = 'Registro de llamadas a herramientas MCP'
     _order = 'create_date desc'
     _rec_name = 'tool_name'
 
@@ -17,22 +17,22 @@ class McpSessionLog(models.Model):
     record_count = fields.Integer(string='Registros', readonly=True, default=0)
     duration_ms = fields.Integer(string='ms', readonly=True, default=0)
     is_error = fields.Boolean(string='Error', readonly=True, default=False)
-    error_message = fields.Char(string='Detalle del Error', readonly=True)
+    error_message = fields.Char(string='Detalle del error', readonly=True)
     transport = fields.Selection(
         [('sse', 'SSE'), ('http', 'HTTP')],
         string='Transporte', readonly=True,
     )
 
-    # Feature 4: payload capture fields — populated only when token.capture_payloads=True
+    # Funcionalidad 4: campos de captura de cargas útiles; solo se rellenan si token.capture_payloads=True
     request_payload = fields.Text(
-        string='Carga Útil de Solicitud',
+        string='Carga útil de la solicitud',
         readonly=True,
         help='Argumentos de la herramienta codificados en JSON (PII ocultada, truncado a 4000 caracteres). '
-             'Solo se captura cuando el token tiene "Capturar Cargas Útiles" activado.',
+             'Solo se captura cuando el token tiene "Capturar cargas útiles" activado.',
     )
     response_payload = fields.Text(
-        string='Carga Útil de Respuesta',
+        string='Carga útil de la respuesta',
         readonly=True,
         help='Resultado de la herramienta codificado en JSON (PII ocultada, truncado a 4000 caracteres). '
-             'Solo se captura cuando el token tiene "Capturar Cargas Útiles" activado.',
+             'Solo se captura cuando el token tiene "Capturar cargas útiles" activado.',
     )

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- List view -->
+    <!-- Vista de lista -->
     <record id="mcp_generated_module_list_view" model="ir.ui.view">
         <field name="name">mcp.generated.module.list</field>
         <field name="model">mcp.generated.module</field>
@@ -24,12 +24,12 @@
         </field>
     </record>
 
-    <!-- Form view -->
+    <!-- Vista de formulario -->
     <record id="mcp_generated_module_form_view" model="ir.ui.view">
         <field name="name">mcp.generated.module.form</field>
         <field name="model">mcp.generated.module</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Módulo generado MCP">
                 <header>
                     <button name="action_generate"
                             string="Generar ZIP"
@@ -41,13 +41,13 @@
                             type="object"
                             invisible="state != 'generated'"/>
                     <button name="action_install"
-                            string="Instalar en Esta Instancia"
+                            string="Instalar en esta instancia"
                             type="object"
                             class="btn-warning"
                             invisible="state != 'generated'"
                             confirm="Esto extraerá el ZIP del módulo a la ruta de addons configurada y lo instalará. El registro de Odoo se reiniciará. ¿Continuar?"/>
                     <button name="action_reset_to_draft"
-                            string="Restablecer a Borrador"
+                            string="Restablecer a borrador"
                             type="object"
                             invisible="state not in ('generated', 'failed')"/>
                     <field name="state" widget="statusbar"
@@ -56,14 +56,14 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Nombre del Módulo"/>
+                            <field name="name" placeholder="Nombre del módulo"/>
                         </h1>
                         <h3>
-                            <field name="technical_name" placeholder="technical_name"/>
+                            <field name="technical_name" placeholder="nombre_tecnico"/>
                         </h3>
                     </div>
                     <group>
-                        <group string="Metadatos del Módulo">
+                        <group string="Metadatos del módulo">
                             <field name="summary"/>
                             <field name="category"/>
                             <field name="author"/>
@@ -71,7 +71,7 @@
                             <field name="license"/>
                             <field name="depends"/>
                         </group>
-                        <group string="Información de Generación">
+                        <group string="Información de generación">
                             <field name="created_by"/>
                             <field name="create_date" string="Creado el"/>
                             <field name="installed_at"
@@ -90,7 +90,7 @@
                                    options="{'mode': 'js'}"
                                    nolabel="1"/>
                         </page>
-                        <page string="Registro de Generación" name="generation_log">
+                        <page string="Registro de generación" name="generation_log">
                             <field name="generation_log"
                                    readonly="1"
                                    nolabel="1"
@@ -107,7 +107,7 @@
         </field>
     </record>
 
-    <!-- Search view -->
+    <!-- Vista de búsqueda -->
     <record id="mcp_generated_module_search_view" model="ir.ui.view">
         <field name="name">mcp.generated.module.search</field>
         <field name="model">mcp.generated.module</field>
@@ -126,15 +126,15 @@
                 <filter string="Fallido" name="filter_failed"
                         domain="[('state', '=', 'failed')]"/>
                 <separator/>
-                <filter string="Mis Módulos" name="filter_mine"
+                <filter string="Mis módulos" name="filter_mine"
                         domain="[('created_by', '=', uid)]"/>
             </search>
         </field>
     </record>
 
-    <!-- Window action -->
+    <!-- Acción de ventana -->
     <record id="mcp_generated_module_action" model="ir.actions.act_window">
-        <field name="name">Módulos Generados</field>
+        <field name="name">Módulos generados</field>
         <field name="res_model">mcp.generated.module</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="mcp_generated_module_search_view"/>

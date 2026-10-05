@@ -2,13 +2,13 @@
 <odoo>
 
     <!-- ================================================================
-         List view
+         Vista de lista
     ================================================================ -->
     <record id="mcp_portal_page_list_view" model="ir.ui.view">
         <field name="name">mcp.portal.page.list</field>
         <field name="model">mcp.portal.page</field>
         <field name="arch" type="xml">
-            <list string="Páginas de Portal" decoration-muted="not enabled">
+            <list string="Páginas de portal" decoration-muted="not enabled">
                 <field name="name"/>
                 <field name="slug"/>
                 <field name="is_public" string="Público" widget="boolean_toggle"/>
@@ -22,50 +22,50 @@
     </record>
 
     <!-- ================================================================
-         Form view
+         Vista de formulario
     ================================================================ -->
     <record id="mcp_portal_page_form_view" model="ir.ui.view">
         <field name="name">mcp.portal.page.form</field>
         <field name="model">mcp.portal.page</field>
         <field name="arch" type="xml">
-            <form string="Página de Portal">
+            <form string="Página de portal">
                 <header>
                     <button name="action_preview"
-                            string="Vista previa de la Página"
+                            string="Vista previa de la página"
                             type="object"
                             icon="fa-external-link"
                             class="oe_highlight"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Título de la Página"/>
+                        <label for="name" string="Título de la página"/>
                         <h1>
-                            <field name="name" placeholder="Mi Tablero"/>
+                            <field name="name" placeholder="Mi tablero"/>
                         </h1>
                     </div>
 
                     <group>
-                        <!-- Left column: identity + access -->
+                        <!-- Columna izquierda: identidad + acceso -->
                         <group string="Configuración">
                             <field name="slug"
                                    readonly="id"
-                                   help="Slug de la URL — solo lectura después de la creación."/>
+                                   help="Slug de la URL: solo lectura después de la creación."/>
                             <field name="description"/>
                             <field name="theme"/>
                             <field name="is_public"/>
                             <field name="enabled"/>
                         </group>
-                        <!-- Right column: stats + embed -->
-                        <group string="Acceso y Estadísticas">
+                        <!-- Columna derecha: estadísticas + incrustación -->
+                        <group string="Acceso y estadísticas">
                             <field name="created_by" readonly="1"/>
                             <field name="view_count" readonly="1"/>
                             <field name="last_viewed" readonly="1"/>
-                            <field name="page_url" readonly="1" string="URL de la Página" widget="url"/>
-                            <field name="embed_url" readonly="1" string="URL de Incrustación" widget="url"/>
+                            <field name="page_url" readonly="1" string="URL de la página" widget="url"/>
+                            <field name="embed_url" readonly="1" string="URL de incrustación" widget="url"/>
                             <div colspan="2">
                                 <field name="access_token" readonly="1" class="o_field_copy"/>
                                 <button name="action_regenerate_token"
-                                        string="Regenerar Token de Incrustación"
+                                        string="Regenerar token de incrustación"
                                         type="object"
                                         class="btn btn-secondary btn-sm mt-1"
                                         confirm="Regenerar el token invalidará todos los enlaces de incrustación existentes. ¿Continuar?"/>
@@ -73,8 +73,8 @@
                         </group>
                     </group>
 
-                    <!-- Full-width spec editor -->
-                    <group string="Especificación de la Página (JSON)">
+                    <!-- Editor de la especificación a ancho completo -->
+                    <group string="Especificación de la página (JSON)">
                         <field name="spec"
                                widget="ace"
                                options="{'mode': 'js'}"
@@ -92,13 +92,13 @@
     </record>
 
     <!-- ================================================================
-         Search view
+         Vista de búsqueda
     ================================================================ -->
     <record id="mcp_portal_page_search_view" model="ir.ui.view">
         <field name="name">mcp.portal.page.search</field>
         <field name="model">mcp.portal.page</field>
         <field name="arch" type="xml">
-            <search string="Buscar Páginas de Portal">
+            <search string="Buscar páginas de portal">
                 <field name="name" string="Título"/>
                 <field name="slug"/>
                 <field name="created_by"/>
@@ -109,8 +109,8 @@
                 <filter string="Público" name="public" domain="[('is_public','=',True)]"/>
                 <filter string="Privado" name="private" domain="[('is_public','=',False)]"/>
                 <separator/>
-                <filter string="Mis Páginas" name="my_pages" domain="[('created_by','=',uid)]"/>
-                <group expand="0" string="Agrupar por">
+                <filter string="Mis páginas" name="my_pages" domain="[('created_by','=',uid)]"/>
+                <group>
                     <filter string="Propietario" name="group_owner" context="{'group_by': 'created_by'}"/>
                     <filter string="Tema" name="group_theme" context="{'group_by': 'theme'}"/>
                 </group>
@@ -119,10 +119,10 @@
     </record>
 
     <!-- ================================================================
-         Window action
+         Acción de ventana
     ================================================================ -->
     <record id="mcp_portal_page_action" model="ir.actions.act_window">
-        <field name="name">Páginas de Portal</field>
+        <field name="name">Páginas de portal</field>
         <field name="res_model">mcp.portal.page</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="mcp_portal_page_search_view"/>

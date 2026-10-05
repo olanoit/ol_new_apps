@@ -10,25 +10,25 @@ CODE_TTL_MINUTES = 10
 
 
 def _hash_code(raw: str) -> str:
-    """SHA-256 hash of a raw auth code — mirrors mcp_token.py hashing."""
+    """Hash SHA-256 de un código de autorización en claro (igual que en mcp_token.py)."""
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
 class McpAuthCode(models.Model):
-    """Short-lived OAuth 2.0 authorization codes (PKCE S256)."""
+    """Códigos de autorización OAuth 2.0 de corta duración (PKCE S256)."""
 
     _name = "mcp.auth.code"
-    _description = "Código de Autorización OAuth MCP"
+    _description = "Código de autorización OAuth MCP"
     _order = "create_date desc"
 
-    code = fields.Char(string="Hash de Código (SHA-256)", readonly=True, index=True, copy=False)
-    user_id = fields.Many2one("res.users", required=True, ondelete="cascade")
-    client_id = fields.Char()
-    client_name = fields.Char()
-    redirect_uri = fields.Char()
-    code_challenge = fields.Char(help="Desafío de código PKCE S256")
-    expires_at = fields.Datetime(readonly=True)
-    used = fields.Boolean(default=False, readonly=True)
+    code = fields.Char(string="Hash del código (SHA-256)", readonly=True, index=True, copy=False)
+    user_id = fields.Many2one("res.users", string="Usuario", required=True, ondelete="cascade")
+    client_id = fields.Char(string="ID de cliente")
+    client_name = fields.Char(string="Nombre del cliente")
+    redirect_uri = fields.Char(string="URI de redirección")
+    code_challenge = fields.Char(string="Desafío de código", help="Desafío de código PKCE S256")
+    expires_at = fields.Datetime(string="Caduca el", readonly=True)
+    used = fields.Boolean(string="Usado", default=False, readonly=True)
 
     @api.model
     def create_code(
@@ -39,7 +39,7 @@ class McpAuthCode(models.Model):
         code_challenge: str,
         client_name: str = "",
     ) -> str:
-        """Issue a one-time authorization code. Stores SHA-256 hash — returns raw code."""
+        """Emite un código de autorización de un solo uso. Guarda el hash SHA-256 y devuelve el código en claro."""
         raw = secrets.token_urlsafe(32)
         self.create(
             {
@@ -57,10 +57,10 @@ class McpAuthCode(models.Model):
     @api.model
     def exchange(self, code: str, code_verifier: str, redirect_uri: str, client_id: str = ""):
         """
-        Exchange code + PKCE verifier for the auth code record.
-        Returns the record (with user_id) on success, None on failure.
-        Marks the code as used to prevent replay.
-        The code is bound to the client_id that requested it (RFC 6749 §4.1.3).
+        Canjea el código + verificador PKCE por el registro del código de autorización.
+        Devuelve el registro (con user_id) si tiene éxito y None si falla.
+        Marca el código como usado para impedir su reutilización.
+        El código queda ligado al client_id que lo solicitó (RFC 6749 §4.1.3).
         """
         rec = self.search(
             [
@@ -77,7 +77,7 @@ class McpAuthCode(models.Model):
         if fields.Datetime.now() > rec.expires_at:
             return None
 
-        # Verify PKCE S256: SHA-256(code_verifier) == base64url(code_challenge)
+        # Verifica PKCE S256: SHA-256(code_verifier) == base64url(code_challenge)
         digest = hashlib.sha256(code_verifier.encode()).digest()
         computed = base64.urlsafe_b64encode(digest).rstrip(b"=").decode()
         if not consteq(computed, rec.code_challenge or ""):
@@ -88,7 +88,7 @@ class McpAuthCode(models.Model):
 
     @api.model
     def _vacuum_expired(self):
-        """Delete used or expired auth codes. Called by ir.cron every hour."""
+        """Elimina los códigos de autorización usados o caducados. Lo invoca un ir.cron cada hora."""
         deadline = fields.Datetime.now() - timedelta(minutes=CODE_TTL_MINUTES)
         old = self.search(["|", ("used", "=", True), ("expires_at", "<", deadline)])
         old.unlink()

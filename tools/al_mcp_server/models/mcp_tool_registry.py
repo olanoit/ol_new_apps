@@ -7,7 +7,7 @@ from ..services.portal_tools import TOOL_DEFINITIONS as _PORTAL_TOOL_DEFINITIONS
 from ..services.artifact_tools import TOOL_DEFINITIONS as _ARTIFACT_TOOL_DEFINITIONS
 
 # ---------------------------------------------------------------------------
-# Static MCP tool definitions (schema advertised to AI clients via tools/list)
+# Definiciones estáticas de herramientas MCP (esquema anunciado a los clientes de IA vía tools/list)
 # ---------------------------------------------------------------------------
 
 _TOOL_DEFINITIONS = [
@@ -162,7 +162,7 @@ _TOOL_DEFINITIONS = [
         },
     },
     # ------------------------------------------------------------------
-    # Workflow & form tools
+    # Herramientas de flujo de trabajo y formularios
     # ------------------------------------------------------------------
     {
         "name": "odoo_message_post",
@@ -331,7 +331,7 @@ _TOOL_DEFINITIONS = [
         },
     },
     # ------------------------------------------------------------------
-    # Analytics tools
+    # Herramientas de analítica
     # ------------------------------------------------------------------
     {
         "name": "odoo_count",
@@ -416,7 +416,7 @@ _TOOL_DEFINITIONS = [
             "detalles del usuario actual, lista de módulos instalados y fecha del servidor. "
             "Usa esto primero para entender la instancia de Odoo antes de responder preguntas de negocio. "
             "Equivalente a leer el recurso odoo://context — se proporciona como herramienta para "
-            "clientes de IA que no admiten Recursos MCP (p.ej. ChatGPT, Grok)."
+            "clientes de IA que no admiten recursos MCP (p.ej. ChatGPT, Grok)."
         ),
         "inputSchema": {
             "type": "object",
@@ -427,7 +427,7 @@ _TOOL_DEFINITIONS = [
 
 
 def get_tool_definitions() -> list:
-    """Return the list of MCP tool definitions. Called by mcp_protocol on tools/list."""
+    """Devuelve la lista de definiciones de herramientas MCP. La llama mcp_protocol en tools/list."""
     return (
         _TOOL_DEFINITIONS
         + _BI_TOOL_DEFINITIONS
@@ -439,22 +439,22 @@ def get_tool_definitions() -> list:
 
 
 # ---------------------------------------------------------------------------
-# Odoo model — exposes tool registry as an ORM service for extensibility
+# Modelo de Odoo: expone el registro de herramientas como servicio del ORM para poder extenderlo
 # ---------------------------------------------------------------------------
 
 
 class McpToolRegistry(models.AbstractModel):
     _name = "mcp.tool.registry"
-    _description = "Registro de Herramientas MCP"
+    _description = "Registro de herramientas MCP"
 
     @api.model
     def get_tools(self) -> list:
-        """Return current MCP tool definitions (can be overridden by other modules)."""
+        """Devuelve las definiciones actuales de herramientas MCP (otros módulos pueden sobrescribirlo)."""
         return get_tool_definitions()
 
     @api.model
     def get_installed_models(self, filter_kw: str = "") -> list:
-        """Return installed non-transient models, optionally filtered by keyword."""
+        """Devuelve los modelos instalados no transitorios, filtrados opcionalmente por palabra clave."""
         domain = [("transient", "=", False)]
         if filter_kw:
             domain.append(("model", "ilike", filter_kw))
