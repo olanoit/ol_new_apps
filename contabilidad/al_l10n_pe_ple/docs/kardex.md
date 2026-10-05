@@ -27,4 +27,4 @@ almacén y tipo de operación (tabla 12) en las transferencias.
 Botón **«Ver Kardex»** en la ficha del producto y de la categoría: abre el
 wizard pre-filtrado.
 
-Documentación completa del módulo: [`ol_stock_kardex_pe/README.md`](../../ol_stock_kardex_pe/README.md).
+Documentación completa del módulo: [`ol_stock_kardex_pe/README.md`](../../../inventario/ol_stock_kardex_pe/README.md).

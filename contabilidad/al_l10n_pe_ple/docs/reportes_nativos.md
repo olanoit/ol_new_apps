@@ -10,7 +10,7 @@ cada botón TXT, uno **XLSX** con las mismas líneas para revisarlas.
 El Excel se arma con el TXT oficial (no puede decir algo distinto del
 archivo que se presenta), con el formato del resto del módulo y los
 encabezados del Anexo 2 publicado por SUNAT
-([`docs/ple/oficial`](../../docs/ple/oficial/README.md)).
+([`docs/ple/oficial`](../../../docs/ple/oficial/README.md)).
 
 ## Diario y Mayor (5.1 / 5.3 / 6.1)
 

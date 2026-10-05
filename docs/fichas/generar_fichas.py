@@ -32,10 +32,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 
 def module_dir(module):
-    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
-    (la que tenga __manifest__.py)."""
-    path = ROOT / module
-    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+    """Carpeta del módulo dentro de su área (contabilidad/, planillas/…):
+    la que tenga __manifest__.py."""
+    for path in [ROOT / module, *ROOT.glob('*/%s' % module)]:
+        if (path / '__manifest__.py').exists():
+            return path
+    return ROOT / module
 
 SRC = ROOT / 'docs' / 'fichas'
 
@@ -135,7 +137,7 @@ def inline(text):
 
 
 # Donde buscar el manifest de las dependencias (nombre legible en la ficha).
-ADDONS_PATHS = [ROOT, ROOT / 'tools'] + [
+ADDONS_PATHS = [ROOT] + sorted(d for d in ROOT.iterdir() if d.is_dir() and not d.name.startswith('.')) + [
     ROOT.parents[1] / sub for sub in ('addons', 'ee19', 'odoo/addons')]
 
 

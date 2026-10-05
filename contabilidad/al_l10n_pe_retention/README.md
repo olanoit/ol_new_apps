@@ -3,7 +3,7 @@
 Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT) sobre el marco
 nativo de Odoo 19 (`l10n_account_withholding_tax`).
 **Guía funcional:** [`docs/retenciones.md`](docs/retenciones.md) ·
-**Plan:** [`docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md`](../docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md) ·
+**Plan:** [`docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md`](../../docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md) ·
 **Demo/validación:** [`tools/retention_demo_data.py`](tools/retention_demo_data.py).
 
 ## Qué hace

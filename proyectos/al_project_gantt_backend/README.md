@@ -122,7 +122,7 @@ Los tests de Python cubren la acción, los menús y sus grupos, y que la librer�
 no esté en el bundle. La lógica de filtros vive en el módulo base y está cubierta
 por sus tests. La verificación de render se hizo con Playwright sobre
 `ol_pe_v19`; los datos de demostración están en
-[`docs/gantt/pruebas/seed_gantt_demo.py`](../docs/gantt/pruebas/seed_gantt_demo.py).
+[`docs/gantt/pruebas/seed_gantt_demo.py`](../../docs/gantt/pruebas/seed_gantt_demo.py).
 
 ## Limitaciones
 

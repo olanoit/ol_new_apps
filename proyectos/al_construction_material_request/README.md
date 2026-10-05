@@ -4,7 +4,7 @@ El personal de obra pide materiales para su obra. El requerimiento se aprueba
 por niveles (`base_tier_validation`, OCA). Logística lo procesa: lo disponible
 en el almacén central sale por transferencia interna a `OBRAS/<obra>` y el
 faltante pasa a requerimiento de compra (`purchase_request`, OCA).
-**Plan:** [`docs/construccion/PLAN_MODULO_al_construction_material_request.md`](../docs/construccion/PLAN_MODULO_al_construction_material_request.md).
+**Plan:** [`docs/construccion/PLAN_MODULO_al_construction_material_request.md`](../../docs/construccion/PLAN_MODULO_al_construction_material_request.md).
 
 ## Estado
 

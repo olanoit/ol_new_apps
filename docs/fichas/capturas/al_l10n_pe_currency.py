@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from PIL import Image  # noqa: E402
 from capturar import Captura, ROOT, _recortar_fondo  # noqa: E402
 
-SHOTS = ROOT / 'al_l10n_pe_currency' / 'static' / 'description' / 'screenshots'
+SHOTS = ROOT / 'contabilidad' / 'al_l10n_pe_currency' / 'static' / 'description' / 'screenshots'
 
 USD = 1
 TASA_MANUAL = 67             # 31/07/2026, compañía 1, origen Manual

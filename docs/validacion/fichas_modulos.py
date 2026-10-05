@@ -33,10 +33,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 def module_dir(module):
-    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
-    (la que tenga __manifest__.py)."""
-    path = ROOT / module
-    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+    """Carpeta del módulo dentro de su área (contabilidad/, planillas/…):
+    la que tenga __manifest__.py."""
+    for path in [ROOT / module, *ROOT.glob('*/%s' % module)]:
+        if (path / '__manifest__.py').exists():
+            return path
+    return ROOT / module
 
 LINK_CLASS = 'al-ficha-link'
 LINK_CSS = '.%s { display: none; }' % LINK_CLASS
@@ -108,11 +110,10 @@ def sync_footer(html, module, manifest):
 
 def main(check=False):
     changed = 0
-    # Módulos de tools/ solo si tienen ficha propia (docs/fichas/<módulo>.yml):
-    # los de terceros (p. ej. prt_report_attachment_preview) no se tocan.
-    indexes = list(ROOT.glob('*/static/description/index.html')) + [
-        p for p in ROOT.glob('tools/*/static/description/index.html')
-        if (ROOT / 'docs' / 'fichas' / ('%s.yml' % p.parts[-4])).exists()]
+    # Módulos propios de todas las áreas; los de terceros/ (OCA, Cetmix…)
+    # conservan su ficha original.
+    indexes = [p for p in ROOT.glob('*/*/static/description/index.html')
+               if p.parts[-5] != 'terceros']
     for index in sorted(indexes):
         module = index.parts[-4]
         manifest_path = module_dir(module) / '__manifest__.py'

@@ -369,4 +369,4 @@ casos límite (tareas sin fecha, huérfanas, dependencias cortadas, truncado) y 
 seguridad (portal, usuario sin grupo, otra compañía, proyecto privado).
 
 Datos de demostración y verificación funcional:
-[`docs/gantt/pruebas/`](../docs/gantt/pruebas/).
+[`docs/gantt/pruebas/`](../../docs/gantt/pruebas/).

@@ -2,10 +2,10 @@
 
 Completa los libros electrónicos PLE de SUNAT que la localización oficial
 de Odoo 19 (CE + EE) no genera. Plan completo:
-[`docs/ple/PLAN_MODULO_al_l10n_pe_ple.md`](../docs/ple/PLAN_MODULO_al_l10n_pe_ple.md) ·
-Mapa de cobertura: [`docs/ple/reportes/README.md`](../docs/ple/reportes/README.md) ·
+[`docs/ple/PLAN_MODULO_al_l10n_pe_ple.md`](../../docs/ple/PLAN_MODULO_al_l10n_pe_ple.md) ·
+Mapa de cobertura: [`docs/ple/reportes/README.md`](../../docs/ple/reportes/README.md) ·
 **Guía funcional por menú** (para consultores): [`docs/README.md`](docs/README.md) ·
-Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.py`](../docs/ple/pruebas/ple_demo_data.py).
+Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.py`](../../docs/ple/pruebas/ple_demo_data.py).
 
 ## Estado actual (Fases 0 a 5 — alcance del plan completo)
 
@@ -36,29 +36,29 @@ Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.
   Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** (Perú ▸ Libros
   PLE ▸ Activos fijos, y Contabilidad ▸ Revisión ▸ Inventario) con las columnas
   del formato físico, PDF/XLSX nativos y botones TXT 7.1/7.3/7.4 y XLSX 7.1.
-  Documentación: [`docs/ple/reportes/libro_7.md`](../docs/ple/reportes/libro_7.md).
+  Documentación: [`docs/ple/reportes/libro_7.md`](../../docs/ple/reportes/libro_7.md).
 - **Libro 4 — PLE 4.1 Retenciones Art. 34 LIR** (mensual): captura en
   **Perú ▸ Libros PLE ▸ Retenciones 4.1** (sin nómina PE, lista editable e
-  importable). Doc: [`docs/ple/reportes/libro_4.md`](../docs/ple/reportes/libro_4.md).
+  importable). Doc: [`docs/ple/reportes/libro_4.md`](../../docs/ple/reportes/libro_4.md).
 - **Libro 9 — PLE 9.1/9.2 Consignaciones** (mensual): albaranes marcados
   con «Consignación PLE (Libro 9)»; incluye fila de saldo inicial por
-  producto/contraparte. Doc: [`docs/ple/reportes/libro_9.md`](../docs/ple/reportes/libro_9.md).
+  producto/contraparte. Doc: [`docs/ple/reportes/libro_9.md`](../../docs/ple/reportes/libro_9.md).
 - **Libro 3 — complementos** (fecha EEFF + oportunidad CC en el nombre):
   **3.8** inversiones (captura), **3.9** intangibles (automático desde
   activos con cuenta `34…`), **3.19** patrimonio (captura por rubro T34) y
   **3.23** notas (PDF adjunto al ZIP).
-  Doc: [`docs/ple/reportes/libro_3_complementos.md`](../docs/ple/reportes/libro_3_complementos.md).
+  Doc: [`docs/ple/reportes/libro_3_complementos.md`](../../docs/ple/reportes/libro_3_complementos.md).
 - **Libro 10 — Registro de Costos** (anual): captura en **Perú ▸ Libros
   PLE ▸ Costos (Libro 10)** — 10.1 costo de ventas (fila única por
   ejercicio), 10.2 elementos del costo (fila por mes), 10.3 procesos
   productivos (agrupamiento T21) y 10.4 centros de costos (precargables
   desde cuentas analíticas).
-  Doc: [`docs/ple/reportes/libro_10.md`](../docs/ple/reportes/libro_10.md).
+  Doc: [`docs/ple/reportes/libro_10.md`](../../docs/ple/reportes/libro_10.md).
 - **Formatos simplificados 5.2/5.4, 8.3 y 14.2** (mensuales, excluyentes
   con 5.1/5.3, 8.1 y 14.1): habilitados por la bandera **Ajustes ▸ Perú ▸
   «Libros PLE simplificados»**; generados desde asientos, compras y ventas
   publicados del mes.
-  Doc: [`docs/ple/reportes/libros_simplificados.md`](../docs/ple/reportes/libros_simplificados.md).
+  Doc: [`docs/ple/reportes/libros_simplificados.md`](../../docs/ple/reportes/libros_simplificados.md).
 
 ## Pruebas
 

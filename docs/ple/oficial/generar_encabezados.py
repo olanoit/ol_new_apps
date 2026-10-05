@@ -21,8 +21,8 @@ import xlrd
 
 ROOT = Path(__file__).resolve().parents[3]
 SOURCE = Path(__file__).resolve().parent / 'Estructura del PLE.xls'
-TARGET = ROOT / 'al_l10n_pe_ple' / 'models' / 'ple_official_headers.py'
-MIXIN = ROOT / 'al_l10n_pe_ple' / 'models' / 'ple_mixin.py'
+TARGET = ROOT / 'contabilidad' / 'al_l10n_pe_ple' / 'models' / 'ple_official_headers.py'
+MIXIN = ROOT / 'contabilidad' / 'al_l10n_pe_ple' / 'models' / 'ple_mixin.py'
 
 TITLE = re.compile(r'^(\d+)\.(\d+)(?:\.(\d+))?\s')
 FIELD = re.compile(r'^(\d+)(?:\.0)?$')

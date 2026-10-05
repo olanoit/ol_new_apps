@@ -26,10 +26,12 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 
 def module_dir(module):
-    """Carpeta del módulo: en la raíz del repo o, si no está, en tools/
-    (la que tenga __manifest__.py)."""
-    path = ROOT / module
-    return path if (path / '__manifest__.py').exists() else ROOT / 'tools' / module
+    """Carpeta del módulo dentro de su área (contabilidad/, planillas/…):
+    la que tenga __manifest__.py."""
+    for path in [ROOT / module, *ROOT.glob('*/%s' % module)]:
+        if (path / '__manifest__.py').exists():
+            return path
+    return ROOT / module
 
 URL = os.environ.get('FICHAS_URL', 'http://127.0.0.1:19730')
 DB = os.environ.get('FICHAS_DB', 'ol_pe_v19')

@@ -20,7 +20,7 @@
 
 ## 1. Instalación
 
-1. El módulo vive en `ol_new_apps/tools/` (incluido en el `addons_path` de
+1. El módulo vive en `ol_new_apps/pos/` (incluido en el `addons_path` de
    `cfg/my/pe.cfg`).
 2. Actualizar la lista de aplicaciones e instalar **TPV - Tema y marca blanca
    (AL)**, o por consola:

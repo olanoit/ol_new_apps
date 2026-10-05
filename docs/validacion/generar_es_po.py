@@ -55,7 +55,7 @@ SELECTION_LABELS = {
 def official_translations():
     dirs = {}
     for pattern in ('addons/*/i18n', 'odoo/addons/*/i18n', 'ee19/*/i18n',
-                    'apps/oca/*/*/i18n', 'myodoo/ol_new_apps/tools/*/i18n'):
+                    'apps/oca/*/*/i18n', 'myodoo/ol_new_apps/*/*/i18n'):
         for d in glob.glob(str(ODOO / pattern)):
             dirs.setdefault(d.split('/')[-2], d)
     order = [m for m in PRIORITY if m in dirs] + sorted(m for m in dirs if m not in PRIORITY)
