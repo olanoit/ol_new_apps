@@ -1,5 +1,5 @@
-herramientas
-============
+tools
+=====
 
 **Herramientas transversales.**
 
@@ -17,7 +17,7 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Módulos de terceros sin modificar → `terceros/`.
+- Módulos de terceros sin modificar → `third_party/`.
 - Funcionalidad de negocio de un área concreta → su área.
 
 Módulos disponibles

@@ -1,5 +1,5 @@
-proyectos
-=========
+projects
+========
 
 **Proyectos y obras.**
 
@@ -17,8 +17,8 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Planilla de construcción civil → `planillas/`.
-- Dependencias de terceros (p. ej. `base_tier_validation`) → `terceros/`.
+- Planilla de construcción civil → `payroll/`.
+- Dependencias de terceros (p. ej. `base_tier_validation`) → `third_party/`.
 
 Módulos disponibles
 -------------------

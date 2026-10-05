@@ -1,5 +1,5 @@
-terceros
-========
+third_party
+===========
 
 **Módulos de terceros.**
 

@@ -18,8 +18,8 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Catálogo de productos que no sea exclusivo del TPV → `inventario/`.
-- Reportes impresos de facturas emitidas desde el backend → `facturacion/`.
+- Catálogo de productos que no sea exclusivo del TPV → `inventory/`.
+- Reportes impresos de facturas emitidas desde el backend → `invoicing/`.
 
 Módulos disponibles
 -------------------

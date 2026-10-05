@@ -1,5 +1,5 @@
-planillas
-=========
+payroll
+=======
 
 **Planillas y recursos humanos de Perú.**
 
@@ -18,8 +18,8 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Configuración contable general (plan de cuentas, diarios) → `contabilidad/`.
-- Gestión de obras y materiales, aunque sean de construcción → `proyectos/`.
+- Configuración contable general (plan de cuentas, diarios) → `accounting/`.
+- Gestión de obras y materiales, aunque sean de construcción → `projects/`.
 
 Módulos disponibles
 -------------------

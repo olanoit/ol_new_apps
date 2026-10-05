@@ -1,5 +1,5 @@
-facturacion
-===========
+invoicing
+=========
 
 **Facturación y documentos electrónicos.**
 
@@ -17,7 +17,7 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Registros y libros tributarios (PLE, SIRE, detracciones, retenciones) → `contabilidad/`.
+- Registros y libros tributarios (PLE, SIRE, detracciones, retenciones) → `accounting/`.
 - Boletas y facturas emitidas desde el TPV → `pos/`.
 
 Módulos disponibles

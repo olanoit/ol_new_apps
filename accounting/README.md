@@ -1,5 +1,5 @@
-contabilidad
-============
+accounting
+==========
 
 **Contabilidad y tributación peruana.**
 
@@ -18,8 +18,8 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Representación impresa y documentos electrónicos (factura, boleta, guía) → `facturacion/`.
-- Planillas, aunque generen asientos contables → `planillas/`.
+- Representación impresa y documentos electrónicos (factura, boleta, guía) → `invoicing/`.
+- Planillas, aunque generen asientos contables → `payroll/`.
 - Comprobantes emitidos desde el TPV → `pos/`.
 
 Módulos disponibles

@@ -1,5 +1,5 @@
-inventario
-==========
+inventory
+=========
 
 **Inventario.**
 
@@ -17,8 +17,8 @@ Qué va aquí
 Qué no va aquí
 --------------
 
-- Guías de remisión impresas o electrónicas → `facturacion/`.
-- Requerimientos de materiales de obra → `proyectos/`.
+- Guías de remisión impresas o electrónicas → `invoicing/`.
+- Requerimientos de materiales de obra → `projects/`.
 
 Módulos disponibles
 -------------------

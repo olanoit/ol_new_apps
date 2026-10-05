@@ -18,7 +18,7 @@ visual de `ol_stock_kardex_pe`.
 | 3.1–3.7, 3.11–3.18, 3.20, 3.24, 3.25 | Inventarios y Balances | `l10n_pe_reports_lib` (EE) | Libro Mayor → «PLE LIB» (ZIP) | — |
 | 5.1 / 5.3 / 6.1 | Diario / Plan contable / Mayor | `l10n_pe_reports` (EE) | Libro Mayor → botones «PLE 5.1 / 5.3 / 6.1» | — |
 | 8.1 / 8.2 | Registro de Compras | `l10n_pe_reports` (EE) | Informes ▸ Compras (RCE 8.4/8.5) | — |
-| 12.1 / 13.1 | Inventario permanente | `l10n_pe_reports_stock` (EE) + `ol_stock_kardex_pe` | Inventario ▸ wizard PLE / Kardex | [`../../../ol_stock_kardex_pe/README.md`](../../../inventario/ol_stock_kardex_pe/README.md) |
+| 12.1 / 13.1 | Inventario permanente | `l10n_pe_reports_stock` (EE) + `ol_stock_kardex_pe` | Inventario ▸ wizard PLE / Kardex | [`../../../ol_stock_kardex_pe/README.md`](../../../inventory/ol_stock_kardex_pe/README.md) |
 | 14.1 | Registro de Ventas | `l10n_pe_reports` (EE) | Informes ▸ Ventas | — |
 | **7.1 / 7.3 / 7.4** | **Registro de Activos Fijos** | **`al_l10n_pe_ple`** | **Perú ▸ Libros PLE ▸ Activos fijos (Libro 7)** (pantalla + TXT/XLSX) y **Exportar PLE** | [libro_7.md](libro_7.md) |
 | **4.1** | **Retenciones Art. 34 LIR** | **`al_l10n_pe_ple`** | **Perú ▸ Libros PLE** (captura + exportar) | [libro_4.md](libro_4.md) |
