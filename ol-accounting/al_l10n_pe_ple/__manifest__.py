@@ -1,0 +1,103 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'PE - Libros Electrónicos PLE (AL)',
+    'summary': 'Completa los libros electrónicos PLE de SUNAT no cubiertos '
+               'por la localización oficial: Libro 7 (Activos Fijos), '
+               '4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), '
+               'complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 '
+               '(Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). '
+               'Corrige además el RCE 8.4 y 8.5 del SIRE.',
+    'description': """
+Libros Electrónicos PLE — SUNAT Perú
+====================================
+Genera los archivos TXT del PLE que la localización oficial (CE + EE) no
+cubre. Plan completo en ``docs/ple/PLAN_MODULO_al_l10n_pe_ple.md``.
+
+Fase actual:
+
+* Motor común PLE (nomenclatura de archivos, serialización ``|``, validador
+  de estructura según el Anexo 2 de SUNAT).
+* Wizard de exportación en el menú **Perú ▸ Libros PLE** (libros anuales y
+  mensuales).
+* **Libro 7 — Registro de Activos Fijos**: formatos 7.1 (revaluados y no
+  revaluados), 7.3 (diferencia de cambio) y 7.4 (arrendamiento financiero),
+  con datos SUNAT capturados en la ficha del activo (``account.asset``).
+  Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** con las
+  columnas del formato físico y botones TXT 7.1/7.3/7.4 y XLSX.
+* **PLE 4.1 — Retenciones Art. 34 e)/f) LIR**: captura mensual editable e
+  importable (sin nómina peruana en Odoo).
+* **PLE 9.1/9.2 — Registro de Consignaciones**: albaranes marcados como
+  consignación (6 clases), con saldo inicial por producto/contraparte.
+* **Libro 3 — complementos**: 3.8 inversiones mobiliarias (captura), 3.9
+  intangibles (automático desde activos cuenta ``34…``), 3.19 cambios en el
+  patrimonio neto (captura por rubro tabla 34) y 3.23 notas a los EEFF
+  (PDF incluido en el ZIP con nombre oficial).
+* **Libro 10 — Registro de Costos** (anual): 10.1 costo de ventas, 10.2
+  elementos del costo mensual, 10.3 costo de producción por proceso
+  (tabla 21) y 10.4 centros de costos, con captura editable/importable
+  (sin ``mrp``).
+* **Formatos simplificados 5.2/5.4, 8.3 y 14.2** (excluyentes con los
+  completos): habilitados por la bandera «Libros PLE simplificados» en
+  Ajustes ▸ Perú; generados desde los asientos/facturas publicados.
+
+* **RCE 8.4 y 8.5 (SIRE)**: la localización oficial ya emite ambos registros,
+  pero con dos campos de más en el 8.4, nueve campos siempre vacíos y una
+  consulta SQL que falla en cuanto el dominio del informe necesita un JOIN.
+  Aquí se sustituye la extracción por el ORM y se completan los campos que
+  faltaban —clasificación de bienes y servicios (tabla 23), detracción, tipo
+  de nota y estado del comprobante (tabla 14)—, respetando la estructura
+  oficial de la RS 040-2022/SUNAT: 41 campos en el 8.4 y 35 en el 8.5.
+* **RVIE 14.4 (SIRE)**: mismo caso. La norma (RS 000112-2021, anexo 2, nota 7)
+  deja el archivo en 33 campos —los campos 34 a 40 no se incluyen—, mientras
+  que la localización oficial emite 35. Se corrige la estructura, se aplica la
+  anotación en cero de los comprobantes anulados y se llevan las notas de
+  crédito de periodos anteriores a los campos de descuento.
+
+Los demás formatos ya cubiertos por ``l10n_pe_reports`` / ``l10n_pe_reports_lib``
+/ ``l10n_pe_reports_stock`` (1.1/1.2, libro 3, 5.1/5.3/6.1, 12.1/13.1)
+NO se reimplementan.
+
+* **Excel de revisión en todos los libros PLE**: además de los propios y los
+  del SIRE, botones XLSX junto a los TXT de la localización oficial —1.1 y
+  1.2 en el Flujo de caja; 5.1, 5.3, 6.1 y el Libro 3 completo (una hoja por
+  formato) en el Libro Mayor; 12.1 y 13.1 en el asistente de inventario—.
+  Mismo formato visual que el módulo v18 y encabezados tomados del Anexo 2
+  oficial de SUNAT (``docs/ple/oficial``), generados con
+  ``docs/ple/oficial/generar_encabezados.py``. El Excel se arma a partir del
+  TXT oficial, así que no puede decir algo distinto del archivo presentado.
+    """,
+    'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
+    'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
+    'website': 'https://www.altabpo.com',
+    'countries': ['pe'],
+    'category': 'ol-accounting/Apps',
+    'version': '8.20260828',
+    'license': 'OPL-1',
+    'depends': [
+        'al_account_base',
+        'account_asset',
+        'l10n_pe_reports',
+        'l10n_pe_reports_stock',
+        'l10n_pe_reports_lib',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/ple_security.xml',
+        'views/account_asset_views.xml',
+        'views/ple_withholding_views.xml',
+        'views/ple_investment_views.xml',
+        'views/ple_cost_views.xml',
+        'views/stock_picking_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/rce_views.xml',
+        'views/stock_ple_wizard_views.xml',
+        'wizards/ple_export_wizard_views.xml',
+        'views/menu.xml',
+        'data/ple_asset_report.xml',
+    ],
+    'external_dependencies': {
+        'python': ['xlsxwriter'],
+    },
+    'installable': True,
+    'application': False,
+}

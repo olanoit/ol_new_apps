@@ -4,14 +4,16 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AREAS = [
-    'accounting',
-    'invoicing',
-    'payroll',
-    'pos',
-    'inventory',
-    'projects',
-    'tools',
-    'third_party',
+    'ol-accounting',
+    'ol-invoicing',
+    'ol-payroll',
+    'ol-pos',
+    'ol-inventory',
+    'ol-projects',
+    'ol-tools',
+    'ol-third-party',
 ]
+# Áreas con módulos de otros autores: su manifiesto no se toca.
+THIRD_PARTY = {'ol-third-party'}
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts'}

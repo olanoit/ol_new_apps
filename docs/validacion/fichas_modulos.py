@@ -33,7 +33,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 def module_dir(module):
-    """Carpeta del módulo dentro de su área (accounting/, payroll/…):
+    """Carpeta del módulo dentro de su área (ol-accounting/, ol-payroll/…):
     la que tenga __manifest__.py."""
     for path in [ROOT / module, *ROOT.glob('*/%s' % module)]:
         if (path / '__manifest__.py').exists():
@@ -110,10 +110,10 @@ def sync_footer(html, module, manifest):
 
 def main(check=False):
     changed = 0
-    # Módulos propios de todas las áreas; los de third_party/ (OCA, Cetmix…)
+    # Módulos propios de todas las áreas; los de ol-third-party/ (OCA, Cetmix…)
     # conservan su ficha original.
     indexes = [p for p in ROOT.glob('*/*/static/description/index.html')
-               if p.parts[-5] != 'third_party']
+               if p.parts[-5] != 'ol-third-party']
     for index in sorted(indexes):
         module = index.parts[-4]
         manifest_path = module_dir(module) / '__manifest__.py'

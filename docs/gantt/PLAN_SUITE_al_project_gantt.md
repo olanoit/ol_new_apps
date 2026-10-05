@@ -303,5 +303,5 @@ los datos del cliente a un tercero: descartado a propósito).
 
 ## 7. Referencias
 
-- Contrato de datos y puntos de extensión: [`al_project_gantt_base/README.md`](../../projects/al_project_gantt_base/README.md)
+- Contrato de datos y puntos de extensión: [`al_project_gantt_base/README.md`](../../ol-projects/al_project_gantt_base/README.md)
 - Elección de librería y benchmark: [`FASE0_SPIKE.md`](FASE0_SPIKE.md)

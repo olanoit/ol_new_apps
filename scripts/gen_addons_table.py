@@ -22,7 +22,7 @@ Uso:
 import ast
 import sys
 
-from areas import AREAS, NO_AREAS, REPO_ROOT
+from areas import AREAS, NO_AREAS, REPO_ROOT, THIRD_PARTY
 
 START, END = '[//]: # (addons)', '[//]: # (end addons)'
 ROOT_START, ROOT_END = '[//]: # (addons-all)', '[//]: # (end addons-all)'
@@ -72,11 +72,20 @@ def structure_errors():
             errors.append(f'{path.name}: módulo en la raíz; muévalo a su área')
         elif path.name not in AREAS:
             errors.append(f'{path.name}/: carpeta que no es un área (ver scripts/areas.py)')
-        elif path.name != path.name.lower():
-            errors.append(f'{path.name}/: las carpetas de área van en minúscula')
+        elif path.name != path.name.lower() or not path.name.startswith('ol-'):
+            errors.append(f'{path.name}/: las carpetas de área van en minúscula y con prefijo ol-')
     for area in AREAS:
         if not (REPO_ROOT / area / 'README.md').exists():
             errors.append(f'{area}/README.md: falta')
+        if area in THIRD_PARTY:
+            continue
+        # La categoría del manifiesto empieza por la carpeta del área
+        # ('Hidden' se respeta: oculta el módulo en Aplicaciones).
+        for manifest_path in sorted((REPO_ROOT / area).glob('*/__manifest__.py')):
+            category = read_manifest(manifest_path).get('category', '')
+            if category != 'Hidden' and not category.startswith(f'{area}/'):
+                errors.append(f'{area}/{manifest_path.parent.name}: category «{category}», '
+                              f'debe ser «{area}/Apps»')
     return errors
 
 
