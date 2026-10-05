@@ -1,0 +1,204 @@
+// =====================================================================
+// Pantalla de productos (point_of_sale.ProductScreen)
+// OJO: no se toca el overflow/scroll de `.rightpane` ni de sus wrappers:
+// mblz_pos_yapp_integration unifica ese scroll a propósito
+// (yapp_rightpane_scroll.scss). Sólo colores, espaciado y grilla.
+// =====================================================================
+
+.pos .product-screen {
+    .leftpane {
+        border-color: var(--alpt-border) !important; // `border-end` es utilidad con !important
+    }
+
+    // Reemplaza a la utilidad `bg-secondary`, quitada en xml/product_screen.xml.
+    .rightpane.alpt-catalog {
+        background-color: var(--alpt-bg);
+    }
+}
+
+// Grilla de productos (no la de categorías, que reutiliza `.product-list`).
+.pos .rightpane .product-list:not(.category-list).d-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 8px !important; // `gap-1 gap-lg-2` del core son utilidades con !important
+    padding: 4px 10px 10px !important; // idem `px-2 pb-2`
+
+    // Tablet vertical / pantallas de caja chicas.
+    @include media-breakpoint-down(xl) {
+        grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+        gap: 8px !important;
+    }
+
+    // Teléfono: 2 columnas fijas, tarjetas grandes para el dedo.
+    @include media-breakpoint-down(sm) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px !important;
+        padding: 4px 8px 8px !important;
+    }
+}
+
+// Botón "Buscar más" y estados vacíos.
+.pos .search-more-button .btn {
+    border-radius: var(--alpt-radius-pill);
+    padding-inline: 24px;
+}
+
+.pos .product-screen .o_view_nocontent {
+    color: var(--alpt-text-2);
+}
+
+// Pagar / Carrito en pantallas chicas.
+.pos .switchpane {
+    background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+    border-top-color: var(--alpt-border) !important;   // `border-top` (!important)
+    box-shadow: 0 -2px 8px rgba(15, 23, 42, .06);
+
+    .btn-switchpane {
+        min-height: $alpt-cta-h;
+        border-radius: var(--alpt-radius-md);
+        font-weight: $alpt-fw-medium;
+    }
+
+    .btn-secondary {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        --btn-color: var(--alpt-text);
+    }
+}
+
+// --- Mismo estilo "de franjas" que recibo, Órdenes, clientes y pago -----
+// Catálogo: la barra de vista + chips de principio activo como franja
+// superior (superficie + línea fina abajo) y los productos debajo, sobre el
+// fondo. Panel de la orden: columna con línea fina a la izquierda y la
+// zona de botones (Cliente/Nota/… + teclado + Pago) como franja inferior.
+.pos .product-screen {
+    .rightpane .pos-view-switch,
+    .rightpane .alpt-ingredient-selector {
+        background-color: var(--alpt-surface);
+    }
+
+    .rightpane .alpt-ingredient-selector,
+    .rightpane .pos-view-switch:not(:has(~ .alpt-ingredient-selector)) {
+        padding-bottom: 10px !important; // `pb-2` (!important)
+        border-bottom: 1px solid var(--alpt-border);
+    }
+
+    // Aire entre la franja y la primera fila/tarjeta.
+    .rightpane .product-list:not(.category-list) {
+        padding-top: 10px !important; // `pt-0` / regla de la grilla (!important)
+    }
+
+    .leftpane .pads {
+        padding: 12px !important; // `px-2` + numpad.scss (!important)
+        background-color: var(--alpt-surface);
+        border-top: 1px solid var(--alpt-border);
+    }
+}
+
+// Oscuro: como el recibo y Órdenes — franja del catálogo y columna de la
+// orden elevadas (surface-2, filo claro); teclas neutras un tono abajo.
+:root[data-alpt-scheme="dark"] .pos .product-screen {
+    .rightpane .pos-view-switch,
+    .rightpane .alpt-ingredient-selector {
+        background-color: var(--alpt-surface-2);
+    }
+
+    .rightpane .alpt-ingredient-selector,
+    .rightpane .pos-view-switch:not(:has(~ .alpt-ingredient-selector)) {
+        border-bottom-color: rgba(255, 255, 255, .10);
+    }
+
+    > .leftpane {
+        background-color: var(--alpt-surface-2) !important;
+        border-left-color: rgba(255, 255, 255, .10) !important;
+    }
+
+    .leftpane .pads {
+        background-color: transparent;
+        border-top-color: rgba(255, 255, 255, .10);
+
+        .numpad-button:not(.active):not([class*="o_colorlist_item_numpad_color_1"]) {
+            --bg: var(--alpt-surface);
+            background-color: var(--alpt-surface);
+        }
+
+        .control-buttons .btn-secondary {
+            --btn-bg: var(--alpt-surface);
+        }
+    }
+}
+
+// --- Teléfono: mismo estilo "de franjas" ---------------------------------
+// En teléfono (`ui.isSmall`) el catálogo termina en la barra "Pagar /
+// Carrito" (`.rightpane > .switchpane`) y el carrito se abre como panel
+// aparte (su zona de botones ya es franja con la regla `.leftpane .pads`
+// de arriba). La barra pasa a franja inferior como en pago, recibo y
+// Órdenes: superficie, línea fina arriba, 12px de aire y botones de 44px.
+.pos .product-screen .rightpane > .switchpane {
+    padding: 12px !important; // `p-2` (!important)
+    background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+    border-top: 1px solid var(--alpt-border) !important; // `border-top` (!important)
+
+    .btn-switchpane {
+        min-height: $alpt-cta-h;
+        padding-block: 4px !important; // `btn-lg` (!important)
+        line-height: 1.2 !important;
+        border-radius: var(--alpt-radius-sm);
+    }
+
+    .btn-secondary {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        --btn-color: var(--alpt-text);
+    }
+}
+
+// Carrito en teléfono: la columna termina en la franja `.pads` (sin el
+// `pb-2` extra del core bajo ella).
+.pos .product-screen > .leftpane.pb-2 {
+    padding-bottom: 0 !important;
+}
+
+:root[data-alpt-scheme="dark"] .pos .product-screen .rightpane > .switchpane {
+    background-color: var(--alpt-surface-2) !important;
+    border-top-color: rgba(255, 255, 255, .10) !important;
+
+    .btn-secondary {
+        --btn-bg: var(--alpt-surface);
+    }
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// Catálogo: Cuadrícula/Lista y actualizar de la franja superior, chips de
+// principio activo y su actualizar, categorías, y los botones "i" de las
+// tarjetas y de las filas de la vista lista. El chip / categoría activos
+// ya van rellenos del color primario.
+.pos .product-screen .rightpane {
+    .pos-view-switch .btn,
+    .alpt-ingredient-chip,
+    .alpt-ingredient-refresh,
+    .category-button,
+    .pos-card-info-btn,
+    .pos-product-list-row__info-btn {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        border: 1px solid var(--alpt-primary) !important; // `border` / reglas previas (!important)
+    }
+}
+
+// Catálogo: 12px a cada lado en lista y cuadrícula (antes 8px en lista y
+// 10px en cuadrícula), el mismo aire que el botón Cuadrícula/Lista y el
+// resumen de beneficios Yapp, así los bordes quedan alineados.
+.pos .product-screen .rightpane .product-list:not(.category-list) {
+    padding-inline: 12px !important; // `px-2` / regla de la grilla (!important)
+}
+
+// El área con scroll del catálogo reserva SIEMPRE el espacio de la barra de
+// scroll, aunque la barra no aparezca (cuadrícula con pocos productos): así
+// el borde derecho de filas y tarjetas no salta según haya o no scroll, y
+// coincide con el del resumen de beneficios Yapp (que suma
+// `--alpt-scrollbar-w`, compat_mblz.scss). Con barras superpuestas (tablet,
+// teléfono, macOS) el espacio reservado es 0.
+.pos .product-screen .rightpane .position-relative > .overflow-y-auto {
+    scrollbar-gutter: stable;
+}

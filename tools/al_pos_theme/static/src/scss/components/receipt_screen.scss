@@ -1,0 +1,349 @@
+// =====================================================================
+// Pantalla de recibo (point_of_sale.ReceiptScreen): confirmación del pago,
+// opciones de envío/impresión y vista previa. El ticket (OrderReceipt)
+// NO se estiliza: queda en blanco y negro para la impresión ESC/POS.
+//
+// Tipografía: "Pago exitoso" 20px/600 · monto 28px/700 · botones 15px/600
+// · "Nueva orden" 18px/700 (CTA).
+// =====================================================================
+
+.pos .alpt-receipt-screen {
+    background-color: var(--alpt-bg);
+
+    .actions {
+        background-color: var(--alpt-surface);
+        border-color: var(--alpt-border) !important; // `border-end` (!important)
+    }
+
+    // Tarjeta de confirmación (reemplaza el bloque verde con borde).
+    .o_payment_successful > div:first-child {
+        gap: 4px;
+        padding: 20px 16px !important;          // `p-1 p-lg-3` (!important)
+        border: 0 !important;                    // `border border-success` (!important)
+        border-radius: var(--alpt-radius-lg) !important;
+        background-color: var(--alpt-surface-2) !important; // `bg-success-subtle` (!important)
+        color: var(--alpt-text) !important;      // `text-success` (!important)
+        font-size: $alpt-font-size-md !important; // `fs-3` (!important)
+
+        // Ícono de éxito en círculo, tamaño contenido (el core usa fa-2x).
+        > .fa-check-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            margin-bottom: 4px;
+            border-radius: 50%;
+            background-color: var(--alpt-success-subtle);
+            color: var(--alpt-success);
+            font-size: 22px !important;
+        }
+
+        // "Pago exitoso"
+        > span.fs-3 {
+            font-size: $alpt-font-size-lg !important; // `fs-3` (!important)
+            font-weight: $alpt-fw-medium !important;              // `fw-bolder` (!important)
+        }
+
+        // Monto cobrado
+        > div.fs-4 {
+            font-size: $alpt-font-size-xl !important; // `fs-4` (!important)
+            @include alpt-display($important: true);
+            font-variant-numeric: tabular-nums;
+            color: var(--alpt-text);
+        }
+
+        .edit-order-payment {
+            background-color: var(--alpt-primary-subtle) !important; // `bg-success` (!important)
+            color: var(--alpt-primary) !important;                    // `text-white` (!important)
+            border-radius: var(--alpt-radius-pill) !important;
+            padding: 4px 10px !important;
+            font-size: $alpt-font-size-xs;
+            font-weight: $alpt-fw-medium;
+        }
+    }
+
+    // Imprimir / enviar por correo. `.yapp-voucher-options` es la sección
+    // "Voucher Yapp" (mblz_pos_yapp_integration) debajo: mismos botones y
+    // campos (su "Descargar e Imprimir Comprobante" traía `btn-lg py-3`).
+    .receipt-options,
+    .yapp-voucher-options {
+        gap: 10px !important; // `gap-2` (!important)
+
+        .btn-secondary {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            --btn-hover-bg: var(--alpt-primary-subtle);
+            --btn-hover-color: var(--alpt-primary);
+            --btn-color: var(--alpt-text);
+            min-height: $alpt-touch-min;
+            padding-block: 0 !important; // `py-3` (!important)
+            border-radius: var(--alpt-radius-md);
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+        }
+
+        .send-receipt-email-input,
+        .send-receipt-phone-input,
+        &.yapp-voucher-options .o_input {
+            min-height: $alpt-touch-min;
+            padding: 0 14px !important; // `p-3` (!important)
+            border-color: var(--alpt-border) !important;
+            border-radius: var(--alpt-radius-md) 0 0 var(--alpt-radius-md) !important;
+            background-color: var(--alpt-surface);
+            font-size: $alpt-font-size-sm;
+            // 16px sólo en pantallas chicas (evita el zoom de iOS al enfocar)
+            @include media-breakpoint-down(md) { font-size: 16px; }
+
+            &:focus {
+                border-color: var(--alpt-primary) !important;
+                box-shadow: var(--alpt-focus-ring);
+            }
+        }
+
+        .send-receipt-email-input + div .btn,
+        &.yapp-voucher-options .o_input + .btn {
+            border-radius: 0 var(--alpt-radius-md) var(--alpt-radius-md) 0 !important;
+
+            // Sin correo válido: neutro (el primario lavado parecía activo).
+            &:disabled {
+                --btn-disabled-bg: var(--alpt-surface-2);
+                --btn-disabled-border-color: var(--alpt-border);
+                --btn-disabled-color: var(--alpt-text-muted);
+                opacity: 1;
+            }
+        }
+
+        .notice {
+            font-size: $alpt-font-size-xs + 1px;
+        }
+    }
+
+    // Nueva orden (CTA).
+    .validation-buttons {
+        padding: 12px !important; // `p-2` (!important)
+        background-color: var(--alpt-surface);
+        border-top: 1px solid var(--alpt-border);
+    }
+
+    .validation-buttons .btn-primary,
+    #action_btn_mobile .btn-primary {
+        min-height: $alpt-cta-h;
+        padding-block: 0 !important; // `py-4` / `py-3` (!important)
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--alpt-radius-md);
+        font-size: $alpt-font-size-md + 1px;
+        font-weight: $alpt-fw-medium;
+        line-height: 1.2 !important; // `lh-lg` (!important)
+        box-shadow: 0 4px 12px rgba(var(--alpt-primary-rgb), .20);
+    }
+
+    // Vista previa: el ticket como una hoja sobre la mesa.
+    .alpt-receipt-preview {
+        background-color: var(--alpt-surface-2);
+
+        > div {
+            border: 0 !important; // `border` (!important)
+            border-radius: var(--alpt-radius-sm) !important;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+        }
+    }
+}
+
+// --- Misma distribución que la pantalla de venta (≥ lg) ------------------
+// El recibo aparece donde estaba el catálogo (izquierda) y las acciones
+// (pago exitoso, imprimir, enviar, Nueva orden) en la columna derecha, con
+// el mismo ancho que el panel de la orden: la barra superior no cambia y
+// "Nueva orden" queda justo donde estaba "Pago", así el cajero siente que
+// sigue en la misma pantalla. Sólo CSS: la pantalla y su lógica son las
+// nativas.
+@include media-breakpoint-up(lg) {
+    .pos .alpt-receipt-screen .default-view {
+        flex-direction: row-reverse !important; // `flex-lg-row` (!important)
+
+        .actions {
+            flex: 0 0 $pos-left-pane-width-tablet !important; // `flex-lg-grow-1 flex-basis-0` (!important)
+            max-width: $pos-left-pane-width-tablet;
+            border-inline-end: 0 !important;                 // `border-end` (!important)
+            border-inline-start: 1px solid var(--alpt-border);
+
+            @include media-breakpoint-up(xl) {
+                flex-basis: $pos-left-pane-width !important;
+                max-width: $pos-left-pane-width;
+            }
+
+            // Columna angosta: el bloque ocupa todo el ancho (`w-xxl-75`).
+            .o_payment_successful {
+                width: 100% !important;
+                padding-top: 16px !important; // `pt-xxl-5` (!important)
+            }
+        }
+
+        // El recibo toma toda la zona del catálogo (`w-lg-50`).
+        .alpt-receipt-preview {
+            flex: 1 1 auto !important;
+            width: auto !important;
+
+            > div {
+                width: auto !important;          // `w-50`
+                min-width: 320px;
+                max-width: 440px;
+            }
+        }
+    }
+}
+
+// Sección "Voucher Yapp": título discreto (el módulo usa `fw-bold`) y sin
+// la línea separadora gruesa.
+.pos .alpt-receipt-screen .yapp-voucher-options {
+    gap: 10px !important; // `gap-2` (!important)
+    border-top-color: var(--alpt-border) !important; // `border-top` (!important)
+
+    > .fw-bold {
+        font-size: $alpt-font-size-sm;
+        color: var(--alpt-text-2);
+    }
+
+    .o_input + .btn {
+        min-height: $alpt-touch-min;
+        padding-block: 0 !important; // `btn-lg`
+    }
+}
+
+// --- Modo oscuro ------------------------------------------------------
+// Mismo criterio que pago y modales: la columna de acciones sube a
+// surface-2 con filo claro y sus controles bajan a surface; la zona del
+// comprobante queda en el fondo. El comprobante sigue BLANCO (es la hoja
+// que se imprime: debe verse igual que el papel).
+:root[data-alpt-scheme="dark"] .pos .alpt-receipt-screen {
+    .actions {
+        background-color: var(--alpt-surface-2);
+        border-color: rgba(255, 255, 255, .10) !important;
+    }
+
+    .o_payment_successful > div:first-child {
+        background-color: var(--alpt-surface) !important;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+
+    :is(.receipt-options, .yapp-voucher-options) {
+        .btn-secondary {
+            --btn-bg: var(--alpt-surface);
+        }
+
+        .send-receipt-email-input,
+        .send-receipt-phone-input,
+        .o_input {
+            background-color: var(--alpt-surface);
+            border-color: rgba(255, 255, 255, .10) !important;
+        }
+    }
+
+    .validation-buttons {
+        background-color: transparent;
+        border-top-color: rgba(255, 255, 255, .10);
+    }
+
+    .alpt-receipt-preview {
+        background-color: var(--alpt-bg);
+
+        > div {
+            background-color: #FFFFFF;
+            color: #000000;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 12px 32px rgba(0, 0, 0, .5);
+        }
+    }
+}
+
+// --- Teléfono y tablet: mismo estilo "de franjas" -------------------------
+// Por debajo de `lg` el core apila acciones y comprobante en una columna.
+// Contenido sobre el fondo con tarjetas de borde suave (pago exitoso,
+// imprimir, enviar, Voucher Yapp), comprobante sin panel gris. El botón
+// "Nueva orden" va en franja inferior: en tablet es `.validation-buttons`
+// (ya franja, arriba); en teléfono la barra aparte `#action_btn_mobile`.
+@mixin alpt-receipt-stacked {
+    background-color: var(--alpt-bg);
+
+    .actions {
+        background-color: transparent;
+        border: 0 !important; // `border-end` (!important)
+    }
+
+    .o_payment_successful > div:first-child {
+        background-color: var(--alpt-card-bg) !important; // `bg-success-subtle` → tarjeta
+        border: 1px solid var(--alpt-card-border) !important;
+    }
+
+    .receipt-options,
+    .yapp-voucher-options {
+        .btn-secondary {
+            --btn-bg: var(--alpt-card-bg);
+            --btn-border-color: var(--alpt-card-border);
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        .send-receipt-email-input,
+        .send-receipt-phone-input,
+        .o_input {
+            background-color: var(--alpt-card-bg);
+        }
+    }
+
+    // El comprobante: la hoja blanca sobre el fondo, sin panel gris.
+    .alpt-receipt-preview {
+        background-color: transparent;
+    }
+
+    :root[data-alpt-scheme="dark"] & {
+        .o_payment_successful > div:first-child {
+            box-shadow: none;
+        }
+
+        .actions,
+        .alpt-receipt-preview {
+            background-color: transparent;
+        }
+    }
+}
+
+// Tablet (vertical): plantilla de escritorio apilada.
+@include media-breakpoint-down(lg) {
+    .pos .alpt-receipt-screen {
+        @include alpt-receipt-stacked;
+    }
+}
+
+// Teléfono (`ui.isSmall`): barra aparte `#action_btn_mobile`.
+.pos .alpt-receipt-screen:has(#action_btn_mobile) {
+    @include alpt-receipt-stacked;
+
+    #action_btn_mobile {
+        padding: 12px !important; // `p-2` (!important)
+        background-color: var(--alpt-surface);
+        border-top: 1px solid var(--alpt-border);
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .alpt-receipt-screen:has(#action_btn_mobile) #action_btn_mobile {
+    background-color: var(--alpt-surface-2);
+    border-top-color: rgba(255, 255, 255, .10);
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// "Imprimir recibo completo" y "Descargar e Imprimir Comprobante" ya lo
+// tienen (order_panel.scss). Se suman "Editar pago" y los botones de enviar
+// por correo (recibo y Voucher Yapp) cuando están deshabilitados — sin
+// correo válido se ven neutros y sin borde parecían un campo más.
+.pos .alpt-receipt-screen {
+    .edit-order-payment {
+        border: 1px solid var(--alpt-primary) !important;
+    }
+
+    :is(.receipt-options, .yapp-voucher-options) .btn-primary:disabled {
+        --btn-disabled-border-color: var(--alpt-primary);
+        border: 1px solid var(--alpt-primary) !important;
+    }
+}

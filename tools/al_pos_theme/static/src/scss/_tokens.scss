@@ -1,0 +1,104 @@
+// Custom properties del tema. Los colores de marca son sobrescritos por el
+// <style> html:root que inyecta el índice (mayor especificidad).
+:root {
+    --alpt-primary: #{$alpt-primary};
+    --alpt-primary-rgb: #{red($alpt-primary)}, #{green($alpt-primary)}, #{blue($alpt-primary)};
+    --alpt-primary-hover: #{mix(#000, $alpt-primary, 15%)};
+    --alpt-primary-active: #{mix(#000, $alpt-primary, 25%)};
+    --alpt-primary-subtle: #{mix(#fff, $alpt-primary, 88%)};
+    --alpt-on-primary: #FFFFFF;
+    --alpt-secondary: #{$alpt-secondary};
+    --alpt-secondary-rgb: #{red($alpt-secondary)}, #{green($alpt-secondary)}, #{blue($alpt-secondary)};
+    --alpt-on-secondary: #FFFFFF;
+    --alpt-accent: #{$alpt-accent};
+    --alpt-accent-rgb: #{red($alpt-accent)}, #{green($alpt-accent)}, #{blue($alpt-accent)};
+    --alpt-accent-subtle: #{mix(#fff, $alpt-accent, 88%)};
+    --alpt-on-accent: #FFFFFF;
+    --alpt-bg: #{$alpt-bg};
+
+    --alpt-surface: #{$alpt-surface};
+    --alpt-surface-2: #{$alpt-surface-2};
+    --alpt-border: #{$alpt-border};
+    --alpt-border-strong: #{$alpt-border-strong};
+    // Tarjetas de ítems (productos, filas de Órdenes y Clientes).
+    --alpt-card-bg: var(--alpt-surface);
+    // Filo del color de acento en las tarjetas, más marcado al pasar el mouse.
+    --alpt-card-border: rgba(var(--alpt-accent-rgb), .22);
+    --alpt-card-border-hover: rgba(var(--alpt-accent-rgb), .50);
+    --alpt-text: #{$alpt-text};
+    --alpt-text-2: #{$alpt-text-2};
+    --alpt-text-muted: #{$alpt-text-muted};
+
+    --alpt-success: #{$alpt-success};
+    --alpt-success-rgb: #{red($alpt-success)}, #{green($alpt-success)}, #{blue($alpt-success)};
+    --alpt-danger-rgb: #{red($alpt-danger)}, #{green($alpt-danger)}, #{blue($alpt-danger)};
+    --alpt-warning-rgb: #{red($alpt-warning)}, #{green($alpt-warning)}, #{blue($alpt-warning)};
+    --alpt-info-rgb: #{red($alpt-info)}, #{green($alpt-info)}, #{blue($alpt-info)};
+    --alpt-info-subtle: #{mix(#fff, $alpt-info, 90%)};
+    --alpt-warning-subtle: #{mix(#fff, $alpt-warning, 88%)};
+    --alpt-success-subtle: #{mix(#fff, $alpt-success, 88%)};
+    --alpt-warning: #{$alpt-warning};
+    --alpt-danger: #{$alpt-danger};
+    --alpt-danger-subtle: #{mix(#fff, $alpt-danger, 90%)};
+    --alpt-info: #{$alpt-info};
+
+    --alpt-font-family: #{$alpt-font-family};
+    --alpt-font-display: #{$alpt-font-display};
+    // Títulos en el color secundario.
+    --alpt-heading: var(--alpt-secondary);
+    // Degradado de los botones principales (135deg primario → acento). El
+    // acento se corre más allá del borde del botón para que el texto (al
+    // centro) quede sobre el primario, legible.
+    --alpt-gradient-primary: linear-gradient(135deg, var(--alpt-primary) 20%, var(--alpt-accent) 160%);
+    --alpt-shadow-primary: 0 6px 16px -4px rgba(var(--alpt-primary-rgb), .40);
+    --alpt-radius-sm: #{$alpt-radius-sm};
+    --alpt-radius-md: #{$alpt-radius-md};
+    --alpt-radius-lg: #{$alpt-radius-lg};
+    --alpt-radius-pill: #{$alpt-radius-pill};
+    --alpt-shadow-card: #{$alpt-shadow-card};
+    --alpt-shadow-hover: #{$alpt-shadow-hover};
+    --alpt-shadow-dialog: #{$alpt-shadow-dialog};
+    // Halo del color de acento.
+    --alpt-focus-ring: 0 0 0 3px rgba(var(--alpt-accent-rgb), .30);
+
+    // Sin logo configurado, el nombre de marca reemplaza al logo.
+    --alpt-logo: none;
+    --alpt-brand-name: "POS";
+    --alpt-brand-text-display: block;
+}
+
+// Paleta oscura (cookie pos_color_scheme=dark, atributo puesto por el índice).
+// El primario claro sólo aplica si la caja no definió uno propio, porque el
+// <style> html:root del índice tiene mayor especificidad.
+:root[data-alpt-scheme="dark"] {
+    --alpt-primary: #{$alpt-dark-primary};
+    --alpt-primary-rgb: #{red($alpt-dark-primary)}, #{green($alpt-dark-primary)}, #{blue($alpt-dark-primary)};
+    --alpt-on-primary: #{$alpt-dark-bg}; // = _on_color(#5686EF): texto oscuro sobre el azul aclarado
+    --alpt-primary-hover: #{mix(#fff, $alpt-dark-primary, 12%)};
+    --alpt-primary-subtle: #{mix($alpt-dark-bg, $alpt-dark-primary, 80%)};
+    --alpt-accent-subtle: #{mix($alpt-dark-bg, $alpt-accent, 80%)};
+    --alpt-bg: #{$alpt-dark-bg};
+    --alpt-surface: #{$alpt-dark-surface};
+    --alpt-surface-2: #{$alpt-dark-surface-2};
+    --alpt-border: #{$alpt-dark-border};
+    --alpt-border-strong: #{$alpt-dark-border-strong};
+    // En oscuro la tarjeta sube un tono (surface-2) y su borde es un filo
+    // claro: sobre el fondo casi negro, surface + borde oscuro no se veía.
+    --alpt-card-bg: #{$alpt-dark-surface-2};
+    --alpt-card-border: rgba(255, 255, 255, .08);
+    --alpt-card-border-hover: rgba(var(--alpt-accent-rgb), .45);
+    --alpt-heading: var(--alpt-text);
+    --alpt-shadow-primary: 0 6px 16px -4px rgba(0, 0, 0, .45);
+    // Sobre el fondo oscuro la profundidad la da una sombra negra y el filo
+    // del acento se refuerza.
+    --alpt-shadow-card: 0 2px 8px rgba(0, 0, 0, .30);
+    --alpt-shadow-hover: 0 10px 25px -4px rgba(0, 0, 0, .50), 0 0 0 1px rgba(var(--alpt-accent-rgb), .40);
+    --alpt-shadow-dialog: 0 20px 40px -8px rgba(0, 0, 0, .60), 0 0 0 1px rgba(var(--alpt-accent-rgb), .25);
+    --alpt-text: #{$alpt-dark-text};
+    --alpt-text-2: #{$alpt-dark-text-2};
+    --alpt-text-muted: #{$alpt-dark-text-2};
+    --alpt-danger-subtle: #{mix($alpt-dark-bg, $alpt-danger, 70%)};
+    --alpt-success-subtle: #{mix($alpt-dark-bg, $alpt-success, 70%)};
+    --alpt-info-subtle: #{mix($alpt-dark-bg, $alpt-info, 70%)};
+    --alpt-warning-subtle: #{mix($alpt-dark-bg, $alpt-warning, 70%)};
+}

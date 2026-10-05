@@ -1,0 +1,122 @@
+// =====================================================================
+// Tarjeta de producto (point_of_sale.ProductCard)
+// Tarjeta redondeada con borde suave y sin sombra (el sistema base usa
+// sombra y borde gris que se oscurece al pasar el mouse). Nombre en 2
+// líneas, precio en primario, filete de marca si ya está en la orden.
+// =====================================================================
+
+.pos .product {
+    --btn-bg: var(--alpt-card-bg);
+    --btn-border-color: var(--alpt-card-border);
+    --btn-hover-bg: var(--alpt-surface);
+    --btn-hover-border-color: var(--alpt-card-border-hover); // filo del color de acento
+    --btn-active-bg: var(--alpt-primary-subtle);
+    --btn-active-border-color: rgba(var(--alpt-primary-rgb), .30);
+    background-color: var(--alpt-card-bg); // el btn-light del bundle oscuro trae gris propio
+    border: 1px solid var(--alpt-card-border);
+    border-radius: var(--alpt-radius-md) !important; // `rounded-3` (!important)
+    box-shadow: none;
+    overflow: hidden;
+    transition: border-color .12s ease, background-color .12s ease, box-shadow .2s ease;
+
+    &:hover {
+        // El core pinta aquí un borde gris más oscuro: filo del acento y
+        // sombra suave (igual que la fila de la vista lista).
+        border: 1px solid var(--alpt-card-border-hover);
+        box-shadow: var(--alpt-shadow-hover);
+    }
+
+    &:active {
+        background-color: var(--alpt-primary-subtle);
+    }
+
+    // Producto ya en la orden: filete de marca arriba (mismo lenguaje que
+    // el filete lateral de la vista lista).
+    &:has(.product-cart-qty)::before {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        top: 0;
+        z-index: 2;
+        height: 3px;
+        background-color: var(--alpt-primary);
+    }
+
+    // Franja de categoría del core (6px, var(--border-color)): sólo si la
+    // categoría tiene color; sin color era una barra gris gruesa.
+    @at-root .pos .rightpane .product {
+        border-bottom-width: 1px;
+
+        &[class*="o_colorlist_item_color_"] {
+            border-bottom: 3px solid var(--border-color);
+        }
+    }
+
+    .product-img {
+        // Imagen más baja (4:3 del core → ~3:2 recortado a 66%): entran más
+        // filas de productos por pantalla. `--aspect-ratio` es la variable de
+        // `.ratio` de Bootstrap (Odoo compila sin prefijo `bs-`).
+        --aspect-ratio: 66%;
+        border-radius: 0 !important; // `rounded-3` (!important): la tarjeta ya recorta
+        background-color: #FFFFFF; // fotos de envases sobre blanco, también en oscuro
+        padding: 4px;
+
+        img {
+            border-radius: 0;
+        }
+    }
+
+    // Nombre arriba, precio abajo.
+    .product-content {
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 2px;
+        padding: 4px 6px 6px !important; // `px-2 my-1` (!important)
+        margin: 0 !important;
+    }
+
+    .product-name {
+        font-size: $alpt-font-size-xs;
+        font-weight: $alpt-fw-regular; // nombres en MAYÚSCULAS
+        line-height: 1.3;
+        color: var(--alpt-text);
+    }
+
+    .alpt-product-price {
+        font-size: $alpt-font-size-xs + 1px;
+        font-weight: $alpt-fw-medium;
+        color: var(--alpt-primary);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    // Cantidad en el carrito: píldora de marca (antes negro).
+    .product-cart-qty {
+        background-color: var(--alpt-primary) !important; // `bg-black` (!important)
+        color: var(--alpt-on-primary) !important;         // `text-white` (!important)
+        border-radius: var(--alpt-radius-pill) !important;
+        font-size: $alpt-font-size-xs !important;          // `fs-5` (!important)
+        // Texto centrado en el badge (como el de stock de la vista lista).
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 18px;
+        padding: 0 6px !important; // `px-2` (!important)
+        line-height: 1 !important; // `lh-*` heredado
+        box-shadow: none;
+    }
+}
+
+// Sin imagen: el nombre ocupa la tarjeta, alineado a la izquierda.
+.pos .product .product-name.no-image {
+    justify-content: flex-start !important;
+    text-align: start !important;
+    align-items: flex-start !important;
+    font-size: $alpt-font-size-sm;
+}
+
+// Cuadrícula: tarjetas separadas por 8px (el core: 4px / 8px en lg).
+.pos .product-list.d-grid:not(.product-list--rows):not(.category-list) {
+    gap: 8px !important; // `gap-1 gap-lg-2` (!important)
+}

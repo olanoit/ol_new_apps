@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Índice del PdV (/pos/ui/<id>): título, favicon y tokens de marca de
+        la caja. Los valores vienen de controllers/main.py; si no están (p.ej.
+        otra ruta que renderice este template) se deja el comportamiento
+        neutro, sin volver a mostrar "Odoo".
+    -->
+    <template id="pos_index" inherit_id="point_of_sale.index" name="Tema TPV (AL): índice">
+        <!-- Esquema claro/oscuro disponible para los tokens desde el primer
+             pintado (el core decide el bundle con la misma cookie). -->
+        <xpath expr="//html" position="attributes">
+            <attribute name="t-att-data-alpt-scheme">'dark' if al_theme_dark else 'light'</attribute>
+        </xpath>
+        <xpath expr="//head/title" position="replace">
+            <title t-out="al_theme_title or 'POS'"/>
+            <!-- Nombre de marca para el JS (diálogos). Se lee del índice y no
+                 de pos.config porque, con la sesión ya abierta, el PdV carga
+                 pos.config desde IndexedDB sin consultar al servidor
+                 (data_service.js::loadInitialData) y podría estar desactualizado. -->
+            <meta name="application-name" t-att-content="al_theme_brand or 'POS'"/>
+        </xpath>
+        <xpath expr="//head/link[@rel='icon']" position="replace">
+            <link rel="icon" t-att-href="al_theme_favicon or '/al_pos_theme/static/description/icon.svg'"/>
+        </xpath>
+        <!-- Fondo inicial (antes de cargar los assets) con el color de marca
+             en vez del gris #222 del core: evita el "flash" oscuro de Odoo. -->
+        <xpath expr="//head/style" position="replace">
+            <style>body { background: <t t-out="'#0F172A' if al_theme_dark else 'var(--alpt-bg, #F8FAFC)'"/>; }</style>
+        </xpath>
+        <!-- Va al final del <head>, después de los bundles. Selector
+             html[data-alpt-scheme]:root (0,2,1): gana tanto a `:root` como a
+             `:root[data-alpt-scheme="dark"]` (0,2,0) de _tokens.scss. -->
+        <xpath expr="//head" position="inside">
+            <style t-if="al_theme_css_vars">html[data-alpt-scheme]:root { <t t-out="al_theme_css_vars"/> }</style>
+        </xpath>
+    </template>
+
+    <!-- Pantalla del cliente: el core deja el <title> con el modo debug. -->
+    <template id="customer_display_index" inherit_id="point_of_sale.customer_display_index"
+              name="Tema TPV (AL): pantalla del cliente">
+        <xpath expr="//head/link[@rel='icon']" position="replace">
+            <link rel="icon" t-att-href="session_info.get('al_theme_favicon') or '/al_pos_theme/static/description/icon.svg'"/>
+        </xpath>
+        <xpath expr="//head/title" position="replace">
+            <title t-out="session_info.get('al_theme_title') or 'POS'"/>
+        </xpath>
+        <xpath expr="//head" position="inside">
+            <style t-if="session_info.get('al_theme_css_vars')">html:root { <t t-out="session_info['al_theme_css_vars']"/> }</style>
+        </xpath>
+    </template>
+
+</odoo>

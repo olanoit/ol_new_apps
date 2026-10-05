@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Historial de tickets: se quitan las utilidades de fondo `bg-100`
+        (con !important) de la pantalla y del estado vacío del detalle, y se
+        agregan clases propias.
+    -->
+    <t t-name="al_pos_theme.TicketScreen" t-inherit="point_of_sale.TicketScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('ticket-screen')]" position="attributes">
+            <attribute name="class" remove="bg-100" add="alpt-ticket-screen" separator=" "/>
+        </xpath>
+        <xpath expr="//CenteredIcon[@icon=&quot;'fa-shopping-cart fa-4x'&quot;]" position="attributes">
+            <attribute name="icon">'fa-file-text-o'</attribute>
+            <attribute name="class">'h-100 alpt-empty-state'</attribute>
+        </xpath>
+        <!-- Total de cada orden: clase propia (escritorio y móvil) para
+             darle su peso sin depender de la posición de la columna, que
+             cambia según presets/direcciones. -->
+        <xpath expr="//table//div[hasclass('fw-bolder')][t[@t-esc='getTotal(order)']]" position="attributes">
+            <attribute name="class" add="alpt-order-total" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('mobileOrderList')]//div[hasclass('fw-bolder')][t[@t-esc='getTotal(order)']]" position="attributes">
+            <attribute name="class" add="alpt-order-total" separator=" "/>
+        </xpath>
+    </t>
+
+</templates>

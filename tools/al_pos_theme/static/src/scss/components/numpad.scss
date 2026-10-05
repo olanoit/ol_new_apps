@@ -1,0 +1,132 @@
+// =====================================================================
+// Teclado numérico (Numpad) del panel de orden y de la pantalla de pago.
+// Teclas separadas y redondeadas en vez de la grilla pegada con colores
+// pastel del core. Se aplica sólo dentro de esas dos pantallas: el Numpad
+// también se usa en popups (fase 5).
+//
+// Tipografía: dígitos 20px/500 (se leen de lejos sin "gritar"); la columna
+// derecha (Cant./%/Precio, +10/+20/+50, borrar) son palabras o atajos:
+// 15px/600.
+// =====================================================================
+
+@mixin alpt-numpad($key-height) {
+    .numpad {
+        gap: 6px;
+        overflow: visible !important; // `overflow-hidden` (!important): recortaba el anillo de foco
+    }
+
+    .numpad-button {
+        // Variables que usa el core para fondo/borde/hover; también pisa los
+        // colores pastel de `o_colorlist_item_numpad_color_N`.
+        --bg: var(--alpt-surface-2);
+        --hover-bg: var(--alpt-border);
+        --border-color: transparent;
+        min-height: $key-height;
+        padding: 0 !important; // `py-2` (!important)
+        border: 0;
+        border-radius: var(--alpt-radius-sm) !important; // el core fuerza esquinas sueltas con !important
+        color: var(--alpt-text);
+        font-size: $alpt-font-size-lg !important; // `fs-3` (!important)
+        font-weight: $alpt-fw-regular;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+
+        &::after {
+            display: none; // borde interno del core
+        }
+
+        &:hover:where(:not(.active)) {
+            background-color: var(--alpt-border);
+        }
+
+        &:active {
+            transform: scale(.97);
+        }
+
+        // Columna derecha: palabras o atajos, no dígitos.
+        &:nth-child(4n) {
+            font-size: $alpt-font-size-sm !important;
+            font-weight: $alpt-fw-medium;
+        }
+
+        // Modo activo (Cant. / % / Precio).
+        &.active {
+            --bg: var(--alpt-primary-subtle);
+            background-color: var(--alpt-primary-subtle);
+            color: var(--alpt-primary);
+        }
+
+        &:disabled {
+            background-color: var(--alpt-surface-2);
+            color: var(--alpt-text-muted);
+            opacity: .5;
+        }
+
+        // Borrar: único color semántico de "quitar".
+        &.o_colorlist_item_numpad_color_1 {
+            --bg: var(--alpt-danger-subtle);
+            --hover-bg: var(--alpt-danger-subtle);
+            color: var(--alpt-danger);
+
+            &:hover {
+                filter: brightness(.96);
+            }
+        }
+
+        // +10 / +20 / +50 (pantalla de pago): "agregar dinero" en primario
+        // suave, en vez del verde pastel del core.
+        &.o_colorlist_item_numpad_color_10 {
+            --bg: var(--alpt-primary-subtle);
+            --hover-bg: var(--alpt-primary-subtle);
+            color: var(--alpt-primary);
+
+            &:hover {
+                filter: brightness(.96);
+            }
+        }
+    }
+}
+
+// --- Panel de orden (ProductScreen) y detalle del historial (TicketScreen,
+// reembolsos: mismo Numpad + ActionpadWidget) ------------------------------
+.pos :is(.product-screen, .ticket-screen) .leftpane {
+    @include alpt-numpad($alpt-touch-lg);
+
+    .pads {
+        padding-inline: 12px !important; // `px-2` (!important)
+        border-top: 1px solid var(--alpt-border);
+    }
+
+    .subpads {
+        gap: 10px !important; // `gap-2` (!important)
+        padding-top: 10px !important;
+    }
+
+    // Botón de pago principal.
+    .pay-order-button {
+        min-height: $alpt-cta-h;
+        padding-block: 0 !important; // `py-3` (!important): daba 61-70px
+        border-radius: var(--alpt-radius-md);
+        font-size: $alpt-font-size-md + 1px; // 18px: CTA principal, sin exagerar
+        font-weight: $alpt-fw-medium;
+        box-shadow: 0 4px 12px rgba(var(--alpt-primary-rgb), .20);
+
+        &:active {
+            transform: scale(.99);
+        }
+    }
+
+    .fast-pay-button {
+        min-height: $alpt-cta-h;
+        padding-block: 0 !important; // `py-3` (!important)
+        border-radius: var(--alpt-radius-md);
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-medium;
+    }
+}
+
+// --- Pantalla de pago -------------------------------------------------
+// Mismo alto de tecla en todas las pantallas (uniformidad).
+.pos .payment-screen {
+    @include alpt-numpad($alpt-touch-lg);
+}

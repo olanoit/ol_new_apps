@@ -1,0 +1,384 @@
+// =====================================================================
+// Barra superior (point_of_sale.Navbar)
+// Superficie blanca con sombra suave en vez de borde, logo a la izquierda,
+// Registrar/Órdenes como control segmentado, buscador tipo píldora y
+// botones de ícono con área táctil >= 44px.
+// =====================================================================
+
+.pos .pos-topheader {
+    min-height: 56px;
+    background-color: var(--alpt-surface);
+    border-bottom-color: var(--alpt-border);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+    z-index: 2;
+
+    // Botones de ícono (escáner, menú, cajero, estado offline).
+    .btn-light {
+        padding-block: 0 !important;  // `btn-lg` (!important)
+        line-height: 1.2 !important;  // `lh-lg` (!important)
+        --btn-bg: transparent;
+        --btn-hover-bg: var(--alpt-surface-2);
+        --btn-active-bg: var(--alpt-primary-subtle);
+        --btn-color: var(--alpt-text-2);
+        min-width: $alpt-control-sm;
+        min-height: $alpt-control-sm;
+        border-radius: var(--alpt-radius-sm);
+    }
+}
+
+// Logo de marca (template: xml/navbar.xml). Hereda el fondo/texto de
+// `.pos-logo` (branding.scss); aquí sólo se ajusta el tamaño a la barra.
+.pos .alpt-navbar-brand {
+    height: 34px;
+    min-width: 34px;
+    max-width: 160px;
+    width: auto;
+    padding-inline: 4px 12px;
+    margin-inline-end: 8px;
+    background-position: left center;
+    // Sin logo el ::after muestra el nombre: el ancho lo da el texto.
+    &::after {
+        font-size: 16px;
+    }
+}
+
+// Teléfono: isotipo de la marca (icono del módulo por defecto) antes del
+// control Registrar / Órdenes, al alto de los botones de la barra.
+.pos .alpt-navbar-brand-icon {
+    width: 30px;
+    height: 30px;
+    margin-inline-end: 6px;
+    background: var(--alpt-logo-icon, none) center / contain no-repeat;
+}
+
+// Registrar / Órdenes: control segmentado.
+.pos .navbar-menu {
+    gap: 2px;
+    padding: 3px;
+    background-color: var(--alpt-surface-2);
+    border-radius: calc(var(--alpt-radius-sm) + 3px);
+
+    > .btn {
+        padding-block: 0 !important;  // `btn-lg` (!important)
+        line-height: 1.2 !important;  // `lh-lg` (!important)
+        --btn-bg: transparent;
+        --btn-hover-bg: rgba(var(--alpt-primary-rgb), .08);
+        --btn-color: var(--alpt-text-2);
+        --btn-active-bg: var(--alpt-surface);
+        --btn-active-color: var(--alpt-primary);
+        min-height: $alpt-control-sm;
+        border: 0;
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-medium;
+
+        &.active {
+            background-color: var(--alpt-surface);
+            color: var(--alpt-primary);
+            box-shadow: var(--alpt-shadow-card);
+        }
+    }
+}
+
+.pos .navbar-separator {
+    border-color: var(--alpt-border);
+}
+
+// Pestañas de órdenes abiertas (OrderTabs / ListContainer): píldoras.
+.pos .pos-topheader .list-container-items .btn,
+.pos .pos-topheader .list-plus-btn {
+    --btn-bg: var(--alpt-surface-2);
+    --btn-border-color: transparent;
+    --btn-hover-bg: var(--alpt-primary-subtle);
+    --btn-hover-border-color: transparent;
+    --btn-color: var(--alpt-text);
+    --btn-hover-color: var(--alpt-primary);
+    min-height: $alpt-control-sm;
+    border-radius: var(--alpt-radius-pill);
+    font-size: $alpt-font-size-sm;
+    font-weight: $alpt-fw-medium;
+    font-variant-numeric: tabular-nums;
+
+    &.active {
+        background-color: var(--alpt-primary-subtle);
+        border-color: transparent;
+        color: var(--alpt-primary);
+    }
+}
+
+.pos .pos-topheader .list-plus-btn {
+    --btn-color: var(--alpt-primary);
+    min-width: $alpt-control-sm;
+}
+
+// Buscador: píldora gris que se vuelve blanca con anillo de foco.
+.pos .pos-topheader .input-container {
+    min-height: $alpt-control-sm;
+    border-radius: var(--alpt-radius-pill);
+    border-color: var(--alpt-border);
+    background-color: var(--alpt-surface-2) !important; // `bg-view` del core es utilidad con !important
+    color: var(--alpt-text-muted);
+    transition: background-color .15s ease, box-shadow .15s ease, border-color .15s ease;
+
+    &:focus-within {
+        background-color: var(--alpt-surface) !important; // idem
+        border-color: var(--alpt-border);
+        box-shadow: var(--alpt-focus-ring);
+    }
+
+    input {
+        // 16px evita el zoom automático de iOS Safari al enfocar el campo.
+        font-size: $alpt-font-size-sm;
+        // 16px sólo en pantallas chicas (evita el zoom de iOS al enfocar)
+        @include media-breakpoint-down(md) { font-size: 16px; }
+        background: transparent;
+        color: var(--alpt-text);
+
+        &::placeholder {
+            color: var(--alpt-text-muted);
+        }
+    }
+}
+
+// Avatar del cajero: circular.
+.pos .cashier-name .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50% !important; // el core usa la utilidad `rounded-3` (!important)
+    object-fit: cover;
+}
+
+// Menú hamburguesa y dropdowns del PdV.
+.pos .o-dropdown--menu.dropdown-menu {
+    border: 1px solid var(--alpt-border);
+    border-radius: var(--alpt-radius-md);
+    box-shadow: var(--alpt-shadow-dialog);
+    overflow: hidden;
+}
+
+.pos .o-dropdown-item {
+    min-height: $alpt-control-sm;
+    display: flex;
+    align-items: center;
+    border-radius: var(--alpt-radius-sm);
+    color: var(--alpt-text);
+
+    &:hover,
+    &.focus {
+        background-color: var(--alpt-primary-subtle);
+        color: var(--alpt-primary);
+    }
+}
+
+.pos .o-dropdown--menu .dropdown-item.focus {
+    background-color: var(--alpt-primary-subtle);
+}
+
+// --- Barra alineada con las columnas de la pantalla de venta -----------
+// Desde `lg` el catálogo está a la izquierda y la orden a la derecha
+// (layout.scss). La barra sigue esas columnas:
+//   izquierda (sobre el catálogo): logo · Registrar/Órdenes · pestañas · buscador
+//   derecha (sobre la orden):      escáner · cajero · menú, alineados a la derecha
+// Mismos anchos que usa el core para `.leftpane` ($pos-left-pane-width*).
+// La barra tiene 8px de padding a cada lado (`p-2`), por eso el `- 8px`.
+// Desde `md`: la tablet usa la misma distribución que el escritorio
+// (layout.scss), así que la barra sigue las mismas columnas.
+@include media-breakpoint-up(md) {
+    .pos .pos-topheader .pos-rightheader {
+        flex: 0 0 calc(#{$pos-left-pane-width-tablet} - 8px);
+        flex-grow: 0 !important; // `flex-grow-1` (!important) anulaba el ancho fijo
+        max-width: none;   // el core lo limita al 40% en `lg`
+        padding-left: 12px;
+
+        @include media-breakpoint-up(xl) {
+            flex-basis: calc(#{$pos-left-pane-width} - 8px);
+        }
+
+        .status-buttons {
+            gap: 4px !important; // `gap-1` (!important)
+        }
+    }
+
+    .pos .pos-topheader .pos-leftheader {
+        max-width: none; // el core lo limita al 40% en `lg`
+        gap: 12px;
+        // El core le pone `overflow-auto` (scroll de pestañas): recortaba el
+        // anillo de foco del buscador.
+        overflow: visible !important;
+        min-width: 0;
+
+        // Logo + Registrar/Órdenes + pestañas: toma el espacio sobrante.
+        // Debe CRECER (no ancho natural): ListContainer mide su ancho para
+        // decidir cuántas pestañas caben y, encogido, las colapsaba todas en
+        // el botón ▾. El core le pone `w-100`, que no dejaba lugar al buscador.
+        > div:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: auto !important; // `w-100` (!important)
+            overflow-x: auto;
+        }
+    }
+
+    // Buscador: ocupa el resto de la columna del catálogo, pegado a su borde
+    // derecho (el mismo borde donde empieza el panel de la orden).
+    .pos .alpt-navbar-search {
+        flex: 0 1 420px;
+        min-width: 220px;
+
+        .input-group {
+            width: 100%;
+        }
+    }
+}
+
+// --- Notificaciones: centradas arriba, entran y salen hacia arriba ---------
+// El sistema base las muestra arriba a la DERECHA, sobre el panel de la
+// orden / pago (tapaban el total y los botones). En el PdV del tema van
+// CENTRADAS bajo la barra superior (pedido explícito; antes se probaron a
+// la izquierda). En teléfono el core ya las pone a todo el ancho.
+@include media-breakpoint-up(sm) {
+    .pos .o_notification_manager {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+// Entrada: baja desde arriba (el core sólo hacía fundido).
+.pos .o_notification_manager .o_notification_fade-enter {
+    opacity: 0;
+    transform: translateY(-16px);
+}
+
+// Salida: sube y se desvanece antes de quitarse del DOM
+// (js/notification_patch.js demora el cierre nativo 250ms).
+.pos .o_notification.alpt-notification-leaving {
+    opacity: 0;
+    transform: translateY(-120%);
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pos .o_notification_manager .o_notification_fade-enter,
+    .pos .o_notification.alpt-notification-leaving {
+        transform: none;
+    }
+}
+
+// Tarjeta de notificación translúcida (pedido explícito): fondo de la
+// superficie al ~72% con desenfoque de lo que queda detrás, borde suave y
+// sombra ligera; la barra de color del tipo (info/éxito/…) se mantiene.
+.pos .o_notification {
+    --Notification__background-color: rgba(255, 255, 255, .72);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    backdrop-filter: blur(10px) saturate(1.2);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .12) !important; // `shadow-lg` (!important)
+
+    > div {
+        border-color: rgba(var(--alpt-primary-rgb), .18) !important; // `border` (!important)
+        background: transparent;
+    }
+
+    .o_notification_progress {
+        opacity: .5 !important; // `opacity-75` (!important)
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .o_notification {
+    --Notification__background-color: rgba(12, 28, 66, .72); // $alpt-dark-surface
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .45) !important;
+
+    > div {
+        border-color: rgba(255, 255, 255, .10) !important;
+    }
+}
+
+// Botón flotante de depuración (🐞, solo con ?debug=1) y su panel: el core
+// los ancla abajo a la DERECHA, encima de Pagar / Validar y del teclado de
+// montos. Pasan a la esquina inferior IZQUIERDA, que queda libre sobre el
+// catálogo en escritorio/tablet y la barra inferior en teléfono.
+.pos .o-debug-widget-btn.open {
+    right: auto;
+    left: 10px;
+}
+
+.pos .debug-widget {
+    right: auto !important; // `end-0` (!important)
+    left: 0 !important;     // equivalente de `start-0`
+}
+
+// Teléfono (`ui.isSmall`, < 768px): abajo a la izquierda está "Pagar" de la
+// barra inferior (Pagar / Carrito, y Validar en el pago: 12px + 44px + 12px
+// + borde). Botón y panel suben por encima de esa barra, y el botón se
+// achica un poco para tapar menos catálogo.
+@include media-breakpoint-down(md) {
+    .pos .o-debug-widget-btn.open {
+        bottom: calc(#{$alpt-cta-h} + 35px);
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .pos .debug-widget {
+        bottom: calc(#{$alpt-cta-h} + 25px) !important; // `bottom-0` (!important)
+        max-width: calc(100vw - 16px);
+    }
+}
+
+// Oscuro: el panel de depuración usa `bg-100` (gris claro de Bootstrap), que
+// no cambia con el esquema del tema y quedaba como un recuadro blanco sobre
+// el PdV oscuro. Pasa a la superficie del tema, con campos y botones
+// secundarios en tonos de tarjeta; los botones de acción destructiva
+// (`btn-danger`) y el botón 🐞 rojo no cambian.
+:root[data-alpt-scheme="dark"] .pos .debug-widget {
+    background-color: var(--alpt-surface) !important; // `bg-100` (!important)
+    color: var(--alpt-text);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .45) !important; // `shadow-lg`
+
+    .input-group-text,
+    .form-control {
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+        color: var(--alpt-text);
+    }
+
+    .form-control::placeholder {
+        color: var(--alpt-text-2);
+    }
+
+    .btn-secondary {
+        --btn-color: var(--alpt-text);
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        --btn-hover-color: var(--alpt-text);
+        --btn-hover-bg: var(--alpt-surface-2);
+        --btn-hover-border-color: var(--alpt-border-strong);
+    }
+}
+
+// Tablet y teléfono (< 992px): botones y campos del panel de depuración
+// (`btn-sm` / `input-group-sm`, ~31px) a altura táctil, como el resto de
+// los controles del PdV; en teléfono el panel scrollea si no cabe sobre la
+// barra inferior. Aplica igual en claro y oscuro (solo tamaños).
+@include media-breakpoint-down(lg) {
+    .pos .debug-widget {
+        .btn-sm,
+        .input-group-sm > .form-control,
+        .input-group-sm > .input-group-text {
+            min-height: 40px;
+        }
+
+        .btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .pos .debug-widget {
+        max-height: calc(100vh - #{$alpt-cta-h} - 90px);
+        overflow-y: auto;
+    }
+}

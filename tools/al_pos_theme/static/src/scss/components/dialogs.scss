@@ -1,0 +1,425 @@
+// =====================================================================
+// Diálogos y popups del PdV (web.Dialog + popups de point_of_sale y de
+// otros módulos, p.ej. el asistente Yapp). Se montan dentro de `body.pos`,
+// así que un estilo común bajo `.pos` los cubre a todos.
+//
+// Criterios: modal ajustado al contenido (ancho por defecto 460px,
+// paddings compactos), sin líneas separadoras (el espacio separa),
+// controles internos de 44px, botones del pie con su ancho natural
+// alineados a la derecha (a lo ancho sólo en teléfono).
+// Tipografía: título 16px/500 · cuerpo 15px/400 · botones 15px/500.
+// =====================================================================
+
+// --- Contenedor ------------------------------------------------------
+// Anchos nativos de Bootstrap (sm 300 / md 500 / lg 800), salvo los
+// diálogos de Yapp (asistente `sm` y resultado `md`): su contenido (RUT,
+// perfiles, documentos) necesita más ancho.
+.pos .modal-dialog:has(.modal-body .fa-yapp) {
+    // unquote(): libsass trataría min() como su función numérica y falla.
+    max-width: unquote("min(640px, calc(100vw - 32px))");
+}
+
+.pos .modal-content {
+    border: 0;
+    border-radius: var(--alpt-radius-lg);
+    background-color: var(--alpt-surface);
+    color: var(--alpt-text);
+    box-shadow: var(--alpt-shadow-dialog);
+    overflow: hidden;
+}
+
+// Fondo detrás del diálogo.
+.pos .o_dialog .modal {
+    background-color: rgba(15, 23, 42, .40);
+}
+
+// --- Encabezado ------------------------------------------------------
+.pos .modal-header {
+    gap: 8px;
+    padding: 12px 12px 4px 16px;
+    border-bottom: 0;
+
+    // Tamaño nativo del título (<h4>: 16.8px = 1.05rem); el `!important` iguala el
+    // `fs-4` que traen algunos popups.
+    .modal-title {
+        font-size: 1.05rem !important;
+        line-height: 1.3;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+        margin: 0 0 0 auto;
+        padding: 0;
+        border-radius: var(--alpt-radius-sm);
+        background-size: 11px;
+        opacity: .5;
+
+        &:hover {
+            opacity: .9;
+            background-color: var(--alpt-surface-2);
+        }
+    }
+}
+
+// --- Cuerpo ----------------------------------------------------------
+.pos .modal-body {
+    font-size: $alpt-font-size-sm;
+    line-height: 1.5;
+
+    // El core usa `p-3` (16px); se compacta el vertical.
+    &:not(.p-0) {
+        padding: 8px 16px 12px !important; // `p-3` (!important)
+    }
+}
+
+// --- Pie -------------------------------------------------------------
+.pos .modal-footer {
+    justify-content: flex-end !important; // `justify-content-around/md-start` (!important)
+    gap: 8px !important; // `gap-1` (!important)
+    padding: 8px 16px 16px;
+    border-top: 0;
+    background-color: var(--alpt-surface);
+
+    .btn {
+        flex: 0 0 auto;
+        min-width: 96px;
+        min-height: $alpt-control-sm;
+        margin: 0;
+        padding: 0 14px !important; // `py-*` de btn-lg (!important)
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm !important; // `btn-lg` (!important en algunos)
+        line-height: 1.2 !important; // `lh-lg` (!important)
+    }
+
+    // Teléfono: botones a lo ancho, el principal abajo al alcance del dedo.
+    @include media-breakpoint-down(sm) {
+        .btn {
+            flex: 1 1 0;
+        }
+    }
+}
+
+// --- Botones y campos dentro de cualquier diálogo --------------------
+.pos .modal-content {
+    .btn-secondary,
+    .btn-light {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        --btn-hover-bg: var(--alpt-border);
+        --btn-hover-border-color: transparent;
+        --btn-color: var(--alpt-text);
+        --btn-active-bg: var(--alpt-primary-subtle);
+        --btn-active-color: var(--alpt-primary);
+        --btn-active-border-color: transparent;
+    }
+
+    .btn-outline-secondary,
+    .btn-outline-primary {
+        --btn-border-color: var(--alpt-border);
+        --btn-hover-border-color: var(--alpt-border);
+    }
+
+    .btn-lg {
+        min-height: $alpt-control-sm;
+        padding-block: 0;
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm;
+    }
+
+    .form-control,
+    .form-select,
+    .o_input {
+        min-height: $alpt-control-sm + 2px;
+        border-color: var(--alpt-border-strong);
+        border-radius: var(--alpt-radius-sm);
+
+        // Tamaño nativo en escritorio; 16px sólo en pantallas chicas, donde
+        // un campo < 16px hace que iOS Safari haga zoom al enfocarlo.
+        @include media-breakpoint-down(md) {
+            font-size: 16px;
+        }
+
+        &:focus {
+            border-color: rgba(var(--alpt-primary-rgb), .45);
+            box-shadow: var(--alpt-focus-ring);
+        }
+    }
+
+    // El <input> interno del componente Input del PdV ya está dentro de un
+    // contenedor con borde (`.input-container`): sin esto quedaba doble.
+    .input-container .o_input {
+        min-height: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .form-label,
+    label {
+        margin-bottom: 4px;
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-regular;
+        color: var(--alpt-text-2);
+    }
+
+    textarea.form-control {
+        min-height: 110px;
+        font-size: $alpt-font-size-sm;
+    }
+}
+
+// --- SelectionPopup (listas de opciones) ------------------------------
+.pos .selection-item {
+    --btn-border-color: var(--alpt-border-strong);
+    --btn-hover-bg: var(--alpt-surface-2);
+    --btn-hover-border-color: var(--alpt-border);
+    --btn-hover-color: var(--alpt-text);
+    --btn-color: var(--alpt-text);
+    min-height: $alpt-touch-min;
+    padding: 6px 12px !important; // `p-3` (!important)
+    border-radius: var(--alpt-radius-sm);
+    font-size: $alpt-font-size-sm;
+
+    &.selected,
+    &.active {
+        --btn-active-bg: var(--alpt-primary-subtle);
+        --btn-active-border-color: transparent;
+        --btn-active-color: var(--alpt-text);
+        background-color: var(--alpt-primary-subtle);
+        border-color: transparent;
+        color: var(--alpt-text);
+    }
+
+    .oi-chevron-right {
+        color: var(--alpt-text-muted);
+    }
+}
+
+// --- NumberPopup (montos, cantidades) --------------------------------
+.pos .modal-content .popup-input {
+    min-height: $alpt-touch-min + 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: transparent;
+    border-radius: var(--alpt-radius-sm);
+    background-color: var(--alpt-surface-2);
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pos .modal-content .numpad {
+    gap: 6px;
+}
+
+.pos .modal-content .numpad-button {
+    --bg: var(--alpt-surface-2);
+    --hover-bg: var(--alpt-border);
+    --border-color: transparent;
+    min-height: $alpt-touch-lg;
+    padding: 0 !important; // `py-2` (!important)
+    border: 0;
+    border-radius: var(--alpt-radius-sm) !important;
+    font-size: $alpt-font-size-lg !important; // `fs-3` (!important)
+    font-weight: $alpt-fw-regular;
+
+    &::after {
+        display: none;
+    }
+
+    &.o_colorlist_item_numpad_color_1 {
+        --bg: var(--alpt-danger-subtle);
+        color: var(--alpt-danger);
+    }
+}
+
+// --- Popup "Acciones" (⋮): botones de control ------------------------
+.pos .control-buttons-modal {
+    gap: 8px !important; // `gap-2` (!important)
+
+    .btn,
+    .control-button {
+        min-height: $alpt-touch-min;
+        padding: 6px 12px !important; // `btn-lg` (!important)
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm !important;
+
+        i {
+            color: var(--alpt-primary);
+        }
+    }
+}
+
+// --- Aviso "no hay conexión" / listas genéricas dentro de modales -----
+.pos .modal-content .list-group-item {
+    border-color: var(--alpt-border);
+    font-size: $alpt-font-size-sm;
+}
+
+// Ícono ✖ para limpiar campos (componente Input del PdV): atenuado.
+.pos .input-container .fa-times {
+    color: var(--alpt-text-muted);
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--alpt-text);
+    }
+}
+
+// --- Modo oscuro ------------------------------------------------------
+// La superficie oscura ($alpt-dark-surface) sobre el fondo ($alpt-dark-bg) con el velo
+// azulado casi no se distinguía: el modal "desaparecía". Se lo eleva un
+// tono (surface-2), se le da un filo claro y el velo pasa a negro opaco,
+// que es lo que da profundidad en oscuro (las sombras no se ven).
+:root[data-alpt-scheme="dark"] .pos {
+    .modal-content {
+        background-color: var(--alpt-surface-2);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .10), 0 24px 56px rgba(0, 0, 0, .65);
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        background-color: transparent;
+    }
+
+    .o_dialog .modal {
+        background-color: rgba(0, 0, 0, .62);
+    }
+
+    // Campos y botones grises dentro del modal: un tono sobre la superficie.
+    .modal-content {
+        .form-control,
+        .form-select,
+        .o_input,
+        .popup-input,
+        .input-container {
+            background-color: var(--alpt-surface);
+        }
+
+        .btn-secondary,
+        .btn-light,
+        .numpad-button {
+            --btn-bg: var(--alpt-surface);
+            --bg: var(--alpt-surface);
+        }
+    }
+}
+
+// --- Todos los modales con el estilo "de franjas" ------------------------
+// Igual que el recibo, Órdenes, clientes, sesión y pago: franja arriba y
+// abajo con línea fina, contenido sobre el fondo, botones del pie de 44px
+// (mixin `alpt-strip-dialog`, _variables.scss). En escritorio los botones
+// del pie conservan su ancho natural (arriba); en teléfono van a lo ancho.
+.pos .modal-content {
+    @include alpt-strip-dialog;
+
+    // Botones, opciones y teclas DENTRO del contenido (Acciones ⋮,
+    // SelectionPopup, NumberPopup…): sobre el fondo gris, gris sobre gris no
+    // se distinguía → tarjetas con borde suave.
+    .modal-body {
+        .btn-secondary,
+        .btn-light,
+        .selection-item {
+            --btn-bg: var(--alpt-card-bg);
+            --btn-border-color: var(--alpt-card-border);
+            border: 1px solid var(--alpt-card-border);
+        }
+
+        .numpad-button:not([class*="o_colorlist_item_numpad_color_1"]) {
+            --bg: var(--alpt-card-bg);
+            background-color: var(--alpt-card-bg);
+            box-shadow: 0 0 0 1px var(--alpt-card-border);
+        }
+
+        .popup-input {
+            background-color: var(--alpt-card-bg);
+            border: 1px solid var(--alpt-card-border);
+        }
+    }
+}
+
+// Teléfono (`env.isSmall`): web.Dialog a pantalla completa (`o_modal_full`,
+// flecha ← en vez de ✕).
+.pos .modal.o_modal_full {
+    .modal-content {
+        border-radius: 0; // pantalla completa: sin esquinas
+    }
+
+    // Flecha ← (cerrar): botón cuadrado suave, como "Volver" del pago.
+    .modal-header .oi-arrow-left {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: var(--alpt-radius-sm);
+        background-color: var(--alpt-surface-2);
+        color: var(--alpt-text);
+    }
+
+    .modal-footer .btn {
+        flex: 1 1 0;
+    }
+}
+
+// Oscuro: las tarjetas del contenido usan --alpt-card-* (surface-2 + filo
+// claro) sobre el fondo; manda sobre el bloque oscuro de arriba, que las
+// dejaba en surface (casi el mismo tono que el fondo).
+:root[data-alpt-scheme="dark"] .pos .modal-content .modal-body {
+    .btn-secondary,
+    .btn-light,
+    .selection-item {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+    }
+
+    .numpad-button:not([class*="o_colorlist_item_numpad_color_1"]),
+    .popup-input,
+    .form-control,
+    .o_input,
+    .input-container {
+        background-color: var(--alpt-card-bg);
+    }
+
+    .input-container .o_input {
+        background-color: transparent;
+    }
+}
+
+// --- Tablet ---------------------------------------------------------------
+// El estilo de franjas ya aplica a todos los modales (arriba). Lo propio de
+// tablet es el ancho: en `md` (tablet vertical, 768–991px) Bootstrap deja
+// los diálogos grandes (`modal-lg` / `modal-xl`, el tamaño por defecto de
+// web.Dialog) en 500px, pensados para 800px o más, y su contenido se
+// apretaba. En `md` usan casi todo el ancho, hasta 800px como en `lg`.
+// Los chicos (`modal-sm`: teclado de montos) y medianos (`modal-md`) no
+// cambian. Clientes y sesión de caja tienen su propio ancho de tablet.
+@include media-breakpoint-only(md) {
+    .pos .modal-dialog:is(.modal-lg, .modal-xl) {
+        // unquote(): libsass trataría min() como su función numérica.
+        max-width: unquote("min(800px, calc(100vw - 32px))");
+    }
+}
+
+// --- Botones con borde de color primario en TODOS los modales --------------
+// Como el panel de la orden, Órdenes, clientes, sesión, pago y recibo:
+// botones secundarios del pie (Descartar, Cancelar, Detalles…) y botones /
+// opciones del contenido (Acciones ⋮, SelectionPopup, Nacional/Extranjero
+// de Yapp…). Reemplaza el borde gris de tarjeta de arriba. Los principales
+// (primario lleno), el ✕, el teclado de montos y los controles
+// segmentados (`.input-type`) quedan como están.
+.pos .modal-content {
+    .modal-footer .btn:not(.btn-primary):not(.btn-close),
+    .modal-body :is(.btn-secondary, .btn-light, .selection-item):not(.input-type):not(.numpad-button) {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        --btn-disabled-border-color: rgba(var(--alpt-primary-rgb), .35);
+        border: 1px solid var(--btn-border-color) !important;
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .modal-content .modal-body :is(.btn-secondary, .btn-light, .selection-item):not(.input-type):not(.numpad-button) {
+    --btn-border-color: var(--alpt-primary);
+}

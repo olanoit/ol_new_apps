@@ -1,0 +1,163 @@
+// =====================================================================
+// Tema TPV (AL) — tokens de diseño (valores por defecto en SCSS).
+// Los colores de marca se pueden cambiar por caja desde Ajustes PdV: el
+// índice del PdV inyecta las mismas custom properties (--alpt-*) con los
+// valores de pos.config (ver models/pos_config.py::_al_theme_css_vars).
+// Mantener sincronizado con AL_THEME_DEFAULTS en ese archivo.
+// =====================================================================
+
+// --- Marca (modo claro) ---
+// Paleta neutra (sin marca de cliente): azul de acción, pizarra para
+// títulos y celeste de acento. Cada caja la cambia en Ajustes del TPV.
+$alpt-primary: #2563EB !default;
+$alpt-secondary: #1E293B !default;
+$alpt-accent: #0EA5E9 !default;
+$alpt-bg: #F8FAFC !default;
+
+// --- Superficies y texto ---
+// Neutros pizarra.
+$alpt-surface: #FFFFFF !default;
+$alpt-surface-2: #F1F5F9 !default;
+$alpt-border: #E2E8F0 !default;  // bordes suaves: separan sin "dibujar" cajas
+$alpt-border-strong: #CBD5E1 !default; // contorno de campos, métodos de pago, chips (suave: pedido explícito)
+$alpt-text: #0F172A !default;
+$alpt-text-2: #334155 !default;
+$alpt-text-muted: #64748B !default;
+
+// --- Estados ---
+$alpt-success: #15803D !default;
+$alpt-warning: #B45309 !default;
+$alpt-danger: #B91C1C !default;
+$alpt-info: #0369A1 !default;
+
+// --- Modo oscuro ---
+// Pizarra oscuro, coherente con la paleta clara.
+$alpt-dark-bg: #0F172A !default;
+$alpt-dark-surface: #1E293B !default;
+$alpt-dark-surface-2: #273449 !default;
+$alpt-dark-border: #334155 !default;
+$alpt-dark-border-strong: #475569 !default;
+$alpt-dark-text: #E2E8F0 !default;
+$alpt-dark-text-2: #94A3B8 !default;
+$alpt-dark-primary: #5686EF !default; // = _readable_on(#2563EB, $alpt-dark-bg) en pos_config.py
+
+// --- Tipografía ---
+// Pesos: casi sin negrita. 600 sólo para los montos que deciden la venta
+// (total de la orden, total a pagar, cambio/restante, monto cobrado).
+$alpt-fw-regular: 400 !default;
+$alpt-fw-medium: 500 !default;
+$alpt-fw-strong: 700 !default; // montos y títulos cortos, en Manrope
+
+$alpt-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !default;
+// Tipografía "display": títulos, montos y marca. El cuerpo va en Inter.
+$alpt-font-display: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !default;
+$alpt-font-size-xs: 11px !default;
+$alpt-font-size-sm: 13px !default;  // base del PdV (raíz 15px; ver _base.scss)
+$alpt-font-size-md: 14px !default;
+$alpt-font-size-lg: 16px !default;
+$alpt-font-size-xl: 20px !default;
+
+// --- Forma ---
+// En el TPV (controles densos) 6/8/12px: más suaves que los 4/6px de Odoo,
+// sin llegar a píldoras.
+$alpt-radius-sm: 6px !default;   // botones, inputs
+$alpt-radius-md: 8px !default;   // tarjetas
+$alpt-radius-lg: 12px !default;  // diálogos
+$alpt-radius-pill: 6px !default; // chips, buscador, pestañas (sin píldoras)
+// Sombras teñidas de pizarra con un filo del color de acento.
+$alpt-shadow-card: 0 2px 8px rgba(15, 23, 42, .04) !default;
+$alpt-shadow-hover: 0 10px 25px -4px rgba(15, 23, 42, .08), 0 0 0 1px rgba(14, 165, 233, .30) !default;
+$alpt-shadow-dialog: 0 20px 40px -8px rgba(15, 23, 42, .18), 0 0 0 1px rgba(14, 165, 233, .25) !default;
+
+// --- Espaciado (base 4px) y áreas táctiles ---
+$alpt-space: 4px !default;
+// Densidad compacta tomando como referencia el nativo (btn 33px, btn-lg
+// 40px, numpad 52px, pago 70px): se ve más liviano sin bajar de ~36px.
+$alpt-touch-min: 36px !default;  // botones y campos del contenido
+$alpt-control-sm: 32px !default; // barra superior, modales, fila Cliente/Cotizar/Nota
+$alpt-touch-lg: 42px !default;   // teclas del numpad
+$alpt-cta-h: 44px !default;      // botones principales (Pago, Validar, Nueva orden, Reembolso)
+
+// --- Filas como tarjetas separadas --------------------------------------
+// Mismo lenguaje en catálogo (vista lista), órdenes y clientes: cada fila es
+// una tarjeta blanca redondeada, con borde suave, separada de la siguiente
+// por `$gap` sobre el fondo del contenedor. Para <table>: `border-spacing`
+// separa las filas y el borde/radio va en las celdas extremas (un <tr> no
+// admite border-radius).
+@mixin alpt-card-table($gap: 6px) {
+    --table-bg: var(--alpt-card-bg);
+    border-collapse: separate !important;
+    border-spacing: 0 $gap;
+    margin-top: -$gap; // el primer espacio de border-spacing no es aire útil
+
+    > tbody > tr > td {
+        background-color: var(--alpt-card-bg);
+        border: 0;
+        border-block: 1px solid var(--alpt-card-border) !important;
+
+        &:first-child {
+            border-inline-start: 1px solid var(--alpt-card-border) !important;
+            border-start-start-radius: var(--alpt-radius-md);
+            border-end-start-radius: var(--alpt-radius-md);
+        }
+
+        &:last-child {
+            border-inline-end: 1px solid var(--alpt-card-border) !important;
+            border-start-end-radius: var(--alpt-radius-md);
+            border-end-end-radius: var(--alpt-radius-md);
+        }
+    }
+}
+
+// --- Diálogo "de franjas" (recibo, Órdenes, clientes, sesión de caja) ----
+// Encabezado y pie como franjas separadas por una línea fina; el contenido
+// en medio sobre el fondo (`--alpt-bg`); botones del pie con el alto del
+// CTA (44px, como "Nueva orden", "Reembolso", "Pago"). En oscuro las
+// franjas llevan filo claro y los controles bajan un tono.
+@mixin alpt-strip-dialog {
+    .modal-header {
+        padding: 12px 16px !important;
+        border-bottom: 1px solid var(--alpt-border);
+    }
+
+    .modal-body {
+        background-color: var(--alpt-bg);
+    }
+
+    .modal-footer {
+        padding: 12px 16px !important;
+        border-top: 1px solid var(--alpt-border);
+
+        .btn {
+            min-height: $alpt-cta-h;
+        }
+    }
+
+    :root[data-alpt-scheme="dark"] & {
+        .modal-header {
+            border-bottom-color: rgba(255, 255, 255, .10);
+        }
+
+        .modal-footer {
+            border-top-color: rgba(255, 255, 255, .10);
+
+            .btn-secondary {
+                --btn-bg: var(--alpt-surface);
+            }
+        }
+    }
+}
+
+// --- Montos y títulos ----------------------------------------------------
+// Manrope en negrita con el interletrado apretado del sitio (-.04em en sus
+// titulares grandes; -.02em a tamaño de PdV).
+@mixin alpt-display($important: false) {
+    @if $important {
+        font-family: var(--alpt-font-display) !important;
+        font-weight: $alpt-fw-strong !important;
+    } @else {
+        font-family: var(--alpt-font-display);
+        font-weight: $alpt-fw-strong;
+    }
+    letter-spacing: -.02em;
+}

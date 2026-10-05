@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Pantalla del cliente: se quitan los dos "Powered by <OdooLogo/>". -->
+    <t t-name="al_pos_theme.CustomerDisplay" t-inherit="point_of_sale.CustomerDisplay" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_customer_display_sidebar')]/div[OdooLogo]" position="replace"/>
+        <xpath expr="//div[hasclass('o_customer_display_main')]//div[OdooLogo]" position="replace"/>
+    </t>
+
+</templates>

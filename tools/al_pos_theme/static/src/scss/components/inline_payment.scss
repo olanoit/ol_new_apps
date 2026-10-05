@@ -1,0 +1,82 @@
+// =====================================================================
+// Pago en el panel derecho (AlptInlinePayment). Hereda los estilos de
+// payment_screen.scss (la raíz lleva `.payment-screen`); aquí sólo lo
+// propio de una columna angosta (~400-450px).
+// =====================================================================
+
+.pos .alpt-inline-payment {
+    background-color: var(--alpt-surface);
+
+    &__header {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--alpt-border);
+    }
+
+    &__back {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        width: $alpt-control-sm;
+        height: $alpt-control-sm;
+        padding: 0;
+        border-radius: var(--alpt-radius-sm);
+    }
+
+    &__title {
+        font-size: $alpt-font-size-md;
+        font-weight: $alpt-fw-medium;
+    }
+
+    &__order {
+        font-size: $alpt-font-size-xs + 1px;
+        color: var(--alpt-text-muted);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__body {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    // Total a pagar: más contenido que en la pantalla completa.
+    .paymentlines-container .total {
+        font-size: 28px;
+    }
+
+    .paymentlines-container:not(.paymentlines-empty) .total {
+        font-size: 20px;
+    }
+
+    // Métodos en 2 columnas. El template nativo le pone `flex-grow-1` en
+    // escritorio (llenaba la pantalla completa); en el panel dejaba un hueco
+    // entre los métodos y las líneas de pago.
+    .paymentmethods-container {
+        flex-grow: 0 !important;     // `flex-grow-1` (!important)
+        margin-bottom: 0 !important; // `mb-3` (!important)
+    }
+
+    .paymentmethods {
+        display: grid !important; // `d-flex flex-column` (!important)
+        grid-template-columns: 1fr 1fr;
+        gap: 6px !important;
+    }
+
+    .paymentlines {
+        margin-bottom: 0 !important; // `mb-3` (!important)
+    }
+
+    .payment-status-container {
+        padding: 10px 12px;
+    }
+
+    // Numpad + Validar fijos abajo.
+    &__footer {
+        gap: 8px;
+        padding: 10px 12px 12px;
+        border-top: 1px solid var(--alpt-border);
+        background-color: var(--alpt-surface);
+
+        .validation-button.next {
+            width: 100% !important; // `w-50` (!important)
+        }
+    }
+}

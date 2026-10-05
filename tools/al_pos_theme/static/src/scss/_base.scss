@@ -1,0 +1,208 @@
+// =====================================================================
+// Base: conecta los tokens --alpt-* con las variables CSS de Bootstrap 5.3
+// que usa el PdV (prefijo vacío en Odoo: --primary, --btn-bg, ...).
+// Todo va bajo `.pos` (clase del <body> del PdV) para no afectar nada fuera
+// de la UI de la caja.
+// =====================================================================
+
+// Tamaño raíz del PdV: 15px en vez de 16px. El core y otros módulos
+// (p.ej. los estilos inline de Yapp) miden en `rem`, así que todo baja en
+// la misma proporción sin tocar cada componente. Este archivo sólo se carga
+// en el bundle del PdV: el backend no cambia.
+html {
+    font-size: 15px;
+}
+
+.pos {
+    // Tipografía global
+    --body-font-family: var(--alpt-font-family);
+    --font-sans-serif: var(--alpt-font-family);
+    font-family: var(--alpt-font-family);
+    -webkit-font-smoothing: antialiased;
+
+    // Color primario de marca en utilidades (.text-primary, .bg-primary,
+    // .border-primary, .text-bg-primary usan --primary-rgb) y enlaces.
+    --primary: var(--alpt-primary);
+    --primary-rgb: var(--alpt-primary-rgb);
+    --link-color: var(--alpt-primary);
+    --link-color-rgb: var(--alpt-primary-rgb);
+    --link-hover-color: var(--alpt-primary-hover);
+    --link-hover-color-rgb: var(--alpt-primary-rgb);
+    --focus-ring-color: rgba(var(--alpt-primary-rgb), .4);
+
+    // Estados semánticos (utilidades .text-*, .bg-*, .text-bg-*, .alert-*
+    // usan las variantes -rgb).
+    --success: var(--alpt-success);
+    --success-rgb: var(--alpt-success-rgb);
+    --danger: var(--alpt-danger);
+    --danger-rgb: var(--alpt-danger-rgb);
+    --warning: var(--alpt-warning);
+    --warning-rgb: var(--alpt-warning-rgb);
+    --info: var(--alpt-info);
+    --info-rgb: var(--alpt-info-rgb);
+}
+
+// Variantes de botón semánticas (el LNA del menú usa btn-{info|warning|
+// success|danger}; Yapp usa btn-success). Bootstrap las compila con los
+// colores del sistema base como literales en cada clase.
+@each $variant in (success, danger, warning, info) {
+    .pos .btn-#{$variant} {
+        --btn-color: #FFFFFF;
+        --btn-bg: var(--alpt-#{$variant});
+        --btn-border-color: var(--alpt-#{$variant});
+        --btn-hover-color: #FFFFFF;
+        --btn-hover-bg: rgba(var(--alpt-#{$variant}-rgb), .88);
+        --btn-hover-border-color: transparent;
+        --btn-active-color: #FFFFFF;
+        --btn-active-bg: rgba(var(--alpt-#{$variant}-rgb), .8);
+        --btn-disabled-bg: var(--alpt-#{$variant});
+        --btn-disabled-border-color: var(--alpt-#{$variant});
+    }
+}
+
+// Avisos dentro de diálogos (p.ej. "RUT cargado desde el cliente" de Yapp).
+.pos .alert {
+    border: 0;
+    border-radius: var(--alpt-radius-sm);
+    font-size: $alpt-font-size-xs + 1px;
+}
+
+.pos .alert-info {
+    background-color: var(--alpt-info-subtle);
+    color: var(--alpt-info);
+}
+
+.pos .alert-warning {
+    background-color: var(--alpt-warning-subtle);
+    color: var(--alpt-warning);
+}
+
+.pos .alert-danger {
+    background-color: var(--alpt-danger-subtle);
+    color: var(--alpt-danger);
+}
+
+.pos .alert-success {
+    background-color: var(--alpt-success-subtle);
+    color: var(--alpt-success);
+}
+
+// Color de "acción" del sistema base (turquesa) usado como texto en
+// varios componentes: cliente elegido, check de selección, etc.
+.pos .text-action {
+    color: var(--alpt-primary) !important; // utilidad con !important
+}
+
+html:not([data-alpt-scheme="dark"]) .pos {
+    --body-bg: var(--alpt-bg);
+    --body-color: var(--alpt-text);
+    background-color: var(--alpt-bg);
+    color: var(--alpt-text);
+}
+
+// Los componentes de botón de Bootstrap compilan sus colores como
+// literales en su propia clase: hay que redefinir sus variables ahí.
+.pos .btn-primary {
+    --btn-color: var(--alpt-on-primary);
+    --btn-bg: var(--alpt-primary);
+    --btn-border-color: var(--alpt-primary);
+    --btn-hover-color: var(--alpt-on-primary);
+    --btn-hover-bg: var(--alpt-primary-hover);
+    --btn-hover-border-color: var(--alpt-primary-hover);
+    --btn-active-color: var(--alpt-on-primary);
+    --btn-active-bg: var(--alpt-primary-active);
+    --btn-active-border-color: var(--alpt-primary-active);
+    // Deshabilitado neutro: el primario "lavado" (opacity) parecía activo.
+    --btn-disabled-color: var(--alpt-text-muted);
+    --btn-disabled-bg: var(--alpt-surface-2);
+    --btn-disabled-border-color: transparent;
+    --btn-disabled-opacity: 1;
+    --btn-focus-shadow-rgb: var(--alpt-primary-rgb);
+}
+
+// CTA con degradado primario →
+// acento en 135deg y sombra azul suave. `background-image` va sobre el
+// `--btn-bg` sólido (que queda de respaldo); hover/presionado se marcan con
+// brillo y sombra porque un degradado no toma `--btn-hover-bg`.
+.pos .btn-primary:not(:disabled):not(.disabled) {
+    background-image: var(--alpt-gradient-primary);
+    border-color: transparent;
+    transition: filter .2s, box-shadow .2s;
+
+    &:hover {
+        filter: brightness(1.06);
+        box-shadow: var(--alpt-shadow-primary);
+    }
+
+    &:active,
+    &.active {
+        filter: brightness(.94);
+        box-shadow: none;
+    }
+}
+
+// Títulos cortos (encabezados de diálogo y de sección): Manrope en el color
+// secundario.
+.pos :is(.modal-title, h1, h2, h3, h4) {
+    @include alpt-display;
+    color: var(--alpt-heading);
+}
+
+// Foco: halo del color de acento.
+.pos :is(.form-control, .form-select, .o_input):focus {
+    border-color: var(--alpt-accent);
+    box-shadow: var(--alpt-focus-ring);
+}
+
+.pos .btn-outline-primary {
+    --btn-color: var(--alpt-primary);
+    --btn-border-color: var(--alpt-primary);
+    --btn-hover-color: var(--alpt-on-primary);
+    --btn-hover-bg: var(--alpt-primary);
+    --btn-hover-border-color: var(--alpt-primary);
+    --btn-active-color: var(--alpt-on-primary);
+    --btn-active-bg: var(--alpt-primary-hover);
+    --btn-active-border-color: var(--alpt-primary-hover);
+    --btn-disabled-color: var(--alpt-primary);
+    --btn-disabled-border-color: var(--alpt-primary);
+    --btn-focus-shadow-rgb: var(--alpt-primary-rgb);
+}
+
+.pos .form-check-input:checked {
+    background-color: var(--alpt-primary);
+    border-color: var(--alpt-primary);
+}
+
+.pos .form-control:focus,
+.pos .form-select:focus,
+.pos .form-check-input:focus {
+    border-color: rgba(var(--alpt-primary-rgb), .45);
+    box-shadow: var(--alpt-focus-ring);
+}
+
+// --- Peso tipográfico: casi sin negrita --------------------------------
+// El core usa `fw-bold`/`fw-bolder` (con !important), <b>, <strong> y
+// encabezados en muchos componentes. Dentro del PdV se llevan a 500; el
+// ticket (`.pos-receipt`) se excluye: impreso en térmica la negrita sí
+// ayuda a leer el TOTAL. Los 2-3 montos decisivos suben a 600 en su propio
+// componente con un selector más específico.
+.pos :is(.fw-bold, .fw-bolder, .fw-semibold, b, strong, th,
+         h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6):not(.pos-receipt, .pos-receipt *, .pos-product-list-row *, .orderline *) {
+    font-weight: $alpt-fw-medium !important; // utilidades `fw-*` (!important)
+}
+
+// Botones: un solo peso y tamaño de texto en todo el PdV.
+.pos .btn {
+    --btn-font-weight: #{$alpt-fw-medium};
+}
+
+// Foco visible accesible para navegación con teclado (WCAG 2.4.7).
+.pos :is(button, .btn, [role="button"], a):focus-visible {
+    outline: none;
+    box-shadow: var(--alpt-focus-ring);
+}
+
+// Cifras de ancho fijo: precios y totales no "bailan" al cambiar.
+.pos :is(.price, .total, .amount, .pos-receipt-amount, .timer-hours) {
+    font-variant-numeric: tabular-nums;
+}

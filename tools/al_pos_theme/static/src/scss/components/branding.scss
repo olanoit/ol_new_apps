@@ -1,0 +1,86 @@
+// =====================================================================
+// Branding global: logo (Navbar + SaverScreen), login, pantalla de carga.
+// =====================================================================
+
+// .pos-logo del core pinta `var(--navbar-logo, url(odoo_logo.svg))`.
+// El índice define --navbar-logo con el logo de la caja/compañía; si no hay
+// ninguno, vale `none` y se muestra el nombre de marca como texto.
+.pos .pos-logo {
+    // Ver pos_config.py: el valor viene de --alpt-logo (índice); con 2
+    // clases gana a `.pos-logo { --navbar-logo: odoo_logo_dark.svg }` del
+    // modo oscuro de pos_enterprise.
+    --navbar-logo: var(--alpt-logo, none);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+        content: var(--alpt-brand-name);
+        display: var(--alpt-brand-text-display);
+        font-family: var(--alpt-font-family);
+        font-weight: $alpt-fw-medium;
+        font-size: 18px;
+        letter-spacing: -.01em;
+        color: var(--alpt-primary);
+        white-space: nowrap;
+    }
+}
+
+// SaverScreen: fondo secundario → primario, así que va la versión clara del
+// logo (si la caja tiene una).
+.pos .login-overlay .pos-logo {
+    --navbar-logo: var(--alpt-logo-inverse, var(--alpt-logo, none));
+}
+
+// SaverScreen: logo grande centrado -> el texto también crece.
+.pos .login-overlay .pos-logo::after {
+    font-size: clamp(32px, 6vw, 64px);
+    color: var(--alpt-on-secondary);
+}
+
+// Login / reposo: el core usa el fondo de burbujas de hr_attendance vía
+// --homeMenu-bg-image; se reemplaza por un degradado de marca.
+.pos .login-overlay {
+    --homeMenu-bg-color: var(--alpt-secondary);
+    --homeMenu-bg-image: linear-gradient(135deg, var(--alpt-secondary) 0%, var(--alpt-primary) 100%);
+    // El texto (reloj, fecha) queda sobre la zona del secundario del
+    // degradado (arriba-izquierda): se usa su color de contraste, que no
+    // cambia con el modo oscuro.
+    color: var(--alpt-on-secondary);
+
+    .screen-login-timer,
+    .timer-hours,
+    .timer-date-container {
+        color: var(--alpt-on-secondary);
+    }
+
+    .open-register-btn {
+        --btn-bg: var(--alpt-surface);
+        --btn-hover-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        border-radius: var(--alpt-radius-lg);
+        box-shadow: var(--alpt-shadow-dialog);
+        color: var(--alpt-text);
+        font-weight: $alpt-fw-medium;
+
+        i {
+            color: var(--alpt-primary);
+        }
+    }
+
+    .select-logout {
+        border-radius: var(--alpt-radius-pill);
+        min-height: $alpt-control-sm;
+        padding-inline: 24px;
+    }
+}
+
+// Pantalla de carga: fondo de marca y spinner en color primario.
+.pos-loader {
+    background-color: var(--alpt-bg);
+    font-family: var(--alpt-font-family);
+}
+
+.lds-ellipsis div {
+    background: var(--alpt-primary);
+}

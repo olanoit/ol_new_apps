@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Icono neutro del tema TPV (AL): caja registradora. -->
+  <rect width="100" height="100" rx="22" fill="#1E293B"/>
+  <rect x="22" y="18" width="56" height="36" rx="6" fill="#E2E8F0"/>
+  <rect x="28" y="24" width="44" height="24" rx="3" fill="#1E293B"/>
+  <rect x="45" y="54" width="10" height="8" fill="#E2E8F0"/>
+  <rect x="16" y="62" width="68" height="20" rx="6" fill="#E2E8F0"/>
+  <circle cx="32" cy="72" r="3.5" fill="#1E293B"/>
+  <circle cx="44" cy="72" r="3.5" fill="#1E293B"/>
+  <circle cx="56" cy="72" r="3.5" fill="#1E293B"/>
+  <rect x="63" y="68.5" width="13" height="7" rx="2" fill="#1E293B"/>
+</svg>

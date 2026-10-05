@@ -1,0 +1,163 @@
+// =====================================================================
+// Panel de orden (OrderSummary > OrderDisplay > Orderline) y botones de
+// control. Acotado a `.leftpane` de ProductScreen y de TicketScreen (en
+// TicketScreen `.leftpane` es el panel de detalle, a la derecha): el mismo
+// OrderDisplay/Orderline se usa en el recibo (mode="receipt"), que debe
+// quedar monocromo para la impresión ESC/POS.
+// =====================================================================
+
+.pos :is(.product-screen, .ticket-screen) .leftpane {
+    background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+
+    // Líneas de la orden: diseño del módulo base TAL CUAL (pedido
+    // explícito: el tema las compactaba con chip de cantidad, sangría de
+    // 44px en la info y tamaños propios, y dejaba mucho aire a la derecha).
+    // Sólo se reemplazan los colores del sistema base (fuga de marca):
+    // fondo de la línea seleccionada y franja de "cambios pendientes".
+    .orderline {
+        --orderline-selected: var(--alpt-primary-subtle);
+
+        // Único ajuste de tamaño (pedido): misma letra que las tarjetas y la
+        // vista lista del catálogo (nombre 11px, precio 12px).
+        .product-name {
+            font-size: $alpt-font-size-xs;
+        }
+
+        .product-price {
+            font-size: $alpt-font-size-xs + 1px;
+        }
+
+        // Descripción bajo el nombre (precio unitario, descuento, nota,
+        // beneficio Yapp "Seguros Bodoque · -$654"): un punto más chica que
+        // el nombre para que se lea como detalle.
+        .info-list {
+            font-size: $alpt-font-size-xs - 1px;
+        }
+
+        &.has-change::before {
+            background-color: var(--alpt-accent); // core: $o-brand-primary
+        }
+    }
+
+    // Totales: banda de cierre en el color SECUNDARIO de la caja (tinta).
+    // Es el único bloque oscuro de la pantalla de venta — el elemento que
+    // distingue al tema del sistema base (donde el total es texto sobre
+    // blanco) y que el ojo del cajero encuentra sin buscar.
+    .order-summary {
+        gap: 2px !important; // `gap-1` (!important)
+        margin: 0 8px 8px;
+        padding: 10px 14px !important; // `p-2` (!important)
+        border-top: 0;
+        border-bottom: 0 !important; // `border-bottom` (!important)
+        border-radius: var(--alpt-radius-md);
+        background-color: var(--alpt-secondary);
+        color: var(--alpt-on-secondary);
+        // Filo claro casi invisible en claro; en oscuro separa la banda de
+        // la superficie (el secundario por defecto es cercano al fondo).
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+
+        .tax-info {
+            font-weight: $alpt-fw-regular;
+            color: inherit !important; // `text-muted` (!important): gris ilegible sobre la banda
+            opacity: .72;
+
+            > span:last-child,
+            .tax {
+                font-variant-numeric: tabular-nums;
+            }
+        }
+
+        // Fila "Total": la fila tiene `fs-3` (utilidad !important), así que
+        // el tamaño se ajusta en los hijos.
+        .fs-3 > span:first-child {
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+            align-self: center;
+        }
+
+        .total {
+            font-size: $alpt-font-size-xl;
+            @include alpt-display;
+            letter-spacing: -.01em;
+            font-variant-numeric: tabular-nums;
+            color: inherit;
+        }
+    }
+}
+
+// Orden vacía (xml/order_summary.xml).
+.pos .alpt-empty-cart {
+    color: var(--alpt-text-muted);
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 4px;
+        background-color: var(--alpt-primary-subtle);
+        color: var(--alpt-primary);
+        font-size: 24px;
+    }
+
+    &__title {
+        font-size: $alpt-font-size-md;
+        font-weight: $alpt-fw-medium;
+        color: var(--alpt-text);
+    }
+
+    &__hint {
+        font-size: $alpt-font-size-xs + 1px;
+        max-width: 240px;
+    }
+}
+
+// Botones de control (Cliente, Nota, Guardar, Más, y los que agregan
+// otros módulos como el "Cotizar"/"Beneficios" de Yapp) sobre el numpad.
+// Alto y letra para TODOS los botones de la fila (antes sólo btn-secondary:
+// el `btn-success btn-lg lh-lg` de Yapp medía 49px y estiraba la fila).
+.pos .product-screen .control-buttons .btn,
+.pos .product-screen .actionpad > .d-flex > .btn { // fila móvil (no el botón Pago)
+    min-height: $alpt-control-sm !important;
+    height: $alpt-control-sm;
+    padding: 0 10px !important;   // `btn-lg` (!important)
+    line-height: 1.2 !important;  // `lh-lg` (!important)
+    font-size: $alpt-font-size-sm !important; // `btn-lg` / fs de Yapp
+    border-radius: var(--alpt-radius-sm);
+}
+
+.pos .product-screen .control-buttons .btn-secondary,
+.pos .product-screen .actionpad .btn-secondary {
+    --btn-bg: var(--alpt-surface-2);
+    --btn-border-color: transparent;
+    --btn-hover-bg: var(--alpt-primary-subtle);
+    --btn-hover-border-color: transparent;
+    --btn-hover-color: var(--alpt-primary);
+    --btn-color: var(--alpt-text);
+    --btn-disabled-bg: var(--alpt-surface-2);
+    --btn-disabled-color: var(--alpt-text-muted);
+    --btn-disabled-border-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--alpt-radius-sm);
+    font-size: $alpt-font-size-sm;
+    font-weight: $alpt-fw-medium;
+}
+
+
+// --- Botones de acción con borde de color primario ----------------------
+// Cliente, Beneficios/Cotizar (Yapp), Nota, los de ícono y ⋮ sobre el
+// teclado — y sus equivalentes en las otras pantallas (Detalles / Imprimir
+// recibo en Órdenes, Cliente / Documento en el pago, opciones del recibo):
+// borde de 1px en el color primario de la caja (pedido explícito), para
+// que se lean como botones y no como etiquetas grises. El relleno sigue
+// suave; al pasar el mouse se tiñe.
+.pos .product-screen :is(.control-buttons, .actionpad > .d-flex) > .btn:not(.pay-order-button):not(.btn-primary),
+.pos .ticket-screen .leftpane .control-buttons .btn,
+.pos .payment-screen .payment-buttons .btn:not(.btn-primary),
+.pos .alpt-receipt-screen :is(.receipt-options, .yapp-voucher-options) .btn-secondary {
+    --btn-border-color: var(--alpt-primary);
+    --btn-hover-border-color: var(--alpt-primary);
+    --btn-active-border-color: var(--alpt-primary);
+    --btn-disabled-border-color: rgba(var(--alpt-primary-rgb), .35);
+    border: 1px solid var(--btn-border-color) !important; // `border-0` / reglas de tarjeta (!important)
+}

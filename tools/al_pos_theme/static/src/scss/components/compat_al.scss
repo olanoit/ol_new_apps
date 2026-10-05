@@ -1,0 +1,132 @@
+// =====================================================================
+// Compatibilidad con los módulos TPV de la suite instalados en la misma
+// base. Esos módulos compilan `$primary` (color del sistema base) como
+// literal; aquí se lo reemplaza por el token de marca. Si el módulo no está
+// instalado las reglas simplemente no aplican (no hay dependencia).
+//
+// al_pos_vendedor y al_l10n_pe_edi_pos usan botones Bootstrap estándar y
+// heredan el tema sin reglas propias.
+// =====================================================================
+
+// al_pos_product_view: barra de vista cuadrícula/lista.
+.pos .pos-view-switch {
+    // Barra de un solo botón: se compacta (antes 53px + 16px de margen) y
+    // sin borde, para que el catálogo empiece más arriba.
+    padding: 8px 12px 4px !important;  // `px-2 py-2` (!important)
+    margin-bottom: 0 !important;       // `mb-2 mb-md-3` (!important)
+    border-bottom: 0 !important;       // `border-bottom` (!important)
+
+    &__btn {
+        --btn-border-color: var(--alpt-border-strong);
+        min-height: 36px;
+        border-radius: var(--alpt-radius-pill);
+        font-weight: $alpt-fw-medium;
+        color: var(--alpt-text-2);
+
+        &:hover {
+            background-color: var(--alpt-primary-subtle);
+            border-color: var(--alpt-border);
+            color: var(--alpt-primary);
+        }
+    }
+}
+
+// al_pos_product_view: filas de la vista lista.
+// Se respeta el diseño del módulo (pedido explícito). Sólo dos ajustes,
+// también pedidos: mismo tamaño de letra que la tarjeta de la cuadrícula
+// (nombre 11px, precio 12px; ver product_card.scss) e imagen más chica.
+// `_base.scss` la excluye de la normalización de negritas.
+.pos .pos-product-list-row {
+    .pos-product-list-row__name {
+        font-size: $alpt-font-size-xs;
+    }
+
+    .pos-product-list-row__price {
+        font-size: $alpt-font-size-xs + 1px;
+    }
+
+    .pos-product-list-row__img {
+        width: 32px;  // módulo: 3rem (45px)
+        height: 32px;
+    }
+
+    // Hover: el módulo compila `border-color: $primary !important`, que es
+    // el púrpura del sistema base (fuga de marca): filo del acento y sombra
+    // suave, como las tarjetas del tema.
+    &:hover {
+        border-color: var(--alpt-card-border-hover) !important;
+        box-shadow: var(--alpt-shadow-hover);
+    }
+
+    // Stock: con `line-height` = tamaño de letra el texto quedaba cargado
+    // hacia arriba dentro del badge; flex + alto fijo lo centra.
+    .pos-product-list-row__stock {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 18px;
+        padding: 0 8px;
+        line-height: 1;
+    }
+
+    // Botón "i": el módulo usa `btn-light` sobre fondo blanco (sólo se veía
+    // la letra). Borde suave como el botón "i" de la cuadrícula y resalte
+    // de marca al pasar el mouse.
+    .pos-product-list-row__info-btn {
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        border: 1px solid var(--alpt-border-strong) !important;
+        color: var(--alpt-text-2);
+        font-size: 11px;
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--alpt-primary);
+            border-color: var(--alpt-primary) !important;
+            color: var(--alpt-on-primary);
+        }
+    }
+}
+
+// Botón "i" flotante de las tarjetas (mismo módulo).
+// Mismo estilo que el botón "i" de la vista lista: círculo de 26px con
+// borde suave, "i" atenuada y relleno de marca al pasar el mouse.
+.pos .pos-card-info-btn {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid var(--alpt-border-strong) !important;
+    color: var(--alpt-text-2);
+    font-size: 11px;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--alpt-primary);
+        border-color: var(--alpt-primary) !important;
+        color: var(--alpt-on-primary);
+    }
+}
+
+// al_pos_product_view: chips del filtro por etiquetas.
+.pos .alpv-tag-selector {
+    padding-inline: 12px !important; // `px-2` (!important)
+
+    .alpv-tag-chip,
+    .alpv-tag-refresh {
+        min-height: 28px;
+        font-size: $alpt-font-size-xs; // igual que el nombre en la cuadrícula
+        border-color: var(--alpt-border-strong) !important; // `border` (!important)
+        font-weight: $alpt-fw-medium;
+    }
+
+    .alpv-tag-chip.btn-light {
+        --btn-bg: var(--alpt-surface);
+        --btn-hover-bg: var(--alpt-primary-subtle);
+        --btn-hover-color: var(--alpt-primary);
+    }
+
+    .alpv-tag-chip.active {
+        border-color: transparent !important;
+    }
+}

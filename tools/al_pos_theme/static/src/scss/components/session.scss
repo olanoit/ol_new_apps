@@ -1,0 +1,260 @@
+// =====================================================================
+// Sesión de caja: apertura (OpeningControlPopup), cierre (ClosePosPopup),
+// detalle de billetes (MoneyDetailsPopup) y entrada/salida de efectivo
+// (CashMovePopup). Todos son diálogos: heredan el estilo común de
+// dialogs.scss; aquí sólo lo propio de cada uno.
+//
+// Criterios: sin `fs-3` en los encabezados de método (17px en su lugar),
+// sin líneas `border-start` a la izquierda de cada fila (se usa sangría y
+// texto atenuado), 600 sólo para el total de ventas y la diferencia.
+// =====================================================================
+
+// --- Cierre de caja ---------------------------------------------------
+.pos .close-pos-popup {
+    // Encabezado "Cierre de caja  ·  total".
+    .modal-header h4 {
+        font-size: $alpt-font-size-md - 1px;
+    }
+
+    .total-orders {
+        font-size: $alpt-font-size-sm;
+        color: var(--alpt-text-muted);
+
+        .amount {
+            margin-inline-start: 4px;
+            font-size: $alpt-font-size-md;
+            @include alpt-display;
+            color: var(--alpt-text);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // Resumen por método de pago.
+    .payment-methods-overview {
+        > div {
+            margin-bottom: 12px !important; // `mb-3` (!important)
+            padding: 10px 12px;
+            border-radius: var(--alpt-radius-md);
+            background-color: var(--alpt-surface-2);
+        }
+
+        // Nombre del método + monto esperado (el core usa `fs-3`).
+        .fs-3 {
+            font-size: $alpt-font-size-md - 1px !important; // `fs-3` (!important)
+            margin-bottom: 4px;
+
+            > span:last-child {
+                font-variant-numeric: tabular-nums;
+            }
+        }
+
+        // Filas de detalle: sin la línea izquierda del core.
+        .border-start {
+            border-left: 0 !important; // `border-start` (!important)
+            padding-left: 12px !important; // `ps-2` (!important)
+            font-size: $alpt-font-size-xs + 1px;
+
+            > span:last-child {
+                font-variant-numeric: tabular-nums;
+            }
+        }
+
+        // Diferencia de caja: el único dato del resumen que sí debe resaltar.
+        .text-danger.fw-bold {
+            @include alpt-display($important: true);
+        }
+    }
+
+    // Conteo de efectivo / por método: campo + botones de ícono.
+    .cash-input,
+    .input-container {
+        border-radius: var(--alpt-radius-sm);
+    }
+
+    .btn.icon {
+        min-width: $alpt-touch-min;
+        min-height: $alpt-touch-min;
+    }
+
+    // Pie con dos grupos (cerrar/descartar · efectivo/venta diaria/imprimir):
+    // sin ancho mínimo para que entren en una sola fila.
+    .modal-footer .btn {
+        min-width: 0;
+        padding-inline: 14px !important;
+    }
+
+    .notes-container textarea {
+        min-height: 80px;
+        font-size: $alpt-font-size-sm;
+    }
+}
+
+// --- Apertura de caja -------------------------------------------------
+.pos .opening-cash-section {
+    .cash-input-sub-section {
+        align-items: stretch;
+    }
+
+    .btn.icon {
+        min-width: $alpt-touch-min;
+        min-height: $alpt-touch-min;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.pos .opening-notes {
+    font-size: $alpt-font-size-sm;
+}
+
+// --- Detalle de billetes y monedas -----------------------------------
+.pos .modal-content .oe_link_icon {
+    font-size: $alpt-font-size-sm;
+    color: var(--alpt-text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+.pos .modal-content .total-section {
+    font-size: $alpt-font-size-md !important;
+    font-variant-numeric: tabular-nums;
+}
+
+// --- Entrada / salida de efectivo ------------------------------------
+// Los botones "Entrada" / "Salida" como control segmentado.
+.pos .input-amount .input-group {
+    gap: 2px;
+    padding: 3px;
+    border-radius: calc(var(--alpt-radius-sm) + 3px);
+    background-color: var(--alpt-surface-2);
+
+    .input-type {
+        --btn-bg: transparent;
+        --btn-border-color: transparent;
+        --btn-hover-bg: rgba(var(--alpt-primary-rgb), .08);
+        --btn-color: var(--alpt-text-2);
+        flex: 1 1 0;
+        min-height: 38px;
+        border-radius: var(--alpt-radius-sm) !important; // `input-group` (!important)
+        font-size: $alpt-font-size-sm;
+
+        // Seleccionado: fondo blanco y el color semántico sólo en el texto
+        // (Entrada = `highlight btn-success`, Salida = `red-highlight btn-danger`).
+        &.btn-success,
+        &.btn-danger {
+            background-color: var(--alpt-surface);
+            box-shadow: var(--alpt-shadow-card);
+        }
+
+        &.btn-success {
+            color: var(--alpt-success);
+        }
+
+        &.btn-danger {
+            color: var(--alpt-danger);
+        }
+    }
+}
+
+.pos .cash-reason {
+    font-size: $alpt-font-size-sm;
+}
+
+// --- Mismo estilo que el recibo, Órdenes y clientes -----------------------
+// Franjas arriba/abajo y contenido sobre el fondo; cada bloque del cierre
+// (efectivo y cada método de pago) es una tarjeta como las filas de
+// Órdenes. Cubre cierre, apertura, entrada/salida de efectivo y billetes.
+.pos .close-pos-popup,
+.pos .modal-content:has(.opening-cash-section),
+.pos .modal-content:has(.input-amount),
+.pos .modal-content:has(.total-section) {
+    @include alpt-strip-dialog;
+
+    .modal-body:not(.p-0) {
+        padding: 16px !important; // `p-3` / ajuste de dialogs.scss (!important)
+    }
+}
+
+// Entrada/salida no tiene encabezado (`header="false"`): el cuerpo empieza
+// arriba, sin franja.
+
+.pos .close-pos-popup .payment-methods-overview > div {
+    padding: 12px 14px;
+    border: 1px solid var(--alpt-card-border);
+    background-color: var(--alpt-card-bg);
+}
+
+// Campos sobre el fondo: blancos (en claro) para recortarse del gris.
+.pos :is(.close-pos-popup, .modal-content:has(.opening-cash-section), .modal-content:has(.input-amount), .modal-content:has(.total-section)) {
+    .form-control,
+    .o_input,
+    .input-container,
+    textarea {
+        background-color: var(--alpt-card-bg);
+    }
+
+    // El <input> dentro del contenedor con borde (componente Input del PdV)
+    // toma el fondo del contenedor: si no, se veía una caja dentro de otra.
+    .input-container .o_input {
+        background-color: transparent !important;
+    }
+
+    // Control segmentado Entrada/Salida: conserva su fondo gris (la opción
+    // elegida es la "tarjeta" blanca); sólo se le da contorno.
+    .input-amount .input-group {
+        border: 1px solid var(--alpt-card-border);
+    }
+}
+
+// --- Teléfono ------------------------------------------------------------
+// Entrada/salida: en `ui.isSmall` el core deja el control segmentado en
+// `w-50` y el monto en `mw-50 h-50` lado a lado (en un teléfono quedan
+// apretados). Se apilan a todo el ancho: Entrada/Salida arriba, monto
+// abajo. Se reconoce por ese `w-50`, que sólo pone en teléfono.
+.pos .input-amount:has(> .input-group.w-50) {
+    flex-direction: column;
+
+    > * {
+        width: 100% !important;     // `w-50` (!important)
+        max-width: none !important; // `mw-50` (!important)
+        height: auto !important;    // `h-50` (!important)
+    }
+
+    .input-type {
+        min-height: $alpt-touch-min;
+    }
+}
+
+// --- Tablet: mismo estilo, a casi todo el ancho ---------------------------
+// Entre `md` y `xl` Bootstrap deja estos diálogos en 500px (md) u 800px
+// (lg): el cierre de caja partía su pie en dos filas desparejas y los
+// montos quedaban apretados. Como la lista de clientes en tablet, el
+// diálogo usa casi todo el ancho de la pantalla (a 736px el pie del cierre
+// entra en una sola fila).
+@include media-breakpoint-between(md, xl) {
+    .pos .modal-dialog:has(.close-pos-popup),
+    .pos .modal-dialog:has(.opening-cash-section),
+    .pos .modal-dialog:has(.input-amount),
+    .pos .modal-dialog:has(.total-section) {
+        // unquote(): libsass trataría min() como su función numérica.
+        max-width: unquote("min(1000px, calc(100vw - 32px))");
+    }
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// Cierre, apertura, entrada/salida y billetes: botones secundarios del pie
+// (Descartar, Entrada/salida, Venta diaria, Detalles, imprimir) y botones de
+// ícono del contenido (billetes/calculadora). El botón principal (Cerrar
+// caja / Confirmar / Abrir) ya es primario lleno; el control segmentado
+// Entrada/Salida conserva su estilo (la opción elegida ya se distingue).
+.pos :is(.close-pos-popup, .modal-content:has(.opening-cash-section), .modal-content:has(.input-amount), .modal-content:has(.total-section)) {
+    .modal-footer .btn:not(.btn-primary),
+    .modal-body .btn:is(.btn-secondary, .btn-light, .icon):not(.input-type) {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        --btn-disabled-border-color: rgba(var(--alpt-primary-rgb), .35);
+        border: 1px solid var(--btn-border-color) !important;
+    }
+}

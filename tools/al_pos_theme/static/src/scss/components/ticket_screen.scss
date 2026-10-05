@@ -1,0 +1,396 @@
+// =====================================================================
+// Historial de tickets (point_of_sale.TicketScreen).
+// OJO: en esta pantalla `.rightpane` es la LISTA (izquierda) y `.leftpane`
+// el DETALLE (derecha). El detalle reutiliza los estilos de líneas y
+// numpad del panel de orden (order_panel.scss / numpad.scss).
+//
+// Tipografía: N° de orden 600 · fecha/cliente 400–500 · total 600 (en una
+// lista con muchas filas el 700 compite entre sí) · estado: píldora 12/600.
+// =====================================================================
+
+.pos .alpt-ticket-screen {
+    background-color: var(--alpt-bg);
+
+    // --- Lista (izquierda) ---------------------------------------------
+    .rightpane {
+        background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+        border-color: var(--alpt-border) !important;      // `border-end` (!important)
+    }
+
+    .controls {
+        padding: 10px 12px !important; // `p-2` (!important)
+        background-color: var(--alpt-surface) !important;
+        border-color: var(--alpt-border) !important;
+
+        // Presets (restaurante / para llevar).
+        .buttons .btn-secondary {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            --btn-color: var(--alpt-text);
+            min-height: $alpt-touch-min;
+            border-radius: var(--alpt-radius-pill);
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+
+            &.active {
+                background-color: var(--alpt-primary-subtle);
+                color: var(--alpt-primary);
+            }
+        }
+
+        // Paginación.
+        .page {
+            font-size: $alpt-font-size-xs + 1px;
+            color: var(--alpt-text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .page-controls .btn {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: var(--alpt-radius-sm);
+        }
+    }
+
+    // Buscador + filtro.
+    .pos-search-bar {
+        .input-group-text {
+            border: 0;
+            border-radius: var(--alpt-radius-pill) 0 0 var(--alpt-radius-pill);
+            background-color: var(--alpt-surface-2);
+            color: var(--alpt-text-muted);
+        }
+
+        .form-control {
+            min-height: $alpt-touch-min;
+            border: 0;
+            background-color: var(--alpt-surface-2);
+            font-size: $alpt-font-size-sm;
+            // 16px sólo en pantallas chicas (evita el zoom de iOS al enfocar)
+            @include media-breakpoint-down(md) { font-size: 16px; }
+        }
+
+        .filter {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            --btn-color: var(--alpt-text);
+            min-height: $alpt-touch-min;
+            border-radius: 0 var(--alpt-radius-pill) var(--alpt-radius-pill) 0;
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+        }
+
+        .input-group:focus-within {
+            border-radius: var(--alpt-radius-pill);
+            box-shadow: var(--alpt-focus-ring);
+        }
+
+        // Sugerencias de campo de búsqueda.
+        .fields {
+            border-radius: var(--alpt-radius-md);
+            box-shadow: var(--alpt-shadow-dialog);
+            background-color: var(--alpt-surface) !important; // `bg-light` (!important)
+
+            .highlight {
+                background-color: var(--alpt-primary-subtle);
+            }
+        }
+    }
+
+    // Tabla de órdenes: filas como tarjetas separadas (mismo lenguaje que
+    // la vista lista del catálogo), sobre el fondo gris claro.
+    .orders {
+        padding: 2px 10px 10px;
+        background-color: var(--alpt-bg) !important; // `bg-view` (!important)
+
+        .table {
+            @include alpt-card-table(6px);
+            --table-striped-bg: transparent;
+            --table-hover-bg: rgba(var(--alpt-primary-rgb), .03);
+            margin-bottom: 0;
+            font-size: $alpt-font-size-sm;
+
+            td {
+                padding: 10px 12px;
+            }
+        }
+
+        // Los `fw-bolder` del core (fecha, N°, cliente, total) se bajan:
+        // con todo en negrita no se distingue nada.
+        .fw-bolder {
+            font-weight: $alpt-fw-regular !important; // `fw-bolder` (!important)
+        }
+
+        .order-name .fw-bolder {
+            font-weight: $alpt-fw-medium !important;
+        }
+
+        .alpt-order-total {
+            font-weight: $alpt-fw-medium !important; // total (clase puesta en xml/ticket_screen.xml)
+            font-variant-numeric: tabular-nums;
+        }
+
+        .small.text-muted {
+            font-size: $alpt-font-size-xs;
+        }
+
+        // Estado: píldora suave en vez de la etiqueta sólida.
+        .badge {
+            padding: 4px 10px;
+            border-radius: var(--alpt-radius-pill) !important; // `rounded` (!important)
+            font-size: 12px !important; // `fs-6` (!important)
+            font-weight: $alpt-fw-medium;
+        }
+
+        .badge.text-bg-success { background-color: var(--alpt-success-subtle) !important; color: var(--alpt-success) !important; }
+        .badge.text-bg-danger  { background-color: var(--alpt-danger-subtle) !important;  color: var(--alpt-danger) !important; }
+        .badge.text-bg-warning { background-color: var(--alpt-warning-subtle) !important; color: var(--alpt-warning) !important; }
+        .badge.text-bg-info    { background-color: var(--alpt-info-subtle) !important;    color: var(--alpt-info) !important; }
+        .badge.text-bg-light,
+        .badge.text-bg-secondary { background-color: var(--alpt-surface-2) !important; color: var(--alpt-text-2) !important; }
+    }
+
+    // Fila seleccionada (el core usa $o-action: turquesa del sistema base).
+    // En Bootstrap 5.3 cada celda pinta su fondo con un box-shadow inset de
+    // 9999px (--table-bg-state), que tapa el fondo del <tr>: el color se
+    // define en esa variable y la barra de marca en la primera celda.
+    .order-row.highlight {
+        color: var(--alpt-text);
+
+        // En cada celda: Bootstrap redefine --table-bg-state por celda
+        // (hover/striped), no se hereda del <tr>.
+        > td {
+            --table-bg-state: var(--alpt-primary-subtle);
+        }
+
+    }
+
+    // Vista móvil (sin tabla).
+    .mobileOrderList.order-row.highlight {
+        background-color: var(--alpt-primary-subtle);
+    }
+
+    // --- Detalle (derecha) ---------------------------------------------
+    .leftpane {
+        background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+
+        .control-buttons .btn-secondary,
+        .pads .btn-secondary {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            --btn-hover-bg: var(--alpt-primary-subtle);
+            --btn-hover-color: var(--alpt-primary);
+            --btn-color: var(--alpt-text);
+            min-height: $alpt-touch-min;
+            border-radius: var(--alpt-radius-sm);
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+        }
+
+        .load-order-button {
+            min-height: $alpt-cta-h;
+            padding-block: 0 !important; // `py-3` (!important)
+            border-radius: var(--alpt-radius-md);
+            font-size: $alpt-font-size-md + 1px;
+            font-weight: $alpt-fw-medium;
+        }
+
+        // Info de reembolso sobre las líneas.
+        .refund-note {
+            font-size: $alpt-font-size-xs;
+        }
+
+        .to-refund-highlight {
+            color: var(--alpt-primary) !important; // `text-primary` compilado
+        }
+    }
+
+    // Estado vacío del detalle (CenteredIcon).
+    .alpt-empty-state {
+        color: var(--alpt-text-muted);
+
+        i {
+            font-size: 32px;
+            color: var(--alpt-primary);
+            opacity: .6;
+        }
+
+        // El texto del core es un <h3> (~24px): es un aviso, no un título.
+        h3 {
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+            color: var(--alpt-text-muted);
+        }
+    }
+}
+
+// --- Mismo estilo que el recibo (receipt_screen.scss) --------------------
+// Lista a la izquierda sobre el fondo (zona del catálogo) y detalle a la
+// derecha como columna blanca separada por una línea fina; el botón
+// principal ("Cargar orden" / "Reembolso") abajo, a lo ancho y con el
+// mismo alto que "Nueva orden" y "Pago".
+.pos .alpt-ticket-screen {
+    .rightpane {
+        background-color: var(--alpt-bg) !important; // `bg-view` (!important)
+        border-inline-end: 0 !important;              // `border-end` (!important)
+    }
+
+    .leftpane {
+        border-inline-start: 1px solid var(--alpt-border);
+
+        // Contenedor del botón principal: franja inferior como la del recibo.
+        > .pads:last-child {
+            padding: 12px !important;
+            border-top: 1px solid var(--alpt-border);
+
+            > .pads {
+                margin: 0 !important; // `m-2 mt-0` (!important)
+            }
+        }
+
+        .load-order-button {
+            height: $alpt-cta-h;
+            min-height: $alpt-cta-h;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2 !important; // `lh-lg`
+            box-shadow: 0 4px 12px rgba(var(--alpt-primary-rgb), .20);
+        }
+    }
+}
+
+// Modo oscuro: igual que el recibo — el detalle sube a surface-2 con filo
+// claro; la lista queda en el fondo con sus tarjetas (--alpt-card-*).
+:root[data-alpt-scheme="dark"] .pos .alpt-ticket-screen {
+    .leftpane {
+        background-color: var(--alpt-surface-2) !important; // `bg-view` (!important)
+        border-inline-start-color: rgba(255, 255, 255, .10);
+
+        > .pads:last-child {
+            border-top-color: rgba(255, 255, 255, .10);
+        }
+
+        .control-buttons .btn-secondary,
+        .pads .btn-secondary {
+            --btn-bg: var(--alpt-surface);
+        }
+
+        // Teclas neutras un tono abajo (si no, iguales a la columna). Las
+        // teclas con color (Cant./borrar) conservan su tinte.
+        .numpad-button:not(.active):not([class*="o_colorlist_item_numpad_color_1"]) {
+            --bg: var(--alpt-surface);
+            background-color: var(--alpt-surface);
+        }
+    }
+
+    .controls {
+        background-color: var(--alpt-bg) !important;
+    }
+
+    .pos-search-bar {
+        .input-group-text,
+        .form-control,
+        .filter {
+            background-color: var(--alpt-surface-2);
+            --btn-bg: var(--alpt-surface-2);
+        }
+    }
+}
+
+// --- Teléfono: mismo estilo "de franjas" ---------------------------------
+// En teléfono la lista no es tabla sino filas `div.mobileOrderList`, y
+// abajo va la barra "Cargar orden / Revisar" (`.switchpane`, sólo en
+// `ui.isSmall`). Filas como tarjetas sobre el fondo (igual que la tabla de
+// escritorio) y la barra como franja inferior a todo el ancho, 44px.
+.pos .alpt-ticket-screen {
+    .mobileOrderList {
+        margin-bottom: 6px;
+        border: 1px solid var(--alpt-card-border);
+        border-radius: var(--alpt-radius-md);
+        background-color: var(--alpt-card-bg);
+
+        &.highlight {
+            border-color: rgba(var(--alpt-primary-rgb), .30);
+        }
+    }
+
+    .rightpane > .switchpane {
+        margin: 0 !important; // `m-2` (!important)
+        padding: 12px;
+        background-color: var(--alpt-surface);
+        border-top: 1px solid var(--alpt-border);
+
+        .btn {
+            min-height: $alpt-cta-h;
+            padding-block: 0 !important; // `py-3` (!important)
+            line-height: 1.2 !important; // `lh-lg` (!important)
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        // "Revisar" (orden sin sincronizar): gris, como Volver en el pago.
+        .btn-light {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+        }
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .alpt-ticket-screen {
+    .rightpane > .switchpane {
+        background-color: var(--alpt-surface-2);
+        border-top-color: rgba(255, 255, 255, .10);
+
+        .btn-light {
+            --btn-bg: var(--alpt-surface);
+        }
+    }
+}
+
+// --- Tablet: mismo estilo, ajustado al ancho -----------------------------
+// Entre `md` y `xl` (tablet) el core pone lista y detalle lado a lado con
+// el detalle a 450px: en ~900px la tabla de tarjetas (fecha, N°, cliente,
+// dirección, …) no cabía y se cortaba a la derecha con scroll horizontal.
+// Detalle al ancho de tablet del core (400px), sin la columna Dirección
+// (secundaria, se ve en el detalle) y celdas más compactas. En teléfono
+// (`sm`) el core apila los paneles y rige el bloque de teléfono de arriba.
+@include media-breakpoint-between(md, xl) {
+    .pos .alpt-ticket-screen {
+        .leftpane {
+            width: $pos-left-pane-width-tablet !important;
+            min-width: $pos-left-pane-width-tablet;
+            max-width: $pos-left-pane-width-tablet !important;
+        }
+
+        .orders {
+            td.address-cell {
+                display: none;
+            }
+
+            td {
+                padding: 8px 10px !important;
+            }
+        }
+    }
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// Filtro (Activo ▾), paginación ◂ ▸, presets (restaurante / para llevar),
+// y en teléfono "Revisión" y los botones secundarios de la franja inferior.
+// Detalles / Imprimir recibo ya lo tienen (order_panel.scss). El ícono de
+// borrar (enlace rojo) queda como está.
+.pos .alpt-ticket-screen {
+    .controls :is(.filter, .page-controls .btn, .buttons .btn-secondary),
+    .rightpane > .switchpane .btn:not(.btn-primary),
+    .leftpane .pads .btn-secondary {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        border: 1px solid var(--btn-border-color) !important;
+    }
+}

@@ -1,0 +1,90 @@
+// =====================================================================
+// Distribución de la pantalla de venta (escritorio y tablet horizontal,
+// desde `lg`). En teléfono / tablet vertical se mantiene la navegación
+// nativa por paneles.
+//
+//   ┌────────┬──────────────────────────┬──────────────┐
+//   │ Categ. │ [chips principio activo] │ Orden / Pago │
+//   │ (riel) │ Catálogo                 │              │
+//   └────────┴──────────────────────────┴──────────────┘
+//
+// Sin duplicar markup del core: el orden de los paneles se invierte con
+// `flex-direction: row-reverse`, y el riel de categorías se arma con CSS
+// grid sobre los hijos que ya existen en `.rightpane > .position-relative`.
+// Los chips de principio activo quedan en horizontal sobre el catálogo.
+// El scroll unificado de `.rightpane` (mblz_pos_yapp_integration) se
+// mantiene: el riel se desplaza junto con el catálogo.
+// =====================================================================
+
+$alpt-rail-w: 208px;
+
+// Orden/pago a la derecha, catálogo a la izquierda: desde `md` (tablet
+// vertical incluida). En `md` el core ya muestra ambos paneles lado a lado
+// (sólo en teléfono, `ui.isSmall`, navega por paneles), así que la tablet
+// usa la misma distribución que el escritorio: catálogo a la izquierda,
+// orden/pago a la derecha, buscador sobre el catálogo (navbar.scss).
+@include media-breakpoint-up(md) {
+    .pos .product-screen {
+        flex-direction: row-reverse;
+
+        > .leftpane {
+            border-right: 0 !important; // `border-end` (!important)
+            border-left: 1px solid var(--alpt-border);
+        }
+    }
+}
+
+// El riel lateral de categorías sólo desde `lg`: en tablet vertical sus
+// 208px le quitarían demasiado al catálogo (quedan en la fila nativa).
+@include media-breakpoint-up(lg) {
+
+    // Riel de categorías PdV a la izquierda: sólo si hay categorías. Los
+    // principios activos se quedan en una fila HORIZONTAL sobre el catálogo
+    // (con o sin riel). El riel es un único elemento que abarca todas las
+    // filas, así su alto no empuja al catálogo.
+    .pos .product-screen .rightpane > .position-relative:has(> .category-list > *) {
+        display: grid !important; // `d-flex` (!important)
+        grid-template-columns: $alpt-rail-w minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr auto;
+        align-items: start;
+        // El fondo del riel cubre toda la altura de la columna.
+        background: linear-gradient(to right,
+            var(--alpt-surface) $alpt-rail-w,
+            var(--alpt-border) $alpt-rail-w, var(--alpt-border) calc(#{$alpt-rail-w} + 1px),
+            transparent calc(#{$alpt-rail-w} + 1px));
+
+        // --- Riel (columna 1, todas las filas) ---
+        > .category-list {
+            grid-column: 1;
+            grid-row: 1 / -1;
+            grid-template-columns: 1fr;
+            max-height: none;
+            gap: 4px !important;           // `gap-*` (!important)
+            padding: 10px 8px !important;  // `p-2` (!important)
+            margin: 0;
+
+            .category-button {
+                height: $alpt-control-sm;
+                justify-content: flex-start !important; // `justify-content-around` (!important)
+                padding-inline: 10px !important;
+                text-align: start;
+                box-shadow: none;
+            }
+        }
+
+        // --- Catálogo (columna 2) ---
+        > .pos-view-switch    { grid-column: 2; grid-row: 1; }
+        > .alpt-ingredient-selector { grid-column: 2; grid-row: 2; }
+        > .overflow-y-auto,
+        > .flex-grow-1.text-center { grid-column: 2; grid-row: 3; }
+        > .search-more-button { grid-column: 2; grid-row: 4; }
+    }
+}
+
+// --- Cobrando en el panel derecho: catálogo bloqueado ------------------
+.pos .product-screen.alpt-paying > .rightpane {
+    pointer-events: none;
+    opacity: .45;
+    filter: grayscale(.4);
+    transition: opacity .15s ease;
+}

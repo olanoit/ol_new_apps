@@ -1,0 +1,20 @@
+// Inter (SIL OFL 1.1, ver fonts/OFL.txt), subset latino, fuente variable
+// 100–900 en un solo archivo de ~48 KB. Se sirve desde el propio módulo:
+// no hay dependencia de Google Fonts ni de internet.
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/al_pos_theme/static/src/fonts/inter-latin-wght-normal.woff2") format("woff2");
+}
+
+// Manrope (SIL OFL 1.1), subset latino, variable 500–800 (~25 KB): la
+// tipografía de títulos. También local, sin Google Fonts.
+@font-face {
+    font-family: "Manrope";
+    font-style: normal;
+    font-weight: 500 800;
+    font-display: swap;
+    src: url("/al_pos_theme/static/src/fonts/manrope-latin-wght-normal.woff2") format("woff2");
+}

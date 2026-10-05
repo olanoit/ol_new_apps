@@ -1,0 +1,13 @@
+// Pantalla del cliente: misma tipografía y primario de marca.
+body:has(.o_customer_display),
+.o_customer_display {
+    --body-font-family: var(--alpt-font-family);
+    --primary: var(--alpt-primary);
+    --primary-rgb: var(--alpt-primary-rgb);
+    font-family: var(--alpt-font-family);
+}
+
+.o_customer_display {
+    background-color: var(--alpt-bg);
+    color: var(--alpt-text);
+}

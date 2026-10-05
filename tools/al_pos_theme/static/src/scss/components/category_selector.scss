@@ -1,0 +1,53 @@
+// =====================================================================
+// Selector de categorías (point_of_sale.CategorySelector)
+// Mosaicos compactos (48px, táctiles) en vez de bloques de 4rem. El color
+// de cada categoría (o_colorlist_item_color_N) es dato del usuario y se
+// respeta; el tema sólo define forma, borde y estado seleccionado
+// (`aria-pressed`, agregado en xml/product_screen.xml).
+// =====================================================================
+
+.pos .category-list {
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    gap: 8px !important;         // `gap-1 gap-lg-2` (!important)
+    padding: 12px 12px 4px !important; // `p-2` (!important)
+    margin-bottom: 4px;
+
+    // Sin categorías PdV configuradas el core igual renderiza el contenedor:
+    // se oculta para no dejar una franja vacía sobre el catálogo. No sirve
+    // `:empty`: OWL deja un nodo de texto vacío como ancla del t-foreach.
+    &:not(:has(*)) {
+        display: none !important; // `d-grid` (!important)
+    }
+}
+
+.pos .category-button {
+    --btn-border-color: var(--alpt-border);
+    --btn-hover-border-color: var(--alpt-border);
+    height: $alpt-touch-min;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: var(--alpt-radius-md) !important; // `rounded-3` (!important)
+    box-shadow: var(--alpt-shadow-card);
+    font-size: $alpt-font-size-sm;
+    font-weight: $alpt-fw-regular;
+    // El core atenúa las no seleccionadas con `opacity-75`: se mantiene la
+    // jerarquía pero con un contraste más legible.
+    &.opacity-75 {
+        opacity: .85 !important; // utilidad `opacity-75` (!important)
+    }
+
+    &:has(.category-img-thumb) {
+        height: $alpt-touch-min + 8px;
+    }
+
+    .category-img-thumb {
+        border-radius: var(--alpt-radius-sm) !important;
+    }
+
+    &[aria-pressed="true"] {
+        border-color: rgba(var(--alpt-primary-rgb), .45) !important; // `border-0` en hijas (!important)
+        box-shadow: var(--alpt-shadow-hover);
+        opacity: 1 !important;
+        font-weight: $alpt-fw-medium;
+    }
+}

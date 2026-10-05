@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Pantalla de productos. `bg-secondary` es una utilidad Bootstrap con
+        !important: en vez de pelear con ella desde SCSS se quita la clase y
+        se agrega una propia (`alpt-catalog`) que usa el token de fondo.
+    -->
+    <t t-name="al_pos_theme.ProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('rightpane')]" position="attributes">
+            <attribute name="class" remove="bg-secondary" add="alpt-catalog" separator=" "/>
+        </xpath>
+    </t>
+
+    <!--
+        Categorías: se expone el estado seleccionado como `aria-pressed`
+        (accesibilidad para lectores de pantalla + gancho CSS estable, en vez
+        de inferirlo de la combinación de clases `opacity-75 border-0`).
+    -->
+    <t t-name="al_pos_theme.CategorySelector" t-inherit="point_of_sale.CategorySelector" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('category-button')]" position="attributes">
+            <attribute name="t-att-aria-pressed">category.isSelected ? 'true' : 'false'</attribute>
+        </xpath>
+    </t>
+
+    <!--
+        Tarjeta de producto:
+        - imagen con `object-fit: contain` sobre blanco: en farmacia son fotos
+          de envases y `cover` los recortaba.
+        - precio visible (el core no lo muestra en la grilla); no se muestra en
+          el configurador de combos, que ya tiene su propio precio extra.
+    -->
+    <t t-name="al_pos_theme.ProductCard" t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-img')]/img" position="attributes">
+            <attribute name="class" remove="object-fit-cover bg-200" add="object-fit-contain alpt-product-img" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('product-name')]" position="after">
+            <span t-if="!props.isComboPopup and alptPriceLabel" class="alpt-product-price" t-esc="alptPriceLabel"/>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Navbar: el logo de marca pasa a estar SIEMPRE visible a la izquierda.
+        El core sólo lo muestra al centro cuando no hay orden abierta y en
+        pantallas xl (`pos-centerheader`), así que ese bloque se elimina.
+        El logo reutiliza `.pos-logo` (fondo = variable CSS navbar-logo, o el nombre
+        de marca como texto si la caja no tiene logo; ver branding.scss).
+    -->
+    <t t-name="al_pos_theme.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('navbar-menu')]" position="before">
+            <div t-if="!ui.isSmall" class="alpt-navbar-brand pos-logo flex-shrink-0" role="img"
+                 t-att-aria-label="pos.config.name"/>
+            <!-- Teléfono: sin espacio para el logo completo, va sólo el
+                 isotipo (favicon de la caja, o el icono del módulo). -->
+            <div t-if="ui.isSmall" class="alpt-navbar-brand-icon flex-shrink-0" role="img"
+                 t-att-aria-label="pos.config.name"/>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-centerheader')]" position="replace"/>
+
+        <!--
+            Buscador sobre el catálogo (escritorio/tablet): desde `lg` el
+            catálogo está a la izquierda y la orden a la derecha
+            (layout.scss), así que el buscador de productos va al final de la
+            zona izquierda de la barra, sobre la columna que filtra.
+            No se usa `position="move"`: en teléfono el core oculta
+            `.pos-leftheader` mientras el buscador está abierto, así que ahí
+            debe seguir en la derecha. Se renderiza UNA sola de las dos
+            copias (`ui.isSmall`); ambas escriben en `pos.searchProductWord`.
+        -->
+        <xpath expr="//div[hasclass('pos-leftheader')]" position="inside">
+            <Input t-if="!ui.isSmall and pos.showSearchButton()"
+                   tModel="[pos, 'searchProductWord']"
+                   class="'alpt-navbar-search'"
+                   isSmall="false"
+                   placeholder.translate="Buscar productos..."
+                   icon="{type: 'fa', value: 'fa-search fa-lg fa-fw'}"
+                   debounceMillis="500"
+                   getRef="(ref) => this.inputRef = ref"/>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-rightheader')]//Input" position="attributes">
+            <attribute name="t-if" add="ui.isSmall" separator=" and "/>
+        </xpath>
+    </t>
+
+</templates>

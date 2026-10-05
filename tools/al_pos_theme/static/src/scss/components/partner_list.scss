@@ -1,0 +1,204 @@
+// =====================================================================
+// Lista de clientes (point_of_sale.PartnerList, dentro de un Dialog).
+// Nombre 15px/600 · dirección y contacto 13px/400 atenuados · fila
+// seleccionada con fondo suave y barra de marca (el core: $o-action).
+// =====================================================================
+
+.pos .partner-list {
+    // Filas como tarjetas separadas (mismo lenguaje que Órdenes y la vista
+    // lista del catálogo), sobre el fondo gris claro.
+    padding: 8px 12px 12px !important; // `p-0` (!important)
+    background-color: var(--alpt-bg);
+
+    table {
+        @include alpt-card-table(6px);
+        margin-bottom: 0;
+    }
+
+    tr {
+        border: 0;
+
+        &:active {
+            background-color: var(--alpt-primary-subtle);
+        }
+    }
+
+    table td {
+        border: 0;
+        padding: 12px 16px;
+        vertical-align: middle;
+        font-size: $alpt-font-size-xs + 1px;
+        color: var(--alpt-text-2);
+    }
+
+    // Primera columna: nombre del cliente. El core la deja en `w-25` con
+    // `text-break` (!important), y la columna de correo en `w-100`: los
+    // nombres se partían a mitad de palabra ("Administrat / or").
+    table td:first-child {
+        min-width: 180px;
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-medium;
+        color: var(--alpt-text);
+        word-break: normal !important;     // `text-break` (!important)
+        overflow-wrap: normal !important;  // idem
+    }
+
+    // Segunda columna: dirección (también `w-25 text-break`).
+    table td:nth-child(2) {
+        min-width: 160px;
+        word-break: normal !important;  // `text-break` (!important)
+    }
+
+    .company-field {
+        font-size: $alpt-font-size-xs;
+        font-weight: $alpt-fw-regular;
+        color: var(--alpt-text-muted);
+        background: transparent !important; // `text-bg-muted` (!important)
+    }
+
+    // Correo/teléfono: ancho mínimo para que el correo no se parta en
+    // cualquier letra ("support@mobi / lize.cl").
+    // (La suma de mínimos debe caber en el diálogo con el padding de la
+    // tabla de tarjetas; si no, aparece scroll horizontal y se corta el borde.)
+    td.partner-line-email {
+        min-width: 200px;
+    }
+
+    .partner-line-email i {
+        color: var(--alpt-text-muted);
+    }
+
+    // Botones de la fila (menú, quitar selección).
+    .edit-partner-button-cell .btn,
+    .unselect-tag {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        border: 0 !important; // `border` (!important)
+        min-height: $alpt-control-sm;
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-xs + 1px !important; // `fs-5` (!important)
+        font-weight: $alpt-fw-medium;
+    }
+}
+
+.pos .partner-line,
+.pos .partner-info {
+    &:hover {
+        background-color: var(--alpt-surface-2);
+    }
+
+    &.selected {
+        background-color: var(--alpt-primary-subtle);
+        color: var(--alpt-text);
+    }
+}
+
+// En la tabla de tarjetas el fondo lo pintan las celdas (alpt-card-table),
+// así que hover/selección van en las celdas.
+.pos .partner-list .partner-line {
+    &:hover > td {
+        background-color: rgba(var(--alpt-primary-rgb), .03);
+    }
+
+    &.selected > td {
+        background-color: var(--alpt-primary-subtle);
+        border-color: rgba(var(--alpt-primary-rgb), .30) !important;
+    }
+}
+
+// Encabezado del diálogo: buscador y botón "+" (crear cliente).
+.pos .modal-content:has(.partner-list) .modal-header {
+    .btn-primary {
+        min-width: $alpt-touch-min;
+        border-radius: var(--alpt-radius-sm);
+    }
+
+    .input-container {
+        border-radius: var(--alpt-radius-pill) !important;
+    }
+}
+
+// Estado vacío ("No se encontraron clientes").
+.pos .partner-list .text-muted .fa-users {
+    font-size: 32px !important; // `fa-3x` (!important)
+    color: var(--alpt-primary);
+    opacity: .6;
+}
+
+// --- Mismo estilo que el recibo y Órdenes --------------------------------
+// Encabezado (Crear · título · buscador) y pie ("Descartar") como franjas
+// separadas por una línea fina; la lista de tarjetas queda sobre el fondo
+// en medio. El pie usa el mismo alto que "Nueva orden" / "Reembolso".
+.pos .modal-content:has(.partner-list) {
+    .modal-header {
+        padding: 12px !important;
+        border-bottom: 1px solid var(--alpt-border);
+    }
+
+    .modal-footer {
+        padding: 12px !important;
+        border-top: 1px solid var(--alpt-border);
+
+        .btn {
+            min-height: $alpt-cta-h;
+        }
+    }
+}
+
+// Modo oscuro: franjas con filo claro (como el recibo y Órdenes).
+:root[data-alpt-scheme="dark"] .pos .modal-content:has(.partner-list) {
+    .modal-header {
+        border-bottom-color: rgba(255, 255, 255, .10);
+    }
+
+    .modal-footer {
+        border-top-color: rgba(255, 255, 255, .10);
+
+        .btn-secondary {
+            --btn-bg: var(--alpt-surface);
+        }
+    }
+
+    .partner-list {
+        background-color: var(--alpt-bg);
+    }
+
+    .modal-header .input-container {
+        background-color: var(--alpt-surface) !important;
+    }
+}
+
+// --- Teléfono: mismo estilo de tarjetas ----------------------------------
+// En teléfono cada cliente no es una fila de tabla sino un bloque
+// `div.partner-info` (con `border-bottom`). Se lo lleva a tarjeta separada
+// sobre el fondo, igual que las filas de escritorio y las órdenes en
+// teléfono. Encabezado y pie ya usan las franjas de arriba.
+.pos .partner-list .partner-info {
+    margin-bottom: 6px;
+    padding: 6px 8px !important;                        // `p-1` (!important)
+    border: 1px solid var(--alpt-card-border) !important; // `border-bottom` (!important)
+    border-radius: var(--alpt-radius-md);
+    background-color: var(--alpt-card-bg);
+
+    &:hover {
+        background-color: var(--alpt-card-bg);
+    }
+
+    &.selected {
+        background-color: var(--alpt-primary-subtle);
+        border-color: rgba(var(--alpt-primary-rgb), .30) !important;
+    }
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// Menú ≡ de cada cliente, "Desmarcar" y "Descartar" del pie. "Crear" /
+// "Nuevo" ya son de color primario lleno.
+.pos .modal-content:has(.partner-list) {
+    .partner-list :is(.edit-partner-button-cell .btn, .unselect-tag),
+    .modal-footer .btn-secondary {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        border: 1px solid var(--btn-border-color) !important; // regla de arriba: `border: 0 !important`
+    }
+}

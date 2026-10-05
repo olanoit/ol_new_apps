@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Panel de pago dentro de la pantalla de productos (ver
+        js/inline_payment.js). Reutiliza los sub-templates nativos de
+        PaymentScreen, así que también trae sus extensiones (Yapp: botón de
+        documento, cliente; tema: etiqueta "Total a pagar").
+    -->
+    <t t-name="al_pos_theme.InlinePayment">
+        <div class="payment-screen alpt-inline-payment d-flex flex-column h-100">
+            <div class="alpt-inline-payment__header d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-light alpt-inline-payment__back"
+                        t-on-click="alptClose" title="Volver a la orden" aria-label="Volver a la orden">
+                    <i class="oi oi-chevron-left" aria-hidden="true"/>
+                </button>
+                <span class="alpt-inline-payment__title">Pago</span>
+                <span class="alpt-inline-payment__order ms-auto" t-esc="currentOrder.getName()"/>
+            </div>
+            <div class="alpt-inline-payment__body d-flex flex-column flex-grow-1 overflow-y-auto">
+                <t t-call="point_of_sale.PaymentScreenDue"/>
+                <t t-call="point_of_sale.PaymentScreenMethods"/>
+                <PaymentScreenPaymentLines
+                    t-if="paymentLines.length"
+                    paymentLines="paymentLines"
+                    deleteLine.bind="deletePaymentLine"
+                    sendForceDone.bind="sendForceDone"
+                    sendPaymentReverse.bind="sendPaymentReverse"
+                    sendPaymentCancel.bind="sendPaymentCancel"
+                    sendPaymentRequest.bind="sendPaymentRequest"
+                    selectLine.bind="selectPaymentLine"
+                    updateSelectedPaymentline.bind="updateSelectedPaymentline"
+                    isRefundOrder="isRefundOrder"/>
+                <PaymentScreenStatus t-if="paymentLines.length" order="currentOrder"/>
+                <t t-call="point_of_sale.PaymentScreenButtons"/>
+            </div>
+            <div class="alpt-inline-payment__footer d-flex flex-column">
+                <Numpad buttons="getNumpadButtons()"/>
+                <t t-call="point_of_sale.PaymentScreenValidate"/>
+            </div>
+        </div>
+    </t>
+
+    <!-- ProductScreen: el panel de la orden cede su lugar al de pago. -->
+    <t t-name="al_pos_theme.ProductScreenInlinePayment" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-screen')]" position="attributes">
+            <attribute name="t-att-class">{ 'alpt-paying': alptInlinePayment }</attribute>
+        </xpath>
+        <xpath expr="//OrderSummary" position="attributes">
+            <attribute name="t-if">!alptInlinePayment</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pads')]" position="attributes">
+            <attribute name="t-if">!alptInlinePayment</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pads')]" position="after">
+            <AlptInlinePayment t-if="alptInlinePayment" t-key="currentOrder.uuid" orderUuid="currentOrder.uuid"/>
+        </xpath>
+    </t>
+
+</templates>

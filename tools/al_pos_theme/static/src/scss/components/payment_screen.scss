@@ -1,0 +1,675 @@
+// =====================================================================
+// Pantalla de pago (point_of_sale.PaymentScreen y sub-templates).
+//
+// Jerarquía tipográfica (700 sólo para el dinero que decide la venta):
+// - Total a pagar ............ clamp(40–64px) / 700
+// - Restante / Cambio ........ 28px / 700 (rojo / verde)
+// - Línea de pago (monto) .... 20px / 600 · (método) 15px / 500
+// - Métodos de pago .......... 15px / 500
+// - Validar .................. 18px / 700 (CTA)
+// =====================================================================
+
+.pos .payment-screen {
+    // --- Columna izquierda: métodos, botones, numpad, volver/validar ----
+    .left-content {
+        gap: 10px !important; // `gap-1` (!important)
+        padding: 12px !important; // `p-1` (!important)
+        background-color: var(--alpt-surface);
+        border-inline-end: 1px solid var(--alpt-border);
+    }
+
+    // Métodos de pago como tarjetas.
+    .paymentmethods {
+        gap: 8px !important; // `gap-1 gap-lg-2` (!important)
+
+        // Teléfono: el core pone la grilla sobre un panel gris (`bg-200 p-1`);
+        // las tarjetas ya tienen borde y sombra, el panel sobra.
+        &.bg-200 {
+            background-color: transparent !important; // `bg-200` (!important)
+            padding: 0 !important;                    // `p-1` (!important)
+        }
+    }
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-surface);
+        --btn-border-color: var(--alpt-border-strong);
+        --btn-hover-bg: var(--alpt-surface);
+        --btn-hover-border-color: rgba(var(--alpt-primary-rgb), .35);
+        --btn-active-bg: var(--alpt-primary-subtle);
+        --btn-active-border-color: rgba(var(--alpt-primary-rgb), .35);
+        min-height: $alpt-touch-min + 4px;
+        padding: 6px 10px;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: var(--alpt-radius-md);
+        box-shadow: var(--alpt-shadow-card);
+        transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease;
+
+        &:hover {
+            box-shadow: var(--alpt-shadow-hover);
+        }
+
+        &:active {
+            transform: scale(.99);
+        }
+
+        .payment-method-display {
+            gap: 12px !important; // `gap-2` (!important)
+        }
+
+        // Ícono en un cuadro suave, tamaño fijo para que todos alineen.
+        .payment-method-icon {
+            width: 30px;
+            height: 30px;
+            max-width: none;
+            max-height: none;
+            padding: 7px;
+            object-fit: contain;
+            border-radius: var(--alpt-radius-sm);
+            background-color: var(--alpt-surface-2);
+        }
+
+        .payment-name {
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-regular;
+            color: var(--alpt-text);
+        }
+
+        // Monto sugerido (p.ej. cuenta de cliente).
+        > .text-muted {
+            font-size: $alpt-font-size-xs;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // Botones Cliente / Factura / Yapp (y propina, cajón, envío).
+    .payment-buttons {
+        gap: 6px !important; // `gap-1` (!important)
+
+        > div {
+            gap: 6px !important;
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            min-height: $alpt-touch-min;
+            border-radius: var(--alpt-radius-sm);
+            font-size: $alpt-font-size-sm;
+            font-weight: $alpt-fw-medium;
+            line-height: 1.3 !important; // `lh-lg` (!important)
+        }
+
+        .btn-secondary {
+            --btn-bg: var(--alpt-surface-2);
+            --btn-border-color: transparent;
+            --btn-hover-bg: var(--alpt-primary-subtle);
+            --btn-hover-border-color: transparent;
+            --btn-hover-color: var(--alpt-primary);
+            --btn-color: var(--alpt-text);
+        }
+
+        // Estado activo (cliente elegido, facturar marcado): el core usa
+        // `highlight text-action` (turquesa del sistema base).
+        .highlight,
+        .active {
+            background-color: var(--alpt-primary-subtle) !important;
+            color: var(--alpt-primary) !important;
+        }
+    }
+
+    // Volver / Validar.
+    .left-content > .d-flex.flex-row {
+        gap: 8px !important; // `gap-1` (!important)
+    }
+
+    .back-button {
+        --btn-bg: var(--alpt-surface-2);
+        --btn-border-color: transparent;
+        --btn-hover-bg: var(--alpt-border);
+        --btn-color: var(--alpt-text);
+        min-height: $alpt-cta-h;
+        padding-block: 0 !important; // `py-3` (!important)
+        border-radius: var(--alpt-radius-md);
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-medium;
+        line-height: 1.2 !important; // `lh-lg` (!important)
+    }
+
+    .validation-button.next {
+        min-height: $alpt-cta-h;
+        padding-block: 0 !important; // `py-3` (!important)
+        border-radius: var(--alpt-radius-md);
+        font-size: $alpt-font-size-md + 1px;
+        font-weight: $alpt-fw-medium;
+        line-height: 1.2 !important; // `lh-lg` (!important)
+
+        &.highlight {
+            box-shadow: 0 4px 12px rgba(var(--alpt-primary-rgb), .20);
+        }
+
+        // No validable todavía: el core lo marca con `.disabled` (queda
+        // turquesa lavado). Se muestra neutro para que no parezca listo.
+        &.disabled {
+            --btn-disabled-bg: var(--alpt-surface-2);
+            --btn-disabled-border-color: transparent;
+            --btn-disabled-color: var(--alpt-text-muted);
+            opacity: 1;
+            box-shadow: none;
+        }
+    }
+
+    // --- Zona central: total, líneas de pago y estado ------------------
+    .alpt-payment-main {
+        background-color: var(--alpt-bg);
+    }
+
+    .center-content {
+        padding: 24px 24px 16px !important; // `py-2 pe-2` (!important)
+    }
+
+    .alpt-due-label {
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-medium;
+        color: var(--alpt-text-muted);
+        letter-spacing: .02em;
+    }
+
+    // Total a pagar: el core usa 125px inline (quitado en el XML) o un
+    // clamp de hasta 64px; se acota a 40–64px y 700.
+    .paymentlines-container .total {
+        font-size: clamp(28px, 2.8vw, 38px);
+        @include alpt-display;
+        line-height: 1.1;
+        letter-spacing: -.02em;
+        color: var(--alpt-text) !important; // `text-dark` (!important)
+        font-variant-numeric: tabular-nums;
+    }
+
+    // El `fw-bold` de la sección aplica también a la etiqueta; se anula
+    // para que sólo el monto vaya en negrita.
+    .paymentlines-container.fw-bold {
+        font-weight: $alpt-fw-regular !important; // `fw-bold` (!important)
+    }
+
+    // Con líneas de pago el total baja de protagonismo.
+    .paymentlines-container:not(.paymentlines-empty) .total {
+        font-size: clamp(22px, 2vw, 26px);
+    }
+
+    .payment-summary {
+        width: 100%;
+        max-width: 640px;
+        margin-inline: auto;
+        padding-inline: 0; // el core usa 150px fijos
+    }
+
+    // Líneas de pago.
+    .paymentline {
+        background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+        border: 1px solid var(--alpt-border) !important;  // `border` (!important)
+        border-radius: var(--alpt-radius-md) !important;  // `rounded-3` (!important)
+        box-shadow: var(--alpt-shadow-card);
+
+        &.selected {
+            background-color: var(--alpt-primary-subtle) !important;
+            border-color: rgba(var(--alpt-primary-rgb), .25) !important;
+            color: var(--alpt-text);
+        }
+
+        .payment-infos {
+            padding: 12px 16px !important; // `px-3 py-3` (!important)
+            font-size: $alpt-font-size-sm !important; // `fs-2` (!important): 28px era excesivo
+            font-weight: $alpt-fw-medium;
+        }
+
+        .payment-amount {
+            font-size: $alpt-font-size-lg;
+            font-weight: $alpt-fw-medium;
+            font-variant-numeric: tabular-nums;
+            padding-inline: 0 !important; // `px-3` (!important)
+        }
+
+        .delete-button {
+            min-width: $alpt-touch-min;
+            min-height: $alpt-touch-min;
+            margin: 0 4px !important; // `mx-2 px-3` (!important)
+            padding: 0 !important;
+            border-radius: var(--alpt-radius-sm);
+
+            &:hover {
+                background-color: var(--alpt-danger-subtle);
+            }
+        }
+    }
+
+    // Estado de pago electrónico (terminal): franja suave.
+    .paymentlines .electronic_payment {
+        background: var(--alpt-surface-2);
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm;
+
+        .button {
+            border-radius: var(--alpt-radius-sm);
+            font-weight: $alpt-fw-medium;
+        }
+    }
+
+    // Restante / Cambio.
+    .payment-status-container {
+        font-size: $alpt-font-size-md !important; // `fs-2` (!important)
+        padding: 14px 16px;
+        border-radius: var(--alpt-radius-md);
+        background-color: var(--alpt-surface);
+        box-shadow: var(--alpt-shadow-card);
+    }
+
+    section.paymentlines-container.border-top {
+        border-top: 0 !important; // `border-top` (!important)
+        padding-top: 4px !important;
+    }
+
+    .payment-status-amount {
+        align-items: center;
+
+        .label {
+            font-weight: $alpt-fw-medium;
+        }
+
+        .amount {
+            margin: 0 !important;  // `me-5 pe-5` (!important): descuadraba el monto
+            padding: 0 !important;
+            font-size: $alpt-font-size-xl;
+            @include alpt-display($important: true); // `fw-bolder` (!important)
+            font-variant-numeric: tabular-nums;
+        }
+
+        &.text-danger {
+            color: var(--alpt-danger) !important;
+        }
+
+        &.text-success {
+            color: var(--alpt-success) !important;
+        }
+    }
+}
+
+// Aviso "Seleccione un método de pago" (PaymentScreenStatus sin líneas).
+.pos .payment-screen .text-bg-light.border.text-center {
+    background-color: var(--alpt-surface) !important;
+    color: var(--alpt-text-muted) !important;
+    border: 1px dashed var(--alpt-border) !important;
+    border-radius: var(--alpt-radius-md);
+    font-size: $alpt-font-size-sm !important; // `fs-4` (!important)
+    padding: 16px !important;
+}
+
+// Teléfono: barra inferior Volver/Validar.
+.pos .payment-screen .switchpane {
+    .btn-switchpane {
+        min-height: $alpt-cta-h;
+    }
+}
+
+// Modo oscuro: el bundle oscuro del sistema base aplica `filter: invert(1)`
+// a estas imágenes (también invierte su fondo: el cuadro se veía crema).
+// Sin fondo, el invert deja el trazo claro sobre la tarjeta oscura.
+:root[data-alpt-scheme="dark"] .pos .payment-screen .paymentmethod .payment-method-icon {
+    background-color: transparent;
+}
+
+// --- Modo oscuro ------------------------------------------------------
+// Mismo criterio que los modales (dialogs.scss): en oscuro la profundidad
+// no la dan las sombras sino el tono. El panel/pantalla de pago sube a
+// surface-2 con un filo claro, y lo que va DENTRO (métodos, líneas de pago,
+// teclas, botones) baja a surface, así cada control se recorta del panel.
+// Antes todo era del mismo tono que el fondo y los métodos de pago sólo
+// se distinguían por un borde casi invisible.
+$alpt-dark-edge: rgba(255, 255, 255, .10);
+
+:root[data-alpt-scheme="dark"] .pos {
+    // Panel derecho (escritorio): elevado sobre el catálogo atenuado.
+    .alpt-inline-payment {
+        background-color: var(--alpt-surface-2);
+        box-shadow: inset 1px 0 0 $alpt-dark-edge;
+
+        &__header,
+        &__footer {
+            background-color: transparent;
+            border-color: $alpt-dark-edge;
+        }
+
+        &__back {
+            --btn-bg: var(--alpt-surface);
+        }
+    }
+
+    // Pantalla completa (teléfono / tablet chica).
+    .payment-screen {
+        .left-content,
+        .alpt-payment-main {
+            background-color: var(--alpt-surface-2);
+        }
+
+        .left-content {
+            border-color: $alpt-dark-edge;
+        }
+
+        .paymentmethod {
+            --btn-bg: var(--alpt-surface);
+            --btn-border-color: #{$alpt-dark-edge};
+            --btn-hover-bg: var(--alpt-primary-subtle);
+            --btn-hover-border-color: rgba(var(--alpt-primary-rgb), .35);
+            background-color: var(--alpt-surface);
+            border-color: $alpt-dark-edge;
+            box-shadow: none;
+        }
+
+        .paymentline {
+            background-color: var(--alpt-surface) !important; // `bg-view` (!important)
+            border-color: $alpt-dark-edge !important;          // `border` (!important)
+            box-shadow: none;
+        }
+
+        .payment-status-container,
+        .paymentlines .electronic_payment {
+            background-color: var(--alpt-surface);
+            box-shadow: 0 0 0 1px $alpt-dark-edge;
+        }
+
+        .payment-buttons .btn-secondary,
+        .back-button {
+            --btn-bg: var(--alpt-surface);
+        }
+
+        // Teclas neutras (incluye +/- y coma, que traen color_3/color_6):
+        // +10/+20/+50 (color_10) y borrar (color_1) conservan su tinte.
+        .numpad-button:not(.o_colorlist_item_numpad_color_10):not(.o_colorlist_item_numpad_color_1) {
+            --bg: var(--alpt-surface);
+            --hover-bg: var(--alpt-border);
+
+            &:disabled {
+                background-color: var(--alpt-surface);
+            }
+        }
+
+        // Validar deshabilitado: un tono sobre el panel (si no, se perdía).
+        .validation-button.next.disabled {
+            --btn-disabled-bg: var(--alpt-surface);
+            --btn-disabled-border-color: #{$alpt-dark-edge};
+        }
+
+        // Aviso "sin líneas de pago" (borde punteado).
+        .text-bg-light.border.text-center {
+            background-color: var(--alpt-surface) !important;
+            border-color: $alpt-dark-edge !important;
+        }
+    }
+}
+
+// --- Mismo estilo que el recibo, Órdenes, clientes y sesión -------------
+// Panel de pago (escritorio) con el esquema "de franjas": encabezado
+// (← Pago · N° orden) y pie (teclado + Validar) como franjas separadas por
+// una línea fina; en medio, sobre el fondo, el total y las tarjetas
+// (métodos, botones Cliente/Documento, líneas de pago, Restante/Cambio).
+// Va al final del archivo (después del bloque oscuro de arriba) para que
+// estas reglas manden en ambos modos.
+.pos .payment-screen.alpt-inline-payment {
+    background-color: var(--alpt-bg);
+    box-shadow: none;
+
+    .alpt-inline-payment__header,
+    .alpt-inline-payment__footer {
+        background-color: var(--alpt-surface);
+        border-color: var(--alpt-border);
+    }
+
+    .alpt-inline-payment__body {
+        background-color: var(--alpt-bg);
+    }
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        --btn-hover-bg: var(--alpt-card-bg);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+        box-shadow: none;
+
+        &:hover {
+            border-color: rgba(var(--alpt-primary-rgb), .45);
+            box-shadow: none;
+        }
+    }
+
+    .payment-buttons .btn-secondary {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .paymentline {
+        background-color: var(--alpt-card-bg) !important;
+        border-color: var(--alpt-card-border) !important;
+        box-shadow: none;
+
+        &.selected {
+            background-color: var(--alpt-primary-subtle) !important;
+            border-color: rgba(var(--alpt-primary-rgb), .30) !important;
+        }
+    }
+
+    .payment-status-container {
+        background-color: var(--alpt-card-bg);
+        box-shadow: 0 0 0 1px var(--alpt-card-border);
+    }
+}
+
+// Oscuro: franjas elevadas (surface-2, filo claro), medio en el fondo y
+// tarjetas surface-2 con filo claro (--alpt-card-*); teclas neutras un
+// tono abajo de la franja.
+:root[data-alpt-scheme="dark"] .pos .payment-screen.alpt-inline-payment {
+    box-shadow: inset 1px 0 0 $alpt-dark-edge;
+
+    .alpt-inline-payment__header,
+    .alpt-inline-payment__footer {
+        background-color: var(--alpt-surface-2);
+        border-color: $alpt-dark-edge;
+    }
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+    }
+
+    .paymentline,
+    .payment-status-container {
+        background-color: var(--alpt-card-bg) !important;
+    }
+
+    .payment-buttons .btn-secondary {
+        --btn-bg: var(--alpt-card-bg);
+    }
+}
+
+// --- Teléfono: mismo estilo "de franjas" ---------------------------------
+// En teléfono el core arma otra plantilla (una columna `.p-2` con total,
+// métodos, líneas, estado, botones y la barra Volver/Validar
+// `.switchpane`). Se reconoce por ese `.switchpane` hijo directo. Contenido
+// sobre el fondo con tarjetas; Volver/Validar como franja inferior a todo
+// el ancho (como el pie del recibo y de los diálogos), botones de 44px.
+.pos .payment-screen:has(> .switchpane) {
+    background-color: var(--alpt-bg);
+    padding: 12px 12px 0 !important; // `p-2` (!important): el pie va a ras
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        --btn-hover-bg: var(--alpt-card-bg);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+        box-shadow: none;
+    }
+
+    .payment-buttons .btn-secondary {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .paymentline {
+        background-color: var(--alpt-card-bg) !important;
+        border-color: var(--alpt-card-border) !important;
+        box-shadow: none;
+
+        &.selected {
+            background-color: var(--alpt-primary-subtle) !important;
+            border-color: rgba(var(--alpt-primary-rgb), .30) !important;
+        }
+    }
+
+    .payment-status-container {
+        background-color: var(--alpt-card-bg);
+        box-shadow: 0 0 0 1px var(--alpt-card-border);
+    }
+
+    > .switchpane {
+        margin: auto -12px 0 !important; // `mt-2` (!important): pegado abajo, a todo el ancho
+        padding: 12px;
+        background-color: var(--alpt-surface);
+        border-top: 1px solid var(--alpt-border);
+
+        .btn {
+            min-height: $alpt-cta-h;
+            padding-block: 0 !important; // `py-3` (!important)
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .payment-screen:has(> .switchpane) {
+    background-color: var(--alpt-bg);
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+    }
+
+    .paymentline,
+    .payment-status-container {
+        background-color: var(--alpt-card-bg) !important;
+    }
+
+    .payment-buttons .btn-secondary {
+        --btn-bg: var(--alpt-card-bg);
+    }
+
+    > .switchpane {
+        background-color: var(--alpt-surface-2);
+        border-top-color: $alpt-dark-edge;
+
+        .back-button {
+            --btn-bg: var(--alpt-surface);
+        }
+    }
+}
+
+// --- Pantalla de pago completa (tablet / flujos sin panel) ---------------
+// En tablet y escritorio el pago normal se abre en el panel derecho (ya
+// con franjas, arriba). Si algún flujo abre la pantalla de pago completa
+// (plantilla de escritorio del core: `.main-content` con columna izquierda
+// de métodos/teclado y zona central de total/líneas), se le aplica el
+// mismo esquema: columna izquierda como panel con la franja Volver/Validar
+// abajo, zona central sobre el fondo, métodos/líneas/estado como tarjetas.
+.pos .payment-screen:has(> .main-content) {
+    .left-content {
+        padding: 0 !important; // `p-1` / 12px de arriba (!important)
+        gap: 0 !important;
+
+        > .flex-grow-1 {
+            padding: 12px;
+            background-color: var(--alpt-bg);
+        }
+
+        > .w-100.flex-shrink-0 {
+            padding: 12px 12px 0;
+            border-top: 1px solid var(--alpt-border);
+        }
+
+        // Volver / Validar: franja inferior.
+        > .d-flex.flex-row {
+            padding: 12px;
+        }
+    }
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+        box-shadow: none;
+    }
+
+    .paymentline {
+        background-color: var(--alpt-card-bg) !important;
+        border-color: var(--alpt-card-border) !important;
+        box-shadow: none;
+
+        &.selected {
+            background-color: var(--alpt-primary-subtle) !important;
+            border-color: rgba(var(--alpt-primary-rgb), .30) !important;
+        }
+    }
+
+    .payment-status-container {
+        background-color: var(--alpt-card-bg);
+        box-shadow: 0 0 0 1px var(--alpt-card-border);
+    }
+}
+
+:root[data-alpt-scheme="dark"] .pos .payment-screen:has(> .main-content) {
+    .left-content {
+        background-color: var(--alpt-surface-2);
+
+        > .w-100.flex-shrink-0 {
+            border-top-color: $alpt-dark-edge;
+        }
+    }
+
+    .paymentmethod {
+        --btn-bg: var(--alpt-card-bg);
+        --btn-border-color: var(--alpt-card-border);
+        background-color: var(--alpt-card-bg);
+        border-color: var(--alpt-card-border);
+    }
+
+    .paymentline,
+    .payment-status-container {
+        background-color: var(--alpt-card-bg) !important;
+    }
+}
+
+// --- Botones con borde de color primario (como el panel de la orden) -------
+// Panel de pago, pantalla completa y teléfono: métodos de pago, volver
+// (← del panel / Regresar), botones Cliente/Documento (ya en order_panel),
+// borrar línea de pago y acciones del pago electrónico. Validar es primario
+// lleno; el teclado conserva su estilo.
+.pos .payment-screen {
+    .paymentmethod,
+    .alpt-inline-payment__back,
+    .back-button,
+    .paymentline .delete-button,
+    .paymentlines .electronic_payment .button {
+        --btn-border-color: var(--alpt-primary);
+        --btn-hover-border-color: var(--alpt-primary);
+        --btn-active-border-color: var(--alpt-primary);
+        border: 1px solid var(--alpt-primary) !important;
+    }
+}

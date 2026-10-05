@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_al_pos_theme" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.mblz.pos.theme</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Nueva sección "Apariencia" justo después de "Interfaz del PdV".
+                 Los valores son por caja (pos_config_id seleccionado arriba). -->
+            <xpath expr="//block[@id='pos_interface_section']" position="after">
+                <block title="Apariencia" id="al_pos_theme_section">
+                    <setting id="al_theme_brand" string="Marca"
+                             help="Nombre e imágenes que ven cajeros y clientes en lugar de la marca del sistema.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="pos_al_theme_brand_name" string="Nombre" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_brand_name" class="col-lg-8"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="pos_al_theme_logo" string="Logo" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_logo" widget="image" class="col-lg-8"
+                                       options="{'size': [0, 60]}"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="pos_al_theme_favicon" string="Icono de pestaña" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_favicon" widget="image" class="col-lg-8"
+                                       options="{'size': [32, 32]}"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="al_theme_colors" string="Colores"
+                             help="El contraste del texto sobre los botones se ajusta solo. Vuelva a abrir el TPV para aplicar los cambios.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="pos_al_theme_color_primary" string="Primario" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_color_primary" widget="color" class="col-lg-8"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="pos_al_theme_color_secondary" string="Secundario" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_color_secondary" widget="color" class="col-lg-8"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="pos_al_theme_color_accent" string="Acento" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_color_accent" widget="color" class="col-lg-8"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="pos_al_theme_color_background" string="Fondo" class="col-lg-4 o_light_label"/>
+                                <field name="pos_al_theme_color_background" widget="color" class="col-lg-8"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
