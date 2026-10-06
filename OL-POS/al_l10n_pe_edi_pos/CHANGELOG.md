@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261006 — 06/10/2026
+
+- Corregido: una boleta elegida en caja para un cliente con RUC salía como factura (tipo 01) numerada en la serie de boletas, y SUNAT la rechazaba (error 1001). Ahora el tipo de comprobante es siempre el elegido en caja.
+
 ## 7.20260721 — 27/09/2026
 
 - Devoluciones: la nota de crédito de una factura se emite en el diario de facturas (antes caía en el de boletas); devolver un «Recibo» sin comprobante ya no genera un comprobante electrónico.

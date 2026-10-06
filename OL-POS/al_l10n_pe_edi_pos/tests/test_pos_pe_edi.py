@@ -77,6 +77,28 @@ class TestPosPeEdi(TestPoSCommon):
         vals = order._prepare_invoice_vals()
         self.assertEqual(vals['journal_id'], self.journal_factura.id)
 
+    def test_boleta_a_cliente_con_ruc_es_boleta(self):
+        """Boleta elegida en caja para un cliente con RUC: tipo 03, no 01.
+
+        l10n_pe pone por defecto la factura a un cliente con RUC; antes el
+        comprobante salía como factura numerada en la serie de boletas."""
+        self.open_new_session()
+        order = self._order_with_line(self.partner_ruc, l10n_pe_doc_type='boleta')
+        vals = order._prepare_invoice_vals()
+        self.assertEqual(vals['journal_id'], self.journal_boleta.id)
+        boleta = self.env.ref('l10n_pe.document_type02')
+        self.assertEqual(vals['l10n_latam_document_type_id'], boleta.id)
+        invoice = order._create_invoice(vals)
+        self.assertEqual(invoice.l10n_latam_document_type_id.code, '03')
+        self.assertEqual(invoice.journal_id, self.journal_boleta)
+
+    def test_factura_lleva_tipo_01(self):
+        self.open_new_session()
+        order = self._order_with_line(self.partner_ruc, l10n_pe_doc_type='factura')
+        invoice = order._create_invoice(order._prepare_invoice_vals())
+        self.assertEqual(invoice.l10n_latam_document_type_id.code, '01')
+        self.assertEqual(invoice.journal_id, self.journal_factura)
+
     def test_factura_requiere_ruc(self):
         self.open_new_session()
         order = self.env['pos.order'].create({

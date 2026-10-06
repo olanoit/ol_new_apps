@@ -47,8 +47,13 @@ class PosOrder(models.Model):
                     'La factura electrónica requiere un cliente con RUC '
                     '(11 dígitos). Seleccione el cliente o emita una boleta.'))
         vals['journal_id'] = journal.id
-        serie = self.edi_series_id
         doc_code = '01' if doc_type == 'factura' else '03'
+        # El tipo lo decide la caja. Sin esto, l10n_pe toma el primero que
+        # admite el cliente: con RUC, la factura (01) aunque se eligiera boleta,
+        # y el comprobante salía como «factura» numerada en la serie de boletas.
+        vals['l10n_latam_document_type_id'] = self.env.ref(
+            'l10n_pe.document_type01' if doc_type == 'factura' else 'l10n_pe.document_type02').id
+        serie = self.edi_series_id
         if (serie and serie in journal.edi_series_ids
                 and serie.state == 'publish' and serie.edi_type_code == doc_code):
             vals['edi_series_id'] = serie.id

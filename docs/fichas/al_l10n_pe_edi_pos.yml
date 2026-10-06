@@ -205,6 +205,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: 8.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Corregido: una boleta elegida en caja para un cliente con RUC salía como factura (tipo 01) numerada en la serie de boletas, y SUNAT la rechazaba (error 1001). Ahora el tipo de comprobante es siempre el elegido en caja."
   - version: 7.20260721
     fecha: 27/09/2026
     cambios:
