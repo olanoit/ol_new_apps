@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_complaint" model="report.paperformat">
+        <field name="name">Hoja de reclamación A4</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">12</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_complaint" model="ir.actions.report">
+        <field name="name">Hoja de reclamación</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_complaints_book.report_complaint</field>
+        <field name="report_file">al_l10n_pe_complaints_book.report_complaint</field>
+        <field name="print_report_name">'Hoja de reclamación %s' % object.name</field>
+        <field name="paperformat_id" ref="paperformat_complaint"/>
+        <field name="binding_model_id" ref="model_l10n_pe_complaint"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_book_notice" model="ir.actions.report">
+        <field name="name">Aviso del libro de reclamaciones</field>
+        <field name="model">l10n_pe.complaint.book</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_complaints_book.report_book_notice</field>
+        <field name="report_file">al_l10n_pe_complaints_book.report_book_notice</field>
+        <field name="print_report_name">'Aviso libro de reclamaciones %s' % object.code</field>
+        <field name="paperformat_id" ref="paperformat_complaint"/>
+        <field name="binding_model_id" ref="model_l10n_pe_complaint_book"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,12 @@
+flowchart TD
+  A[Consumidor llena la hoja<br/>sin registrarse] --> B[Número correlativo<br/>y fecha y hora]
+  B --> C[Constancia en PDF<br/>a su correo]
+  B --> D[Aviso al equipo<br/>y plazo de 15 días hábiles]
+  D --> E{¿Oferta de solución?}
+  E -- A distancia --> F[Plazo suspendido<br/>hasta 5 días hábiles]
+  F -- Aceptada --> G[Solución aceptada]
+  F -- No aceptada --> H[Respuesta escrita]
+  E -- No --> H
+  H --> I[Respuesta por correo o carta<br/>con la hoja completada]
+  G --> J[Cerrada]
+  I --> J

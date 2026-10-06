@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_complaint_book_user,l10n_pe.complaint.book user,model_l10n_pe_complaint_book,group_complaint_user,1,0,0,0
+access_complaint_book_manager,l10n_pe.complaint.book manager,model_l10n_pe_complaint_book,group_complaint_manager,1,1,1,1
+access_complaint_user,l10n_pe.complaint user,model_l10n_pe_complaint,group_complaint_user,1,1,1,0
+access_complaint_manager,l10n_pe.complaint manager,model_l10n_pe_complaint,group_complaint_manager,1,1,1,1
+access_complaint_sirec_wizard,l10n_pe.complaint.sirec.wizard,model_l10n_pe_complaint_sirec_wizard,group_complaint_manager,1,1,1,1
+access_complaint_settlement_wizard,l10n_pe.complaint.settlement.wizard,model_l10n_pe_complaint_settlement_wizard,group_complaint_user,1,1,1,1

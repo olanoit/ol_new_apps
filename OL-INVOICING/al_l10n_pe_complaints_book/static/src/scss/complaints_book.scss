@@ -1,0 +1,26 @@
+// Libro de reclamaciones: formulario y constancia (prefijo .lr-).
+.o_l10n_pe_complaints_book {
+    .lr-container { max-width: 880px; }
+    .lr-section {
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem 1.25rem;
+        margin-bottom: 1.25rem;
+        legend {
+            float: none;
+            width: auto;
+            padding: 0 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    }
+    // Campo trampa fuera de la vista sin usar display:none (algunos robots lo detectan).
+    .lr-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    .lr-pre { white-space: pre-wrap; }
+    .lr-summary th { width: 40%; }
+}
+.lr-footer-link {
+    font-size: 0.95rem;
+    .lr-icon { flex: none; }
+}

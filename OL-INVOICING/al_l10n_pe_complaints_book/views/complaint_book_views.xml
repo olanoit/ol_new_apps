@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_complaint_book_list" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.book.list</field>
+        <field name="model">l10n_pe.complaint.book</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="book_type"/>
+                <field name="is_backup" optional="show"/>
+                <field name="website_ids" widget="many2many_tags" optional="show"/>
+                <field name="sirec_site_code" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_complaint_book_form" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.book.form</field>
+        <field name="model">l10n_pe.complaint.book</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_print_notice" type="object" string="Imprimir aviso (Anexo II)"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_complaints" type="object" class="oe_stat_button"
+                                icon="fa-book">
+                            <field name="complaint_count" widget="statinfo" string="Hojas"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Tienda virtual"/></h1>
+                    </div>
+                    <group>
+                        <group string="Libro">
+                            <field name="code"/>
+                            <field name="book_type"/>
+                            <field name="is_backup" invisible="book_type != 'physical'"/>
+                            <field name="address"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Atención">
+                            <field name="user_ids" widget="many2many_tags"/>
+                            <field name="notify_email" widget="email"/>
+                            <field name="website_ids" widget="many2many_tags"
+                                   invisible="book_type != 'virtual'"/>
+                            <field name="sirec_site_code"/>
+                            <field name="sequence_id" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_complaint_book" model="ir.actions.act_window">
+        <field name="name">Libros</field>
+        <field name="res_model">l10n_pe.complaint.book</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree un libro por establecimiento o canal</p>
+            <p>Cada libro tiene su código de identificación, su dirección y su numeración
+               correlativa por año. Publique el libro virtual en sus sitios web.</p>
+        </field>
+    </record>
+
+</odoo>

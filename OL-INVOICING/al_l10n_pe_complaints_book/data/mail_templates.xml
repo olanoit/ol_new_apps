@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Constancia inmediata al consumidor (Reglamento, art. 4-B): la hoja en PDF
+         va adjunta desde el código. -->
+    <record id="mail_template_complaint_ack" model="mail.template">
+        <field name="name">Libro de reclamaciones: constancia al consumidor</field>
+        <field name="model_id" ref="model_l10n_pe_complaint"/>
+        <field name="subject">Hoja de reclamación {{ object.name }} - {{ object.company_id.name }}</field>
+        <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.consumer_email }}</field>
+        <field name="use_default_to" eval="False"/>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; font-size: 14px; color: #222;">
+    <p>Estimado(a) <t t-out="object.consumer_name or ''"/>:</p>
+    <p>Registramos su <strong t-out="dict(object._fields['claim_type'].selection).get(object.claim_type)"/>
+        en el Libro de Reclamaciones de <strong t-out="object.company_id.name or ''"/>
+        (RUC <t t-out="object.company_id.vat or ''"/>).</p>
+    <table style="border-collapse: collapse; margin: 12px 0;">
+        <tr><td style="padding: 4px 12px 4px 0;">Hoja de reclamación</td>
+            <td><strong t-out="object.name or ''"/></td></tr>
+        <tr><td style="padding: 4px 12px 4px 0;">Fecha y hora</td>
+            <td t-out="object._local_datetime().strftime('%d/%m/%Y %H:%M')"/></tr>
+        <tr><td style="padding: 4px 12px 4px 0;">Libro</td>
+            <td><t t-out="object.book_id.name or ''"/> (<t t-out="object.book_id.code or ''"/>)</td></tr>
+        <tr><td style="padding: 4px 12px 4px 0;">Respuesta a más tardar</td>
+            <td t-out="format_date(object.deadline_date, date_format='dd/MM/yyyy')"/></tr>
+    </table>
+    <p>Adjuntamos la hoja de reclamación. Puede consultar su estado en
+        <a t-att-href="object.get_base_url() + object.get_portal_url()">este enlace</a>.</p>
+    <p style="font-size: 12px; color: #555;">La formulación del reclamo no impide acudir a otras
+        vías de solución de controversias ni es requisito previo para interponer una denuncia
+        ante el INDECOPI. El proveedor debe dar respuesta al reclamo o queja en un plazo no
+        mayor a quince (15) días hábiles, el cual es improrrogable.</p>
+</div>
+        </field>
+    </record>
+
+    <record id="mail_template_complaint_internal" model="mail.template">
+        <field name="name">Libro de reclamaciones: aviso interno</field>
+        <field name="model_id" ref="model_l10n_pe_complaint"/>
+        <field name="subject">Nueva hoja de reclamación {{ object.name }} ({{ object.book_id.code }})</field>
+        <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="use_default_to" eval="False"/>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; font-size: 14px; color: #222;">
+    <p>Se registró la hoja <strong t-out="object.name or ''"/>
+        (<t t-out="dict(object._fields['claim_type'].selection).get(object.claim_type)"/>)
+        en el libro <t t-out="object.book_id.name or ''"/>.</p>
+    <p><strong>Consumidor:</strong> <t t-out="object.consumer_name or ''"/><br/>
+       <strong>Vence:</strong> <t t-out="format_date(object.deadline_date, date_format='dd/MM/yyyy')"/></p>
+    <p><strong>Detalle:</strong><br/><t t-out="object.detail or ''"/></p>
+</div>
+        </field>
+    </record>
+
+    <record id="mail_template_complaint_response" model="mail.template">
+        <field name="name">Libro de reclamaciones: respuesta al consumidor</field>
+        <field name="model_id" ref="model_l10n_pe_complaint"/>
+        <field name="subject">Respuesta a su hoja de reclamación {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.consumer_email }}</field>
+        <field name="use_default_to" eval="False"/>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; font-size: 14px; color: #222;">
+    <p>Estimado(a) <t t-out="object.consumer_name or ''"/>:</p>
+    <p>En atención a su hoja de reclamación <strong t-out="object.name or ''"/>, le comunicamos:</p>
+    <div style="white-space: pre-wrap; border-left: 3px solid #ccc; padding-left: 12px;"
+         t-out="object.provider_observations or ''"/>
+    <p>Adjuntamos la hoja de reclamación con nuestra respuesta.</p>
+    <p>Atentamente,<br/><t t-out="object.company_id.name or ''"/></p>
+</div>
+        </field>
+    </record>
+
+</odoo>

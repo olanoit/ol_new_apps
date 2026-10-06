@@ -1,0 +1,166 @@
+titulo: Libro de Reclamaciones
+subtitulo: >-
+  El Libro de Reclamaciones físico y virtual que exige el Código de Protección
+  y Defensa del Consumidor: hoja del Anexo I, constancia inmediata por correo,
+  plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
+categoria: Localización · Perú
+etiquetas: [INDECOPI, Libro de Reclamaciones, Reclamos y quejas, 15 días hábiles, SIREC, Sitio web, Multicompañía]
+portada: screenshots/01-formulario.png
+
+destacados_intro: >-
+  Construido desde las normas vigentes a octubre de 2026: Ley 29571 con las
+  leyes 31435 y 32495, D.S. 011-2011-PCM y sus modificatorias hasta el D.S.
+  101-2022-PCM.
+destacados:
+  - icono: "▣"
+    titulo: Hoja del Anexo I
+    texto: >-
+      Formato vigente del D.S. 101-2022-PCM, con numeración 000000001-AAAA por
+      libro y año y las dos notas legales literales.
+  - icono: "@"
+    titulo: Constancia inmediata
+    texto: >-
+      Al enviar, el consumidor recibe en su correo la hoja en PDF con fecha y
+      hora, y puede imprimirla desde su enlace.
+  - icono: "15"
+    titulo: 15 días hábiles
+    texto: >-
+      De lunes a viernes sin feriados, con suspensión de hasta 5 días por una
+      oferta de solución a distancia, alertas y vencidos.
+  - icono: "🔓"
+    titulo: Sin registro
+    texto: >-
+      El formulario no pide cuenta ni inicio de sesión; se protege de los
+      robots sin captcha.
+  - icono: "▤"
+    titulo: SIREC
+    texto: Archivo de carga masiva para quienes superan las 3 000 UIT.
+  - icono: "⌂"
+    titulo: Multicompañía
+    texto: >-
+      Un libro por establecimiento o canal, con su código y su numeración, y
+      cada compañía ve solo sus hojas.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Todo proveedor con establecimiento o tienda en línea debe tener un Libro de
+    Reclamaciones, entregar constancia de cada hoja, responder en 15 días
+    hábiles y conservar todo dos años. Los módulos disponibles todavía usan el
+    plazo de 30 días derogado en 2022. Este módulo lleva el libro dentro de
+    Odoo, conforme a las normas vigentes.
+  nota: >-
+    **Fuente:** `docs/reclamaciones/REQUISITOS_LEGALES.md`, con las normas
+    oficiales en `docs/reclamaciones/oficial/`.
+
+flujos_intro: >-
+  De la hoja del consumidor a la respuesta.
+flujos:
+  - id: atencion
+    titulo: Atención de una hoja de reclamación
+    texto: >-
+      La hoja llega por el sitio web o se registra desde el libro físico; el
+      plazo corre desde el día siguiente.
+    mermaid: |
+      flowchart TD
+        A[Consumidor llena la hoja<br/>sin registrarse] --> B[Número correlativo<br/>y fecha y hora]
+        B --> C[Constancia en PDF<br/>a su correo]
+        B --> D[Aviso al equipo<br/>y plazo de 15 días hábiles]
+        D --> E{¿Oferta de solución?}
+        E -- A distancia --> F[Plazo suspendido<br/>hasta 5 días hábiles]
+        F -- Aceptada --> G[Solución aceptada]
+        F -- No aceptada --> H[Respuesta escrita]
+        E -- No --> H
+        H --> I[Respuesta por correo o carta<br/>con la hoja completada]
+        G --> J[Cerrada]
+        I --> J
+
+pasos_intro: >-
+  Capturas reales del sitio web y de la hoja en PDF.
+pasos:
+  - seccion: Consumidor
+  - titulo: Formulario del libro virtual
+    ruta: Sitio web ▸ Libro de Reclamaciones
+    texto: >-
+      Las secciones del Anexo I, con los datos del proveedor por defecto y
+      validación de lo que la norma exige. Adjuntos opcionales y datos del
+      representante para menores.
+    imagen: screenshots/01-formulario.png
+  - titulo: Constancia y seguimiento
+    ruta: Al enviar
+    texto: >-
+      Número, fecha y hora, plazo de respuesta y la hoja en PDF. El enlace
+      firmado permite consultar el estado sin cuenta.
+    imagen: screenshots/02-constancia.png
+  - titulo: Hoja de reclamación
+    ruta: PDF
+    texto: El formato del Anexo I con las notas legales vigentes.
+    imagen: screenshots/03-hoja.png
+  - titulo: Enlace permanente
+    ruta: Pie de todas las páginas
+    texto: El aviso con el libro abierto y el enlace al formulario.
+    imagen: screenshots/04-enlace.png
+
+campos_intro: >-
+  Lo que se configura por libro.
+campos:
+  - grupo: Libro
+    ruta: Libro de reclamaciones ▸ Configuración ▸ Libros
+    campos:
+      - [Código de identificación, Distingue los libros (art. 8)., "—", Único por compañía]
+      - [Tipo, Virtual o físico; libro de respaldo., Virtual, "—"]
+      - [Domicilio del establecimiento, Aparece en la hoja., Dirección de la compañía, "—"]
+      - [Sitios web, Dónde se publica el libro virtual., "—", Solo de su compañía]
+      - [Responsables, Reciben las hojas y las alertas., "—", "—"]
+      - [Código de sede SIREC, Para el archivo de carga masiva., "—", 6 caracteres]
+
+funcionalidades:
+  - grupo: Libro virtual
+    items:
+      - Formulario público sin registro, adaptado a móvil, con adjuntos.
+      - "Validación de lo que exige el art. 5: nombre, documento, domicilio o correo y detalle."
+      - Protección contra robots sin captcha (campo trampa, tiempo mínimo y límite por conexión).
+      - Constancia inmediata con la hoja en PDF y enlace firmado de seguimiento.
+      - Enlace permanente en el pie del sitio y aviso del Anexo II imprimible.
+  - grupo: Atención
+    items:
+      - Plazo de 15 días hábiles con calendario de feriados, alertas y vencidos.
+      - Recalificación de queja a reclamo y datos del consumidor protegidos.
+      - Oferta de solución a distancia (suspende el plazo) o presencial.
+      - Respuesta por correo con la hoja completada, o por carta.
+      - Libro físico, de respaldo y canal telefónico.
+  - grupo: Cumplimiento
+    items:
+      - Conservación de 2 años y SIREC.
+      - Multicompañía y grupos de atención y responsable.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-INVOICING).
+  - "En **Libro de reclamaciones ▸ Configuración ▸ Libros** cree un libro por establecimiento o canal y publique el virtual en su sitio web."
+  - "En **Ajustes** elija el calendario con los feriados nacionales y, si corresponde, active el SIREC."
+  - "Imprima el aviso del Anexo II para cada establecimiento físico."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Necesita el módulo Sitio web para el
+  libro virtual y un servidor de correo para la constancia.
+
+faq:
+  - pregunta: "¿Por qué 15 días hábiles y no 30?"
+    respuesta: >-
+      Desde la Ley 31435 y el D.S. 101-2022-PCM el plazo es de 15 días hábiles
+      improrrogables, para reclamos y quejas.
+  - pregunta: "¿Se puede pedir que el consumidor se registre?"
+    respuesta: >-
+      No conviene: el libro debe ser fácilmente accesible y el proyecto de
+      reglamento de 2026 lo prohíbe de forma expresa. El formulario no lo pide.
+  - pregunta: "¿Se pueden borrar hojas?"
+    respuesta: >-
+      Solo un responsable y después de los 2 años de conservación que exige el
+      art. 12.
+
+novedades:
+  - version: 1.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Primera versión: libros por establecimiento, formulario web sin registro, constancia en PDF, plazo de 15 días hábiles con feriados, oferta de solución, respuesta, SIREC, aviso del Anexo II y multicompañía."
+
+relacionados: [al_l10n_pe_invoice]

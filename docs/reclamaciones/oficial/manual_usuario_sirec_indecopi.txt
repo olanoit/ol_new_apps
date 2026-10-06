@@ -1,0 +1,1304 @@
+Manual de Usuario
+
+
+
+
+                                                             Unidad de Desarro
+
+
+Contenido:
+
+       A. Resumen
+       B. Registro de Proveedores
+       C. Acceso al sistema
+       D. Gestión de Sedes o Locales
+       E. Gestión de Usuarios
+       F. Gestión de Hojas de Reclamación
+       G. Gestión de Hojas de Reclamación (Módulo cliente)
+       H. Formato del archivo de carga masiva de reclamos
+       I. Alertas del Sistema
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      A. Resumen
+
+                El sistema “Controla tus Reclamos”, tiene como objetivo brindar un formulario en línea y de
+                libre acceso, que permita el registro de reclamaciones de las empresas, así como también
+                brinda mecanismos para que las empresas puedan reportar en masivo sus hojas de
+                reclamaciones. La finalidad primordial es crear una herramienta de control para los proveedores
+                que les permita retroalimentar información, para que puedan perfeccionar los servicios o productos que
+                ofrecen en el mercado.
+
+                En este contexto, el presente manual brinda la información necesaria para realizar el Registro
+                de Proveedores.
+
+      B. Registro de Proveedores
+
+           1. Ingresar al sistema
+
+                 Ingresar al formulario de solicitud de acceso mediante el siguiente enlace:
+
+                 http://servicios.indecopi.gob.pe/controlatusreclamos/publico/pgw_registro.seam
+
+
+
+
+Formato: 1.0                                                                             Pág. 2 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           2. Ingresar los datos
+
+                 El formulario considera todos los datos como obligatorios, de no ingresarlos por completo, el
+                 sistema le mostrará un mensaje de error y pintará de color rojo los campos que se deben
+                 corregir.
+
+
+
+
+                 Adicionalmente es necesario adjuntar algunos documentos en formato de documento
+
+                 portable (pdf), para ello deberá presionar el botón                     , dicha opción se encuentra en la
+                 parte derecha de cada documento obligatorio.
+
+
+
+
+Formato: 1.0                                                                                Pág. 3 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                                Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados      Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                 Al presionar dicho botón aparecerá la siguiente pantalla:
+
+
+
+
+                 Usted deberá presionar el botón “Subir archivo”, inmediatamente después se abrirá la ventana
+                 de un explorador de archivos, para que pueda seleccionar el documento a subir.
+
+
+
+
+                 Usted podrá validar que el documento fue subido de forma correcta, al visualizar en la tabla el
+                 nombre del archivo y el peso del mismo.
+
+
+Formato: 1.0                                                                             Pág. 4 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                 Deberá de tener especial consideración en la sección Datos del administrador al momento de
+                 registrar el campo Correo Electrónico, ya que este será utilizado por usted como su cuenta de
+                 usuario, a través del mismo también recibirá las diversas alertas que genera el sistema.
+
+                 Una vez haya terminado de ingresar todos los datos y adjuntado los documentos necesarios,
+                 deberá presionar el botón Enviar, el cual se encuentra en la parte final del formulario.
+
+
+
+
+                 Luego de ello, el sistema le pedirá su confirmación, si desea continuar el proceso de registro,
+                 deberá presionar el botón Aceptar.
+
+
+
+
+Formato: 1.0                                                                             Pág. 5 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           3. Registro satisfactorio
+
+                 Luego de finalizado el proceso, se mostrará un mensaje indicándole que el registro fue
+                 satisfactorio.
+
+
+
+
+                Adicionalmente le llegará un cargo de recepción con los datos ingresados a la cuenta de
+                Correo Electrónico del administrador registrado. Dicho cargo será remitido desde el correo
+                operacionesenlinea@indecopi.gob.pe
+
+
+
+
+Formato: 1.0                                                                             Pág. 6 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                Nota: Una vez que la Gerencia de Fiscalización haya validado los datos ingresados, le llegara un
+                segundo correo con su contraseña asignada. Recordamos que la obligación del reporte se dará a
+                los 30 días contados desde el día siguiente de recibida la comunicación de las mencionadas claves, no
+                antes.
+
+
+
+
+      C. Acceso al sistema
+
+
+           1. Recepción de credenciales de acceso
+
+                 Luego de que la Gerencia de Supervisión y Fiscalización valide que los datos ingresados en el
+                 formulario de registro son correctos, se le proporcionará sus credenciales de acceso al sistema,
+                 para    ello    le     llegará    un      mensaje     de      correo    desde     la      cuenta
+                 operacionesenlinea@indecopi.gob.pe
+
+
+
+
+Formato: 1.0                                                                             Pág. 7 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           2. Ingresar al sistema
+
+                 Ingresar al formulario de acceso mediante el siguiente enlace
+
+                           http://servicios.indecopi.gob.pe/controlatusreclamos/pgw_login.seam
+
+           3. Validar sus credenciales de acceso
+
+           En el formulario de acceso, deberá ingresar sus credenciales y presionar el botón “Autenticar”
+
+
+
+
+Formato: 1.0                                                                             Pág. 8 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           4. Cambiar contraseña
+
+           Si es la primera vez que ingresa al sistema, deberá cambiar su contraseña. Es necesario que la
+           nueva contraseña cumpla con los siguientes requisitos de seguridad:
+
+           - Ocho caracteres como mínimo y veinte como máximo
+           - Al menos un dígito
+           - Al menos un carácter en mayúscula
+           - Al menos un carácter en minúscula
+           - Al menos un carácter especial
+           ¿Es necesario que la contraseña cumpla estos requisitos? Creo que sería mejor que sólo tenga el
+           punto 1 y lo demás dejarlo a criterio del usuario.
+
+
+
+
+Formato: 1.0                                                                             Pág. 9 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           Además, usted podrá cambiar su contraseña siempre que lo desee desde la opción “Cambiar
+           clave”, ubicada en la parte superior derecha del sistema.
+
+
+
+
+           5. Recuperar contraseña de acceso
+
+           En caso haya olvidado su contraseña, acceda a la opción “¿Ha olvidado su contraseña?”, la cual se
+           encuentra en el formulario de acceso. Luego ingrese su usuario y presione el botón “Enviar”, el
+           sistema le enviará un mensaje a su correo electrónico con los pasos a seguir.
+
+
+
+
+Formato: 1.0                                                                             Pág. 10 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           6. Cargo de solicitud de recuperación de contraseña
+
+           Usted recibirá un mensaje de correo desde la cuenta operacionesenlinea@indecopi.gob.pe
+
+
+
+
+          Luego deberá acceder al enlace y realizar el cambio de su contraseña, esta operación se realiza
+          solo para la primera vez que accede al sistema.
+
+
+
+
+Formato: 1.0                                                                             Pág. 11 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           7. Cambio de Datos del Administrador.
+
+                 En la parte superior Ud. puede dar clic sobre el nombre y a continuación se mostrarán los
+                 datos de la persona, se puede actualizar los datos como Nombre Apellido, Nro. Documento,
+                 Dirección, Correo, Teléfono.
+
+                 Es necesario cerrar sesión y volver a ingresar para verificar los cambios. Cambiando el correo
+                 se cambia también el usuario de logeo.
+
+                 La opción de edición solo está habilitada para los usuarios administradores generales, a los
+                 demás administradores se podrá cambiar desde el menú Usuarios.
+
+
+
+
+Formato: 1.0                                                                             Pág. 12 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           8. Selección de empresa a administrar
+
+                 Cuando Ud. acceda al sistema se mostrarán las empresas a las cuales tiene acceso, como se
+                 muestra a continuación:
+
+
+
+
+            Ud. debe seleccionar la empresa con la cual va a consultar/registrar hojas de reclamación, si Ud.
+            necesita administrar otra empresa, es necesario que salga del sistema, vuelva a iniciar sesión y
+            seleccione la empresa.
+
+
+
+
+Formato: 1.0                                                                             Pág. 13 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      D. Gestión de Sedes o Locales
+
+
+           1. Ingresar a la gestión de sedes
+
+           Para acceder a la gestión de sedes deberá estar autenticado en el sistema e ingresar a la opción
+           “Sedes” del menú principal. Recordar que la función de administrar las sedes y los usuarios para
+           cada una, está permitida solo al administrador general. Además en esta pantalla usted podrá
+           visualizar los datos generales de cada sede, entre ellos el “Código” asignado por el sistema, dicho
+           código será el que su empresa utilizará en caso desee realizar la carga masiva de hojas de
+           reclamación.
+
+
+
+
+           2. Crear una sede
+
+           Para crear una nueva sede, presione la opción “Agregar Sede”
+
+
+
+
+Formato: 1.0                                                                             Pág. 14 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                      Manual de Usuario
+
+
+
+
+           A            continuación          usted            visualizará               la         siguiente             pantalla:
+
+
+
+
+           Luego de ingresar todos los datos obligatorios (Departamento, Provincia, Distrito, Descripción o
+           nombre de la sede y dirección), deberá presionar el botón Guardar, si todo es correcto, aparecerá
+           el botón “Actualizar” y se habilitará la opción para agregar administradores.
+
+
+
+
+           3. Editar una sede
+
+           Para actualizar los datos de una sede, presione el botón               , ubicado en la columna “Opc.” de cada
+           sede.
+
+
+
+
+Formato: 1.0                                                                                  Pág. 15 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                                  Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados        Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           En la pantalla de edición de sede, usted podrá modificar los datos de la misma (dirección, teléfono,
+           etc.) y para guardar sus cambios debe presionar el botón “Actualizar”
+
+
+
+
+           4. Generar licencia por Sede
+
+           En caso alguna de sus sedes no cuente con internet, podrá usar el ¨sistema cliente¨, el mismo que
+           le facilitara el registro de los reclamos, para ello deberá generar la licencia presionando el botón
+
+                 , inmediatamente iniciará la descarga del archivo.
+
+
+
+
+           5. Cerrar una Sede
+
+           Si desea dar por cerrada una sede, deberá presionar el botón                  , esto inhabilitará el registro de
+           reclamos para la sede seleccionada.
+
+
+
+
+Formato: 1.0                                                                             Pág. 16 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           6. Eliminar una Sede
+
+           Si desea eliminar una sede, deberá presionar el botón                 , recordar que al eliminar la sede, ya no
+           podrá visualizar los reclamos correspondientes.
+
+
+
+
+           7. Exportar Sedes
+
+          Para exportar las sedes registradas a una hoja de cálculo, deberá presionar la opción “Exportar
+          sedes”.
+
+
+
+
+           8. Carga Masiva de Sedes
+
+           En caso Ud. quiera realizar una carga masiva de sedes, deberá hacer clic en la Opción Descargar
+           Plantilla, a continuación abrirá el archivo Excel descargado y seguirá las opciones indicadas dentro
+           del Excel, cuando tenga guardado el archivo Excel, deberá regresar al sistema y clic en la opción
+           Cargar Sedes, seleccionar el archivo Excel y se cargarán las sedes.
+
+
+
+
+Formato: 1.0                                                                              Pág. 17 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                              Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados    Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+Formato: 1.0                                                                             Pág. 18 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      E. Gestión de Usuarios
+
+           1. Ingresar a la gestión de usuarios
+
+           Para acceder a la gestión de usuarios deberá estar autenticado en el sistema e ingresar a la opción
+           “Usuarios” del menú principal. En esta sección Ud. podrá definir qué usuario(s) tiene(n) acceso a
+           determinadas sedes.
+
+
+
+
+Formato: 1.0                                                                             Pág. 19 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           2. Creación de un usuario
+
+           Para crear un usuario, clic en el menú Usuarios y clic en la opción Agregar Administrador. Ingrese
+           los datos solicitados, además debe escoger como mínimo una sede, en caso de dar acceso a varias
+           sedes habilite la opción Administrar Varias Sedes, cuando de clic en el botón guardar llegará un
+           correo indicando la contraseña para acceder al sistema.
+
+
+
+
+           3. Editar un administrador de Sede
+
+           Para editar un administrador, ingresar a la sección Usuarios y luego presionar el botón (Editar
+           Usuario), ubicado en la columna Opc. Luego de ello se abrirá la siguiente ventana, en la cual podrá
+           modificar los datos del usuario y presionar el botón Actualizar, ubicado en la parte inferior,
+           además podrá editar los accesos a las sedes que correspondan.
+
+
+
+
+Formato: 1.0                                                                             Pág. 20 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                                  Sistema Controla tus Reclamos
+
+
+                                                         Manual de Usuario
+
+
+
+
+           4. Deshabilitar/Habilitar un administrador
+
+           Para deshabilitar o habilitar un administrador según sea necesario, deberá ingresar a la opción
+
+           Usuarios y luego presionar el botón         , ubicado en la columna Opc del usuario que desee
+           habilitar/deshabilitar. Esto impedirá que dicho administrador pueda ingresar al sistema web.
+
+
+
+
+           5. Eliminar un administrador
+
+           Para eliminar un administrador según sea necesario, deberá ingresar a la opción Usuarios y luego
+           presionar el botón            , ubicado en la columna Opc del usuario que desee eliminar.
+
+
+
+
+Formato: 1.0                                                                                 Pág. 21 de 42
+                                                MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                                 Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos       ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      E. Gestión de Hojas de Reclamación
+
+           1. Buscador de hojas de reclamaciones
+
+           Para visualizar las hojas de reclamación registradas, se habilitó un buscador con los siguientes
+           filtros (estado, fecha inicio y fin, sede, número de reclamo, bien, tipo de reclamo y nombre o razón
+           social). Luego de ingresar o seleccionar los datos necesarios, presione el botón “Mostrar” para
+           visualizar las hojas en la tabla inferior.
+
+           Al buscar un reclamo, tenga siempre en cuenta las opciones de búsqueda:
+                Estado del reclamo: Creado (Cuando aún no tiene respuesta), Atendido (Cuando se ha
+                    consignado una respuesta), Todos
+                Rango de Fecha: Desde y Hasta
+            Por defecto el sistema filtrará los reclamos en estado de Creados y con un rango de fechas hasta
+            5 días antes de la fecha actual de consulta.
+
+
+
+
+Formato: 1.0                                                                             Pág. 22 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           2. Agregar una nueva hoja de reclamación
+
+           Para agregar una nueva hoja de reclamación, deberá presionar el enlace “Agregar hoja”
+
+
+
+
+                Luego de ello, deberá llenar todos los datos necesarios, iniciando con la sede, para ello
+                presionar el botón       , luego se mostrará la siguiente ventana:
+
+
+
+
+                Usted, deberá seleccionar la sede sobre la cual desea registrar el reclamo, para ello presionar
+                el botón      ubicado en la columna “Opc.” Luego de ello continúe con el registro de los
+                siguientes datos.
+                El número de reclamo será el correlativo siguiente según se tengan registrados en cada sede, si
+                fuera necesario, Ud. puede cambiar este número de reclamo, el campo es alfanumérico.
+
+
+
+
+Formato: 1.0                                                                             Pág. 23 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                Continúe registrando los datos:
+
+                Datos del consumidor reclamante
+
+
+
+
+                Identificación del bien contratado
+                (En el tipo de bien deberá escoger si es un Producto o Servicio o ambos)
+
+
+
+
+Formato: 1.0                                                                             Pág. 24 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                Detalle de la reclamación
+
+
+
+
+                Finalmente deberá ingresar el código Captcha que se muestra en la imagen y presionar el
+                botón guardar.
+
+
+
+
+                A continuación se mostrará una confirmación del reclamo registrado, adempas podrá
+                descargar el formato de reclamación del link
+
+
+
+
+Formato: 1.0                                                                             Pág. 25 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           3. Registrar o Actualizar la Respuesta
+
+           Para registrar la respuesta a una hoja de reclamación, deberá encontrarse en la bandeja de hojas
+           de reclamación utilizando los filtros (ver punto 1), luego presionar el botón
+           (Ingresar/Actualizar respuesta), se abrirá la siguiente ventana:
+
+
+
+
+Formato: 1.0                                                                             Pág. 26 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                     Si Ud. tiene la respuesta final del reclamo ingrese el detalle de la respuesta, escoja de
+                      fecha de respuesta y de clic en la opción Guardar y Cerrar Reclamo, con esto el reclamo
+                      pasa a estado Atendido.
+                      Importante: Una vez que se cierre el reclamo no es posible modificar la respuesta.
+
+                     Si Ud. quiere actualizar el seguimiento del reclamo ingrese el detalle de respuesta y clic en
+                      la opción Actualizar Respuesta, con esto el reclamo permanece en estado Creado.
+
+
+           4. Solicitar prorroga
+
+
+           Si desea solicitar una prórroga de 30 días adicionales sobre una hoja de reclamación, deberá
+           encontrarse en la bandeja de hojas de reclamación, y luego presionar el botón                   correspondiente
+           al reclamo al cual desea solicitar la prórroga.
+
+
+           5. Ver reclamo en PDF
+
+
+           Para visualizar la hoja de reclamación, según el formato físico, deberá encontrarse en la bandeja
+           de hojas de reclamación, y luego presionar el botón                  . Ello cargará una nueva ventana con el
+           documento de la hoja de reclamación.
+
+
+
+
+Formato: 1.0                                                                             Pág. 27 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+Formato: 1.0                                                                             Pág. 28 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           6. Cargar hojas de reclamación
+
+           Si su empresa, usará la modalidad de carga de hojas de reclamación de forma masiva, primero
+           deberá generar el archivo según el formato proporcionado por el INDECOPI (ver sección H.
+           FORMATO HOJAS DE RECLAMACIÓN), luego presionar el botón “Cargar hojas”.
+
+
+
+
+                Se abrirá la siguiente ventana, mediante la cual deberá subir el archivo TXT y esperar que el
+                proceso de carga masiva finalice.
+
+
+
+
+Formato: 1.0                                                                             Pág. 29 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           7. Exportar hojas de reclamación
+
+           Si desea generar un reporte de las hojas de reclamación registrada, deberá realizar una búsqueda
+           previa (ver punto 1), y luego presionar el enlace “Exportar hojas”.
+
+
+
+
+           8. Reclamos Sin Respuesta
+
+
+
+      G. Gestión de Hojas de Reclamación (módulo cliente)
+
+           Pensando en la posibilidad de que ciertas sedes de una empresa no puedan contar con acceso a
+           internet. El sistema “Controla tus reclamos”, provee una aplicación de escritorio que podrá ser
+           descargada del sitio web. http://servicios.indecopi.gob.pe/controlatusreclamos/pgw_login.seam
+           El sistema tiene como objetivo brindar un formulario que permita el registro de reclamaciones de
+           las empresas, así como también brinda mecanismos para que las empresas puedan reportar en
+           masivo sus hojas de reclamaciones. Manteniendo el objetivo primordial que es fortalecer la
+           supervisión y fiscalización del cumplimiento del Libro de Reclamaciones.
+
+           1. Configuración Inicial
+           Para empezar a trabajar con el sistema cliente es necesario descargar el software desde la página
+           http://servicios.indecopi.gob.pe/controlatusreclamos/pgw_login.seam,         crear     la     sede
+           correspondiente y generar una licencia para la sede ver apartado (D. Gestión de Sedes o Locales).
+
+           Seguidamente colocar el archivo descargado en un lugar visible, de fácil acceso como por ejemplo
+           el escritorio, ejecutar el programa presione sobre el icono aparecerá una ventana de login como
+           esta:
+Formato: 1.0                                                                             Pág. 30 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      Presione sobre el botón enmarcado de color rojo para realizar la configuración inicial, seguidamente
+      aparecerá una ventana en la cual seleccionaremos la ruta a utilizar por el aplicativo y presione en el
+      botón GRABAR. Dicha ruta cumple dos funciones, contiene tanto los archivos de configuración como
+      el repositorio de datos.
+
+
+
+
+      Seguidamente agregamos la licencia descargada y damos click sobre el botón guardar, mostrándonos
+      un mensaje satisfactorio al cargar la licencia.
+
+
+
+
+Formato: 1.0                                                                             Pág. 31 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      NOTA: En caso de querer modificar la ubicación de la carpeta principal, se deberá cargar nuevamente
+      la licencia. Tener en cuenta que la información de los reclamos se podría perder y comenzar el
+      contador de cero. Para evitar la pérdida de información se deberá copiar manualmente todos los
+      archivos que estén dentro de la carpeta origen hacia la nueva dirección configurada.
+           2. Ingresar al sistema
+
+           En el formulario de acceso, ingresar sus credenciales y presionar el botón “Ingresar”
+
+
+
+
+      Aparecerá una pantalla de bienvenida, en la cual en la parte superior se visualiza al usuario actual que
+      ingreso al sistema, además se muestran las opciones de registro de reclamaciones y los reportes
+      asociados.
+
+Formato: 1.0                                                                             Pág. 32 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      NOTA: El cambio de contraseña solo se da en el sistema web de “CONTROLA TUS RECLAMOS”, para
+      actualizar la información de la contraseña se debe generar una nueva licencia y cambiarla en la
+      configuración. Ver APARTADO ( F. Gestión de Hojas de Reclamación (módulo cliente) ANEXO 1).
+
+
+
+
+           3. Buscador de hojas de reclamaciones
+           Para visualizar las hojas de reclamación registradas, se habilitó un buscador con los siguientes
+           filtros (estado, nombre o razón social). Luego de ingresar o seleccionar los datos necesarios,
+           presione el botón “Mostrar” para visualizar las hojas en la tabla inferior.
+
+
+
+
+           4. Agregar una nueva hoja de reclamación
+
+           Para agregar una nueva hoja de reclamación, deberá presionar el botón                   .
+
+
+
+
+Formato: 1.0                                                                             Pág. 33 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           Datos del consumidor reclamante
+
+
+
+
+          Identificación del bien contratado
+
+
+
+
+          Detalle de la reclamación
+
+
+
+
+          Finalmente deberá presionar el botón guardar.
+
+
+
+           5. Ver Hoja de reclamación
+           Si desea visualizar una hoja de reclamación, deberá encontrarse en la bandeja de hojas de
+           reclamación, buscar y seleccionar el registro, y luego presionar el botón                   “VER HOJA”. El cual
+
+
+Formato: 1.0                                                                             Pág. 34 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           permitirá visualizar la hoja en un formulario similar al de registrar hoja. Cargada con la información
+           correspondiente a dicha hoja de reclamación.
+
+           6. Registrar respuesta
+           Para registrar la respuesta a una hoja de reclamación, deberá encontrarse en la bandeja de hojas
+           de reclamación, seleccionar una fila de la tabla mostrada, y luego presionar el botón                     “Agregar
+           Respuesta”, se abrirá la siguiente ventana:
+
+
+
+
+           Deberá ingresar la fecha y detalle de la respuesta y presionar el botón “Aceptar”.
+
+
+
+
+           7. Solicitar prorroga
+           Si desea solicitar una prórroga de 30 días adicionales sobre una hoja de reclamación, deberá
+           encontrarse en la bandeja de hojas de reclamación, seleccionar el registro, y luego presionar el
+           botón           “PRORROGA”, aparecerá un mensaje de confirmación para efectuar la operación.
+
+
+
+
+           8. Ver reclamo en PDF
+           Para visualizar la hoja de reclamación, según el formato físico, deberá encontrarse en la bandeja
+           de hojas de reclamación, seleccionar el registro y luego presionar el botón                    . Ello cargará una
+           nueva ventana con el documento de la hoja de reclamación.
+
+
+
+
+Formato: 1.0                                                                             Pág. 35 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+           9. Exportar hojas de reclamación
+           Si desea generar un reporte de las hojas de reclamación registradas, deberá realizar una búsqueda
+           por rangos de fechas, y luego presionar el botón “Exportar hojas”.
+
+
+
+
+Formato: 1.0                                                                             Pág. 36 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                               Sistema Controla tus Reclamos
+
+
+                                                      Manual de Usuario
+
+
+
+
+           Si lo que se quiere es reportar las hojas al INDECOPI deberá realizar una búsqueda por rangos de
+           fechas, y luego presionar el botón “Exportar a INDECOPI”. El archivo generado contiene la
+           información de las hojas que aún no han sido exportadas y finalizadas, dicho archivo tiene la
+           extensión “TXT” y cuenta con el formato correcto para cargar las hojas en el sistema
+           “CONTROLA TUS RECLAMOS” (WEB).
+
+
+      H. Formato del archivo de carga masiva de reclamos
+
+           Si la empresa no desea usar el sistema “Controla tus reclamos” como libro de reclamación, se le
+           brindará la opción de realizar una carga masiva de sus reclamos para ello ver el apartado (E.
+           Gestión de Hojas de Reclamación), el archivo plano que deberá generar la empresa (área de
+           sistemas o similar) contiene todos los datos de la hoja de reclamación separadas por pipes “|” y
+           cada línea del archivo representa una hoja de reclamación
+
+           Formato:
+
+           CODIGO DE SEDE|NRO DE RECLAMO(000000001)|AÑO DE RECLAMO(YYYY)|FECHA(YYYY-MM-
+           DD)|NOMBRES O RAZON SOCIAL|DIRECCION|NRO DOCUMENTO|TELEFONO|EMAIL|PADRE O
+           MADRE(MENORES DE EDAD)|TIPO DEL BIEN(PRODUCTO=P O SERVICIO=S O AMBOS=PS)|MONTO
+           RECLAMADO(TEXTO)|DESCRIPCION|TIPO        DE        RECLAMO(RECLAMO=R         O
+           QUEJA=Q)|DETALLE|PEDIDO|FECHA DE RESPUESTA(YYYY-MM-DD)|DESCRIPCION DE LA
+           RESPUESTA
+
+
+
+
+                  CAMPO                       TIPO DE DATO                   OBLIGATORIO                   DESCRIPCIÓN
+
+
+      CODIGO DE SEDE                     Cadena de texto (6                          SI          Es el código que el sistema
+                                         caracteres como máximo)                                 “Controla tus reclamos”,
+                                                                                                 asigna a cada sede de la
+                                                                                                 empresa al momento de
+                                                                                                 registrarla.
+
+
+      NRO DE RECLAMO                     Cadena de texto (9                          SI          Correlativo     alfanumérico
+                                         caracteres como máximo)                                 utilizado para identificar una
+                                                                                                 hoja de reclamación dentro
+                                                                                                 de un año.
+
+
+
+
+Formato: 1.0                                                                              Pág. 37 de 42
+                                             MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                              Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos    ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                                 Sistema Controla tus Reclamos
+
+
+                                                       Manual de Usuario
+
+
+
+
+      AÑO DE RECLAMO                     Numérico (4 dígitos)                         SI          Año en que se realizó el
+                                                                                                  reclamo
+
+
+      FECHA                              Fecha                                        SI          Fecha en la que se realizó la
+                                                                                                  reclamación. En el formato
+                                                                                                  YYYY-MM-DD
+
+
+      NOMBRES           O     RAZÓN Cadena de texto (150                              SI          Nombres o razón social del
+      SOCIAL                        caracteres como máximo)                                       reclamante
+
+
+      DIRECCIÓN                          Cadena de texto (150                         SI          Domicilio del reclamante
+                                         caracteres como máximo)
+
+
+      NRO DOCUMENTO                      Cadena de texto (11                          SI          Documento de identificación
+                                         caracteres como máximo)                                  del reclamante. Para el caso
+                                                                                                  de     personas     jurídicas
+                                                                                                  ingresaran el ruc, para el
+                                                                                                  caso de personas naturales
+                                                                                                  DNI.
+
+
+      TELEFONO                           Cadena de texto (50                         NO           Número      telefónico     del
+                                         caracteres como máximo)                                  reclamante.
+
+
+      EMAIL                              Cadena de texto (80                         NO           Email del reclamante.
+                                         caracteres como máximo)
+
+
+      PADRE                          O Cadena de texto (150                          NO           Nombres y apellidos del
+      MADRE(MENORES                 DE caracteres como máximo)                                    apoderado en caso de que el
+      EDAD)                                                                                       reclamante sea menor de
+                                                                                                  edad.
+
+
+      TIPO DEL BIEN                      Cadena de texto (2                           SI          Tipo del bien contratado.
+                                         caracteres como máximo)                                  Valores posibles:
+
+                                                                                                  P=PRODUCTO
+                                                                                                  S=SERVICIO
+Formato: 1.0                                                                               Pág. 38 de 42
+                                              MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                               Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos     ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                                Sistema Controla tus Reclamos
+
+
+                                                       Manual de Usuario
+
+
+
+
+                                                                                                  PS= PRODUCTO Y SERVICIO
+
+
+      MONTO RECLAMADO                    Cadena de texto (100                         SI          Descripción del importe
+                                         caracteres como máximo)                                  involucrado    en    la
+                                                                                                  reclamación.
+
+
+      DESCRIPCION                        Cadena de texto (4000                        SI          Descripción del producto o
+                                         caracteres como máximo)                                  servicio reclamado.
+
+
+      TIPO            DE Cadena de texto (1                                           SI          Reclamo(R): Disconformidad
+      RECLAMO(RECLAMO=R  carácter como máximo)                                                    relacionada a los productos o
+      O QUEJA=Q)                                                                                  servicios.
+
+                                                                                                  Queja(Q): Disconformidad no
+                                                                                                  relacionada a los productos o
+                                                                                                  servicios; o, malestar o
+                                                                                                  descontento respecto a la
+                                                                                                  atención al público.
+
+                                                                                                  Valores        posibles:
+                                                                                                  R=RECLAMO ó Q=QUEJA
+
+
+      DETALLE                            Cadena de texto (4000                        SI          Detalle de la reclamación.
+                                         caracteres como máximo)
+
+
+      PEDIDO                             Cadena de texto (4000                        SI          Pedido del reclamante.
+                                         caracteres como máximo)
+
+
+      FECHA            DE Fecha                                                      NO           Fecha en que el usuario
+      RESPUESTA(YYYY-MM-                                                                          atendió la reclamación. En el
+      DD)                                                                                         formato YYYY-MM-DD
+
+
+      DESCRIPCION            DE      LA Cadena de texto (4000                        NO           Descripción de la respuesta
+      RESPUESTA                         caracteres como máximo)                                   brindada al reclamante.
+
+
+           Ejemplo:
+
+Formato: 1.0                                                                               Pág. 39 de 42
+                                              MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                               Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos     ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+           000001|000000005|2014|2014-07-19|ARACELY ARRIETA MENDOZA|JR. LOS FICUS 1356 SANTA
+           ANITA|45805689|5275623|a.arrieta@micorreo.com||P|5000 nuevos soles|Laptop TOSHIBA|R|La
+           laptop presenta fallas en la pantalla|Se solicita cambio del equipo|2014-08-01|Se reparó la pantalla de
+           la laptop
+
+
+
+
+           Consideraciones:
+
+                     En los casos en donde los campos son obligatorios como NOMBRE O RAZÓN SOCIAL,
+                      DIRECCION, NRO DOCUMENTO, MONTO RECLAMADO, DESCRIPCIÓN, DETALLE, PEDIDO y el
+                      usuario no ha ingresado, Ud. puede poner un texto que sustente ello. Por ejemplo “NO
+                      INDICA”, “NO CONSIGNA”, “NO INGRESÓ”, etc.
+                     Cuando cargue el archivo y haya un problema en el formato del archivo TXT, el sistema
+                      mostrará el número de fila y columna en donde se encuentra el error y una breve descripción
+                      del problema.
+                     Ud. puede utilizar el módulo cliente para validar el formato del archivo.
+                     Si se encuentra algún problema durante la carga del archivo en alguna fila, no se procesará
+                      ningún registro del archivo.
+                     En caso deje en blanco un campo que no es obligatorio no omita ningún pipe o palote |
+
+
+
+
+Formato: 1.0                                                                             Pág. 40 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+      I. Alertas del Sistema
+
+            El sistema Controla tus reclamos pone a disposición de los usuarios las siguientes alertas:
+                1. OBLIGACIÓN DE REPORTAR PROXIMA A EMPEZAR: Esta alerta es enviada al correo del
+                    administrador designado a los 15 y 30 días calendarios transcurridos luego de haber
+                    recibido su usuario y contraseña, a fin de recordarle que su obligación a reportar está
+                    próxima a iniciar.
+
+
+
+
+                 2. OBLIGACION DE DAR RESPUESTA A RECLAMOS: Esta alerta es enviada al correo del
+                    administrador designado, con la finalidad de informarle sobre el número de reclamos (por
+                    sede) que se encuentran vencidos, es decir, que tengan más de 30 días calendarios sin
+                    registro de respuesta en el sistema; en caso de prórroga se consideran 60 días calendarios
+                    como máximo.
+
+
+
+
+Formato: 1.0                                                                             Pág. 41 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+                                              Sistema Controla tus Reclamos
+
+
+                                                     Manual de Usuario
+
+
+
+
+                      ¿Cómo ver los reclamos vencidos?
+                      Para poder ver los reclamos vencidos, usted debe ingresar a la sección de Reclamación
+                      (pantalla principal del sistema).
+                      Y tener las siguientes consideraciones:
+                           Verificar que el filtro de estado del reclamo sea Creado
+                           Especificar un rango de fechas, si son reclamos vencidos deben tener más de 30
+                               días calendario de antigüedad o 60 días (en caso de prórroga), por lo que se
+                               recomienda especificar una fecha de inicio correcta, de preferencia la fecha en la
+                               que comenzó a reportar.
+
+
+
+
+Formato: 1.0                                                                             Pág. 42 de 42
+                                            MÉTODOLOGIA DE SOFTWARE INDECOPI
+Versión: 4.1                                                                             Archivo: Manual de Usuario.docx
+Ubicación: Drive Controla tus Reclamos   ©2015 INDECOPI. Todos los derechos reservados   Actualización: 2015-08-03
+

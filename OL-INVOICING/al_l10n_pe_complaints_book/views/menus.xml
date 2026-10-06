@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_complaints_root" name="Libro de reclamaciones"
+              web_icon="al_l10n_pe_complaints_book,static/description/icon.png"
+              groups="group_complaint_user" sequence="85"/>
+
+    <menuitem id="menu_complaints" name="Hojas de reclamación" parent="menu_complaints_root"
+              action="action_complaint" sequence="10"/>
+    <menuitem id="menu_complaints_overdue" name="Vencidas" parent="menu_complaints_root"
+              action="action_complaint_overdue" sequence="20"/>
+
+    <menuitem id="menu_complaints_reporting" name="Informes" parent="menu_complaints_root"
+              sequence="80"/>
+    <menuitem id="menu_complaints_sirec" name="Exportar al SIREC" parent="menu_complaints_reporting"
+              action="action_complaint_sirec_wizard" groups="group_complaint_manager" sequence="10"/>
+
+    <menuitem id="menu_complaints_config" name="Configuración" parent="menu_complaints_root"
+              groups="group_complaint_manager" sequence="90"/>
+    <menuitem id="menu_complaints_settings" name="Ajustes" parent="menu_complaints_config"
+              action="action_complaint_settings" sequence="5"/>
+    <menuitem id="menu_complaints_books" name="Libros" parent="menu_complaints_config"
+              action="action_complaint_book" sequence="10"/>
+
+</odoo>

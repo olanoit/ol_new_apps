@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.complaints.book</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Libro de reclamaciones" string="Libro de reclamaciones"
+                     name="al_l10n_pe_complaints_book"
+                     groups="al_l10n_pe_complaints_book.group_complaint_manager">
+                    <block title="Plazos" name="complaint_deadlines">
+                        <setting string="Calendario de feriados"
+                                 help="Los 15 días hábiles se cuentan de lunes a viernes, sin los feriados (ausencias globales) de este calendario.">
+                            <field name="l10n_pe_complaint_calendar_id"/>
+                        </setting>
+                        <setting string="Aviso de vencimiento"
+                                 help="Crea una actividad para el responsable cuando quedan estos días hábiles.">
+                            <field name="l10n_pe_complaint_alert_days"/>
+                        </setting>
+                    </block>
+                    <block title="INDECOPI" name="complaint_indecopi">
+                        <setting string="Obligada al SIREC"
+                                 help="Ingresos anuales de 3 000 UIT o más: cada reclamo y su respuesta se reportan al SIREC en 30 días calendario.">
+                            <field name="l10n_pe_complaint_sirec"/>
+                        </setting>
+                        <setting string="Libros" help="Un libro por establecimiento o canal, con su código y su numeración.">
+                            <button name="%(al_l10n_pe_complaints_book.action_complaint_book)d" type="action"
+                                    string="Configurar libros" class="btn-link" icon="oi-arrow-right"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_complaint_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_l10n_pe_complaints_book', 'bin_size': False}</field>
+    </record>
+
+</odoo>

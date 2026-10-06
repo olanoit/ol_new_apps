@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_groups_privilege_complaints_book" model="res.groups.privilege">
+        <field name="name">Libro de reclamaciones</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <!-- Las hojas llevan datos personales (DNI, domicilio, correo): solo las ve
+         el equipo de atención de reclamos. -->
+    <record id="group_complaint_user" model="res.groups">
+        <field name="name">Atención de reclamos</field>
+        <field name="comment">Atiende y responde las hojas de reclamación.</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_complaints_book"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_complaint_manager" model="res.groups">
+        <field name="name">Responsable</field>
+        <field name="comment">Configura los libros, exporta al SIREC y elimina hojas cuyo plazo de conservación terminó.</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_complaints_book"/>
+        <field name="implied_ids" eval="[(4, ref('group_complaint_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="complaint_book_company_rule" model="ir.rule">
+            <field name="name">Libro de reclamaciones: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_complaint_book"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="complaint_company_rule" model="ir.rule">
+            <field name="name">Hoja de reclamación: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_complaint"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+
+</odoo>

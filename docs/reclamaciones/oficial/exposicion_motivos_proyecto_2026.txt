@@ -1,0 +1,2475 @@
+                                                                                         EXPOSICIÓN DE MOTIVOS
+
+                                           DECRETO SUPREMO QUE MODIFICA EL REGLAMENTO DEL LIBRO DE
+                                       RECLAMACIONES DEL CÓDIGO DE PROTECCIÓN Y DEFENSA DEL CONSUMIDOR,
+                                               APROBADO POR EL DECRETO SUPREMO N° 011-2011-PCM
+
+
+                                  I. OBJETO
+
+                                  El objeto del presente Decreto Supremo es modificar el Reglamento del Libro de Reclamaciones
+                                  del Código de Protección y Defensa del Consumidor, aprobado por el Decreto Supremo N° 011-
+                                  2011-PCM (en adelante, el Reglamento) para adecuarlo a las modificaciones previstas en la Ley
+                                  N° 32495, Ley que modifica la Ley 29571, Código de Protección y Defensa del Consumidor, para
+                                  incluir a las plataformas digitales de comercio electrónico en la obligación de contar con el Libro
+                                  de Reclamaciones (en adelante, la Ley N° 32495).
+
+                                  II. FINALIDAD
+
+
+
+
+                                                                                                                                        Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                                  La presente norma tiene como finalidad garantizar el derecho de los consumidores a acceder de
+                                  manera eficaz al Libro de Reclamaciones para la presentación de quejas y reclamos en las
+                                  plataformas digitales de comercio electrónico.
+
+
+
+
+                                                                                                                                        La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                                  III. MARCO JURÍDICO
+
+                                  El marco jurídico que justifica la elaboración de la presente propuesta normativa es el siguiente:
+
+                                  a. Constitución Política del Perú. El artículo 65 establece que el Estado defiende el interés
+                                     de los consumidores y usuarios y que garantiza el derecho a la información sobre los bienes
+                                     y servicios.
+
+                                  b. Ley N° 29571, Código de Protección y Defensa del Consumidor. El literal g) de su artículo
+                                     1 reconoce el derecho de los consumidores a la protección de sus derechos mediante
+                                     procedimientos eficaces, céleres o ágiles, con formalidades mínimas, gratuitos o no
+                                     costosos, según sea el caso, para la atención de sus reclamos o denuncias ante las
+                                     autoridades competentes. Asimismo, los artículos 150 y 151 de dicho cuerpo normativo,
+                                     modificados por la Ley N° 32495, establecen la obligación de las plataformas digitales de
+                                     comercio electrónico de implementar un Libro de Reclamaciones, así como exhibir un enlace
+                                     de dicho libro de forma permanente y en un lugar visible y fácilmente accesible.
+
+                                  c.   Decreto Supremo N° 011-2011-PCM, Decreto Supremo que aprueba el Reglamento del
+                                       Libro de Reclamaciones del Código de Protección y Defensa del Consumidor.
+                                       Establece disposiciones complementarias al artículo 150 del Código, vinculadas a la
+                                       implementación del Libro de Reclamaciones, en forma física o virtual, aplicables a
+                                       proveedores que desarrollan sus actividades económicas en establecimientos comerciales
+                                       abiertos al público.
+
+                                  d. Ley N° 32495, Ley que modifica la Ley N° 29571, Código de Protección y Defensa del
+                                     Consumidor para incluir a las plataformas digitales de comercio electrónico en la
+                                     obligación de contar con el Libro de Reclamaciones. La Única Disposición
+                                     Complementaria Final de la referida ley establece que el Poder Ejecutivo adecúa el
+                                     Reglamento del Libro de Reclamaciones conforme a las modificaciones introducidas a los
+                                     artículos 150 y 151 del Código.
+
+                                  e. Decreto Supremo N° 075-2025-PCM, que aprueba la Política Nacional de Protección y
+                                     Defensa del Consumidor al 2030. El objetivo OP.04. de esta Política Nacional busca
+                                     garantizar los mecanismos de solución de controversias de consumo en las entidades
+                                     competentes, lo que incluye implementar mejoras regulatorias en la protección del
+                                     consumidor en el comercio electrónico.
+Firmado digitalmente por
+WILLSTATTER VASQUEZ Anna
+Patricia FAU 20133840533 hard
+Motivo: Doy V° B°
+Fecha: 15.07.2026 16:51:48-0500
+
+                                         Firmado digitalmente por
+                                                                           Firmado digitalmente por
+                                         JIMENEZ RODRIGUEZ Carlos Raul
+                                                                           URBINA CRUZ Dioselina Esther
+                                         FAU 20133840533 hard
+                                                                           FAU 20133840533 hard
+                                         Motivo: Doy V° B°
+                                                                           Motivo: Doy V° B°
+                                         Fecha: 15.07.2026 17:10:21-0500
+                                                                           Fecha: 15.07.2026 18:25:29-0500
+IV. FUNDAMENTACIÓN TÉCNICA DE LA PROPUESTA NORMATIVA
+
+1.     Identificación del problema público
+
+          a) Antecedentes
+
+En nuestro país, el literal g) del numeral 1.1. del artículo 1 del Código, reconoce el derecho de
+los consumidores, entre otros, a la atención de sus reclamos o denuncias ante las autoridades
+competentes mediante procedimientos eficaces, céleres o ágiles, con formalidades mínimas,
+gratuitas o no costosos1.
+
+Para garantizar la efectividad de este derecho, el Código consagró en su artículo 150 la figura
+del Libro de Reclamaciones, instrumento que permite al consumidor manifestar formalmente su
+disconformidad sobre el producto o servicio contratado con el proveedor (reclamo) o su malestar
+sobre la atención de este al público u otro aspecto no relacionado con los bienes suministrados
+o servicios prestados (queja), con lo cual se genera una constancia con fecha cierta –la hoja de
+reclamación– y activa la obligación del proveedor a brindar una respuesta dentro del plazo
+perentorio de quince (15) días hábiles.
+
+
+
+
+                                                                                                                                       Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+Asimismo, a través del artículo 151 de dicho cuerpo normativo se estableció la obligación de los
+establecimientos comerciales de implementar un aviso que indique la existencia del Libro de
+
+
+
+
+                                                                                                                                       La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+Reclamaciones y el derecho que tienen los consumidores de solicitarlo cuando lo estimen
+conveniente.
+
+En febrero de 2011 se emitió el Decreto Supremo N° 011-2011-PCM, que aprobó el Reglamento
+del Libro de Reclamaciones del Código de Protección y Defensa del Consumidor, a través del
+cual se establecieron disposiciones obligatorias en la materia aplicables a aquellos proveedores
+que desarrollan sus actividades económicas en establecimientos comerciales físicos abiertos al
+público.
+
+Dicha norma fue posteriormente modificada mediante el Decreto Supremo N° 006-2014-PCM, el
+cual estableció la definición de establecimiento comercial abierto al público no solo como un
+espacio físico, sino también como un medio virtual a través del cual el proveedor desarrolla sus
+actividades económicas de venta de bienes o prestación de servicios a los consumidores;
+incorporando además la definición del proveedor virtual como aquel proveedor con Registro
+Único de Contribuyente (RUC) que establece sus relaciones de consumo a través de portales
+web.
+
+En esa línea, el referido decreto supremo dispuso que todo establecimiento comercial abierto al
+público debe contar con un Libro de Reclamaciones, físico o virtual, precisando, asimismo, que
+los proveedores que además de dicho establecimiento utilicen medios virtuales para establecer
+sus relaciones de consumo deben implementar un Libro de Reclamaciones Virtual en cada uno
+de sus establecimientos. De igual forma, se estableció que, tratándose de proveedores virtuales,
+dicho libro debe estar alojado en la página de inicio del portal web y permitir la impresión y envío
+automático al correo electrónico del consumidor, con constancia de la fecha y hora de
+presentación.
+
+En cuanto a la exhibición del aviso del Libro de Reclamaciones, el citado Decreto Supremo N°
+006-2014-PCM estableció la obligación de los proveedores virtuales de colocar como mínimo un
+aviso fácilmente identificable en la página de inicio del portal web donde estos establecen sus
+relaciones de consumo, el mismo que debe contener un vínculo que dirija al Libro de
+Reclamaciones Virtual, utilizando el formato establecido en el Anexo III de dicho Reglamento 2.
+
+1
+     LEY N° 29571, CÓDIGO DE PROTECCIÓN Y DEFENSA DEL CONSUMIDOR
+     Artículo 1. – Derechos de los consumidores
+     1.1 En los términos establecidos por el presente Código, los consumidores tienen los siguientes derechos:
+     (…)
+     g. A la protección de sus derechos mediante procedimientos eficaces, céleres o ágiles, con formalidades mínimas, gratuitos o no
+     costosos, según sea el caso, para la atención de sus reclamos o denuncias ante las autoridades competentes.
+     (…)
+2
+     DECRETO SUPREMO N° 006-2014-PCM, DECRETO SUPREMO QUE MODIFICA EL REGLAMENTO DEL LIBRO DE
+     RECLAMACIONES DEL CÓDIGO DE PROTECCIÓN Y DEFENSA DEL CONSUMIDOR
+En ese contexto, se advierte que el marco normativo vigente contempla la obligación de
+implementar el Libro de Reclamaciones tanto en los establecimientos comerciales físicos como
+en los medios virtuales. Sobre este último canal la regulación tomó en consideración
+principalmente a las transacciones de consumo realizadas por medio de las páginas web, en
+atención a la realidad existente al momento de su modificación, cuando el comercio electrónico
+en el Perú se desarrollaba mayoritariamente a través de sitios web de tiendas virtuales, que
+constituían el principal canal para la realización de compras por internet, sin embargo, la realidad
+actual es muy diferente.
+
+          b) Masificación del comercio electrónico
+
+La expansión acelerada de los entornos digitales en los últimos años ha redefinido el comercio
+electrónico, que ha pasado de estructurarse principalmente en páginas web a desenvolverse en
+un ecosistema digital más amplio y en constante evolución, integrado por plataformas digitales
+de comercio electrónico.
+
+A nivel internacional, diversas instituciones han abordado el concepto de comercio electrónico
+
+
+
+
+                                                                                                                                              Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+atendiendo diferentes enfoques. Sin embargo, dentro de las definiciones más completas y
+actuales se encuentra la establecida en el 2025 por la Organización para la Cooperación y el
+Desarrollo Económico (OCDE), que señala que:3
+
+
+
+
+                                                                                                                                              La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+           “(…) una transacción de comercio electrónico es la venta o compra de bienes o servicios,
+           realizada a través de redes informáticas mediante métodos específicamente diseñados
+           para la recepción o realización de pedidos. Los bienes o servicios se solicitan por esos
+           métodos, pero el pago y la entrega final de los mismos bienes o servicios no tienen que
+           realizarse en línea. La transacción de comercio electrónico puede ser entre empresas,
+           hogares, particulares, gobiernos y otras organizaciones públicas o privadas.”
+
+Sobre la base de lo señalado por la OCDE se puede identificar un principio fundamental, que es
+aquel que establece que el comercio electrónico se define por el método de pedido y no por la
+forma de pago o modalidad de entrega 4. Asimismo, también se pueden reconocer dos principios
+
+    Artículo 1.- Modificación del Reglamento del Libro de Reclamaciones del Código de Protección y Defensa del Consumidor
+    Modifíquense el (…) el numeral 3.2 del artículo 3 (…) del Reglamento del Libro de Reclamaciones del Código de Protección y
+    Defensa del Consumidor, aprobado mediante Decreto Supremo No. 011-2011-PCM, en los siguientes términos:
+    (…)
+
+    “Artículo 3.- Definiciones
+    Para los efectos del presente Reglamento, se entiende por:
+    (…)
+    3.2 Establecimiento comercial abierto al público: Inmueble, parte del mismo, instalación, construcción, espacio físico, o medio virtual
+    a través del cual un proveedor debidamente identificado desarrolla sus actividades económicas de venta de bienes o prestación de
+    servicios a los consumidores.
+
+    Artículo 9.- Exhibición del Aviso del Libro de Reclamaciones
+    (…)
+    Los proveedores virtuales deberán colocar como mínimo un aviso fácilmente identificable en la página de inicio del portal web
+    donde establecen sus relaciones de consumo, el mismo que deberá contener un vínculo que dirija al Libro de Reclamaciones
+    Virtual, utilizando el formato establecido en el Anexo III del presente Reglamento.”
+
+    Artículo 2.- Incorporaciones al Reglamento del Libro de Reclamaciones del Código de Protección y Defensa del Consumidor
+    Agréguense el artículo 2-A, numeral 3.6 del artículo 3, artículo 4-A, 4-B, 16, 17, 18, así como los Anexos III, IV y V del Reglamento
+    del Libro de Reclamaciones del Código de Protección y Defensa del Consumidor, en los siguientes términos:
+
+           “Artículo 3.- Definiciones
+           Para los efectos del presente Reglamento, se entiende por: (…) 3.6. Proveedor virtual: Es el proveedor con RUC que
+           establece sus relaciones de consumo a través de portales web.
+           (…)
+
+    Artículo 4 B.- Libro de Reclamaciones para proveedores virtuales
+    En el caso de los proveedores virtuales, el Libro de Reclamaciones de naturaleza virtual, deberá estar alojado en la página de inicio
+    del portal web diseñado para establecer las relaciones de consumo. Asimismo, al concluir el proceso de ingreso del reclamo o
+    queja, se debe permitir la impresión de la Hoja de Reclamación y enviarse automáticamente al correo electrónico indicado por el
+    consumidor, dejándose constancia de la fecha y hora de presentación del reclamo o queja. (…)”
+3
+    OECD. The 2025 OECD definition of e-commerce and guidelines for interpretation, OECD Publishing, Paris, 2025. P. 8.
+    https://doi.org/10.1787/2254f1de-en
+4
+    De acuerdo con la OCDE, es importante no confundir comercio electrónico con comercio digital, ya que este último se define como
+    todo el comercio internacional que es ordenado y/o entregado digitalmente, es decir, también el método de entrega debe ser digital.
+    Cfr.      OCDE,         Handbook        on      measuring        digital     trade       (2nd       ed.).     Disponible       en:
+complementarios, que vendrían a ser el principio de automatización, impulsado cada vez más
+por tecnologías avanzadas (sistema de pedidos y procesamiento remoto); y el principio de
+lejanía, que define al comercio electrónico como aquellas transacciones en las que el comprador
+y el vendedor no se encuentran físicamente juntos.
+
+El comercio electrónico constituye un instrumento que ha permitido a los consumidores acceder
+a productos y servicios ofrecidos por proveedores en cualquier parte del mundo, convirtiéndose
+además en una alternativa relevante para aquellas personas que no pueden o prefieren no acudir
+a establecimientos comerciales físicos, así como para los casos en los que la contratación solo
+es posible a través de medios virtuales.
+
+Nuestro país no ha sido ajeno al desarrollo del comercio electrónico, ya que, de acuerdo con la
+Cámara Peruana de Comercio Electrónico (CAPECE), durante el año 2024 las ventas por
+comercio electrónico alcanzaron los US$ 15.600 millones en Perú, esto es, un 21,2% más que
+el año anterior. Asimismo, al cierre de dicho año, el 55% de los peruanos (18.7 millones de
+personas) realizaron compras por internet 5 y durante el primer semestre del 2025, las ventas en
+este sector registraron un crecimiento del 18% en volumen, en comparación con el mismo
+período del 2024; evidenciándose con ello el crecimiento del e-commerce y su impacto en la
+
+
+
+
+                                                                                                                                         Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+transformación digital de los consumidores y empresas debido a las facilidades que brinda 6.
+
+Así, de acuerdo con el documento “Perú: Evaluación sobre el estado de preparación para el
+
+
+
+
+                                                                                                                                         La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+comercio electrónico” publicado por la Conferencia de las Naciones Unidas para el Comercio y
+el Desarrollo (UNCTAD, por sus siglas en inglés) en el año 2023, casi la mitad del volumen de
+ventas de comercio electrónico del Perú corresponde a plataformas digitales, según los datos de
+la CAPECE.
+
+Según Ipsos Perú, en 2023 el 57% de los adultos urbanos peruanos de NSE ABCD -equivalente
+a 8.6 millones de personas- realizó compras por internet, de los cuales el 74% utilizó páginas
+web, el 65% aplicaciones móviles y el 41% redes sociales como canales de compra7, y, en 2025
+se advirtió que la compra a través de aplicativos alcanzó el 65% del comercio online en el país 8.
+
+En lo que respecta al mercado digital de alcance internacional, el Marketplace Explorer de
+América Latina y el Caribe (LACME), reportó que en 2021 existían ciento cuarenta y ocho (148)
+plataformas de bienes B2C9 orientadas al mercado local, de las cuales el 47,3% permitía que
+empresas extranjeras no registradas en el Perú realizaran ventas. Entre las plataformas de
+bienes B2C con más tráfico durante ese año destacaron Mercado Libre, Falabella, Ripley, Linio,
+Sodimac y OLX. A ello se suman las plataformas globales cuyo foco es el mercado local como
+Amazon, Taobao, Tmall o eBay, que también tienen una presencia significativa en el mercado
+transfronterizo10.
+
+En relación con este último segmento, en 2024 la demanda de productos internacionales a través
+de plataformas de e-commerce transfronterizo aumentó en un 30% en el Perú al cierre del primer
+
+
+     https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/07/handbook-on-measuring-digital-trade-second-
+     edition_099afd2f/ac99e6d3-en.pdf
+5
+     FORBES Perú. Comercio electrónico creció 21,2% durante 2024, según Capece. Publicación del 30 de mayo de 2025. Para obtener
+     más información acceder al siguiente enlace: https://forbes.pe/economia-y-finanzas/2025-05-30/comercio-electronico-crecio-212-
+     durante-2024-segun-capece
+6
+     DIARIO EL COMERCIO. Adicionalmente durante el primer semestre del 2025, las ventas por comercio electrónico registraron un
+     crecimiento del 18% en volumen, en comparación con el mismo período del 2024, alcanzando los US$8.700 millones, de acuerdo
+     con CAPECE. Publicación del 08 de octubre de 2025. Para obtener más información acceder al siguiente enlace:
+     https://elcomercio.pe/economia/peru/el-comercio-electronico-en-peru-crece-18-alcanzado-los-us8700-millones-durante-el-primer-
+     semestre-del-2025-l-ultimas-noticia/?ref=ecr
+7
+     IPSOS. El consumidor en el 2024: Preocupaciones, expectativas, actitudes, nuevos comportamientos y tendencias. 2024.
+     Información   extraída   del    siguiente    enlace:    https://www.ipsos.com/sites/default/files/ct/news/documents/2024-
+     03/El%20consumidor%20en%20el%202024_V5_21Mar24%20%28Presentaci%C3%B3n%20evento%29_0.pdf
+8
+     DIARIO LA REPÚBLICA. Apss en Perú: la compra a través de aplicativos alcanza el 65% del comercio online en el país. Publicación
+     del 24 de septiembre de 2024. Información extraída del siguiente enlace: https://larepublica.pe/economia/2024/09/24/apps-en-peru-
+     la-compra-a-traves-de-aplicativos-alcanza-el-65-del-comercio-online-en-el-pais-675408
+9
+     Business to Consumer o empresa a consumidor.
+10
+     Ídem.
+trimestre11. Asimismo, la CAPECE proyectó que para el 2025 el comercio electrónico
+transfronterizo representaría el 40 % de las ventas online en el país, duplicando su participación
+respecto del 20 % actual12.
+
+En este contexto, de acuerdo con la OCDE, las plataformas digitales han aportado importantes
+beneficios a las economías y a las sociedades, contribuyendo a la innovación, incremento de la
+productividad, crecimiento económico y acceso a nuevos mercados; así como a la reducción de
+costos de búsqueda para los consumidores, quienes pueden comparar precios y productos con
+mayor facilidad y superar limitaciones geográficas, contando con una mayor oferta de bienes y
+servicios, información, conveniencia, oportunidades de elección y competencia 13.
+
+En esa misma línea, en el marco de la etapa de consulta pública temprana para la elaboración
+de esta propuesta normativa, realizada en diciembre y enero de 2026, la Dirección de la Autoridad
+Nacional de Protección del Consumidor del Indecopi elaboró un cuestionario sobre la atención
+de reclamos en el comercio electrónico (en adelante, el cuestionario sobre la atención de
+reclamos en el e-commerce), dirigido a representantes del sector empresarial, emprendedores,
+especialistas y asesores que forman parte del ecosistema digital. 14
+
+
+
+
+                                                                                                                                            Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+En el marco de dicha encuesta, los participantes identificaron como parte de las plataformas
+digitales a una amplia gama de entornos digitales, entre las cuales destacan principalmente las
+páginas web propias (93,5 %), las aplicaciones móviles propias (71 %), plataformas de
+
+
+
+
+                                                                                                                                            La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+intermediación o marketplaces (64,5 %), plataformas de delivery o taxi (41,9%) herramientas
+digitales como las redes sociales (Facebook, Instagram y TikTok), y servicios de mensajería
+instantánea, tales como WhatsApp Business y Telegram (35,5 % en ambos casos), conforme se
+aprecia del siguiente cuadro:
+
+     Cuadro 1: Principales canales, herramientas, interfaces que están incluidos dentro del término “plataforma
+                                          digital de comercio electrónico”
+
+
+
+
+             Pregunta referencial: ¿Cuál de los siguientes canales, herramientas, interfaces, entre otros, considera
+             que están incluidos dentro del término “plataforma digital de comercio electrónico”?
+             Fuente: Cuestionario de consulta pública: Atención de reclamos en el comercio electrónico - Indecopi
+             Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi
+
+
+
+
+11
+      DIARIO GESTIÓN. El auge del e-commerce crossborder: ¿Qué plataforma es la más descargada? Publicación del 28 de setiembre
+      de 2024. Información extraída del siguiente enlace: https://gestion.pe/economia/empresas/el-auge-del-e-commerce-crossborder-
+      que-plataforma-es-la-mas-descargada-serpost-temu-aliexpress-amazon-comercio-electronico-noticia/#google_vignette
+12
+      FORBES PERÚ. Comercio electrónico creció 21,2% durante 2024, según Capece. Publicación del 30 de mayo de 2025. Información
+      extraída del siguiente enlace: https://forbes.pe/economia-y-finanzas/2025-05-30/comercio-electronico-crecio-212-durante-2024-
+      segun-capece
+13
+      OECD, An Introduction to Online Platforms and their Role in the Digital Transformation, 2019. Para obtener más información acceder
+      al siguiente enlace: https://www.oecd.org/content/dam/oecd/en/publications/reports/2019/05/an-introduction-to-online-platforms-and-
+      their-role-in-the-digital-transformation_970fc377/53e5f593-en.pdf
+14
+      De las 31 respuestas recabadas en dicha encuesta la mayoría de los encuestados manifestó desarrollar actividades comerciales de
+      alcance nacional (67,7 %), seguida por operaciones de alcance nacional e internacional (25,8 %), mientras que una proporción menor
+      indicó desempeñar actividades principalmente en el ámbito departamental (6,5 %). Por otro lado, en cuanto a la distribución de la
+      muestra encuestada según la tipología empresarial, el 35,5 % correspondió a proveedores, el 19,4 % se identificó como plataformas
+      de ventas, el 6,5 % como representantes de gremios empresariales y el 38,7 % restante se ubicó en otras categorías, que reflejarían
+      principalmente la participación de asociaciones gremiales y empresas de courier.
+Estos canales han experimentado un crecimiento sostenido y significativo en el país durante los
+últimos años, como resultado del proceso de transformación digital del mercado y de la creciente
+preferencia de los consumidores por modalidades de contratación remota, consolidándose como
+espacios centrales para la oferta y contratación de bienes y servicios, donde millones de
+consumidores peruanos entablan relaciones de consumo.
+
+           c) Dificultades de la normativa vigente frente a las dinámicas del comercio
+              electrónico
+
+Sin embargo, esta transformación también ha dejado en evidencia brechas existentes entre la
+regulación nacional vigente de protección al consumidor y las dinámicas actuales del comercio
+electrónico, en tanto hoy los consumidores realizan transacciones a través de múltiples canales
+digitales –como los previamente mencionados– que no responden al esquema tradicional
+previsto en el Reglamento del Libro de Reclamaciones del Código.
+
+Esto significa que la normativa vigente no establece reglas claras sobre la forma en que el Libro
+de Reclamaciones y su aviso deben incorporarse en esta clase de plataformas digitales que, en
+muchos casos, no cuentan con un “home”15 en el sentido tradicional, lo cual ha generado
+
+
+
+
+                                                                                                                            Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+incentivos a los proveedores que se desenvuelven en este ecosistema para operar sin contar
+con una herramienta formal de atención de reclamos y quejas, limitando la posibilidad del
+consumidor de exigir la tutela efectiva de sus derechos.
+
+
+
+
+                                                                                                                            La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+Sumado a ello, debe considerarse la complejidad propia de la intermediación digital,
+especialmente en el caso de las plataformas de intermediación (marketplaces), donde el
+consumidor enfrenta dificultades para identificar con claridad al proveedor que efectivamente
+ofrece el bien o servicio. Esta situación no solo obstaculiza la exigencia de una respuesta de
+fondo frente a un reclamo, sino que también genera confusión respecto de la atribución de
+responsabilidades dentro del entorno digital en el que se realizó la transacción.
+
+En este escenario, la experiencia del consumidor no es satisfactoria, en la medida que ha
+enfrentado barreras de acceso al Libro de Reclamaciones en este tipo de plataformas. A modo
+de ejemplo, de acuerdo con los resultados obtenidos en el cuestionario sobre la atención de
+reclamos en el e-commerce, la mayor dificultad para los consumidores en el proceso de
+presentación de reclamos se presentó en los perfiles o páginas de redes sociales, en los cuales
+tiende a desarrollarse, con mayor intensidad, un comercio digital con menores niveles de
+formalización; seguido de las aplicaciones móviles, marketplaces, páginas web de las empresas,
+plataformas de delivery o taxi y canales de mensajería instantánea.
+
+     Cuadro 2: Principales tipos de plataformas de venta en línea donde se tiene mayor dificultad para presentar
+                                                     reclamos
+
+                        58.1%
+
+                                         48.4%            48.4%
+                                                                         45.2%
+
+                                                                                         35.5%
+                                                                                                        29.0%
+
+
+
+
+                                                                                                                    6.5%
+
+
+                   Perfiles/páginas Aplicaciones      Plataformas de Páginas web de Plataformas de     Canales de   Otras
+                   de redes sociales móviles (Apps)   intermediación las empresas   delivery o taxi    mensajería
+                      (Facebook,                      (marketplaces)                                  instantánea
+                      Instagram,                                                                       (WhatsApp
+                        TikTok)                                                                         Business,
+                                                                                                        Telegram)
+
+                  Pregunta referencial: ¿En qué tipo de plataforma de venta en línea considera que el consumidor
+                  tiene mayor dificultad para presentar reclamos?
+                  Fuente: Cuestionario de consulta pública: Atención de reclamos en el comercio electrónico - Indecopi
+                  Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi
+
+
+
+
+15
+      "Home" (o homepage), página principal o de inicio de un sitio web.
+En esa misma línea, de acuerdo con la encuesta virtual “Sondeo del Consumidor 2025” realizada
+por la Dirección de la Autoridad Nacional de Protección del Consumidor durante el mes de
+diciembre del 2025, el 9,4 % de los consumidores participantes indicaron que la inexistencia de
+un canal habilitado por el proveedor o la plataforma para la presentación de reclamos constituye
+uno de los principales problemas que enfrentan en el comercio electrónico, como se observa del
+siguiente cuadro:
+
+                              Cuadro 3: Principales problemas identificados en el comercio por internet
+
+
+
+
+                                                                                                                 Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                     Pregunta referencial: ¿Cuál fue el principal problema o conflicto que experimentó?
+
+
+
+
+                                                                                                                 La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                     Fuente: Encuesta “Sondeo del Consumidor 2025” – Indecopi
+                     Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi
+
+
+La evidencia disponible demuestra que esta problemática se ve reflejada en la presentación
+continua de reclamos relacionados a las controversias de comercio electrónico. Particularmente,
+durante el periodo de 2019-2024, se observó un aumento significativo de reclamos en dicha
+materia en un 237.2 % en promedio anual, pasando de 11,131 en 2019 a 37,539 en 2024, siendo
+equivalente al 32.8 % del total de reclamos a nivel nacional, de acuerdo con los datos extraídos
+de la Plataforma Interactiva del Servicio de Atención al Ciudadano del Indecopi.
+
+                         Cuadro 4: Número de reclamos concluidos relacionados con comercio electrónico16
+                                                          (2019-2024)
+                                         Número de reclamos de comercio electrónico concluidos
+                                         Porcentaje respecto al total de reclamos
+                                            40.5%
+                                                          35.4%         34.3%        33.0%         32.8%
+
+                                           38 147         39 840                     38 300        37 539
+                                                                        35 905
+                           16.3%
+
+                             11 131
+
+
+                               2019          2020          2021          2022         2023          2024
+
+                          Fuente: Plataforma Interactiva de Servicio de Atención al Ciudadano (PISAC) del
+                          Indecopi
+                          Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del
+                          Indecopi
+
+
+Del total de reclamos reportados, se observa que el 0.3 % corresponde al Libro de
+Reclamaciones en el citado periodo, durante el cual se identificó la presentación de un total de
+24 reclamos vinculados a los siguientes supuestos: (i) falta de implementación del Libro de
+Reclamaciones Virtual; (ii) falta de disponibilidad de dicho libro en una plataforma de fácil acceso;
+(iii) impedimentos para el registro de reclamos; (iv) falta de implementación del aviso del referido
+libro; así como (v) la falta de entrega de este, como se detalla a continuación:
+
+
+16
+     Corresponden a reclamos por productos o servicios adquiridos vía internet.
+                   Hecho
+          N°                       Detalle del hecho reclamado          2019      2020      2021      2022      2023      2024
+                 reclamado
+                                Falta de atención de reclamo                   86        153        168       249       466       586
+                                Demora en la atención del reclamo              41         75        39         71       324       310
+            Atención de             Cuadro
+                                Calidad        5: Hechos
+                                          del servicio         reclamados
+                                                        de atención    de      en comercio electrónico17
+        1                                                             (2019-2024)
+            reclamos            reclamos                                       11         21        15         20       88        85
+               Hecho            No cuenta con oficina para atención
+     N°                          Detalle del hecho reclamado                2019      2020       2021       2022      2023      2024
+            reclamado           de reclamos                                                                              3         1
+                             Falta
+                                Otrosde atención de reclamo                  8630      153
+                                                                                         135      168
+                                                                                                    149      249
+                                                                                                              136      466
+                                                                                                                        87       586
+                                                                                                                                  84
+                             Demora     en la atención
+                                Establecimiento          del reclamo
+                                                    no cuenta   con Libro 41            75         39         71       324       310
+         Atención de         Calidad
+                                de      del servicio de atención de
+                                    Reclamaciones                                          1                    2        5         1
+     1
+         reclamos               Libro de Reclamaciones virtual no se 11
+                             reclamos                                                   21         15         20       88        85
+                             Noencuentra
+                                  cuenta con enoficina  parade
+                                                plataforma     atención
+                                                                  fácil
+            Libro de         deacceso
+                                 reclamos                                       1          2         2                  31        12
+        2
+            Reclamaciones Otros Impedimentos para registrar                  30        135        149        136       87        84
+                             Establecimiento
+                                reclamos          no cuenta con Libro                                                    1         4
+                             deEstablecimiento
+                                 Reclamaciones no cuenta con aviso                       1                     2        5         1
+                             Libro
+                                del de  Reclamaciones
+                                     Libro de Reclamacionesvirtual no se        1
+                             encuentra
+                                No entregaen del
+                                              plataforma
+                                                  Libro de de fácil
+         Libro de            acceso
+                                Reclamaciones                                 1          2          2                   11        2
+      2
+         Reclamaciones       Impedimentos
+             Fuente: Plataforma Otros           para  registrar                12
+                                   Interactiva de Servicio de Atención al Ciudadano       36(PISAC) 61         58
+                                                                                                     del Indecopi       59        32
+             Elaboración: Dirección
+                             reclamos  de la Autoridad Nacional de Protección del Consumidor del Indecopi               1         4
+                                Llamadas     y/o comunicaciones sin
+
+
+
+
+                                                                                                                                                Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                             Establecimiento
+                                consentimientono cuenta con aviso                                              10       41        48
+            Métodos          delRelación
+                                  Libro decontractual
+                                            Reclamaciones                     1
+                                                          no reconocida
+        3 comerciales
+De manera       complementaria,             la Libro
+                                                información           contenida en el
+                             Nooentrega
+                                   aceptadadel        de                                   3 Registro2     de Infracciones
+                                                                                                                5        5       y8Sanciones
+evidenciacoercitivos
+              que, en losReclamaciones
+                               últimos        seis    años
+                                Limitaciones injustificadas al  (2020-2025),        por    medio      de   resoluciones 1    firmes   en sede
+
+
+
+
+                                                                                                                                                La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+administrativa del Indecopi, Otros            a   nivel     nacional,
+                                derecho de poner fin al contrato            en
+                                                                             12   materia
+                                                                                        36      de 61 protección
+                                                                                                              582     del
+                                                                                                                       591  consumidor,
+                                                                                                                                 32        se
+impusieron 1,869 sanciones   Llamadas          contra
+                                                 unilateral1,119
+                                          y/o comunicaciones
+                                Modificación                        sin proveedores. De estas, al1 menos
+                                                             del contrato                                                1 513 1 sanciones
+correspondieron
+        4Métodos
+            Otros      a infracciones
+                             consentimiento relacionadas con 10               el949
+                                                                                  Libro37de721 Reclamaciones
+                                                                                                  39 404 35   10351 37Virtual.
+                                                                                                                       41217 3648377
+                             Relación    contractual
+                                      Total            no  reconocida        11 131 38 147 39 840 35 905 38 300 37 539
+      3 comerciales
+            periodo se oobservó
+En estecoercitivos             aceptada un crecimiento con variaciones                   3          2
+                                                                                                  interanuales 5     en5 la imposición
+                                                                                                                                  8        de
+dichas sanciones, al Limitaciones
+                              pasar deinjustificadas
+                                               46 en 2020      al a 113 en 2024 y registrarse 81 en 2025, conforme se
+aprecia en las barrasderecho   rosadas  de poner
+                                               delfinsiguiente
+                                                       al contrato gráfico.                                    2        1
+                             Modificación unilateral del contrato                                              1        1         1
+      4 Otros
+           Cuadro 6: Evolución del número de sanciones                     10relacionadas
+                                                                              949 37 721 con     39 404     35 351
+                                                                                                      el Libro       37 217 36 377
+                                                                                                                 de Reclamaciones
+                                   Total                                   11 131 38 147 39 840 35 905 38 300 37 539
+                                                                      (2020-2025)
+
+
+
+
+                   Fuente: Registro de Infracciones y Sanciones - Indecopi
+                   Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi
+
+
+
+Del total de 513 sanciones administrativas impuestas, 278 de ellas se concentran principalmente
+en conductas relacionadas con la falta de implementación del Libro de Reclamaciones virtual en
+el aplicativo móvil o página web (140 sanciones, 27,3%); falta de implementación del aviso del
+Libro de Reclamaciones virtual (117 sanciones, 22,8%); no brindar el enlace del Libro de
+Reclamaciones virtual o no entregarlo (16 sanciones, 3,1%); y, Libro de Reclamaciones no visible
+y de fácil acceso (5 sanciones, 1,0%).
+
+
+
+
+17
+     Corresponden a reclamos por productos o servicios adquiridos vía internet.
+           Cuadro 7: Sanciones impuestas a proveedores de comercio electrónico según hecho infractor
+                                                 (2020-2025)
+
+
+
+
+                         Fuente: Registro de Infracciones y Sanciones - Indecopi
+                         Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi
+
+
+
+
+                                                                                                                                           Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+          d) Recomendaciones internacionales en materia de atención de reclamos de
+
+
+
+
+                                                                                                                                           La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+             consumo
+
+La experiencia comparada y las recomendaciones de organismos internacionales especializados
+destacan que los mecanismos internos de atención de reclamos implementados por los propios
+proveedores constituyen una primera línea esencial de protección al consumidor. Dichos
+mecanismos, cuando son accesibles y funcionales, permiten resolver controversias de manera
+temprana, reduciendo los costos asociados tanto para los consumidores como para el Estado, y
+evitando la escalada innecesaria de conflictos hacia instancias administrativas o judiciales.
+
+La UNCTAD y la OCDE han venido desarrollando un cuerpo progresivo de estándares, principios
+y recomendaciones orientados a garantizar que la protección del consumidor en el comercio
+electrónico no sea inferior a la existente en los canales tradicionales; aspecto que ha sido
+recogido en el Informe del Grupo Intergubernamental de Expertos en Derecho y Política de
+Protección al Consumidor de la UNCTAD, adoptado en su octavo período de sesiones en 2024 18;
+así como en la Recomendación del Consejo de la OCDE sobre Protección al Consumidor en el
+Comercio Electrónico19.
+
+En ese marco, las Directrices de las Naciones Unidas para la Protección del Consumidor, así
+como la citada recomendación efectuada por la OCDE, reconocen expresamente la necesidad
+de contar con mecanismos fáciles de usar, eficaces y oportunos de atención de reclamos y
+reparación, incluyendo la tramitación interna de quejas y los mecanismos alternativos de
+resolución de controversias; señalando que los Estados Miembros deben alentar a todas las
+empresas a solucionar las controversias con los consumidores de forma rápida, justa,
+transparente, accesible, exenta de formalidades y sin incurrir en costos o cargas innecesarias 20,
+garantizando la protección de sus derechos a lo largo de todo el proceso 21.
+
+
+
+
+18
+     En el Informe del Grupo Intergubernamental de Expertos en Derecho y Política de Protección al Consumidor de la UNCTAD, adoptado
+     en su octavo período de sesiones en 2024, se reconoció el derecho que tienen los consumidores de recibir, en el ámbito del comercio
+     electrónico, un nivel de protección que no sea inferior al garantizado en otras formas de comercio. UNCTAD. Report of the
+     Intergovermental Group of Expert son Consumer Protection Law and Policy on its eighth session. TD / B / C.I / CPLP / 42. Para más
+     información ingresar al siguiente enlace: https://unctad.org/system/files/official-document/cicplpd42_en.pdf
+19
+     Uno de los principios que establece la Recomendación del Consejo de la OCDE sobre la protección al consumidor en el comercio
+     electrónico, señala que la protección que reciban los consumidores en línea debe ser equivalente a la protección que reciben en
+     canales tradicionales de consumo. Documento disponible en: https://www.gob.pe/institucion/pcm/informes-publicaciones/3819596-
+     recomendacion-del-consejo-sobre-proteccion-del-consumidor-en-el-comercio-electronico-de-la-ocde
+20
+     UNCTAD. Directrices de las Naciones Unidas para la Protección del Consumidor.
+21
+     UNCTAD. UN Trade and Development: Online dispute resolution key to boosting consumer trust. Disponible en:
+     https://unctad.org/news/un-trade-and-development-online-dispute-resolution-key-boosting-consumer-trust
+Sumado a ello, la UNCTAD a través de las referidas directrices hace un llamado a los Estados
+Miembros para cooperar con las empresas y los grupos de consumidores a fin de que estos
+conozcan mejor cómo evitar las controversias, cuáles son los mecanismos de solución de
+controversias que disponen los consumidores y dónde pueden estos últimos presentar sus
+reclamos22, considerando que esta clase de mecanismos, particularmente en línea, son la base
+de un mercado digital inclusivo, donde la confianza del consumidor se construye cuando este
+conoce sobre la existencia de una vía clara y accesible para la solución de sus conflictos 23.
+
+En 2023, en el estudio “Perú: Evaluación sobre el estado de preparación para el comercio
+electrónico”, en el cual se identificaron los retos y necesidades del Perú para el desarrollo del
+comercio electrónico, dicho organismo señaló que resulta recomendable que el país explore la
+posibilidad de introducir mejoras regulatorias respecto de la aplicación de las leyes a las
+plataformas digitales que operan sin sede social en el país, recomendando asimismo al Indecopi
+contemplar la protección de los consumidores en línea, a fin de reforzar la tutela de los
+consumidores en el entorno digital y armonizar el marco normativo nacional con los estándares
+de la OCDE en materia de protección al consumidor en dicho ámbito24.
+
+En línea con lo anterior, a través del Examen Voluntario entre Homólogos del Derecho y la Política
+
+
+
+
+                                                                                                                                         Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+de Protección del Consumidor del Perú (Peer Review) realizado por la UNCTAD25, se recomendó
+al Indecopi reforzar la protección del consumidor en el comercio electrónico, así como continuar
+participando en los procesos regulatorios vinculados a la economía digital que incidan en la tutela
+
+
+
+
+                                                                                                                                         La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+de los derechos de los consumidores.
+
+De lo expuesto se desprende que la implementación de mecanismos adecuados para la atención
+de reclamos en el comercio electrónico, como el Libro de Reclamaciones, cumple una función
+elemental dentro del sistema de protección al consumidor. Desde la perspectiva de los
+estándares internacionales, esta clase de mecanismos constituyen un pilar esencial para
+garantizar el acceso a la justicia y fortalecer la confianza del consumidor en la economía digital,
+consolidando los sistemas de resolución de controversias como un bien público indispensable
+para el desarrollo de un mercado digital confiable e inclusivo, en el que la protección del
+consumidor acompañe el ritmo de la transformación tecnológica 26.
+
+De igual forma, desde la perspectiva de la política pública, esta situación resulta particularmente
+relevante si se considera que el propio Estado peruano, a través de instrumentos como la Agenda
+Digital27 y, posteriormente, la Política Nacional de Transformación Digital al 2030, ha reconocido
+la necesidad de fortalecer la confianza en los entornos digitales, promover el comercio electrónico
+y garantizar condiciones adecuadas de protección para los usuarios. Sin embargo, estos
+lineamientos de política aún no se han traducido de manera suficiente en ajustes normativos
+concretos en el régimen de protección al consumidor, especialmente en lo referido a la
+implementación del Libro de Reclamaciones y su respectivo aviso en las plataformas digitales de
+comercio electrónico.
+
+          e) Planteamiento del problema público
+
+De acuerdo con lo expuesto en los apartados precedentes, si bien el Código y el Reglamento del
+Libro de Reclamaciones reconocen la obligación de los establecimientos comerciales abiertos al
+público y de las plataformas digitales de comercio electrónico de implementar y exhibir el Libro
+
+22
+     UNCTAD. Directrices de las Naciones Unidas para la Protección del Consumidor.
+23
+     UNCTAD. Consumer trust in the digital economy: The case for online dispute resolution. UNCTAD / SER.RP / 2021 / 15. Información
+     extraída del siguiente enlace: https://unctad.org/system/files/official-document/ser-rp-2021d15_en.pdf
+24
+     UNCTAD. Perú: Evaluación sobre el estado de preparación para el comercio electrónico. UNCTAD / DTL / ECDE / 2023 / 5.
+     Información extraída del siguiente enlace: https://unctad.org/system/files/official-document/dtlecdc2023d5_es.pdf
+25
+     UNCTAD. Perú: Examen voluntario entre homólogos del derecho y la política de protección del consumidor del Perú. UNCTAD /
+     DITC / CPLP / 2020 / 1. Información extraída del siguiente enlace: https://consumidor.gob.pe/wp-content/uploads/2020/07/8.-
+     Peer_Review_Consumo_Indecopi.pdf
+26
+     UNCTAD. Consumer Dispute Resolution in the World. UNCTAD / DITC / CPLP / 2023 / 2. Información extraída del siguiente enlace:
+     https://unctad.org/system/files/official-document/ser-rp-2021d15_en.pdf
+27
+     Agenda                   Digital                 del                Indecopi.               Disponible                        en:
+     https://cdn.www.gob.pe/uploads/document/file/894637/Agenda_digital_16.05.2018.pdf?v=1593297725
+de Reclamaciones, físico o virtual, dicho marco normativo ha quedado rezagado frente a la
+diversidad de plataformas que actualmente estructuran el ecosistema digital.
+
+El marco jurídico en cuestión fue diseñado en la era de la tienda física y posteriormente en el
+contexto de los sitios web tradicionales y no ha previsto expresamente las ventas a través de los
+Marketplace o las plataformas de redes sociales, por ejemplo, lo cual ha ocasionado que miles
+de pequeños y medianos proveedores operen sin implementar el Libro de Reclamaciones, aun
+cuando legalmente se encuentran obligados a hacerlo, o mediante canales de comunicación y/o
+herramientas que no se adecúan a las condiciones o el plazo que exige la ley peruana.
+
+En consecuencia, consideramos que existen motivos suficientes para plantear la existencia del
+siguiente problema público:
+
+“Existencia de barreras al consumidor para acceder al Libro de Reclamaciones dentro de
+ las plataformas digitales de comercio electrónico, lo cual viene afectando su derecho a
+  presentar reclamos de manera sencilla, accesible y oportuna, así como a obtener una
+        respuesta obligatoria por parte del proveedor como consecuencia de dicha
+                                       presentación”
+
+
+
+
+                                                                                                                    Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+Esto se ve manifestado en que, entre los años 2019 y 2025, en el mercado peruano se registraron
+24 reclamos y 278 sanciones administrativas contra proveedores de comercio electrónico
+
+
+
+
+                                                                                                                    La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+relacionados con la implementación y accesibilidad del consumidor al Libro de Reclamaciones
+Virtual en diversos canales del ecosistema digital, observándose la presentación sostenida y
+continua de dichos reclamos en este periodo, así como un crecimiento con variaciones
+interanuales en la imposición de dichas sanciones, al pasar de 46 en 2020 a 113 en 2024 y
+registrarse 81 en 2025.
+
+       f)   Análisis de causas del problema identificado
+
+Con el propósito de identificar las causas subyacentes que explican la persistencia de los
+problemas de implementación y accesibilidad del Libro de Reclamaciones Virtual en el
+ecosistema digital peruano, la Dirección de la Autoridad Nacional de Protección del Consumidor
+del Indecopi aplicó un cuestionario virtual dirigido a representantes y expertos de treinta y un (31)
+empresas de distintos tamaños.
+
+   Cuadro 8: Principales razones por las que muchas empresas no implementan el Libro de Reclamaciones
+                                                  Virtual
+                 80.6%
+
+
+
+                                    54.8%
+                                                       51.6%
+
+                                                                           38.7%
+
+
+
+                                                                                              16.1%
+
+                                                                                                            3.2%
+
+            Desconocimiento       Alto costo de Complejidad técnica Preferencia por       Perciben baja     Otras
+            de la norma o sus     desarrollo e   para la integración canales informales   fiscalización o
+                 alcances       implementación    en apps o redes (WhatsApp, correo)          sanción
+                                                socialesComplejidad
+                                                   técnica para la
+                                                integración en apps
+                                                  o redes sociales
+      Pregunta referencial: ¿Cuáles considera que son las principales razones por las que muchas empresas con
+      canales de venta en línea (especialmente Pymes) no implementen el Libro de Reclamaciones Virtual?
+      Fuente: Cuestionario de consulta pública: Atención de reclamos en el comercio electrónico - Indecopi
+      Elaboración: Dirección de la Autoridad Nacional de Protección del Consumidor del Indecopi.
+
+
+Los resultados obtenidos permiten identificar y agrupar las causas reportadas en dos grandes
+causas:
+           •     Causa 1: Brecha regulatoria como origen estructural del problema
+
+La causa más extendida entre los encuestados fue el desconocimiento de la norma o sus
+alcances, reportada por el 80.6% de los participantes. Una lectura contextualizada de este
+resultado no puede interpretarse exclusivamente como un déficit de difusión normativa o de
+voluntad de cumplimiento por parte de los proveedores. La revisión del marco regulatorio vigente
+revela que el Decreto Supremo N° 006-2014-PCM, que modificó el Reglamento del Libro de
+Reclamaciones del Código de Protección y Defensa del Consumidor, aprobado por el Decreto
+Supremo N° 011-2011-PCM, fue diseñado sobre la base de un ecosistema de comercio
+electrónico centrado en portales web con página de inicio, que constituía el canal predominante
+de transacciones digitales al momento de su aprobación.
+
+No obstante, el escenario actual es sustancialmente distinto. De acuerdo con los resultados del
+cuestionario sobre la atención de reclamos en el e-commerce, los proveedores desarrollan hoy
+sus actividades a través de una amplia variedad de canales digitales: páginas web propias
+(93.5%), aplicaciones móviles (71%), plataformas de intermediación o marketplaces (64.5%),
+plataformas de delivery o taxi (41.9%), redes sociales como Facebook, Instagram y TikTok, y
+
+
+
+
+                                                                                                                                     Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+servicios de mensajería instantánea como WhatsApp Business y Telegram (35.5% en ambos
+casos). La mayoría de estos entornos no responde al esquema de un “home” o una "página de
+inicio" en el sentido tradicional previsto por la normativa vigente, lo que genera una situación en
+la que la norma no establece reglas claras sobre cómo debe incorporarse el Libro de
+
+
+
+
+                                                                                                                                     La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+Reclamaciones en dichos canales.
+
+En consecuencia, el elevado desconocimiento normativo reportado no constituye un problema
+de difusión de la Ley y el Reglamento, sino que refleja, en parte, una brecha regulatoria
+estructural: la norma es ambigua o considerada inaplicable para los canales a través de los
+cuales opera hoy una parte significativa del comercio electrónico peruano.
+
+De manera complementaria, esta incertidumbre normativa ha venido acompañada de una
+variedad de criterios por parte de los distintos órganos resolutivos en materia de protección al
+consumidor del Indecopi frente a casos vinculados con la implementación del Libro de
+Reclamaciones y su aviso en los diversos entornos del ecosistema digital; situación que genera
+incertidumbre para los proveedores que operan en dichos espacios, en la medida que estos no
+cuentan con una pauta clara y predecible sobre cómo debe aplicarse el Reglamento del Libro de
+Reclamaciones en contextos digitales.
+
+A modo de ejemplo, en anteriores pronunciamientos se sostuvo que la obligación de contar con
+el Libro de Reclamaciones Virtual alcanza únicamente a aquellos proveedores que efectúan
+actividades comerciales a través de sus páginas web; por lo que, si las transacciones se realizan
+exclusivamente mediante un aplicativo móvil y no por la página web, el proveedor no se
+encuentra obligado a implementar el Libro de Reclamaciones en esta última, al no constituir el
+canal donde se concreta la relación de consumo 28.
+
+En otros casos se ha reconocido que el aplicativo móvil constituye un “establecimiento” o “medio
+virtual” comprendido dentro del concepto de portal web, entendiendo que la obligación no se
+limita a páginas web tradicionales, sino que se extiende a todo espacio digital donde se entablen
+relaciones de consumo, bajo una interpretación pro consumidor. 29 Este aspecto ha sido
+reconocido incluso a nivel judicial, donde se analizó expresamente si un aplicativo móvil es o no
+equivalente a un portal web, concluyéndose que los proveedores que desarrollan actividades
+económicas mediante aplicativos se encuentran obligados a implementar un Libro de
+Reclamaciones Virtual en dichos medios30.
+
+
+
+
+28
+     Ver Resolución Final N° 1050-2016/CC2 del 23 de junio de 2016 y Resolución Final N° 1251-2018/CC2 del 08 de junio de 2018.
+29
+     Ver Resolución 0203-2019/SPC-INDECOPI del 23 de enero de 2019 y Resolución N° 2174-2020/SPC-INDECOPI del 19 de noviembre
+     de 2020.
+30
+     Ver Sentencia de Casación N° 20463-2022-Lima, emitida por la Corte Suprema de Justicia de la República el 02 de septiembre de
+     2024.
+En lo que respecta a las redes sociales –como Facebook, por ejemplo– en determinados casos
+se ha considerado que el perfil del proveedor en dicha plataforma no genera la obligación de
+implementar el Libro de Reclamaciones cuando la transacción no se concreta directamente por
+ese medio. En la misma línea, se ha señalado que no corresponde exigir su implementación en
+páginas web que se limitan a brindar información sobre los productos o servicios ofrecidos por el
+proveedor y que no permiten la contratación directa, al no constituir el canal a través del cual se
+entabla o perfecciona la relación de consumo.31
+
+No obstante, en otros pronunciamientos se ha adoptado un criterio más amplio, señalándose que
+aun cuando no se perfeccione la contratación de manera directa, si dicho canal constituye un
+mecanismo de información que promueve y facilita el establecimiento de una relación de
+consumo –dirigiendo al consumidor a ponerse en contacto con el proveedor– este sí se encuentra
+obligado a implementar el Libro de Reclamaciones y su respectivo aviso. 32
+
+Esta falta de uniformidad interpretativa viene generando un escenario de falta de predictibilidad
+respecto del alcance de la obligación de implementación del Libro de Reclamaciones en el
+entorno digital. Si bien se ha reconocido que el concepto de portal web puede comprender
+diversos recursos digitales –como enlaces webs, buscadores, foros, documentos, aplicaciones,
+
+
+
+
+                                                                                                                                 Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+entre otros33– no existe una disposición normativa que regule expresamente cómo debe aplicarse
+el Reglamento del Libro de Reclamaciones frente a la diversidad de canales virtuales existentes,
+situación que, sumada a criterios resolutivos divergentes, impide a los proveedores contar con
+
+
+
+
+                                                                                                                                 La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+una pauta clara sobre los supuestos en los que corresponde implementar el Libro en espacios
+digitales, lo que deviene en constantes incumplimientos a la norma.
+
+           •    Causa 2: Barreras de implementación
+
+El alto costo de desarrollo e implementación (54.8%) y la complejidad técnica para la integración
+en aplicaciones móviles o redes sociales (51.6%) configuran un segundo eje de causas de
+naturaleza estructural que afecta con particular intensidad a las micro, pequeñas y medianas
+empresas. Estas barreras operan como obstáculos reales de acceso al cumplimiento normativo,
+incluso en aquellos casos en que existe voluntad de cumplir.
+
+El carácter multicanal del comercio electrónico actual agrava este problema. La obligación de
+implementar el Libro de Reclamaciones Virtual en todos los canales digitales a través de los
+cuales el proveedor establece relaciones de consumo implica, en la práctica, el desarrollo de
+soluciones técnicas diferenciadas para cada tipo de plataforma, cada una con sus propias
+lógicas, interfaces y restricciones de integración. En ausencia de un estándar oficial que oriente
+dicha implementación, los proveedores –especialmente los de menor tamaño– deben diseñar
+soluciones ad hoc, multiplicando costos y complejidad operativa.
+
+A ello se añade la dimensión de la intermediación digital, particularmente relevante en el caso de
+los marketplaces, donde la dificultad para identificar con claridad al proveedor que efectivamente
+ofrece el bien o servicio no solo obstaculiza la exigencia de una respuesta de fondo frente a un
+reclamo, sino que también genera confusión respecto de la atribución de responsabilidades para
+implementar el Libro de Reclamaciones dentro del entorno digital, lo que desincentiva tanto a la
+plataforma intermediaria como al proveedor vendedor a asumir la obligación de implementación.
+
+2.     Análisis del estado actual de la situación fáctica que se desea modificar o regular
+
+La situación fáctica actual se caracteriza por una asimetría de protección que se agudiza
+proporcionalmente al crecimiento del comercio electrónico en el Perú. Mientras la oferta de
+bienes y servicios digitales se viene desarrollando con éxito, los mecanismos de garantía y
+defensa del consumidor no se han adecuado con la misma velocidad y especificidad a las
+
+
+
+31
+     Ver Resolución N° 0173-2019/SPC-INDECOPI del 21 de enero de 2019 y Resolución N° 0314-2023/CC2 del 16 de febrero de 2023.
+32
+     Ver Resolución N° 1061-2022/SPC del 25 de mayo de 2022, Resolución N° 226-2022/SPC-INDECOPI del 07 de febrero de 2022,
+     Resolución N° 2136-2024/SPC-INDECOPI del 07 de agosto de 2024 y Resolución N° 2440-2024-SPC-INDECOPI del 02 de
+     septiembre de 2024.
+33
+     Ver Resolución N° 0203-2019/SPC-INDECOPI del 23 de enero de 2019.
+dinámicas propias de las plataformas digitales de comercio electrónico, generando los siguientes
+escenarios problemáticos:
+
+     a) Hoy el proceso de compra en plataformas digitales es intuitivo, rápido y estructurado
+        para facilitar la contratación; sin embargo, el acceso al Libro de Reclamaciones no
+        siempre se encuentra integrado de manera visible, inmediata y funcional dentro del
+        mismo entorno digital.
+
+     b) En la práctica, diversos proveedores –especialmente aquellos que operan mediante
+        modelos de intermediación, marketplaces, redes sociales, páginas web, aplicativos,
+        entre otros– no incorporan de forma clara y permanente el Libro de Reclamaciones ni el
+        aviso correspondiente que informe al consumidor sobre su derecho a utilizarlo.
+
+     c) Como consecuencia, el costo de la ineficiencia en la implementación del Libro de
+        Reclamaciones se traslada al consumidor, quien enfrenta barreras prácticas para
+        registrar formalmente su reclamo y obtener la constancia respectiva, debilitándose así la
+        función preventiva y probatoria de esta herramienta dentro del sistema de protección al
+        consumidor.
+
+
+
+
+                                                                                                    Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+En resumen, la situación actual es de desalineamiento normativo entre las nuevas dinámicas
+propias del comercio electrónico y la capacidad de las instituciones vigentes para la protección
+
+
+
+
+                                                                                                    La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+del consumidor. Sin la intervención propuesta, esta tendencia continuará profundizándose,
+incrementando los costos sociales y debilitando la competitividad del comercio electrónico
+nacional.
+
+3.   Contenido y sustento de la propuesta normativa
+
+La presente propuesta normativa adecúa el Reglamento del Libro de Reclamaciones a las
+nuevas dinámicas del comercio electrónico, desarrollando reglas específicas para su
+implementación en plataformas digitales, en cumplimiento de las modificaciones introducidas por
+la Ley N° 32495 a los artículos 150 y 151 del Código, como sigue a continuación:
+
+     a) Modificación del artículo 1: Ámbito de aplicación
+
+El artículo 1 del Reglamento vigente circunscribe su ámbito de aplicación a los proveedores que
+desarrollen sus actividades económicas en establecimientos comerciales abiertos al público,
+conforme a la definición contenida en el numeral 3.2 del artículo 3. Esta delimitación respondía
+a la realidad del comercio electrónico peruano al momento de la aprobación del Reglamento en
+2011 y su correspondiente modificación en el año 2014, en la que las transacciones digitales se
+realizaban principalmente a través de portales web que podían asimilarse, con cierta lógica, a la
+noción de establecimiento comercial.
+
+En ese contexto, la modificación del artículo 1 incorpora expresamente en el ámbito de aplicación
+a las plataformas digitales de comercio electrónico con independencia de la existencia de un
+establecimiento físico, de acuerdo con las definiciones que se señalan en el artículo 3.
+
+     b) Modificación del numeral 3.1: Definición de Libro de Reclamaciones
+
+El numeral 3.1 del artículo 3 vigente define el Libro de Reclamaciones como el documento
+provisto por los proveedores en el cual los consumidores pueden registrar quejas o reclamos
+sobre los productos o servicios ofrecidos en un determinado establecimiento comercial abierto al
+público. Esta definición restringe el Libro de Reclamaciones al concepto de establecimiento
+comercial, lo que resultaba coherente con la redacción original del Código pero que, en el nuevo
+contexto normativo, limita conceptualmente su operatividad al entorno físico.
+
+En consecuencia, la modificación del numeral 3.1 menciona expresamente a los bienes y
+servicios ofrecidos a través de una plataforma digital de comercio electrónico como objeto del
+registro de quejas y reclamos. Esta precisión conceptual adecúa el concepto del libro al nuevo
+ámbito subjetivo incorporado por la Ley N° 32495 y establece la base conceptual sobre la cual
+se articulan las obligaciones de implementación reguladas en los artículos 4-B, 4-C y 5-A del
+Reglamento, explicadas más adelante.
+
+    c) Modificación del numeral 3.2: Definición de establecimiento comercial abierto al
+       público
+
+El numeral 3.2 del Reglamento del Libro de Reclamaciones del Código de Protección y Defensa
+del Consumidor, aprobado por el Decreto Supremo N° 011-2011-PCM, incorporado por el
+Decreto Supremo N° 006-2014-PCM, considera el concepto de medio virtual como parte de la
+definición de establecimiento comercial abierto al público, equiparando los canales digitales de
+comercio al espacio físico de atención al consumidor. Esta incorporación tuvo como propósito
+especificar que la obligación del Libro de Reclamaciones no se limitaba a los espacios físicos,
+sino que también era aplicable a los proveedores virtuales que operaban a través de portales
+web, que constituía el canal predominante del comercio electrónico en aquel momento.
+
+La modificación del numeral 3.2 otorga mayor claridad al concepto de establecimiento comercial
+abierto al público otorgándole un alcance estrictamente físico, llámese inmueble, parte del
+mismo, instalación, construcción o espacio físico, etc., separándola de la noción de medio virtual
+
+
+
+
+                                                                                                     Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+que había sido introducida por la modificación del 2014, la cual queda ahora incorporada dentro
+del concepto de plataforma digital de comercio electrónico, explicada más adelante. Esta
+precisión conceptual es la consecuencia de la decisión normativa contenida en la Ley N° 32495,
+
+
+
+
+                                                                                                     La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+la cual regula el entorno físico y el digital a través de regímenes diferenciados.
+
+La separación de regímenes permite que cada uno de ellos cuenten con obligaciones
+técnicamente adecuadas a la naturaleza del canal correspondiente, eliminando las dificultades
+interpretativas que generaba la equiparación. Con ello, se preservan las disposiciones aplicables
+a los establecimientos físicos, incluyendo el régimen del Libro de Respaldo del artículo 4-A y las
+obligaciones de los proveedores con múltiples establecimientos del artículo 7, que mantienen
+plena vigencia para ese ámbito.
+
+    d) Modificación del numeral 3.5: Definición de aviso del Libro de Reclamaciones
+
+El numeral 3.5 de artículo 3 vigente define el aviso del Libro de Reclamaciones como el letrero
+físico o aviso virtual que los proveedores deben colocar en sus establecimientos comerciales y/o,
+cuando corresponda, en medios virtuales, en un lugar visible y fácilmente accesible al público.
+
+La modificación acota la definición del aviso del Libro de Reclamaciones al letrero físico,
+suprimiendo la mención al aviso virtual. Esta modificación es consecuencia directa de la
+separación de regímenes descrita en el punto anterior: el aviso en canales digitales pasa a
+denominarse enlace al Libro de Reclamaciones y a regularse específicamente en el nuevo
+artículo 9-A, con un estándar técnico propio que resulta más preciso y adecuado a la naturaleza
+de los canales digitales que la referencia genérica a un aviso virtual que contenía la definición
+vigente.
+
+La denominación de enlace en lugar de aviso virtual refleja con mayor exactitud el mecanismo
+técnico a través del cual el consumidor accede al Libro de Reclamaciones en el entorno digital,
+en línea con la terminología utilizada por el artículo 151 del Código tras su modificación por la
+Ley N° 32495.
+
+    e) Modificación del numeral 3.6: Definición de proveedor virtual / plataforma digital
+       de comercio electrónico
+
+El numeral 3.6 del artículo 3 vigente define al proveedor virtual como el proveedor con RUC que
+establece sus relaciones de consumo a través de portales web. Esta definición, contenida en el
+Reglamento del Libro de Reclamaciones del Código de Protección y Defensa del Consumidor,
+aprobado por el Decreto Supremo N° 011-2011-PCM, introducida por el Decreto Supremo
+N° 006-2014-PCM, circunscribía el universo de los proveedores digitales a quienes operaban
+mediante sitios web, que era el canal dominante del comercio electrónico peruano en el año de
+su aprobación.
+No obstante, esta limitación generaría confusión en los proveedores que operan exclusiva o
+principalmente a través de otros canales de venta no presenciales, tales como aplicaciones
+móviles, marketplaces, redes sociales, plataformas de delivery o canales de mensajería
+instantánea. Ello, por cuanto, aun cuando dichos canales están comprendidos dentro de la noción
+general de medios virtuales, contenida en la definición de establecimiento comercial, el numeral
+3.6 circunscribía la condición de proveedor virtual únicamente a aquellos que operaban mediante
+páginas web.
+
+En ese contexto, la modificación sustituye la categoría de proveedor virtual, que resulta restrictiva
+y sin base legal en el Código, por la de plataforma digital de comercio electrónico, definida como
+el entorno virtual a través del cual un proveedor ofrece, comercializa o contrata productos o
+servicios o facilita su adquisición o contratación por parte de los consumidores.
+
+La incorporación de este término responde a la necesidad de dotar de contenido uniforme a un
+concepto que el ordenamiento de protección al consumidor emplea sin definirlo, recogiendo la
+finalidad del legislador, que al emplear el término no aludió a una arquitectura tecnológica
+específica ni a un modelo de negocio determinado, sino a todo medio o entorno virtual —en
+contraposición al establecimiento físico— utilizado por los proveedores para ofrecer,
+
+
+
+
+                                                                                                                                              Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+comercializar, contratar o facilitar transacciones con los consumidores.
+
+La definición adopta como criterio rector la función de este entorno —la oferta, comercialización,
+
+
+
+
+                                                                                                                                              La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+contratación o facilitación de productos o servicios— y no el soporte que la materializa, e incluye,
+de manera enunciativa, pero no limitativa, una enumeración ejemplificativa (sitios web,
+aplicaciones móviles, programas informáticos, redes sociales y otros canales digitales) que
+asegura su adecuada comprensión y aplicación a las modalidades presentes y futuras del
+comercio electrónico.
+
+De este modo, la nueva definición adopta un enfoque funcional y neutro, que no se enfoca en
+identificar ciertos formatos o canales digitales específicos sino en la función que estos cumplen,
+esto es, que a través de ellos se desarrollen actividades económicas de venta de bienes o
+prestación de servicios a consumidores 34. Este enfoque permite que la definición mantenga
+vigencia frente a la evolución tecnológica del comercio electrónico, sin necesidad de
+actualizaciones normativas ante la aparición de nuevos formatos de canal digital.
+
+      f)     Modificación del artículo 4: Libro de Reclamaciones para establecimientos
+             comerciales
+
+El artículo 4 vigente regula de manera conjunta las obligaciones del Libro de Reclamaciones para
+los establecimientos comerciales físicos y para los proveedores con medios virtuales,
+estableciendo en su primer párrafo que los proveedores que además del establecimiento
+comercial utilicen medios virtuales para establecer sus relaciones de consumo deben
+implementar un Libro de Reclamaciones Virtual en cada uno de sus establecimientos.
+
+La modificación circunscribe el artículo 4 a los establecimientos comerciales físicos abiertos al
+público, eliminando la referencia a los proveedores con medios virtuales. Esta adecuación va de
+la mano con la nueva denominación del artículo (Libro de Reclamaciones para establecimientos
+comerciales) que refleja con precisión su objeto, diferenciándolo de los artículos 4-B y 4-C que
+
+
+
+34
+     Es importante mencionar que en el marco de la aprobación de la Ley N° 32495, la Comisión de Defensa del Consumidor y Organismos
+     Reguladores de los Servicios Públicos, en el numeral 6.2.1. del Dictamen en insistencia recaído en las observaciones formuladas por
+     la Presidencia de la República a la Autógrafa de la ley que modifica la Ley 29571, Código de Protección y Defensa del Consumidor,
+     para incluir a las plataformas digitales de comercio electrónico en la obligación de contar con el libro de reclamaciones (Proyecto de
+     Ley 7117/2023-CR) señala lo siguiente:
+
+           “(…) la propuesta legislativa estaría ampliando la obligación de poner a disposición el Libro de Reclamaciones a través de
+           aplicaciones móviles, ampliando así el concepto de proveedor digital y establecimiento comercial abierto al público (…). (…) el
+           comercio electrónico no se limita únicamente a las páginas web y los aplicativos móviles. Actualmente, la venta o
+           distribución de productos y servicios puede realizarse a través de distintos medios electrónicos como las redes
+           sociales, aplicaciones de mensajería u plataformas digitales. (…) hoy por hoy es posible concretar relaciones de
+           consumo tanto a través de sitios webs propios como de terceros. Este es el caso de los Marketplaces, plataformas en
+           línea que actúan como intermediarias entre vendedores y compradores, como lo son Mercado Libre, Diners Club Mall,
+           Shopstar, Falabella.com, entre otros.”
+regulan el Libro de Reclamaciones en el entorno digital. Todo ello como consecuencia de la
+separación de regímenes introducida por la Ley N° 32495 en los artículos 150 y 151 del Código.
+
+Por otro lado, se mantienen íntegramente las obligaciones propias del establecimiento físico,
+tales como la disponibilidad inmediata del Libro de Reclamaciones, el apoyo al consumidor para
+el correcto ingreso de su queja o reclamo y la habilitación de atención preferente.
+
+    g) Modificación del artículo 4-A: Libro de Reclamaciones de Respaldo
+
+La modificación introduce una precisión de forma que no altera el contenido y los efectos de la
+disposición, al añadir al término “establecimientos comerciales” la indicación “abiertos al público”,
+mención que se utiliza de manera uniforme a lo largo de todo el documento.
+
+    h) Modificación del artículo 4-B: Libro de Reclamaciones para plataformas digitales
+       de comercio electrónico
+
+El artículo 4-B actual dispone que, en el caso de los proveedores virtuales, el Libro de
+Reclamaciones Virtual debe estar alojado en la página de inicio del portal web diseñado para
+
+
+
+
+                                                                                                        Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+establecer las relaciones de consumo y que, al concluir el proceso de ingreso del reclamo o
+queja, debía permitirse la impresión de la Hoja de Reclamación y su envío automático al correo
+electrónico del consumidor con constancia de fecha y hora.
+
+
+
+
+                                                                                                        La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+La regulación vigente presenta dos limitaciones importantes. La primera es que, al referirse
+exclusivamente al portal web, deja sin atención a otros canales digitales que no se articulan
+mediante un sitio web, como las aplicaciones móviles, los marketplaces o las redes sociales, y
+que también constituyen medios virtuales obligados a implementar el Libro de Reclamaciones.
+La segunda es que el texto vigente no establece ninguna restricción respecto de las condiciones
+de acceso al Libro de Reclamaciones, lo que en la práctica permitía que algunos proveedores
+condicionaran su uso a la creación de una cuenta, el inicio de sesión o la validación de una
+compra previa, generando barreras que desnaturalizaban la finalidad del instrumento.
+
+En atención a ello, la modificación, en primer lugar, precisa el ámbito de aplicación de la
+obligación a toda plataforma digital de comercio electrónico con independencia del formato
+técnico del canal, requiriendo la implementación del Libro de Reclamaciones mediante un enlace
+o acceso directo, visible y permanente en la página de inicio o interfaz principal del sitio web,
+aplicación o canal digital correspondiente. La referencia a la interfaz principal permite adaptar la
+obligación a canales que no cuentan con una página de inicio en el sentido tradicional, como las
+aplicaciones móviles o determinadas plataformas digitales.
+
+En segundo lugar, la modificación incorpora una garantía expresa de acceso libre al Libro de
+Reclamaciones, al prohibir que su acceso esté condicionado a la autenticación previa, registro
+de usuario, validación de una compra o cualquier otro requisito. Esta prohibición responde a una
+de las barreras de acceso más frecuentemente identificadas en la práctica y busca alcanzar el
+objetivo de accesibilidad reconocido en el artículo 151 del Código.
+
+De otro lado, se mantiene la obligación de envío automático de la constancia del reclamo o queja
+presentado al correo electrónico del consumidor y la posibilidad de su impresión.
+
+    i)   Modificación del artículo 9: Exhibición del Aviso del Libro de Reclamaciones
+
+El artículo 9 actual regula tanto la obligación de exhibición del aviso en establecimientos físicos
+abiertos al público como la obligación de los proveedores virtuales de colocar un aviso fácilmente
+identificable en la página de inicio del portal web, con un vínculo al Libro de Reclamaciones
+Virtual.
+
+La modificación del artículo 9 elimina parcialmente el segundo párrafo, referido a los proveedores
+virtuales, cuyo contenido pasa a regularse de manera ampliada y técnicamente más precisa en
+el nuevo artículo 9-A. La supresión obedece a la misma lógica de separación de regímenes que
+estructura el conjunto de modificaciones: el artículo 9 queda referido exclusivamente a los
+establecimientos físicos, mientras que las obligaciones de exhibición del enlace en el entorno
+digital son objeto de regulación específica en el artículo 9-A, que desarrolla con mayor detalle los
+estándares de visibilidad y accesibilidad aplicables a cada tipo de canal digital.
+
+    j)   Incorporación del numeral 3.7 del artículo 3: Definición del enlace al Libro de
+         Reclamaciones
+
+El numeral 3.5 del Reglamento vigente define el aviso del Libro de Reclamaciones como el letrero
+físico o aviso virtual que los proveedores deben colocar en sus establecimientos comerciales.
+Esta definición se deriva del texto original del artículo 151 del Código, cuyo objetivo era informar
+a los consumidores sobre la existencia de esta herramienta para la presentación de sus quejas
+y/o reclamos.
+
+Con la modificación del referido artículo por la Ley N° 32495, que ha incorporado la figura del
+enlace al Libro de Reclamaciones, el aviso ha dejado de ser el único medio para comunicar a los
+clientes la existencia del libro. En ese sentido, el aviso ha quedado asociado directamente con
+los establecimientos comerciales abiertos al público, en tanto que el enlace se constituye como
+el mecanismo de exhibición propio de las plataformas digitales de comercio electrónico.
+
+
+
+
+                                                                                                       Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+Por tal motivo, se ha considerado necesario incorporar una definición autónoma del enlace al
+Libro de Reclamaciones, atendiendo a la naturaleza y a las características propias de los canales
+digitales. En ese marco, el enlace se define como una dirección web o vínculo electrónico,
+
+
+
+
+                                                                                                       La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+claramente identificado bajo la denominación “Libro de Reclamaciones”, a través del cual el
+consumidor accede directamente al formulario del Libro de Reclamaciones para registrar su
+queja o reclamo.
+
+La denominación “Libro de Reclamaciones” sustituye al letrero físico o aviso virtual que indica la
+definición vigente, mientras que la referencia a la página de inicio o interfaz principal busca
+garantizar su visibilidad y accesibilidad, conceptos que quedan desarrollados con mayor detalle
+en el artículo 9-A.
+
+    k) Incorporación del artículo 4-C: Plataformas de intermediación y de redes sociales
+
+Mediante la modificación del artículo 4-B, referido a las plataformas digitales de comercio
+electrónico en general, se establece el procedimiento de implementación del Libro de
+Reclamaciones, régimen que es aplicable fundamentalmente en aquellos casos en los que la
+plataforma digital de comercio electrónico es administrada directamente por el proveedor de
+bienes y servicios, y que, como tal, es capaz de incorporar ajustes o modificaciones en la
+plataforma.
+
+No obstante, el desarrollo de nuevas tecnologías digitales y la masificación del comercio
+electrónico han dado lugar a la aparición y consolidación de plataformas digitales de
+intermediación, tales como marketplaces, redes sociales, aplicaciones móviles y otros canales
+virtuales, que han transformado sustancialmente la estructura tradicional de las relaciones de
+consumo. A diferencia del modelo clásico bipartito, basado en la interacción directa entre
+proveedor y consumidor, estos nuevos entornos digitales incorporan a uno o más actores
+adicionales que facilitan, organizan o median la transacción comercial, ya sea mediante la
+provisión de infraestructura tecnológica, mecanismos de pago, sistemas de logística,
+herramientas de posicionamiento comercial o reglas de operación propias.
+
+En estos entornos, el consumidor ya no interactúa directamente con el proveedor a través de
+medios propios de este último, sino mediante un canal digital administrado por un tercero, que
+concentra la relación comercial y, en muchos casos, gestiona fases relevantes del proceso de
+contratación, pago, entrega o atención postventa. Como consecuencia, la implementación
+efectiva del Libro de Reclamaciones ya no recae únicamente en el proveedor subyacente, en
+tanto este no siempre tiene control sobre el canal a través del cual se realiza la transacción ni
+sobre el espacio digital en el que el consumidor formula sus reclamos.
+
+Es importante indicar que el dictamen del Congreso de la República que dio lugar a la aprobación
+de la Ley N° 32495 sustentó que hoy en día es posible concretar relaciones de consumo tanto a
+través de sitios web propios como de terceros, este es el caso de los marketplaces y otras
+plataformas en línea que actúan como intermediarias entre vendedores y compradores, razón
+por la cual se recomendó que el artículo 150 del Código incorpore no solo a los establecimientos
+comerciales, sino también a toda plataforma digital de comercio electrónico35.
+
+En ese contexto, considerando la nueva redacción de los artículos 150 y 151 del Código, resulta
+necesario definir también las obligaciones concretas del tercero que interviene como facilitador
+indispensable de la relación de consumo y como punto de contacto principal con el consumidor,
+en tanto constituyen plataformas digitales a través de las cuales se establecen relaciones de
+consumo, conforme a la Ley N° 32495. Para ello es importante conocer las principales
+dificultades que encontramos actualmente.
+
+En el caso de las plataformas de intermediación o marketplaces, la dificultad radica en la
+estructura tripartita de la relación de consumo: el consumidor contrata con un proveedor afiliado
+a través de una plataforma gestionada por un tercero intermediario. La ausencia de reglas claras
+sobre la atribución de la obligación de implementar el Libro de Reclamaciones en este entorno
+genera confusión respecto de quién es el responsable de implementarlo, con el resultado práctico
+de que en muchos casos ninguno de los dos actores lo hacía. Esta situación fue identificada
+como uno de los principales problemas de acceso al Libro de Reclamaciones en los resultados
+
+
+
+
+                                                                                                                                      Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+del cuestionario sobre la atención de reclamos en el e-commerce, que señaló a los marketplaces
+como el segundo canal con mayores dificultades para la presentación de reclamos, después de
+los perfiles en redes sociales.
+
+
+
+
+                                                                                                                                      La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+En el caso de las redes sociales con funcionalidades de comercio electrónico, el problema es de
+naturaleza diferente. Estas plataformas fueron diseñadas inicialmente para la comunicación, pero
+han permitido progresivamente un nuevo tipo de comercio electrónico. El comercio en línea
+mediante plataformas sociales puede desarrollarse de distintas maneras. Por ejemplo, las
+plataformas comerciales pueden integrar algunos contenidos comerciales o interactivos en el
+proceso de venta (lo que se conoce como comercio electrónico social, Amazon Live, por
+ejemplo); a la inversa, las plataformas de redes sociales tradicionales pueden integrar
+componentes de venta (como Instagram Shop, TikTok Shop) 36.
+
+Sin embargo, a diferencia de los marketplaces, la red social no actúa como vendedora ni como
+intermediaria en sentido estricto, sino como proveedora de la infraestructura tecnológica sobre
+la que los proveedores desarrollan su actividad. La obligación de implementar el Libro de
+Reclamaciones corresponde, en esencia, al proveedor, pero las características del entorno, en
+particular, la ausencia de una interfaz propia del proveedor, hacen que su cumplimiento requiera
+la colaboración de la plataforma.
+
+Desde esa perspectiva, el artículo 4-C establece un régimen diferenciado para cada uno de estos
+supuestos. Respecto de los marketplaces, la norma impone al administrador de la plataforma la
+obligación de implementar un Libro de Reclamaciones de carácter centralizado (Libro de
+Reclamaciones único), que permita el registro de los reclamos y quejas dirigidos tanto contra los
+proveedores afiliados como contra la plataforma.
+
+Este diseño atribuye a la plataforma la responsabilidad de implementación, en reconocimiento
+de su posición de control sobre la infraestructura digital a través de la cual se establecen las
+relaciones de consumo, sin perjuicio de la responsabilidad del proveedor afiliado respecto del
+bien o servicio que ofrece y del contenido material del reclamo. Este Libro de Reclamaciones
+centralizado garantiza que el consumidor cuente con un punto de acceso único al mecanismo de
+reclamo, lo que resulta coherente con la realidad del marketplace, en el que el consumidor
+interactúa primariamente con la plataforma y puede tener dificultades para identificar con claridad
+al proveedor afiliado que le suministró el bien o servicio.
+
+
+
+35
+     COMISIÓN DE DEFENSA DEL CONSUMIDOR Y ORGANISMOS REGULADORES DE LOS SERVICIOS PÚBLICOS (CODECO).
+     Dictamen de INSISTENCIA, recaído en las observaciones formuladas por la Presidencia de la República a la Autógrafa de la ley
+     que modifica la Ley 29571, Código de Protección y Defensa del consumidor, para incluir a las plataformas digitales de comercio
+     electrónico en la obligación de contar con el libro de reclamaciones. (Proyecto de Ley 7117/2023-CR). Pág. 14. Documento
+     disponible en: https://api.congreso.gob.pe/spley-portal-service/archivo/MjI2Mzk2/pdf
+36
+     UNCTAD. El comercio electrónico desde una perspectiva de género y desarrollo. Naciones Unidas, Geneva. P. 20. Documento
+     disponible en: https://unctad.org/system/files/official-document/ditc2023d1_es.pdf
+Respecto de las plataformas de redes sociales, el segundo párrafo del artículo 4-C dispone que
+las plataformas que integren funcionalidades que permitan la publicación organizada de ofertas,
+la aceptación de pedidos o la gestión y procesamiento de pagos, tienen la obligación de habilitar
+mecanismos gratuitos e integrados que permitan a los proveedores implementar el Libro de
+Reclamaciones a través de un enlace visible y fácilmente accesible en la sección de perfil,
+biografía, información de contacto o sitio equivalente. El criterio sobre la existencia de
+funcionalidades de publicación organizada, aceptación de pedidos o procesamiento de pagos
+tiene como finalidad principal distinguir a las redes sociales que han incorporado capacidades de
+comercio electrónico de aquellas otras que sirven meramente como canal de comunicación o
+publicidad, evitando extender la obligación a plataformas respecto de las cuales no existiría una
+base razonable para su imposición.
+
+La obligación de gratuidad de los mecanismos que las redes sociales deben poner a disposición
+de los proveedores responde a la necesidad de evitar que el costo de habilitación de la
+funcionalidad se convierta en una barrera de implementación, especialmente para los
+proveedores de menor tamaño que desarrollan su actividad comercial principalmente a través de
+estos canales.
+
+
+
+
+                                                                                                      Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+    l)   Incorporación del artículo 4-D: Soporte en línea
+
+El artículo 4-D establece que la obligación de implementar el Libro de Reclamaciones conforme
+
+
+
+
+                                                                                                      La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+a los artículos 4-B y 4-C no impide a las plataformas digitales ofrecer, adicionalmente al Libro de
+Reclamaciones, funcionalidades centralizadas de soporte en línea para la solución inmediata de
+conflictos, siempre que garanticen condiciones de atención iguales o superiores a las previstas
+en el Reglamento.
+
+Esta disposición cumple una función aclaratoria y de fomento del cumplimiento voluntario con
+mejores estándares. Su propósito es disipar cualquier interpretación que pudiera entenderse
+como una prohibición de los sistemas propios de atención al cliente que muchas plataformas han
+desarrollado, tales como los chats de soporte, centros de ayuda, sistemas de resolución de
+disputas y que en algunos casos ofrecen al consumidor una atención más ágil e integrada que
+el Libro de Reclamaciones tradicional.
+
+La norma establece que estos sistemas son compatibles con la obligación reglamentaria, con la
+condición de que sus estándares de atención sean al menos equivalentes o superiores a los
+previstos en el Reglamento. Con ello se incentiva la innovación en la atención al consumidor sin
+comprometer el nivel de protección garantizado por la norma.
+
+    m) Incorporación del artículo 5-A: Características del Formulario de Reclamación en
+       plataformas digitales
+
+El Reglamento vigente regula en el artículo 5 las características de la Hoja de Reclamación, tanto
+física como virtual, pero lo hacía sobre la base de un modelo diseñado principalmente para el
+entorno físico: hojas desglosables, copia en papel para el proveedor y el Indecopi, firma
+manuscrita del consumidor, etc. La aplicación de este régimen al entorno digital generaba
+dificultades operativas evidentes y no respondía a las posibilidades técnicas ni a los estándares
+propios de los canales digitales actuales. Adicionalmente, la norma vigente no establecía ningún
+requisito de optimización para dispositivos móviles, que constituyen el principal dispositivo de
+acceso a internet para la mayoría de los consumidores peruanos, ni previsión alguna respecto
+de la posibilidad de adjuntar documentación de respaldo.
+
+El artículo 5-A establece un régimen específico para el Formulario de Reclamación en
+plataformas digitales, que reemplaza la lógica del documento físico digitalizado por la de un
+formulario propio del entorno digital. Las innovaciones respecto del régimen vigente del artículo
+5 son de dos tipos.
+
+En primer lugar, el artículo 5-A introduce un mecanismo de confirmación de envío equivalente
+funcionalmente a la firma, que puede consistir en un botón de confirmación u otro elemento que
+deje constancia de la voluntad del consumidor, en sustitución de la firma manuscrita prevista
+para el Libro de Reclamaciones físico. Esta equivalencia funcional es coherente con la naturaleza
+del entorno digital, en el que exigir una firma manuscrita escaneada o una firma electrónica
+certificada impondría una barrera desproporcionada para la presentación de un reclamo.
+
+En segundo lugar, el artículo establece estándares técnicos mínimos de uso que el Formulario
+de Reclamación debe cumplir: optimización para su visualización y correcto llenado en
+dispositivos móviles, tabletas y computadoras personales; posibilidad de adjuntar archivos en
+formatos comunes que sirvan como sustento del reclamo; y validación previa al envío que alerte
+al consumidor si faltan los datos mínimos indispensables. Estos estándares responden a la
+necesidad de garantizar que el Formulario de Reclamación sea efectivamente utilizable en los
+dispositivos y condiciones de conectividad habituales del consumidor peruano.
+
+    n) Incorporación del artículo 9-A: Exhibición del enlace del Libro de Reclamaciones
+
+El artículo 9 del Reglamento vigente obliga a los proveedores virtuales a colocar un aviso
+fácilmente identificable en la página de inicio del portal web. Esta regla resulta aplicable con
+relativa claridad a los sitios web tradicionales, pero generaba incertidumbre respecto de los
+canales digitales que no cuentan con una página de inicio en el sentido convencional, tales como
+las aplicaciones móviles, los perfiles de redes sociales o los canales de mensajería. La ausencia
+
+
+
+
+                                                                                                           Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+de reglas específicas para estos canales era identificada por los propios proveedores como una
+de las causas del incumplimiento, al no saber cómo dar cumplimiento a la obligación en entornos
+para los que la norma no preveía una solución técnica concreta.
+
+
+
+
+                                                                                                           La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+Partiendo de ello, el artículo 9-A utiliza una figura distinta a la del aviso, aplicable desde ahora
+solo para los establecimientos físicos, y regula la obligación de exhibir permanentemente el
+enlace al Libro de Reclamaciones en plataformas digitales de comercio electrónico,
+desarrollando los criterios de visibilidad y accesibilidad que el artículo 151 del Código, modificado
+por la Ley N° 32495, enuncia en términos generales.
+
+En cuanto al criterio de visibilidad, se establece que el enlace se considera visible cuando esté
+disponible desde la página de inicio o la interfaz principal del portal web, aplicativo o canal digital,
+sin necesidad de navegación adicional. Para el caso específico de las redes sociales, se indica
+que la sección de perfil, biografía, información de contacto o equivalente constituye el espacio
+adecuado de ubicación del enlace, en reconocimiento de que estos canales no tienen una interfaz
+principal en el sentido de los portales web o las aplicaciones, pero sí cuentan con secciones
+específicamente destinadas a la identificación del proveedor y su información de contacto.
+
+Respecto al criterio de accesibilidad, se prevé que el enlace será fácilmente accesible cuando la
+activación del enlace dirija al consumidor directamente al Formulario de Reclamación, sin requerir
+la realización de más de una acción de su parte. Este estándar establece un parámetro que
+resulta razonable para el consumidor y operativamente viable para los proveedores, en la medida
+en que no exige que el Formulario esté directamente incorporado en la interfaz principal sino
+únicamente que no esté oculto en menús o condicionado a una navegación más extensa.
+
+La obligación se extiende a cada canal digital en el que el proveedor promueva o establezca
+relaciones de consumo, teniendo en consideración que la protección del consumidor no puede
+limitarse a uno de los canales del proveedor si este opera a través de varios.
+
+    o) Derogación del Anexo III
+
+El Anexo III actual del Reglamento del Libro de Reclamaciones, incorporado por el Decreto
+Supremo N° 006-2014-PCM, establece el formato estandarizado del aviso virtual del Libro de
+Reclamaciones para los proveedores virtuales, cuya derogación se hace necesaria en función
+de las modificaciones introducidas por el presente Decreto Supremo.
+
+En este nuevo esquema, la obligación de exhibición del aviso en el entorno digital se regula a
+través del enlace al Libro de Reclamaciones previsto en el artículo 151 del Código y desarrollado
+en el artículo 9-A del Reglamento. A diferencia del aviso físico estandarizado, cuyo formato se
+mantiene en el Anexo II para los establecimientos físicos, el enlace digital admite dificultades
+para su estandarización en función del tipo de canal digital y de la plataforma en la que opera el
+proveedor.
+En ese sentido, la derogación del Anexo III elimina una obligación cuya implementación generaba
+dificultades técnicas en los canales digitales para los que no había sido diseñada, sustituyéndola
+por un régimen más flexible y tecnológicamente neutro que resulta aplicable a la diversidad de
+canales del ecosistema digital actual.
+
+En conjunto, las modificaciones propuestas permiten alinear el Reglamento del Libro de
+Reclamaciones con la estructura actual del comercio electrónico, fortaleciendo la efectividad del
+derecho a reclamar, reduciendo incertidumbre regulatoria y consolidando un estándar obligatorio
+de protección al consumidor en entornos digitales.
+
+4.     Análisis sobre la necesidad, viabilidad y oportunidad
+
+      a) Necesidad
+
+La propuesta normativa responde a una necesidad regulatoria concreta: el marco reglamentario
+vigente del Libro de Reclamaciones establece la obligación de los establecimientos comerciales
+abiertos al público y de las plataformas digitales de comercio electrónico de implementar el Libro
+
+
+
+
+                                                                                                                                       Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+de Reclamaciones, pero no contempla con precisión cómo debe implementarse este mecanismo
+en los entornos digitales actuales, generando una brecha entre el mandato legal y su
+cumplimiento efectivo por parte del proveedor.
+
+
+
+
+                                                                                                                                       La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+La evidencia recabada en la etapa de consulta pública temprana revela que el 80.6% de los
+proveedores encuestados reportó desconocimiento de la norma o sus alcances, lo que refleja,
+en gran parte, que el Reglamento vigente no les ofrece una regla aplicable para los canales en
+que operan, y que el 9.4% de los consumidores identifica la inexistencia de un canal habilitado
+para presentar reclamos como uno de sus principales problemas en el comercio electrónico.
+
+Entre 2019 y 2025, se registraron 278 sanciones administrativas contra proveedores por
+incumplimientos relacionados con el Libro de Reclamaciones Virtual, sin que ello haya producido
+una mejora estructural del cumplimiento. Este comportamiento confirma que el problema no
+responde únicamente a falta de voluntad de los proveedores, sino a la ausencia de una regla
+técnica clara para los canales digitales que concentran hoy la mayor parte de las transacciones
+de consumo.
+
+La necesidad de intervención normativa resulta corroborada por los instrumentos internacionales
+en la materia. Las Directrices de la UNCTAD emplazan a los Estados a fomentar la confianza de
+los consumidores en el comercio electrónico mediante la formulación constante de políticas de
+protección del consumidor transparentes y eficaces que garanticen un grado de protección que
+no sea inferior al otorgado en otras formas de comercio. Asimismo, se invita a los Estados a
+examinar las políticas de protección del consumidor en vigor para dar cabida a las características
+especiales del comercio electrónico, resaltando el papel crucial que desempeñan los gobiernos
+en este proceso37.
+
+Particularmente, en el Informe del Grupo Intergubernamental de Expertos en Derecho y Política
+de Protección al Consumidor de la UNCTAD, adoptado en su octavo período de sesiones en
+2024, dicho organismo recomendó a los Estados miembros implementar políticas, alineadas con
+las citadas directrices y otros instrumentos internacionales, orientadas a establecer mecanismos
+eficaces de resolución de controversias y reparación para los consumidores 38.
+
+En esa misma línea, la Recomendación del Consejo de la OCDE sobre Protección al Consumidor
+en el Comercio Electrónico, ha señalado igualmente que los mecanismos de atención de
+
+
+
+
+37
+     UNCTAD. Consumer trust in the digital economy: The case for online dispute resolution. UNCTAD / SER.RP / 2021 / 15. Información
+     extraída del siguiente enlace: https://unctad.org/system/files/official-document/ser-rp-2021d15_en.pdf
+38
+     UNCTAD. Report of the Intergovermental Group of Expert son Consumer Protection Law and Policy on its eighth session.
+     TD/B/C.I/CPLP/42. Información extraída del siguiente enlace: https://unctad.org/system/files/official-document/cicplpd42_en.pdf
+reclamos y resolución de controversias son elementos centrales de la política de protección al
+consumidor39.
+
+A nivel nacional, la actual Política de Protección y Defensa del Consumidor al 2030, aprobada
+por Decreto Supremo N° 075-2025-PCM, estableció como uno de sus objetivos prioritarios
+(Objetivo Prioritario Nº 04) “Garantizar los mecanismos de solución de controversias de consumo
+en las entidades competentes” señalando entre sus lineamientos los siguientes: (i) L.04.02:
+fortalecer los mecanismos de solución de controversias de consumo de agentes privados; y, (ii)
+L.04.03: implementar mejoras regulatorias en la protección del consumidor en el comercio
+digital40.
+
+Asimismo, el numeral 6 del artículo VI del Título Preliminar del Código, establece como política
+pública en materia de protección al consumidor, el deber del Estado de garantizar mecanismos
+eficaces y expeditivos para la solución de conflictos entre consumidores y proveedores,
+promoviendo que estos últimos atiendan y solucionen directa y rápidamente los reclamos de los
+consumidores y garantizando el acceso a procedimientos administrativos ágiles, expeditos y
+eficaces para la resolución de conflictos.41
+
+
+
+
+                                                                                                                                            Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+A la luz de los referidos instrumentos nacionales e internacionales, la propuesta normativa bajo
+análisis resulta necesaria en la medida que el marco normativo vigente no desarrolla con
+precisión cómo debe implementarse el Libro de Reclamaciones en los entornos digitales
+
+
+
+
+                                                                                                                                            La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+actuales, cuya evolución ha provocado el desfase entre las disposiciones originalmente
+concebidas para contextos presenciales o virtuales tradicionales y las dinámicas propias de las
+plataformas digitales.
+
+En ese contexto, la propuesta normativa resulta indispensable para cerrar esta brecha,
+estableciendo reglas y parámetros para la implementación del Libro de Reclamaciones en el
+comercio electrónico que sean coherentes con la realidad tecnológica actual, y, a su vez,
+asegurando que el derecho del consumidor a reclamar pueda ejercerse en condiciones
+equivalentes de accesibilidad, eficacia y oportunidad que aquellas previstas para las
+modalidades tradicionales de comercio.
+
+      b) Viabilidad
+
+La propuesta es jurídicamente viable, por cuanto el Decreto Supremo es el instrumento normativo
+apropiado para desarrollar el contenido reglamentario que exige la Única Disposición
+Complementaria Final de la Ley N° 32495.
+
+La propuesta es asimismo técnicamente viable, ya que los estándares que se incorporan, tales
+como la optimización para dispositivos móviles, posibilidad de adjuntar archivos en formatos de
+uso extendido, generación automática de numeración y fecha, y exhibición del enlace en la
+interfaz principal, corresponden a capacidades ya disponibles en las plataformas digitales
+existentes en el mercado y no requieren desarrollos tecnológicos complejos.
+
+Finalmente, la propuesta es viable desde el punto de vista del proceso regulatorio, dado que para
+su elaboración se contó con una etapa de consulta pública que permitió identificar las principales
+dificultades de implementación y orientar el diseño de las reglas propuestas hacia soluciones
+para reducir las cargas de los proveedores respecto del marco vigente.
+
+39
+     OECD, Recommendation of the Council on Consumer Protection in E-commerce, OECD/LEGAL/0422. Para obtener más
+     información acceder al siguiente enlace: https://www.gob.pe/institucion/pcm/informes-publicaciones/3819596-recomendacion-del-
+     consejo-sobre-proteccion-del-consumidor-en-el-comercio-electronico-de-la-ocde
+40
+     Información disponible en el siguiente enlace: https://www.gob.pe/institucion/indecopi/informes-publicaciones/6835016-politica-
+     nacional-de-proteccion-y-defensa-del-consumidor-al-2030
+41
+     LEY N° 29571, CÓDIGO DE PROTECCIÓN Y DEFENSA DEL CONSUMIDOR
+     TÍTULO PRELIMINAR
+     Artículo VI.- Políticas públicas
+     (…)
+     6. El Estado garantiza mecanismos eficaces y expeditivos para la solución de conflictos entre proveedores y consumidores. Para tal
+     efecto, promueve que los proveedores atiendan y solucionen directa y rápidamente los reclamos de los consumidores, el uso de
+     mecanismos alternativos de solución como la mediación, la conciliación y el arbitraje de consumo voluntario, y sistemas de
+     autorregulación; asimismo, garantiza el acceso a procedimientos administrativos y judiciales ágiles, expeditos y eficaces para la
+     resolución de conflictos y la reparación de daños. Igualmente, facilita el acceso a las acciones por intereses colectivos y difusos.
+     c) Oportunidad
+
+La modificación cumple el criterio de oportunidad, pues desde el punto de vista legal, la Ley
+N° 32495 estableció un mandato expreso al Poder Ejecutivo de adecuar el Reglamento del Libro
+de Reclamaciones en un plazo de treinta días calendario desde su entrada en vigor. La propuesta
+normativa es, en ese sentido, la respuesta directa a dicho mandato.
+
+Desde el punto de vista del mercado, el comercio electrónico en el Perú atraviesa un período de
+consolidación y diversificación acelerada de canales. El porcentaje de transacciones realizadas
+a través de aplicaciones móviles, marketplaces y redes sociales ha crecido de manera sostenida,
+y es previsible que esta tendencia continúe. Intervenir en este momento, es decir, antes de que
+los patrones de incumplimiento se consoliden como prácticas aceptadas, es más eficiente que
+hacerlo cuando el ecosistema haya alcanzado mayor madurez y las resistencias al cambio sean
+mayores.
+
+Desde el punto de vista de la política pública, la Política Nacional de Protección y Defensa del
+Consumidor al 2030 fue aprobada recientemente y define como prioritaria la mejora regulatoria
+en el comercio digital. La propuesta normativa es coherente con este marco y contribuye a su
+
+
+
+
+                                                                                                     Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+implementación en el momento en que la agenda de política pública lo demanda.
+
+5.   Precisión del nuevo estado que genera la propuesta
+
+
+
+
+                                                                                                     La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+La propuesta normativa genera un nuevo estado del mercado de comercio electrónico en el Perú
+caracterizado por la incorporación de estándares mínimos obligatorios de protección al
+consumidor en el entorno digital, que hoy no existen de manera expresa ni sistemática en el
+Código de Protección y Defensa del Consumidor.
+
+En este nuevo estado los proveedores que operan a través de plataformas, aplicaciones u otros
+canales de comercio electrónico estarán obligados a implementar un Libro de Reclamaciones
+que permitan al consumidor presentar, tramitar y obtener respuesta a sus quejas y reclamos sin
+depender de la voluntad del proveedor ni de barreras técnicas o informativas.
+
+En este nuevo escenario, toda plataforma digital a través de la cual se establezcan relaciones de
+consumo de bienes o servicios en el mercado peruano deberá incorporar un enlace visible,
+permanente y funcional al Libro de Reclamaciones dentro del propio entorno de navegación o
+transacción. Así, el consumidor podrá registrar su reclamo sin salir de la plataforma, obtener una
+constancia inmediata de su presentación y activar el deber legal de respuesta del proveedor.
+
+La implementación de este canal deja de ser una buena práctica o una expectativa implícita y
+pasa a ser una condición jurídica exigible para operar en el mercado digital peruano, reduciendo
+el riesgo de que el consumidor carezca de un mecanismo efectivo, visible y funcional para
+formular su reclamo.
+
+Asimismo, los proveedores que operan en el comercio electrónico dejan de enfrentar zonas
+grises regulatorias y pasan a contar con obligaciones definidas, claras y aplicables respecto a la
+implementación del Libro de Reclamaciones. Esto reduce la discrecionalidad interpretativa,
+facilita el cumplimiento normativo y establece condiciones homogéneas para todos los actores
+del mercado digital, fortaleciendo la seguridad jurídica y la competencia en igualdad de
+condiciones.
+
+En conjunto, la norma transforma un entorno actualmente caracterizado por asimetrías
+informativas y barreras de reclamación en un entorno donde la transparencia, la trazabilidad del
+proveedor y la accesibilidad a mecanismos de solución de controversias son elementos
+jurídicamente protegidos y pasibles de supervisión.
+
+6.   Desarrollo de los objetivos relacionados con el problema identificado
+
+El objetivo principal de que se busca alcanzar a través de esta intervención regulatoria es:
+Garantizar el acceso efectivo de los consumidores al Libro de Reclamaciones en las
+plataformas digitales de comercio electrónico, en condiciones de accesibilidad, sencillez
+y oportunidad equivalentes a las previstas para las modalidades tradicionales de
+comercio.
+
+El Código reconoce el derecho del consumidor a acceder al Libro de Reclamaciones para
+presentar sus quejas o reclamos, con independencia del canal a través del cual realiza sus
+compras. Sin embargo, en la práctica, ese derecho opera de manera distinta según si la
+transacción se realiza en un establecimiento físico, en un portal web tradicional, en una aplicación
+móvil, en un marketplace o en una red social.
+
+En los entornos digitales, ese acceso depende de decisiones individuales de cada proveedor.
+Por ello, el objetivo general apunta precisamente a cerrar esa asimetría. No se busca crear un
+nuevo derecho o imponer una nueva obligación, sino hacer efectivo lo que ya establece el
+Código, modificado por la Ley N° 32495, que obliga a implementar el Libro de Reclamaciones en
+todos los canales donde se realizan las transacciones comerciales.
+
+De otro lado, la referencia explícita a accesibilidad, sencillez y oportunidad responde a una
+
+
+
+
+                                                                                                       Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+dimensión específica del problema identificado. La accesibilidad responde al hallazgo de que el
+9.4% de los consumidores encuestados identifica la inexistencia de un canal habilitado como su
+principal barrera para reclamar, es decir, el mecanismo directamente no existe o no es localizable.
+
+
+
+
+                                                                                                       La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+La sencillez responde a la constatación de que, incluso cuando el mecanismo existe, en muchos
+casos está condicionado a registro previo, inicio de sesión o validación de compra, lo que lo
+convierte en un obstáculo más que en una garantía. La oportunidad responde al carácter del
+Libro de Reclamaciones como mecanismo de primera instancia destinado a generar una
+respuesta directa y rápida del proveedor.
+
+En virtud de este objetivo general, la propuesta normativa busca alcanzar los siguientes objetivos
+específicos, los cuales derivan de las causas del problema público identificadas anteriormente:
+
+        •   Objetivo específico 1: Establecer un marco normativo claro, preciso y
+            tecnológicamente neutro que regule la implementación del Libro de Reclamaciones
+            en la diversidad de plataformas digitales de comercio electrónico.
+
+El primer objetivo específico apunta a la causa raíz del problema, consistente en que la norma
+vigente no da respuesta a la realidad tecnológica en la que operan hoy la mayoría de los
+proveedores y consumidores del mercado digital peruano. Si bien no se trata de una norma
+deficiente, sí es una norma que el tiempo ha dejado técnicamente desactualizada sin que haya
+habido una intervención regulatoria que la ponga al día.
+
+La consecuencia más directa de esta brecha es la incertidumbre jurídica para los proveedores,
+quienes no saben qué se les exige en cada canal, y también para la autoridad administrativa,
+que no cuenta con una regla suficientemente específica como para supervisar y sancionar con
+claridad en entornos distintos al portal web, lo que ha generado, como se ha señalado antes,
+pronunciamientos administrativos dispares sobre esta obligación.
+
+La separación entre el régimen físico y el régimen digital que introduce la propuesta es la
+expresión más concreta de este objetivo. La modificación del 2014 intentó extender la obligación
+a los entornos digitales equiparando el portal web al establecimiento comercial, equiparación que
+fue funcionalmente útil en su momento, pero que hoy genera el efecto contrario al buscado,
+provocando confusión sobre su aplicación en entornos digitales como los marketplaces o las
+redes sociales.
+
+Finalmente, no está de más indicar que a través de esta propuesta normativa se desarrolla de
+manera operativa y funcional los cambios a los artículos 150 y 151 del Código aprobados por la
+Ley N° 32495, cuya adecuación reglamentaria se encuentra pendiente a la fecha.
+
+        •   Objetivo específico 2: Reducir la complejidad técnica que enfrentan los
+            proveedores para implementar el Libro de Reclamaciones en sus canales digitales.
+El segundo objetivo específico apunta a atender las dificultades técnicas que tienen los
+proveedores para cumplir la norma. El 54.8% de los proveedores encuestados señaló el alto
+costo de implementación como una barrera relevante, y el 51.6% identificó la complejidad
+técnica. Estos datos denotan que cada proveedor debe diseñar e implementar una solución
+propia para cada canal en el que opera, lo que genera costos que son proporcionalmente mucho
+más altos para los operadores pequeños que para los grandes.
+
+Por ende, este objetivo reconoce que la reducción de barreras de implementación es una
+condición necesaria para garantizar el cumplimiento efectivo por los proveedores obligados. El
+mecanismo más importante para alcanzar este objetivo es la atribución de obligaciones claras
+para los actores que intervienen en las plataformas digitales, como son los proveedores y los
+administradores de plataformas.
+
+Finalmente, debemos destacar la admisión de sistemas propios de atención al cliente como vía
+alternativa de cumplimiento, siempre que ofrezcan condiciones equivalentes o superiores a las
+del Reglamento, que cumple una función diferente pero igualmente importante en la gestión de
+reclamos, pues evita que la norma opere como un desincentivo a la innovación en la atención al
+consumidor.
+
+
+
+
+                                                                                                                                               Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+V. ANÁLISIS DE IMPACTOS CUANTITATIVOS Y/O CUALITATIVOS DE LA NORMA
+
+
+
+
+                                                                                                                                               La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+     1. Identificación de agentes involucrados
+
+De acuerdo con el artículo 1 de la propuesta normativa, referido a su ámbito de aplicación, las
+disposiciones establecidas en ella son de obligatorio cumplimiento para "los establecimientos
+comerciales abiertos al público y las plataformas digitales de comercio electrónico (…)", al tiempo
+que se indica que "los consumidores deberán respetar y seguir el procedimiento establecido en
+la presente norma para el uso del Libro de Reclamaciones".
+
+En ese sentido, se identifica que la implementación de la norma involucraría la participación de
+tres grupos de agentes económicos: los consumidores, los proveedores y el Estado (Indecopi).
+
+• Los consumidores son las personas naturales o jurídicas que, como destinatarios finales,
+  adquieren productos o servicios a través de los canales señalados en la norma. Para ello, la
+  propuesta garantiza la disponibilidad de un Libro de Reclamaciones de naturaleza física o
+  virtual que sea idóneo y accesible, asegurando que su derecho se mantenga uniforme,
+  independientemente del entorno donde se origine la relación de consumo.
+
+• Los proveedores son los sujetos que, debidamente identificados, desarrollan actividades
+  económicas bajo las modalidades previstas en la norma, esto es: i) en un “establecimiento
+  comercial abierto al público” (inmueble, instalación o espacio físico) y ii) a través de una
+  “plataforma digital de comercio electrónico” (medio virtual, aplicación, portal web o cualquier
+  otro canal digital). Para estos proveedores, la norma precisa la responsabilidad de
+  implementar y asegurar la visibilidad del Libro de Reclamaciones y su respectivo aviso.
+
+• El Estado (Indecopi) es la autoridad encargada de las funciones de fiscalización y sanción
+  sobre la materia. Su rol se orienta a verificar que los proveedores cumplan con las condiciones
+  de accesibilidad y respuesta, asegurando la idoneidad del “Libro de Reclamaciones” de
+  conformidad con sus facultades legales vigentes.
+
+     2. Análisis de impactos cualitativos
+
+En el siguiente cuadro, se presenta una matriz con el detalle de los efectos esperados de la
+propuesta normativa, según se trate del agente involucrado, abordados cualitativamente 42:
+
+
+
+
+42
+       El análisis es cualitativo debido a la inexistencia de información estadística o histórica que permita cuantificar los impactos de la
+       norma en los agentes involucrados.
+                                                                                                         Impacto neto esperado
+     Agente económico                     Beneficios                             Costos
+                                                                                                          (Beneficios vs. Costos)
+                              • Se       esperaría      un
+                                fortalecimiento    de    la
+                                protección al consumidor
+                                al       precisarse       y
+                                garantizarse            un                                              • Impacto neto positivo,
+                                mecanismo               de                                                en tanto que la
+                                autogestión de reclamos                                                   reducción            de
+                                directo y accesible, tanto                                                asimetrías informativas
+                                en los canales virtuales                                                  fortalecería          la
+                                como          en       los           • No     se   identifican            protección          del
+ Consumidores                   establecimientos abiertos              costos directos para               consumidor      y     le
+                                al público.                            este grupo.                        permitiría ejercer sus
+                                                                                                          derechos de forma
+                              • Se      produciría      una                                               más eficiente en los
+                                reducción en los costos de                                                canales virtuales, sin
+                                búsqueda y transacción                                                    incurrir   en    costos
+                                del consumidor, gracias a                                                 adicionales.
+                                la                 ubicación
+
+
+
+
+                                                                                                                                             Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                                estandarizada y visible del
+                                enlace      al   Libro    de
+                                Reclamaciones.
+                              • Se esperaría una mayor               • La propuesta podría
+                                                                                                        • Impacto neto positivo,
+
+
+
+
+                                                                                                                                             La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                                predictibilidad respecto de            generar costos de
+                                                                                                          en tanto los beneficios
+                                las obligaciones exigibles             adecuación técnica de
+                                                                                                          derivados    de     una
+                                sobre      el    Libro    de           única                vez,
+                                                                                                          mayor predictibilidad y
+                                Reclamaciones,             al          relacionados         con
+                                                                                                          reducción de riesgos
+                                establecerse parámetros                ajustes       en      las
+                                                                                                          de             sanción
+                                claros para las diversas               interfaces digitales. En
+ Proveedores                                                                                              predominarían sobre
+                                plataformas de comercio                cualquier caso, dichos
+                                                                                                          los costos que la
+                                electrónico.                           costos resultarían poco
+                                                                                                          propuesta        podría
+                                                                       significativos, dado que
+                                                                                                          generar respecto a la
+                              • Se podrían reducir la                  la     norma      recoge
+                                                                                                          adecuación técnica de
+                                incertidumbre y el riesgo              obligaciones           ya
+                                                                                                          los proveedores en sus
+                                de sanciones, asociadas                establecidas de forma
+                                                                                                          diversos canales de
+                                al          Libro         de           general en la Ley
+                                                                                                          atención.
+                                Reclamaciones.                         Nº 32495.
+                              • Se fortalecería su rol como
+                                                                     • No      se      identifican
+                                autoridad en materia de
+                                                                       costos       significativos
+                                protección al consumidor,
+                                                                       adicionales, debido a
+                                al contar con parámetros
+                                                                       que       las      labores       • Impacto neto positivo,
+                                definidos que facilitarían
+                                                                       institucionales                    en tanto se generarían
+                                las labores resolutivas y
+                                                                       (resolutivas,             de       eficiencias     en    las
+                                de fiscalización respecto
+                                                                       fiscalización y otras              labores institucionales
+                                de      las     obligaciones
+                                                                       que        correspondan)           respecto       de     las
+                                exigibles sobre el Libro de
+                                                                       respecto        de       las       obligaciones exigibles
+                                Reclamaciones para las
+                                                                       obligaciones exigibles             sobre el Libro de
+ Estado        Indecopi         diversas plataformas de
+                                                                       sobre el Libro de                  Reclamaciones para
+                                comercio electrónico.
+                                                                       Reclamaciones para                 las             diversas
+                                                                       las               diversas         plataformas            de
+                              • Se facilitaría el acceso a
+                                                                       plataformas               de       comercio electrónico,
+                                información estandarizada
+                                                                       comercio electrónico,              sin que se produzcan
+                                sobre los reclamos en el
+                                                                       se realizarían con la              costos       adicionales
+                                entorno              digital,
+                                                                       capacidad instalada y              significativos.
+                                permitiendo un mejor
+                                                                       los recursos actuales
+                                monitoreo       de       las
+                                                                       con los que cuenta la
+                                problemáticas que afectan
+                                                                       entidad.
+                                a los consumidores.
+
+En consecuencia, un análisis cualitativo y razonado de los efectos de la norma permite concluir
+que, vistos en conjunto, los beneficios que acarrearía su entrada en vigor superarían a los
+eventuales costos generados43.
+
+
+
+
+43
+         Cabe precisar que la Ley Nº 32495 dispone obligatoriamente la adecuación del Reglamento del Libro de Reclamaciones. Por lo
+         tanto, el presente análisis se enfoca en la implementación de dicho mandato legal, no identificándose alternativas distintas a lo
+         dispuesto en dicha ley.
+VI. ANÁLISIS DE IMPACTO DE LA VIGENCIA DE LA NORMA EN LA LEGISLACIÓN
+    NACIONAL
+
+1. Impacto de la vigencia de la norma (innovación, modificación, derogación o
+   complementación)
+
+El presente Decreto Supremo impacta en el marco normativo nacional al adecuar el Reglamento
+del Libro de Reclamaciones a las recientes modificaciones de los artículos 150 y 151 del Código.
+Esta intervención permite cerrar la brecha regulatoria respecto a la diversidad de plataformas
+digitales de comercio electrónico –como aplicativos móviles, marketplaces y redes sociales– que
+no responden a la arquitectura de un portal web tradicional.
+
+2. Análisis de la constitucionalidad, legalidad de la iniciativa planteada
+
+La presente propuesta no presenta ninguna incompatibilidad con la Constitución, ni con los
+tratados internacionales ratificados por nuestro país, ni con las leyes vigentes en el
+ordenamiento. Por el contrario, dicha propuesta guarda correlación con el artículo 65 de la
+Constitución Política del Perú, el cual garantiza el derecho de los consumidores y usuarios a la
+
+
+
+
+                                                                                                                 Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+información sobre los bienes y servicios que se encuentran a su disposición en el mercado; así
+como con la normativa vigente en materia de protección del consumidor, la Política Nacional de
+Protección y Defensa del Consumidor al 2030 e instrumentos internacionales emitidos por la
+
+
+
+
+                                                                                                                 La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+UNCTAD y OCDE.
+
+3. Coherencia con el ordenamiento jurídico nacional y tratados internacionales
+
+El proyecto de Decreto Supremo es concordante con el ordenamiento jurídico vigente, en
+específico, con las disposiciones relacionadas con la solución de conflictos de consumo y Libro
+de Reclamaciones contemplados en el literal g) del numeral 1.1 del artículo 1 del Código y los
+artículos 150 y 151 de dicho cuerpo normativo; así como con las políticas públicas establecidas
+en el numeral 6 del artículo VI de su Título Preliminar; los Lineamientos L.04.02 y L.04.03 del
+Objetivo Prioritario Nº 04 de la Política Nacional de Protección y Defensa del Consumidor al 2030;
+e instrumentos internacionales emitidos por la UNCTAD y OCDE.
+
+4. Cuadro comparativo de modificaciones propuestas
+
+De conformidad con lo establecido en el numeral 10.5 del artículo 10 del Reglamento de la Ley
+Marco para la Producción y Sistematización Legislativa, aprobado por el Decreto Supremo
+N° 007-2022-JUS, las modificaciones que se proponen son las siguientes:
+
+
+                  Texto vigente                                       Propuesta de cambio
+ Artículo 1.- Ámbito de aplicación                   Artículo 1.- Ámbito de aplicación
+ Las disposiciones del presente Título son de        Las disposiciones del presente Título son de obligatorio
+ obligatorio cumplimiento para los proveedores que   cumplimiento para los proveedores que desarrollan sus
+ desarrollen sus actividades económicas en           actividades económicas en establecimientos comerciales
+ establecimientos comerciales abiertos al público;   abiertos al público y plataformas digitales de comercio
+ tomando en consideración la definición detallada    electrónico tomando en consideración las definiciones
+ en el Artículo 3.2 del presente Reglamento.         detalladas en el artículo 3 del presente Reglamento.
+
+ Los consumidores deberán respetar y seguir el       Los consumidores deberán respetar y seguir el
+ procedimiento establecido en la presente norma      procedimiento establecido en la presente norma para el
+ para el uso del Libro de Reclamaciones.             uso del Libro de Reclamaciones.
+
+ Artículo 3.- Definiciones                           Artículo 3.- Definiciones
+ Para los efectos del presente Reglamento, se        Para los efectos del presente Reglamento, se entiende
+ entiende por:                                       por:
+
+ 3.1. Libro de Reclamaciones: Documento de           3.1. Libro de Reclamaciones: Documento de naturaleza
+ naturaleza física o virtual provisto por los        física o virtual en el cual los consumidores pueden
+ proveedores en el cual los consumidores podrán      registrar quejas o reclamos sobre los productos o
+ registrar quejas o reclamos sobre los productos o   servicios ofrecidos en un determinado establecimiento
+ servicios    ofrecidos   en    un     determinado   comercial abierto al público o a través de una plataforma
+ establecimiento comercial abierto al público.       digital de comercio electrónico.
+3.2 Establecimiento comercial abierto al                3.2 Establecimiento comercial abierto al público:
+público: Inmueble, parte del mismo, instalación,        Inmueble, parte del mismo, instalación, construcción o
+construcción, espacio físico, o medio virtual a         espacio físico en el cual un proveedor debidamente
+través del cual un proveedor debidamente                identificado desarrolla sus actividades económicas de
+identificado     desarrolla   sus   actividades         oferta y/o venta de productos o prestación de servicios
+económicas de venta de bienes o prestación de           a los consumidores.
+servicios a los consumidores.
+                                                        La identificación a la que se hace alusión en el presente
+La identificación a la que se hace alusión en el        punto se encuentra constituida por el número de Registro
+presente punto se encuentra constituida por el          Único de Contribuyentes (RUC) que posea el proveedor,
+número de Registro Único de Contribuyentes              de acuerdo a lo establecido en el Decreto Legislativo Nº
+(RUC) que posea el proveedor, de acuerdo a lo           943, Ley del Registro Único de Contribuyentes; o norma
+establecido en el Decreto Legislativo Nº 943, Ley       que la modifique o sustituya.
+del Registro Único de Contribuyentes; o norma
+que la modifique o sustituya.                           Las instalaciones que se ubiquen en el interior de un
+                                                        establecimiento comercial abierto al público, que se
+Las instalaciones que se ubiquen en el interior de      presenten o identifiquen como un establecimiento
+un establecimiento comercial abierto al público,        independiente y que otorguen sus propios comprobantes
+que se presenten o identifiquen como un                 de pago, deben contar con su propio Libro de
+
+
+
+
+                                                                                                                    Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+establecimiento independiente y que otorguen sus        Reclamaciones. Se debe entender como establecimiento
+propios comprobantes de pago, deberán contar            independiente a aquel con diferente razón social al del
+con su propio Libro de Reclamaciones. Se debe           establecimiento que lo alberga.
+entender como establecimiento independiente a
+aquel con diferente razón social al del                 Cuando una entidad pública o empresa estatal, actuando
+
+
+
+
+                                                                                                                    La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+establecimiento que lo alberga.                         como proveedor, venda productos o preste servicios a los
+                                                        consumidores, está obligada a contar con un Libro de
+Cuando una entidad pública o empresa estatal,           Reclamaciones; sin perjuicio de las obligaciones que se
+actuando como proveedor, venda productos o              derivan de lo dispuesto en el Decreto Supremo Nº 007-
+preste servicios a los consumidores, estará             2020-PCM que establece disposiciones para la
+obligada a contar con un Libro de Reclamaciones;        gestión de reclamos en las entidades de la
+sin perjuicio de las obligaciones que se derivan de     Administración Pública o norma que lo sustituya.
+lo dispuesto en el Decreto Supremo Nº 042-2011-
+PCM.
+
+3.5. Aviso del Libro de Reclamaciones:                  3.5. Aviso del Libro de Reclamaciones: Letrero físico
+Letrero físico o aviso virtual que los proveedores      que los proveedores deben colocar en sus
+deberán colocar en sus establecimientos                 establecimientos comerciales abiertos al público en un
+comerciales y/o, cuando corresponda, en medios          lugar visible y fácilmente accesible al público, para
+virtuales, en un lugar visible y fácilmente accesible   registrar su queja o reclamo en el formato estandarizado
+al público, para registrar su queja y/o reclamo en      del Anexo II del presente Reglamento.
+el formato estandarizado del Anexo 2 del presente
+Reglamento.
+
+3.6. Proveedor virtual: Es el proveedor con RUC         3.6. Plataforma digital de comercio electrónico:
+que establece sus relaciones de consumo a través        Entorno virtual a través del cual un proveedor ofrece,
+de portales web.                                        comercializa o contrata productos o servicios o
+                                                        facilita su adquisición o contratación por parte de los
+                                                        consumidores.       Comprende      los   sitios   web,
+                                                        aplicaciones móviles, programas informáticos, redes
+                                                        sociales y otros canales digitales utilizados con
+                                                        dichos fines.
+
+                                                        3.7. Enlace al Libro de Reclamaciones: Dirección web
+                                                        o vínculo electrónico, claramente identificado bajo la
+                                                        denominación “Libro de Reclamaciones”, a través del
+                                                        cual el consumidor accede directamente al formulario
+                                                        del Libro de Reclamaciones para registrar su queja o
+                                                        reclamo, conforme a lo establecido en el presente
+                                                        Reglamento.
+
+Artículo 4.- Libro de Reclamaciones                     Artículo 4.- Libro de Reclamaciones para
+El establecimiento comercial abierto al público         establecimientos comerciales
+deberá contar con un Libro de Reclamaciones,            Los establecimientos comerciales abiertos al público
+sea de naturaleza física o virtual, el mismo que        deben contar con un Libro de Reclamaciones, sea de
+deberá ser puesto inmediatamente a disposición          naturaleza física o virtual, el mismo que debe ser puesto
+del consumidor cuando lo solicite. Los                  inmediatamente a disposición del consumidor cuando lo
+proveedores que además del establecimiento              solicite.
+comercial abierto al público, utilicen medios
+virtuales para establecer sus relaciones de             Los establecimientos comerciales abiertos al público
+consumo, deberán implementar un Libro de                que cuenten con un Libro de Reclamaciones deben
+Reclamaciones Virtual en cada uno de sus              brindar el apoyo necesario para que el consumidor
+establecimientos.                                     ingrese su queja o reclamo. Esto incluye que el proveedor
+Los proveedores que cuenten con Libro de              guíe al consumidor a fin de que toda manifestación que
+Reclamaciones Virtual, deberán brindar el apoyo       califique como queja o reclamo sea ingresada
+necesario para que el consumidor ingrese su           correctamente en el Libro de Reclamaciones.
+queja o reclamo en el Libro de Reclamaciones.
+Esto incluye que el proveedor guíe al consumidor      En los establecimientos comerciales abiertos al público
+a fin de que toda manifestación que califique como    los proveedores deberán habilitar un orden de atención
+reclamo o queja sea ingresada correctamente en        preferente para los consumidores que deseen presentar
+el Libro de Reclamaciones.                            una queja o reclamo.
+En los establecimientos comerciales los
+proveedores deberán habilitar un orden de
+atención preferente para los consumidores que
+deseen presentar un reclamo o queja.
+                                                      Artículo 4-A.- Libro de Reclamaciones de Respaldo
+                                                      Los proveedores que cuenten con Libro de
+                                                      Reclamaciones Virtual deberán contar adicionalmente en
+                                                      sus establecimientos comerciales abiertos al público
+                                                      con un Libro de Reclamaciones físico al que se
+                                                      denominará expresamente “Libro de Reclamaciones de
+
+
+
+
+                                                                                                                  Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                                                      Respaldo”, conforme a las características del Anexo I del
+                                                      presente reglamento, el mismo que será puesto a
+                                                      disposición del público cuando no sea posible el uso del
+                                                      Libro de Reclamaciones Virtual. La información contenida
+                                                      en el Libro de Respaldo incluyendo el número de la hoja,
+
+
+
+
+                                                                                                                  La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                                                      deberá ser ingresada por el proveedor al Libro de
+                                                      Reclamaciones Virtual en el plazo de un (01) día
+                                                      calendario contado desde que dicho Libro se encuentre
+                                                      habilitado.
+
+Artículo 4 B.- Libro de Reclamaciones para            Artículo 4-B.- Libro de Reclamaciones               para
+proveedores virtuales                                 plataformas digitales de comercio electrónico
+En el caso de los proveedores virtuales, el Libro
+de Reclamaciones de naturaleza virtual, deberá        Toda plataforma digital de comercio electrónico debe
+estar alojado en la página de inicio del portal web   contar con un Libro de Reclamaciones accesible al
+diseñado para establecer las relaciones de            público mediante un enlace visible y permanente en
+consumo. Asimismo, al concluir el proceso de          la página de inicio o interfaz principal del sitio web,
+ingreso del reclamo o queja, se debe permitir la      aplicación o canal digital correspondiente.
+impresión de la Hoja de Reclamación y enviarse
+automáticamente al correo electrónico indicado        El acceso al Libro de Reclamaciones no puede estar
+por el consumidor, dejándose constancia de la         condicionado a la autenticación previa, registro de
+fecha y hora de presentación del reclamo o queja.     usuario, validación de una compra o cualquier otro
+                                                      requisito.
+
+                                                      Al concluir el proceso de registro de la queja o
+                                                      reclamo, el Formulario de Reclamación debe enviarse
+                                                      automáticamente al correo electrónico indicado por el
+                                                      consumidor como constancia de presentación de la
+                                                      queja o reclamo. Asimismo, debe permitirse su
+                                                      impresión.
+
+                                                      Artículo 4-C.- Plataformas de intermediación y de
+                                                      redes sociales
+                                                      Las plataformas digitales de comercio electrónico
+                                                      que intermedien relaciones de consumo entre
+                                                      proveedores afiliados y consumidores deben contar
+                                                      con un Libro de Reclamaciones único que permita el
+                                                      registro centralizado de las quejas y reclamos. El
+                                                      administrador de la plataforma es responsable de
+                                                      recibir, gestionar y responder la queja o reclamo
+                                                      frente al consumidor a través de dicho canal único,
+                                                      sin perjuicio de la responsabilidad administrativa del
+                                                      proveedor afiliado sobre el contenido material del
+                                                      reclamo.
+
+                                                      Las plataformas de redes sociales que integren
+                                                      funcionalidades que permitan la publicación
+                                                      organizada de ofertas, la aceptación de pedidos o la
+                                                      gestión y procesamiento de pagos dentro de su
+                                                      entorno, deben habilitar mecanismos gratuitos e
+                                                      integrados que permitan a los proveedores
+                                                     implementar el Libro de Reclamaciones a través de un
+                                                     enlace visible y fácilmente accesible en la sección de
+                                                     “perfil”, “biografía”, “información de contacto” o sitio
+                                                     equivalente que dirija al Formulario de Reclamación,
+                                                     siendo cada proveedor directamente responsable de
+                                                     dar respuesta a las quejas o reclamos recibidos a
+                                                     través del mecanismo habilitado por la plataforma.
+
+                                                     Artículo 4-D.- Soporte en línea
+                                                     La implementación del Libro de Reclamaciones
+                                                     conforme a lo indicado en los artículos 4-B y 4-C no
+                                                     impide a las plataformas digitales de comercio
+                                                     electrónico ofrecer funcionalidades centralizadas de
+                                                     soporte en línea para la solución inmediata de
+                                                     conflictos con los consumidores, siempre que
+                                                     garanticen condiciones de atención iguales o
+                                                     superiores a las previstas en el presente Reglamento.
+
+                                                     Artículo 5-A.- Características del Formulario de
+                                                     Reclamación en plataformas digitales
+
+
+
+
+                                                                                                                 Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                                                     El Formulario de Reclamación del Libro de
+                                                     Reclamaciones en plataformas digitales de comercio
+                                                     electrónico debe contener como mínimo la siguiente
+                                                     información:
+
+
+
+
+                                                                                                                 La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                                                     -   Nombre o razón social del proveedor y su número
+                                                         de Registro Único de Contribuyentes.
+                                                     -   Nombre completo, número de documento de
+                                                         identidad, teléfono y correo electrónico del
+                                                         consumidor.
+                                                     -   Identificación del producto o servicio contratado
+                                                         objeto de la queja o reclamo.
+                                                     -   Detalle de la queja o reclamo.
+                                                     -   Pedido concreto del consumidor respecto al
+                                                         hecho que motiva la queja o reclamo.
+                                                     -   Mecanismo de confirmación que deje constancia
+                                                         de la voluntad del consumidor de presentar la
+                                                         queja o reclamo.
+                                                     -   Numeración            correlativa       generada
+                                                         automáticamente por el sistema al momento del
+                                                         envío.
+                                                     -   Fecha y hora del registro de la queja o reclamo
+                                                         generadas automáticamente por el sistema.
+
+                                                     Asimismo, para la presentación de la queja o reclamo,
+                                                     el Formulario de Reclamación debe cumplir con los
+                                                     siguientes estándares mínimos:
+
+                                                     -   Permitir su visualización y correcto llenado en
+                                                         dispositivos móviles, tabletas y computadoras
+                                                         personales.
+                                                     -   Permitir al consumidor adjuntar archivos en
+                                                         formatos comunes (tales como PDF, JPG, PNG,
+                                                         etc.) que sirvan como sustento de su queja o
+                                                         reclamo (comprobantes de pago, fotografías,
+                                                         capturas de pantalla, entre otros).
+                                                     -   Alertar al consumidor antes del envío si faltan los
+                                                         siguientes    datos:     nombre,     DNI,   correo
+                                                         electrónico, detalle de la queja o reclamo.
+
+Artículo 9.- Exhibición del Aviso del Libro de       Artículo 9.- Exhibición del Aviso del Libro de
+Reclamaciones                                        Reclamaciones
+Los proveedores que cuenten con un Libro de          Los establecimientos comerciales abiertos al público
+Reclamaciones deberán exhibir en sus                 que cuenten con un Libro de Reclamaciones deben
+establecimientos comerciales, en un lugar visible    exhibir en un lugar visible y fácilmente accesible al
+y fácilmente accesible al público, como mínimo, un   público, como mínimo, un aviso del Libro de
+Aviso del Libro de Reclamaciones, utilizando el      Reclamaciones, utilizando el formato establecido en el
+formato establecido en el Anexo II del presente      Anexo II del presente Reglamento.
+Reglamento.
+                                                     En los casos en que el proveedor cuente con varios
+                                                     establecimientos comerciales, la obligación de exhibir el
+ En los casos en que el proveedor cuente con           Aviso del Libro de Reclamaciones se extiende a cada uno
+ varios establecimientos comerciales, la obligación    de ellos.”
+ de exhibir el Aviso del Libro de Reclamaciones se
+ extiende a cada uno de ellos. Los proveedores
+ virtuales deberán colocar como mínimo un aviso
+ fácilmente identificable en la página de inicio del
+ portal web donde establecen sus relaciones de
+ consumo, el mismo que deberá contener un
+ vínculo que dirija al Libro de Reclamaciones
+ Virtual, utilizando el formato establecido en el
+ Anexo III del presente Reglamento.
+                                                       Artículo 9-A.- Exhibición del enlace del Libro de
+                                                       Reclamaciones para plataformas digitales de
+                                                       comercio electrónico
+                                                       Las plataformas digitales de comercio electrónico
+                                                       que cuenten con un Libro de Reclamaciones deben
+                                                       exhibir permanentemente, en un lugar visible y de
+                                                       fácil acceso, un enlace al Libro de Reclamaciones.
+                                                       Esta obligación es aplicable para cada canal digital en
+                                                       el que se fomente y/o establezca las relaciones de
+
+
+
+
+                                                                                                                  Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+                                                       consumo.
+
+                                                       El enlace debe encontrarse disponible desde la
+                                                       página de inicio o la interfaz principal del portal web,
+                                                       aplicativo o canal digital; así como desde la sección
+
+
+
+
+                                                                                                                  La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+                                                       de “perfil”, “biografía”, “información de contacto” o
+                                                       sitio equivalente de la plataforma de red social, según
+                                                       corresponda. Asimismo, la activación del enlace debe
+                                                       dirigir al consumidor directamente al Formulario de
+                                                       Reclamación, sin requerir más de una acción de su
+                                                       parte.
+
+                                                       Anexo III derogado
+
+
+
+
+VII. ANÁLISIS DE IMPACTO REGULATORIO EX ANTE Y ANÁLISIS DE CALIDAD
+     REGULATORIA EX ANTE
+
+1. Análisis de Impacto Regulatorio (AIR) Ex Ante
+
+El 28 de mayo de 2023 se publicó en el diario oficial El Peruano el Decreto Legislativo N° 1565,
+que aprueba la Ley General de Mejora de la Calidad Regulatoria. Posteriormente, el 25 de febrero
+de 2025 se publicó el Decreto Supremo que aprueba el Reglamento del Decreto Legislativo
+N° 1565, Decreto Legislativo que aprueba la Ley General de Mejora de la Calidad Regulatoria,
+en cuyo artículo 33, numeral 33.2 se establece que las entidades públicas tienen la obligación de
+aplicar un Análisis de Impacto Regulatorio Ex Ante (AIR Ex Ante) como herramienta de análisis
+previo cuando el proyecto normativo de carácter general establezca y/o modifique una obligación,
+condición, requisito, responsabilidad, prohibición, limitación y/o cualquier otra regla que imponga
+exigencias.
+
+Dado que la normativa propuesta genera nuevas obligaciones para los proveedores con relación
+a la implementación y exhibición del Libro de Reclamaciones o modifica las ya existentes, este
+proyecto normativo se encuentra dentro del ámbito de aplicación del AIR Ex Ante, de conformidad
+con lo establecido en el artículo 33 del Reglamento del Decreto Legislativo N° 1565.
+
+En ese sentido, la presente norma ha sido sometida a evaluación de la Comisión Multisectorial
+de Calidad Regulatoria, la misma que, con fecha […], ha emitido un dictamen favorable que valida
+el expediente de AIR Ex Ante de la presente propuesta normativa.
+2. Análisis de Calidad Regulatoria (ACR) Ex Ante
+
+El artículo 46 del Reglamento del Decreto Legislativo N° 1565 establece que el Análisis de
+Calidad Regulatoria (ACR) es el proceso integral y continuo de análisis de procedimientos
+administrativos a pedido de parte, que comprende la identificación, eliminación y/o simplificación
+de aquellos que resulten innecesarios, ineficaces, injustificados, desproporcionados,
+redundantes o que no se ajusten a la Ley del Procedimiento Administrativo General, a las normas
+con rango de ley o a las disposiciones normativas que les sirven de sustento.
+
+En esa línea, el artículo 49 del citado Reglamento, señala que los tipos de ACR son el ACR Stock,
+que tiene por finalidad identificar, eliminar y/o simplificar aquellos procedimientos administrativos
+vigentes; el ACR Ex Ante, que tiene por finalidad evitar la creación, o modificación, de
+procedimientos administrativos y/o requisitos o condiciones innecesarios, ineficientes, ineficaces,
+injustificados, desproporcionados, etc.; y el ACR Ex Post, que tiene como finalidad evaluar la
+necesidad de que un procedimiento administrativo permanezca en el tiempo por contribuir en la
+solución de un problema relevante, así como evaluar el cumplimiento de los objetivos planteados
+e identificar oportunidades de simplificación del trámite.
+
+
+
+
+                                                                                                        Documento electrónico firmado digitalmente en el marco de la Ley N°27269, Ley de Firmas y Certificados Digitales, su reglamento y modificatorias.
+Mediante el presente proyecto normativo no se busca crear, desarrollar, modificar o eliminar
+procedimientos administrativos, razón por la cual, con fecha 29 de abril de 2026, la Secretaría
+
+
+
+
+                                                                                                        La integridad del documento y la autoría de la(s) firma(s) pueden ser verificadas en: https://apps.firmaperu.gob.pe/web/validador.xhtml
+Técnica de la Comisión Multisectorial de Calidad Regulatoria señaló que la propuesta normativa
+no requiere someterse al Análisis de Calidad Regulatoria Ex Ante (ACR Ex Ante).
+

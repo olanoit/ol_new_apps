@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Estilos de la hoja: B/N, rejilla clásica (sin border-radius en tablas,
+         que wkhtmltopdf pinta mal) y reset de los bordes de Bootstrap. -->
+    <template id="complaint_report_styles">
+        <style>
+            .lr-sheet, .lr-sheet * { font-family: Arial, Helvetica, sans-serif; color: #000; }
+            .lr-sheet table, .lr-sheet tr, .lr-sheet td, .lr-sheet th { border: none; }
+            .lr-sheet { font-size: 11px; }
+            .lr-head { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+            .lr-head td { vertical-align: top; padding: 0; }
+            .lr-title { font-size: 17px; font-weight: bold; letter-spacing: 1px; }
+            .lr-idbox { border: 1.5px solid #000; border-radius: 6px; padding: 6px 10px; text-align: center; }
+            .lr-idbox .lr-idtitle { font-weight: bold; font-size: 12px; }
+            .lr-idbox .lr-number { font-size: 15px; font-weight: bold; margin-top: 2px; }
+            .lr-grid { width: 100%; border-collapse: collapse; margin-top: 6px; }
+            .lr-grid td, .lr-grid th { border: 1px solid #000; padding: 4px 6px; vertical-align: top; }
+            .lr-grid th { background: #f2f2f2; text-align: left; font-size: 11px; }
+            .lr-label { font-weight: bold; width: 22%; }
+            .lr-check { display: inline-block; width: 11px; height: 11px; border: 1px solid #000;
+                        text-align: center; line-height: 10px; font-size: 10px; margin-right: 4px; }
+            .lr-text { white-space: pre-wrap; min-height: 40px; }
+            .lr-sign { height: 46px; vertical-align: bottom !important; text-align: center; }
+            .lr-notes { margin-top: 8px; font-size: 9.5px; }
+            .lr-notes p { margin: 2px 0; }
+            .lr-dest { margin-top: 6px; text-align: right; font-size: 10px; font-weight: bold; }
+        </style>
+    </template>
+
+    <template id="report_complaint_document">
+        <t t-call="web.basic_layout">
+            <t t-call="al_l10n_pe_complaints_book.complaint_report_styles"/>
+            <div class="page lr-sheet">
+                <t t-set="company" t-value="o.company_id"/>
+                <table class="lr-head">
+                    <tr>
+                        <td style="width: 65%;">
+                            <div class="lr-title">LIBRO DE RECLAMACIONES</div>
+                            <div><strong t-out="company.name"/> - RUC <t t-out="company.vat or ''"/></div>
+                            <div t-out="o.book_id.address or ''"/>
+                            <div>Código de identificación: <t t-out="o.book_id.code"/></div>
+                        </td>
+                        <td style="width: 35%;">
+                            <div class="lr-idbox">
+                                <div class="lr-idtitle">HOJA DE RECLAMACIÓN</div>
+                                <div class="lr-number">Nº <t t-out="o.name"/></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <t t-set="local_dt" t-value="o._local_datetime()"/>
+                <div><strong>FECHA:</strong>
+                    <t t-out="local_dt.strftime('%d/%m/%Y')"/> · Hora <t t-out="local_dt.strftime('%H:%M')"/>
+                    <t t-if="o.channel == 'backup' and o.backup_sheet_number">
+                        · Hoja de respaldo Nº <t t-out="o.backup_sheet_number"/></t>
+                </div>
+
+                <table class="lr-grid">
+                    <tr><th colspan="4">1. IDENTIFICACIÓN DEL CONSUMIDOR RECLAMANTE</th></tr>
+                    <tr><td class="lr-label">NOMBRE:</td><td colspan="3" t-out="o.consumer_name"/></tr>
+                    <tr><td class="lr-label">DOMICILIO:</td><td colspan="3" t-out="o.consumer_address or ''"/></tr>
+                    <tr>
+                        <td class="lr-label">DNI / CE:</td>
+                        <td><t t-out="dict(o._fields['consumer_doc_type'].selection).get(o.consumer_doc_type)"/>
+                            <t t-out="o.consumer_doc_number"/></td>
+                        <td class="lr-label">TELÉFONO / E-MAIL:</td>
+                        <td><t t-out="o.consumer_phone or ''"/><t t-if="o.consumer_phone and o.consumer_email"> / </t>
+                            <t t-out="o.consumer_email or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td class="lr-label">PADRE O MADRE:</td>
+                        <td colspan="3">
+                            <t t-if="o.is_minor">
+                                <t t-out="o.guardian_name"/>
+                                <t t-if="o.guardian_doc_number"> · Doc. <t t-out="o.guardian_doc_number"/></t>
+                                <t t-if="o.guardian_address"> · <t t-out="o.guardian_address"/></t>
+                                <t t-if="o.guardian_phone"> · <t t-out="o.guardian_phone"/></t>
+                                <t t-if="o.guardian_email"> · <t t-out="o.guardian_email"/></t>
+                            </t>
+                            <t t-else="">[Para el caso de menores de edad]</t>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="lr-grid">
+                    <tr><th colspan="4">2. IDENTIFICACIÓN DEL BIEN CONTRATADO</th></tr>
+                    <tr>
+                        <td style="width: 22%;">
+                            <span class="lr-check"><t t-if="o.good_type in ('product', 'both')">X</t></span>PRODUCTO<br/>
+                            <span class="lr-check"><t t-if="o.good_type in ('service', 'both')">X</t></span>SERVICIO
+                        </td>
+                        <td colspan="3">
+                            <strong>MONTO RECLAMADO:</strong>
+                            <t t-if="o.amount_claimed" t-out="o.amount_claimed"
+                               t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            <br/><strong>DESCRIPCIÓN:</strong> <t t-out="o.good_description or ''"/>
+                            <t t-if="o.order_reference"><br/><strong>Comprobante o pedido:</strong>
+                                <t t-out="o.order_reference"/></t>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="lr-grid">
+                    <tr>
+                        <th colspan="2">3. DETALLE DE LA RECLAMACIÓN Y PEDIDO DEL CONSUMIDOR
+                            <span style="float: right;">
+                                <span class="lr-check"><t t-if="o.claim_type == 'claim'">X</t></span>RECLAMO¹
+                                &#160;&#160;<span class="lr-check"><t t-if="o.claim_type == 'complaint'">X</t></span>QUEJA²
+                            </span>
+                        </th>
+                    </tr>
+                    <tr><td class="lr-label">DETALLE:</td><td class="lr-text" t-out="o.detail"/></tr>
+                    <tr><td class="lr-label">PEDIDO:</td><td class="lr-text" t-out="o.consumer_request or ''"/></tr>
+                    <tr>
+                        <td colspan="2" class="lr-sign">
+                            <t t-if="o.consumer_confirmed">Enviado y confirmado por el consumidor en el libro virtual el
+                                <t t-out="local_dt.strftime('%d/%m/%Y %H:%M')"/></t>
+                            <t t-else="">______________________________</t>
+                            <br/>FIRMA DEL CONSUMIDOR
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="lr-grid">
+                    <tr><th colspan="2">4. OBSERVACIONES Y ACCIONES ADOPTADAS POR EL PROVEEDOR</th></tr>
+                    <tr><td colspan="2" class="lr-text">
+                        <t t-if="o.settlement_offer"><strong>Oferta de solución:</strong>
+                            <t t-out="o.settlement_offer"/>
+                            <t t-if="o.state in ('settled', 'closed') and o.settlement_acceptance_date">
+                                <br/><strong>ACUERDO ACEPTADO PARA SOLUCIONAR EL RECLAMO</strong>
+                                (<t t-out="o.settlement_acceptance_date.strftime('%d/%m/%Y')"/>)</t>
+                            <br/></t>
+                        <t t-out="o.provider_observations or ''"/>
+                    </td></tr>
+                    <tr>
+                        <td style="width: 60%;"><strong>FECHA DE COMUNICACIÓN DE LA RESPUESTA:</strong>
+                            <t t-if="o.response_date" t-out="o.response_date.strftime('%d/%m/%Y')"/></td>
+                        <td class="lr-sign">______________________________<br/>FIRMA DEL PROVEEDOR</td>
+                    </tr>
+                </table>
+
+                <div class="lr-notes">
+                    <p>¹ RECLAMO: Disconformidad relacionada a los productos o servicios.</p>
+                    <p>² QUEJA: Disconformidad no relacionada a los productos o servicios; o, malestar o descontento respecto a la atención al público.</p>
+                    <p>*La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el INDECOPI.</p>
+                    <p>* El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles, el cual es improrrogable.</p>
+                </div>
+                <div class="lr-dest">Destinatario: <t t-out="destination or 'CONSUMIDOR'"/></div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_complaint">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_complaints_book.report_complaint_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Aviso del Anexo II (D.S. 006-2014-PCM): A4, «Libro de Reclamaciones» con
+         letras de al menos 1 × 1 cm y el resto de al menos 0,5 × 0,5 cm. -->
+    <template id="report_book_notice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: Arial, Helvetica, sans-serif; color: #000; text-align: center;
+                                             border: 3px solid #000; padding: 40px 30px; margin-top: 30px;">
+                        <div style="font-size: 54px; font-weight: bold; line-height: 1.15;">Libro de Reclamaciones</div>
+                        <div style="font-size: 26px; line-height: 1.45; margin-top: 40px;">
+                            Conforme a lo establecido en el Código de Protección y Defensa del Consumidor este
+                            establecimiento cuenta con un Libro de Reclamaciones
+                            (<t t-out="'virtual' if o.book_type == 'virtual' else 'físico'"/>) a tu disposición.
+                            Solicítalo para registrar una queja o reclamo
+                        </div>
+                        <div style="font-size: 22px; margin-top: 40px;">
+                            En caso de negativa de entrega del libro escribe a libroreclamaciones@indecopi.gob.pe
+                        </div>
+                        <div style="font-size: 18px; margin-top: 40px;">
+                            <t t-out="o.company_id.name"/> · RUC <t t-out="o.company_id.vat or ''"/> · Libro <t t-out="o.code"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

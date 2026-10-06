@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_complaint_list" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.list</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue" decoration-muted="state in ('closed',)">
+                <field name="name"/>
+                <field name="date_submitted"/>
+                <field name="book_id" optional="show"/>
+                <field name="claim_type"/>
+                <field name="consumer_name"/>
+                <field name="consumer_doc_number" optional="hide"/>
+                <field name="good_type" optional="hide"/>
+                <field name="amount_claimed" optional="show" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="channel" optional="hide"/>
+                <field name="responsible_user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="deadline_date"/>
+                <field name="days_left" optional="show"/>
+                <field name="is_overdue" column_invisible="1"/>
+                <field name="sirec_state" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('submitted', 'in_progress')"
+                       decoration-warning="state == 'suspended'"
+                       decoration-success="state in ('answered', 'settled')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_complaint_kanban" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.kanban</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column" quick_create="false"
+                    group_create="false" group_delete="false" group_edit="false">
+                <field name="is_overdue"/>
+                <field name="days_left"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="name" class="fw-bold"/>
+                            <field name="claim_type" widget="badge"/>
+                        </div>
+                        <field name="consumer_name"/>
+                        <field name="book_id" class="text-muted small"/>
+                        <footer>
+                            <span t-att-class="record.is_overdue.raw_value ? 'text-danger fw-bold' : 'text-muted'">
+                                <i class="fa fa-clock-o me-1" title="Vence"/>
+                                <field name="deadline_date"/>
+                            </span>
+                            <field name="responsible_user_id" widget="many2one_avatar_user" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_complaint_form" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.form</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Atender" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_send_response" type="object" string="Enviar respuesta"
+                            class="btn-primary" invisible="state not in ('submitted', 'in_progress')"
+                            confirm="Se comunicará la respuesta al consumidor. ¿Continuar?"/>
+                    <button name="action_open_settlement" type="object" string="Oferta de solución"
+                            invisible="state not in ('submitted', 'in_progress')"/>
+                    <button name="action_settlement_accepted" type="object" string="Oferta aceptada"
+                            class="btn-primary" invisible="state != 'suspended'"/>
+                    <button name="action_settlement_rejected" type="object" string="Oferta no aceptada"
+                            invisible="state != 'suspended'"/>
+                    <button name="action_reclassify_as_claim" type="object" string="Recalificar como reclamo"
+                            invisible="claim_type != 'complaint' or state in ('answered', 'settled', 'closed')"/>
+                    <button name="action_close" type="object" string="Cerrar"
+                            invisible="state not in ('answered', 'settled')"/>
+                    <button name="action_reopen" type="object" string="Reabrir" invisible="state != 'closed'"/>
+                    <button name="action_print" type="object" string="Imprimir hoja"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="submitted,in_progress,answered,closed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Vencida" bg_color="text-bg-danger" invisible="not is_overdue"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <div class="oe_title">
+                        <h1>Hoja Nº <field name="name" class="oe_inline"/></h1>
+                        <field name="claim_type" widget="radio" options="{'horizontal': true}"
+                               readonly="state != 'submitted'"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="book_id" readonly="name != '/'"/>
+                            <field name="date_submitted"/>
+                            <field name="channel" readonly="name != '/'"/>
+                            <field name="backup_sheet_number" invisible="channel != 'backup'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="responsible_user_id" widget="many2one_avatar_user"/>
+                            <field name="deadline_date"/>
+                            <field name="days_left" invisible="state in ('answered', 'settled', 'closed')"/>
+                            <field name="preferred_response_channel"/>
+                            <field name="original_claim_type"
+                                   invisible="original_claim_type == claim_type or not original_claim_type"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Consumidor" name="consumer">
+                            <group>
+                                <group>
+                                    <field name="consumer_name" readonly="state != 'submitted'"/>
+                                    <field name="consumer_doc_type" readonly="state != 'submitted'"/>
+                                    <field name="consumer_doc_number" readonly="state != 'submitted'"/>
+                                    <field name="partner_id"/>
+                                </group>
+                                <group>
+                                    <field name="consumer_address"/>
+                                    <field name="consumer_phone" widget="phone"/>
+                                    <field name="consumer_email" widget="email"/>
+                                    <field name="is_minor"/>
+                                </group>
+                            </group>
+                            <group string="Padre, madre o representante" invisible="not is_minor">
+                                <group>
+                                    <field name="guardian_name" required="is_minor"/>
+                                    <field name="guardian_doc_number"/>
+                                    <field name="guardian_address"/>
+                                </group>
+                                <group>
+                                    <field name="guardian_phone" widget="phone"/>
+                                    <field name="guardian_email" widget="email"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Reclamación" name="claim">
+                            <group>
+                                <group>
+                                    <field name="good_type" readonly="state != 'submitted'"/>
+                                    <field name="amount_claimed" readonly="state != 'submitted'"/>
+                                    <field name="currency_id" groups="base.group_multi_currency"/>
+                                    <field name="order_reference"/>
+                                </group>
+                                <group>
+                                    <field name="good_description" readonly="state != 'submitted'"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="detail" readonly="state != 'submitted'"/>
+                                <field name="consumer_request" readonly="state != 'submitted'"/>
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                                <field name="consumer_confirmed"/>
+                            </group>
+                        </page>
+                        <page string="Respuesta" name="response">
+                            <group>
+                                <field name="provider_observations"
+                                       readonly="state in ('answered', 'settled', 'closed')"
+                                       placeholder="Observaciones y acciones adoptadas. Si se rechaza el pedido, fundamente la posición."/>
+                                <field name="response_date"/>
+                                <field name="response_user_id"/>
+                            </group>
+                            <group string="Solución acordada (art. 6-A)" invisible="not settlement_offer">
+                                <group>
+                                    <field name="settlement_mode"/>
+                                    <field name="settlement_offer_date"/>
+                                    <field name="settlement_acceptance_date"/>
+                                    <field name="settlement_fulfilled" invisible="state not in ('settled', 'closed')"/>
+                                </group>
+                                <group>
+                                    <field name="settlement_offer"/>
+                                    <field name="suspension_start"/>
+                                    <field name="suspension_end"/>
+                                    <field name="suspension_days"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Constancia y SIREC" name="records">
+                            <group>
+                                <group>
+                                    <field name="ack_sent_date"/>
+                                    <field name="retention_until"/>
+                                    <field name="consumer_ip"/>
+                                </group>
+                                <group>
+                                    <field name="sirec_state"/>
+                                    <field name="sirec_report_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_complaint_search" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.search</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="consumer_name"/>
+                <field name="consumer_doc_number"/>
+                <field name="book_id"/>
+                <field name="responsible_user_id"/>
+                <filter name="filter_mine" string="Mis hojas" domain="[('responsible_user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="filter_open" string="Por responder"
+                        domain="[('state', 'in', ('submitted', 'in_progress', 'suspended'))]"/>
+                <filter name="filter_overdue" string="Vencidas" domain="[('is_overdue', '=', True)]"/>
+                <separator/>
+                <filter name="filter_claim" string="Reclamos" domain="[('claim_type', '=', 'claim')]"/>
+                <filter name="filter_complaint" string="Quejas" domain="[('claim_type', '=', 'complaint')]"/>
+                <separator/>
+                <filter name="filter_sirec_pending" string="Sin reportar al SIREC"
+                        domain="[('sirec_state', '=', 'pending')]"/>
+                <filter name="filter_date" string="Fecha" date="date_submitted"/>
+                <group>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_book" string="Libro" context="{'group_by': 'book_id'}"/>
+                    <filter name="group_type" string="Tipo" context="{'group_by': 'claim_type'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date_submitted:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_complaint_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.pivot</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <pivot string="Hojas de reclamación">
+                <field name="date_submitted" interval="month" type="row"/>
+                <field name="claim_type" type="col"/>
+                <field name="amount_claimed" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_complaint_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.graph</field>
+        <field name="model">l10n_pe.complaint</field>
+        <field name="arch" type="xml">
+            <graph string="Hojas de reclamación" type="bar" stacked="1">
+                <field name="date_submitted" interval="month"/>
+                <field name="claim_type"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_complaint" model="ir.actions.act_window">
+        <field name="name">Hojas de reclamación</field>
+        <field name="res_model">l10n_pe.complaint</field>
+        <field name="view_mode">kanban,list,form,pivot,graph</field>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay hojas de reclamación</p>
+            <p>Las hojas llegan desde el libro virtual del sitio web; las del libro físico o
+               de respaldo se registran aquí.</p>
+        </field>
+    </record>
+
+    <record id="action_complaint_overdue" model="ir.actions.act_window">
+        <field name="name">Vencidas</field>
+        <field name="res_model">l10n_pe.complaint</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_overdue': 1}</field>
+    </record>
+
+</odoo>

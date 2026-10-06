@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_complaint_settlement_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.complaint.settlement.wizard.form</field>
+        <field name="model">l10n_pe.complaint.settlement.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="complaint_id" readonly="1"/>
+                    <field name="mode" widget="radio"/>
+                    <field name="offer"/>
+                    <field name="accepted" invisible="mode != 'in_person'"/>
+                </group>
+                <div class="alert alert-info" role="alert" invisible="mode != 'remote'">
+                    El plazo de respuesta se suspende hasta 5 días hábiles. Si el consumidor no
+                    acepta de forma expresa, se reanuda y hay que responder formalmente.
+                </div>
+                <footer>
+                    <button name="action_confirm" type="object" string="Registrar" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

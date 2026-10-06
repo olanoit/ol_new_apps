@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ícono del Anexo III: libro abierto con el rótulo «Libro de Reclamaciones». -->
+    <template id="complaint_book_icon">
+        <svg class="lr-icon" viewBox="0 0 64 48" width="40" height="30" aria-hidden="true"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 9 C24 3 12 3 4 6 V44 C12 41 24 41 32 47 C40 41 52 41 60 44 V6 C52 3 40 3 32 9 Z"
+                  fill="#fff" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M32 9 V47" stroke="currentColor" stroke-width="3"/>
+            <path d="M10 15 H26 M10 22 H26 M10 29 H26 M38 15 H54 M38 22 H54 M38 29 H54"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </template>
+
+    <!-- Enlace visible y permanente en todas las páginas (Código, art. 151; Anexo III). -->
+    <template id="complaint_book_footer_link" inherit_id="web.frontend_layout" name="Enlace al libro de reclamaciones">
+        <xpath expr="//div[hasclass('o_footer_copyright')]" position="before">
+            <t t-if="website and website.l10n_pe_complaint_show_link and website._l10n_pe_complaint_books()">
+                <div class="lr-footer-link text-center py-2">
+                    <a href="/libro-reclamaciones" class="d-inline-flex align-items-center gap-2 text-reset">
+                        <t t-call="al_l10n_pe_complaints_book.complaint_book_icon"/>
+                        <span class="fw-bold">Libro de Reclamaciones</span>
+                    </a>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="complaint_field_error">
+        <div t-if="errors.get(field)" class="invalid-feedback d-block" t-out="errors.get(field)"/>
+    </template>
+
+    <template id="complaint_form_page" name="Libro de reclamaciones">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Libro de Reclamaciones</t>
+            <div id="wrap" class="o_l10n_pe_complaints_book">
+                <div class="container py-4 lr-container">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <t t-call="al_l10n_pe_complaints_book.complaint_book_icon"/>
+                        <h1 class="h2 mb-0">Libro de Reclamaciones</h1>
+                    </div>
+                    <div class="lr-provider border rounded p-3 mb-4">
+                        <div class="fw-bold" t-out="company.name"/>
+                        <div>RUC <t t-out="company.vat or ''"/></div>
+                        <div t-out="book.address or ''"/>
+                        <div class="text-muted small">Hoja de reclamación virtual · Libro <t t-out="book.code"/> ·
+                            Fecha <t t-out="today.strftime('%d/%m/%Y')"/> · El número se asigna al enviar.</div>
+                    </div>
+                    <div t-if="errors.get('form')" class="alert alert-danger" role="alert" t-out="errors['form']"/>
+                    <div t-if="errors and not errors.get('form')" class="alert alert-danger" role="alert">
+                        Revise los campos marcados.
+                    </div>
+
+                    <form action="/libro-reclamaciones/enviar" method="post" enctype="multipart/form-data"
+                          class="lr-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="form_ts" t-att-value="form_ts"/>
+                        <input type="hidden" name="form_token" t-att-value="form_token"/>
+                        <!-- Campo trampa: lo rellenan solo los robots. -->
+                        <div class="lr-hp" aria-hidden="true">
+                            <label for="lr_website_url">No rellenar</label>
+                            <input type="text" id="lr_website_url" name="website_url" tabindex="-1" autocomplete="off"/>
+                        </div>
+
+                        <div class="mb-3" t-if="len(books) &gt; 1">
+                            <label class="form-label fw-bold" for="lr_book">Establecimiento</label>
+                            <select id="lr_book" name="book_id" class="form-select">
+                                <t t-foreach="books" t-as="b">
+                                    <option t-att-value="b.id" t-att-selected="b == book"
+                                            t-out="'%s - %s' % (b.code, b.name)"/>
+                                </t>
+                            </select>
+                        </div>
+                        <input t-else="" type="hidden" name="book_id" t-att-value="book.id"/>
+
+                        <fieldset class="lr-section">
+                            <legend>1. Identificación del consumidor reclamante</legend>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label" for="lr_name">Nombre completo <span class="text-danger">*</span></label>
+                                    <input id="lr_name" name="consumer_name" required="required"
+                                           t-att-value="values.get('consumer_name')" maxlength="150"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('consumer_name') else ''}"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_name'"/></t>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="lr_doc_type">Documento <span class="text-danger">*</span></label>
+                                    <select id="lr_doc_type" name="consumer_doc_type" class="form-select">
+                                        <option value="dni" t-att-selected="values.get('consumer_doc_type') in (None, 'dni')">DNI</option>
+                                        <option value="ce" t-att-selected="values.get('consumer_doc_type') == 'ce'">Carné de extranjería</option>
+                                        <option value="passport" t-att-selected="values.get('consumer_doc_type') == 'passport'">Pasaporte</option>
+                                        <option value="ruc" t-att-selected="values.get('consumer_doc_type') == 'ruc'">RUC</option>
+                                        <option value="other" t-att-selected="values.get('consumer_doc_type') == 'other'">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label" for="lr_doc_number">Número de documento <span class="text-danger">*</span></label>
+                                    <input id="lr_doc_number" name="consumer_doc_number" required="required" maxlength="20"
+                                           t-att-value="values.get('consumer_doc_number')"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('consumer_doc_number') else ''}"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_doc_number'"/></t>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="lr_address">Domicilio</label>
+                                    <input id="lr_address" name="consumer_address" maxlength="200"
+                                           t-att-value="values.get('consumer_address')"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('consumer_address') else ''}"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_address'"/></t>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_phone">Teléfono</label>
+                                    <input id="lr_phone" name="consumer_phone" type="tel" class="form-control" maxlength="30"
+                                           t-att-value="values.get('consumer_phone')"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_email">Correo electrónico <span class="text-danger">*</span></label>
+                                    <input id="lr_email" name="consumer_email" type="email" maxlength="120"
+                                           t-att-value="values.get('consumer_email')"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('consumer_email') else ''}"/>
+                                    <div class="form-text">Le enviaremos la constancia con la hoja de reclamación.</div>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_email'"/></t>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="lr_is_minor" name="is_minor"
+                                               t-att-checked="values.get('is_minor')"/>
+                                        <label class="form-check-label" for="lr_is_minor">Soy menor de edad</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-attf-class="row g-3 mt-1 lr-guardian #{'' if values.get('is_minor') else 'd-none'}">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_guardian_name">Padre, madre o representante <span class="text-danger">*</span></label>
+                                    <input id="lr_guardian_name" name="guardian_name" maxlength="150"
+                                           t-att-value="values.get('guardian_name')"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('guardian_name') else ''}"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'guardian_name'"/></t>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_guardian_doc">Documento del representante</label>
+                                    <input id="lr_guardian_doc" name="guardian_doc_number" class="form-control" maxlength="20"
+                                           t-att-value="values.get('guardian_doc_number')"/>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="lr_guardian_address">Domicilio del representante</label>
+                                    <input id="lr_guardian_address" name="guardian_address" class="form-control" maxlength="200"
+                                           t-att-value="values.get('guardian_address')"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_guardian_phone">Teléfono del representante</label>
+                                    <input id="lr_guardian_phone" name="guardian_phone" type="tel" class="form-control" maxlength="30"
+                                           t-att-value="values.get('guardian_phone')"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_guardian_email">Correo del representante</label>
+                                    <input id="lr_guardian_email" name="guardian_email" type="email" class="form-control" maxlength="120"
+                                           t-att-value="values.get('guardian_email')"/>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="lr-section">
+                            <legend>2. Identificación del bien contratado</legend>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <span class="form-label d-block">Tipo</span>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="good_type" id="lr_good_product" value="product"
+                                               t-att-checked="values.get('good_type') in (None, 'product')"/>
+                                        <label class="form-check-label" for="lr_good_product">Producto</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="good_type" id="lr_good_service" value="service"
+                                               t-att-checked="values.get('good_type') == 'service'"/>
+                                        <label class="form-check-label" for="lr_good_service">Servicio</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_amount">Monto reclamado (S/)</label>
+                                    <input id="lr_amount" name="amount_claimed" inputmode="decimal" maxlength="15"
+                                           t-att-value="values.get('amount_claimed')"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('amount_claimed') else ''}"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'amount_claimed'"/></t>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label" for="lr_good_description">Descripción</label>
+                                    <input id="lr_good_description" name="good_description" class="form-control" maxlength="500"
+                                           t-att-value="values.get('good_description')"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="lr_order">Comprobante o pedido</label>
+                                    <input id="lr_order" name="order_reference" class="form-control" maxlength="60"
+                                           t-att-value="values.get('order_reference')"/>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="lr-section">
+                            <legend>3. Detalle de la reclamación y pedido del consumidor</legend>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="claim_type" id="lr_type_claim" value="claim"
+                                               t-att-checked="values.get('claim_type') in (None, 'claim')"/>
+                                        <label class="form-check-label" for="lr_type_claim"><strong>Reclamo:</strong>
+                                            disconformidad relacionada a los productos o servicios.</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="claim_type" id="lr_type_complaint" value="complaint"
+                                               t-att-checked="values.get('claim_type') == 'complaint'"/>
+                                        <label class="form-check-label" for="lr_type_complaint"><strong>Queja:</strong>
+                                            disconformidad no relacionada a los productos o servicios; o, malestar o
+                                            descontento respecto a la atención al público.</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="lr_detail">Detalle <span class="text-danger">*</span></label>
+                                    <textarea id="lr_detail" name="detail" rows="5" required="required" maxlength="4000"
+                                              t-attf-class="form-control #{'is-invalid' if errors.get('detail') else ''}"
+                                              t-out="values.get('detail') or ''"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'detail'"/></t>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="lr_request">Pedido <span class="text-danger">*</span></label>
+                                    <textarea id="lr_request" name="consumer_request" rows="3" maxlength="4000"
+                                              t-attf-class="form-control #{'is-invalid' if errors.get('consumer_request') else ''}"
+                                              t-out="values.get('consumer_request') or ''"/>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_request'"/></t>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_attachments">Adjuntos (opcional)</label>
+                                    <input id="lr_attachments" name="attachments" type="file" multiple="multiple"
+                                           accept=".pdf,.jpg,.jpeg,.png"
+                                           t-attf-class="form-control #{'is-invalid' if errors.get('attachments') else ''}"/>
+                                    <div class="form-text">Hasta 3 archivos PDF, JPG o PNG de 5 MB.</div>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'attachments'"/></t>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="lr_channel">Deseo la respuesta por</label>
+                                    <select id="lr_channel" name="preferred_response_channel" class="form-select">
+                                        <option value="email" t-att-selected="values.get('preferred_response_channel') != 'letter'">Correo electrónico</option>
+                                        <option value="letter" t-att-selected="values.get('preferred_response_channel') == 'letter'">Carta a mi domicilio</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-check my-3">
+                            <input t-attf-class="form-check-input #{'is-invalid' if errors.get('consumer_confirmed') else ''}"
+                                   type="checkbox" id="lr_confirm" name="consumer_confirmed" required="required"/>
+                            <label class="form-check-label" for="lr_confirm">
+                                Confirmo que los datos son correctos y presento esta hoja de reclamación.</label>
+                            <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_confirmed'"/></t>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Enviar hoja de reclamación</button>
+
+                        <div class="lr-legal small text-muted mt-4">
+                            <p>* La formulación del reclamo no impide acudir a otras vías de solución de
+                                controversias ni es requisito previo para interponer una denuncia ante el INDECOPI.</p>
+                            <p>* El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a quince
+                                (15) días hábiles, el cual es improrrogable.</p>
+                            <p>Sus datos personales se usan solo para atender esta hoja de reclamación (Ley 29733).</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="complaint_status_page" name="Hoja de reclamación">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Hoja de reclamación</t>
+            <div id="wrap" class="o_l10n_pe_complaints_book">
+                <div class="container py-4 lr-container">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <t t-call="al_l10n_pe_complaints_book.complaint_book_icon"/>
+                        <h1 class="h2 mb-0">Hoja de reclamación Nº <t t-out="complaint.name"/></h1>
+                    </div>
+                    <div class="alert alert-success" role="status" t-if="complaint.state in ('submitted', 'in_progress', 'suspended')">
+                        Registramos su <t t-out="dict(complaint._fields['claim_type'].selection).get(complaint.claim_type).lower()"/>.
+                        <t t-if="complaint.consumer_email">Enviamos la constancia a <strong t-out="complaint.consumer_email"/>.</t>
+                    </div>
+                    <table class="table table-sm lr-summary">
+                        <tbody>
+                            <tr><th scope="row">Proveedor</th>
+                                <td><t t-out="company.name"/> · RUC <t t-out="company.vat or ''"/></td></tr>
+                            <tr><th scope="row">Libro</th>
+                                <td><t t-out="complaint.book_id.name"/> (<t t-out="complaint.book_id.code"/>)</td></tr>
+                            <tr><th scope="row">Fecha y hora de presentación</th>
+                                <td t-out="complaint.date_submitted" t-options="{'widget': 'datetime', 'tz_name': complaint._report_tz()}"/></tr>
+                            <tr><th scope="row">Consumidor</th><td t-out="complaint.consumer_name"/></tr>
+                            <tr><th scope="row">Estado</th>
+                                <td t-out="dict(complaint._fields['state'].selection).get(complaint.state)"/></tr>
+                            <tr t-if="complaint.state not in ('answered', 'settled', 'closed')">
+                                <th scope="row">Respuesta a más tardar</th>
+                                <td t-out="complaint.deadline_date" t-options="{'widget': 'date'}"/></tr>
+                            <tr t-if="complaint.response_date">
+                                <th scope="row">Fecha de la respuesta</th>
+                                <td t-out="complaint.response_date" t-options="{'widget': 'date'}"/></tr>
+                        </tbody>
+                    </table>
+                    <div t-if="complaint.state in ('answered', 'closed') and complaint.provider_observations" class="mb-3">
+                        <h2 class="h5">Respuesta del proveedor</h2>
+                        <div class="border rounded p-3 lr-pre" t-out="complaint.provider_observations"/>
+                    </div>
+                    <a class="btn btn-primary" t-attf-href="/libro-reclamaciones/hoja/#{complaint.id}/pdf?access_token=#{access_token}">
+                        <i class="fa fa-download me-1" title="Descargar"/>Descargar o imprimir la hoja (PDF)
+                    </a>
+                    <p class="small text-muted mt-3">Guarde este enlace para consultar el estado de su hoja.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
