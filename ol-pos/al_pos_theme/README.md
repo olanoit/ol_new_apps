@@ -12,7 +12,7 @@
 | Información | |
 |---|---|
 | **Versión** | ver `__manifest__.py` (convención `N.AAAAMMDD`) |
-| **Categoría** | ol-pos/Apps |
+| **Categoría** | ol-pos |
 | **Licencia** | OPL-1 (fuentes Inter y Manrope: SIL OFL 1.1, `static/src/fonts/OFL.txt`) |
 | **Autor** | CRISTÓBAL OCH |
 | **Dependencias** | `point_of_sale` (probado con `pos_enterprise`, `al_pos_product_view`, `al_pos_vendedor` y `al_l10n_pe_edi_pos`) |

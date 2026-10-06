@@ -36,7 +36,7 @@ y PDF.
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-projects/Apps',
+    'category': 'ol-projects',
     'version': '14.20260818',
     'license': 'OPL-1',
     'depends': [

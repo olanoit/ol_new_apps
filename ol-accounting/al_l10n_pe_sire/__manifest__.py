@@ -21,7 +21,7 @@ trabajo (XLSX).
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '5.20260803',
     'license': 'OPL-1',
     'depends': [

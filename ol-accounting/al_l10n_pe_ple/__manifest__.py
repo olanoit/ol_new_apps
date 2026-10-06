@@ -70,7 +70,7 @@ NO se reimplementan.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '8.20260828',
     'license': 'OPL-1',
     'depends': [

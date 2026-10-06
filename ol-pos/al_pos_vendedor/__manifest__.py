@@ -31,7 +31,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-pos/Apps',
+    'category': 'ol-pos',
     'version': '2.20260721',
     'license': 'OPL-1',
     'depends': [

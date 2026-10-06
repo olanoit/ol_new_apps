@@ -24,7 +24,7 @@ ruta crítica, líneas base y exportación a Excel y PDF.
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-projects/Apps',
+    'category': 'ol-projects',
     'version': '12.20260818',
     'license': 'OPL-1',
     'depends': [

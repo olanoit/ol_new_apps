@@ -73,7 +73,7 @@ bandera de función de forma predeterminada. Aislado a la ruta de addons configu
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-tools/Apps',
+    'category': 'ol-tools',
     'license': 'OPL-1',
     'depends': ['base', 'web', 'mail'],
     'data': [

@@ -27,7 +27,7 @@ Fase 5 (actual):
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-payroll/Apps',
+    'category': 'ol-payroll',
     'version': '4.20260816',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],

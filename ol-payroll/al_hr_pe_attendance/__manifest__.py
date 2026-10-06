@@ -31,7 +31,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-payroll/Apps',
+    'category': 'ol-payroll',
     'version': '6.20260816',
     'license': 'OPL-1',
     'depends': [

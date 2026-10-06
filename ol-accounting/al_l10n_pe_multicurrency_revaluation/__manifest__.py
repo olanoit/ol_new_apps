@@ -39,7 +39,7 @@ Diferencias frente al módulo v18 ``mblz_l10n_pe_multicurrency_revaluation``
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '2.20260916',
     'license': 'OPL-1',
     'depends': [

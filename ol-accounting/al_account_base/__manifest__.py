@@ -21,7 +21,7 @@ campos sin uso.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '4.20260815',
     'license': 'OPL-1',
     'depends': ['account'],

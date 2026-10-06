@@ -43,7 +43,7 @@ asientos por su complejidad y riesgo contable.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '12.20260827',
     'license': 'OPL-1',
     'depends': [

@@ -16,7 +16,7 @@ Kardex SUNAT para la localización peruana
     """,
     'countries': ['pe'],
     'version': '4.20260718',
-    'category': 'ol-inventory/Apps',
+    'category': 'ol-inventory',
     'author': 'OLANOIT',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://github.com/olanoit',

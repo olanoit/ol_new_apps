@@ -44,7 +44,7 @@ y regla de registro por compañía en el historial.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-payroll/Apps',
+    'category': 'ol-payroll',
     'version': '4.20260816',
     'license': 'OPL-1',
     'depends': [

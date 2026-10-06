@@ -45,7 +45,7 @@ sin dependencias externas.
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-pos/Apps',
+    'category': 'ol-pos',
     'version': '4.20260925',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->

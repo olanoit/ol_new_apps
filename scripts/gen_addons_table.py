@@ -79,13 +79,13 @@ def structure_errors():
             errors.append(f'{area}/README.md: falta')
         if area in THIRD_PARTY:
             continue
-        # La categoría del manifiesto empieza por la carpeta del área
+        # La categoría del manifiesto es el nombre de la carpeta del área
         # ('Hidden' se respeta: oculta el módulo en Aplicaciones).
         for manifest_path in sorted((REPO_ROOT / area).glob('*/__manifest__.py')):
             category = read_manifest(manifest_path).get('category', '')
-            if category != 'Hidden' and not category.startswith(f'{area}/'):
+            if category not in ('Hidden', area):
                 errors.append(f'{area}/{manifest_path.parent.name}: category «{category}», '
-                              f'debe ser «{area}/Apps»')
+                              f'debe ser «{area}»')
     return errors
 
 

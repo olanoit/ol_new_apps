@@ -25,7 +25,7 @@ dependencia muerta de ``al_account_dua``.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '4.20260828',
     'license': 'OPL-1',
     'depends': [

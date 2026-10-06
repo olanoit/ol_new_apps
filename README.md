@@ -83,8 +83,8 @@ Convenciones
 
 - **Nombre técnico** con prefijo `al_` (o `l10n_pe_`, `ol_` en módulos
   heredados); un módulo nuevo va en la carpeta de su área.
-- **Categoría** del manifiesto: `'<carpeta del área>/Apps'`, por ejemplo
-  `'ol-inventory/Apps'` para un módulo de `ol-inventory/`. Si el módulo cambia
+- **Categoría** del manifiesto: el nombre de la carpeta del área, tal cual;
+  por ejemplo `'ol-inventory'` para un módulo de `ol-inventory/`. Si el módulo cambia
   de área, la categoría cambia con él. `gen_addons_table.py --check` lo
   verifica; quedan fuera `ol-third-party/` y los módulos con `'Hidden'`.
 - **Versión** `N.AAAAMMDD`: contador de versión y fecha.

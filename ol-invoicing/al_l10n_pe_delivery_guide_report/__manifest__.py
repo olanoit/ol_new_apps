@@ -21,7 +21,7 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-invoicing/Apps',
+    'category': 'ol-invoicing',
     'version': '7.20260828',
     'license': 'OPL-1',
     'depends': [

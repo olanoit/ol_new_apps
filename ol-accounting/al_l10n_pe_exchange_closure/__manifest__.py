@@ -63,7 +63,7 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '4.20260828',
     'license': 'OPL-1',
     'depends': [

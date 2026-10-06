@@ -24,7 +24,7 @@ Adaptación a la suite AL del tema del TPV de Mobilize
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-pos/Apps',
+    'category': 'ol-pos',
     'version': '1.20261005',
     'license': 'OPL-1',
     # Solo point_of_sale: convive con los demás módulos TPV usando selectores

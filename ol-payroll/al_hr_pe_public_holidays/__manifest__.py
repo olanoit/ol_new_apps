@@ -26,7 +26,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-payroll/Apps',
+    'category': 'ol-payroll',
     'version': '4.20260827',
     'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada

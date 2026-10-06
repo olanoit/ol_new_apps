@@ -23,7 +23,7 @@ Una ficha cuenta como tal cuando la ha preparado
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-tools/Apps',
+    'category': 'ol-tools',
     'version': '1.20260914',
     'license': 'OPL-1',
     'depends': ['base'],

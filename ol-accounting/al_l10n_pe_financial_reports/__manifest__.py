@@ -38,7 +38,7 @@ a PDF y XLSX con las herramientas estándar.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '1.20260917',
     'license': 'OPL-1',
     'depends': [

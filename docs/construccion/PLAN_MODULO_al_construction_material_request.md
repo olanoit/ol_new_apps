@@ -226,7 +226,7 @@ Solicitante ⊂ Aprobador ⊂ Logística ⊂ Administrador.
 ### F1.5 Convenciones AL aplicadas
 
 `version` `1.20260930` (skill `odoo-module-versioning`), `license` `LGPL-3`,
-categoría `ol-projects/Apps`, `README.md` + `docs/fichas/<módulo>.yml`
+categoría `ol-projects`, `README.md` + `docs/fichas/<módulo>.yml`
 (ficha generada con `generar_fichas.py`) en lugar de `README.rst` OCA. El
 repo no tiene `pre-commit` ni hay `ruff`/`pylint-odoo` en el venv:
 **[Por validar]** si se añade la configuración OCA al repo.

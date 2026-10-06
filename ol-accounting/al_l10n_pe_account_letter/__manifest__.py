@@ -35,7 +35,7 @@ se usaban en la lógica del módulo).
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '7.20260901',
     'license': 'OPL-1',
     'depends': [

@@ -21,7 +21,7 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '4.20260828',
     'license': 'OPL-1',
     'depends': ['account', 'l10n_pe', 'al_account_base'],

@@ -8,7 +8,7 @@
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-tools/Apps',
+    'category': 'ol-tools',
     'version': '2.20260730',
     'license': 'LGPL-3',
 

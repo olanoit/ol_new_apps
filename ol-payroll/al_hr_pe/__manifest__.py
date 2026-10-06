@@ -27,7 +27,7 @@ cero códigos hardcodeados (ver plan §5).
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-payroll/Apps',
+    'category': 'ol-payroll',
     'version': '16.20260925',
     'license': 'OPL-1',
     'depends': [

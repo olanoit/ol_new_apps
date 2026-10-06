@@ -29,7 +29,7 @@ Principios de diseño
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-projects/Apps',
+    'category': 'ol-projects',
     'version': '3.20260817',
     'license': 'OPL-1',
     'depends': [

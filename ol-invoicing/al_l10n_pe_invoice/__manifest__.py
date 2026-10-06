@@ -39,7 +39,7 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-invoicing/Apps',
+    'category': 'ol-invoicing',
     'version': '11.20260828',
     'license': 'OPL-1',
     'depends': [

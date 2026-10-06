@@ -24,7 +24,7 @@ y el render usa el adaptador y la configuración compartidos del módulo base.
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
-    'category': 'ol-projects/Apps',
+    'category': 'ol-projects',
     'version': '11.20260818',
     'license': 'OPL-1',
     'depends': [

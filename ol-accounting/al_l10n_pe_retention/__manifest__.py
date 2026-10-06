@@ -26,7 +26,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-accounting/Apps',
+    'category': 'ol-accounting',
     'version': '8.20260828',
     'license': 'OPL-1',
     'depends': [

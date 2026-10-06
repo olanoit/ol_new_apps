@@ -28,7 +28,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'ol-pos/Apps',
+    'category': 'ol-pos',
     'version': '7.20260721',
     'license': 'OPL-1',
     'depends': [
