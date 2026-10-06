@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261006 — 06/10/2026
+
+- Sin datos no se descarga nada: el Excel, el PDF, la vista en pantalla y la generación en segundo plano muestran un mensaje en vez de un archivo vacío; los generados sin datos quedan en «Sin datos».
+- El comprobante se guarda en cada movimiento: entregas facturadas en partes, devoluciones con su nota de crédito y ventas del punto de venta con su factura o boleta (antes salían con el nombre interno de la transferencia).
+- Corrección manual del documento por movimiento o por transferencia, protegida del llenado automático, y acciones masivas para completar o recalcular.
+- Validación del formato SUNAT del documento; el historial se completa al actualizar el módulo.
+
 ## 4.20260718 — 27/09/2026
 
 - Las cantidades son las recibidas o entregadas de verdad, no las pedidas: una recepción parcial cerrada sin pendiente ya no infla el kardex.

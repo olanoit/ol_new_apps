@@ -13,7 +13,10 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'done'"
                        decoration-danger="state == 'error'"
+                       decoration-warning="state == 'empty'"
                        decoration-info="state in ('pending', 'generating')"/>
+                <field name="error_message" string="Mensaje" optional="show"
+                       invisible="state not in ('empty', 'error')"/>
                 <button name="action_download" type="object" string="Descargar"
                         icon="fa-download" invisible="state != 'done'"/>
             </list>
@@ -46,6 +49,9 @@
                             <field name="user_id"/>
                         </group>
                     </group>
+                    <div class="alert alert-warning" role="alert" invisible="state != 'empty'">
+                        <field name="error_message" readonly="1"/>
+                    </div>
                     <field name="error_message" invisible="state != 'error'"
                            class="text-danger"/>
                 </sheet>

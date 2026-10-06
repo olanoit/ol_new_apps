@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Documento del kardex por movimiento: columnas opcionales y editables en
+         Inventario ▸ Informes ▸ Historial de movimientos. -->
+    <record id="view_move_tree_kardex_document" model="ir.ui.view">
+        <field name="name">stock.move.list.kardex.document</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_tree"/>
+        <field name="arch" type="xml">
+            <field name="reference" position="after">
+                <field name="l10n_pe_kardex_doc_type" optional="hide" string="Tipo (kardex)"/>
+                <field name="l10n_pe_kardex_serie" optional="hide" string="Serie (kardex)"/>
+                <field name="l10n_pe_kardex_number" optional="hide" string="Número (kardex)"/>
+                <field name="l10n_pe_kardex_invoice_id" optional="hide" readonly="1"/>
+                <field name="l10n_pe_kardex_doc_manual" optional="hide" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_form_kardex_document" model="ir.ui.view">
+        <field name="name">stock.picking.form.kardex.document</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_kardex_document" type="object"
+                        string="Documento del kardex" groups="stock.group_stock_user"
+                        invisible="state != 'done' or l10n_pe_kardex_country_code != 'PE'"/>
+                <field name="l10n_pe_kardex_country_code" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kardex_document_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.kardex.document.wizard.form</field>
+        <field name="model">l10n_pe.kardex.document.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <p class="text-muted">
+                    Documento con que la transferencia figura en el kardex (formatos 12.1 y 13.1).
+                    Queda marcado como corregido a mano: el llenado automático no lo cambia.
+                </p>
+                <group>
+                    <field name="picking_id" readonly="1"/>
+                    <field name="doc_type"/>
+                    <field name="document" placeholder="F001-00000123"/>
+                    <field name="overwrite_manual"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_move_kardex_fill_empty" model="ir.actions.server">
+        <field name="name">Kardex: completar documentos vacíos</field>
+        <field name="model_id" ref="stock.model_stock_move"/>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_kardex_fill_empty()</field>
+    </record>
+
+    <record id="action_move_kardex_refresh" model="ir.actions.server">
+        <field name="name">Kardex: recalcular documentos (respeta los manuales)</field>
+        <field name="model_id" ref="stock.model_stock_move"/>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_kardex_refresh()</field>
+    </record>
+
+    <record id="action_move_kardex_reset_manual" model="ir.actions.server">
+        <field name="name">Kardex: volver al documento automático</field>
+        <field name="model_id" ref="stock.model_stock_move"/>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_kardex_reset_manual()</field>
+    </record>
+
+</odoo>

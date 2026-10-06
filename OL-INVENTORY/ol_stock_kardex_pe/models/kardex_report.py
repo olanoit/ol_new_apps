@@ -50,7 +50,7 @@ class L10nPeKardexReport(models.Model):
 
     state = fields.Selection(
         [('pending', 'Pendiente'), ('generating', 'Generando'),
-         ('done', 'Listo'), ('error', 'Error')],
+         ('done', 'Listo'), ('empty', 'Sin datos'), ('error', 'Error')],
         default='pending', required=True, string='Estado')
     output_file = fields.Binary(string='Archivo', readonly=True, attachment=True)
     output_filename = fields.Char(readonly=True)
@@ -122,7 +122,11 @@ class L10nPeKardexReport(models.Model):
                 # abortada y ni siquiera se podría guardar el estado «Error».
                 with self.env.cr.savepoint():
                     wizard = rec.with_company(rec.company_id)._build_wizard()
-                    if rec.file_format == 'pdf':
+                    empty_message = not wizard._has_data() and wizard._no_data_message()
+                    if empty_message:
+                        # Sin movimientos ni saldos: no se guarda un archivo vacío.
+                        content = ext = None
+                    elif rec.file_format == 'pdf':
                         content, _ = self.env['ir.actions.report'].with_company(
                             rec.company_id)._render_qweb_pdf(
                             'ol_stock_kardex_pe.report_kardex', wizard.ids)
@@ -130,6 +134,12 @@ class L10nPeKardexReport(models.Model):
                     else:
                         content = build_kardex_xlsx(wizard)
                         ext = 'xlsx'
+                if empty_message:
+                    rec.write({'state': 'empty', 'output_file': False,
+                               'output_filename': False, 'error_message': empty_message})
+                    if not _in_test_mode():
+                        self.env.cr.commit()
+                    continue
                 rec.write({
                     'state': 'done',
                     'output_file': base64.b64encode(content),

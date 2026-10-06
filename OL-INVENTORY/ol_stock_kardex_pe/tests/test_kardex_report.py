@@ -393,6 +393,8 @@ class TestKardexReport(TestSaleCommon):
 
     def test_15_error_en_segundo_plano(self):
         """Un error SQL deja el reporte en «Error» y el cursor utilizable."""
+        # Con datos: sin ellos el reporte termina en «Sin datos» antes de generar.
+        self._build_moves()
         report = self.env['l10n_pe.kardex.report'].create({
             'company_id': self.env.company.id,
             'date_from': '2024-01-01', 'date_to': '2024-01-31',

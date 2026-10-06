@@ -231,16 +231,26 @@ class L10nPeKardexLine(models.Model):
             values['folio'] = last.group() or ''
         return values
 
-    @api.depends('move_id', 'direction', 'is_internal')
+    @api.depends('move_id', 'direction', 'is_internal', 'move_id.l10n_pe_kardex_doc_type',
+                 'move_id.l10n_pe_kardex_serie', 'move_id.l10n_pe_kardex_number')
     def _compute_document(self):
         has_latam = 'l10n_latam_document_number' in self.env['stock.picking']._fields
         for line in self:
             move = line.move_id
+            if move.l10n_pe_kardex_doc_type and move.l10n_pe_kardex_number:
+                # Documento guardado en el movimiento (comprobante emparejado,
+                # guía o corrección manual): manda sobre el cálculo al vuelo.
+                line.document_type_code = move.l10n_pe_kardex_doc_type
+                line.serie = move.l10n_pe_kardex_serie or ''
+                line.folio = move.l10n_pe_kardex_number
+                line.account_move_id = move.l10n_pe_kardex_invoice_id
+                continue
+            # Sin documento guardado (historial anterior): cálculo al vuelo.
             # sorted('id'): account.move se ordena por fecha desc; sin esto
             # [:1] tomaría la última factura (p. ej. una nota de crédito).
             invoice = move.sale_line_id.invoice_lines.move_id.sorted('id')[:1]
             bill = move.purchase_line_id.invoice_lines.move_id.sorted('id')[:1]
-            doc = invoice or bill
+            doc = invoice or bill or move._l10n_pe_kardex_pos_invoice()
             delivery_number = has_latam and move.picking_id.l10n_latam_document_number
             if delivery_number:
                 number = delivery_number

@@ -10,7 +10,7 @@ from werkzeug.urls import url_encode
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Date, Domain
-from odoo.tools import SQL
+from odoo.tools import SQL, float_is_zero
 
 from ..reports.kardex_xlsx import build_kardex_xlsx
 
@@ -181,6 +181,8 @@ class L10nPeKardexReportWizard(models.TransientModel):
         """Abre la vista SQL del kardex filtrada; no se puebla nada."""
         self.ensure_one()
         self._sync_period_dates()
+        if not self.env['l10n_pe.kardex.line'].search_count(self._get_line_domain(None), limit=1):
+            raise UserError(self._no_data_message(movements_only=True))
         by_warehouse = self._by_warehouse()
         group_by = ['warehouse_id', 'product_id'] if by_warehouse else ['product_id']
         return {
@@ -201,6 +203,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
     def action_export_xlsx(self):
         self.ensure_one()
         self._sync_period_dates()
+        self._check_has_data()
         content = build_kardex_xlsx(self)
         self.write({
             'report_data': base64.b64encode(content),
@@ -212,12 +215,14 @@ class L10nPeKardexReportWizard(models.TransientModel):
     def action_print_pdf(self):
         self.ensure_one()
         self._sync_period_dates()
+        self._check_has_data()
         return self.env.ref('ol_stock_kardex_pe.action_report_kardex').report_action(self)
 
     def action_generate_background(self):
         """Encola la generación del archivo en segundo plano."""
         self.ensure_one()
         self._sync_period_dates()
+        self._check_has_data()
         report = self.env['l10n_pe.kardex.report'].create(self._background_vals())
         report._enqueue()
         return {
@@ -270,6 +275,39 @@ class L10nPeKardexReportWizard(models.TransientModel):
         return 'KARDEX_%s_%s_%s%02d.%s' % (
             self.report_type, self.company_id.vat or self.company_id.id,
             self.date_from.year, self.date_from.month, extension)
+
+    # -------------------------------------------------------------------------
+    # Sin datos: no se genera ni se muestra nada
+    # -------------------------------------------------------------------------
+
+    def _has_data(self):
+        """¿Hay algo que informar? Movimientos en el periodo o, si se piden los
+        productos sin movimientos, algún saldo inicial distinto de cero."""
+        self.ensure_one()
+        if self.env['l10n_pe.kardex.line'].search_count(self._get_line_domain(None), limit=1):
+            return True
+        if not self.include_no_movement:
+            return False
+        for warehouse in self._get_scopes():
+            if any(not float_is_zero(qty, precision_digits=6)
+                   for qty, _value in self._get_opening_balances(warehouse).values()):
+                return True
+        return False
+
+    def _no_data_message(self, movements_only=False):
+        what = (self.env._('movimientos') if movements_only
+                else self.env._('movimientos ni saldos iniciales'))
+        return self.env._(
+            'No hay datos de kardex del %(df)s al %(dt)s con los filtros elegidos: no hay '
+            '%(what)s. No se generó ningún archivo; revise el periodo, la compañía, los '
+            'almacenes o los productos.',
+            df=self.date_from.strftime('%d/%m/%Y'), dt=self.date_to.strftime('%d/%m/%Y'),
+            what=what)
+
+    def _check_has_data(self):
+        for wizard in self:
+            if not wizard._has_data():
+                raise UserError(wizard._no_data_message())
 
     # -------------------------------------------------------------------------
     # Consulta de la vista SQL

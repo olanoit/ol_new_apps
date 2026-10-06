@@ -40,8 +40,40 @@ En v19 ya no existe `stock.valuation.layer`; el módulo se apoya en:
   (Tabla 5, producto), `l10n_pe_operation_type` (Tabla 12, picking),
   `l10n_pe_anexo_establishment_code` (almacén).
 - Tabla 6: `uom.uom.l10n_pe_edi_measure_unit_code` (de `l10n_pe_edi`).
-- Tabla 10: `l10n_latam_document_type_id` de la factura/boleta vinculada al
-  movimiento (`sale_line_id`/`purchase_line_id` → `invoice_lines`).
+- Tabla 10, serie y número: **guardados en cada `stock.move`**
+  (`l10n_pe_kardex_doc_type`, `l10n_pe_kardex_serie`, `l10n_pe_kardex_number`,
+  `l10n_pe_kardex_invoice_id`). Se llenan solos al publicar el comprobante
+  (`account.move._post`) y al validar el movimiento (`stock.move._action_done`):
+  - venta y compra: movimientos y comprobantes de la línea de pedido
+    emparejados **en orden** (primera entrega ↔ primera factura); las
+    devoluciones con las notas de crédito;
+  - punto de venta: la factura o boleta del pedido (`pos_order_id.account_move`);
+  - sin comprobante: la guía de remisión de la transferencia (tipo 09).
+
+  Lo que corrige un usuario (historial de movimientos o botón «Documento del
+  kardex» de la transferencia) queda marcado y el llenado automático no lo
+  cambia. Sin documento guardado, el kardex lo calcula al vuelo como antes.
+  La migración a la 5.20261006 llena el historial (solo los vacíos).
+
+## Sin datos
+
+Si el periodo y los filtros no tienen movimientos ni saldos iniciales (con
+«Incluir productos sin movimientos»), no se genera nada: el Excel, el PDF
+(también impreso fuera del asistente), la vista en pantalla y la generación
+en segundo plano avisan con un mensaje. Un kardex en segundo plano sin datos
+queda en el estado «Sin datos», sin archivo.
+
+## Comparación con `invoice_type_document_extension` (Ganemo)
+
+| | Ganemo | Este módulo |
+|---|---|---|
+| Documento por movimiento, llenado al publicar y al validar | Sí | Sí |
+| Corrección manual protegida y acciones masivas | Sí | Sí |
+| Guía de remisión (09) sin comprobante | Sí | Sí |
+| Entregas facturadas en partes | Factura de la línea | Emparejadas en orden |
+| Devoluciones con nota de crédito | No indicado | Sí |
+| Punto de venta (factura o boleta del pedido) | No | Sí |
+| Formatos 12.1 y 13.1 en Excel y PDF | Requiere otro módulo | Incluidos |
 
 ## Arquitectura (rendimiento)
 

@@ -123,6 +123,18 @@ funcionalidades:
       - "Formato 12.1: Registro de Inventario Permanente en Unidades Físicas."
       - Línea de saldo inicial por producto (operación 16) calculada a la fecha de inicio.
       - Tipo, serie y número del comprobante vinculado; tipo 09 (guía de remisión) en ventas y compras sin comprobante y 00 en el resto.
+  - grupo: Documento por movimiento
+    items:
+      - "Cada movimiento guarda su comprobante: se llena solo al publicar la factura, boleta o nota de crédito y al validar el movimiento."
+      - "Entregas facturadas en partes emparejadas en orden (primera entrega con la primera factura) y devoluciones con su nota de crédito."
+      - "Ventas del punto de venta con su factura o boleta, no con el nombre interno de la transferencia."
+      - "Corrección manual en el historial de movimientos o con el botón «Documento del kardex» de la transferencia; el llenado automático nunca la cambia."
+      - "Acciones masivas: completar vacíos, recalcular (respeta los manuales) y volver al automático."
+      - "Formato SUNAT validado: tipo de 2 dígitos, serie alfanumérica y número positivo de hasta 20."
+  - grupo: Sin datos
+    items:
+      - "Sin movimientos ni saldos en el periodo no se genera ni se muestra nada: el Excel, el PDF, la vista y el segundo plano avisan al usuario."
+
       - "Tipo de operación de la transferencia (tabla 12) o deducido de las ubicaciones: compra, venta, devoluciones, producción, ajuste, merma y traslados."
   - grupo: Salidas
     items:
@@ -198,6 +210,13 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: 5.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Sin datos no se descarga nada: el Excel, el PDF, la vista en pantalla y la generación en segundo plano muestran un mensaje en vez de un archivo vacío; los generados sin datos quedan en «Sin datos»."
+      - "El comprobante se guarda en cada movimiento: entregas facturadas en partes, devoluciones con su nota de crédito y ventas del punto de venta con su factura o boleta (antes salían con el nombre interno de la transferencia)."
+      - "Corrección manual del documento por movimiento o por transferencia, protegida del llenado automático, y acciones masivas para completar o recalcular."
+      - "Validación del formato SUNAT del documento; el historial se completa al actualizar el módulo."
   - version: 4.20260718
     fecha: 27/09/2026
     cambios:
