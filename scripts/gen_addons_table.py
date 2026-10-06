@@ -22,10 +22,16 @@ Uso:
 import ast
 import sys
 
-from areas import AREAS, NO_AREAS, REPO_ROOT, THIRD_PARTY
+from areas import AREAS, LICENSE_DEFAULT, LICENSE_EXCEPTIONS, NO_AREAS, REPO_ROOT, THIRD_PARTY
 
 START, END = '[//]: # (addons)', '[//]: # (end addons)'
 ROOT_START, ROOT_END = '[//]: # (addons-all)', '[//]: # (end addons-all)'
+# Texto que identifica cada licencia en el archivo LICENSE del módulo.
+LICENSE_MARKS = {
+    'OPL-1': 'Odoo Proprietary License v1.0',
+    'LGPL-3': 'GNU LESSER GENERAL PUBLIC LICENSE',
+    'AGPL-3': 'GNU AFFERO GENERAL PUBLIC LICENSE',
+}
 
 
 def read_manifest(path):
@@ -77,6 +83,21 @@ def structure_errors():
     for area in AREAS:
         if not (REPO_ROOT / area / 'README.md').exists():
             errors.append(f'{area}/README.md: falta')
+        # Todo módulo lleva CHANGELOG.md y el LICENSE de la licencia que declara.
+        for manifest_path in sorted((REPO_ROOT / area).glob('*/__manifest__.py')):
+            module = manifest_path.parent
+            if not (module / 'CHANGELOG.md').exists():
+                errors.append(f'{area}/{module.name}: falta CHANGELOG.md')
+            license_path = module / 'LICENSE'
+            license_ = read_manifest(manifest_path).get('license', '')
+            expected = LICENSE_EXCEPTIONS.get(module.name, LICENSE_DEFAULT)
+            if area not in THIRD_PARTY and license_ != expected:
+                errors.append(f'{area}/{module.name}: license «{license_}», debe ser «{expected}» '
+                              f'(excepciones en scripts/areas.py)')
+            if not license_path.exists():
+                errors.append(f'{area}/{module.name}: falta LICENSE')
+            elif LICENSE_MARKS.get(license_, '\0') not in license_path.read_text(encoding='utf-8'):
+                errors.append(f'{area}/{module.name}: el LICENSE no es el texto de {license_}')
         if area in THIRD_PARTY:
             continue
         # La categoría del manifiesto es el nombre de la carpeta del área

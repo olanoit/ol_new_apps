@@ -73,6 +73,7 @@ script | para qué
 --- | ---
 `scripts/gen_addons_table.py` | Regenera las tablas «Módulos disponibles» de este README y de cada área desde los manifiestos. Con `--check` solo comprueba (y avisa de módulos fuera de un área).
 `scripts/addons_path.py` | Imprime las rutas de las áreas para el `addons_path` de un servidor.
+`scripts/gen_changelog.py` | Genera el `CHANGELOG.md` de cada módulo desde las `novedades` de su ficha (`docs/fichas/<módulo>.yml`). Con `--check` solo comprueba.
 `scripts/areas.py` | Lista de áreas: añadir aquí un área nueva (`ol-<área>`, en minúscula) antes de crear su carpeta.
 `docs/fichas/generar_fichas.py` | Genera la ficha `static/description/index.html` de cada módulo desde `docs/fichas/<módulo>.yml`.
 `docs/validacion/fichas_modulos.py` | Valida las fichas (ASCII, enlace a la ficha completa, pie con versión y licencia).
@@ -88,6 +89,16 @@ Convenciones
   de área, la categoría cambia con él. `gen_addons_table.py --check` lo
   verifica; quedan fuera `ol-third-party/` y los módulos con `'Hidden'`.
 - **Versión** `N.AAAAMMDD`: contador de versión y fecha.
+- **CHANGELOG.md** en cada módulo, una entrada por versión. Se genera desde
+  las `novedades` de la ficha con `scripts/gen_changelog.py`; solo los módulos
+  sin ficha (terceros y algunas utilidades) lo mantienen a mano.
+- **Licencia** OPL-1 en todos los módulos propios. Excepciones, en
+  `scripts/areas.py` con su motivo: `al_construction_material_request`
+  (LGPL-3, extiende `base_tier_validation`, que es AGPL-3) y `al_l10n_pe_city`
+  (LGPL-3, basado en el módulo de Laxicon Solution). Los de `ol-third-party/`
+  conservan la de su autor.
+- **LICENSE** en cada módulo, con el texto de la licencia de su manifiesto.
+  `gen_addons_table.py --check` verifica la licencia y los dos archivos.
 - **Idioma**: textos de origen en español, con solo la primera letra en
   mayúscula; comentarios también en español.
 - **Ficha** del módulo generada desde `docs/fichas/<módulo>.yml`, nunca
