@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- El pago se completa en Culqi Checkout Custom, que se abre al pulsar
+         «Pagar»: aquí solo se avisa al cliente. -->
+    <template id="inline_form">
+        <p class="text-muted small mb-0">
+            Pagará de forma segura en la ventana de Culqi: los datos de su tarjeta van
+            directamente a Culqi y nunca pasan por esta tienda.
+        </p>
+    </template>
+
+</odoo>

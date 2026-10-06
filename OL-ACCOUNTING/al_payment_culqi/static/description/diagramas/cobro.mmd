@@ -1,0 +1,10 @@
+flowchart TD
+  A[Cliente elige Culqi y pulsa Pagar] --> B[Culqi Checkout Custom:<br/>tarjeta o Yape]
+  B --> C[Token de Culqi]
+  C --> D[Odoo crea el cargo<br/>con la llave secreta]
+  D --> E{Respuesta de Culqi}
+  E -- 201 cargo creado --> F[Pago confirmado]
+  E -- 200 REVIEW --> G[Autenticación 3DS<br/>en el navegador]
+  G --> H[Odoo repite el cargo<br/>con los parámetros 3DS]
+  H --> F
+  E -- Rechazo --> I[Error con el mensaje de Culqi]

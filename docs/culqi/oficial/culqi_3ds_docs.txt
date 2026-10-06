@@ -1,0 +1,1061 @@
+#### https://docs.culqi.com/es/documentacion/culqi-3ds
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Conoce nuestra librería Culqi3DS
+
+Culqi3DS es una librería que permite a los comecios integrar la autenticación 3DS al flujo de generación de cargos, siendo mandatorio y disponible en todas las librerías, la cual tiene como fin el minimizar las transacciones fraudulentas realizando un paso extra de autenticación con el banco emisor.
+
+Cuando hayas integrado Culqi3DS, el motor de fraude decidirá cuándo mostrar el popup de autenticación del banco. Esta decisión se toma en base a una serie de criterios que generan sospecha de fraude.
+
+¿Qué beneficios te da el integrar la autenticación 3DS?
+Reduce el nivel de fraude porque permite al titular de la tarjeta validar su identidad durante la compra.
+En casos de disputas para transacciones autenticadas, el banco emisor asume los contracargos.
+¿Qué es 3DS?
+
+3DS un mecanismo de seguridad utilizado para autenticar a los usuarios, proporcionando así una capa adicional de protección para las transacciones con tarjeta de pago donde el banco emisor envía un PIN o contraseña vía SMS al celular y/o correo electrónico del tarjetahabiente para validar su identidad.
+
+Anterior
+Checkout - v4
+Siguiente
+Flujo de Cargos + 3DS
+Contenido de esta página
+Conoce nuestra librería Culqi3DS
+¿Qué beneficios te da el integrar la autenticación 3DS?
+¿Qué es 3DS?
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/flujo-con-3ds
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Flujo de cargos
+
+Veamos primero cómo se ve el flujo de cargos sin la implementación de la autenticación 3DS.
+
+Flujo de cargos + 3DS
+
+Ahora agreguemos la autenticación 3DS al flujo de cargos:
+
+Genera el deviceId: Genera un identificador único UUID v4, el cual sirve para hacer tracking del flujo de autenticación.
+Valida el HTTP StatusCode: La petición de cargo respondera diferentes HTTP StatusCode dependiendo de la decisión del motor antifraude como:
+201: Cargo exitoso
+4xx, 5xx: Cargo fallido
+200: Necesita pasar por la autenticación 3DS.
+Inicia la autenticación 3DS: Si la respuesta del motor antifraude es AUTENTICAR, debemos iniciar la autenticación 3DS con el uso de la libreria Culqi3DS. Puedes ver los pasos de instalación aquí).
+Genera cargo con parametros 3DS: Terminado el flujo 3DS, se pasa a volver a realizar la petición de cargo pero esta vez añadiendo los parametros 3DS.
+
+Anterior
+Empieza aquí
+Siguiente
+Configuración
+Contenido de esta página
+Flujo de cargos
+Flujo de cargos + 3DS
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/configuracion
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Culqi 3DS versión 1
+
+El método más simple para capturar los datos de tarjeta.
+
+Incluye el siguiente script en tu tienda virtual y configura tu llave pública. Puedes incluirlo antes del cierre de la etiqueta “body”:
+
+HTML
+<body>
+	<script src="https://3ds.culqi.com" defer></script>
+	<script>
+		Culqi3DS.publicKey = "Aquí inserta tu llave pública";
+	</script>
+</body>
+Paso 1. Cargo y tarjeta
+
+Ingresar la configuración inicial charge - card como se muestra a continuación:
+
+HTML
+<script>
+	Culqi3DS.settings = {
+		charge: {
+			totalAmount: 300,
+			returnUrl: "http://localhost:3000/checkout"
+		},
+		card: {
+			email: "example@yopmail.com"
+		}
+	};
+</script>
+Parámetro	Descripción
+charge
+object (Charge)	Permite definir la información del cargo que se está realizando.
+card
+object (Card)	Permite definir la información del cargo que se está realizando.
+Objeto Charge
+Parámetro	Descripción
+totalAmount
+number	Campo requerido que indica el monto total del cargo, valor positivo entre 300 - 999900.
+returnUrl
+string	Campo requerido que indica la URL del sitio web donde se invoca la autenticación 3DS.
+currency
+string	Campo que indica el tipo de moneda del cargo a realizarse
+Por defecto: PEN.
+Objeto Card
+Parámetro	Descripción
+email
+string	Campo requerido que indica el correo electrónico del dueño de la tarjeta.
+Esta configuración se tiene que hacer por cada generación de cargo que se desea realizar.
+Paso 2. Personaliza Culqi3DS (Opcional)
+
+Personaliza modal de error, asocia una acción al cerrar el modal y si quieres o no mostrar el componente loading con los parámetros de configuración de culqi3DS.options.
+
+Configuración básica
+HTML
+<script>
+	Culqi3DS.options = {
+		showModal: true,
+		showLoading: true,
+		showIcon: true,
+		closeModalAction: function () {
+			/* ... */
+		},
+		style: {
+			btnColor: "#3c1361",
+			btnTextColor: "#FFFFFF"
+		}
+	};
+</script>
+Parámetro	Descripción
+showModal
+boolean	Campo que indica si se va a mostrar el modal de error.
+showIcon
+boolean	Campo que indica si se mostrara el ícono por defecto del modal de error.
+showLoading
+boolean	Campo que indica si se va a mostrar el loader por defecto.
+closeModalAction
+function	Campo que indica la función que se va a llamar cuando se de click al botón aceptar del modal.
+style
+object (Style)	Campo que permite personalizar los colores del modal para la autenticación 3DS.
+Objeto Style
+Parámetro	Descripción
+btnColor
+string	Campo que indica el color del botón para el modal
+Por defecto: #00A19B.
+btnTextColor
+string	Campo que indica el color de texto del botón para el modal
+Por defecto: #FFFFFF.
+Paso 3. Obtención de resultado de la autenticación 3DS
+
+Para poder obtener la respuesta del flujo de la autenticación 3DS se necesita implementar un eventListener al origin actual que invoca la librería. Te lo mostramos a continuación:
+
+HTML
+<script>
+	window.addEventListener(
+		"message",
+		function (event) {
+			if (event.origin === window.location.origin) {
+				const response = event.data;
+				if (response.loading) {
+					/* Mostrar custom loading */
+				} else {
+					/* Ocultar custom loading */
+				}
+
+				if (response.parameters3DS) {
+					/*
+					La autenticación 3DS se completó exitosamente
+					response.parameters3DS -> { xid: "0201848b8c23f6b0196cfd", ... }
+				*/
+				}
+
+				if (response.error) {
+					/*
+					Hubo un error en la autenticación 3DS
+					response.error -> “No se pudo autenticar la transacción”
+				*/
+				}
+			}
+		},
+		false
+	);
+</script>
+Parámetro	Descripción
+parameters3DS
+object (Parameters3DS)	Campo que contiene los parámetros 3DS que da como resultado la autenticación 3DS.
+error
+string	Texto del error en la autenticación 3DS.
+loading
+boolean	Valor que indica cuando se debe mostrar el custom loading mientras se procesa el flujo 3DS.
+Objeto Parameters3DS
+Parámetro	Descripción
+eci
+string	Identificador único.
+xid
+string	Identificador único codificado en Base64.
+cavv
+string	Identificador único codificado en Base64.
+protocolVersion
+string	Versión de 3DS que se empleó para la autenticación, por ejemplo: 1.0.2 - 2.1.0.
+directoryServerTransactionId
+string	Identificador único de la transacción que solo cuenta la versión 2.x.x.
+Anterior
+Flujo de Cargos + 3DS
+Siguiente
+Uso de la librería
+Contenido de esta página
+Culqi 3DS versión 1
+Paso 1. Cargo y tarjeta
+Objeto Charge
+Objeto Card
+Paso 2. Personaliza Culqi3DS (Opcional)
+Configuración básica
+Objeto Style
+Paso 3. Obtención de resultado de la autenticación 3DS
+Objeto Parameters3DS
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#generaci%C3%B3n-del-token-de-culqi
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#custom-checkout
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#api-de-tokens
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#generaci%C3%B3n-del-devicefingerprintid
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#iniciar-autenticaci%C3%B3n-3ds
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión
+
+#### https://docs.culqi.com/es/documentacion/culqi-3ds/v1/uso-libreria/#reinicio-de-la-sesi%C3%B3n
+Empieza aquí
+Flujo de Cargos + 3DS
+Culqi3DS V1
+Configuración
+Uso de la librería
+Generación del token de Culqi
+
+La generación de token lo puedes realizar a través de:
+
+Custom Checkout
+
+Puedes utilizar el Custom Checkout para tener una integración rápida y segura.
+
+Recuerda que el Custom Checkout cumple con la normativa PCI DSS 3.2, dado que la información de la tarjeta nunca toca tu servidor.
+
+Api de tokens
+
+En caso se use el API para generación de token, es responsabilidad del comercio cumplir con la normativa PCI DSS. ESto se debe a que se está manipulando los datos de la tarjeta directamente.
+
+Recuerda que cuando interactúas directamente con el API necesitas cumplir la normativa de PCI DSS 3.2. Por ello, te pedimos que llenes el formulario SAQ-D y lo envíes al buzón de riesgos Culqi.
+Generación del deviceFingerPrintId
+
+Este método genera un identificador único el cual sirve para enviar en el objeto antifraud_details para la generación del cargo con el key device_finger_print_id.
+
+JS
+const 
+const devideFingerPrintId: string | null
+devideFingerPrintId = await 
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+generateDevice: () => Promise<string | null>
+generateDevice();
+
+if (
+const devideFingerPrintId: string | null
+devideFingerPrintId) {
+	/* '8019959c-fab1-49eb-bbbe-b846d308d8df' */
+} else {
+	/* Error al generar el device */
+}
+
+A continuación se muestra un ejemplo del body que se manda al servicio de https://api.culqi.com/v2/charges para la generación de cargo añadiendo el tokenId y el deviceId.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	}
+}
+
+Este servicio responderá diferentes HTTP StatusCode:
+
+Status Code	Descripción
+200	Se generó exitosamente el cargo.
+201	La generación de cargo necesita pasar por una autenticación (Culqi3DS).
+4xx - 5xx	Ocurrió un error en la generación del cargo.
+Iniciar autenticación 3DS
+
+Este método inicia el proceso de autenticación 3DS, el cual consiste en que el usuario ingrese el código de autenticación dentro de un formulario que despliega la librería.
+
+Al finalizar este flujo se obtienen algunos parámetros que se tienen que mandar para la generación de cargos. En caso exista algún error aparecerá un mensaje (ver la configuración si se quiere cambiar).
+
+Para iniciar la autenticación 3DS debemos pasar como parámetro un token:
+
+JS
+const Culqi3DS: {
+    generateDevice: () => Promise<string | null>;
+    initAuthentication: (tokenId?: string) => Promise<void>;
+    reset: () => void;
+}
+Culqi3DS.
+initAuthentication: (tokenId?: string) => Promise<void>
+initAuthentication("tkn_live_xxxxxxxxxxx");
+
+Te mostramos un ejemplo del body que se manda al servicio de https://api.culqi.com/ por segunda vez para generación del cargo después de pasar por la autenticación 3DS.
+
+JSON
+{
+	"amount": 1000,
+	"currency_code": "PEN",
+	"email": "example@yopmail.com",
+	"source_id": "tkn_live_xxxxxxxxxxx",
+	"installments": 3,
+	"antifraud_details": {
+		"first_name": "Fernando",
+		"last_name": "Chullo Mamani",
+		"phone_number": "999-999-999",
+		"device_finger_print_id": "8019959c-fab1-49eb-bbbe-b846d308d8df"
+	},
+	"authentication_3DS": {
+		"eci":"05",
+		"xid":"02010000755f8c81a4db4c848b8c23f6b0196cfd",
+		"cavv":"63617264696e616c636f6d6d6572636561757468",
+		"protocolVersion":"2.1.0",
+		"directoryServerTransactionId":"755f8c81-a4db-4c84-8b8c-23f6b0196cfd"
+	}
+}
+
+Tanto el campo device_finger_print_id como el source_id deben tener los mismos valores que se enviaron para la generación del cargo en la primera vez.
+
+Reinicio de la sesión
+
+Para cada generación de cargo se tiene que volver a configurar la librería. Esto para evitar volver a mandar la misma información. Es necesario borrar las instancias generadas para un nuevo uso, usando la función reset().
+
+JS
+const Culqi3DS: {
+    reset: () => void;
+}
+Culqi3DS.
+reset: () => void
+reset();
+
+Esto elimina las siguientes instancias:
+
+Culqi3DS.settings
+El objeto token generado
+Anterior
+Configuración
+Siguiente
+Empieza aquí
+Contenido de esta página
+Generación del token de Culqi
+Custom Checkout
+Api de tokens
+Generación del deviceFingerPrintId
+Iniciar autenticación 3DS
+Reinicio de la sesión

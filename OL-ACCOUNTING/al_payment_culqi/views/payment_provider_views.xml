@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">payment.provider.form.culqi</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'culqi'" name="culqi_credentials">
+                    <field name="culqi_public_key" required="code == 'culqi' and state != 'disabled'"
+                           placeholder="pk_test_…"/>
+                    <field name="culqi_secret_key" required="code == 'culqi' and state != 'disabled'"
+                           password="True" placeholder="sk_test_…" groups="base.group_system"/>
+                    <field name="culqi_rsa_id"/>
+                    <field name="culqi_rsa_public_key"/>
+                    <div colspan="2" class="text-muted small">
+                        Las llaves están en CulqiPanel ▸ Desarrollo ▸ API Keys. En «Modo de prueba»
+                        use las de integración (pk_test_…/sk_test_…); en «Activado», las de producción.
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>

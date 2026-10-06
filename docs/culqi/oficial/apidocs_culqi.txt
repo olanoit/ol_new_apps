@@ -1,0 +1,6992 @@
+Documentación
+API
+Soporte
+Introducción
+Autenticación
+Encriptación AES/RSA
+Errores
+Metadata
+Paginación
+ID de rastreo
+Versionado
+Webhooks
+Tokens
+Cargos
+Devoluciones
+Clientes
+Tarjetas
+Planes
+Suscripciones
+Órdenes
+Eventos
+Links
+Estado Cuenta
+API docs by Redocly
+CULQI API (2.0)
+License: Culqi
+Revisa la última versión del Checkout aquí.
+La nueva versión de suscripciones ya está disponible, revísala aquí.
+Introducción
+
+Nuestra API está construido bajo los estándares de REST. Es decir, posee URLs orientadas a recursos y hace uso de los códigos de respuesta HTTP para indicar los posibles errores en ella. Para cada petición se encuentra implementada una autenticación HTTP (Bearer Token). Además, soportamos las solicitudes HTTP de origen cruzado (CORS), permitiendo que podamos interactuar con tu sitio de manera segura mediante nuestra API desde una aplicación cliente. Cada petición a la API retorna un objeto JSON incluyendo errores. Adicionalmente, nuestras bibliotecas convierten las respuestas en objetos específicos para cada lenguaje soportado.
+
+Para que puedas comenzar a experimentar con nuestra API, todas las cuentas registradas en Culqi poseen llaves para el entorno de prueba (Regístrate y obtén tus llaves) y el entorno de producción. al usar las llaves de prueba, las transacciones no pasan por redes bancarias ni tienen costo ( Al probar, recuerda usar tarjetas de prueba).
+
+Nunca debes exponer tu Llave Secreta en el código de la aplicación cliente web.
+Tokens
+
+Captura de manera segura los datos sensibles de las tarjetas de crédito y débito directamente desde el navegador de tu cliente sin que toquen tus servidores.
+
+Cargos
+
+Realiza un cargo o cobro a las tarjetas de crédito o débito de tus clientes usando un token de cargo único o una tarjeta que haya sido guardada previamente.
+
+Planes
+
+Define un plan que contenga información acerca del tipo de cargo, frecuencia, intervalo y monto que quieres cobrar a un cliente de manera recurrente.
+
+Subscriptions
+
+Realiza cargos recurrentes a tus clientes asociando una tarjeta de crédito o débito con un plan de suscripción creado previamente.
+
+Clientes
+
+Crear un cliente te permitirá asociar un usuario a una o varias tarjetas de crédito o débito para realizarles cargos recurrentes o pagos en un solo click.
+
+Tarjetas
+
+Guarda información de las tarjetas de tus clientes frecuentes para realizarles cargos sin que vuelvan a ingresar todos los datos de sus tarjetas de crédito o débito.
+
+Autenticación
+
+Culqi autentica tus solicitudes de API usando tu llave pública o privada. Se genera un error de petición si no incluyes una llave en la petición, y un error de autenticación si la llave es incorrecta.
+
+Para poder acceder y utilizar nuestra API necesitas previamente obtener tus Llaves de Autenticación e incluirlas en cada petición que hagas. Podrás encontrar tus llaves en el Panel de Integración y Producción.
+
+Ten en cuenta que es información muy sensible y no puedes compartirla con nadie.
+
+Para usar nuestra API utiliza autenticación Bearer y envía el header Authorization como se muestra a continuación:
+
+Ejemplo de autenticación:
+
+curl --location --request POST 'https://api.culqi.com/v2/charges' \
+--header 'Authorization: Bearer sk_test_UTCQSGcXW8bCyU59' \
+--header 'Content-Type: application/json'
+
+Las llaves secretas de integración tiene el prefijo 'sk_test_' y las llaves secretas de producción tienen el prefijo 'sk_live_'
+
+Todas las peticiones al API deben ser hechas bajo el protocolo de transferencia HTTPS. Las llamadas hechas bajo el protocolo HTTP plano fallarán en el entorno de producción al igual que las peticiones sin autenticación.
+
+Encriptación AES/RSA
+
+Culqi proporciona un mecanismo de encriptación híbrido AES/RSA entre tus servidor y Culqi, ya que permite encriptar la data sensible del payload de los servicios POST y PATCH resguardando los datos en tránsito y brindando un segundo factor de protección, ya que cifra los datos y los protege contra cualquier acceso ilícito.
+
+La data sensible del payload se encripta con AES-256-GCM (encriptación simétrica) con un “key” e “iv” generados aleatoriamente, luego se encripta el “key” e “iv” con la llave pública RSA (encriptación asimétrica) y el algoritmo “RSA/ECB/OAEPWithSHA-256AndMGF1Padding”.
+
+El payload encriptado tiene formato json y consta de 3 parámetros:
+
+encrypted_data: payload encriptado.
+encrypted_key: key de la encriptación simétrica AES-256.
+encrypted_iv: Vector de inicialización de la encriptación simétrica AES-256.
+
+Para poder encriptar el payload de nuestra API necesitas previamente obtener tus llave RSA e incluir en el header el ID de la llave RSA en cada petición que hagas. Podrás generar tus llaves RSA en el Panel de Integración o Producción.
+
+¿Cómo generar el payload encriptado?
+
+Para generar la encriptación del payload debe seguir los siguientes pasos:
+
+Almacena tu llave RSA y ID de la llave RSA en tu server.
+
+Genera un key aleatorio(AES-GCM).
+
+Genera un iv aleatorio(ASES-GCM).
+
+Encripta el payload con el key e iv generados con el algoritmo AES-GCM.
+
+Encripta el key aleatorio con la llave RSA pública.
+
+Encripta el iv aleatorio con la llave RSA pública.
+
+Genera el payload encriptado en formato JSON, el cual contiene el encrypted_data, encripted_key, encrypted_id.
+
+Debes enviar en tu petición el payload encriptado.
+
+A continuación mostramos un ejemplo de encriptación con Python:
+
+import json
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Hash import SHA256
+import base64
+
+class RsaAesEncoder:
+
+    def _encrypt(self, data, public_key):
+        # Generate a random encryption key
+        key = get_random_bytes(32)
+        iv = get_random_bytes(16)
+
+        # Message to be encrypted
+        message = json.dumps(data).encode('utf-8')
+
+        # Initialize the cipher with the key and IV
+        cipher = AES.new(key, AES.MODE_GCM, iv)
+
+        # Encrypt the message
+        # Note that the message length must be a multiple of 16 bytes
+        ciphertext = cipher.encrypt(message)
+
+        encrypted_message = base64.b64encode(ciphertext).decode('utf-8')
+
+        # Encrypt the key with the public key
+        cipher = PKCS1_OAEP.new(RSA.import_key(public_key), hashAlgo=SHA256)
+        ciphertext_key = cipher.encrypt(key)
+
+        # Encrypt the iv with the public key
+        cipher = PKCS1_OAEP.new(RSA.import_key(public_key), hashAlgo=SHA256)
+        ciphertext_iv = cipher.encrypt(iv)
+
+        # Convert the encrypted message to a string
+        encrypted_aes_key = base64.b64encode(ciphertext_key).decode()
+        encrypted_aes_iv = base64.b64encode(ciphertext_iv).decode()
+
+        return {
+            "encrypted_data": encrypted_message,
+            "encrypted_key": encrypted_aes_key,
+            "encrypted_iv": encrypted_aes_iv
+        }
+
+
+Para conocer más del proceso de encriptación haz click aquí.
+
+¿Cómo realizar una petición encriptada?
+
+Para realizar una petición con payload encriptado, envía el header x-culqi-rsa-id y el body encriptado como se muestra a continuación:
+
+curl --location --request POST 'https://secure.culqi.com/v2/tokens' \
+--header 'Authorization: Bearer pk_live_53d22e51b61a43d1' \
+--header 'Content-Type: application/json' \
+--header 'x-culqi-rsa-id: 2ab335ad-c40d-4375-8dad-3ea315de23b0' \
+--data-raw '{
+    "encrypted_data": "+iXSkRrC7nUYL310YsEOnk39iqr5b6fUTf+taY1KgQuIyoK93Ss5EAI1MVnL8jmuHdOpZd1GP6+1AMZ7QjaHWW5gmEuPA/lHRbpqdw4hNLgIBZxu7kvnF9pLRLrtmrIrr1CQJXK4eX8NcLpV/JCvXQ/CMK4CnQwQLnTHf4b0fdg5GmqFugFSdynuey0ubel70HsB1bszmUl1cGNTkNyboe+PKWZcpSwl1btLszOvKSOVe0mNoWeiRYVbqGZF87BE",
+    "encrypted_key": "G8YuFIiX7rDbtV9r0iKndJRNBRqOnPDqqhsHiUlGb6rmp0lNZgZayWsgP9etL4m1YdCsjuRhdhmOTbNtlhh4HrgeI2NGAHWltgdHsS85kbzuOZT3elV5BZptDBjhh9UeCiOWX228vE8wznIdXvp/hB1bmFtvR5w1DUB+qK2MPDY=",
+    "encrypted_iv": "HZkjM80P5CpVP3XvmuTUjGFWp7Lol6u0ocn5OXoTr658dLgkCjZIubIrLqgmsiMV9+wV6XK0CZgXWNe+hYdI5ZfuuOvkT5onaajAOz5IjzaATM0xlzltAZqEFaZzPjJf7pdCVLUJRfOqbrJPljNk+axSrKc1o+6UxL7cQG3SHrY="
+}'
+
+Errores
+
+Por medio de nuestra API, serás notificado con toda la información en caso presentes un error al momento de hacer una petición a cualquier operación. Utilizamos el estándar de Códigos de Estado HTTP (HTTP Status Codes) en todas sus respuestas para indicar si las solicitudes se pudieron procesar con éxito o fallaron.
+
+Objeto error
+
+Atributos:
+
+type
+required
+	
+string
+Example: "card_error"
+Enum: "invalid_request_error", "authentication_error", "parameter_error", "card_error", "limit_api_error", "resource_error" y "api_error"
+
+Indica el tipo de error devuelto
+
+
+charge_id
+	
+string
+Example: "chr_test_stm3Fr4HIPC50qxH""
+
+El ID del cargo que ha sido denegado
+
+
+code
+Example: "DNGA0019"
+	
+string
+
+Indica el tipo de error relacionado a una tarjeta
+
+
+decline_code
+Example: "insufficient_funds"
+	
+string
+
+Indica el motivo de denegación devuelto por los bancos.
+
+
+merchant_message
+required
+	
+string
+Example: "La tarjeta no tiene fondos suficientes para realizar la compra."
+
+Mensaje dirigido al comercio para conocer el detalle del error.
+
+
+user_message
+	
+string
+Example: "Su tarjeta no tiene fondos suficientes. Verifica tus fondos disponibles con el banco emisor o inténta nuevamente con otra tarjeta.
+
+Mensaje dirigido al cliente para conocer el detalle del error.
+
+
+param
+	
+string
+Example: "amount"
+
+Indica el parámetro específico relacionado al error.
+
+Códigos HTTP
+
+Usamos los siguientes códigos de estado HTTP en las respuestas:
+
+Código	HTTP Status	Descripción
+200	OK	Todo salió a la perfección.
+201	Created	Un nuevo recurso fue creado. (POST).
+204	No Content	El recurso fue exitosamente eliminado. (DELETE)
+400	Bad Request	La petición al servidor no pudo ser procesada debido a una sintáxis incorrecta.
+401	Unauthorized	La llave API utilizada es inválida.
+402	Payment Required	El pago no pudo ser procesado.
+404	Not Found	El recurso solicitado en la llamada no existe.
+422	Unprocessable Entity	La sintaxis de la llamada es válida pero la información dentro de los parámetros es inválida.
+500 y 503	Server Errors	Error en nuestro servidor, la petición no pudo ser procesada.
+Tipos de errores
+
+Devolvemos los siguientes tipos de errores relacionados con los códigos de estado HTTP en las respuestas:
+
+Type	HTTP Status Code - Descripción
+invalid_request_error	HTTP 400 - La petición tiene una sintaxis inválida.
+authentication_error	HTTP 401 - La petición no pudo ser procesada debido a problemas con las llaves.
+parameter_error	HTTP 422 - Algún parámetro de cualquier petición es inválido.
+card_error	HTTP 402 - No se pudo realizar el cargo a una tarjeta.
+limit_api_error	HTTP 429 - Estás haciendo muchas peticiones rápidamente al API o superaste tu límite designado.
+resource_error	HTTP 404 - El recurso no puede ser encontrado, es inválido o tiene un estado diferente al permitido.
+api_error	HTTP 500 y 503 - Engloba cualquier otro tipo de error (Ejemplo: problema temporal con nuestro servidor) y debería de ocurrir muy pocas veces.
+Codigos de denegación de bancos
+
+Culqi devuelve los siguientes tipos de denegaciones devueltas por los bancos:
+
+Decline Code	Explicación
+expired_card	Tarjeta vencida. La tarjeta está vencida o la fecha de vencimiento ingresada es incorrecta.
+stolen_card	Tarjeta robada. La tarjeta fue bloqueada y reportada al banco emisor como una tarjeta robada
+lost_card	Tarjeta perdida. La tarjeta fue bloqueada y reportada al banco emisor como una tarjeta perdida.
+insufficient_funds	Fondos insuficientes. La tarjeta no tiene fondos suficientes para realizar la compra.
+contact_issuer	Contactar emisor. La operación fue denegada por el banco emisor de la tarjeta y el cliente necesita contactarse con la entidad para conocer el motivo.
+invalid_cvv	CVV inválido. El código de seguridad (CVV2, CVC2, CID) de la tarjeta es inválido.
+too_many_attempts_cvv	Exceso CVV. El cliente intentó demasiadas veces ingresar el código de seguridad (CVV2, CVC2, CID) de la tarjeta.
+issuer_not_available	Emisor no disponible. El banco que emitió la tarjeta no responde. El cliente debe realizar el pago nuevamente.
+issuer_decline_operation	Operación denegada. La operación fue denegada por el banco emisor de la tarjeta por una razón desconocida.
+invalid_card	Tarjeta inválida. La tarjeta utilizada tiene restricciones para este tipo de compras. El cliente necesita contactarse con el banco emisor para conocer el motivo de la denegación.
+processing_error	Error de procesamiento. Ocurrió un error mientras procesabamos la compra. Contáctate con culqi.com/soporte para darte una solución.
+fraudulent	Operación fraudulenta. El banco emisor de la tarjeta sospecha que se trata de una compra fraudulenta.
+culqi_card	Tarjeta Culqi. Estás utilizando una de nuestras tarjetas de prueba para realizar una compra real.
+soft_block	Tarjeta con bloqueo temporal por reintentos. El cliente debe intentar nuevamente con otra tarjeta.
+Casos de errores
+
+A continuación te presentamos una serie de ejemplos de errores comunes a la hora de integrar nuestra API. Ver nuestra lista de errores aquí
+
+Petición inválida
+
+El formato de la petición no es JSON.
+
+{
+  "object": "error",
+  "type": "invalid_request_error",
+  "merchant_message": "Petición invalida, verifica que el Content-Type sea
+  application/json (formato JSON) y el cuerpo un JSON válido."
+}
+
+Autenticación
+
+No ingresaste una llave de autenticación válida.
+
+{
+  "object": "error",
+  "type": "authentication_error",
+  "code": "DNGA0019",
+  "merchant_message": "Código de comercio proporcionado inválido: AJVBX245.
+  Revisa tus llaves correctas en tu panel Culqi (http://culqi.com/)."
+}
+
+Parámetros inválidos
+
+Ingresaste un parámetro inválido.
+
+{
+  "object": "error",
+  "type": "parameter_error",
+  "code": "invalid_amount",
+  "merchant_message": "El campo 'amount' es inválido.  El valor debe ser mayor
+  o igual que '100' (1 Nuevo Sol) .",
+  "param": "amount"
+}
+
+Tarjetas denegadas
+
+El banco denegó la compra porque el cliente no tenía fondos suficientes.
+
+{
+  "object": "error",
+  "type": "card_error",
+  "charge_id": "chr_test_stm3Fr4HIPC50qxH",
+  "code": "DNGE0015",
+  "decline_code": "insufficient_funds"
+  "merchant_message": "La La tarjeta no tiene fondos suficientes para realizar
+  la compra. ",
+  "user_message": "Su tarjeta no tiene fondos suficientes. Verifica tus fondos
+  disponibles con el banco emisor o inténta nuevamente con otra tarjeta."
+}
+
+Manejo de errores
+
+Nuestras bibliotecas manejan excepciones por muchas razones. Entre ellas tenemos cargos denegados, parámetros inválidos, errores de autenticación y no disponibilidad de los bancos emisores. Recomendamos que, contemples todos los escenarios y manejes todas las excepciones que presenta nuestra API.
+
+Metadata
+
+La metadata es una manera útil de guardar información adicional de manera estructurada en un objeto. Nuestros recursos, incluyendo Tokens, Cargos, Planes, Suscripciones, Devoluciones, Tarjetas, Clientes tienen un parámetro metadata que puede ser utilizado para reflejar información clave del negocio que quieras relacionar con las operaciones.
+
+Por ejemplo, en el parámetro metadata del recurso Clientes podrás guardar el nombre completo de tu cliente, su número de documento de identidad y su fecha de nacimiento. La metadata no es utilizada por nosotros para analizar, realizar o rechazar un cargo.
+
+El atributo metadata no puede tener más de 20 objetos clave-valor. Adicionalmente, la clave no podrá exceder de 30 caracteres y el valor de 200 caracteres.
+
+Ejemplos de metadata
+
+
+Por ejemplo, en la petición para crear un cargo al API, podrás enviar los valores como user_id , user_details a través del objeto metadata:
+
+{
+  "amount": 200,
+  "currency_code": "PEN",
+  "source_id": "tkn_test_189fqQ2eZvKYlo2",
+  "description": "Apple Watch Series 20",
+  "installments": 6,
+  "capture": true,
+  "metadata": {
+    "order_id": "204055",
+    "user_id": "4625",
+    "user_details": "46734527"
+  }
+}
+
+
+Aquí te presentamos algunas sugerencias para los valores de metadata:
+
+order_id
+	
+string
+Example: {'order_id':'204055'}
+
+Adjunta un número de pedido incremental.
+
+
+user_id
+	
+string
+Example: {'user_id:'4625'}
+
+Adjunta un identificador del cliente de tu sistema.
+
+
+user_details
+	
+string
+Example: {'dni':'46734527'}
+
+Adjunta datos adicionales sobre tu cliente.
+
+Paginación
+
+Todas nuestras APIS soportan operaciones de listado, entre ellos tokens, cargos, tarjetas, clientes, suscripciones, devoluciones y planes. Adicionalmente, todos los métodos de listado comparten una estructura similar tomando en cuenta estos tres parámetros: limit, after y before.
+
+Utilizamos una paginación en tiempo real basada en cursor a través de los parámetros after y before. Un cursor se refiere a un string de caracteres random que marca un ítem específico en una lista de datos. A menos que el ítem sea borrado, el cursor siempre estará punteando la misma parte de la lista, pero será invalidado si el ítem es removido.
+
+Los parámetros after y before toman el valor ID y retornan los objetos en un orden cronológico reverso. El parámetro before devuelve los objetos creados antes del objeto en cuestión. El parámetro after devuelve los objetos creados después del objeto en cuestión. Si ambos parámetros son provistos solo before es utilizado.
+
+Ejemplo de paginación
+
+En el siguiente ejemplo podrás conocer cómo realizar una petición para obtener un listado de los últimos 50 cargos.
+
+Petición
+
+Petición
+
+curl -X GET -H "Authorization: Bearer sk_test_wJ7jU1ydtz9npsmc"
+-H "Cache-Control: no-cache"
+"https://api.culqi.com/v2/charges?limit=50&before=chr_test_kzGrl1jlVSaY8guT"
+
+
+Atributos
+
+limit
+required
+MinValue: 1
+MaxValue: 100
+	
+string
+Example: "50"
+
+El número límite de objetos que quieres que sean retornados
+
+
+charge_id
+	
+string
+Example: "chr_test_stm3Fr4HIPC50qxH""
+
+El ID del cargo que ha sido denegado
+
+
+after	
+string
+Example: "chr_test_ExT9c1UFAH0TX2Ui"
+
+El objeto desde donde se quiere traer la siguiente página (no inclusivo)
+
+
+before	
+string
+Example: "chr_test_kzGrl1jlVSaY8guT"
+
+El objeto desde donde se quiere traer la página anterior (no inclusivo) .
+
+Respuesta
+
+  {
+  "data":[
+    ...
+  ],
+  "paging":{
+    "previous": "https://api.culqi.com/v2/charges?limit=50&before=chr_test
+    _kzGrl1jlVSaY8guT",
+    "next": "https://api.culqi.com/v2/charges?limit=50&after=chr_test_ExT9
+    c1UFAH0TX2Ui",
+    "cursors": {
+    "before": "chr_test_kzGrl1jlVSaY8guT",
+    "after": "chr_test_ExT9c1UFAH0TX2Ui"
+    }
+  }
+}
+
+
+Atributos
+
+data
+required
+MinValue: 1
+MaxValue: 100
+	
+string
+Example: "50"
+
+Un arreglo que contiene los elementos de la respuesta paginados por los parámetros de la petición.
+
+
+paging
+required
+	
+object
+
+Objeto que contiene la información de los cursores.
+
+Auto-paginación
+
+La mayoría de nuestras bibliotecas soportan la auto-paginación. Esta funcionalidad te permite manejar grandes listados de recursos sin tener que implementar manualmente resultados paginados o realizar peticiones subsequentes.
+
+ID de rastreo
+
+Cada petición al API está asociada a un identificador de rastreo. Puedes encontrar este valor en los headers de respuesta, bajo el nombre de x-culqi-tracking-id, en el Panel de Culqi y en el detalle de cada petición.
+
+Si necesitas ayuda con alguna petición en específica, al brindar este ID de rastreo, será más fácil la ubicación y posterior solución al problema o incidencia.
+
+Ejemplo de headers de respuesta:
+
+"x-culqi-environment": "live",
+"x-culqi-tracking-id": "9283",
+"x-culqi-version": "17.01.89",
+"content-type": "application/json"
+
+
+Atributos:
+
+x-culqi-environment
+required
+	
+string
+Enum: "live" "test"
+
+Entorno al que se realizó la petición. Ver más.
+
+
+x-culqi-tracking-id
+required
+	
+string
+Example: "9283"
+
+Código de identificación de la petición.
+
+
+x-culqi-version
+required
+	
+string
+Example: "17.01.89"
+
+Número de versión del API.
+
+
+content-type
+required
+	
+string
+Value: "applcation/json"
+
+Formato de contenido de la respuesta.
+
+Versionado
+
+Cuando hacemos cambios a nuestra API que afectan la compatibilidad con versiones anteriores, realizamos lanzamientos de nuevas modificaciones de manera versionada.
+
+Los eventos generados por las peticiones al API estarán siempre estructurados de acuerdo a tu versión del API.
+Versión API	Fecha	Docs
+v2.0	08-02-2017	API 2.0
+v1.2	23-08-2016	API 1.2 (Descontinuada)
+v1.0	01-09-2015	Descontinuada
+Webhooks
+
+Para usar los eventos listados debes leer nuestra guía de integración de Webhooks.
+
+Lista de eventos tokens
+
+Evento	Descripción
+token.creation.succeeded	El token fue creado con éxito.
+token.creation.failed	El token no pudo ser creado.
+token.expired	El token expiró y no puede ser usado para realizar un cargo.
+token.update.succeeded	La información del token fue actualizada.
+token.update.failed	La información del token no pudo ser actualizada.
+
+Lista de eventos cargos
+
+Evento	Descripción
+charge.creation.succeeded	El cargo fue procesado con éxito.
+charge.creation.failed	El cargo no pudo ser procesado y fue denegado.
+charge.show.failed	El cargo no pudo mostrarse.
+charge.expired	El cargo expiró y el monto de la venta fue devuelto a la tarjeta del cliente.
+charge.update.succeeded	El cargo fue procesado con éxito.
+charge.update.failed	La información del cargo no pudo ser actualizada.
+charge.capture.succeeded	El cargo fue capturado.
+charge.capture.failed	El cargo no pudo ser capturado.
+
+Lista de eventos devoluciones
+
+Evento	Descripción
+refund.creation.succeeded	La devolución fue procesada con éxito.
+refund.creation.failed	La devolución no pudo ser procesada.
+refund.update.succeeded	La información de la devolución fue actualizada.
+refund.update.failed	La información de la devolución no pudo ser actualizada.
+
+Lista de eventos clientes
+
+Evento	Descripción
+customer.creation.succeeded	El cliente fue creado con éxito.
+customer.creation.failed	El cliente no pudo ser creado.
+customer.update.succeeded	La información del cliente fue actualizada con éxito.
+customer.update.failed	La información del cliente no pudo ser actualizada.
+customer.delete.succeeded	El cliente ha sido eliminado con éxito.
+customer.delete.failed	El cliente no pudo ser eliminado.
+
+Lista de eventos tarjetas
+
+Evento	Descripción
+card.creation.succeeded	La tarjeta fue creada con éxito.
+card.creation.failed	La tarjeta no pudo ser creada.
+card.updated.succeeded	La información de la tarjeta fue actualizada con éxito.
+card.updated.failed	La información de la tarjeta no pudo ser actualizada.
+card.delete.succeeded	La tarjeta fue eliminada con éxito.
+card.delete.failed	La tarjeta no pudo ser eliminada.
+
+Lista de eventos planes
+
+Evento	Descripción
+plan.creation.succeeded	El plan fue creado con éxito.
+plan.creation.failed	El plan no pudo ser creado.
+
+Lista de eventos suscripciones
+
+Evento	Descripción
+subscription.creation.succeeded	La suscripción fue creada con éxito.
+subscription.creation.failed	La suscripción no pudo ser creada.
+subscription.charge.failed	El cargo de la suscripción falló.
+subscription.charge.succeeded	El cargo de la suscripción fue exitosa.
+subscription.cancel.succeeded	La suscripción ha sido cancelada con éxito.
+subscription.cancel.failed	La suscripción no pudo ser cancelada.
+subscription.trial.end	La suscripción de prueba finalizó.
+
+Lista de eventos órdenes
+
+Evento	Descripción
+order.status.changed	La orden cambió de estado.
+order.creation.succeeded	La orden fue creada con éxito.
+
+Lista de eventos transferencia
+
+Evento	Descripción
+transfer.available	Transferencia disponible.
+transfer.paid	Transferencia pagada.
+Tokens
+
+Tokenización es el proceso que utiliza Culqi para capturar de manera segura datos sensibles de tarjetas de crédito y débito directamente desde el navegador del cliente. Un token representa a una tarjeta dentro de nuestro flujo de pago y es devuelto a tus servidores para que puedas utilizarlo a través de Culqi Checkout o nuestras bibliotecas para móviles (iOS y Android). Este método nos asegura que ningún dato de la tarjeta toque tus servidores y permite que la integración cumpla con la normativa PCI DSS.
+
+Recuerda que la forma más sencilla de cumplir con la normativa PCI es nunca ver (o tener acceso a) los datos de la tarjeta.
+
+Si no deseas hacer uso de los métodos de tokenización disponibles, también puedes crear tokens utilizando la API y tu llave pública. Pero, ten en cuenta que cuando pasas la información de las tarjetas directamente a la API de CULQI, tu integración se encarga directamente de esos datos y debes demostrar anualmente el cumplimiento de todos los controles de seguridad que exige la normativa PCI (SAQ-D).
+
+¿Qué es el SAQ-D?
+
+El SAQ-D (Self-Assessment Questionnaire D) es una herramienta que permite conocer a las marcas (Visa, MasterCard o American Express), el nivel de cumplimiento del comercio con respecto a los requisitos de seguridad de PCI DSS. Es aplicable para todos los comercios que aceptan datos de tarjeta en sus propios sitios web y/o los almacenan electrónicamente en sus propios servidores.
+
+Quiero usar la API de Culqi ¿qué debo hacer para cumplir la normativa PCI?
+
+Debido a que el cuestionario trata sobre requisitos de seguridad, recomendamos que el documento sea revisado en compañía del responsable de tecnología y/o de Ciberseguridad.
+
+Lo primero que debe hacer el comercio es descargar el cuestionario “SAQ D Merchant" del siguiente enlace.
+
+El comercio deberá revisar las instrucciones del documento y dar respuesta a todas las secciones del documento (sección 1, sección 2 y sección 3).
+
+La "Sección 1" trata sobre el modelo de negocio del comercio.
+
+La "Sección 2" habla sobre los requisitos de seguridad para la protección de los datos de los tarjetahabientes, para ello, existen 5 opciones de respuesta, cada requisito debe tener al menos 1 opción de respuesta: (1) Implementado (2) Implementado con CCW, (3) No Aplicable, (4) No Probado y (5) No Implementado.
+
+La "Sección 3" es una declaración de conformidad que deberá completar y firmar el representante legal del comercio
+
+Luego de completar todas las secciones del documento, el comercio deberá enviar el documento al equipo de Seguridad de la Información de CULQI (pci-compliance@culqi.com)
+
+El equipo de Seguridad de CULQI revisará el documento enviado y dará su conformidad al comercio. De encontrar alguna observación retomarán con el comercio para que puedan subsanar el hallazgo.
+
+Puntos a tener en cuenta:
+
+Por política interna de CULQI, solo podrán hacer uso del SAQ-D los comercios que no han sobrepasado los 5 millones de transacciones anuales.
+
+El SAQ-D es un documento obligatorio para los comercios que quieran usar la API de CULQI. Los comercios no podrán afiliarse sino completan y envían el documento.
+
+Si el comercio ha sobrepasado los 5 millones de transacciones anuales, las marcas de pago (Visa, MasterCard y American Express) considerarán al comercio como proveedor de NIVEL 1, lo que implica que el comercio deberá presentar un informe anual de cumplimiento (ROC) y obtener su certificación de cumplimiento PCI (AOC).
+
+Quiero certificar mi comercio en PCI ¿Qué debo hacer?
+
+El primer paso para iniciar el proceso de certificación de PCI es mediante un assessment que permita identificar las capacidades y brechas con respecto al cumplimiento de todos los requisitos de la norma PCI.
+
+Para ello, el comercio puede iniciar un assessment interno, realizado por sus propios especialistas de la organización o contratando los servicios de un auditor externo certificado en PCI DSS.
+
+Luego de obtener los resultados del assessment, el comercio debe implementar todos los planes de acción producto del assessment. Esto involucra contratar servicios, comprar herramientas y formalizar procesos y procedimientos.
+
+Cuando el comercio esté preparado para una auditoría externa, debe contactarse con una empresa auditora que brinde el servicio de auditoría externa PCI. Esta empresa debe tener la capacidad de emitir un AOC y esta debe renovarse anualmente.
+
+Objeto token
+object	
+string
+Value: "token"
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID del token.
+
+
+type	
+string
+Value: "card"
+
+Método de pago.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación del token en UNIX.
+
+
+email	
+string <email>
+
+Dirección de correo electrónico del cliente.
+
+
+card_number	
+string
+
+Número de la tarjeta enmascarado.
+
+
+last_four	
+string
+
+Últimos cuatro números de la tarjeta.
+
+
+active	
+boolean
+
+Indica si el token se encuentra activo para realizar un cargo.
+
+
+iin	
+object
+
+Información del banco emisor y el tipo de tarjeta.
+
+
+client	
+object
+
+Información del cliente y dispositivo utilizado.
+
+
+metadata	
+object
+
+Envía parámetros adicionales con información relevante. Ver más
+
+Copy
+Expand allCollapse all
+{
+"object": "token",
+"id": "tkn_test_0CjjdWhFpEAZlxlz",
+"type": "card",
+"email": "richard@piedpiper.com",
+"creation_date": 1476132639,
+"card_number": "442328******1214",
+"last_four": "1214",
+"active": true,
+"iin": 
+{
+"object": "iin",
+"bin": "442328",
+"card_brand": "Visa",
+"card_type": "credito",
+"card_category": "platinum",
+"issuer": 
+{},
+"installments_allowed": 
+[]
+},
+"client": 
+{
+"ip": "72.229.28.185",
+"ip_country": "United States",
+"ip_country_code": "US",
+"browser": "Google Chrome 56.0.2924.87",
+"device_fingerprint": "6rITdVTYkWfOrss8",
+"device_type": "escritorio"
+},
+"metadata": 
+{
+"dni": "5831543"
+}
+}
+Crear token
+
+Crear tokens te permitirá obtener información de la tarjeta y utilizarla para crear un cargo o crear una tarjeta.
+
+Si desarrollas una página web debes crear el token utilizando Culqi Checkout o CulqiJS.
+Si desarrollas una aplicación móvil debes crear el token utilizando nuestros SDKs para móviles (iOS o Android).
+Si deseas crear el token de manera directa con el API de Culqi debes llenar el siguiente autocuestionario.
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer pk_test_UTCQSGcXW8bCyU59
+
+Llave pública
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+card_number
+required
+	
+string [ 13 .. 16 ] characters
+
+Número de tarjeta.
+
+
+cvv
+required
+	
+string [ 3 .. 4 ] characters
+
+CVV de la tarjeta.
+
+
+expiration_month
+required
+	
+string [ 1 .. 2 ] characters
+
+Mes de expiración de la tarjeta.
+
+
+expiration_year
+required
+	
+string = 4 characters
+
+Año de expiración de la tarjeta.
+
+
+email
+required
+	
+string [ 5 .. 50 ] characters
+
+Dirección de correo electrónico del cliente.
+
+
+metadata	
+object
+
+Informacion adicional que se quiere enviar del token.
+Example: {"dni":"71701978"}
+
+Responses
+201 
+
+La petición exitosa.
+
+POST
+/v2/tokens
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"card_number": "4111111111111111",
+"cvv": "123",
+"expiration_month": 9,
+"expiration_year": "2020",
+"email": "ichard@piedpiper.com",
+"metadata": 
+{
+"dni": "5831543"
+}
+}
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "token",
+"id": "tkn_test_0CjjdWhFpEAZlxlz",
+"type": "card",
+"email": "richard@piedpiper.com",
+"creation_date": 1476132639,
+"card_number": "442328******1214",
+"last_four": "1214",
+"active": true,
+"iin": 
+{
+"object": "iin",
+"bin": "442328",
+"card_brand": "Visa",
+"card_type": "credito",
+"card_category": "platinum",
+"issuer": 
+{},
+"installments_allowed": 
+[]
+},
+"client": 
+{
+"ip": "72.229.28.185",
+"ip_country": "United States",
+"ip_country_code": "US",
+"browser": "Google Chrome 56.0.2924.87",
+"device_fingerprint": "6rITdVTYkWfOrss8",
+"device_type": "escritorio"
+},
+"metadata": 
+{
+"dni": "5831543"
+}
+}
+Listar tokens
+
+Listar tokens te permitirá obtener una serie de tokens existentes. De acuerdo a los filtros que uses los tokens serán ordenados según la fecha de creación, siendo el primero el más reciente.
+
+QUERY PARAMETERS
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha del token en UNIX Timestamp.
+
+
+creation_date_from	
+string [ 5 .. 15 ] characters
+Example: creation_date_from=1476132639
+
+Fecha inicial de las tarjetas en UNIX Timestamp.
+
+
+creation_date_to	
+string [ 5 .. 15 ] characters
+Example: creation_date_to=1476132639
+
+Fecha limite de las tarjetas en UNIX Timestamp.
+
+
+card_brand	
+string
+Enum: "Visa" "Mastercard" "Amex" "Diner"
+Example: card_brand=Visa
+
+Marca de la tarjeta.
+
+
+card_type	
+string
+Enum: "credito" "debito" "internacional"
+Example: card_type=credito
+
+Tipo de tarjeta.
+
+
+device_type	
+string
+Enum: "escritorio" "movil" "tablet"
+Example: device_type=escritorio
+
+Tipo de dispositivo.
+
+
+bin	
+string [ 6 .. 8 ] characters
+Example: bin=411111
+
+Primeros seis dígitos de la tarjeta expresado en formato ISO/IEC 7812.
+
+
+country_code	
+string
+Example: country_code=PE
+
+Código del país, en formato ISO-3166 (Alfa 2).
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Cantidad exacta de tokens que se quieren listar.
+
+
+before	
+string = 25 characters
+Example: before=tkn_test_7lYOtONQ9LxcgJUW
+
+El ID del token desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=tkn_test_7lYOtOMM6LxcgJUW
+
+El ID del token desde donde se quiere traer los resultados siguientes. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/tokens
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/tokens?creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&card_brand=Visa&card_type=credito&device_type=escritorio&bin=411111&country_code=PE&limit=50&before=tkn_test_7lYOtONQ9LxcgJUW&after=tkn_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/tokens?limit=50&before=tkn_test_RzjTyGUwZioJLpZt",
+"next": "https://api.culqi.com/v2/tokens?limit=50&after=tkn_test_Z1YXhVdg60B0UCLI",
+"cursors": 
+{}
+}
+}
+Consultar token
+
+Consultar el detalle de un token utilizando su respectivo ID te permitirá obtener como respuesta el objeto solicitado. Si la petición es inválida te devolveremos un error.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: tkn_test_LVNpj300apa78Pjq
+
+ID del token a consultar.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/tokens/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "token",
+"id": "tkn_test_701ug3CDNJOAt5Q6",
+"type": "card",
+"creation_date": 1486686216000,
+"card_number": "411111******1111",
+"last_four": "1111",
+"active": false,
+"iin": 
+{
+"object": "iin",
+"bin": "411111",
+"card_brand": "Visa",
+"card_type": "credit",
+"card_category": "Clásica",
+"issuer": 
+{},
+"installments_allowed": 
+[]
+},
+"client": 
+{
+"ip": "190.235.231.153",
+"ip_country": "Perú",
+"ip_country_code": "PE",
+"browser": null,
+"device_fingerprint": null,
+"device_type": null
+}
+}
+Actualizar token
+
+Actualizar un token te permitirá agregar o reemplazar información a los valores de la metadata que enviaste a la hora de crearla. Cualquier parámetro o valor no provisto será omitido en los valores de la metadata.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: tkn_test_LVNpj300apa78Pjq
+
+ID del token a consultar.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+metadata	
+object
+
+Informacion adicional que se quiere enviar del token.
+Example: {"dni": "5831543", "cliente_id": 259}
+
+Responses
+200 
+
+La petición fue exitosa.
+
+PATCH
+/v2/tokens/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"metadata": 
+{
+"dni": "5831543",
+"cliente_id": 259
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "token",
+"id": "tkn_test_LVNpj300apa78Pjq",
+"type": "card",
+"creation_date": 1599833781000,
+"email": "soporte@culqi.com",
+"card_number": "455789******1201",
+"last_four": "1201",
+"active": false,
+"iin": 
+{
+"object": "iin",
+"bin": "455789",
+"card_brand": "Visa",
+"card_type": "credito",
+"card_category": null,
+"issuer": 
+{},
+"installments_allowed": [ ]
+},
+"client": 
+{
+"ip": "190.233.49.214",
+"ip_country": "Peru",
+"ip_country_code": "PE",
+"browser": "UNKNOWN",
+"device_fingerprint": null,
+"device_type": "Escritorio"
+},
+"metadata": 
+{
+"dni": 5831543,
+"cliente_id": 259
+}
+}
+Crear Token Yape
+
+Crear tokens te permitirá obtener información de la tarjeta y utilizarla para crear un cargo
+
+Si desarrollas una página web debes crear el token utilizando Culqi Checkout o CulqiJS.
+Si deseas crear el token de manera directa con el API de Culqi debes llenar el siguiente autocuestionario.
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer pk_test_UTCQSGcXW8bCyU59
+
+Llave pública
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+otp
+required
+	
+string = 6 characters
+
+Código digital Yape.
+
+
+number_phone
+required
+	
+string = 9 characters
+
+Teléfono del cliente.
+
+
+amount
+required
+	
+string [ 3 .. 5 ] characters
+
+Monto del cargo. Sin punto decimal.
+
+
+metadata	
+object
+
+Informacion adicional que se quiere enviar del token.
+Example: {"dni": "5831543"}
+
+Responses
+201 
+
+La petición fue exitosa.
+
+400 
+
+bad request
+
+POST
+/v2/tokens/yape
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"otp": "946627",
+"number_phone": "951123456",
+"amount": "500",
+"metadata": 
+{
+"dni": "5831543"
+}
+}
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "token",
+"id": "ype_live_0CjjdWhFpEAZlxlz",
+"type": "card",
+"email": "richard@piedpiper.com",
+"creation_date": 1476132639,
+"card_number": "442328******1214",
+"last_four": "1214",
+"active": true,
+"iin": 
+{
+"object": "iin",
+"bin": "442328",
+"card_brand": "Visa",
+"card_type": "credito",
+"card_category": "platinum",
+"issuer": 
+{},
+"installments_allowed": 
+[]
+},
+"client": 
+{
+"ip": "72.229.28.185",
+"ip_country": "United States",
+"ip_country_code": "US",
+"browser": "Google Chrome 56.0.2924.87",
+"device_fingerprint": "6rITdVTYkWfOrss8",
+"device_type": "escritorio"
+},
+"metadata": 
+{
+"dni": "5831543"
+}
+}
+Cargos
+
+Para realizar un cargo a una tarjeta de débito o crédito debes crear un objeto cargo. Adicionalmente puedes consultar, devolver un cargo en particular o listar tu historial de cargos en base a los filtros que desees. Todos los cargos están identificados por un ID.
+
+Objeto cargo
+object	
+string
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID del cargo.
+
+
+creation_date	
+integer
+
+Fecha de creación del cargo en UNIX Timestamp.
+
+
+amount	
+integer
+
+Monto inicial del cargo en céntimos.
+
+
+amount_refunded	
+integer
+
+Monto devuelto del cargo en céntimos.
+
+
+current_amount	
+integer
+
+Monto actual del cargo en céntimos.
+
+
+installments	
+integer
+
+Número de cuotas aplicadas al cargo.
+
+
+installments_amount	
+integer
+
+Monto aproximado de la cuota que se aplicará al cliente.
+
+
+currency_code	
+string
+Enum: "PEN" "USD"
+
+Código de la moneda en la que se realizó el cargo en formato ISO 3166-2.
+
+
+email	
+string
+
+Dirección de correo electrónico del cliente.
+
+
+description	
+string
+
+Descripción del producto o servicio adquirido.
+
+
+source	
+object
+
+Información del objeto utilizado para crear el cargo. Puede ser un token o una tarjeta.
+
+
+outcome	
+object
+
+Información detallada acerca del éxito o denegación del cargo.
+
+
+fraud_score	
+number
+
+Métrica que define el nivel de riesgo de fraude del cliente. Revisa la guía de análisis de riesgo para más información.
+
+
+antifraud_details	
+object
+
+Parámetros evaluados para el motor de fraude.
+
+
+dispute	
+boolean
+
+Indica si el cargo está en disputa. Revisa la guía de disputas para más información.
+
+
+capture	
+boolean
+
+Indica si el cargo está capturado. Revisa el flujo de un pago para más información.
+
+
+reference_code	
+string
+
+ID de referencia de la marca procesadora.
+
+
+duplicated	
+boolean
+
+Indica si ya se realizó un cargo con la misma información.
+
+
+metadata	
+object
+
+Envía parametros adicionales con información relevante. Ver más.
+
+
+fee_details	
+object
+
+Información detallada acerca de la comisión cobrada por Culqi.
+
+IMPORTANTE: Las comisiones se calculan de manera asíncrona, por lo que podrá recibir valores en blanco o NULL temporalmente.
+
+
+paid	
+boolean
+
+Indica si el cargo está en disputa. Revisa la guía de disputas para más información.
+
+
+statement_descriptor	
+string
+
+Descripción que aparecerá en el estado de cuenta del cliente para reflejar el cargo.
+
+
+operations	
+object
+
+Información de las operaciones que afectaron el monto original del cargo.
+
+Copy
+Expand allCollapse all
+{
+"object": "charge",
+"id": "chr_test_kEazTaQBDtzNdwFr",
+"creation_date": 1476132639,
+"amount": 10000,
+"amount_refunded": 500,
+"current_amount": 9900,
+"installments": 2,
+"installments_amount": 0,
+"currency_code": "PEN",
+"email": "richard@piedpiper.com",
+"description": "Demo Phone",
+"source": 
+{
+"object": "token",
+"id": "tkn_test_0CjjdWhFpEAZlxlz",
+"type": "card",
+"email": "richard@piedpiper.com",
+"creation_date": 1476132639,
+"card_number": "442328******1214",
+"last_four": "1214",
+"active": true,
+"iin": 
+{},
+"client": 
+{},
+"metadata": 
+{}
+},
+"outcome": 
+{
+"type": "succesfull_request",
+"code": "succesfull_charge",
+"decline_code": "insufficient_funds",
+"merchant_message": "Venta exitosa. Se logró realizar el cargo a la tarjeta del cliente.",
+"user_message": "¡Felicitaciones! Su compra ha sido exitosa."
+},
+"fraud_score": 30,
+"antifraud_details": 
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"address": "5230 Newell Road",
+"address_city": "Palo Alto",
+"country_code": "US",
+"phone": "65054324800"
+},
+"dispute": false,
+"capture": true,
+"reference_code": "1jKsutQy4s",
+"duplicated": false,
+"metadata": { },
+"fee_details": 
+{
+"fixed_fee": { },
+"variable_fee": { }
+},
+"paid": true,
+"statement_descriptor": "Culqi",
+"operations": 
+{
+"type": "devolucion",
+"operation_id": "ref_test_TWsfemI22ypplGK6",
+"creation_date": 1476132639
+}
+}
+Crear cargo
+
+Para realizar un cobro a un número telefónico vinculado con Yape o a una tarjeta de débito/crédito, es necesario crear un cargo utilizando un token o una tarjeta. Si utilizas tu llave secreta de integración no se realizarán cargos reales, a diferencia del entorno de producción donde enviamos tu petición a los bancos y marcas procesadoras.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+required
+amount
+required
+	
+integer [ 100 .. 9999900 ]
+
+Monto del cargo en céntimos sin punto decimal.
+Ejemplo: 100.00 serían 10000.
+
+
+currency_code
+required
+	
+string non-empty
+Enum: "PEN" "USD"
+
+Código de la moneda en tres letras (Formato ISO 4217).
+
+
+email
+required
+	
+string [ 5 .. 50 ]
+
+Correo electrónico del cliente.
+
+
+source_id
+required
+	
+string = 25 characters
+
+ID del objeto token, objeto Yape u objeto tarjeta que se va usar para realizar el cargo.
+
+Ejemplo:
+Cargo único:
+'tkn_test_701ug3CDNJOAt5Q6'
+'ype_live_0CjjdWhFpEAZlxlz'
+
+Recurrencia:
+'crd_test_TWsfemI22ypplGK6'
+
+
+capture	
+boolean
+
+Indica si se va realizar la captura automática de la tarjeta. Si no se considera por defecto, tiene el valor de "true".
+
+
+description	
+string [ 5 .. 80 ] characters
+
+Descripción del cargo a realizarse.
+
+
+installments	
+string [ 2 .. 48 ] characters
+
+Cantidad de cuotas que se van a aplicar al pago. Estas dependen de las cuotas aceptadas por el objeto token.
+
+
+metadata	
+object
+
+Informacion adicional que se quiere enviar del cargo.
+Example: {'dni': '70202170}
+
+
+antifraud_details	
+object
+
+Datos de la persona que realiza la compra, para detectar posibles fraudes.
+
+
+authentication_3DS	
+object
+
+Parámetros 3DS.
+
+Responses
+200 
+
+Se requieren parámetros 3DS.
+
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/charges
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Example
+Cargo tradicional sin 3DS
+Cargo con autenticación 3DS
+Cargo para producto Remesa
+Cargo tradicional sin 3DS
+Copy
+Expand allCollapse all
+{
+"amount": 10000,
+"currency_code": "PEN",
+"email": "richard@piedpiper.com",
+"source_id": "tkn_test_0CjjdWhFpEAZlxlz",
+"capture": true,
+"antifraud_details": 
+{
+"address": "Avenida Lima 1234",
+"address_city": "Lima",
+"country_code": "PE",
+"first_name": "culqi",
+"last_name": "core",
+"phone_number": "999777666"
+},
+"metadata": 
+{
+"documentNumber": "77723083"
+}
+}
+Response samples
+200201
+Content type
+application/json
+Copy
+{
+"user_message": "El usuario necesita autenticarse",
+"action_code": "REVIEW"
+}
+Listar cargos
+
+Este recurso te permitirá obtener una serie de cargos existentes, de acuerdo a los filtros que uses. Los cargos serán ordenados según la fecha de creación, siendo el primero el más reciente.
+
+QUERY PARAMETERS
+amount	
+string [ 300 .. 999900 ] characters
+Example: amount=50000
+
+Monto de los cargos en céntimos.
+recuerda que: 500.00 sería 50000.
+
+
+min_amount	
+string [ 300 .. 999900 ] characters
+Example: min_amount=10000
+
+Monto mínimo de los cargos en céntimos.
+recuerda que: 100.00 sería 10000
+
+
+max_amount	
+string [ 300 .. 999900 ] characters
+Example: max_amount=10000
+
+Monto máximo de los cargos en céntimos.
+recuerda que: 100.00 sería 10000
+
+
+installments	
+string [ 2 .. 48 ] characters
+Example: installments=4
+
+Cantidad de cuotas que se aplicaron al cargo.
+
+
+min_installments	
+string [ 2 .. 48 ] characters
+Example: min_installments=8
+
+Cantidad mínima de cuotas que se aplicaron al cargo.
+
+
+max_installments	
+string [ 2 .. 48 ] characters
+Example: max_installments=48
+
+Cantidad máxima de cuotas que se aplicaron al cargo.
+
+
+currency_code	
+string
+Example: currency_code=PE
+
+Código de la moneda en la que se realizaron los cargos cargo en formato ISO 4217.
+
+
+code	
+string [ 5 .. 15 ] characters
+Example: code=card_declined
+
+Indica el tipo de error relacionado a una tarjeta.
+
+
+decline_code	
+string [ 5 .. 15 ] characters
+Example: decline_code=expired_card
+
+Indica el tipo de error de declinación.
+
+
+fraud_score	
+string [ 0 .. 100 ] characters
+Example: fraud_score=50
+
+Score de fraude.
+
+
+min_fraud_score	
+string [ 0 .. 100 ] characters
+Example: min_fraud_score=20
+
+Score mínimo de fraude.
+
+
+max_fraud_score	
+string [ 0 .. 100 ] characters
+Example: max_fraud_score=90
+
+Score máximo de fraude de los clientes.
+
+
+first_name	
+string [ 2 .. 50 ] characters
+Example: first_name=Richard
+
+Nombre del cliente.
+
+
+last_name	
+string [ 2 .. 50 ] characters
+Example: last_name=Hendricks
+
+Apellidos del clinte.
+
+
+email	
+string [ 5 .. 50 ] characters
+Example: email=richard@piedpiper.com
+
+Correo electrónico.
+
+
+address	
+string [ 5 .. 100 ] characters
+Example: address=Av. Lima 321
+
+Dirección física del cliente.
+
+
+address_city	
+string [ 5 .. 15 ] characters
+Example: address_city=Lima
+
+Ciudad del cliente.
+
+
+phone_number	
+string [ 5 .. 15 ] characters
+Example: phone_number=3383478
+
+Teléfono del cliente.
+
+
+country_code	
+string
+Example: country_code=PE
+
+Código de país, en formato ISO-3166 (Alfa 2).
+
+
+captured	
+string [ 5 .. 15 ] characters
+Example: captured=true
+
+Cargos capturados o no.
+
+
+capture_date	
+string [ 5 .. 15 ] characters
+Example: capture_date=1476132639
+
+Fecha de la captura en UNIX Timestamp.
+
+
+capture_date_from	
+string [ 5 .. 15 ] characters
+Example: capture_date_from=1476132639
+
+Fecha inicial de los cargos capturados en UNIX Timestamp.
+
+
+capture_date_to	
+string [ 5 .. 15 ] characters
+Example: capture_date_to=1476132639
+
+Fecha limite de los cargos capturados en UNIX Timestamp.
+
+
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha del cargo en UNIX Timestamp.
+
+
+creation_date_from	
+string [ 5 .. 15 ] characters
+Example: creation_date_from=1476132639
+
+Fecha inicial de los cargos en UNIX Timestamp.
+
+
+creation_date_to	
+string [ 5 .. 15 ] characters
+Example: creation_date_to=1476132639
+
+Fecha limite de los cargos en UNIX Timestamp.
+
+
+card_brand	
+string [ 5 .. 15 ] characters
+Enum: "visa" "mastercard" "american_express" "diners_club"
+Example: card_brand=visa
+
+Marca de la tarjeta.
+
+
+card_type	
+string [ 5 .. 15 ] characters
+Enum: "credito" "debito" "prepagada"
+Example: card_type=credito
+
+Tipo de la tarjeta a consultar.
+
+
+bin	
+string
+Example: bin=411111
+
+Primeros 6 números de la tarjeta, expresado en formato ISO/IEC 7812.
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Límite de la paginación, por defecto 50 registros.
+
+
+before	
+string = 25 characters
+Example: before=chr_test_7lYOtONQ9LxcgJUW
+
+El ID del cargo desde donde se quiere traer la página anterior. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=chr_test_7lYOtOMM6LxcgJUW
+
+El ID del cargo desde donde se quiere traer la siguiente página. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/charges
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/charges?amount=50000&min_amount=10000&max_amount=10000&installments=4&min_installments=8&max_installments=48&currency_code=PE&code=card_declined&decline_code=expired_card&fraud_score=50&min_fraud_score=20&max_fraud_score=90&first_name=Richard&last_name=Hendricks&email=richard%40piedpiper.com&address=Av.%20Lima%20321&address_city=Lima&phone_number=3383478&country_code=PE&captured=true&capture_date=1476132639&capture_date_from=1476132639&capture_date_to=1476132639&creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&card_brand=visa&card_type=credito&bin=411111&limit=50&before=chr_test_7lYOtONQ9LxcgJUW&after=chr_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{}
+]
+}
+Consultar cargo
+
+Consultar el detalle de un cargo utilizando el ID devuelto en la petición de creación, te permitirá obtener como respuesta todos los parámetros del objeto indicado.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: chr_test_7VUwCneoG1XtLeS7
+
+ID del cargo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/charges/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"duplicated": false,
+"object": "charge",
+"id": "chr_test_HuVDSH10IoLKtYMa",
+"creation_date": 1669244278226,
+"amount": 10000,
+"amount_refunded": 0,
+"current_amount": 10000,
+"installments": 0,
+"installments_amount": null,
+"currency_code": "PEN",
+"email": "geerson.pizarro@culqi.com",
+"description": null,
+"source": 
+{
+"object": "token",
+"id": "tkn_test_RvtfMbLatXRJrJQo",
+"type": "card",
+"creation_date": 1669244270000,
+"email": "richard@piedpiper.com",
+"card_number": "41111111****1111",
+"last_four": "1111",
+"active": true,
+"iin": 
+{},
+"client": 
+{},
+"metadata": { }
+},
+"outcome": 
+{
+"type": "venta_exitosa",
+"code": "AUT0000",
+"merchant_message": "La operación de venta ha sido autorizada exitosamente",
+"user_message": "Su compra ha sido exitosa."
+},
+"fraud_score": 4,
+"antifraud_details": 
+{
+"first_name": "culqi",
+"last_name": "core",
+"address": null,
+"address_city": "Lima",
+"country_code": "PE",
+"phone": "999777666",
+"object": "client"
+},
+"dispute": false,
+"capture": true,
+"reference_code": "5526937563",
+"authorization_code": "9adPhe",
+"metadata": 
+{
+"documentNumber": "77723083"
+},
+"total_fee": 0,
+"fee_details": 
+{
+"fixed_fee": { },
+"variable_fee": 
+{}
+},
+"total_fee_taxes": 0,
+"transfer_amount": 10000,
+"paid": false,
+"statement_descriptor": "CULQI*",
+"transfer_id": null,
+"operations": [ ],
+"capture_date": 1669244278000
+}
+Actualizar cargo
+
+Actualizar un cargo te permitirá agregar o reemplazar información a los valores de la metadata que enviaste a la hora de crearlo. Cualquier parámetro o valor no provisto será omitido en los valores de la metadata.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: chr_test_7VUwCneoG1XtLeS7
+
+ID del cargo.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+metadata	
+object
+
+Información adicional del cargo a modificar
+Example: {"documentNumber": "99999999","documentType": 1}
+
+Responses
+200 
+
+La petición fue exitosa.
+
+PATCH
+/v2/charges/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"metadata": 
+{
+"documentType": "1",
+"documentNumber": "99999999"
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"duplicated": false,
+"object": "charge",
+"id": "chr_test_HuVDSH10IoLKtYMa",
+"creation_date": 1669244278226,
+"amount": 10000,
+"amount_refunded": 0,
+"current_amount": 10000,
+"installments": 0,
+"installments_amount": null,
+"currency_code": "PEN",
+"email": "richard@piedpiper.com",
+"description": null,
+"source": 
+{
+"object": "token",
+"id": "tkn_test_RvtfMbLatXRJrJQo",
+"type": "card",
+"creation_date": 1669244270000,
+"email": "geerson.pizarro@culqi.com",
+"card_number": "41111111****1111",
+"last_four": "1111",
+"active": false,
+"iin": 
+{},
+"client": 
+{},
+"metadata": { }
+},
+"outcome": 
+{
+"type": "venta_exitosa",
+"code": "AUT0000",
+"merchant_message": "La operación de venta ha sido autorizada exitosamente",
+"user_message": "Su compra ha sido exitosa."
+},
+"fraud_score": 4,
+"antifraud_details": 
+{
+"first_name": "culqi",
+"last_name": "core",
+"address": null,
+"address_city": "Lima",
+"country_code": "PE",
+"phone": "999777666",
+"object": "client"
+},
+"dispute": false,
+"capture": true,
+"reference_code": "5526937563",
+"authorization_code": "9adPhe",
+"metadata": 
+{
+"documentType": "1",
+"documentNumber": "99999999"
+},
+"total_fee": 0,
+"fee_details": 
+{
+"fixed_fee": { },
+"variable_fee": 
+{}
+},
+"total_fee_taxes": 0,
+"transfer_amount": 0,
+"paid": false,
+"statement_descriptor": "CULQI*",
+"transfer_id": null,
+"capture_date": 1669244278000
+}
+Capturar cargos
+
+Esta operación permite capturar una transacción que se encuentra en estado "Autorizada", es decir que, aún no ha sido capturada. Este proceso es la segunda mitad del flujo de pagos en dos pasos (autorización y captura) que sucede cuando creas un cargo con el parámetro de captura falso. Una vez que captures un cargo, empezará el proceso de transferencia de esa transacción a tu cuenta bancaria. En caso, no captures un cargo en un periodo de 4 días, el cargo vencerá y los fondos serán devueltos inmediatamente a la tarjeta de tu cliente y el estado cambiará a "Devuelta".
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: chr_test_7VUwCneoG1XtLeS7
+
+ID del cargo a capturar.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/charges/{id}/capture
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "charge",
+"duplicated": false,
+"id": "chr_test_7VUwCneoG1XtLeS7",
+"creation_date": 1487021262000,
+"amount": 10000,
+"amount_refunded": 0,
+"current_amount": 10000,
+"installments": 0,
+"installments_amount": null,
+"currency_code": "PEN",
+"email": null,
+"description": null,
+"source": 
+{
+"object": "token",
+"id": "tkn_test_701ug3CDNJOAt5Q6",
+"type": "card",
+"email": "richard@piedpiper.com",
+"creation_date": 1487021247000,
+"card_number": "411111******1111",
+"last_four": "1111",
+"active": true,
+"iin": 
+{},
+"client": 
+{},
+"metadata": 
+{}
+},
+"outcome": 
+{
+"type": "venta_exitosa",
+"code": "AUT0000",
+"merchant_message": "La operación de venta ha sido autorizada exitosamente",
+"user_message": "Su compra ha sido exitosa."
+},
+"fraud_score": 0.04,
+"antifraud_details": 
+{
+"country_code": "PE",
+"first_name": "Ejemplo",
+"last_name": "Prueba core",
+"address_city": "ciudad",
+"address": "direccion",
+"phone": 999999999,
+"object": "client"
+},
+"dispute": false,
+"capture": true,
+"capture_date": 1669138294378,
+"reference_code": "kwd3glvhbs",
+"authorization_code": "iXLTIj",
+"total_fee": 0,
+"fee_details": 
+{
+"fixed_fee": { },
+"variable_fee": 
+{}
+},
+"total_fee_taxes": 0,
+"transfer_amount": 0,
+"paid": false,
+"statement_descriptor": "CULQI*",
+"transfer_id": null,
+"operations": [ ],
+"metadata": null
+}
+Devoluciones
+
+Esta opción permite devolver montos que han sido previamente creados, los cuales serán depositados a la tarjeta de crédito o débito en la que se ha realizado el cargo.
+
+Objeto devolucion
+object	
+string
+Value: "refund"
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID de la devolución.
+
+
+charge_id	
+string
+
+ID del cargo al que se le aplicó la devolución.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación de la devolución en UNIX Timestamp (milisegundos).
+
+
+amount	
+integer
+
+Monto de la devolución en céntimos.
+
+
+reason	
+string
+Enum: "Duplicado" "Fraudulento" "Devolución solicitada por el comercio"
+
+Razón o motivo de la devolución.
+
+
+metadata	
+object
+
+Envía parámetros adicionales con información (Inicialmente vacío, luego podrá agregar o reemplazar valores, cualquier parámetro o valor inválido será omitido en la metadata).
+
+
+status	
+string
+Enum: "Completa" "Pendiente" "Rechazado"
+
+Estado de la devolución.
+
+
+last_modified	
+integer <int64>
+
+Fecha de actualización del estado de la devolución en UNIX Timestamp (milisegundos).
+
+Copy
+Expand allCollapse all
+{
+"object": "refund",
+"id": "ref_test_TTfLAgaA8nz8PWbO",
+"charge_id": "chr_test_kEazTaQBDtzNdwFr",
+"creation_date": 1556552960000,
+"amount": 2000,
+"reason": "Devolución solicitada por el comercio",
+"metadata": 
+{
+"dni": "71702323"
+},
+"status": "Completa",
+"last_modified": 1669173595000
+}
+Crear devolución
+
+Para crear una devolución, es necesario enviar el ID del cargo a devolver. Esta operación retorna el monto y la comisión variable de Culqi a la tarjeta de crédito o débito de tu cliente. También tienes la opción de devolver el monto de manera parcial. Esta opción permite seleccionar el número de plazos que desees, hasta que el cargo total haya sido devuelto por completo.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+amount
+required
+	
+integer
+
+Monto de la devolución en céntimos.
+
+
+charge_id
+required
+	
+string non-empty
+
+ID del cargo a devolver.
+
+
+reason
+required
+	
+string non-empty
+Enum: "duplicado" "fraudulento" "solicitud_comprador"
+
+Razón o motivo de la devolución, es una cadena de texto predefinida.
+
+Responses
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/refunds
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+{
+"amount": 2000,
+"charge_id": "chr_test_3xWxRF1Zswgp6C7N",
+"reason": "fraudulento"
+}
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "refund",
+"id": "ref_test_TTfLAgaA8nz8PWbO",
+"charge_id": "chr_test_TWsfemI22ypplGK6",
+"creation_date": 1487039706000,
+"amount": 2000,
+"reason": "Devolución solicitada por el comercio",
+"metadata": 
+{
+"dni": 71702323
+},
+"status": "completa",
+"last_modified": 1669173595000
+}
+Listar devoluciones
+
+Esta opción permite tener una lista de devoluciones activas en tu negocio. De acuerdo a los filtros que uses en su creación, serán ordenadas de la operación reciente a la más antigua.
+
+QUERY PARAMETERS
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha de la devolución en UNIX Timestamp
+
+
+creation_date_from	
+string
+Example: creation_date_from=1476132639
+
+Fecha inicial de las devoluciones en UNIX Timestamp
+
+
+creation_date_to	
+string
+Example: creation_date_to=1476132639
+
+Fecha limite de las devoluciones en UNIX Timestamp
+
+
+reason	
+string
+Enum: "duplicado" "fraudulento" "solicitud_comprador"
+Example: reason=fraudulento
+
+Razón o motivo de la devolución, es una cadena de texto predefinida.
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Cantidad exacta de devoluciones que se quieren listar.
+
+
+before	
+string = 25 characters
+Example: before=ref_test_7lYOtONQ9LxcgJUW
+
+El ID de la devolución desde donde se quiere traer la página anterior. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=ref_test_7lYOtOMM6LxcgJUW
+
+El ID de la devolución desde donde se quiere traer la siguiente página. No inclusivo.
+
+
+modification_date_from	
+string
+Example: modification_date_from=1476132639
+
+Fecha modificación de las devoluciones en UNIX Timestamp
+
+
+modification_date_to	
+string
+Example: modification_date_to=1476132639
+
+Fecha modificación de las devoluciones en UNIX Timestamp
+
+
+status	
+string
+Enum: "pendiente" "rechazado" "completado"
+Example: status=pendiente
+
+Estado de la devolución
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/refunds
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/refunds?creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&reason=fraudulento&limit=50&before=ref_test_7lYOtONQ9LxcgJUW&after=ref_test_7lYOtOMM6LxcgJUW&modification_date_from=1476132639&modification_date_to=1476132639&status=pendiente")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{},
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/refunds?limit=50&before=ref_test_RzjTyGUwZioJLpZt",
+"next": "https://api.culqi.com/v2/refunds?limit=50&after=ref_test_Z1YXhVdg60B0UCLI",
+"cursors": 
+{},
+"remaining_items": 48
+}
+}
+Consultar devolución
+
+Puedes consultar el estado de las devoluciones; solo debes enviar el ID creado en la operación inicial.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ref_test_LVNpj300apa78Pjq
+
+ID de la devolución a consultar.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/refunds/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "refund",
+"id": "ref_test_TTfLAgaA8nz8PWbO",
+"charge_id": "chr_test_TWsfemI22ypplGK6",
+"creation_date": 1487039707000,
+"amount": 5000,
+"reason": "Devolución solicitada por el comercio",
+"metadata": 
+{
+"dni": 71702323
+},
+"status": "completa",
+"last_modified": 1669173545000
+}
+Actualizar devolución
+
+Puedes agregar o reemplazar valores en la información de tus devoluciones. Cualquier parámetro o valor inválido será omitido en la metadata.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ref_test_LVNpj300apa78Pjq
+
+ID de la devolución a consultar.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+metadata
+required
+	
+object
+
+Información adicional de la devolucion a modificar
+Example: {"dni": "71701978"}
+
+Responses
+200 
+
+La petición fue exitosa.
+
+PATCH
+/v2/refunds/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"metadata": 
+{
+"dni": "71701978"
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "refund",
+"id": "ref_test_LVNpj300apa78Pjq",
+"charge_id": "chr_test_TWsfemI22ypplGK6",
+"creation_date": 1487039707000,
+"amount": 5000,
+"reason": "Devolución solicitada por el comercio",
+"metadata": 
+{
+"dni": 71701978
+},
+"status": "completa",
+"last_modified": 1669173545000
+}
+Clientes
+
+Puedes guardar la información de tus clientes, esto con el fin de que puedas realizar cobros recurrentes o posteriores. Nuestra API permite: crear, eliminar y actualizar datos. Adicional, podrás consultar datos de clientes en particular o listarlos en base a los filtros que desees crear.
+
+Objeto cliente
+object	
+string
+Value: "customer"
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID del cliente.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación del cliente en UNIX Timestamp (milisegundos).
+
+
+email	
+string <email>
+
+Dirección de correo electrónico del cliente.
+
+
+antifraud_details	
+object
+
+Parámetros evaluados para el motor de fraude.
+
+
+metadata	
+object
+
+Envía parámetros adicionales con información relevante. Ver más
+
+Copy
+Expand allCollapse all
+{
+"object": "customer",
+"id": "cus_test_Lz6Yfsm7QqCPIECW",
+"creation_date": 1487041774773,
+"email": "richard@piedpiper.com",
+"antifraud_details": 
+{
+"country_code": "US",
+"first_name": "Richard",
+"last_name": "Hendricks",
+"address_city": "Palo Alto",
+"address": "San Francisco Bay Area",
+"phone": "6505434800",
+"object": "client"
+},
+"metadata": { }
+}
+Crear cliente
+
+Puedes ingresar los datos de tu cliente a través de los valores de la metadata.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+address
+required
+	
+string [ 5 .. 100 ] characters
+
+Dirección del cliente.
+
+
+address_city
+required
+	
+string [ 2 .. 30 ] characters
+
+Ciudad del cliente
+
+
+country_code
+required
+	
+string non-empty
+
+Código ISO-3166-1 (Alfa 2) del país del cliente.
+
+
+email
+required
+	
+string <email> [ 5 .. 50 ] characters
+
+Correo electrónico del cliente
+
+
+first_name
+required
+	
+string [ 2 .. 50 ] characters
+
+Nombre del cliente.
+Sólo se aceptan carácteres alfabéticos y espacios, no se aceptan carácteres especiales.
+Ejemplo
+Podemos usar la siguiente expresión regular para validar el nombre del cliente
+^[^0-9±!@£$%^&*_+§¡€#¢§¶•ªº«\<>-?:;|=.,]{2,50}$
+
+
+last_name
+required
+	
+string [ 2 .. 50 ] characters
+
+Apellido del cliente.
+Sólo se aceptan carácteres alfabéticos y espacios, no se aceptan carácteres especiales.
+Ejemplo
+Podemos usar la siguiente expresión regular para validar el apellido del cliente
+^[^0-9±!@£$%^&*_+§¡€#¢§¶•ªº«\<>-?:;|=.,]{2,50}$
+
+
+phone_number
+required
+	
+string [ 5 .. 15 ] characters
+
+Teléfono del cliente.
+
+
+metadata	
+object
+
+Informacion adicional que se requiera enviar al crear el cliente.
+Example: {"codigo_alumno": "0001A"}
+
+Responses
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/customers
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"email": "richard@piedpiper.com",
+"address": "San Francisco Bay Area",
+"address_city": "Palo Alto",
+"country_code": "US",
+"phone_number": "6505434800"
+}
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "customer",
+"id": "cus_test_Lz6Yfsm7QqCPIECW",
+"creation_date": 1487041774773,
+"email": "richard@piedpiper.com",
+"antifraud_details": 
+{
+"country_code": "US",
+"first_name": "Richard",
+"last_name": "Hendricks",
+"address_city": "Palo Alto",
+"address": "San Francisco Bay Area",
+"phone": "6505434800",
+"object": "client"
+},
+"metadata": { }
+}
+Listar clientes
+
+Esta opción permite tener una lista de tus clientes. De acuerdo a los filtros que uses en su creación, serán ordenados del más reciente al más antiguo.
+
+QUERY PARAMETERS
+first_name	
+string [ 2 .. 50 ] characters
+Example: first_name=Richard
+
+Nombre del cliente.
+
+
+last_name	
+string [ 2 .. 50 ] characters
+Example: last_name=Hendricks
+
+Apellido del cliente.
+
+
+email	
+string [ 5 .. 50 ] characters
+Example: email=richard@piedpiper.com
+
+Correo electrónico del cliente.
+
+
+address	
+string [ 5 .. 100 ] characters
+Example: address=San Francisco Bay
+
+Dirección física del cliente.
+
+
+address_city	
+string [ 2 .. 30 ] characters
+Example: address_city=Palo Alto
+
+Ciudad del cliente.
+
+
+phone_number	
+string [ 5 .. 15 ] characters
+Example: phone_number=3383478
+
+Teléfono del cliente.
+
+
+country_code	
+string
+Example: country_code=PE
+
+Código del país, en formato ISO-3166 (Alfa 2).
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Cantidad exacta de clientes que se quieren listar.
+
+
+before	
+string = 25 characters
+Example: before=cus_test_7lYOtONQ9LxcgJUW
+
+El ID del cliente desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=cus_test_7lYOtOMM6LxcgJUW
+
+El ID del cliente desde donde se quiere traer los resultados siguientes. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/customers
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/customers?first_name=Richard&last_name=Hendricks&email=richard%40piedpiper.com&address=San%20Francisco%20Bay&address_city=Palo%20Alto&phone_number=3383478&country_code=PE&limit=50&before=cus_test_7lYOtONQ9LxcgJUW&after=cus_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{},
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/customers?limit=50&before=cus_test_Lz6Yfsm7QqCPIECW",
+"next": "https://api.culqi.com/v2/customers?limit=50&after=cus_test_Psny4smwxpmEDooU",
+"cursors": 
+{},
+"remaining_items": 17
+}
+}
+Consultar cliente
+
+Para devolver los detalles de un cliente en particular, solo debes enviar el ID del usuario que te brindamos a la hora de crear su perfil.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: cus_test_QDO81GT6Zaseewkp
+
+ID del cliente.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/customers/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "customer",
+"id": "cus_test_Lz6Yfsm7QqCPIECW",
+"creation_date": 1487041774773,
+"email": "richard@piedpiper.com",
+"antifraud_details": 
+{
+"country_code": "US",
+"first_name": "Richard",
+"last_name": "Hendricks",
+"address_city": "Palo Alto",
+"address": "San Francisco Bay Area",
+"phone": "6505434800",
+"object": "client"
+},
+"cards": 
+[
+{}
+],
+"metadata": 
+{
+"dni": "71702323"
+}
+}
+Actualizar cliente
+
+Mantener los datos de tus clientes actualizados, permitirá que se modifiquen los valores que se envíen en cada transacción. Cualquier otro parámetro que no sea válido en la petición, mantendrá la información anterior.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: cus_test_QDO81GT6Zaseewkp
+
+ID del cliente.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: 
+application/json
+application/xml
+application/json
+address	
+string [ 5 .. 100 ] characters
+
+Dirección del cliente.
+
+
+address_city	
+string [ 2 .. 30 ] characters
+
+Ciudad del cliente
+
+
+country_code	
+string non-empty
+
+Código ISO-3166-1 (Alfa 2) del país del cliente.
+
+
+first_name	
+string [ 2 .. 50 ] characters
+
+Nombre del cliente.
+Sólo se aceptan carácteres alfabéticos y espacios, no se aceptan carácteres especiales.
+Ejemplo
+Podemos usar la siguiente expresión regular para validar el nombre del cliente
+^[^0-9±!@£$%^&*_+§¡€#¢§¶•ªº«\<>-?:;|=.,]{2,50}$
+
+
+last_name	
+string [ 2 .. 50 ] characters
+
+Apellido del cliente.
+Sólo se aceptan carácteres alfabéticos y espacios, no se aceptan carácteres especiales.
+Ejemplo
+Podemos usar la siguiente expresión regular para validar el apellido del cliente
+^[^0-9±!@£$%^&*_+§¡€#¢§¶•ªº«\<>-?:;|=.,]{2,50}$
+
+
+phone_number	
+string [ 5 .. 15 ] characters
+
+Teléfono del cliente.
+
+
+metadata	
+object
+
+Información adicional del cliente a modificar.
+Example: {"dni": "71702323"}
+
+Responses
+200 
+
+OK
+
+PATCH
+/v2/customers/{id}
+Request samples
+Payload
+Content type
+application/json
+application/xml
+application/json
+Copy
+Expand allCollapse all
+{
+"metadata": 
+{
+"dni": "71702323"
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "customer",
+"id": "cus_test_Lz6Yfsm7QqCPIECW",
+"creation_date": 1487041774773,
+"email": "richard@piedpiper.com",
+"antifraud_details": 
+{
+"country_code": "US",
+"first_name": "Richard",
+"last_name": "Hendricks",
+"address_city": "Palo Alto",
+"address": "San Francisco Bay Area",
+"phone": "6505434800",
+"object": "client"
+},
+"metadata": 
+{
+"dni": "71702323"
+}
+}
+Eliminar cliente
+
+Puedes eliminar a un cliente de manera permanente, haciendo toda cancelación de pago posterior o suscripción que este relacionado.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: cus_test_QDO81GT6Zaseewkp
+
+ID del cliente.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+Petición exitosa.
+
+DELETE
+/v2/customers/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"id": "cus_test_LbB0x6yB2Pd0JJnP",
+"deleted": true,
+"merchant_message": "Se eliminó el cliente con ID cus_test_LbB0x6yB2Pd0JJnP exitosamente."
+}
+Tarjetas
+
+Se pueden crear cargos posteriores a una tarjeta en específico. Tener en cuenta que un token de cliente vence a los 5 minutos de creado, pero si se cambia la opción "Tarjeta" podrás realizar cargos posteriores múltiples veces a un cliente.
+
+Objeto tarjeta
+object	
+string
+Value: "card"
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID de la tarjeta.
+
+
+active	
+boolean
+
+Indica si la tarjeta se encuentra activa para realizar cargos.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación de la tarjeta en UNIX Timestamp (milisegundos).
+
+
+customer_id	
+string
+
+ID del cliente.
+
+
+source	
+object
+
+Información del objeto token utilizado para crear una tarjeta.
+
+
+metadata	
+object
+
+Envía parámetros adicionales con información relevante. Ver más
+
+Copy
+Expand allCollapse all
+{
+"object": "card",
+"id": "crd_test_TWsfemI22ypplGK6",
+"active": true,
+"creation_date": 1487044833972,
+"customer_id": "cus_test_TWsfemI22ypplGK6",
+"source": 
+{
+"object": "token",
+"id": "tkn_test_vEcZSCOVz5PGDPdQ",
+"type": "card",
+"creation_date": 1487044809000,
+"email": "richard@piedpiper.com",
+"card_number": "411111******1111",
+"last_four": "1111",
+"active": true,
+"iin": 
+{},
+"client": 
+{}
+},
+"metadata": { }
+}
+Crear tarjeta
+
+Cuando agregues nueva tarjeta, tendrás que relacionarla a un token de cliente, que previamente ha sido creada en la opción de pagos posteriores o suscripciones.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+customer_id
+required
+	
+string = 25 characters
+
+ID del cliente a enlazar a la tarjeta.
+
+
+token_id
+required
+	
+string = 25 characters
+
+ID del token generado al Crear Token.
+
+
+validate	
+boolean
+Default: true
+
+Indica si se debe realizar una validación a la tarjeta, es decir, Culqi crea un cargo mínimo (3 PEN) y lo devuelve inmediatamente. Si no se considera el parametro, por defecto tiene un valor true.
+
+
+authentication_3DS	
+object
+
+Parámetros 3DS.
+
+
+metadata	
+object
+
+Informacion adicional que se requiera enviar al crear la tarjeta.
+Example: {"marca_tarjeta": "VISA"}
+
+Responses
+200 
+
+Se requieren parámetros 3DS.
+
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/cards
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"customer_id": "cus_test_Lz6Yfsm7QqCPIECW",
+"token_id": "tkn_test_vEcZSCOVz5PGDPdQ",
+"validate": true,
+"metadata": 
+{
+"marca_tarjeta": "VISA"
+}
+}
+Response samples
+200201
+Content type
+application/json
+Copy
+{
+"user_message": "El usuario necesita autenticarse",
+"action_code": "REVIEW"
+}
+Listar tarjetas
+
+Esta opción permite tener una lista de tarjetas existentes. De acuerdo a los filtros que uses en su creación, serán ordenados de la más reciente a la más antigua.
+
+QUERY PARAMETERS
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha de la tarjeta en UNIX Timestamp.
+
+
+creation_date_from	
+string [ 5 .. 15 ] characters
+Example: creation_date_from=1476132639
+
+Fecha inicial de las tarjetas en UNIX Timestamp.
+
+
+creation_date_to	
+string [ 5 .. 15 ] characters
+Example: creation_date_to=1476132639
+
+Fecha limite de las tarjetas en UNIX Timestamp.
+
+
+card_brand	
+string
+Enum: "Visa" "Mastercard" "Amex" "Diners"
+Example: card_brand=Visa
+
+Marca de la tarjeta.
+
+
+card_type	
+string
+Enum: "credito" "debito" "prepagada"
+Example: card_type=credito
+
+Tipo de la tarjeta a consultar.
+
+
+device_type	
+string
+Enum: "escritorio" "movil" "tablet"
+Example: device_type=escritorio
+
+Tipo de dispositivo.
+
+
+bin	
+string [ 6 .. 8 ] characters
+Example: bin=411111
+
+Son los primeros seis dígitos del número de tarjeta.
+
+
+country_code	
+string
+Example: country_code=PE
+
+Código del país, en formato ISO-3166 (Alfa 2).
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Cantidad exacta de tarjetas que se quieren listar.
+
+
+before	
+string = 25 characters
+Example: before=crd_test_7lYOtONQ9LxcgJUW
+
+El ID de la tarjeta desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=crd_test_7lYOtOMM6LxcgJUW
+
+El ID de la tarjeta desde donde se quiere traer los resultados siguientes. No inclusivo..
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/cards
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/cards?creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&card_brand=Visa&card_type=credito&device_type=escritorio&bin=411111&country_code=PE&limit=50&before=crd_test_7lYOtONQ9LxcgJUW&after=crd_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{},
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/cards?limit=50&before=crd_test_RzjTyGUwZioJLpZt",
+"next": "https://api.culqi.com/v2/cards?limit=50&after=crd_test_Z1YXhVdg60B0UCLI",
+"cursors": 
+{},
+"remaining_items": 14
+}
+}
+Consultar tarjeta
+
+Para consultar los detalles de una tarjeta en particular, solo debes enviar el ID del usuario que te brindamos a la hora de crearla.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: crd_test_QDO81GT6Zaseewkp
+
+ID de la tarjeta.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/cards/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "card",
+"id": "crd_test_RzjTyGUwZioJLpZt",
+"active": true,
+"creation_date": 1487044833972,
+"customer_id": "cus_test_Lz6Yfsm7QqCPIECW",
+"source": 
+{
+"object": "token",
+"id": "tkn_test_vEcZSCOVz5PGDPdQ",
+"type": "card",
+"creation_date": 1487044809000,
+"email": "richard@piedpiper.com",
+"card_number": "411111******1111",
+"last_four": "1111",
+"active": true,
+"iin": 
+{},
+"client": 
+{},
+"metadata": { }
+},
+"metadata": 
+{
+"marca_tarjeta": "VISA"
+}
+}
+Actualizar tarjeta
+
+Mantener los datos actualizados de las tarjetas, permitirá que se modifiquen los valores que se envíen en cada transacción. Cualquier otro parámetro que no sea válido en la petición, mantendrá la información anterior. También permite actualizar el ID del token asociado.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: crd_test_QDO81GT6Zaseewkp
+
+ID de la tarjeta.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+token_id	
+string = 25 characters
+
+ID del token nuevo a actualizar en la Tarjeta, este es generado previamente en Crear Token.
+
+
+metadata	
+object
+
+Información adicional de la tarjeta a modificar
+Example: { "dni": "71701978" }
+
+Responses
+200 
+
+Petición fue exitosa.
+
+PATCH
+/v2/cards/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"metadata": 
+{
+"dni": "71702323"
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "card",
+"id": "crd_test_RzjTyGUwZioJLpZt",
+"active": true,
+"creation_date": 1487044833972,
+"customer_id": "cus_test_Lz6Yfsm7QqCPIECW",
+"source": 
+{
+"object": "token",
+"id": "tkn_test_vEcZSCOVz5PGDPdQ",
+"type": "card",
+"creation_date": 1487044809000,
+"email": "richard@piedpiper.com",
+"card_number": "411111******1111",
+"last_four": "1111",
+"active": true,
+"iin": 
+{},
+"client": 
+{},
+"metadata": { }
+},
+"metadata": 
+{
+"marca_tarjeta": "VISA",
+"dni": "71702323"
+}
+}
+Eliminar tarjeta
+
+Puedes eliminar una tarjeta o tarjetas asociadas a un cliente por varios motivos: superar la cantidad de denegaciones, fraude, prevención de pago de suscripciones canceladas, entre otros.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: crd_test_QDO81GT6Zaseewkp
+
+ID de la tarjeta.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+DELETE
+/v2/cards/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"id": "crd_test_RzjTyGUwZioJLpZt",
+"deleted": true,
+"merchant_message": "Se eliminó la tarjeta con ID crd_test_RzjTyGUwZioJLpZt exitosamente."
+}
+Planes
+
+Contiene información acerca de los tipos de cargo: frecuencia y montos de cobros que se requieran hacer a una tarjeta de manera recurrente. Por ejemplo: configurar un Descripción Plan de Prueba de S/ 50 mensuales y un plan premium de S/ 75 mensuales.
+
+Objeto plan
+id	
+string
+
+ID del plan.
+
+
+interval_unit_time	
+integer
+Enum: 1 2 3 4 5 6
+
+Unidad de tiempo del intervalo de facturación.
+1 = Diario
+2 = Semanal
+3 = Mensual
+4 = Anual
+5 = Trimestral
+6 = Semestral
+
+
+interval_count	
+integer
+
+Cantidad de intervalos entre cada cargo.
+
+
+amount	
+integer
+
+Monto del cargo en céntimos.
+
+
+currency	
+string
+Enum: "PEN" "USD"
+
+Código de la moneda en formato ISO 4217 (PEN o USD).
+
+
+name	
+string
+
+Nombre del plan.
+
+
+description	
+string
+
+Descripción del plan.
+
+
+short_name	
+string
+
+Nombre corto del plan.
+
+
+initial_cycles	
+object
+
+Ciclos iniciales del plan.
+
+
+metadata	
+object
+
+Envía parámetros adicionales con información relevante. Ver más
+
+
+image	
+string
+
+URL de la imagen asociada al plan.
+
+
+total_subscriptions	
+integer
+
+Cantidad de suscripciones activas asociadas al plan.
+
+
+status	
+integer
+Enum: 1 2
+
+Estado del plan.
+1 = Activo
+2 = Inactivo
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación del plan en formato UNIX Timestamp (milisegundos).
+
+
+slug	
+string <uuid>
+
+UUID v4 que identifica al plan.
+
+Copy
+Expand allCollapse all
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"interval_unit_time": 1,
+"interval_count": 1,
+"amount": 8600,
+"name": "Plan de Prueba",
+"description": "Descripción Plan de Prueba.",
+"short_name": "plan-de-prueba-001",
+"currency": "PEN",
+"initial_cycles": 
+{
+"count": 0,
+"has_initial_charge": false,
+"amount": 0,
+"interval_unit_time": 1
+},
+"metadata": 
+{
+"field_custom": "Updated from Api"
+},
+"image": "",
+"total_subscriptions": 1,
+"status": 1,
+"creation_date": 1556569427000,
+"slug": "1c4f6d80-4257-465c-af58-4d54cea49853"
+}
+Crear plan
+
+Esta operación permitirá crear planes de suscripción recurrente para sus clientes. También puedes hacerlo vía CulqiPanel.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave_privada
+
+REQUEST BODY SCHEMA: application/json
+name
+required
+	
+string [ 5 .. 50 ] characters
+
+Plan de Prueba.
+
+
+short_name
+required
+	
+string [ 5 .. 50 ] characters
+
+Nombre corto del plan.
+
+
+description
+required
+	
+string [ 5 .. 200 ] characters
+
+Descripción Plan de Prueba.
+
+
+amount
+required
+	
+number [ 300 .. 5000000 ]
+
+Monto del plan en céntimos.
+Ejemplo: S/ 1.00 = 100
+
+
+currency
+required
+	
+string
+Enum: "PEN" "USD"
+
+Código de la moneda en formato ISO 4217 (PEN o USD).
+
+
+interval_unit_time
+required
+	
+number
+Enum: 1 2 3 4 5 6
+
+Unidad de tiempo del intervalo de facturación.
+1 = Diario
+2 = Semanal
+3 = Mensual
+4 = Anual
+5 = Trimestral
+6 = Semestral
+
+
+interval_count
+required
+	
+number
+
+Cantidad de intervalos entre cada cargo.
+Si envia el 0 se cobrará de forma indefinida.
+
+
+initial_cycles
+required
+	
+object
+
+Ciclos iniciales del plan.
+
+
+image	
+string
+
+URL de la imagen asociada al plan.
+
+
+metadata	
+object
+
+Envía parametros adicionales con información relevante. Ver más
+
+
+Responses
+201 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+POST
+/v2/recurrent/plans/create
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"name": "Plan de Prueba.",
+"short_name": "plan-de-prueba-001",
+"description": "Descripción Plan de Prueba",
+"amount": 5,
+"currency": "PEN",
+"interval_unit_time": 1,
+"interval_count": 1,
+"initial_cycles": 
+{
+"count": 0,
+"has_initial_charge": false,
+"amount": 0,
+"interval_unit_time": 1
+},
+"metadata": 
+{
+"DNI": 123456782
+}
+}
+Response samples
+201
+Content type
+application/json
+Copy
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"slug": "1c4f6d80-4257-465c-af58-4d54cea49853"
+}
+Listar planes
+
+Listar planes te permitirá obtener una serie de planes existentes. De acuerdo a los filtros que uses los planes serán ordenados de acuerdo a la fecha de creación, siendo el primero el más reciente.
+
+QUERY PARAMETERS
+amount	
+integer [ 100 .. 500000 ]
+
+Monto de los planes en céntimos.
+
+
+status	
+number
+Enum: 1 2
+
+Estado del plan.
+1 = Activo
+2 = Inactivo
+
+
+min_amount	
+integer [ 100 .. 500000 ]
+
+Monto mínimo de los planes en céntimos.
+
+
+max_amount	
+integer [ 100 .. 500000 ]
+
+Monto máximo de los planes en céntimos.
+
+
+creation_date_from	
+number [ 10 .. 13 ] characters
+
+Fecha inicial de los planes en UNIX Timestamp.
+
+
+creation_date_to	
+number [ 10 .. 13 ] characters
+
+Fecha final de los planes en UNIX Timestamp.
+
+
+limit	
+number [ 1 .. 100 ]
+
+Cantidad exacta de planes que se quieren listar. Por defecto 100 registros.
+
+
+before	
+string = 25 characters
+
+El ID del plan desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+
+El ID del plan desde donde se quiere traer los resultados siguientes. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+GET
+/v2/recurrent/plans
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/recurrent/plans?amount=SOME_INTEGER_VALUE&status=SOME_NUMBER_VALUE&min_amount=SOME_INTEGER_VALUE&max_amount=SOME_INTEGER_VALUE&creation_date_from=SOME_NUMBER_VALUE&creation_date_to=SOME_NUMBER_VALUE&limit=SOME_NUMBER_VALUE&before=SOME_STRING_VALUE&after=SOME_STRING_VALUE")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"creation_date": 1671720949000,
+"name": "Plan de Prueba",
+"description": "Descripción Plan de Prueba",
+"status": 1,
+"amount": 300,
+"currency_code": "PEN",
+"interval_count": 1,
+"interval": "Meses",
+"limit": 2,
+"trial_days": 1,
+"total_subscriptions": 0,
+"metadata": { }
+},
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/plans?limit=50&before=pln_test_XXXXXXXXXXXXXXXX",
+"next": "https://api.culqi.com/v2/plans?limit=50&after=pln_test_XXXXXXXXXXXXXXXX"
+},
+"cursors": 
+{
+"before": "pln_test_XXXXXXXXXXXXXXXX",
+"after": "pln_test_XXXXXXXXXXXXXXXX"
+},
+"remaining_items": 25
+}
+Consultar plan
+
+Para devolver los detalles de un plan en particular, solo debes enviar el ID del plan que te brindamos al momento de su creación.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+
+El id del plan.
+Ejemplo: pln_test_XXXXXXXXXXXXXXXX
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+GET
+/v2/recurrent/plans/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"interval_unit_time": 1,
+"interval_count": 1,
+"amount": 8600,
+"name": "Plan de Prueba",
+"description": "Descripción Plan de Prueba.",
+"short_name": "plan-de-prueba-001",
+"currency": "PEN",
+"initial_cycles": 
+{
+"count": 0,
+"has_initial_charge": false,
+"amount": 0,
+"interval_unit_time": 1
+},
+"metadata": 
+{
+"field_custom": "Updated from Api"
+},
+"total_subscriptions": 1,
+"status": 1,
+"creation_date": 1556569427000,
+"slug": "1c4f6d80-4257-465c-af58-4d54cea49853"
+}
+Actualizar plan
+
+Mantener los datos actualizados de los planes, permitirá que se modifiquen los valores que se envíen en cada transacción. Cualquier otro parámetro que no sea válido en la petición, mantendrá la información anterior.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+name	
+string [ 5 .. 50 ] characters
+
+Nombre del Plan.
+
+
+short_name	
+string [ 5 .. 50 ] characters
+
+Nombre corto del plan.
+
+
+description	
+string [ 5 .. 200 ] characters
+
+Descripción Plan de Prueba.
+
+
+status	
+integer
+Enum: 1 2
+
+Estado del plan.
+1 = Activo
+2 = Inactivo
+
+
+image	
+string
+
+URL de la imagen asociada al plan.
+
+
+metadata	
+object
+
+Envía parametros adicionales con información relevante. Ver más
+
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+PATCH
+/v2/recurrent/plans/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"name": "Nuevo Plan de Prueba",
+"short_name": "plan-nombre-del-plan",
+"description": "Nueva Descripción Plan de Prueba",
+"status": 1,
+"image": "URL_IMAGE",
+"metadata": 
+{
+"DNI": 123456782
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"interval_unit_time": 1,
+"interval_count": 1,
+"amount": 8600,
+"name": "Plan de Prueba",
+"description": "Descripción Plan de Prueba.",
+"short_name": "plan-de-prueba-001",
+"currency": "PEN",
+"initial_cycles": 
+{
+"count": 0,
+"has_initial_charge": false,
+"amount": 0,
+"interval_unit_time": 1
+},
+"metadata": 
+{
+"field_custom": "Updated from Api"
+},
+"total_subscriptions": 1,
+"status": 1,
+"creation_date": 1556569427000,
+"slug": "1c4f6d80-4257-465c-af58-4d54cea49853"
+}
+Eliminar plan
+
+Puedes eliminar un plan, para hacerlo se necesita que el plan no tenga suscripciones creadas, activas o en periodo de prueba.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+
+El id del plan.
+Ejemplo: pln_test_XXXXXXXXXXXXXXXX
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+DELETE
+/v2/recurrent/plans/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"id": "pln_test_XXXXXXXXXXXXXXXX",
+"deleted": true,
+"merchant_message": "Se eliminó el plan con ID pln_live_SkEOXF4aVgjoYpgP exitosamente."
+}
+Suscripciones
+
+El crear suscripciones te permite realizar cargos recurrentes a la tarjeta de un cliente. Una suscripción relaciona al objeto customer y al objeto plan que creaste previamente.
+
+Objeto suscripción
+id	
+string
+
+ID de la suscripción.
+
+
+status	
+integer
+Enum: 1 2 3 4 5 6
+
+Estado de la suscripción.
+1 = Creada
+2 = Dias de prueba
+3 = Activa
+4 = Cancelada
+5 = En cola
+6 = Finalizada
+
+
+creation_date	
+integer <int64>
+
+Indica fecha de creación de la suscripción en formato UNIX Timestamp.
+
+
+next_billing_date	
+integer <int64>
+
+Indica la próxima fecha de facturación en formato UNIX Timestamp.
+
+
+current_period	
+integer
+
+Número del periodo de facturación actual.
+
+
+trial_start	
+integer <int64>
+
+Marca de tiempo Unix de la fecha de inicio del período de prueba.
+
+
+trial_end	
+integer <int64>
+
+Marca de tiempo Unix de la fecha de finalización del período de prueba.
+
+
+active_card	
+string
+
+ID de la tarjeta activa en la suscripción.
+
+
+plan	
+object
+
+periods	
+Array of objects
+
+customer	
+object
+
+metadata	
+object
+
+Envía parámetros adicionales con información relevante. Ver más
+
+Copy
+Expand allCollapse all
+{
+"id": "sxn_test_XXXXXXXXXXXXXXXX",
+"status": 3,
+"creation_date": 1656201600,
+"next_billing_date": 1656201601,
+"current_period": 1,
+"trial_start": 1656201600,
+"trial_end": 16459770801,
+"active_card": "crd_test_XXXXXXXXXXXXXXXX",
+"plan": 
+{
+"plan_id": "pln_test_XXXXXXXXXXXXXXXX",
+"name": "Plan de Prueba",
+"amount": 303,
+"currency": "PEN",
+"interval_unit_time": 1
+},
+"periods": 
+[
+{}
+],
+"customer": 
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"email": "richard@piedpiper.com"
+},
+"metadata": { }
+}
+Crear suscripción
+
+Esta operación relaciona la tarjeta de un cliente a un plan de cobranza recurrente creado anteriormente.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave_privada
+
+REQUEST BODY SCHEMA: application/json
+card_id	
+string
+
+ID de la tarjeta utilizada para la transacción.
+
+
+plan_id	
+string
+
+ID del plan al que se está suscribiendo o asociando.
+
+
+tyc	
+boolean
+
+Indicador de aceptación de términos y condiciones.
+
+
+metadata	
+object
+
+Envía parametros adicionales con información relevante. Ver más
+
+Responses
+201 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+POST
+/v2/recurrent/subscriptions/create
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"card_id": "string",
+"plan_id": "string",
+"tyc": true,
+"metadata": { }
+}
+Response samples
+201
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "sxn_test_XXXXXXXXXXXXXXXX",
+"customer_id": "cus_test_XXXXXXXXXXXXXXX",
+"plan_id": "pln_test_XXXXXXXXXXXXXXXX",
+"status": 1,
+"created_at": 1669170224000,
+"metadata": 
+{
+"reference": 123123123
+}
+}
+Listar suscripciones
+
+Te permite obtener una serie de suscripciones existentes. De acuerdo a los filtros que uses, las diferentes suscripciones serán ordenadas según a su fecha de creación; siendo el primero, el más reciente.
+
+QUERY PARAMETERS
+plan_id	
+string
+
+ID del plan.
+
+
+status	
+number
+
+Estado de la suscripción.
+1 = Creada
+2 = Periodo de prueba
+3 = Activa
+4 = Cancelada
+5 = En cola
+6 = Vencida
+
+
+creation_date_from	
+number [ 10 .. 13 ] characters
+
+Fecha inicial de las suscripciones en UNIX Timestamp.
+
+
+creation_date_to	
+number [ 10 .. 13 ] characters
+
+Fecha final de las suscripciones en UNIX Timestamp.
+
+
+limit	
+number [ 1 .. 100 ]
+
+Cantidad exacta de suscripciones que se quiere listar.
+
+
+before	
+string = 25 characters
+
+El ID de la suscripción desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+
+El ID de la suscripción desde donde se quiere traer los resultados siguientes. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+GET
+/v2/recurrent/subscriptions
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/recurrent/subscriptions?plan_id=SOME_STRING_VALUE&status=SOME_NUMBER_VALUE&creation_date_from=SOME_NUMBER_VALUE&creation_date_to=SOME_NUMBER_VALUE&limit=SOME_NUMBER_VALUE&before=SOME_STRING_VALUE&after=SOME_STRING_VALUE")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+{
+"id": "sxn_test_XXXXXXXXXXXXXXXXXXX",
+"creation_date": 1665537611000,
+"status": 1,
+"current_period": 1,
+"total_period": 3,
+"next_billing_date": 1665537611000,
+"trial_start": 1665537611000,
+"trial_end": 1665537611000,
+"plan_id": "pln_test_XXXXXXXXXXXXXXXX",
+"card_id": "card_live_XXXXXXXXXXXXXXXX",
+"customer": 
+{},
+"metadata": { }
+},
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/recurrent/subscriptions?limit=50&before=sxn_test_XXXXXXXXXXXXXXXXXXX",
+"next": "https://api.culqi.com/v2/recurrent/subscriptions?limit=50&after=sxn_test_XXXXXXXXXXXXXXXXXXX"
+},
+"cursors": 
+{
+"before": "sxn_test_XXXXXXXXXXXXXXXXXXX",
+"after": "sxn_test_XXXXXXXXXXXXXXXXXXX"
+},
+"remaining_items": 2
+}
+Consultar suscripción
+
+Devuelve los detalles de una suscripción en particular. Para la petición, solo debes enviar el ID de la suscripción que te brindamos a la hora de crearla.
+
+PATH PARAMETERS
+id
+required
+	
+string
+Example: sxn_test_XXXXXXXXXXXXXXXXXXX
+
+ID suscripcion
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_4eC39HqLyjWDarjt
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+400 
+
+bad request
+
+GET
+/v2/recurrent/subscriptions/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "sxn_test_XXXXXXXXXXXXXXXX",
+"status": 3,
+"creation_date": 1656201600,
+"next_billing_date": 1656201601,
+"current_period": 1,
+"trial_start": 1656201600,
+"trial_end": 16459770801,
+"active_card": "crd_test_XXXXXXXXXXXXXXXX",
+"plan": 
+{
+"plan_id": "pln_test_XXXXXXXXXXXXXXXX",
+"name": "Plan de Prueba",
+"amount": 303,
+"current": "PEN",
+"interval_unit_time": 1
+},
+"periods": 
+{
+"period": 0,
+"status": 1,
+"charges": 
+{}
+},
+"customer": 
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"email": "richard@piedpiper.com"
+}
+}
+Actualizar suscripción
+
+Permite agregar o reemplazar información a los valores de la metadata que enviaste a la hora de crearla.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+card_id	
+string
+
+ID de la tarjeta utilizada para la transacción.
+
+
+metadata	
+object
+
+Envía parametros adicionales con información relevante. Ver más
+
+
+Responses
+200 
+
+La petición fué exitosa
+
+400 
+
+bad request
+
+PATCH
+/v2/recurrent/subscriptions/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"card_id": "crd_test_XXXXXXXXXXXXXXXX",
+"metadata": { }
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "sxn_test_XXXXXXXXXXXXXXXX",
+"status": 3,
+"creation_date": 1656201600,
+"next_billing_date": 1656201601,
+"current_period": 1,
+"trial_start": 1656201600,
+"trial_end": 16459770801,
+"active_card": "crd_test_XXXXXXXXXXXXXXXX",
+"plan": 
+{
+"plan_id": "pln_test_XXXXXXXXXXXXXXXX",
+"name": "Plan de Prueba",
+"amount": 303,
+"currency": "PEN",
+"interval_unit_time": 1
+},
+"periods": 
+{
+"period": 0,
+"status": 1,
+"charges": 
+{}
+},
+"customer": 
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"email": "richard@piedpiper.com"
+}
+}
+Cancelar suscripción
+
+Permite la cancelación de la suscripción. Al cliente no se realizarán mas cargos en esa suscripción.
+
+PATH PARAMETERS
+id
+required
+	
+string
+Example: sxn_test_XXXXXXXXXXXXXXXXXXX
+
+ID suscripcion
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_4eC39HqLyjWDarjt
+
+Llave privada.
+
+Responses
+200 
+
+La pertición fue exitosa
+
+DELETE
+/v2/recurrent/subscriptions/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"id": "sxn_live_SkEOXF4aVgjoYpgP",
+"delete": true,
+"merchant_message": "Se eliminó la suscripción con ID sxn_live_SkEOXF4aVgjoYpgP exitosamente."
+}
+Órdenes
+
+El objeto orden contiene información de una posible venta y es usado para el método de pago en efectivo. Una vez que tu cliente paga la orden vía banco o agente, el estado cambia en el mismo momento de la acción. Con este recurso podrás brindar a tus clientes la opción de pagar sus compras en efectivo.
+
+Objeto orden
+object	
+string
+Value: "order"
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID de la orden.
+
+
+amount	
+integer
+
+Monto de la orden. Sin punto decimal.
+Ejemplo: 100.00 serían 10000
+
+
+payment_code	
+string
+
+Código de pago de la orden.
+
+
+currency_code	
+string
+Enum: "PEN" "USD"
+
+Código de la moneda en tres letras. Formato ISO 4217.
+
+
+description	
+string
+
+Descripción de la orden.
+
+
+order_number	
+string
+
+Número de la orden. Este debe ser único entre todas tus órdenes.
+
+
+state	
+string
+
+Estado de la orden. Los estados posibles son "created", "pending", "deleted" y "expired".
+
+
+total_fee	
+number or null
+
+Comisión Culqi.
+
+
+net_amount	
+number or null
+
+Monto a depositar.
+
+
+fee_details	
+object or null
+
+Detalles de la comisión.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación de la orden en UNIX Timestamp.
+
+
+expiration_date	
+integer <int64>
+
+Fecha de expiración de la orden en UNIX Timestamp. El tiempo de vigencia de CIP es mínimo 10 minutos y máximo 6 meses.
+
+
+updated_at	
+integer or null <int64>
+
+Fecha de actualización de la orden en UNIX Timestamp.
+
+
+paid_at	
+integer or null <int64>
+
+Fecha de pago de la orden en UNIX Timestamp.
+
+
+available_on	
+string or null <date>
+
+Fecha de disponibilidad.
+
+
+metadata	
+object or null
+
+Envía parámetros adicionales con información relevante. Ver más.
+
+
+qr	
+string or null
+
+Contiene la URL de la imagen del QR para los pagos con billeteras móviles.
+
+
+cuotealo	
+string or null
+
+Muestra la URL a la que será redirigido tu cliente para evaluar si su compra será financiada por Cuotéalo BCP.
+
+
+url_pe	
+string or null
+
+Muestra la URL a la que será redirigido tu cliente para mostrar las opciones que ofrece PagoEfectivo.
+
+Copy
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487000,
+"expiration_date": 1538540700000,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": null,
+"qr": null,
+"cuotealo": null,
+"url_pe": null
+}
+Crear orden
+
+Este proceso permite que se genere un objeto orden con los detalles de la posible venta, la cual se crea con un estado pendiente de pago. Además, al momento de la creación tu cliente recibe un correo con las instrucciones de cómo pagar la orden.
+
+Si una orden es creada con el parámetro confirm en false, esta tendrá que ser confirmada inmediatamente con el método Confirm orden; de los contrario, la orden no podrá ser pagada por tu cliente. Se recomienda crearla sin incluir el parámetro "confirm" para que siga el flujo natural.
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+amount
+required
+	
+integer [ 600 .. 700000 ]
+
+Monto de la orden. Sin punto decimal, 600.00 serían 60000.
+
+
+currency_code
+required
+	
+string non-empty
+
+Código de la moneda en tres letras (Formato ISO 4217).
+
+
+description
+required
+	
+string [ 5 .. 80 ] characters
+
+Descripción de la orden
+
+
+order_number
+required
+	
+string [ 1 .. 36 ] characters
+
+Número que identifica a la orden. Debe ser único
+
+
+expiration_date
+required
+	
+string <time>
+
+Fecha de expiración de la orden. Debe ser una fecha futura.
+
+
+client_details
+required
+	
+object
+
+Datos de la persona que realiza la compra
+
+
+confirm	
+boolean
+
+Indica si se debe confirmar la orden. Por defecto tiene un valor true.
+
+Example: true
+
+
+metadata	
+object
+
+Informacion adicional que se requiera enviar al crear la orden.
+Example: "{dni":"71702999"}"
+
+Responses
+201 
+
+La petición fue exitosa
+
+POST
+/v2/orders
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"amount": 60000,
+"currency_code": "PEN",
+"description": " Venta de polo",
+"order_number": "#id-9999",
+"expiration_date": "1476132639",
+"client_details": 
+{
+"first_name": "Richard",
+"last_name": "Hendricks",
+"email": "richard@piedpiper.com",
+"phone_number": "999999987"
+},
+"confirm": true,
+"metadata": 
+{
+"dni": "71702999"
+}
+}
+Response samples
+201
+Content type
+application/json
+Example
+-"confirm":true
+-"confirm":false
+-"confirm":true
+Copy
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487,
+"expiration_date": 1538540700,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": null,
+"qr": "https://qr-example.com/qr-creado",
+"cuotealo": null,
+"url_pe": "url de pago efectivo"
+}
+Listar órdenes
+
+Permite obtener el listado de órdenes de tu comercio. De acuerdo a los filtros que uses, éstas serán organizadas según su fecha de creación; siendo el primero, el más reciente.
+
+QUERY PARAMETERS
+amount	
+integer [ 100 .. 999900 ]
+Example: amount=5000
+
+Monto de la orden en céntimos.
+reuerda que: 50.00 sería 5000
+
+
+min_amount	
+integer
+Example: min_amount=10000
+
+Monto mínimo de los cargos en céntimos.
+recuerda que: 100.00 sería 10000
+
+
+max_amount	
+integer [ 100 .. 999900 ]
+Example: max_amount=10000
+
+Monto máximo de los cargos en céntimos.
+recuerda que: 100.00 sería 10000
+
+
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha de la orden en UNIX Timestamp
+
+
+creation_date_from	
+string
+Example: creation_date_from=1476132639
+
+Fecha inicial de las órdenes en UNIX Timestamp
+
+
+creation_date_to	
+string
+Example: creation_date_to=1476132639
+
+Fecha límite de las órdenes en UNIX Timestamp
+
+
+state	
+string
+Example: state=created
+
+Estado de la orden a consultar y valores permitidos:
+
+
+limit	
+integer [ 1 .. 100 ]
+Example: limit=50
+
+Cantidad exacta de órdenes que se quieren listar.
+
+
+before	
+string = 25 characters
+Example: before=ord_test_7lYOtONQ9LxcgJUW
+
+El ID de la orden desde donde se quiere traer los resultados anteriores. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=ord_test_7lYOtOMM6LxcgJUW
+
+El ID de la orden desde donde se quiere traer los resultados siguientes. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/orders
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/orders?amount=5000&min_amount=10000&max_amount=10000&creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&state=created&limit=50&before=ord_test_7lYOtONQ9LxcgJUW&after=ord_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/orders?limit=50&before=crd_test_RzjT yGUwZioJLpZt",
+"next": "https://api.culqi.com/v2/orders?limit=50&after=crd_test_Z1YXhVdg6 0B0UCLI",
+"cursors": 
+{},
+"remaining_items": 0
+}
+}
+Confirmar orden
+
+El uso de este método es opcional y permite que una orden se habilite para ser pagada; para ello, se le genera un código de pago y se cambia su estado a "pendiente". Solo se puede usar este método cuando la orden se encuentra en estado "creada".
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ord_test_0CjjdWhFpEAZlxlz
+
+ID de la orden a confirmar.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer pk_test_UTCQSGcXW8bCyU59
+
+Llave pública
+
+Responses
+200 
+
+La petición fue exitosa
+
+POST
+/v2/orders/{id}/confirm
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487,
+"expiration_date": 1538540700,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": null,
+"qr": "https://qr-example.com/qr-creado",
+"cuotealo": "url de cuotéalo",
+"url_pe": "url de pago efectivo"
+}
+Confirmar tipo de orden
+
+El uso de este método es opcional y permite que una orden se habilite para ser pagada; para ello, se le genera un código de pago y se cambia su estado a "pendiente". Solo se puede usar este método cuando la orden se encuentra en estado "creada".
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer pk_test_UTCQSGcXW8bCyU59
+
+Llave pública
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+id
+required
+	
+string
+
+ID de la orden a confirmar.
+
+
+order_types
+required
+	
+Array of strings
+
+Es el medio de confirmación de Cuotéalo y CIP. Pueden ser ambas o una de ellas.
+Ejemplo: ["cip", "cuotealo"]
+
+Responses
+200 
+
+Petición exitosa.
+
+POST
+/v2/orders/confirm
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"order_types": 
+[
+"cuotealo",
+"cip"
+]
+}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487,
+"expiration_date": 1538540700,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": null,
+"qr": "https://qr-example.com/qr-creado",
+"cuotealo": "url de cuotéalo",
+"url_pe": "url de pago efectivo"
+}
+Consultar orden
+
+Consulta el detalle de ella utilizando su ID. Como respuesta exitosa obtendrá un objeto orden, si la petición es inválida te devolveremos el error.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ord_test_QDO81GT6Zaseewkp
+
+ID de la orden a consultar.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/orders/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487000,
+"expiration_date": 1538540700000,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": null,
+"qr": "https://qr-example.com/qr-creado",
+"cuotealo": "url de cuotéalo",
+"url_pe": "url de pago efectivo"
+}
+Actualizar orden
+
+Con este proceso se puede extender la validez de una orden (tiempo de expiración). Además, te permitirá agregar o reemplazar información a los valores de la metadata que enviaste a la hora de crearla. Cualquier parámetro o valor no provista será omitido. La actualización solo permite extender el tiempo de expiración de la orden pero no el tiempo del cip o QR.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ord_test_QDO81GT6Zaseewkp
+
+ID de la orden a consultar.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-rsa-id	
+string
+Example: 2ab335ad-c40d-4375-8dad-3ea315de23b0
+
+ID de la llave pública RSA, requerido si encripta el payload. Ver más
+
+
+x-culqi-product	
+string
+Example: online
+
+Identificador del producto.
+
+REQUEST BODY SCHEMA: application/json
+expiration_date
+required
+	
+string [ 10 .. 15 ] characters
+
+Nueva fecha de expiración. Debe ser mayor a la fecha de expiración original.
+
+
+metadata	
+object
+
+Información adicional de la orden a modificar
+Example: {"dni":"71701978"}
+
+Responses
+200 
+
+La petición fue exitosa
+
+PATCH
+/v2/orders/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"expiration_date": 1661117022,
+"metadata": 
+{
+"dni": "71701978"
+}
+}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "order",
+"id": "ord_test_xjmEW4dIyJM9G4cc",
+"amount": 6000,
+"payment_code": "13642064",
+"currency_code": "PEN",
+"description": "Venta de polo",
+"order_number": "#id-9999",
+"state": "pending",
+"total_fee": null,
+"net_amount": null,
+"fee_details": null,
+"creation_date": 1538540487000,
+"expiration_date": 1661117022,
+"updated_at": null,
+"paid_at": null,
+"available_on": null,
+"metadata": 
+{
+"dni": 71701978
+},
+"qr": "https://qr-example.com/qr-creado",
+"cuotealo": "url de cuotéalo",
+"url_pe": "url de pago efectivo"
+}
+Eliminar orden
+
+Esta operación te permitirá desactivar y dejar sin efecto una orden. Solo se puede aplicar para órdenes que estén en estado "pendiente" o "creada". Solo existe eliminación logica de la orden pero no del cip o QR.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: ord_test_QDO81GT6Zaseewkp
+
+ID de la orden a consultar.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+204 
+
+La petición fue exitosa
+
+DELETE
+/v2/orders/{id}
+Eventos
+
+Cuando algo sucede en tu cuenta, creamos un objeto evento como una forma de comunicártelo. Por ejemplo, cuando un cargo es exitoso, habilitamos el evento charge.succeeded. Adicionalmente, si realizas muchas peticiones al API podría llegar a causar multiples eventos. Es decir, si creas una suscripción para un cliente, recibirás el evento customer.subscription.created y el evento charge.succeeded.
+
+Al igual que los otros recursos del API, puedes consultar un evento particular o listar una serie de eventos directamente desde ella. También, hemos construido un sistema automatizado que enviará eventos directamente a tu servidor: webhooks. Reconedamos que revises nuestra guía de webhooks para que sepas cómo configurarlos.
+
+Objeto evento
+object	
+string
+
+Nombre del objeto.
+
+
+id	
+string
+
+Identificador del evento.
+
+
+creation_date	
+integer <int64>
+
+Fecha de creación del evento en UNIX Timestamp (milisegundos).
+
+
+data	
+object
+
+Objeto que contiene al recurso.
+
+
+type	
+string
+
+Identifica el tipo de evento.
+
+
+status_code	
+integer <int32>
+
+Estado de la petición HTTP.
+
+Copy
+Expand allCollapse all
+{
+"object": "event",
+"id": "evt_live_Ibqq91rd3yTrXhAz",
+"creation_date": 1622066883783,
+"data": { },
+"type": "charged.creation.failed",
+"status_code": 200
+}
+↗️ Notificar evento
+
+Puedes configurar notificaciones de eventos para tokens, cargos, devoluciones, clientes, tarjetas, planes, suscripciones y órdenes. Para esto debes registrar la Url de tu webhook a través del Culqi Panel con un evento asociado.
+Ejemplo: order.status.changed
+
+El objeto que se enviará a tu Url de webhook es el siguiente:
+
+object	
+string
+
+Nombre del objeto.
+
+
+id	
+string
+
+Identificador del evento.
+
+
+type	
+string
+
+Identifica el tipo de evento. Ver eventos
+Ejemplo: order.status.changed
+
+
+creation_date	
+integer <int64>
+
+Fecha de notificación de evento, en formato UNIX Timestamp.
+Ejemplo: 1547246714217
+
+
+data	
+string
+
+Objeto que contiene todo el response de un API.
+Ejemplo: Objeto del response de creación de orden.
+
+
+    {
+        "object": "order",
+        "id": "ord_live_TxHV5eiXSAeDJHoW",
+        "amount": 708,
+        "payment_code": "2823728",
+        "currency_code": "PEN",
+        "description": "Venta de prueba para PRESTASHOP",
+        "order_number": "woo-1662792270",
+        "state": "paid",
+        "total_fee": null,
+        "net_amount": null,
+        "fee_details": null,
+        "creation_date": 1547166170,
+        "expiration_date": 1547251200,
+        "updated_at": null,
+        "paid_at": null,
+        "available_on": null,
+        "metadata": {
+            "order_id": 568,
+            "order_number": 568,
+            "order_key": "wc_order_631c318c557fd",
+            "cip_code": "125233122",
+            "customer_email": "review@culqi.com",
+            "customer_first": "Javier"
+        }
+    }
+
+Copy
+{
+"object": "event",
+"id": "evt_test_bOoowQYioJrxqBlr",
+"type": "order.status.changed",
+"creation_date": 1547246714217,
+"data": "{\"object\":\"order\",\"id\":\"ord_live_TxHV5eiXSAeDJHoW\"}"
+}
+Consultar evento
+
+Consiste en devolver los detalles de un evento en particular. Para realizar esta petición solo debes enviar el ID del evento que te enviamos a través del Webhook. Todos ellos comparten una estructura común y la única diferencia es el parámetro data.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: evt_test_0CjjdWhFpEAZlxlz
+
+ID del evento a consultar.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/events/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"object": "event",
+"id": "evt_live_Ibqq91rd3pQzZotR",
+"creation_date": 1622066883783,
+"data": { },
+"type": "charge.creation.failed",
+"status_code": 200
+}
+Listar eventos
+
+Este proceso te permitirá obtener una serie de eventos existentes. De acuerdo a los filtros que uses, los eventos serán ordenados según su fecha de creación; siendo el primero, el más reciente.
+
+QUERY PARAMETERS
+type	
+string
+Example: type=charge.creation.succeeded (cargos exitosos)
+
+Tipo de evento a filtrar.
+
+
+creation_date	
+string
+Example: creation_date=1476132639
+
+Fecha del evento en UNIX Timestamp
+
+
+creation_date_from	
+string
+Example: creation_date_from=1476132639
+
+Fecha inicial de los eventos en UNIX Timestamp.
+
+
+creation_date_to	
+string
+Example: creation_date_to=1476132639
+
+Fecha limite de los eventos en UNIX Timestamp.
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Cantidad exacta de eventos que se quieren listar.
+
+
+before	
+string
+Example: before=evt_test_7lYOtONQ9LxcgJUW
+
+El ID del evento desde donde se quiere traer la página anterior. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=evt_test_7lYOtOMM6LxcgJUW
+
+El ID del evento desde donde se quiere traer la siguiente página. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/events
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/events?type=charge.creation.succeeded%20(cargos%20exitosos)&creation_date=1476132639&creation_date_from=1476132639&creation_date_to=1476132639&limit=50&before=evt_test_7lYOtONQ9LxcgJUW&after=evt_test_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{},
+{}
+],
+"total": 2,
+"current": 2
+}
+Links
+
+CulqiLink es un servicio simple y seguro que te permite realizar cobros desde tus redes sociales sin necesidad de tener una tienda virtual. Puedes crear links de cobro para enviarlos a tus clientes y así automatizar tu proceso de venta. Adicionalmente, si cuentas con una página web informativa, podrás insertar la URL de nuestro link en tu botón de pago para mejorar la experiencia de compra de tus clientes. Para más información de links de pago ingresa aquí
+
+Objeto link
+object	
+string
+
+Nombre del objeto.
+
+
+id	
+string
+
+ID del link de pago.
+
+
+code	
+string
+
+Código del link de pago.
+
+
+url	
+string
+
+Url del link de pago.
+
+
+concept	
+string
+
+Descripción del link de pago.
+
+
+amount	
+integer
+
+Monto del link de pago en céntimos.
+
+
+currency_code	
+string
+Enum: "PEN" "USD"
+
+Código de la moneda del link de pago en formato ISO 4217.
+
+
+limit_uses	
+integer
+
+Límite de usos.
+
+
+is_open_amount	
+boolean
+
+Indica si el link es de monto abierto.
+
+
+payment_methods	
+Array of strings
+
+Métodos de pago del link.
+
+
+creation_date	
+integer
+
+Fecha de creación del link de pago en UNIX Timestamp.
+
+
+expiration_date	
+integer
+
+Fecha de expiración del link de pago en UNIX Timestamp.
+
+Copy
+Expand allCollapse all
+{
+"object": "link",
+"id": "link_live_r3UDTjIwB2LOc0t1",
+"code": "C8614283C4",
+"url": "https://express.culqi.com/pago/C8614283C4",
+"concept": "Link de prueba",
+"amount": 14900,
+"currency_code": "PEN",
+"limit_uses": 10000000,
+"is_open_amount": false,
+"payment_methods": 
+[
+"tarjeta",
+"yape",
+"bancaMovil",
+"agente",
+"billetera",
+"cuotealo"
+],
+"creation_date": 1760736448,
+"expiration_date": 1760840802
+}
+Crear link de pago
+
+Esta operación permitirá crear links de pago para que los puedas enviar a tus clientes. También puedes hacerlo vía CulqiPanel.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_live_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-product
+required
+	
+string
+Example: link
+
+Id del producto, siempre enviar el valor ¨link¨
+
+REQUEST BODY SCHEMA: application/json
+amount
+required
+	
+integer [ 600 .. 999900 ]
+
+Monto del link de pago. Sin punto decimal.
+Ejemplo: 100.00 serían 10000
+
+
+currency_code
+required
+	
+string non-empty
+Enum: "PEN" "USD"
+
+Código de la moneda en tres letras (Formato ISO 4217).
+
+
+concept
+required
+	
+string
+
+Descripción del link de pago.
+
+
+limit_uses
+required
+	
+integer [ 1 .. 999900 ]
+
+Límite de usos.
+
+
+is_open_amount	
+boolean
+
+Indica si es link es de monto abierto o no.
+Por defecto false.
+
+
+payment_methods
+required
+	
+Array of strings
+
+Métodos de pago del link.
+Valores permitidos: [ "tarjeta", "yape", "bancaMovil","agente", "billetera", "cuotealo" ]
+
+
+expiration_date	
+integer
+
+Fecha de expiración del link de pago en UNIX Timestamp.
+
+Responses
+201 
+
+La petición fue exitosa.
+
+POST
+/v2/links
+Request samples
+PayloadJavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"amount": 10000,
+"currency_code": "PEN",
+"concept": "descripción del link de pago",
+"limit_uses": 1000,
+"is_open_amount": true,
+"payment_methods"": 
+[
+"tarjeta",
+"yape",
+"bancaMovil",
+"agente",
+"billetera",
+"cuotealo"
+],
+"expiration_date": 1760840802
+}
+Response samples
+201
+Content type
+application/json
+Copy
+{
+"object": "link",
+"id": "link_live_r3UDTjIwB2LOc0t1",
+"code": "C8614283C4",
+"url": "https://express.culqi.com/pago/C8614283C4",
+"concept": "descripción del link de pago",
+"amount": 10000,
+"currency_code": "PEN",
+"limit_uses": 10000000,
+"is_open_amount": true,
+"creation_date": 1760736448,
+"expiration_date": 1760840802
+}
+Listar Links de pago
+
+Este recurso te permitirá obtener una serie de links de pagos existentes, de acuerdo a los filtros que uses. Los links de pagos serán ordenados según la fecha de creación, siendo el primero el más reciente.
+
+QUERY PARAMETERS
+creation_date_from	
+string [ 5 .. 15 ] characters
+Example: creation_date_from=1476132639
+
+Fecha inicial de los cargos en UNIX Timestamp.
+
+
+creation_date_to	
+string [ 5 .. 15 ] characters
+Example: creation_date_to=1476132639
+
+Fecha limite de los cargos en UNIX Timestamp.
+
+
+limit	
+string [ 1 .. 100 ] characters
+Example: limit=50
+
+Límite de la paginación, por defecto 50 registros.
+
+
+before	
+string = 25 characters
+Example: before=link_live_7lYOtONQ9LxcgJUW
+
+El ID del cargo desde donde se quiere traer la página anterior. No inclusivo.
+
+
+after	
+string = 25 characters
+Example: after=link_live_7lYOtOMM6LxcgJUW
+
+El ID del cargo desde donde se quiere traer la siguiente página. No inclusivo.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_live_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-product
+required
+	
+string
+Example: link
+
+Id del producto, siempre enviar el valor ¨link¨
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/links
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/links?creation_date_from=1476132639&creation_date_to=1476132639&limit=50&before=link_live_7lYOtONQ9LxcgJUW&after=link_live_7lYOtOMM6LxcgJUW")
+  .header("Authorization", "Bearer sk_live_UTCQSGcXW8bCyU59")
+  .header("x-culqi-product", "link")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"data": 
+[
+{},
+{}
+],
+"paging": 
+{
+"previous": "https://api.culqi.com/v2/links?limit=50&before=link_live_3nKwGp5EGMA8fxaW",
+"next": "https://api.culqi.com/v2/links?limit=50&after=link_live_3nKwGp5EGMA8fxaW",
+"cursors": 
+{},
+"remaining_items": 81
+}
+}
+Consultar link de pago
+
+Consultar el detalle de un link de pago utilizando el ID devuelto en la petición de creación, te permitirá obtener como respuesta todos los parámetros del objeto indicado.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: link_live_r3UDTjIwB2LOc0t1
+
+ID del link de pago.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_live_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-product
+required
+	
+string
+Example: link
+
+Id del producto, siempre enviar el valor ¨link¨
+
+Responses
+200 
+
+La petición fue exitosa.
+
+GET
+/v2/links/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"object": "link",
+"id": "link_live_r3UDTjIwB2LOc0t1",
+"code": "C8614283C4",
+"url": "https://express.culqi.com/pago/C8614283C4",
+"concept": "descripción del link de pago",
+"amount": 10000,
+"currency_code": "PEN",
+"limit_uses": 10000000,
+"is_open_amount": true,
+"creation_date": 1760736448,
+"expiration_date": 1760840802
+}
+Actualizar link
+
+Actualizar un link de pago te permitirá agregar o reemplazar información de los valores que enviaste a la hora de crearlo. Cualquier parámetro o valor no provisto será omitido en los valores de la metadata.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: link_live_r3UDTjIwB2LOc0t1
+
+ID del link de pago.
+
+HEADER PARAMETERS
+Content-type
+required
+	
+string
+Example: application/json
+
+Authorization
+required
+	
+string
+Example: Bearer sk_live_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-product
+required
+	
+string
+Example: link
+
+Id del producto, siempre enviar el valor ¨link¨
+
+REQUEST BODY SCHEMA: application/json
+limit_uses	
+integer [ 1 .. 999900 ]
+
+Límite de usos.
+
+
+payment_methods	
+Array of strings
+
+Métodos de pago del link.
+Valores permitidos: [ "tarjeta", "yape", "bancaMovil","agente", "billetera", "cuotealo" ]
+
+
+expiration_date	
+integer
+
+Fecha de expiración del link de pago en UNIX Timestamp.
+
+Responses
+200 
+
+La petición fue exitosa.
+
+PATCH
+/v2/links/{id}
+Request samples
+Payload
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"limit_uses": 100,
+"payment_methods": 
+[
+"tarjeta",
+"yape",
+"bancaMovil",
+"agente",
+"billetera",
+"cuotealo"
+],
+"expiration_date": "1476132639"
+}
+Response samples
+200
+Content type
+application/json
+Copy
+{
+"object": "link",
+"id": "link_live_r3UDTjIwB2LOc0t1",
+"code": "C8614283C4",
+"url": "https://express.culqi.com/pago/C8614283C4",
+"concept": "descripción del link de pago",
+"amount": 10000,
+"currency_code": "PEN",
+"limit_uses": 10000000,
+"is_open_amount": true,
+"creation_date": 1760736448,
+"expiration_date": 1760840802
+}
+Eliminar link
+
+Esta operación te permitirá desactivar y dejar sin efecto un link de pago.
+
+PATH PARAMETERS
+id
+required
+	
+string = 25 characters
+Example: link_live_r3UDTjIwB2LOc0t1
+
+ID del link de pago.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_live_UTCQSGcXW8bCyU59
+
+Llave privada
+
+
+x-culqi-product
+required
+	
+string
+Example: link
+
+Id del producto, siempre enviar el valor ¨link¨
+
+Responses
+200 
+
+La petición fue exitosa
+
+DELETE
+/v2/links/{id}
+Estado Cuenta
+
+Con esta API, podrás obtener los datos de tus depósitos y estado de cuenta, tal como se visualizan en el Panel Culqi.
+
+Si eres de los comercios que necesitan automatizar la conciliación de sus ventas con sus sistemas de contabilidad, esta opción te será de gran ayuda.
+
+* Válido para comercios Online con Estados de cuenta activos
+
+Listar operaciones
+
+Retornará un listado de las operaciones realizadas en tu comercio. Toma en cuenta que la información devuelta incluye todas las operaciones procesadas hasta este momento.
+
+QUERY PARAMETERS
+currency_code
+required
+	
+string
+Example: currency_code=PEN
+
+Código de la moneda en tres letras (Formato ISO 4217).
+Valores permitidos: "PEN", "USD"
+
+
+operation_type	
+string
+Example: operation_type=Authorized
+
+Tipo de operación para filtrar el detalle.
+Valores permitidos: "Authorized", "Canceled", "Return", "Fraud", "Adjust"
+
+
+date_from	
+string
+Example: date_from=1476132639
+
+Fecha inicial de las operaciones en formato UNIX Timestamp.
+
+
+date_to	
+string
+Example: date_to=1476132639
+
+Fecha límite de las operaciones en formato UNIX Timestamp.
+
+
+limit	
+number [ 1 .. 200 ]
+Example: limit=50
+
+Límite de cargos a listar. Si no se define, es automáticamente 200.
+
+
+page	
+number
+Example: page=10
+
+Número de página de las operaciones. Si no se define, automáticamente es 1.
+
+
+sort	
+string
+Example: sort=ASC
+
+Tipo de ordenamiento de las operaciones. Si no se define, automáticamente es ASC.
+Valores permitidos: "ASC", "DESC"
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/balance/operations
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/balance/operations?currency_code=PEN&operation_type=Authorized&date_from=1476132639&date_to=1476132639&limit=50&page=10&sort=ASC")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"list": 
+[
+{}
+],
+"pagination": 
+{
+"total_records": 685,
+"total_pages": 4,
+"prev_page": null,
+"next_page": 2,
+"page": 1,
+"limit": 200
+}
+}
+Listar abonos
+
+Retornará un listado de los abonos realizados de Culqi hacia tu comercio.
+
+QUERY PARAMETERS
+currency_code
+required
+	
+string
+Example: currency_code=PEN
+
+Código de la moneda en tres letras (Formato ISO 4217).
+Valores permitidos: "PEN", "USD"
+
+
+date_from
+required
+	
+string
+Example: date_from=1476132639
+
+Fecha inicial de las operaciones en formato UNIX Timestamp.
+
+
+date_to
+required
+	
+string
+Example: date_to=1476132639
+
+Fecha límite de las operaciones en formato UNIX Timestamp.
+
+
+sort	
+string
+Example: sort=ASC
+
+Tipo de ordenamiento de las operaciones. Si no se define, automáticamente es ASC.
+Valores permitidos: "ASC", "DESC"
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/balance/deposits
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/balance/deposits?currency_code=PEN&date_from=1476132639&date_to=1476132639&sort=ASC")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+[
+{
+"id": 1000000069340,
+"status": "Abonado",
+"currency": "PEN",
+"bank_name": "BCP",
+"account_holder": "JUAN PEREZ",
+"account_number": 11495674033774072,
+"voucher_id": "659C8D1C9B6840018539668",
+"amount": 1576.89,
+"date": "2022-03-04T05:00:00.000Z"
+},
+{
+"id": 1000000039340,
+"status": "Abonado",
+"currency": "PEN",
+"bank_name": "BCP",
+"account_holder": "JUAN PEREZ",
+"account_number": 11495674033774072,
+"voucher_id": "659C8D1C9B6840018539668",
+"amount": 4124.98,
+"date": "2022-03-05T05:00:00.000Z"
+}
+]
+Detalle abono
+
+Retornará el detalle de un abono (incluyendo sus operaciones asociadas), para ello deberás utilizar el identificador (id) devuelto en la opción "Listar abonos".
+
+QUERY PARAMETERS
+id
+required
+	
+string
+Example: id=fARY6gP7VeRiI2L2
+
+El ID del abono del que se quiere obtener el detalle.
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/balance/deposits/{id}
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+[
+{
+"id": 1000000069340,
+"currency": "PEN",
+"status": "Abonado",
+"voucher_id": "659C8D1C9B6840018539668",
+"accumulated_amount": 1637.7,
+"accumulated_igv": -9.28,
+"accumulated_payable_amount": 1576.89,
+"date": "2022-03-04T05:00:00.000Z",
+"sales": 
+[]
+}
+]
+Listar facturación
+
+Retornará un listado de las operaciones realizadas en tu comercio y que ya te fueron abonadas*. Toma en cuenta que este listado podría sufrir alguna variación hasta el cierre mensual por parte del área financiera.
+
+*La información de este listado puede tener un desfase de hasta 24 horas.
+
+
+QUERY PARAMETERS
+currency_code
+required
+	
+string
+Example: currency_code=PEN
+
+Código de la moneda en tres letras (Formato ISO 4217).
+Valores permitidos: "PEN", "USD"
+
+
+operation_type	
+string
+Example: operation_type=Authorized
+
+Tipo de operación para filtrar el detalle.
+Valores permitidos: "Authorized", "Canceled", "Return", "Fraud", "Adjust"
+
+
+date_from	
+string
+Example: date_from=1476132639
+
+Fecha inicial de las operaciones en formato UNIX Timestamp.
+
+
+date_to	
+string
+Example: date_to=1476132639
+
+Fecha límite de las operaciones en formato UNIX Timestamp.
+
+
+limit	
+number [ 1 .. 200 ]
+Example: limit=50
+
+Límite de cargos a listar. Si no se define, es automáticamente 200.
+
+
+page	
+number
+Example: page=10
+
+Número de página de las operaciones. Si no se define, automáticamente es 1.
+
+
+sort	
+string
+Example: sort=ASC
+
+Tipo de ordenamiento de las operaciones. Si no se define, automáticamente es ASC.
+Valores permitidos: "ASC", "DESC"
+
+HEADER PARAMETERS
+Authorization
+required
+	
+string
+Example: Bearer sk_test_UTCQSGcXW8bCyU59
+
+Llave privada.
+
+Responses
+200 
+
+La petición fue exitosa
+
+GET
+/v2/balance/billing-operations
+Request samples
+JavaPhpPythonC#GoNode.jsRubySwiftJqueryJavascript
+Copy
+HttpResponse<String> response = Unirest.get("https://api.culqi.com/v2/balance/billing-operations?currency_code=PEN&operation_type=Authorized&date_from=1476132639&date_to=1476132639&limit=50&page=10&sort=ASC")
+  .header("Authorization", "Bearer sk_test_UTCQSGcXW8bCyU59")
+  .asString();
+Response samples
+200
+Content type
+application/json
+Copy
+Expand allCollapse all
+{
+"list": 
+[
+{}
+],
+"pagination": 
+{
+"total_records": 685,
+"total_pages": 4,
+"prev_page": null,
+"next_page": 2,
+"page": 1,
+"limit": 200
+}
+}
+Documentación
+Inicio rápido
+Pagos Online
+Plugins
+Checkout
+Pruebas
+APIs
+Tokens
+Cargos
+Órdenes
+Clientes
+Tarjetas
+SDKs
+PHP
+JAVA
+Python
+.NET
+ver todos ->
+Soporte
+Whatsapp
+Comunidad Facebook
+Síguenos
+
+© Culqi 2026 | Con el respaldo de
+
+Avenida Javier Prado Este No. 496, oficina No. 2501 - San Isidro

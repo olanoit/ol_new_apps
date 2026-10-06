@@ -1,0 +1,162 @@
+titulo: Pagos con Culqi
+subtitulo: >-
+  Culqi como proveedor de pago de Odoo: tarjetas y Yape con Culqi Checkout
+  Custom, autenticación 3DS cuando el banco la pide y devoluciones totales
+  o parciales.
+categoria: Pagos · Perú
+etiquetas: [Culqi, Tarjetas, Yape, 3D Secure, Devoluciones, Soles y dólares]
+portada: screenshots/03-checkout.png
+
+destacados_intro: >-
+  Construido desde la documentación oficial de Culqi: API v2, Checkout
+  Custom y Culqi 3DS.
+destacados:
+  - icono: "▣"
+    titulo: Checkout Custom
+    texto: >-
+      La versión vigente del checkout de Culqi (Checkout v4 está en desuso):
+      tarjetas y Yape en la misma ventana.
+  - icono: "🔒"
+    titulo: La tarjeta nunca toca Odoo
+    texto: >-
+      Los datos van del navegador a Culqi; Odoo cobra en el servidor con el
+      token y la llave secreta.
+  - icono: "3D"
+    titulo: Autenticación 3DS
+    texto: >-
+      Si el banco pide autenticar al cliente, Culqi 3DS lo hace y el cargo se
+      repite con los parámetros obtenidos.
+  - icono: "−"
+    titulo: Devoluciones
+    texto: Totales o parciales desde la transacción de Odoo.
+  - icono: "S/"
+    titulo: Soles y dólares
+    texto: Tarjetas en soles y dólares; Yape en soles.
+  - icono: "✓"
+    titulo: Sin cobros dobles
+    texto: >-
+      La ruta de cobro exige una firma de la transacción y la bloquea mientras
+      cobra.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Culqi es una de las pasarelas más usadas por los comercios en línea de
+    Perú, pero Odoo no la trae. Este módulo la agrega como proveedor de pago
+    para la tienda en línea, el portal y los enlaces de pago de facturas y
+    pedidos.
+  nota: >-
+    **Requisito:** una cuenta de Culqi con sus llaves (pública y secreta).
+    Para probar, las llaves de integración (pk_test/sk_test) del CulqiPanel.
+
+flujos_intro: >-
+  El cobro y la autenticación 3DS, según la documentación oficial.
+flujos:
+  - id: cobro
+    titulo: Cobro con Culqi
+    texto: >-
+      El checkout convierte la tarjeta o Yape en un token; Odoo cobra con él.
+      Si Culqi responde REVIEW, el cliente se autentica con 3DS y el cargo se
+      repite.
+    mermaid: |
+      flowchart TD
+        A[Cliente elige Culqi y pulsa Pagar] --> B[Culqi Checkout Custom:<br/>tarjeta o Yape]
+        B --> C[Token de Culqi]
+        C --> D[Odoo crea el cargo<br/>con la llave secreta]
+        D --> E{Respuesta de Culqi}
+        E -- 201 cargo creado --> F[Pago confirmado]
+        E -- 200 REVIEW --> G[Autenticación 3DS<br/>en el navegador]
+        G --> H[Odoo repite el cargo<br/>con los parámetros 3DS]
+        H --> F
+        E -- Rechazo --> I[Error con el mensaje de Culqi]
+
+pasos_intro: >-
+  La configuración del proveedor y el pago desde la página de pago de Odoo,
+  con la ventana real de Culqi Checkout Custom.
+pasos:
+  - seccion: Configuración
+  - titulo: Llaves de Culqi
+    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Culqi
+    texto: >-
+      Llave pública y llave secreta de CulqiPanel ▸ Desarrollo ▸ API Keys.
+      Odoo comprueba que correspondan al modo: de integración en «Modo de
+      prueba», de producción en «Activado».
+    puntos:
+      - La llave secreta solo la ven los administradores y nunca se envía al navegador.
+      - "Opcional: el ID y la llave pública RSA para cifrar el checkout."
+    imagen: screenshots/01-ajustes.png
+
+  - seccion: Pago
+  - titulo: Culqi en la página de pago
+    ruta: Tienda, portal o enlace de pago ▸ Método de pago
+    texto: >-
+      Culqi aparece con sus métodos Tarjeta y Yape. El aviso recuerda que los
+      datos de la tarjeta van directamente a Culqi.
+    imagen: screenshots/02-pago.png
+  - titulo: Pago con tarjeta
+    ruta: Método de pago ▸ Tarjeta ▸ Pagar
+    texto: >-
+      Se abre Culqi Checkout Custom con el nombre de la empresa, el importe y
+      el correo del cliente. Al pagar, Odoo crea el cargo y, si el banco lo
+      pide, el cliente se autentica con 3D Secure.
+    imagen: screenshots/03-checkout.png
+  - titulo: Pago con Yape
+    ruta: Método de pago ▸ Yape ▸ Pagar
+    texto: >-
+      El cliente aprueba la compra con el código de «Aprobar compras» de su
+      app Yape.
+    imagen: screenshots/04-yape.png
+
+campos_intro: >-
+  Los campos que el módulo añade al proveedor.
+campos:
+  - grupo: Proveedor Culqi
+    ruta: Proveedores de pago ▸ Culqi ▸ Credenciales
+    campos:
+      - [Llave pública, "pk_test_… o pk_live_…", "—", La usan el checkout y 3DS]
+      - [Llave secreta, "sk_test_… o sk_live_…", "—", Solo administradores]
+      - [ID de la llave RSA, Cifrado opcional del checkout., "—", "—"]
+      - [Llave pública RSA, Cifrado opcional del checkout., "—", "—"]
+
+funcionalidades:
+  - grupo: Pago
+    items:
+      - Tarjetas y Yape con Culqi Checkout Custom.
+      - Cargo en el servidor por el monto exacto en céntimos.
+      - Datos antifraude del cliente y huella del dispositivo.
+      - Autenticación 3DS cuando Culqi responde REVIEW.
+  - grupo: Después del pago
+    items:
+      - Devoluciones totales o parciales.
+      - Mensaje de Culqi en la transacción cuando rechaza el pago.
+  - grupo: Seguridad
+    items:
+      - Ruta de cobro firmada y con bloqueo de la transacción.
+      - Llave secreta solo para administradores y borrada al neutralizar la base.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
+  - "Indique las llaves en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Culqi**."
+  - Publique el proveedor y active los métodos Tarjeta y Yape.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. No incluye todavía los medios que
+  requieren una orden de Culqi (PagoEfectivo, billeteras, Cuotéalo), la
+  tarjeta guardada ni la captura manual.
+
+faq:
+  - pregunta: "¿Por qué Checkout Custom y no Checkout v4?"
+    respuesta: >-
+      Culqi anuncia que Checkout v4 se discontinuará y recomienda migrar a
+      Checkout Custom.
+  - pregunta: "¿Qué pasa si el banco pide 3D Secure?"
+    respuesta: >-
+      El cliente se autentica en una ventana de Culqi y el pago continúa sin
+      volver a escribir la tarjeta.
+
+novedades:
+  - version: 1.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Primera versión: tarjetas y Yape con Checkout Custom, autenticación 3DS, devoluciones totales o parciales, soles y dólares."
+
+relacionados: [al_payment_niubiz, al_l10n_pe_invoice]

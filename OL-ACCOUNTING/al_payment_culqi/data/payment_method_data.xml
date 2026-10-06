@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Yape (BCP): billetera móvil peruana. Culqi la tokeniza en el checkout
+         (token ype_…) y se cobra con el mismo endpoint de cargos. -->
+    <record id="payment_method_yape" model="payment.method">
+        <field name="name">Yape</field>
+        <field name="code">yape</field>
+        <field name="sequence">20</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="al_payment_culqi/static/img/yape.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_manual_capture">none</field>
+        <field name="support_refund">partial</field>
+        <field name="supported_country_ids" eval="[Command.set([ref('base.pe')])]"/>
+        <field name="supported_currency_ids" eval="[Command.set([ref('base.PEN')])]"/>
+    </record>
+
+</odoo>
