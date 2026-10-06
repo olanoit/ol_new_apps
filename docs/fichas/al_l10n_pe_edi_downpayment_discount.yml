@@ -1,0 +1,183 @@
+titulo: Anticipos y descuentos globales en el CPE
+subtitulo: >-
+  El XML que Odoo envía a SUNAT, correcto también cuando la factura lleva
+  anticipos de partes exoneradas o inafectas, descuentos globales mixtos o
+  cuando hay que anularla con una nota de crédito.
+categoria: Localización Perú · Facturación electrónica
+etiquetas: [Anticipos, Descuentos globales, Nota de crédito, UBL 2.1, Reglas de validación SUNAT, Sin rechazos]
+portada: screenshots/02-factura-final.png
+
+destacados_intro: >-
+  Odoo 19 ya emite los anticipos y el descuento global en los casos simples.
+  Este módulo corrige los casos que SUNAT rechaza, verificados contra sus
+  reglas de validación oficiales.
+destacados:
+  - icono: "%"
+    titulo: Anticipos exonerados e inafectos
+    texto: >-
+      El anticipo de una venta mixta se informa con su código: 04 gravado,
+      05 exonerado y 06 inafecto.
+  - icono: "1"
+    titulo: Un anticipo, una referencia
+    texto: >-
+      Cada comprobante de anticipo aparece una sola vez, con su importe total
+      y su tipo (factura o boleta).
+  - icono: "−"
+    titulo: Descuentos de partes no gravadas
+    texto: >-
+      El descuento global de lo exonerado o inafecto se reparte entre esos
+      ítems como descuento de línea, sin perder céntimos.
+  - icono: "↩"
+    titulo: Notas de crédito sin bloqueos
+    texto: >-
+      Se puede anular una factura con anticipos, descuento global o
+      descuento de línea sin rehacer las líneas.
+  - icono: "✓"
+    titulo: Contabilidad intacta
+    texto: >-
+      Todo ocurre al generar el XML: el asiento y la deducción del anticipo
+      no cambian.
+  - icono: "▤"
+    titulo: Probado contra SUNAT
+    texto: >-
+      Veinte escenarios validados con las reglas de cuadre oficiales de
+      SUNAT (26.08.2026).
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Una constructora cobra un anticipo del 20 % de un contrato que incluye
+    diseño (gravado) y capacitación (exonerada). Al emitir la factura final,
+    Odoo informa los dos anticipos con el código de un descuento gravado y
+    referencia dos veces el mismo comprobante: SUNAT la rechaza (error 2365 y
+    descuadres de la base imponible). Y si después hay que anularla, Odoo no
+    deja publicar la nota de crédito porque tiene líneas negativas.
+
+
+    Este módulo corrige el XML en esos casos y deja publicar las notas. Los
+    casos simples (un anticipo gravado, dólares, boletas, IGV incluido) siguen
+    saliendo como en el Odoo estándar.
+  nota: >-
+    **Sin configuración.** El flujo es el de Ventas: anticipo por porcentaje
+    o monto fijo y luego factura regular, que deduce los anticipos.
+
+flujos_intro: >-
+  Cómo se informa cada línea negativa según el documento y el impuesto.
+flujos:
+  - id: lineas
+    titulo: Anticipos y descuentos en el XML
+    texto: >-
+      En la factura, los anticipos van como pago anticipado y el descuento de
+      lo gravado como descuento global; el de lo no gravado pasa a los ítems.
+      En la nota de crédito todo se reparte entre los ítems.
+    mermaid: |
+      flowchart TD
+        A[Línea negativa] --> B{¿Documento?}
+        B -- Factura o boleta --> C{¿Es deducción de anticipo?}
+        C -- Sí --> D[PrepaidPayment y cargo<br/>04 / 05 / 06 según afectación]
+        C -- No --> E{¿Grupo gravado con IGV?}
+        E -- Sí --> F[Descuento global 02]
+        E -- No --> G[Descuento de línea 00<br/>repartido entre los ítems]
+        B -- Nota de crédito o débito --> H[Repartida entre los ítems<br/>del mismo impuesto]
+        H --> I[Precio neto por ítem]
+
+pasos_intro: >-
+  El caso de la constructora DEMO: diseño de planos (gravado) y capacitación
+  (exonerada), con un anticipo del 20 %.
+pasos:
+  - seccion: Anticipo y factura final
+  - titulo: Facturar desde el pedido
+    ruta: Ventas ▸ Pedido ▸ Crear factura
+    texto: >-
+      Elija **Anticipo (porcentaje)** o **Anticipo (importe fijo)** para el
+      comprobante de anticipo. Al terminar el servicio, **Factura normal**
+      deduce los anticipos.
+    imagen: screenshots/01-crear-factura.png
+  - titulo: Factura final con el anticipo deducido
+    ruta: Contabilidad ▸ Clientes ▸ Facturas
+    texto: >-
+      La sección **Anticipos** resta lo cobrado, una línea por impuesto. En
+      el XML, el comprobante de anticipo aparece una sola vez y los cargos
+      salen como 04 (gravado) y 05 (exonerado).
+    puntos:
+      - "Total de la factura S/ 13.440,00: el contrato menos el anticipo de S/ 3.360,00."
+      - El tipo del anticipo (factura o boleta) se toma del propio comprobante de anticipo.
+    imagen: screenshots/02-factura-final.png
+
+  - seccion: Anulación
+  - titulo: Nota de crédito de la factura final
+    ruta: Factura ▸ Nota de crédito
+    texto: >-
+      Se publica tal cual, con las mismas líneas que la factura. En el XML,
+      la deducción del anticipo se reparte entre los ítems de su mismo
+      impuesto y cada ítem lleva su precio neto, como exige SUNAT para las
+      notas.
+    puntos:
+      - Lo mismo con una factura con descuento global o con descuento de línea.
+      - "El asiento conserva la deducción del anticipo en su cuenta."
+    imagen: screenshots/03-nota-credito.png
+
+campos_intro: >-
+  No añade campos. Estos son los códigos que usa en el XML.
+campos:
+  - grupo: Catálogo 53 — cargos y descuentos
+    ruta: XML UBL 2.1 ▸ cac:AllowanceCharge
+    campos:
+      - ["04", Anticipo gravado (IGV/IVAP), Global, "Afectación 10-17"]
+      - ["05", Anticipo exonerado, Global, "Afectación 20-21"]
+      - ["06", Anticipo inafecto, Global, "Afectación 30-37"]
+      - ["02", Descuento global que afecta la base gravada, Global, "Nativo de Odoo"]
+      - ["00", Descuento de línea, Ítem, "Incluye el descuento global repartido de lo no gravado"]
+
+funcionalidades:
+  - grupo: Anticipos
+    items:
+      - "Código del anticipo según la afectación: 04, 05 o 06."
+      - Una referencia y un pago anticipado por comprobante de anticipo.
+      - Tipo del anticipo (factura 02 o boleta 03) tomado del propio anticipo.
+      - "Importes cuadrados al céntimo con el total de anticipos (regla 2509)."
+  - grupo: Descuentos
+    items:
+      - Descuento global gravado como 02, como en el Odoo estándar.
+      - Descuento global exonerado o inafecto repartido entre sus ítems como 00.
+      - Factor del descuento de línea calculado sobre los importes reales.
+      - Aviso al publicar si los descuentos de un impuesto superan a sus ítems.
+  - grupo: Notas de crédito y débito
+    items:
+      - Se publican con deducciones de anticipo, descuentos globales o de línea.
+      - Precio neto por ítem en el XML (regla 3271 de la nota).
+      - Sin PrepaidPayment ni cargos globales, que la nota no admite.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-INVOICING).
+  - No requiere configuración.
+requisitos_nota: >-
+  Requiere Odoo 19 Enterprise con la facturación electrónica de Perú
+  (l10n_pe_edi) y Ventas. Al desinstalarlo, Odoo vuelve a generar el XML
+  estándar.
+
+faq:
+  - pregunta: "¿Cambia algo en la contabilidad?"
+    respuesta: >-
+      No. Todo ocurre al generar el XML; las líneas y el asiento de la factura
+      y de la nota de crédito no cambian.
+  - pregunta: "¿Qué pasa con un anticipo solo gravado?"
+    respuesta: >-
+      Sale igual que en el Odoo estándar, que ya lo resolvía bien; el módulo
+      solo agrupa la referencia por comprobante.
+  - pregunta: "¿Cómo registro un descuento global?"
+    respuesta: >-
+      Como una línea negativa con el impuesto de lo que descuenta (por
+      ejemplo, el producto de descuento de Ventas).
+  - pregunta: "¿Cómo se comprobó?"
+    respuesta: >-
+      Con las reglas de validación oficiales de SUNAT del 26.08.2026: veinte
+      escenarios sin incumplimientos y con el mismo total que el asiento.
+
+novedades:
+  - version: 1.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Primera versión: anticipos exonerados e inafectos (05/06), una referencia por comprobante de anticipo, descuento global de partes no gravadas como descuento de línea y notas de crédito y débito con anticipos o descuentos."
+
+relacionados: [al_l10n_pe_invoice, al_l10n_pe_detraction, al_l10n_pe_retention]

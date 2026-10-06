@@ -30,5 +30,6 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_delivery_guide_report](al_l10n_pe_delivery_guide_report/) | 7.20260828 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
+[al_l10n_pe_edi_downpayment_discount](al_l10n_pe_edi_downpayment_discount/) | 1.20261006 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_invoice](al_l10n_pe_invoice/) | 11.20260828 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [//]: # (end addons)

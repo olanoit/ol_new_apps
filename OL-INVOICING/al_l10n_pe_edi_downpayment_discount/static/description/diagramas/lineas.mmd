@@ -1,0 +1,9 @@
+flowchart TD
+  A[Línea negativa] --> B{¿Documento?}
+  B -- Factura o boleta --> C{¿Es deducción de anticipo?}
+  C -- Sí --> D[PrepaidPayment y cargo<br/>04 / 05 / 06 según afectación]
+  C -- No --> E{¿Grupo gravado con IGV?}
+  E -- Sí --> F[Descuento global 02]
+  E -- No --> G[Descuento de línea 00<br/>repartido entre los ítems]
+  B -- Nota de crédito o débito --> H[Repartida entre los ítems<br/>del mismo impuesto]
+  H --> I[Precio neto por ítem]

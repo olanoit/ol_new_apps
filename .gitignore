@@ -14,3 +14,6 @@ docs/tecport/referencia/
 # Editores / SO
 *.swp
 .DS_Store
+
+# XML de los escenarios de anticipos (regenerables con docs/anticipos/escenarios_xml.py)
+docs/anticipos/xml/
