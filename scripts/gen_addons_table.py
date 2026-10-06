@@ -78,8 +78,8 @@ def structure_errors():
             errors.append(f'{path.name}: módulo en la raíz; muévalo a su área')
         elif path.name not in AREAS:
             errors.append(f'{path.name}/: carpeta que no es un área (ver scripts/areas.py)')
-        elif path.name != path.name.lower() or not path.name.startswith('ol-'):
-            errors.append(f'{path.name}/: las carpetas de área van en minúscula y con prefijo ol-')
+        elif path.name != path.name.upper() or not path.name.startswith('OL-'):
+            errors.append(f'{path.name}/: las carpetas de área van en mayúscula y con prefijo OL-')
     for area in AREAS:
         if not (REPO_ROOT / area / 'README.md').exists():
             errors.append(f'{area}/README.md: falta')
@@ -100,13 +100,14 @@ def structure_errors():
                 errors.append(f'{area}/{module.name}: el LICENSE no es el texto de {license_}')
         if area in THIRD_PARTY:
             continue
-        # La categoría del manifiesto es el nombre de la carpeta del área
-        # ('Hidden' se respeta: oculta el módulo en Aplicaciones).
+        # La categoría del manifiesto es '<carpeta del área>/Apps': Aplicaciones
+        # solo muestra una categoría raíz si tiene una subcategoría con módulos
+        # o algún módulo application=True ('Hidden' se respeta: lo oculta).
         for manifest_path in sorted((REPO_ROOT / area).glob('*/__manifest__.py')):
             category = read_manifest(manifest_path).get('category', '')
-            if category not in ('Hidden', area):
+            if category not in ('Hidden', f'{area}/Apps'):
                 errors.append(f'{area}/{manifest_path.parent.name}: category «{category}», '
-                              f'debe ser «{area}»')
+                              f'debe ser «{area}/Apps»')
     return errors
 
 

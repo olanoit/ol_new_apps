@@ -23,7 +23,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 
 def module_dir(module):
-    """Carpeta del módulo dentro de su área (ol-accounting/, ol-payroll/…):
+    """Carpeta del módulo dentro de su área (OL-ACCOUNTING/, OL-PAYROLL/…):
     la que tenga __manifest__.py."""
     for path in [ROOT / module, *ROOT.glob('*/%s' % module)]:
         if (path / '__manifest__.py').exists():

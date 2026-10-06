@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from PIL import Image  # noqa: E402
 from capturar import Captura, ROOT  # noqa: E402
 
-SHOTS = ROOT / 'ol-accounting' / 'al_l10n_pe_account_letter' / 'static' / 'description' / 'screenshots'
+SHOTS = ROOT / 'OL-ACCOUNTING' / 'al_l10n_pe_account_letter' / 'static' / 'description' / 'screenshots'
 
 CANJE_COMPROBADO = 58        # CLC00124, DLTV/2026/00004 en dos letras
 CANJE_CLIENTE = 23           # CLC00088, tres letras, cobranza libre y descuento

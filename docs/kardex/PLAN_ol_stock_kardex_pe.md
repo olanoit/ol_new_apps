@@ -160,7 +160,7 @@ ol_stock_kardex_pe/
     'name': 'PE - Kardex SUNAT (Formato 13.1 / 12.1)',
     'countries': ['pe'],
     'version': '0.2026071601',
-    'category': 'ol-inventory',
+    'category': 'OL-INVENTORY',
     'author': 'OLANOIT',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://github.com/olanoit',

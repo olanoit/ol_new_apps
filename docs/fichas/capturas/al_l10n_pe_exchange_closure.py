@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from PIL import Image  # noqa: E402
 from capturar import Captura, ROOT, _recortar_fondo  # noqa: E402
 
-SHOTS = ROOT / 'ol-accounting' / 'al_l10n_pe_exchange_closure' / 'static' / 'description' / 'screenshots'
+SHOTS = ROOT / 'OL-ACCOUNTING' / 'al_l10n_pe_exchange_closure' / 'static' / 'description' / 'screenshots'
 
 CUENTA_DETALLE = 46        # 1212000, con detalle por socio
 CIERRE_JUNIO = 29

@@ -4,19 +4,19 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AREAS = [
-    'ol-accounting',
-    'ol-invoicing',
-    'ol-payroll',
-    'ol-pos',
-    'ol-inventory',
-    'ol-projects',
-    'ol-tools',
-    'ol-third-party',
+    'OL-ACCOUNTING',
+    'OL-INVOICING',
+    'OL-PAYROLL',
+    'OL-POS',
+    'OL-INVENTORY',
+    'OL-PROJECTS',
+    'OL-TOOLS',
+    'OL-THIRD-PARTY',
 ]
 # Áreas con módulos de otros autores: su manifiesto no se toca.
-THIRD_PARTY = {'ol-third-party'}
+THIRD_PARTY = {'OL-THIRD-PARTY'}
 # Licencia de los módulos propios: OPL-1. Excepciones, con su motivo (las
-# de ol-third-party/ conservan siempre la de su autor).
+# de OL-THIRD-PARTY/ conservan siempre la de su autor).
 LICENSE_DEFAULT = 'OPL-1'
 LICENSE_EXCEPTIONS = {
     # Extiende base_tier_validation (AGPL-3): no puede ser propietario.
