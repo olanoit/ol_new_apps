@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="al_pos_network_printer.AgentAuthorizationDialog">
+        <Dialog title="'Autorizar conexión con la impresora'" size="'md'">
+            <div class="mb-3">
+                Antes de cobrar hace falta autorizar la conexión con el agente de impresión — una
+                sola vez por navegador, no en cada venta.
+            </div>
+            <ol class="ps-3 mb-3">
+                <li>Presioná <strong>"Abrir agente"</strong> — se abre una pestaña nueva con una
+                    advertencia de seguridad (el certificado del agente es autofirmado, es
+                    esperable).</li>
+                <li>En esa pestaña: <strong>"Avanzado"</strong> → <strong>"Continuar a... (no
+                    seguro)"</strong>.</li>
+                <li>Volvé a esta pestaña y presioná <strong>"Reintentar"</strong>.</li>
+            </ol>
+            <div t-if="state.failed" class="alert alert-warning py-2 mb-0">
+                <i class="fa fa-exclamation-triangle me-1"/>
+                Todavía no se pudo contactar al agente. Repetí los pasos de arriba, o avisale a
+                quien administra el sistema si el agente no está prendido.
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-secondary" t-on-click="() => this.onCancel()">
+                    Cancelar
+                </button>
+                <button class="btn btn-secondary" t-on-click="() => this.onOpenAgent()">
+                    <i class="fa fa-external-link me-1"/>Abrir agente
+                </button>
+                <button class="btn btn-primary" t-att-disabled="state.checking"
+                        t-on-click="() => this.onRetry()">
+                    <t t-if="state.checking">Comprobando...</t>
+                    <t t-else="">Reintentar</t>
+                </button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

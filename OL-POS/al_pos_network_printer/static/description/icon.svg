@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Icono neutro de la impresora de red del TPV (AL): ticketera con ticket y señal de red. -->
+  <rect width="100" height="100" rx="22" fill="#2563EB"/>
+  <path d="M34 20 h32 v30 h-32 z" fill="#FFFFFF"/>
+  <path d="M34 20 l4 -4 l4 4 l4 -4 l4 4 l4 -4 l4 4 l4 -4 l4 4 z" fill="#FFFFFF"/>
+  <rect x="39" y="27" width="22" height="3" rx="1.5" fill="#0EA5E9"/>
+  <rect x="39" y="34" width="22" height="3" rx="1.5" fill="#1E293B" opacity="0.35"/>
+  <rect x="39" y="41" width="15" height="3" rx="1.5" fill="#1E293B" opacity="0.35"/>
+  <rect x="20" y="46" width="60" height="26" rx="6" fill="#FFFFFF"/>
+  <rect x="30" y="51" width="40" height="4" rx="2" fill="#0EA5E9"/>
+  <rect x="16" y="72" width="68" height="8" rx="4" fill="#E2E8F0"/>
+  <circle cx="68" cy="63" r="3" fill="#2563EB"/>
+  <path d="M74 30 a8 8 0 0 1 8 8" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M74 23 a15 15 0 0 1 15 15" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+</svg>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Reintentos cortos al principio (corte de papel, red intermitente),
+         espaciados más adelante (impresora apagada por un rato) — se da
+         por vencido a los ~20 minutos (ver max_retries=15 en el
+         with_delay() de controllers/main.py::_enqueue_escpos_retry), para
+         no terminar imprimiendo tickets viejos mucho después de la venta.
+         Mismo método (`_escpos_retry_print_receipt_job`) en pos.config
+         (recibo principal) y pos.printer (impresoras de preparación) —
+         ambos delegan en controllers/main.py::retry_print_receipt. -->
+    <record id="job_function_pos_config_escpos_retry_print_receipt_job" model="queue.job.function">
+        <field name="model_id" ref="point_of_sale.model_pos_config"/>
+        <field name="method">_escpos_retry_print_receipt_job</field>
+        <field name="channel_id" ref="channel_escpos_print"/>
+        <field name="retry_pattern" eval="{1: 15, 3: 30, 6: 60, 10: 180}"/>
+    </record>
+    <record id="job_function_pos_printer_escpos_retry_print_receipt_job" model="queue.job.function">
+        <field name="model_id" ref="point_of_sale.model_pos_printer"/>
+        <field name="method">_escpos_retry_print_receipt_job</field>
+        <field name="channel_id" ref="channel_escpos_print"/>
+        <field name="retry_pattern" eval="{1: 15, 3: 30, 6: 60, 10: 180}"/>
+    </record>
+</odoo>

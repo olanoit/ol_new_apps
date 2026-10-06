@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Canal propio para los reintentos de impresión ESC/POS: sin esto
+         competirían por concurrencia con los trabajos de otros módulos en
+         el canal raíz (secuencial por defecto). -->
+    <record id="channel_escpos_print" model="queue.job.channel">
+        <field name="name">escpos_print</field>
+        <field name="parent_id" ref="queue_job.channel_root"/>
+    </record>
+</odoo>

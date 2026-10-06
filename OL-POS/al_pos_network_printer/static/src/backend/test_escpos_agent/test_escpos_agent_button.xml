@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_pos_network_printer.TestEscposAgentButton">
+        <button type="button"
+                class="btn btn-secondary"
+                data-tooltip="Probar agente"
+                aria-label="Probar agente"
+                t-on-click.stop="onClick">
+            Probar agente
+        </button>
+    </t>
+
+</templates>

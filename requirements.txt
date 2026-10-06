@@ -1,0 +1,7 @@
+# Dependencias Python de los módulos de ol_new_apps. Los servidores que montan
+# el repositorio en shared-addons las instalan al arrancar (entrypoint).
+# al_pos_network_printer: impresión ESC/POS de red y rasterizado de PDF.
+python-escpos==3.1
+pymupdf==1.28.2
+# queue_job (OL-THIRD-PARTY): migraciones.
+openupgradelib

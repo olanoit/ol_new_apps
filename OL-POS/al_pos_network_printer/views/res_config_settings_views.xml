@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sección propia dentro de "Dispositivos conectados"
+         (`pos_connected_devices_section`, ver point_of_sale/views/
+         res_config_settings_views.xml), como sibling del bloque nativo
+         "ePos Printer" (Epson) — NO anidada dentro de él. Antes esta
+         sección vivía físicamente adentro del `<setting id="pos_other_devices">`
+         nativo (insertada después del `<div class="row">` de
+         `pos_epson_printer_ip`), así que activar/desactivar "ePos Printer"
+         (el toggle de OTRO proveedor, Epson) decidía si se veía o no toda
+         la config de este módulo — sin relación real entre los dos (pedido
+         en vivo). Ahora tiene su propio toggle
+         (`pos_escpos_network_printer_enabled`). Este bloque se sigue
+         ocultando si "ePos Printer" (Epson) está activo — no tendría
+         sentido configurar los dos recibos a la vez, y de hecho no se
+         puede guardar (`_check_single_receipt_printer_backend`). En el
+         otro sentido, activar este módulo NO oculta el bloque nativo: se
+         decidió dejar los dos visibles en paralelo en vez de ocultar un
+         setting que no es de este módulo.
+
+         Orden pensado como flujo de decisión, no como lista de campos
+         sueltos (pedido en vivo 2026-09-XX: "que empiece la configuración
+         con el método de impresión, y agregar mensajes para que el usuario
+         entienda"):
+           1. Método de impresión — la única decisión real que hay que
+              tomar primero, todo lo demás depende de esta elección.
+           2. IP/puerto de la impresora — hace falta en los 2 métodos.
+           3. Campos del agente local — SOLO se muestran si el método
+              elegido es "Agente local". -->
+    <record id="res_config_settings_view_form_inherit_al_network_printer" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.network.printer</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='pos_other_devices']" position="after">
+                <setting id="al_escpos_network_printer" string="Impresora ESC/POS de red"
+                         help="Impresora térmica genérica de red (no Epson), sin IoT Box"
+                         invisible="pos_other_devices">
+                    <field name="pos_escpos_network_printer_enabled"/>
+                    <!-- No se usa el atributo `documentation=` del widget nativo: ese mecanismo
+                         concatena rutas relativas contra odoo.com/documentation (ver
+                         DocumentationLink en web/static/src/views/widgets/documentation_link/),
+                         pensado para docs oficiales de Odoo, no para la página de descripción de
+                         un módulo propio. Un link relativo sí funciona en cualquier instancia: Odoo
+                         sirve el `static/` de cada módulo instalado en su propia ruta, sin depender
+                         del dominio de esa instancia. Misma clase (`o_doc_link`) y estructura que
+                         usa el widget nativo, para que se vea igual. -->
+                    <!--                    <a href="/al_pos_network_printer/static/description/index.html"-->
+                    <!--                       title="Documentación" target="_blank" class="o_doc_link me-2">-->
+                    <!--                        <i class="fa fa-external-link" aria-hidden="true"/>-->
+                    <!--                        <span>Ver documentación completa</span>-->
+                    <!--                    </a>-->
+                    <div class="content-group" invisible="not pos_escpos_network_printer_enabled">
+                        <!-- 1. Método de impresión — primero, decide todo lo de abajo. -->
+                        <div class="row mt-2">
+                            <label for="pos_escpos_printer_mode" string="Método de impresión"
+                                   class="col-lg-4 o_light_label"/>
+                            <div class="col-lg-8">
+                                <field name="pos_escpos_printer_mode" class="w-100"/>
+                                <small class="text-muted d-block mt-1" invisible="pos_escpos_printer_mode == 'agent'">
+                                    Odoo le habla directo a la impresora (red local).
+                                </small>
+                                <small class="text-muted d-block mt-1" invisible="pos_escpos_printer_mode != 'agent'">
+                                    Usar solo si Odoo no llega a la impresora (ej. Odoo.sh) — requiere instalar un
+                                    agente puente en la red del local.
+                                </small>
+                            </div>
+                        </div>
+                        <!-- El objeto impresora del navegador se arma una sola vez al
+                             cargar la pestaña del POS (afterProcessServerData, ver
+                             point_of_sale/static/src/app/services/pos_store.js).
+                             Confirmado en vivo (2026-09-09): sin recargar, sigue
+                             usando el modo viejo aunque parezca que "no cambió
+                             nada". -->
+                        <small class="text-muted d-block mb-2">
+                            Recargar (F5) el POS después de cambiar esto.
+                        </small>
+
+                        <!-- 2. IP/puerto — hace falta en los 2 métodos. -->
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <field name="pos_escpos_printer_ip"
+                                       placeholder="IP de impresora ESC/POS genérica (no Epson)"
+                                       class="w-100 pt-1"/>
+                            </div>
+                            <div class="col-lg-6">
+                                <field name="pos_escpos_printer_port"
+                                       placeholder="Puerto (por defecto 9100)"
+                                       class="w-100 pt-1"/>
+                            </div>
+                        </div>
+
+                        <!-- Botón "Probar impresora": solo tiene sentido en modo
+                             "backend" — en "agent" el backend no tiene ruta de red
+                             hacia la impresora (ver action_test_escpos_printer). -->
+                        <div class="row mt-2"
+                             invisible="pos_escpos_printer_mode != 'backend' or not pos_escpos_printer_ip">
+                            <div class="col-lg-6 offset-lg-6">
+                                <button name="action_test_escpos_printer"
+                                        type="object"
+                                        string="Probar impresora"
+                                        class="btn-secondary w-100"
+                                        icon="fa-print"/>
+                            </div>
+                        </div>
+
+                        <!-- 1.5. Impresión automática — no depende del método
+                             (backend/agente), aplica igual en los 2. -->
+                        <div class="row mt-3 pt-2 border-top">
+                            <div class="col-lg-8">
+                                <label for="pos_escpos_auto_print" string="Imprimir automáticamente al pagar"
+                                       class="o_light_label"/>
+                                <small class="text-muted d-block">
+                                    Al guardar con esto marcado, el ticket sale solo apenas se confirma el pago
+                                    (sin pantalla de recibo). Al desmarcar y guardar, vuelve el proceso normal
+                                    (impresión manual).
+                                </small>
+                            </div>
+                            <div class="col-lg-4">
+                                <field name="pos_escpos_auto_print" class="oe_inline"/>
+                            </div>
+                        </div>
+
+                        <!-- 1.6. Cola de reintento en background — opt-in,
+                             inactiva por defecto. Solo modo "backend" (ver
+                             escpos_retry_queue_enabled en models/pos_config.py). -->
+                        <div class="row mt-2" invisible="pos_escpos_printer_mode != 'backend'">
+                            <div class="col-lg-8">
+                                <label for="pos_escpos_retry_queue_enabled"
+                                       string="Reintentar impresión fallida en segundo plano"
+                                       class="o_light_label"/>
+                                <small class="text-muted d-block">
+                                    Si la impresión falla, reintenta solo hasta que la impresora vuelva a
+                                    responder, sin depender de que el cajero note el popup de reintento manual.
+                                </small>
+                            </div>
+                            <div class="col-lg-4">
+                                <field name="pos_escpos_retry_queue_enabled" class="oe_inline"/>
+                            </div>
+                        </div>
+
+                        <!-- 3. Agente local (Camino A/B) — SOLO si el método es "agent". -->
+                        <div invisible="pos_escpos_printer_mode != 'agent'">
+                            <!-- Camino A del agente local (ver
+                                 agent/README.md, Camino A) — un
+                                 campo por fila a ancho completo, no en columnas — a
+                                 diferencia de IP/puerto de arriba, acá son textos
+                                 largos (el token son 64 caracteres); forzarlos en
+                                 col-lg-6 los recortaba y desalineaba mal. -->
+                            <div class="row mt-2">
+                                <div class="col-lg-8">
+                                    <field name="pos_escpos_agent_url"
+                                           placeholder="URL del agente local, ej. http://192.168.0.50:8765"
+                                           class="w-100"/>
+                                </div>
+                                <div class="col-lg-4">
+                                    <widget name="al_test_escpos_agent"/>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mb-2">
+                                Debe usar <code>https://</code> si Odoo está en HTTPS.
+                            </small>
+                            <label for="pos_escpos_agent_token" string="Token del agente"
+                                   class="o_light_label d-block mt-2"/>
+                            <field name="pos_escpos_agent_token"
+                                   placeholder="Opcional, pero recomendado"
+                                   password="True"
+                                   class="w-100"/>
+                            <!-- Diálogo "Autorizar conexión con la impresora" antes
+                                 de pagar (ver models/pos_config.py::
+                                 escpos_require_agent_authorization y
+                                 pos_store.js::pay()) — inactivo por defecto,
+                                 opt-in una vez confirmado que el agente por HTTPS
+                                 autoriza bien de punta a punta. -->
+                            <div class="row mt-3">
+                                <label for="pos_escpos_require_agent_authorization"
+                                       class="col-lg-8 o_light_label">
+                                    Bloquear pago hasta autorizar el agente
+                                </label>
+                                <div class="col-lg-4">
+                                    <field name="pos_escpos_require_agent_authorization" class="oe_inline"/>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mb-2">
+                                Inactivo: el pago sigue igual que siempre, sin chequear antes al agente — el
+                                ticket se intenta imprimir igual al final.
+                            </small>
+                            <!-- Camino B (Fase 2) — canal del bus para el comprobante
+                                 del backend (ver models/pos_config.py). Se genera solo,
+                                 nunca se tipea. Mismo patrón que usa el core para
+                                 "campo secreto/URL generada + botón de regenerar" —
+                                 ver hr_attendance/views/res_config_settings_views.xml,
+                                 campo attendance_kiosk_url. -->
+                            <label for="pos_escpos_agent_channel" string="Canal del agente (bus)"
+                                   class="o_light_label d-block mt-2"/>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <field name="pos_escpos_agent_channel"
+                                           class="w-100"
+                                           widget="CopyClipboardChar"/>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button name="action_regenerate_escpos_agent_channel"
+                                            type="object"
+                                            string="Regenerar canal"
+                                            class="btn-link"
+                                            icon="fa-refresh"
+                                            confirm="Cualquier agente conectado con el canal actual va a dejar de recibir los comprobantes del backend hasta que se reconfigure con el nuevo valor. ¿Continuar?"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

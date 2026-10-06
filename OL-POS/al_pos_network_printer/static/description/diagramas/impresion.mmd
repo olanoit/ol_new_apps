@@ -1,0 +1,13 @@
+flowchart TD
+  A[Cobro en el TPV] --> B[El TPV dibuja el ticket]
+  B --> C{¿Método de impresión?}
+  C -- Servidor de Odoo --> D{¿IP y puerto configurados?}
+  D -- No --> E[Rechazado]
+  D -- Sí --> F[Odoo envía ESC/POS a la impresora]
+  F --> G{¿Respondió?}
+  G -- Sí --> H[Ticket impreso]
+  G -- No --> I[Reintento en segundo plano<br/>hasta ~20 minutos]
+  I --> H
+  C -- Agente local --> J[El navegador envía el ticket<br/>al agente de la tienda]
+  J --> K[El agente imprime]
+  K --> H

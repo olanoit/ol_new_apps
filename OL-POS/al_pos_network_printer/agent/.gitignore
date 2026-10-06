@@ -1,0 +1,18 @@
+# Certificado autofirmado del Camino A (HTTPS opcional, ver README.md) —
+# generado en el primer arranque y persistido acá mismo. La clave privada
+# nunca debe versionarse.
+agent_cert.pem
+agent_key.pem
+
+# Config real que guarda la GUI (pestaña Configuración -> "Guardar") —
+# trae en texto plano el token del Camino A y el canal secreto del bus del
+# Camino B de la instancia contra la que se probó. Ver
+# agent_gui_config.example.yaml para la plantilla sin secretos.
+agent_gui_config.yaml
+
+# Build artifacts de PyInstaller/Inno Setup (ver build_installer.bat)
+__pycache__/
+*.pyc
+dist/
+build/
+Output/

@@ -1,0 +1,20 @@
+# Plantilla de agent_gui_config.yaml — la GUI (pestaña Configuración ->
+# "Guardar") escribe el archivo real (agent_gui_config.yaml, gitignored)
+# al lado de este, con los valores reales de la instancia contra la que
+# se está probando. No copiar este archivo a mano con ese nombre salvo
+# para tener un punto de partida offline; los valores de abajo son de
+# ejemplo, no credenciales reales.
+bus:
+  ack_path: ""
+  bus_channel: "<pos.config.escpos_agent_channel del TPV — Ajustes, botón Regenerar canal>"
+  odoo_db: "<nombre de la base de datos>"
+  odoo_url: "https://tu-instancia.odoo.com"
+log_level: INFO
+server:
+  allowed_printers: 192.168.0.252:9100
+  cors_origin: '*'
+  listen_host: 0.0.0.0
+  listen_port: 8765
+  tls_enabled: false
+  tls_hostname: nombre-de-la-pc
+  token: "<pos.config.escpos_agent_token del TPV — opcional, dejar vacío si no se exige token>"

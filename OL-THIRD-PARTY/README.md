@@ -32,4 +32,5 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_city](al_l10n_pe_city/) | 2.20260730 | LGPL-3 | Datos de la ciudad
 [base_tier_validation](base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
+[queue_job](queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue
 [//]: # (end addons)

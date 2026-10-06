@@ -1,0 +1,207 @@
+titulo: Impresora de red ESC/POS para el TPV
+subtitulo: >-
+  Tickets y comandas del Punto de Venta en impresoras térmicas ESC/POS
+  genéricas conectadas por red, sin IoT Box: desde el servidor de Odoo o, si
+  Odoo está en la nube, con un agente local en la tienda.
+categoria: Punto de venta · Impresión
+etiquetas: [ESC/POS, Sin IoT Box, Impresora de red, Agente local, Reintento automático, Comandas de cocina]
+portada: screenshots/02-prueba.png
+
+destacados_intro: >-
+  Agrega un tercer tipo de impresora junto a Epson e IoT. Lo nativo sigue
+  funcionando igual.
+destacados:
+  - icono: "▤"
+    titulo: Cualquier térmica de red
+    texto: >-
+      Xprinter, Zjiang, Gainscha, MUNBYN y demás impresoras ESC/POS por red
+      (puerto 9100), sin IoT Box ni impresora Epson.
+  - icono: "⇄"
+    titulo: Recibo y comandas
+    texto: >-
+      Sirve para el recibo de cada caja y para las impresoras de preparación
+      (cocina, barra) por categoría de producto.
+  - icono: "☁"
+    titulo: También con Odoo en la nube
+    texto: >-
+      Si el servidor no llega a la impresora (Odoo.sh u otra nube), un agente
+      local en la tienda imprime en su lugar.
+  - icono: "↻"
+    titulo: Sin tickets perdidos
+    texto: >-
+      Si la impresora no responde, el servidor reintenta solo en segundo
+      plano hasta que vuelva, durante unos 20 minutos.
+  - icono: "✓"
+    titulo: Prueba con un clic
+    texto: >-
+      «Probar impresora» imprime un ticket de prueba desde los ajustes, sin
+      abrir el TPV ni hacer una venta.
+  - icono: "🔒"
+    titulo: Seguro
+    texto: >-
+      Solo se imprime en las IP y puertos configurados en una caja o
+      impresora; el agente se protege con un token.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El TPV de Odoo 19 imprime por red sin IoT Box solo en impresoras Epson,
+    porque usa su protocolo propio (ePOS). Las térmicas genéricas, las más
+    comunes y económicas, hablan ESC/POS por un puerto de red que el
+    navegador no puede abrir: sin este módulo, la única salida es una IoT
+    Box.
+
+
+    Aquí el ticket que dibuja el TPV se envía al servidor de Odoo, que lo
+    convierte en comandos ESC/POS y lo manda a la impresora. Cuando el
+    servidor está en la nube y no ve la red de la tienda, ese trabajo lo hace
+    un pequeño agente instalado en una PC de la tienda.
+  nota: >-
+    **Mismo ticket.** El diseño del recibo lo sigue generando el TPV
+    estándar; el módulo solo cambia cómo llega a la impresora.
+
+flujos_intro: >-
+  Por dónde viaja el ticket según dónde esté el servidor de Odoo.
+flujos:
+  - id: impresion
+    titulo: Del TPV a la impresora
+    texto: >-
+      Con el servidor en la tienda imprime Odoo; con Odoo en la nube, el
+      agente local. Si la impresora no responde, el servidor reintenta en
+      segundo plano.
+    mermaid: |
+      flowchart TD
+        A[Cobro en el TPV] --> B[El TPV dibuja el ticket]
+        B --> C{¿Método de impresión?}
+        C -- Servidor de Odoo --> D{¿IP y puerto configurados?}
+        D -- No --> E[Rechazado]
+        D -- Sí --> F[Odoo envía ESC/POS a la impresora]
+        F --> G{¿Respondió?}
+        G -- Sí --> H[Ticket impreso]
+        G -- No --> I[Reintento en segundo plano<br/>hasta ~20 minutos]
+        I --> H
+        C -- Agente local --> J[El navegador envía el ticket<br/>al agente de la tienda]
+        J --> K[El agente imprime]
+        K --> H
+
+pasos_intro: >-
+  La configuración sobre el punto de venta de demostración «DEMO TPV
+  Vendedores», con una impresora simulada en 127.0.0.1.
+pasos:
+  - seccion: Recibo de la caja
+    texto: Una impresora por caja para el recibo del cliente.
+  - titulo: Impresora de la caja
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes ▸ Impresora ESC/POS de red
+    texto: >-
+      Elija la caja arriba, active **Impresora ESC/POS de red** e indique la
+      **IP** y el **Puerto** (9100 por defecto). Con el método **Backend de
+      Odoo**, el servidor imprime directamente.
+    puntos:
+      - "**Imprimir automáticamente al pagar**: el ticket sale al confirmar el pago, sin pantalla de recibo."
+      - "**Reintentar impresión fallida en segundo plano**: si la impresora no responde, el servidor reintenta solo."
+      - Es excluyente con la impresora ePos (Epson) nativa de la misma caja.
+    imagen: screenshots/01-ajustes.png
+  - titulo: Ticket de prueba
+    ruta: Ajustes ▸ Impresora ESC/POS de red ▸ Probar impresora
+    texto: >-
+      Imprime un ticket de texto en la IP configurada, sin abrir el TPV, y
+      confirma el envío con un aviso verde.
+    imagen: screenshots/02-prueba.png
+
+  - seccion: Odoo en la nube
+    texto: Cuando el servidor no llega a la red de la tienda.
+  - titulo: Agente local
+    ruta: Ajustes ▸ Impresora ESC/POS de red ▸ Método de impresión ▸ Agente local
+    texto: >-
+      Indique la **URL del agente** instalado en la tienda y su **Token**.
+      El navegador del cajero envía el ticket al agente, que imprime en la
+      red local. **Probar agente** comprueba la conexión.
+    puntos:
+      - "El agente se instala en Windows (con interfaz o como servicio) o en Linux: ver la carpeta agent/ del módulo."
+      - "Con Odoo en HTTPS, el agente también debe usar HTTPS."
+      - "**Canal del agente (bus)**: canal secreto, generado solo, para que el servidor envíe comprobantes en PDF al agente."
+    imagen: screenshots/03-agente.png
+
+  - seccion: Cocina y barra
+  - titulo: Impresora de preparación
+    ruta: Punto de venta ▸ Configuración ▸ Impresoras de preparación ▸ Nuevo
+    texto: >-
+      Elija el tipo **Usar una impresora ESC/POS genérica de red**, la IP, el
+      puerto y las categorías de producto que imprime. Después asígnela a la
+      caja.
+    imagen: screenshots/04-cocina.png
+
+campos_intro: >-
+  Los campos que el módulo añade a cada caja y a las impresoras de
+  preparación.
+campos:
+  - grupo: Impresora ESC/POS de red de la caja
+    ruta: Punto de venta ▸ Configuración ▸ Ajustes
+    campos:
+      - [Impresora ESC/POS de red, Activa la impresión en la térmica de red., Desactivado, Excluyente con la impresora ePos nativa]
+      - [IP y puerto, Dirección de la impresora., "— / 9100", Obligatoria la IP al activar]
+      - [Método de impresión, Quién habla con la impresora., Backend de Odoo, "Agente local si Odoo está en la nube"]
+      - [Imprimir automáticamente al pagar, Ticket sin pantalla de recibo., Desactivado, "—"]
+      - [Reintentar impresión fallida, Cola de reintentos en segundo plano., Desactivado, Solo con el método Backend de Odoo]
+      - [URL y token del agente, Dónde está el agente y su clave., Vacíos, Solo con Agente local]
+      - [Bloquear pago hasta autorizar el agente, Comprueba el agente antes de cobrar., Desactivado, "—"]
+  - grupo: Impresora de preparación
+    ruta: Punto de venta ▸ Configuración ▸ Impresoras de preparación
+    campos:
+      - [Tipo de impresora, Nueva opción ESC/POS genérica de red., "—", Junto a IoT y Epson]
+      - [IP y puerto de la impresora ESC/POS, Dirección de la impresora., "— / 9100", "—"]
+
+funcionalidades:
+  - grupo: Impresión
+    items:
+      - Recibo de cada caja e impresoras de preparación por categoría.
+      - Apertura del cajón de dinero conectado a la impresora.
+      - Una conexión persistente y un bloqueo por impresora, sin esperas entre cajas.
+      - Impresión de PDF completos para los comprobantes que generen otros módulos.
+  - grupo: Agente local
+    items:
+      - Servidor HTTP en la tienda para el ticket del TPV (Camino A).
+      - Canal del bus de Odoo para comprobantes enviados desde el servidor (Camino B).
+      - Instalador para Windows, servicio de Windows y servicio de Linux.
+      - HTTPS opcional con certificado propio o túnel de Cloudflare.
+  - grupo: Seguridad
+    items:
+      - Solo IP y puertos configurados en una caja o impresora activa.
+      - Límite de 5 MB por ticket.
+      - Token compartido con el agente y canal del bus secreto y regenerable.
+
+configuracion:
+  - "Instale las librerías Python: pip install -r requirements.txt (python-escpos y pymupdf)."
+  - "Para los reintentos, arranque el servidor con --load=base,web,queue_job."
+  - Instale el módulo desde Aplicaciones (categoría OL-POS).
+  - "Configure la impresora en **Punto de venta ▸ Configuración ▸ Ajustes**, caja por caja."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Depende de queue_job (OCA), incluido en
+  el repositorio. El método «Backend de Odoo» requiere que el servidor esté en
+  la misma red que la impresora; con Odoo en la nube se usa el agente local.
+
+faq:
+  - pregunta: "¿Sirve para impresoras Epson?"
+    respuesta: >-
+      Para Epson use la impresora ePos nativa de Odoo. Este módulo es para las
+      térmicas ESC/POS genéricas que Odoo no soporta sin IoT Box.
+  - pregunta: "¿Funciona en Odoo.sh?"
+    respuesta: >-
+      Sí, con el método «Agente local»: el servidor de Odoo.sh no ve la red de
+      la tienda, así que imprime el agente instalado allí.
+  - pregunta: "¿Y si la impresora se queda sin papel durante una venta?"
+    respuesta: >-
+      Con el reintento en segundo plano activado, el ticket se imprime solo
+      cuando la impresora vuelva, durante unos 20 minutos.
+  - pregunta: "¿Puede alguien usar la ruta de impresión para conectarse a otros equipos de la red?"
+    respuesta: >-
+      No. Solo se aceptan la IP y el puerto de una impresora ya configurada
+      en una caja o impresora de preparación activa.
+
+novedades:
+  - version: 1.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Primera versión en la suite: impresora ESC/POS de red para el recibo y las comandas, agente local para Odoo en la nube y reintento en segundo plano con queue_job."
+
+relacionados: [al_pos_theme, al_pos_product_view, al_l10n_pe_edi_pos]

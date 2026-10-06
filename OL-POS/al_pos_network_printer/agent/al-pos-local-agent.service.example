@@ -1,0 +1,34 @@
+[Unit]
+Description=Agente local ESC/POS para el TPV de Odoo (Camino A + B)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pos-agent
+WorkingDirectory=/opt/al-pos-local-agent
+ExecStart=/opt/al-pos-local-agent/.venv/bin/python al_pos_local_agent.py
+Restart=always
+RestartSec=5
+
+# Completar con los valores reales de este local antes de habilitar el
+# servicio (ver README.md de esta carpeta para el detalle de cada variable).
+Environment=AL_AGENT_LISTEN_PORT=8765
+Environment=AL_AGENT_ALLOWED_PRINTERS=192.168.0.252:9100
+Environment=AL_AGENT_TOKEN=CAMBIAR_POR_UN_TOKEN_LARGO_Y_UNICO
+
+# HTTPS del Camino A — obligatorio si Odoo está detrás de HTTPS (Odoo.sh, o
+# cualquier hosting con TLS): sin esto, el navegador bloquea el ticket con
+# "Mixed Content". Borrar las 2 líneas si Odoo se sirve por HTTP plano
+# (instalación on-premise normal).
+Environment=AL_AGENT_TLS_ENABLED=1
+Environment=AL_AGENT_TLS_HOSTNAME=CAMBIAR_POR_EL_HOSTNAME_O_IP_DE_ESTA_MAQUINA
+
+# Camino B (comprobantes del backend) — opcional. Borrar las 3 líneas si este local
+# no lo necesita (el agente sigue funcionando igual, solo con el Camino A).
+Environment=AL_AGENT_ODOO_URL=https://mi-instancia.odoo.com
+Environment=AL_AGENT_ODOO_DB=mi_base
+Environment=AL_AGENT_BUS_CHANNEL=CAMBIAR_POR_pos.config.escpos_agent_channel
+
+[Install]
+WantedBy=multi-user.target

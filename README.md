@@ -162,6 +162,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 7.20260721 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_pos_network_printer](OL-POS/al_pos_network_printer/) | 1.20261006 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
 [al_pos_product_view](OL-POS/al_pos_product_view/) | 4.20260925 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
 [al_pos_theme](OL-POS/al_pos_theme/) | 1.20261005 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
 [al_pos_vendedor](OL-POS/al_pos_vendedor/) | 2.20260721 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
@@ -197,6 +198,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_city](OL-THIRD-PARTY/al_l10n_pe_city/) | 2.20260730 | LGPL-3 | Datos de la ciudad
 [base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
+[queue_job](OL-THIRD-PARTY/queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue
 [//]: # (end addons-all)
 
 Licencias
