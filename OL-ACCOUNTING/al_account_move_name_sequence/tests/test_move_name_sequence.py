@@ -242,6 +242,48 @@ class TestMoveNameSequence(AccountTestInvoicingCommon):
         self.assertEqual(move.edi_series_id, s2)
         self.assertEqual(s2.invoice_count, 1)
 
+    def _invoice_draft(self, journal):
+        return self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'journal_id': journal.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product_a.id,
+                'quantity': 1, 'price_unit': 100.0,
+                'tax_ids': [(6, 0, self.tax_sale_a.ids)]})],
+        })
+
+    def test_sin_serie_elegida_toma_la_primera(self):
+        """Con varias series y ninguna elegida, al publicar se usa la primera
+        en vez de la numeración nativa, que no movía el contador de la serie."""
+        s1, s2 = self._publish_series(('F301', 'FC31', 'FD31'),
+                                      ('F302', 'FC32', 'FD32'))
+        journal = self.company_data['default_journal_sale'].copy({
+            'name': 'Dos series sin elegir', 'code': 'JDSE',
+            'l10n_latam_use_documents': True, 'use_name_sequence': True,
+            'edi_series_ids': [(6, 0, (s1 | s2).ids)]})
+        move = self._invoice_draft(journal)
+        self.assertFalse(move.edi_series_id, 'en borrador sigue pudiendo elegirse')
+        move.action_post()
+        self.assertEqual(move.edi_series_id, s1)
+        self.assertEqual(move.name, 'F301-00000001')
+
+    def test_contador_atrasado_salta_lo_usado(self):
+        """Si el contador de la serie va por detrás de los números ya usados
+        en el diario, se salta lo ocupado en vez de fallar por nombre repetido."""
+        serie = self._publish_series(('F401', 'FC41', 'FD41'))
+        journal = self.company_data['default_journal_sale'].copy({
+            'name': 'Contador atrasado', 'code': 'JCAT',
+            'l10n_latam_use_documents': True, 'use_name_sequence': True,
+            'edi_series_ids': [(6, 0, serie.ids)]})
+        first = self._invoice_draft(journal)
+        first.action_post()
+        self.assertEqual(first.name, 'F401-00000001')
+        serie.invoice_seq_id.number_next_actual = 1  # contador atrasado
+        second = self._invoice_draft(journal)
+        second.action_post()
+        self.assertEqual(second.name, 'F401-00000002')
+
     def test_other_document_types_not_numbered_by_series(self):
         """Un tipo de documento distinto de 01/03/07/08 no toma la
         secuencia de la serie del diario."""

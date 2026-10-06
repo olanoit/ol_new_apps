@@ -31,7 +31,7 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '9.20260828',
+    'version': '10.20261006',
     'license': 'OPL-1',
     'depends': [
         'account',

@@ -373,6 +373,11 @@ faq:
       No. Sin la casilla, el diario numera igual que el Odoo estándar.
 
 novedades:
+  - version: 10.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Una factura o boleta publicada sin serie en un diario con varias series toma la primera: antes caía en la numeración nativa, que no movía el contador de la serie, y la siguiente boleta numerada por la serie repetía un número."
+      - "Si el contador de la serie va por detrás de los números ya usados en el diario, se salta lo ocupado en vez de fallar por nombre repetido."
   - version: 9.20260828
     fecha: 27/09/2026
     cambios:

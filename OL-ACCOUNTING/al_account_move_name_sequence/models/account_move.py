@@ -113,6 +113,19 @@ class AccountMove(models.Model):
         nombre generado (p. ej. «F001-00000001») no lleva espacio, así que
         _compute_l10n_latam_document_number lo toma completo como número
         de documento serie-folio."""
+        # Factura o boleta que se publica sin serie en un diario con varias
+        # candidatas (p. ej. el TPV sin serie elegida en caja): se toma la
+        # primera. Si cayera en la numeración nativa, esta seguiría el último
+        # nombre del diario («B001-…») sin mover el contador de la serie, y la
+        # siguiente boleta numerada por la serie repetiría un número.
+        for move in self.filtered(
+                lambda m: m.state == 'posted' and (not m.name or m.name == '/')
+                and not m.edi_series_id and m.journal_id.use_name_sequence
+                and m.journal_id.l10n_latam_use_documents
+                and m.l10n_latam_document_type_id.code in ('01', '03')):
+            candidates = move._al_candidate_edi_series().sorted(lambda s: (s.name, s.id))
+            if candidates:
+                move.edi_series_id = candidates[:1]
         seq_moves = self.filtered(
             lambda m: m.state == 'posted'
             and (not m.name or m.name == '/')
@@ -121,12 +134,29 @@ class AccountMove(models.Model):
             seq = move._al_get_name_sequence()
             # ir_sequence_date: aplica la fecha del asiento tanto al prefijo
             # con patrones de fecha como a los rangos de fecha de la secuencia.
-            move.name = seq.with_context(ir_sequence_date=move.date).next_by_id()
+            move.name = move._al_next_free_name(seq)
         super(AccountMove, self - seq_moves)._compute_name()
         if seq_moves:
             # Sincroniza sequence_prefix/sequence_number almacenados, igual
             # que hace el compute nativo al terminar.
             seq_moves._inverse_name()
+
+    def _al_next_free_name(self, sequence):
+        """Siguiente número de la secuencia que no esté ya usado en el diario.
+
+        El contador puede ir por detrás si antes se numeró por otra vía
+        (numeración nativa, importación): se salta lo ocupado en vez de
+        chocar con la restricción de nombre único al publicar.
+        """
+        self.ensure_one()
+        seq = sequence.with_context(ir_sequence_date=self.date)
+        for dummy in range(1000):
+            name = seq.next_by_id()
+            if not self.search_count([('journal_id', '=', self.journal_id.id),
+                                      ('name', '=', name), ('id', '!=', self._origin.id)],
+                                     limit=1):
+                return name
+        return name
 
     def _constrains_date_sequence(self):
         # El chequeo nativo nombre↔fecha no aplica cuando la numeración la

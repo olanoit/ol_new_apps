@@ -33,7 +33,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_account_base](al_account_base/) | 4.20260815 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](al_account_destinations/) | 4.20260828 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
-[al_account_move_name_sequence](al_account_move_name_sequence/) | 9.20260828 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
+[al_account_move_name_sequence](al_account_move_name_sequence/) | 10.20261006 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](al_account_payments/) | 4.20260828 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
 [al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 7.20260901 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
 [al_l10n_pe_currency](al_l10n_pe_currency/) | 7.20260901 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.

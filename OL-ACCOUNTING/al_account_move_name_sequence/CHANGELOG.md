@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_move_name_sequence.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261006 — 06/10/2026
+
+- Una factura o boleta publicada sin serie en un diario con varias series toma la primera: antes caía en la numeración nativa, que no movía el contador de la serie, y la siguiente boleta numerada por la serie repetía un número.
+- Si el contador de la serie va por detrás de los números ya usados en el diario, se salta lo ocupado en vez de fallar por nombre repetido.
+
 ## 9.20260828 — 27/09/2026
 
 - Un comprobante devuelto a borrador conserva su Serie CPE aunque el diario tenga varias series. Antes la perdía y, al volver a publicarlo, quedaba sin serie.
