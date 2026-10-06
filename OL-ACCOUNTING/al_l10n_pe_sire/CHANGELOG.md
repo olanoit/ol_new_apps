@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261006 — 06/10/2026
+
+- Historial de operaciones con SUNAT por periodo: ticket, archivo enviado y reportes; los tickets se consultan solos y los reportes (inconsistencias del envío, resumen, preliminar, constancia de recepción) quedan adjuntos.
+- Tipo de cambio: envío masivo al RVIE y al RCE (anexo 10) e individual al RVIE.
+- Registro de compras de no domiciliados (anexo 9): datos de renta en la factura, país SUNAT (tabla 16), validación, envío y exportación del preliminar.
+- RCE: completar o reubicar datos de la propuesta, excluir y volver a incluir comprobantes; RVIE y RCE: nuevos comprobantes en la propuesta o en el preliminar.
+- Ajustes posteriores del periodo (RVIE y RCE, también no domiciliados) y de periodos anteriores al SIRE (formato general), con su envío en el RCE.
+- Eliminaciones en SUNAT (solo responsables) y reintegro, crédito fiscal especial y prorrata del RCE.
+- Corregido: el ticket de las cargas TUS llega como texto plano y no se leía; el reemplazo del RVIE añadía una columna CLU vacía.
+
 ## 6.20261006 — 06/10/2026
 
 - Validación de las líneas del sistema antes del envío: RUC con dígito verificador, tipo de comprobante, serie y número, IGV frente a la base, total, moneda y tipo de cambio, fechas y notas sin comprobante modificado. Con observaciones, el reemplazo no se envía.

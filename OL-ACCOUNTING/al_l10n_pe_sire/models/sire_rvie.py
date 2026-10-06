@@ -1,5 +1,8 @@
 from odoo import _, fields, models
 
+from odoo.exceptions import UserError
+
+from .sire_api import SIRE_UPLOAD_ADJUSTMENT_ENDPOINT
 from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
 
 # Notas de venta y documentos internos que no van al RVIE
@@ -23,6 +26,9 @@ class L10nPeSireRvie(models.Model):
         'l10n_pe.sire.rvie.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    operation_ids = fields.One2many(
+        'l10n_pe.sire.operation', 'res_id', string='Operaciones con SUNAT', copy=False,
+        domain=[('res_model', '=', 'l10n_pe.sire.rvie')])
     invalid_line_ids = fields.One2many(
         'l10n_pe.sire.rvie.line', 'sire_id', string='Observaciones', copy=False,
         domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
@@ -165,6 +171,173 @@ class L10nPeSireRvie(models.Model):
                 vals['tipo_nota'] = getattr(move, 'l10n_pe_edi_refund_reason', '') or ''
         return vals
 
+    # ------------------------------------------------------------------
+    # Servicios del manual de Ventas v22 (docs/sire/SERVICIOS_RVIE.md)
+    # ------------------------------------------------------------------
+
+    def _sire_inconsistency_summary_request(self, token, summary_type):
+        # 5.21: GET (en el RCE es POST).
+        return self._sire_get(
+            token, '/libros/rvierce/resumen/web/resumeninconsistencias/%s' % self._sire_period(),
+            params={'codTipoResumen': summary_type, 'codLibro': self._sire_upload_book_code()})
+
+    def _sire_receipt_request(self, token, name):
+        # 5.26
+        return self._sire_get(
+            token, '/libros/rvierce/gestionlibro/web/registroslibros/constancia/archivo',
+            params={'nomArchivo': name})
+
+    def _sire_preliminary_inconsistencies_path(self):
+        # 5.24: la plantilla lleva {numCas}, pero el ejemplo del manual no, y
+        # añade el formato al final; se sigue el ejemplo.
+        return ('/libros/rvierce/casillas/inconsistenciaslibros/%s/reporteinconsistencia/txt'
+                % self._sire_period())
+
+    @staticmethod
+    def _sire_rate_text(rate):
+        return '%.3f' % rate
+
+    def _sire_send_exchange_rates(self, rates):
+        """5.11: cuerpo JSON. La tabla pide dd/mm/aaaa y moneda numérica; el
+        ejemplo del manual usa aaaa-mm-dd y el código ISO, y es lo que se envía."""
+        payload = [{
+            'fecEmision': date.strftime('%Y-%m-%d'),
+            'codMoneda': currency,
+            'mtoTipoCambio': self._sire_rate_text(rate),
+        } for date, currency, rate in rates]
+        return self._sire_json_call(
+            'exchange_rate', 'POST',
+            '/libros/rvie/propuesta/web/masivo/%s/guardacomplementomasivo' % self._sire_period(),
+            payload, detail=_('%s tipos de cambio enviados.', len(payload)))
+
+    def _sire_send_line_exchange_rate(self, line):
+        """5.12: tipo de cambio de un comprobante de la propuesta."""
+        return self._sire_json_call(
+            'exchange_rate_one', 'PUT',
+            '/libros/rvie/propuesta/web/propuesta/%s/complementoindividual' % self._sire_period(),
+            {'codCar': line.car_sunat, 'codMoneda': line.moneda,
+             'mtoTipoCambio': self._sire_rate_text(line.tipo_cambio)},
+            detail='%s-%s' % (line.serie_cp, line.nro_cp))
+
+    def _sire_withdraw_lines(self, lines):
+        """5.10: exclusión definitiva e irreversible, un CAR por llamada."""
+        self._sire_check_dangerous()
+        for line in self._sire_lines_of(lines):
+            self._sire_json_call(
+                'withdraw', 'POST',
+                '/libros/rvie/propuesta/web/propuesta/%s/retiracomprobante' % self._sire_period(),
+                params={'codCar': line.car_sunat, 'codSituacion': '0'},
+                detail='%s %s-%s' % (line.tipo_cp, line.serie_cp, line.nro_cp))
+        return True
+
+    def _sire_delete_proposal_lines(self, lines):
+        # 5.13: solo comprobantes agregados por el contribuyente.
+        self._sire_check_dangerous()
+        return self._sire_json_call(
+            'delete_proposal', 'POST',
+            '/libros/rvie/propuesta/web/propuesta/%s/eliminacomprobante' % self._sire_period(),
+            self._sire_lines_cp(self._sire_lines_of(lines)),
+            detail=_('%s comprobantes.', len(lines)))
+
+    def _sire_delete_preliminary_lines(self, lines):
+        # 5.14
+        self._sire_check_dangerous()
+        return self._sire_json_call(
+            'delete_preliminary', 'PUT',
+            '/libros/rvierce/gestionlibro/web/registroslibros/%s/comprobantepreliminar'
+            % self._sire_period(),
+            self._sire_lines_cp(self._sire_lines_of(lines)),
+            detail=_('%s comprobantes.', len(lines)))
+
+    def action_sire_delete_replacement(self):
+        # 5.15
+        self.ensure_one()
+        self._sire_check_dangerous()
+        return self._sire_json_call(
+            'delete_replacement', 'PUT',
+            '/libros/rvierce/gestionlibro/web/registroslibros/%s/eliminarreemplazo'
+            % self._sire_period(), params={'codLibro': self._sire_upload_book_code()})
+
+    def action_sire_delete_registered_preliminary(self):
+        # 5.36: ``id`` dejó de ser obligatorio en la v22.
+        self.ensure_one()
+        self._sire_check_dangerous()
+        operation = self._sire_json_call(
+            'delete_registered', 'PUT',
+            '/libros/rvierce/gestionlibro/web/registroslibros/%s/eliminapreliminar'
+            % self._sire_period(), {'codTipoRegistro': '14'},
+            params={'codLibro': self._sire_upload_book_code()})
+        self.preliminary_registered = False
+        return operation
+
+    # ------------------------------------------------------------------
+    # Nuevos comprobantes y ajustes posteriores (docs/sire/ESTRUCTURAS_TXT.md)
+    # ------------------------------------------------------------------
+
+    def _sire_new_cp_identifier(self):
+        # Tabla 6: RUC-CPF-AAAAMM-NN, anexo 2 (campos 1-33 del reemplazo).
+        return 'CPF'
+
+    def _sire_adjustment_row(self, line, car_orig):
+        """Anexo 4 [R.S. 138-2023]: campos 1-33 y el CAR del anotado en el 41.
+
+        Los campos 34 a 40 no se envían (los completa SUNAT), así que el CAR
+        original va justo después del 33, como la CLU en el reemplazo.
+        """
+        row = self._sire_replacement_row(line)
+        clu = row[33:]
+        return row[:33] + [car_orig] + clu
+
+    def _sire_previous_row(self, move, state):
+        """Anexo 5.1: ajuste de un periodo anterior al SIRE (registro de ventas PLE)."""
+        period = self._sire_move_period_record(move)
+        vals = period._sire_system_line_vals(move)
+        serie, folio = period._sire_serie_folio(move)
+        currency = vals['moneda'] or 'PEN'
+        rate = vals['tipo_cambio'] or 1.0
+        return [
+            '%s00' % period._sire_period(),
+            self._sire_text(move.name, 40).replace('&', ''),
+            'M1',
+            self._sire_fmt_date(vals['fecha_emision']),
+            self._sire_fmt_date(vals['fecha_vencimiento']) if vals['tipo_cp'] == '14' else '',
+            vals['tipo_cp'], serie, folio, '',
+            vals['tipo_doc_identidad'], vals['nro_doc_identidad'],
+            self._sire_text(vals['razon_social'], 100),
+            self._sire_fmt_amount(vals['valor_exportacion']),
+            self._sire_fmt_amount(vals['bi_gravada']),
+            self._sire_fmt_amount(vals['dscto_bi']),
+            self._sire_fmt_amount(vals['igv_ipm']),
+            self._sire_fmt_amount(vals['dscto_igv']),
+            self._sire_fmt_amount(vals['mto_exonerado']),
+            self._sire_fmt_amount(vals['mto_inafecto']),
+            self._sire_fmt_amount(vals['isc']),
+            self._sire_fmt_amount(vals['bi_ivap']),
+            self._sire_fmt_amount(vals['ivap']),
+            self._sire_fmt_amount(vals['icbper']),
+            self._sire_fmt_amount(vals['otros_tributos']),
+            self._sire_fmt_amount(vals['total_cp']),
+            currency, '%.3f' % rate,
+            self._sire_fmt_date(vals.get('fecha_emision_mod')),
+            vals.get('tipo_cp_mod') or '', vals.get('serie_cp_mod') or '',
+            vals.get('nro_cp_mod') or '',
+            '', '', '', state,
+        ]
+
+    def _sire_upload_previous_adjustment(self, moves, state):
+        """5.7: ajustes de periodos anteriores al SIRE, referidos al último generado."""
+        self.ensure_one()
+        if self.state != 'done' and not self.preliminary_registered:
+            raise UserError(_('Envíe los ajustes de periodos anteriores desde el último '
+                              'periodo generado en el SIRE.'))
+        correlative = self._sire_next_correlative('adjustment_previous')
+        operation = self._sire_tus_upload(
+            'adjustment_previous', self._sire_le_name('140400', '04', correlative),
+            [self._sire_previous_row(move, state) for move in moves],
+            '7', SIRE_UPLOAD_ADJUSTMENT_ENDPOINT)
+        operation.adjustment_kind = 'adjustment_previous'
+        return operation
+
     def _sire_line_errors(self, line):
         errors = super()._sire_line_errors(line)
         date_from, dummy = self._sire_period_bounds()
@@ -259,8 +432,7 @@ class L10nPeSireRvie(models.Model):
             line.serie_cp_mod or '',
             line.nro_cp_mod or '',
             line.id_proyecto or '',
-            line.clu or '',
-        ]
+        ] + ([line.clu] if line.clu else [])
 
 
 class L10nPeSireRvieLine(models.Model):
@@ -286,3 +458,21 @@ class L10nPeSireRvieLine(models.Model):
     id_proyecto = fields.Char(string='ID Proyecto Operadores')
     tipo_operacion = fields.Char(string='Tipo Operación')
     clu = fields.Char(string='CLU')
+
+    def action_sire_withdraw(self):
+        """Exclusión definitiva e irreversible de facturas y notas de crédito (5.10)."""
+        lines = self._sire_proposal_lines()
+        return lines._sire_period_record()._sire_withdraw_lines(lines)
+
+    def action_sire_send_exchange_rate(self):
+        """Tipo de cambio de cada comprobante seleccionado, con el del sistema (5.12)."""
+        lines = self._sire_proposal_lines()
+        period = lines._sire_period_record()
+        for line in lines:
+            system = period.system_line_ids.filtered(lambda l: l.car_sunat == line.car_sunat)[:1]
+            if not system.tipo_cambio:
+                raise UserError(_('El comprobante %(doc)s no tiene tipo de cambio en el '
+                                  'sistema.', doc='%s-%s' % (line.serie_cp, line.nro_cp)))
+            period._sire_send_line_exchange_rate(system)
+        return True
+

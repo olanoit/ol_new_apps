@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sire_rvie_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rvie.line.list</field>
+        <field name="model">l10n_pe.sire.rvie.line</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0"
+                  decoration-danger="check_detail"
+                  decoration-info="compare_state == '1'">
+                <field name="type_line"/>
+                <field name="compare_state" widget="badge" optional="show"/>
+                <field name="car_sunat" optional="show"/>
+                <field name="fecha_emision"/>
+                <field name="tipo_cp"/>
+                <field name="serie_cp"/>
+                <field name="nro_cp"/>
+                <field name="nro_doc_identidad" optional="show"/>
+                <field name="razon_social" optional="show"/>
+                <field name="bi_gravada" sum="Total"/>
+                <field name="igv_ipm" sum="Total"/>
+                <field name="total_cp" sum="Total"/>
+                <field name="moneda" optional="show"/>
+                <field name="tipo_cambio" optional="hide"/>
+                <field name="check_detail" optional="show"/>
+                <field name="diff_detail" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sire_rvie_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rvie.line.search</field>
+        <field name="model">l10n_pe.sire.rvie.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="serie_cp"/>
+                <field name="nro_cp"/>
+                <field name="nro_doc_identidad"/>
+                <field name="car_sunat"/>
+                <filter name="filter_sire" string="Propuesta SUNAT" domain="[('type_line', '=', 'sire')]"/>
+                <filter name="filter_system" string="Sistema" domain="[('type_line', '=', 'system')]"/>
+                <separator/>
+                <filter name="filter_diff" string="Con diferencias"
+                        domain="[('compare_state', 'in', ('1', '2', '3'))]"/>
+                <filter name="filter_invalid" string="Con observaciones"
+                        domain="[('check_detail', '!=', False)]"/>
+                <group>
+                    <filter name="group_type_line" string="Origen" context="{'group_by': 'type_line'}"/>
+                    <filter name="group_compare_state" string="Comparación"
+                            context="{'group_by': 'compare_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_sire_rce_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rce.line.list</field>
+        <field name="model">l10n_pe.sire.rce.line</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0"
+                  decoration-danger="check_detail"
+                  decoration-info="compare_state == '1'">
+                <field name="type_line"/>
+                <field name="compare_state" widget="badge" optional="show"/>
+                <field name="car_sunat" optional="show"/>
+                <field name="fecha_emision"/>
+                <field name="tipo_cp"/>
+                <field name="serie_cp"/>
+                <field name="nro_cp"/>
+                <field name="nro_doc_identidad" optional="show"/>
+                <field name="razon_social" optional="show"/>
+                <field name="bi_gravada_dg" sum="Total"/>
+                <field name="igv_dg" sum="Total"/>
+                <field name="bi_gravada_dgng" sum="Total" optional="hide"/>
+                <field name="bi_gravada_dng" sum="Total" optional="hide"/>
+                <field name="total_cp" sum="Total"/>
+                <field name="moneda" optional="show"/>
+                <field name="tipo_cambio" optional="hide"/>
+                <field name="check_detail" optional="show"/>
+                <field name="diff_detail" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sire_rce_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.rce.line.search</field>
+        <field name="model">l10n_pe.sire.rce.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="serie_cp"/>
+                <field name="nro_cp"/>
+                <field name="nro_doc_identidad"/>
+                <field name="car_sunat"/>
+                <filter name="filter_sire" string="Propuesta SUNAT" domain="[('type_line', '=', 'sire')]"/>
+                <filter name="filter_system" string="Sistema" domain="[('type_line', '=', 'system')]"/>
+                <separator/>
+                <filter name="filter_diff" string="Con diferencias"
+                        domain="[('compare_state', 'in', ('1', '2', '3'))]"/>
+                <filter name="filter_invalid" string="Con observaciones"
+                        domain="[('check_detail', '!=', False)]"/>
+                <group>
+                    <filter name="group_type_line" string="Origen" context="{'group_by': 'type_line'}"/>
+                    <filter name="group_compare_state" string="Comparación"
+                            context="{'group_by': 'compare_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acciones por comprobante (menú Acción de la lista de líneas) -->
+    <record id="action_sire_rvie_add_proposal" model="ir.actions.server">
+        <field name="name">SUNAT: agregar a la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_add_to_proposal()</field>
+    </record>
+
+    <record id="action_sire_rvie_add_preliminary" model="ir.actions.server">
+        <field name="name">SUNAT: agregar al preliminar</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_add_to_preliminary()</field>
+    </record>
+
+    <record id="action_sire_rvie_adjustment" model="ir.actions.server">
+        <field name="name">SUNAT: enviar como ajuste posterior</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_send_adjustment()</field>
+    </record>
+
+    <record id="action_sire_rvie_exchange" model="ir.actions.server">
+        <field name="name">SUNAT: enviar tipo de cambio</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_send_exchange_rate()</field>
+    </record>
+
+    <record id="action_sire_rvie_withdraw" model="ir.actions.server">
+        <field name="name">SUNAT: exclusión definitiva</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_withdraw()</field>
+    </record>
+
+    <record id="action_sire_rvie_delete_proposal" model="ir.actions.server">
+        <field name="name">SUNAT: eliminar de la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_delete_from_proposal()</field>
+    </record>
+
+    <record id="action_sire_rvie_delete_preliminary" model="ir.actions.server">
+        <field name="name">SUNAT: eliminar del preliminar</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rvie_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_delete_from_preliminary()</field>
+    </record>
+
+    <record id="action_sire_rce_add_proposal" model="ir.actions.server">
+        <field name="name">SUNAT: agregar a la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_add_to_proposal()</field>
+    </record>
+
+    <record id="action_sire_rce_add_preliminary" model="ir.actions.server">
+        <field name="name">SUNAT: agregar al preliminar</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_add_to_preliminary()</field>
+    </record>
+
+    <record id="action_sire_rce_adjustment" model="ir.actions.server">
+        <field name="name">SUNAT: enviar como ajuste posterior</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_send_adjustment()</field>
+    </record>
+
+    <record id="action_sire_rce_complement" model="ir.actions.server">
+        <field name="name">SUNAT: completar con datos del sistema</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_complement()</field>
+    </record>
+
+    <record id="action_sire_rce_exclude" model="ir.actions.server">
+        <field name="name">SUNAT: excluir de la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_exclude()</field>
+    </record>
+
+    <record id="action_sire_rce_include" model="ir.actions.server">
+        <field name="name">SUNAT: volver a incluir en la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_include()</field>
+    </record>
+
+    <record id="action_sire_rce_delete_proposal" model="ir.actions.server">
+        <field name="name">SUNAT: eliminar de la propuesta</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_delete_from_proposal()</field>
+    </record>
+
+    <record id="action_sire_rce_delete_preliminary" model="ir.actions.server">
+        <field name="name">SUNAT: eliminar del preliminar</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_delete_from_preliminary()</field>
+    </record>
+
+    <record id="action_sire_rce_nd_adjustment" model="ir.actions.server">
+        <field name="name">SUNAT: enviar como ajuste posterior (8.5)</field>
+        <field name="model_id" ref="model_l10n_pe_sire_rce_nd_line"/>
+        <field name="binding_model_id" ref="model_l10n_pe_sire_rce_nd_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_sire_send_nd_adjustment()</field>
+    </record>
+
+</odoo>

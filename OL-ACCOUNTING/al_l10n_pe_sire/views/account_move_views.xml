@@ -10,7 +10,35 @@
                 <group string="SIRE (PE)" name="l10n_pe_sire_group"
                        invisible="move_type not in ('in_invoice', 'in_refund')">
                     <field name="l10n_pe_sire_goods_class"/>
+                    <field name="l10n_pe_sire_is_non_domiciled"/>
                 </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="No domiciliado (SIRE)" name="l10n_pe_sire_non_domiciled"
+                      invisible="not l10n_pe_sire_is_non_domiciled">
+                    <group>
+                        <group string="Renta">
+                            <field name="l10n_pe_sire_nd_income_type" required="l10n_pe_sire_is_non_domiciled"/>
+                            <field name="l10n_pe_sire_nd_agreement" required="l10n_pe_sire_is_non_domiciled"/>
+                            <field name="l10n_pe_sire_nd_service_modality"/>
+                            <field name="l10n_pe_sire_nd_exemption"/>
+                            <field name="l10n_pe_sire_nd_art76"/>
+                            <field name="l10n_pe_sire_nd_gross_income"/>
+                            <field name="l10n_pe_sire_nd_deduction"/>
+                            <field name="l10n_pe_sire_nd_net_income"/>
+                            <field name="l10n_pe_sire_nd_withholding_rate"/>
+                            <field name="l10n_pe_sire_nd_withheld_tax"/>
+                        </group>
+                        <group string="Crédito fiscal y vinculación">
+                            <field name="l10n_pe_sire_nd_credit_move_id"/>
+                            <field name="l10n_pe_sire_nd_igv_withholding"/>
+                            <field name="l10n_pe_sire_nd_link"/>
+                            <field name="l10n_pe_sire_nd_beneficiary_vat"/>
+                            <field name="l10n_pe_sire_nd_beneficiary_name"/>
+                            <field name="l10n_pe_sire_nd_beneficiary_country_id"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

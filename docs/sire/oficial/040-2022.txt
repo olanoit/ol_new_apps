@@ -1,0 +1,1070 @@
+         RESOLUCIÓN DE SUPERINTENDENCIA N.° 000040-2022/SUNAT
+
+     RESOLUCIÓN DE SUPERINTENDENCIA QUE APRUEBA EL SISTEMA
+    INTEGRADO DE REGISTROS ELECTRÓNICOS Y EL MÓDULO PARA EL
+   LLEVADO DEL REGISTRO DE COMPRAS QUE SE INCORPORA EN DICHO
+                            SISTEMA
+
+
+Lima, 21 de marzo de 2022
+
+CONSIDERANDO:
+
+Que mediante las Resoluciones de Superintendencia N.os 286-2009/SUNAT y 066-
+2013/SUNAT se aprueba el Sistema de llevado de libros y registros electrónicos (SLE -
+PLE) y el Sistema de llevado de los registros de ventas e ingresos y de compras de
+manera electrónica en SUNAT Operaciones en Línea (SLE - Portal), respectivamente;
+
+Que, para anotar las operaciones en el Registro de Compras electrónico que se genere
+en el SLE - PLE y el SLE - Portal, el deudor tributario debe ingresar a estos sistemas la
+información relativa a sus comprobantes de pago u otros documentos que corresponde
+anotar en dicho registro;
+
+Que mediante la Resolución de Superintendencia N.° 000112-2021/SUNAT se
+establecieron nuevas disposiciones para el llevado del Registro de Ventas e Ingresos
+de manera electrónica, aprobándose el módulo RVIE, en el cual se pone a disposición
+de los deudores tributarios una propuesta de dicho registro (RVIE) que incorpora, entre
+otros, información con la que cuenta la SUNAT según la normativa que regula el Sistema
+de Emisión Electrónica (SEE) creado por la Resolución de Superintendencia N.° 300-
+2014/SUNAT, a fin que sea aceptada, complementada o reemplazada para efecto de
+generar el RVIE y/o anotar las operaciones en dicho registro;
+
+Que, al contar la SUNAT con determinada información de documentos que corresponde
+anotar en el Registro de Compras, se considera pertinente facilitar el cumplimiento del
+llevado del Registro de Compras de manera electrónica (RCE), aprobándose el Sistema
+Integrado de Registros Electrónicos (SIRE) y un módulo similar al módulo RVIE para
+poner a disposición de los deudores una propuesta de RCE que incorpore dicha
+información, modificándose, entre otras, la Resolución de Superintendencia N.° 000112-
+2021/SUNAT, incluso para que el RCE y el RVIE se generen de manera conjunta;
+
+Que la cuarta disposición complementaria final de la Resolución de Superintendencia
+N.° 169-2015/SUNAT exceptúa de la obligación de llevar el registro auxiliar a que se
+refiere el artículo 8 de la Resolución de Superintendencia N.° 022-98/SUNAT y el artículo
+5 de las Resoluciones de Superintendencia N.os 021-99/SUNAT, 142-2001/SUNAT, 256-
+2004/SUNAT, 257-2004/SUNAT, 258-2004/SUNAT y 259-2004/SUNAT, si en el
+Registro de Compras Electrónico llevado en el SLE - PLE o en el SLE - Portal se incluye
+la información que se solicita en aquel registro auxiliar, por lo que resulta conveniente
+que la anotación de tal información en el RCE permita también exceptuar de la referida
+obligación;
+
+Que, dado que se generará por cada comprobante de pago u otro documento a anotar
+en el RCE un código de anotación de registro - CAR, el cual será anotado en el Libro
+Diario o en el Libro Diario en Formato Simplificado, resulta necesario modificar las
+estructuras y formatos que corresponden a estos libros, regulados en las Resoluciones
+de Superintendencia N.os 234-2006/SUNAT y 286-2009/SUNAT;
+
+Que también se debe modificar las notas (11), (13) y (14) del anexo II del Reglamento
+de gradualidad aplicable a las infracciones del Código Tributario, aprobado por la
+Resolución de Superintendencia N.° 063-2007/SUNAT, a fin de adecuar la forma de
+subsanar a que se refieren dichas notas a las particularidades del llevado del RCE;
+
+Que la presente resolución ha sido objeto de prepublicación, salvo en el extremo en que
+los anexos regulan las reglas que permiten que el SIRE incorpore en el RCE a las notas
+de crédito y de débito que modifican más de un comprobante de pago. Sin embargo, en
+aplicación del numeral 3.2. del artículo 14 del reglamento que establece disposiciones
+relativas a la publicidad, publicación de proyectos normativos y difusión de normas
+legales de carácter general, aprobado por el Decreto Supremo N.º 001-2009-JUS, no
+son materia de prepublicación por considerar que resulta innecesario, en tanto sí se
+norma la posibilidad de anotar en el RCE las notas de crédito y débito en general
+omitiéndose únicamente, en los anexos, las reglas necesarias para que aquel sistema
+permita la anotación de dichas notas cuando estas modifiquen más de un comprobante
+de pago;
+
+En uso de las atribuciones conferidas por el numeral 16 del artículo 62, los numerales 4
+y 7 del artículo 87 y el artículo 166 del Código Tributario, cuyo último Texto Único
+Ordenado ha sido aprobado mediante el Decreto Supremo N.° 133-2013-EF; el inciso
+c) del tercer párrafo del artículo 65 de la Ley del Impuesto a la Renta, cuyo Texto Único
+Ordenado fue aprobado por el Decreto Supremo N.° 179-2004-EF; el numeral 1 del
+artículo 10 del Reglamento de la Ley del Impuesto General a las Ventas e Impuesto
+Selectivo al Consumo, aprobado por el Decreto Supremo N.° 029-94-EF; el artículo 11
+del Decreto Legislativo N.° 501, Ley General de la SUNAT; el artículo 5 de la Ley N.°
+29816, Ley de Fortalecimiento de la SUNAT, y el inciso k) del artículo 8 del Documento
+de Organización y Funciones Provisional de la SUNAT, aprobado por Resolución de
+Superintendencia N.° 000065-2021/SUNAT;
+SE RESUELVE:
+
+Artículo 1. Referencia
+
+Para efecto del presente dispositivo, se entiende por resolución a la Resolución de
+Superintendencia N.° 000112-2021/SUNAT, que dicta nuevas disposiciones para el
+llevado del Registro de Ventas e Ingresos en forma electrónica y modifica resoluciones
+de superintendencia relacionadas con dicho tema.
+
+Artículo 2. Modificaciones a la resolución
+
+2.1. Modifícase los incisos a), b), c), h), k), l), n), p), r) y s) del artículo 1; el inciso b) del
+     artículo 2; los artículos 3, 4 y 5; el epígrafe, el encabezado y los incisos b), c) y d)
+     del artículo 6; el epígrafe, el encabezado, el inciso b) del párrafo 7.1. y los incisos
+     b) y c) del párrafo 7.3. del artículo 7; el párrafo 8.3. del artículo 8; el epígrafe del
+     artículo 9; los artículos 10, 11 y 12, así como la tercera y cuarta disposiciones
+     complementarias finales de la resolución, en los siguientes términos:
+
+“Artículo 1. Definiciones
+
+(…)
+
+a)    Aplicativo cliente SIRE :         Al aplicativo desarrollado por la SUNAT que está a
+                                        disposición de los deudores tributarios y que permite
+                                        realizar las acciones indicadas en esta resolución,
+                                        previa descarga e instalación, en cualquier
+                                        computadora personal cuyo sistema operativo
+                                        permita utilizar sus funcionalidades.
+
+                                        Además, según se indique en el mismo aplicativo,
+                                        determinadas acciones se pueden realizar sin
+                                        conexión a Internet, siendo necesario para continuar
+                                        usándolo en línea que se habilite la conexión a
+                                        Internet y se ingrese el número de RUC, el código de
+                                        usuario y la clave SOL.
+
+b)    Archivo plano               :     Al archivo en formato txt que cumpla con lo señalado
+                                        en las tablas 5 y 6 o 12 y 13 del anexo N.° 1, según
+                                        se use el módulo RVIE o el módulo RCE,
+                                        respectivamente.
+c)    Ajustes posteriores      :   Al ajuste o rectificación de las anotaciones efectuadas
+                                   en un periodo y/o a la anotación de lo que se omitió
+                                   anotar en dicho periodo.
+
+(…)
+
+h)    Constancia            de :   Al documento que acredita, según corresponda, que,
+      recepción                    a través de SUNAT Operaciones en Línea, se generó
+                                   el RVIE o el RCE y/o anotó en el registro
+                                   correspondiente la información respectiva o ajustes
+                                   posteriores.
+(…)
+
+k)    Generador                :   Al sujeto obligado por esta resolución a llevar el RVIE
+                                   y el RCE, según lo dispuesto en el artículo 3, o al que
+                                   se afilie para el llevado de estos conforme a lo
+                                   establecido en el artículo 4.
+
+l)    Hash                     :   A la secuencia de bits de longitud fija obtenida como
+                                   resultado de procesar un archivo en formato digital que
+                                   forma parte del RVIE o del RCE con un algoritmo, de
+                                   tal manera que:
+
+                                   1) El archivo en formato digital que compone el RVIE
+                                      o el RCE produzca siempre el mismo código de
+                                      verificación cada vez que se le aplique dicho
+                                      algoritmo.
+
+                                   2) Sea improbable a través de medios técnicos que el
+                                      archivo en formato digital que compone el RVIE o
+                                      el RCE pueda ser derivado o reconstruido a partir
+                                      del código de verificación producido por el
+                                      algoritmo.
+
+                                   3) Sea improbable que por medios técnicos se pueda
+                                      encontrar dos o más archivos en formato digital que
+                                      componen un RVIE o un RCE que produzcan el
+                                      mismo código de verificación al usar el mismo
+                                      algoritmo.
+
+(…)
+n)      Periodo                :   A aquel al que correspondan las operaciones que se
+                                   anotan, tratándose del RVIE, o a aquel en que se
+                                   anotan las operaciones, tratándose del RCE.
+
+(…)
+
+p)      Reporte de información :   Al documento que acredita que la SUNAT, a través del
+        recibida - Servicio web    servicio web API SUNAT, recibió aquello que, según
+        API SUNAT                  los artículos 8, 8-A, 9 o 9-A, se puede enviar mediante
+                                   dicho servicio.
+
+(…)
+
+r)      RVIE                   :   Al Registro de Ventas e Ingresos que obra en la
+                                   opción “Descarga de Registros” del módulo RVIE y
+                                   está conformado por archivos en formato digital que
+                                   contienen un hash, en los que se anotan las
+                                   operaciones que realice el generador conforme a lo
+                                   dispuesto en la presente resolución.
+
+s)      Servicio   web    API :    Al servicio web habilitado por la SUNAT para que el
+        SUNAT                      deudor tributario acceda a los módulos que conforman
+                                   el SIRE en los términos indicados en esta resolución.
+
+(…).”
+
+“Artículo 2. Aprobación del módulo RVIE
+
+(…)
+
+b) Generar el RVIE y el RCE y/o anotar en dichos registros la información respectiva o
+   anotar en el RVIE los ajustes posteriores, únicamente a través de SUNAT
+   Operaciones en Línea.
+
+(…).”
+
+“Artículo 3. Sujetos obligados a llevar el RVIE y el RCE a través del SIRE
+
+3.1. Los sujetos obligados a llevar el Registro de Ventas e Ingresos y el Registro de
+     Compras de acuerdo con la Ley del IGV quedan obligados a llevar el RVIE y el RCE,
+     conforme a lo siguiente:
+    a) A partir del periodo octubre de 2022, tratándose de aquellos que estén
+       comprendidos en el anexo N.° 7.
+
+    b) A partir de los periodos octubre, noviembre o diciembre de 2022, según
+       corresponda, aquellos sujetos que, de conformidad con el artículo 4 de la
+       Resolución de Superintendencia N.° 286-2009/SUNAT y el artículo 2 de la
+       Resolución de Superintendencia N.° 379-2013/SUNAT, adquieran en esos
+       periodos la obligación de llevar los mencionados registros en el SLE - PLE o el
+       SLE - Portal.
+
+    c) Desde el período enero de 2023, aquellos sujetos que, al 31 de diciembre de
+       2022, se encuentren obligados a llevar el Registro de Ventas e Ingresos y el
+       Registro de Compras, y no estén comprendidos en los incisos a) y b).
+
+    d) Tratándose de sujetos que, a partir del 1 de enero de 2023, se encuentren
+       obligados a llevar el Registro de Ventas e Ingresos y el Registro de Compras,
+       desde el primer día calendario del tercer mes siguiente a aquel en que adquieren
+       dicha obligación o desde el periodo en que adquieran por elección la calidad de
+       emisor electrónico del Sistema de Emisión Electrónica a que se refiere la
+       Resolución de Superintendencia N.° 300-2014/SUNAT, lo que ocurra primero.
+
+3.2. Los sujetos a que se refiere el párrafo anterior se encuentran obligados a llevar el
+     RVIE y el RCE, desde el periodo que corresponda según lo señalado en dicho
+     párrafo, aun de encontrarse con suspensión temporal de actividades.
+
+3.3. En caso los sujetos indicados en el párrafo 3.1. se encuentren de baja de inscripción
+     en el RUC en el periodo señalado en ese párrafo para adquirir la obligación de llevar
+     el RVIE y el RCE, dicha obligación se hará efectiva desde el periodo por el cual,
+     según lo establecido en el artículo 10 de la Resolución de Superintendencia N.°
+     210-2004/SUNAT: a) soliciten la reactivación de su número de RUC o b) este
+     número sea reactivado de oficio por la SUNAT.
+
+3.4. Los sujetos obligados a llevar el RVIE y el RCE antes de la baja de inscripción de
+     su RUC, están obligados a llevar los registros electrónicos desde el periodo por el
+     cual, según lo establecido en el artículo 10 de la Resolución de Superintendencia
+     N.° 210-2004/SUNAT: a) soliciten la reactivación de su número de RUC o b) este
+     número sea reactivado de oficio por la SUNAT, teniendo en cuenta lo indicado en
+     el artículo 12.
+
+3.5. Lo señalado en los párrafos 3.3. y 3.4. no implica en ningún caso la obligación de
+     llevar el RVIE y el RCE con anterioridad al periodo octubre, noviembre o diciembre
+     de 2022 o enero de 2023, según corresponda.”
+“Artículo 4. De la afiliación para el llevado del RVIE y del RCE a través del SIRE
+
+Pueden optar por afiliarse al llevado del RVIE y del RCE a través del SIRE, los sujetos
+que se encuentren obligados a llevar el Registro de Ventas e Ingresos y el Registro de
+Compras y cuenten con código de usuario y clave SOL, conforme a lo siguiente:
+
+a) Desde el período octubre de 2022 hasta el período diciembre de 2022, los sujetos
+   obligados a llevar dichos registros en forma electrónica, por los referidos períodos en
+   los que no se encuentren obligados a llevar el RVIE y el RCE.
+
+b) A partir del periodo octubre de 2022, quienes no se encuentren obligados a llevarlos
+   en forma electrónica.
+
+A tal efecto, el sujeto debe generar el RVIE y el RCE según lo indicado en los artículos
+8 y 8-A. La afiliación se realiza cuando el sujeto reciba las constancias de recepción por
+la generación del RVIE y del RCE, según los párrafos 8.3. y 8-A.3. de esos artículos.
+Dicha afiliación opera a partir del período por el cual se realiza la generación de ambos
+registros.
+
+La afiliación tiene carácter definitivo, no procede la desafiliación.”
+
+“Artículo 5. De los efectos de la obtención de la calidad de generador
+
+La obtención de la calidad de generador determina:
+
+a) La obligación de cerrar el Registro de Ventas e Ingresos y el Registro de Compras
+   llevados en forma manual o en hojas sueltas o continuas, según la normativa
+   respectiva, previa anotación de lo que corresponda hasta el periodo anterior a aquel
+   en que se adquiere la obligación de llevar el RVIE y el RCE, o el periodo anterior a
+   aquel por el cual generó estos a fin de afiliarse a su llevado.
+
+   En el caso del Registro de Ventas e Ingresos y del Registro de Compras llevados en
+   el SLE - PLE o en el SLE- Portal, la obligación de anotar lo que corresponda hasta el
+   periodo anterior a aquel en que se adquiere la obligación de llevar el RVIE y el RCE
+   o el periodo anterior a aquel por el cual se generó estos a fin de afiliarse a su llevado
+   y la de realizar el cierre respectivo. Sin aquella anotación, ni el módulo RVIE ni el
+   módulo RCE permiten la generación de los registros electrónicos.
+
+b) La obligación de generar conjuntamente el RVIE y el RCE a partir del periodo en que
+   esté obligado a llevarlos o del periodo siguiente a aquel por el cual se afilie para su
+   llevado.
+   Dicha obligación se mantiene aun cuando el sujeto que la obtuvo por ser incorporado
+   a un directorio de principales contribuyentes o al de la Intendencia de Principales
+   Contribuyentes Nacionales sea excluido de esos directorios.
+
+c) La sustitución por parte de la SUNAT en el cumplimiento de las obligaciones del
+   generador de almacenar, archivar y conservar los registros electrónicos.
+
+d) El derecho a consultar y/o descargar la propuesta y el preliminar de los registros
+   electrónicos, antes de que se generen y/o se realice la anotación respectiva en ellos;
+   el archivo plano que pone a disposición la SUNAT y el preliminar de ajustes
+   posteriores, antes de que se anoten en el RVIE o en el RCE, y los archivos en
+   formatos digitales que componen ambos registros.
+
+e) La posibilidad de exceptuarse de llevar el registro auxiliar anotando en el RCE la
+   información que debe consignarse en ese registro, el cual previamente debe ser
+   cerrado, una vez que se anote la información del mes anterior a aquel en que se
+   exceptúa, no pudiendo volverse a llevar dicho registro.
+
+   Si el sujeto anotaba la información del registro auxiliar en el Registro de Compras
+   electrónico llevado en el SLE - PLE o el SLE - Portal, tiene la obligación de realizar
+   dicha anotación en el RCE.”
+
+“Artículo 6. De la forma de llevado de los registros electrónicos
+
+Los registros electrónicos deben llevarse conforme a las siguientes disposiciones:
+
+(…)
+
+b) La generación de los registros electrónicos y/o la anotación en dichos registros de la
+   información de un periodo se realiza en una única oportunidad, dentro o fuera del
+   plazo indicado en el inciso anterior, periodo tras periodo; sin perjuicio que después
+   se realicen ajustes posteriores.
+
+c) Tratándose del RVIE, de no realizar operaciones en un determinado periodo, el
+   generador debe enviar, según el artículo 8, un archivo plano sin información teniendo
+   en cuenta lo señalado en la tabla 6 del anexo N.° 1, caso en el cual el RVIE muestra
+   que en dicho registro no se anotó información.
+
+   En el caso del RCE, de no tener información por registrar u optar por no registrarla
+   en un periodo, el generador debe indicar que no cuenta o no registra información
+   relativa a documentos de no domiciliados, lo que origina que el módulo RCE envíe
+   un archivo en blanco, mostrándose que no se anota información en dicho archivo.
+   Además, por la información distinta a documentos de no domiciliados, el generador
+  debe enviar, según el artículo 8-A, un archivo plano sin información, caso en el cual
+  el módulo RCE muestra que en dicho archivo tampoco se anotó información.
+
+  De tener información en alguno de los archivos antes mencionados, el módulo RCE
+  identifica el archivo que contiene información y aquel que no la contiene.
+
+d) La anotación de ajustes posteriores relativos a periodos en los que el sujeto llevaba
+   el Registro de Ventas e Ingresos y el Registro de Compras de manera manual o en
+   hojas sueltas o continuas, en el SLE - PLE o en el SLE - Portal, forma parte de la
+   información del RVIE y del RCE, respectivamente.
+
+(…)”.
+
+“Artículo 7. Formas de acceder al módulo RVIE o al módulo RCE
+
+El sujeto puede acceder al módulo RVIE o al módulo RCE a través de SUNAT
+Operaciones en Línea, del aplicativo cliente SIRE o del servicio web API SUNAT,
+teniendo en cuenta lo siguiente:
+
+7.1. Acceso a través de SUNAT Operaciones en Línea
+
+    (…)
+
+    b) Luego, ubicar la opción módulo RVIE o módulo RCE del rubro “Sistema Integrado
+       de Registros Electrónicos” y seguir las instrucciones del sistema para acceder al
+       módulo.
+
+    (…)
+
+7.3. Acceso a través del servicio web API SUNAT
+
+    (…)
+
+    b) Tener en cuenta las especificaciones técnicas indicadas en el anexo N.° 6 para
+       conectar los sistemas del sujeto al módulo RVIE o al módulo RCE, a través del
+       servicio web API SUNAT.
+
+    c) Autenticarse en el referido servicio web con las credenciales y la clave SOL, para
+       acceder en línea al módulo RVIE o al módulo RCE y utilizar las distintas
+       funciones habilitadas para ese servicio.”
+“Artículo 8. Pasos a seguir para la generación del RVIE y/o la anotación de operaciones
+en dicho registro
+
+(…)
+
+8.3. De la generación del RVIE y del RCE y/o la anotación en dichos registros
+
+      Desde el periodo octubre de 2022 o con posterioridad, según corresponda, los
+      sujetos obligados a llevar el RVIE y el RCE, según el artículo 3, o los que se afilien
+      a su llevado, luego de contar con el preliminar del RVIE y del RCE, según el párrafo
+      8.2. del artículo 8 y el párrafo 8-A.2. del artículo 8-A, respectivamente, pueden
+      generar el RVIE y el RCE y/o anotar la información respectiva en dichos registros,
+      a través de la opción “Generación de registros” del módulo RVIE o del módulo RCE,
+      a la cual se puede acceder únicamente si se ingresa a uno de esos módulos
+      mediante SUNAT Operaciones en Línea.
+
+      Con tal generación y/o anotación se registra en el RVIE y en el RCE la información
+      que forma parte de los mencionados registros y/o, en su caso, se muestra que no
+      se anotó información en uno de ellos o en ambos; incluyéndose en los archivos en
+      formato digital respectivos, la fecha y hora de generación y/o anotación y el hash.
+      Inmediatamente después, se deposita en el buzón electrónico del generador una
+      constancia de recepción por cada registro electrónico, la cual contiene, por lo
+      menos, la fecha y hora de generación y/o anotación; su número de RUC; el periodo
+      al que corresponde el registro; la denominación del(de los) archivo(s) plano(s)
+      recibido(s), según se trate del RVIE o del RCE; la cantidad de comprobantes de
+      pago, notas de débito y de crédito u otros documentos que se anoten y la firma
+      digital de la SUNAT.”
+
+“Artículo 9. De los ajustes posteriores en el módulo RVIE”
+
+“Artículo 10. De la validación en SUNAT Operaciones en Línea
+
+Sin perjuicio de lo dispuesto en el inciso d) del artículo 5, a través de SUNAT
+Operaciones en Línea, se puede validar si un archivo forma parte del RVIE o del RCE,
+mediante la opción que indique ese sistema.”
+
+“Artículo 11. De la suspensión temporal de actividades o el reinicio de actividades
+
+11.1. El generador que, al amparo de lo dispuesto en los artículos 24 y/o 26 de la
+      Resolución de Superintendencia N.º 210-2004/SUNAT:
+
+       a) Comunica la suspensión temporal de actividades
+         Tratándose del RVIE, no podrá anotar operaciones en dicho registro, respecto
+         del lapso de tiempo comprendido en la referida suspensión, pero sí puede
+         anotar operaciones y/o ajustes posteriores respecto a periodos anteriores a
+         aquella.
+
+         En el caso del RCE, dicha comunicación no impide anotar información en el
+         registro.
+
+      b) Comunica el reinicio de actividades, deberá realizar las anotaciones en los
+         registros electrónicos por los periodos comprendidos en la suspensión, según
+         lo indicado en los artículos 8 y 8-A, y/o, de corresponder aplicar lo dispuesto en
+         el inciso c) del artículo 6, antes de efectuar las anotaciones del periodo en el
+         que se reinician las actividades, considerándose para este efecto como fecha
+         máxima de atraso la prevista para este periodo.
+
+         Lo antes señalado no será de aplicación respecto del primer periodo
+         comprendido en la suspensión cuando esta inicia con posterioridad al primer
+         día calendario del mencionado periodo.
+
+11.2. En caso de que, durante el plazo de suspensión temporal de actividades, la
+      SUNAT obtenga, al amparo de la normativa sobre comprobantes de pago,
+      información de comprobantes de pago emitidos por el generador o a este,
+      mediante ejemplares o declaraciones juradas informativas, o al amparo de la
+      normativa aduanera, información sobre los documentos detallados en la tabla 11
+      del anexo N.° 1, pone a disposición del generador las propuestas en los módulos
+      RVIE y RCE con la información respectiva para que proceda según lo indicado en
+      los artículos 8 y 8-A, y/o, de corresponder a aplicar lo dispuesto en el inciso c) del
+      artículo 6, sin perjuicio de las sanciones que correspondan a este por no
+      comunicar el reinicio de actividades conforme a lo establecido en la Resolución de
+      Superintendencia N.° 210-2004/SUNAT.
+
+11.3. En caso un sujeto que, previamente, comunicó la suspensión de sus actividades,
+      al amparo de lo dispuesto de los artículos 24 y/o 26 de la Resolución de
+      Superintendencia N.° 210-2004/SUNAT, quede obligado a llevar el RVIE y el RCE
+      conforme lo dispuesto en el artículo 3, es de aplicación lo señalado en los párrafos
+      11.1. y 11.2. a partir del periodo de la mencionada obligación.”
+
+“Artículo 12. Del cierre de los registros electrónicos
+
+El generador debe cerrar sus registros electrónicos cuando se encuentre en alguna de
+las situaciones por las que, según la Resolución de Superintendencia N.° 210-
+2004/SUNAT, deba solicitar la baja de inscripción en el RUC o cuando deje de tener la
+obligación de llevar dichos registros, según la normativa vigente, para cuyo efecto debe
+seleccionar la opción que, para ese fin, prevea el módulo RVIE y el módulo RCE.
+
+Lo antes señalado es sin perjuicio de la aplicación del párrafo 3.4. del artículo 3, en cuyo
+caso las anotaciones que se deban efectuar a partir del período en que el sujeto se
+encuentre nuevamente obligado a llevar el RVIE y el RCE se realizarán en dichos
+registros.”
+
+“Tercera. De la referencia a los Registros de Ventas e Ingresos y Registros de Compras
+electrónicos en otras resoluciones de superintendencia
+
+Toda referencia sobre los registros de ventas e ingresos o los registros de compras
+electrónicos regulados por las Resoluciones de Superintendencia N.° 286-2009/SUNAT,
+066-2013/SUNAT y/o 379-2013/SUNAT o sobre los sujetos afiliados y/o incorporados a
+los sistemas de llevado de libros electrónicos que regulan esas resoluciones o sobre los
+que hubieran obtenido la calidad de generador de dichos sistemas, que obre en una
+resolución de superintendencia distinta a las antes indicadas, también alude al registro
+generado a partir del módulo RVIE o del módulo RCE o a los mencionados sujetos.
+
+Lo señalado en el párrafo anterior no impide que las resoluciones ahí mencionadas
+regulen el llevado del Registro de Ventas e Ingresos o del Registro de Compras hasta
+que deba usarse el módulo RVIE y el módulo RCE para el llevado de dichos registros,
+en cuyo caso se aplican las disposiciones establecidas en la presente resolución.”
+
+“Cuarta. De los sujetos que adquieran la obligación de llevar el Registro de Ventas e
+Ingresos en el SLE - PLE o SLE - Portal desde el periodo noviembre de 2021 hasta el
+periodo febrero de 2022
+
+Los sujetos que han adquirido o adquieran la obligación de llevar el Registro de Ventas
+e Ingresos en el SLE - PLE o el SLE - Portal entre el periodo noviembre de 2021 y el
+período febrero de 2022 pueden generar en dichos sistemas el referido registro y/o
+anotar las operaciones correspondientes a tales periodos hasta la fecha máxima de
+atraso que establece la Resolución de Superintendencia N.° 000189-2021/SUNAT para
+el periodo marzo de 2022.”
+
+2.2. Modifícase las tablas 4, 7 y 10 del anexo N.° 1 de la resolución, en los términos
+     indicados en el anexo A de esta resolución.
+
+Artículo 3. Incorporaciones a la resolución
+
+3.1. Incorpórase los incisos w), x), y), z), aa), ab), ac), ad) y ae) en el artículo 1; los
+     artículos 1-A, 2-A, 8-A y 9-A y los incisos h), i), j), k), l) y m) en el artículo 13,
+      corrigiéndose la denominación “anexo 13” por artículo 13, así como un segundo
+      párrafo en la segunda disposición complementaria final de la resolución,
+      modificándose su epígrafe, en los siguientes términos:
+
+“Artículo 1. Definiciones
+
+(…)
+
+w) Información relativa a :       A la información relativa a los comprobantes de
+   documentos    de    no         pago, notas de débito y notas de crédito u otros
+   domiciliados                   emitidos o recibidos por sujetos no domiciliados en
+                                  el país, a que se refiere el anexo N.° 9.
+
+x)    Ley del IGV             :   Al TUO de la Ley del Impuesto General a las
+                                  Ventas e Impuesto Selectivo al Consumo,
+                                  aprobado por el Decreto Supremo N.° 055-99-EF.
+
+y)    Módulo RCE              :   A aquel a que se refiere el artículo 2-A.
+
+z)    RCE                     :   Al Registro de Compras que obra en la opción
+                                  “Descarga de Registros” del módulo RCE y está
+                                  conformado por archivos en formato digital que
+                                  contienen un hash, en los que el generador anota
+                                  la información conforme a lo dispuesto en la
+                                  presente resolución.
+
+aa) Registro auxiliar         :   A registro auxiliar llevado en forma manual o en
+                                  hojas sueltas o continuas, a que se refiere el
+                                  artículo 8 de la Resolución de Superintendencia N.°
+                                  022-98/SUNAT y el artículo 5 de las Resoluciones
+                                  de Superintendencia N.os 021-99/SUNAT, 142-
+                                  2001/SUNAT,            256-2004/SUNAT,        257-
+                                  2004/SUNAT,         258-2004/SUNAT       y    259-
+                                  2004/SUNAT.
+
+ab) Registro de Compras       :   A aquel a que se refiere el artículo 37 de la Ley del
+                                  IGV y el artículo 65 del TUO de la Ley del Impuesto
+                                  a la Renta, aprobado por el Decreto Supremo N.°
+                                  179-2004-EF.
+
+ac) Registros Electrónicos    :   Al RVIE y RCE.
+ad) SIRE                       :   Al Sistema Integrado de Registros Electrónicos a
+                                   que se refiere el artículo 1-A.
+
+ae) UIT                        :   A la Unidad Impositiva Tributaria.”
+
+“Artículo 1-A. Aprobación del Sistema Integrado de Registros Electrónicos
+
+Apruébese el Sistema Integrado de Registros Electrónicos (SIRE), conformado por el
+módulo RVIE y el módulo RCE, aprobados en los artículos 2 y 2-A, respectivamente.”
+
+“Artículo 2-A. Aprobación del módulo RCE
+
+Apruébese el módulo RCE para el llevado del RCE, que obra en el rubro “Sistema
+Integrado de Registros Electrónicos” de SUNAT Operaciones en Línea, al que se puede
+acceder a través de este sistema, del aplicativo cliente SIRE y del servicio web API
+SUNAT, el cual permite:
+
+a) Seguir los pasos previos para generar el RCE y/o anotar en este registro, desde
+   acceder a la propuesta de RCE hasta generar el preliminar del RCE.
+
+b) Generar el RCE y el RVIE y/o anotar en estos registros la información respectiva o
+   anotar en el RCE los ajustes posteriores, únicamente a través de SUNAT
+   Operaciones en Línea.
+
+c) El almacenamiento, archivo y conservación por la SUNAT del RCE en sustitución del
+   generador.
+
+d) Realizar consultas y/o descargas de archivos en los términos indicados en la
+   presente resolución.”
+
+“Artículo 8-A. Pasos a seguir para la generación del RCE y/o la anotación en dicho
+registro
+
+Para generar el RCE y/o anotar información en dicho registro se debe tener en cuenta
+lo siguiente:
+
+8-A.1.De la propuesta de RCE
+
+     8-A.1.1. A partir del segundo día calendario de cada mes, la SUNAT pone a
+              disposición, a través del módulo RCE, un archivo plano con la propuesta
+              de RCE de ese mes, que contiene la información señalada en el anexo
+N.° 8, relativa a los comprobantes de pago, notas de débito y de crédito
+u otros documentos indicados en la columna “Información de la
+propuesta” de la tabla 11 del anexo N.° 1, que se haya recibido del emisor
+-mediante el envío de ejemplares, declaraciones juradas informativas y
+comunicaciones de baja-, del generador o que haya generado la SUNAT.
+Tal propuesta:
+
+a) Considera incluso aquello que el sujeto excluyó de la propuesta del
+   mes anterior, según el numeral 8-A.2.1., teniendo en cuenta la
+   normativa del IGV.
+
+b) Puede presentarse en blanco, en caso la SUNAT no haya recibido ni
+   generado la mencionada información, salvo que se considere
+   información según el inciso a).
+
+c) Por defecto, ubica información en un determinado campo o llena un
+   campo con determinada información, solo si así lo señala el anexo N.°
+   8.
+
+d) En ningún caso considera aquello que únicamente debe obrar en el
+   archivo de información relativa a documentos de no domiciliados,
+   correspondiendo su incorporación por parte del sujeto según el
+   numeral 8-A.2.1. del párrafo 8-A.2.
+
+Dicha propuesta se actualiza diariamente de manera automática con la
+información recibida o generada el día anterior, debiendo seguirse las
+indicaciones del sistema para efecto de su actualización con la
+información recibida o generada en el día, para lo cual debe ubicarse en
+el módulo RCE la opción prevista para este fin.
+
+El archivo plano que contiene la propuesta de RCE también señala las
+inconsistencias que se detectan en la información que obra en la
+propuesta e información adicional con la que cuenta la SUNAT, siendo
+esta última detallada en el anexo N.° 8. Dichas inconsistencias e
+información adicional tienen carácter meramente ilustrativo y no forman
+parte del mencionado registro, lo cual se indica expresamente en aquel
+anexo.
+
+También pueden acceder al archivo plano de la propuesta de RCE todos
+los sujetos obligados a llevar el Registro de Compras que no tienen la
+calidad de generadores, para efecto de consultarlo, desde el periodo
+octubre de 2022.
+     8-A.1.2. El módulo RCE proporciona al generador la opción de comparar la
+              propuesta de RCE con la información con la que aquél cuenta para lo
+              cual debe cargar esta información en un archivo plano conforme a la
+              estructura y reglas señaladas en el anexo N.° 11.
+
+              Una vez que se muestra el estado “atendido”, en caso se realice la carga
+              a través de SUNAT Operaciones en Línea o del aplicativo cliente SIRE,
+              o, si se emplea el servicio web API SUNAT, se cuente con el ticket con
+              ese estado y el Reporte de información recibida - Servicio web API
+              SUNAT respectivo, se genera el reporte que detalla las diferencias entre
+              ambos archivos. Dicho reporte tiene carácter meramente ilustrativo y no
+              forma parte del RCE.
+
+              De no cumplirse con la estructura y reglas antes indicadas, se señala
+              aquello que se incumplió luego de mostrarse el estado “rechazado” o
+              contar con un ticket con ese estado, según sea el caso.
+
+8-A.2.De la generación del preliminar del RCE
+
+     8-A.2.1. A partir del octavo día calendario del mes siguiente al período respectivo,
+              o, si la propuesta pertenece a un emisor de recibos electrónicos por
+              servicios públicos emitidos en el Sistema de Emisión Electrónica para
+              empresas supervisadas, desde el décimo día calendario de dicho mes, el
+              generador puede generar el preliminar del RCE, para lo cual puede:
+
+              a) Aceptar la propuesta de RCE:
+
+                 i) Sin ninguna modificación respecto de la información que obra en
+                    esta y que formará parte de dicho registro, siguiendo las
+                    indicaciones del módulo RCE, a través de SUNAT Operaciones en
+                    Línea, del aplicativo cliente SIRE o del servicio web API SUNAT.
+
+                 ii) Luego de excluir uno o más documentos, salvo notas de crédito, lo
+                    que solo se puede hacer en el módulo RCE, a través de SUNAT
+                    Operaciones en Línea o del aplicativo cliente SIRE, siguiendo las
+                    indicaciones de estos.
+
+                 Aceptada la propuesta y de no tener información relativa a
+                 documentos de no domiciliados por registrar u optar por no registrarla
+                 en el periodo, se genera a continuación el preliminar del RCE.
+  Cuando se incluya información relativa a documentos de no
+  domiciliados se debe tener en cuenta lo indicado más adelante.
+
+b) Complementar la propuesta de RCE si va a:
+
+  i) Incluir determinada información respecto de documentos
+     comprendidos en la propuesta de RCE, o modificar o reubicar la
+     información a que se refiere el inciso c) del numeral 8-A.1.1. del
+     párrafo 8-A.1.; cuando así lo señale el anexo N.° 8. A tal efecto, se
+     debe usar la opción que le permita incorporar, modificar o reubicar
+     la información pertinente de cada documento directamente en el
+     formulario que obre en el módulo RCE o incluir, modificar o reubicar
+     la información de uno o más documentos utilizando un archivo
+     plano que cumpla con la estructura y reglas indicadas en los anexos
+     N.os 8 o 10, según corresponda.
+
+  ii) Incluir documentos que, según la tabla 11 del anexo N.° 1, se
+      pueden complementar, para lo cual debe usar la opción que le
+      permita incorporar la información pertinente de cada documento
+      directamente en el formulario que obre en el módulo RCE o en un
+      archivo plano que cumpla con la estructura y reglas indicadas en el
+      anexo N.° 8.
+
+  iii) Excluir uno o más documentos que obran en la propuesta, salvo
+       notas de crédito, usando para ello la opción que le permita excluir
+       el(los) documento(s) directamente en el formulario que obre en el
+       módulo RCE o un archivo plano que cumpla con la estructura y
+       reglas indicadas en el anexo N.° 8.
+
+  Se puede usar el mismo archivo plano a fin de realizar las acciones
+  descritas en i), ii) y iii); sin embargo, si además se requiere
+  complementar información comprendida en el anexo N.° 10, esta debe
+  enviarse en un archivo plano distinto.
+
+c) Reemplazar la propuesta de RCE para modificarla o añadir incluso
+   información que, según la tabla 11 del anexo N.° 1, no puede ser
+   considerada al complementar la propuesta, usando un archivo plano
+   que cumpla con la estructura y reglas señaladas en el anexo N.° 11,
+   el cual también se puede dejar en blanco de no tener información por
+   registrar u optar por no registrarla en el período.
+
+De corresponder, al aceptar, complementar o reemplazar la propuesta de
+RCE, es posible incluir, usando la opción respectiva, la información
+             relativa a documentos de no domiciliados en un archivo plano que cumpla
+             con la estructura y reglas indicadas en el anexo N.° 9.
+
+             Si el generador opta por aceptar la propuesta de RCE e incluir
+             información relativa a documentos de no domiciliados o por
+             complementar o reemplazar la propuesta de RCE, se puede cargar o
+             excluir la información directamente en el formulario que obra en el módulo
+             RCE, salvo cuando se utilice el servicio web API SUNAT, y/o en el(los)
+             archivo(s) plano(s) correspondiente(s). En caso se emplee(n) archivo(s)
+             plano(s), dicho módulo muestra el estado “atendido”, en caso se realice
+             la carga a través de SUNAT Operaciones en Línea o del aplicativo cliente
+             SIRE, o, si se emplea el servicio web API SUNAT, se contará con un ticket
+             con ese estado y el Reporte de información recibida - Servicio web API
+             SUNAT respectivo. A continuación, se puede generar el preliminar del
+             RCE.
+
+             Además, se muestra, con carácter meramente ilustrativo y no formará
+             parte del RCE, de ser el caso, un reporte con las inconsistencias que se
+             obtengan a partir de la complementación de la propuesta o del reemplazo
+             de esta.
+
+             De no cumplirse con la estructura y reglas señaladas en los anexos N.°
+             8, 9, 10 y/u 11, según corresponda, se muestra el estado “rechazado” o
+             se cuenta con un ticket con ese estado y se detalla aquello que se
+             incumplió.
+
+     8-A.2.2. El preliminar del RCE está compuesto por dos archivos:
+
+             a) Uno que contiene la información relativa a documentos de no
+                domiciliados.
+
+             b) Otro que contiene la demás información, incluida aquella adicional
+                que, tal como se indica en el numeral 8-A.1.1. del párrafo 8-A.1., no
+                forma parte del RCE y se proporciona únicamente con fines
+                informativos.
+
+             Con anterioridad a la generación del RCE y/o la anotación de información
+             en dicho registro conforme a lo establecido en el párrafo 8-A.3., el
+             generador puede generar un nuevo preliminar del RCE, eliminando
+             previamente el que ya hubiera generado.
+
+8-A.3.Para la generación del RVIE y del RCE y/o la anotación en dichos registros se
+      debe tener en cuenta lo señalado en el párrafo 8.3. del artículo 8.”
+“Artículo 9-A. De los ajustes posteriores en el módulo RCE
+
+9-A.1. El generador puede realizar ajustes posteriores, a través del módulo RCE,
+       respecto del RCE o de registros de compras distintos a dicho registro, según lo
+       indicado en el párrafo 9-A.3.
+
+9-A.2.Antes de realizar los ajustes posteriores, el generador puede descargar, por cada
+      periodo, un archivo plano en el que se pone a su disposición la información sobre
+      los documentos indicados en la columna “Información de la propuesta” de la tabla
+      11 del anexo N.° 1 que se haya recibido del emisor -mediante el envío de
+      ejemplares, comunicaciones de baja o declaraciones informativas- o del
+      generador hasta el día calendario anterior y que impliquen cambios en lo anotado
+      en el RCE.
+
+     No se considera en el archivo plano antes indicado ajustes o rectificación de
+     aquello que se incorporó en el archivo de información relativa a documentos de
+     no domiciliados, correspondiendo su incorporación por parte del sujeto según el
+     inciso a) del párrafo 9-A.3.
+
+9-A.3.Para realizar los ajustes posteriores, el generador debe:
+
+   a) Ingresar a la opción Gestión de ajustes posteriores del módulo RCE y cargar:
+
+       i) Tratándose del RCE, según corresponda, un archivo plano que contiene la
+          información relativa a documentos de no domiciliados y/u otro que contiene la
+          demás información, los cuales deben contar con la estructura y reglas
+          señaladas en el anexo N.° 12.
+
+       ii) Tratándose del Registro de Compras distinto al RCE, un archivo plano que
+           contiene la información relativa a documentos de no domiciliados y/u otro que
+           contiene la demás información, los cuales deben contar con la estructura y
+           reglas señaladas en el anexo N.° 13.
+
+        Una vez que se muestre el estado “atendido”, en caso se realice la carga a
+        través de SUNAT Operaciones en Línea o del aplicativo cliente SIRE, o, si se
+        emplea el servicio web API SUNAT, reciba el ticket con ese estado y el Reporte
+        de información recibida - Servicio web API SUNAT, se puede generar el
+        preliminar de los ajustes posteriores en el RCE.
+
+        De no cumplirse con la estructura y reglas señaladas en los anexos respectivos,
+        se muestra el estado “rechazado”, si la carga se realizó a través de SUNAT
+        Operaciones en Línea o del aplicativo cliente SIRE, o se cuenta con un ticket
+         con ese estado, en caso se haya usado el servicio web API SUNAT. En
+         cualquiera de los casos, se muestra aquello que se incumplió.
+
+        El generador tiene la opción de eliminar el(los) archivo(s) que contiene(n) dicho
+        preliminar a fin de generar uno nuevo en caso lo considere pertinente.
+
+      b) Ubicar la opción “Generación de registros” del módulo RCE, a la cual se accede
+         únicamente ingresando a este a través de SUNAT Operaciones en Línea, y
+         luego seguir las indicaciones del sistema para la generación del(de los)
+         archivo(s) en formato digital de ajustes posteriores, el(los) cual(es) incluye(n)
+         la fecha y hora de anotación y el hash, tras lo cual el sistema muestra el estado
+         “presentado”.
+
+        Inmediatamente después se deposita en el buzón electrónico del generador la
+        constancia de recepción, la cual contiene, por lo menos, la fecha y hora de la
+        anotación; su número de RUC; el(los) periodo(s) respecto del(de los) cual(es)
+        se realizan los ajustes posteriores; la denominación del(de los) archivo(s)
+        plano(s) recibido(s); la cantidad de comprobantes de pago, notas de débito y
+        de crédito u otros documentos que se anotan y la firma digital de la SUNAT.”
+
+“Artículo 13. De la aprobación de los anexos
+
+(…)
+
+h) Anexo N.° 8 – Información de la propuesta del RCE/Estructura y reglas para elaborar
+   el archivo plano que complementa la propuesta del RCE.
+
+i) Anexo N.° 9 – Información relativa a documentos de no domiciliados/Estructura y
+   reglas para elaborar el archivo plano con dicha información.
+
+j) Anexo N.° 10 – Información, estructura y reglas para complementar la propuesta del
+   RCE, en los casos en que esta no contiene el tipo de cambio.
+
+k) Anexo N.° 11 – Estructura y reglas para elaborar el archivo plano que permita la
+   comparación con la propuesta del RCE o reemplazar esa última.
+
+l) Anexo N.° 12 – Estructura y reglas para elaborar el archivo plano con ajustes
+   posteriores relativos al RCE.
+
+m) Anexo N.° 13 – Estructura y reglas para elaborar el archivo plano con ajustes
+   posteriores relativos a registros de compras distintos al RCE.”
+“Segunda. De la aprobación del aplicativo cliente SIRE y de su obtención y utilización
+
+(…)
+
+Apruébase el aplicativo cliente SIRE versión 2.0, el cual estará a disposición de los
+interesados en SUNAT Virtual desde el 1 de octubre de 2022, para ser utilizado desde
+la referida fecha incluso para acceder al módulo RVIE respecto de los periodos
+noviembre 2021 hasta setiembre de 2022. Dicho aplicativo sustituye al aplicativo cliente
+RVIE, por lo que toda referencia que obre en la presente resolución a este aplicativo
+debe entenderse referida al aplicativo cliente SIRE.”
+
+3.2. Incorpórase las tablas 11 al 23 en el anexo N.° 1 de la resolución, en los términos
+indicados en el anexo B de la presente resolución.
+
+3.3. Incorpórase los anexos N.° 8 al 13 en la resolución, en los términos indicados en
+los anexos C, D, E, F, G y H de la presente resolución.
+
+                    DISPOSICIONES COMPLEMENTARIAS FINALES
+
+Primera. Vigencia
+
+La presente resolución entra en vigencia a partir del 1 de octubre de 2022, salvo el
+artículo 2, en el extremo referido a la modificación de la cuarta disposición
+complementaria final de la resolución, así como la tercera y la cuarta disposiciones
+complementarias finales de la presente resolución, las cuales rigen desde el día
+siguiente a su publicación.
+
+Segunda. De la aprobación de la nueva versión del PLE, de su obtención y
+utilización
+
+Apruébase el Programa de Libros Electrónicos (PLE) versión 5.4, el cual estará a
+disposición de los interesados en SUNAT Virtual desde el 1 de noviembre de 2022, para
+ser utilizada a partir de esa fecha, incluso respecto de periodos que se omitieron
+registrar hasta dicha fecha.
+
+La SUNAT facilita, a través de sus dependencias, la obtención del PLE a quienes no
+tienen acceso a internet.
+Tercera. De la generación del RVIE y/o anotación de operaciones
+correspondientes a los periodos noviembre de 2021 a setiembre de 2022
+
+Los sujetos comprendidos en el anexo N.° 7 de la resolución aplican las disposiciones
+de esta, antes de su modificación por la presente resolución, para efecto de generar el
+RVIE y/o anotar en dicho registro las operaciones de los periodos noviembre de 2021 a
+setiembre de 2022.
+
+Cuarta. De la obligación de llevar el Registro de Ventas e Ingresos en el SLE -
+PLE o SLE - Portal desde el periodo abril de 2022 hasta el periodo diciembre de
+2022 y de la afiliación al llevado del RVIE
+Los deudores tributarios que no se encuentran comprendidos en el anexo N.° 7 de la
+resolución continuarán sujetos a la normativa que regula la obligación de llevar el
+Registro de Ventas e Ingresos en forma electrónica a través del SLE - PLE o el SLE -
+Portal hasta el periodo diciembre de 2022, salvo que:
+
+a) Opten por afiliarse al llevado del RVIE y del RCE en el SIRE, a partir del período
+   octubre de 2022, o
+
+b) Adquieran la obligación de llevar el RVIE y el RCE, según el inciso b) del párrafo 3.1.
+   del artículo 3, modificado por esta resolución.
+
+Por los periodos abril a setiembre de 2022, no se puede optar por afiliarse al llevado
+solo del RVIE.
+
+              DISPOSICIONES COMPLEMENTARIAS MODIFICATORIAS
+
+Primera. Modificación de la Resolución de Superintendencia N.° 234-2006/SUNAT
+
+1.1. Modifícase el acápite (ii) del literal d) del numeral 5.2. del inciso 5 y el acápite (i) del
+     numeral 5.2. del inciso 5-A del artículo 13 de la Resolución de Superintendencia N.°
+     234-2006/SUNAT, en los términos siguientes:
+
+“Artículo 13. De la información mínima y los formatos
+
+(…)
+
+5. Libro Diario
+
+  (…)
+       5.2. Asimismo, se deberá incluir mensualmente la siguiente información mínima:
+
+        d) (…)
+
+            (ii) El número correlativo del registro o código único de la operación, según
+                 corresponda, y, de ser el caso, el código de anotación de registro para
+                 efecto del RVIE o del RCE.
+
+(…)
+
+5-A. Libro Diario de Formato Simplificado
+
+(…)
+
+      5.2. Asimismo, se deberá incluir mensualmente la siguiente información:
+
+          (i) Número correlativo o código único de la operación, según corresponda, y,
+              de ser el caso, el código de anotación de registro para efecto del RVIE o del
+              RCE.”
+
+1.2. Modifícase los formatos N.os 5.1. “LIBRO DIARIO” y 5.2. “LIBRO DIARIO
+     SIMPLIFICADO” que se anexan a la Resolución de Superintendencia N.° 234-
+     2006/SUNAT, teniendo en cuenta los que obran en el anexo I.
+
+1.3. Incorpórase los incisos ñ) y o) en el primer párrafo del artículo 1 de la Resolución
+     de Superintendencia N.° 234-2006/SUNAT, en los términos siguientes:
+
+“Artículo 1.- DEFINICIONES
+
+ (…)
+
+ ñ)      RVIE      :   Al Registro de Ventas e Ingresos que se lleva mediante el módulo
+                       RVIE, regulado en la Resolución de Superintendencia N.° 000112-
+                       2021/SUNAT.
+
+ o)      RCE       :   Al Registro de Compras que se lleva mediante el módulo RCE,
+                       regulado en la Resolución de Superintendencia N.° 000112-
+                       2021/SUNAT.”
+Segunda. Modificación de la Resolución de Superintendencia N.° 286-2009/SUNAT
+
+2.1. Modificar el inciso a) del numeral 5.1. del artículo 5 de la Resolución de
+     Superintendencia N.° 286-2009/SUNAT y el tercer párrafo del artículo 11 de la
+     misma resolución, incorporándose en este último artículo un cuarto párrafo, en los
+     términos siguientes:
+
+“Artículo 5.- DE LA AFILIACIÓN AL SISTEMA
+
+5.1. (…)
+
+    a) Lleven algún libro y/o registro señalado en el Anexo N.° 1 o en el Anexo N.° 4,
+       de acuerdo con la normativa vigente.
+
+        Solo se podrán afiliar respecto de los registros señalados en el Anexo N.° 1 hasta
+        por el periodo setiembre de 2022, de acuerdo con la normativa vigente.
+
+(…).”
+
+“Artículo 11.- Del cierre de los libros y/o registros electrónicos
+
+(…)
+
+El Registro de Ventas e Ingresos y el Registro de Compras Electrónico deben ser
+cerrados previamente a la generación del Registro de Ventas e Ingresos y el Registro
+de Compras en el Sistema Integrado de Registros Electrónicos (SIRE), considerando lo
+dispuesto en el segundo párrafo del inciso a) del artículo 5 de la Resolución de
+Superintendencia N.° 000112-2021/SUNAT.
+
+Para efecto de lo señalado en los párrafos anteriores, se deberá seleccionar la opción
+correspondiente que prevea el PLE.”
+
+2.2. Módifícase la fila del campo 20 en el ítem 5.1. del rubro 5 y en el ítem 5.2. del rubro
+     5A del anexo N.° 2 de la Resolución de Superintendencia N.° 286-2009/SUNAT, en
+     los términos indicados en el anexo J de esta resolución.
+
+2.3. Modifìcase el anexo incorporado en la Resolución de Superintendencia N.° 286-
+     2009/SUNAT por la segunda disposición complementaria modificatoria de la
+     resolución en los términos indicados en el anexo K de la presente resolución,
+     modificándose incluso su denominación a anexo N.° 7.
+Tercera. Sobre el Reglamento del Régimen de gradualidad aplicable a infracciones
+del Código Tributario
+
+Incorpórase como inciso w) del artículo 1 y modifíquese la nota (11) y el segundo párrafo
+de las notas (13) y (14) del anexo II del Reglamento del Régimen de gradualidad
+aplicable a infracciones del Código Tributario, aprobado por la Resolución de
+Superintendencia N.° 063-2007/SUNAT, los textos siguientes:
+
+    “Artículo 1. DEFINICIONES
+
+    (…)
+
+     w)        Módulo          :      Al módulo mediante el cual se lleva el Registro de
+               RCE                    Compras electrónico, regulado por la Resolución
+                                      de Superintendencia N.° 000112-2021/SUNAT.”
+
+                               “ANEXO II
+            INFRACCIONES SUBSANABLES Y SANCIONADAS CON MULTA
+
+  (…)
+
+  (11) Son determinados libros y registros vinculados a asuntos tributarios que los
+       sujetos afiliados o incorporados al sistema aprobado por el artículo 2 de la
+       Resolución de Superintendencia N.° 286-2009/SUNAT, los sujetos que
+       hubieran obtenido la calidad de generadores del sistema aprobado por el
+       artículo 2 de la Resolución de Superintendencia N.° 066-2013/SUNAT, los
+       sujetos que hubieran sido obligados según la Resolución de Superintendencia
+       N.° 379-2013/SUNAT y los que se afiliaron o estén obligados a llevar el Registro
+       de Ventas e Ingresos en el módulo RVIE o el Registro de Compras en el módulo
+       RCE que regula la normativa vigente, llevan de manera electrónica utilizando
+       para ello los sistemas o módulos antes mencionados.
+
+  (…)
+
+  (13) (…)
+
+          Tratándose del sujeto que lleva el Registro de Ventas e Ingresos electrónico o
+          el Registro de Compras electrónico en el módulo RVIE o en el módulo RCE que
+          regula la normativa vigente, el registro correspondiente se rehace corrigiendo
+          lo anotado, a través de la opción Gestión de ajustes posteriores del módulo
+          RVIE o del módulo RCE, según sea el caso.
+
+  (14) (…)
+         Tratándose del sujeto que lleva el Registro de Ventas e Ingresos electrónico o
+         el Registro de Compras electrónico en el módulo RVIE o en el módulo RCE que
+         regula la normativa vigente, el registro llevado con anterioridad a través del
+         sistema regulado en la Resolución de Superintendencia N.° 286-2009/SUNAT
+         se rehace anotando la información correspondiente, mediante la opción
+         Gestión de ajustes posteriores del módulo RVIE o del módulo RCE, según sea
+         el caso.”
+
+Cuarta. Modificación de la Resolución de Superintendencia N.° 066-2013/SUNAT
+
+Modificase el encabezado del primer párrafo en el artículo 3 y el artículo 12 de la
+Resolución de Superintendencia N.° 066-2013/SUNAT, en los términos siguientes:
+
+“Artículo 3. DE LAS CONDICIONES PARA OBTENER LA CALIDAD DE GENERADOR
+
+El sujeto que cuente con código de usuario y clave SOL podrá obtener la calidad de
+generador hasta el periodo setiembre de 2022, siempre que cumpla con las siguientes
+condiciones:
+
+(…)”.
+
+“Artículo 12. Del cierre de los registros electrónicos
+
+El generador deberá cerrar sus Registros Electrónicos cuando se encuentre en alguna
+de las situaciones por las que según la Resolución de Superintendencia N.° 210-
+2004/SUNAT, deba solicitar la baja de inscripción en el RUC, cuando deje de tener la
+obligación de llevar los mismos conforme a la normatividad vigente o previamente a la
+generación del Registro de Ventas e Ingresos y el Registro de Compras en alguno de
+los módulos que forman parte del Sistema Integrado de Registros Electrónicos (SIRE),
+considerando lo dispuesto en el segundo párrafo del inciso a) del artículo 5 de la
+Resolución de Superintendencia N.° 000112-2021/SUNAT.
+
+Para efecto de lo señalado en el párrafo anterior se debe seleccionar la opción
+correspondiente que prevea el Sistema.”
+
+Regístrese, comuníquese y publíquese.
+
+      LUIS ENRIQUE VERA CASTILLO
+         Superintendente Nacional
+SUPERINTENDENCIA NACIONAL DE ADUANAS
+    Y DE ADMINISTRACIÓN TRIBUTARIA
+

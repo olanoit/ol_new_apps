@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sire_action_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.sire.action.wizard.form</field>
+        <field name="model">l10n_pe.sire.action.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="book_type" invisible="1"/>
+                <group>
+                    <field name="action" widget="radio"/>
+                    <field name="value"
+                           invisible="action not in ('fiscal_rcf', 'fiscal_cfe', 'fiscal_prorrata')"/>
+                    <field name="adjust_state"
+                           invisible="action != 'adjust_previous' or book_type == 'rce'"/>
+                    <field name="move_ids" widget="many2many_tags"
+                           invisible="action != 'adjust_previous'"
+                           domain="[('state', 'in', ('posted', 'cancel')), ('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]"/>
+                    <field name="confirm"
+                           invisible="action not in ('delete_replacement', 'delete_registered', 'delete_registered_nd')"/>
+                </group>
+                <div class="alert alert-warning" role="alert"
+                     invisible="action not in ('delete_replacement', 'delete_registered', 'delete_registered_nd')">
+                    La eliminación se hace en SUNAT y no se puede deshacer desde Odoo.
+                </div>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

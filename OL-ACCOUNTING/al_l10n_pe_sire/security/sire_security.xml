@@ -25,6 +25,16 @@
             <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="sire_rce_nd_line_company_rule" model="ir.rule">
+            <field name="name">SIRE no domiciliados: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_sire_rce_nd_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="sire_operation_company_rule" model="ir.rule">
+            <field name="name">SIRE operación: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_sire_operation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
 
     </data>
 </odoo>

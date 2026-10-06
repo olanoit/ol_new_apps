@@ -1,5 +1,8 @@
 from odoo import _, fields, models
 
+from odoo.exceptions import UserError
+
+from .sire_api import SIRE_UPLOAD_ADJUSTMENT_ENDPOINT, SIRE_UPLOAD_ENDPOINT
 from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
 
 # Tipos de documento que no van al RCE (recibos por honorarios van al RHE)
@@ -27,6 +30,9 @@ class L10nPeSireRce(models.Model):
         'l10n_pe.sire.rce.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    operation_ids = fields.One2many(
+        'l10n_pe.sire.operation', 'res_id', string='Operaciones con SUNAT', copy=False,
+        domain=[('res_model', '=', 'l10n_pe.sire.rce')])
     invalid_line_ids = fields.One2many(
         'l10n_pe.sire.rce.line', 'sire_id', string='Observaciones', copy=False,
         domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
@@ -113,6 +119,8 @@ class L10nPeSireRce(models.Model):
         return self.env['account.move'].search(
             self._sire_system_domain(('in_invoice', 'in_refund'), 'date') + [
                 ('l10n_latam_document_type_id.code', 'not in', RCE_EXCLUDED_DOC_TYPES),
+                # Los no domiciliados van a su propio registro (8.5).
+                ('l10n_pe_sire_is_non_domiciled', '=', False),
             ], order='invoice_date, name')
 
     def _sire_system_line_vals(self, move):
@@ -165,6 +173,281 @@ class L10nPeSireRce(models.Model):
             if doc_code == '07':
                 vals['tipo_nota'] = move.l10n_pe_edi_refund_reason or ''
         return vals
+
+    # ------------------------------------------------------------------
+    # Servicios del manual de Compras v22 (docs/sire/SERVICIOS_RCE.md)
+    # ------------------------------------------------------------------
+
+    def _sire_inconsistency_summary_request(self, token, summary_type):
+        # 5.36: POST (en el RVIE es GET).
+        return self._sire_request(
+            'POST', token,
+            '/libros/rvierce/resumen/web/resumeninconsistencias/%s' % self._sire_period(),
+            params={'codTipoResumen': summary_type, 'codLibro': self._sire_upload_book_code()})
+
+    def _sire_receipt_request(self, token, name):
+        # 5.49: desde la v22 la constancia llega como arreglo de bytes.
+        return self._sire_get(
+            token, '/libros/rvierce/gestionlibro/web/registroslibros/constancia/constanciarecepcion',
+            params={'nomConstanciaRecepcion': name})
+
+    def _sire_preliminary_inconsistencies_path(self):
+        # 5.42: el último tramo es el formato (Anexo IV: 0 = txt).
+        return ('/libros/rvierce/casillas/inconsistenciaslibros/%s/reporteinconsistencia/0'
+                % self._sire_period())
+
+    def _sire_delete_proposal_lines(self, lines):
+        # 5.15: DELETE con cuerpo.
+        self._sire_check_dangerous()
+        return self._sire_json_call(
+            'delete_proposal', 'DELETE',
+            '/libros/rce/propuesta/web/propuestarce/%s' % self._sire_period(),
+            self._sire_lines_cp(self._sire_lines_of(lines)),
+            detail=_('%s comprobantes.', len(lines)))
+
+    def _sire_delete_preliminary_lines(self, lines):
+        # 5.16
+        self._sire_check_dangerous()
+        return self._sire_json_call(
+            'delete_preliminary', 'POST',
+            '/libros/rce/preliminar/web/comprobanteslibroscompras/%s/eliminacomprobante'
+            % self._sire_period(),
+            self._sire_lines_cp(self._sire_lines_of(lines)),
+            detail=_('%s comprobantes.', len(lines)))
+
+    def action_sire_delete_registered_preliminary(self, only_non_domiciled=False):
+        # 5.17: 1 = todo el preliminar, 2 = solo no domiciliados.
+        self.ensure_one()
+        self._sire_check_dangerous()
+        scope = '2' if only_non_domiciled else '1'
+        operation = self._sire_json_call(
+            'delete_registered', 'PUT',
+            '/libros/rce/preliminar/web/registroslibros/%s/%s/eliminapreliminar'
+            % (self._sire_period(), scope),
+            detail=_('Solo no domiciliados') if only_non_domiciled else _('Todo el preliminar'))
+        if not only_non_domiciled:
+            self.preliminary_registered = False
+        return operation
+
+    def _sire_send_fiscal_credit(self, field, value):
+        """5.11 reintegro (valorRCF), 5.12 crédito especial (valorCFE) y 5.13
+        prorrata (factProrrata). La tabla habla de ``datosFV621``; los
+        ejemplos, que son lo que responde «OK», envían ``registros``."""
+        endpoint = ('grabacreditofiscalespecial' if field == 'valorCFE'
+                    else 'grabacreditofiscal')
+        labels = {'valorRCF': _('Reintegro del crédito fiscal'),
+                  'valorCFE': _('Crédito fiscal especial'),
+                  'factProrrata': _('Coeficiente de prorrata')}
+        return self._sire_json_call(
+            'fiscal_credit', 'PUT',
+            '/libros/rce/propuesta/web/%s/%s' % (self._sire_period(), endpoint),
+            {'registros': {field: value}},
+            detail='%s: %s' % (labels[field], value))
+
+    # ------------------------------------------------------------------
+    # Complementos, nuevos CP y ajustes (docs/sire/ESTRUCTURAS_TXT.md)
+    # ------------------------------------------------------------------
+
+    def _sire_new_cp_identifier(self):
+        # Tabla 13.2: RUC-CP-AAAAMM-NN, anexo 8 variante «incluir CP».
+        return 'CP'
+
+    def _sire_adjustment_row(self, line, car_orig):
+        """Anexo 12 (8.4): la estructura del reemplazo con el CAR original en el campo 37."""
+        row = self._sire_replacement_row(line)
+        row[36] = car_orig
+        return row
+
+    def _sire_adjustment_ticket_required(self):
+        # 5.18: la carga de ajustes del RCE responde «OK», sin ticket.
+        return False
+
+    @staticmethod
+    def _sire_empty_row():
+        """Fila del anexo 8 con los 37 campos vacíos (los 38-41 no se envían)."""
+        return [''] * 37
+
+    def _sire_upload_complement(self, lines):
+        """Anexo 8 (A): completa o reubica datos de los CP propuestos con los del sistema.
+
+        Por cada línea de la propuesta se envía su CAR y lo que la nota 5
+        permite complementar (campos 15-20, 22, 27, 33-36), tomado de la
+        línea del sistema con el mismo CAR.
+        """
+        self.ensure_one()
+        rows = []
+        for line in self._sire_lines_of(lines):
+            system = self.system_line_ids.filtered(lambda l: l.car_sunat == line.car_sunat)[:1]
+            if not system:
+                raise UserError(_('El comprobante %s no está en el sistema: no hay datos con '
+                                  'qué complementarlo.', '%s-%s' % (line.serie_cp, line.nro_cp)))
+            base_proposal = line.bi_gravada_dg + line.bi_gravada_dgng + line.bi_gravada_dng
+            base_system = system.bi_gravada_dg + system.bi_gravada_dgng + system.bi_gravada_dng
+            if abs(base_proposal - base_system) > 1.0:
+                raise UserError(_(
+                    'En %(doc)s la base gravada del sistema (%(system).2f) no suma la de la '
+                    'propuesta (%(proposal).2f): el complemento solo reubica, no cambia '
+                    'importes. Use un ajuste posterior o el reemplazo.',
+                    doc='%s-%s' % (line.serie_cp, line.nro_cp),
+                    system=base_system, proposal=base_proposal))
+            row = self._sire_empty_row()
+            row[3] = line.car_sunat
+            for index, field in ((14, 'bi_gravada_dg'), (15, 'igv_dg'), (16, 'bi_gravada_dgng'),
+                                 (17, 'igv_dgng'), (18, 'bi_gravada_dng'), (19, 'igv_dng'),
+                                 (21, 'isc')):
+                row[index] = self._sire_fmt_amount(system[field])
+            row[26] = self._sire_fmt_rate(system.tipo_cambio, system.moneda)
+            row[32] = system.clasif_bienes or ''
+            row[33] = system.id_proyecto or ''
+            row[34] = system.porc_participacion or ''
+            row[35] = system.imb or ''
+            rows.append(row)
+        name = self._sire_complement_name('RCECOM', self._sire_next_correlative('complement'))
+        return self._sire_tus_upload('complement', name, rows, '54', SIRE_UPLOAD_ENDPOINT)
+
+    def _sire_upload_include_exclude(self, lines, include):
+        """Anexo 8 (C), tabla 22: 1 excluye un CP propuesto, 2 vuelve a incluirlo."""
+        self.ensure_one()
+        lines = self._sire_lines_of(lines)
+        if not include and any(l.tipo_cp in ('07', '87') for l in lines):
+            raise UserError(_('Las notas de crédito (07 y 87) no se pueden excluir de la propuesta.'))
+        rows = []
+        for line in lines:
+            row = self._sire_empty_row()
+            row[3] = line.car_sunat
+            row[36] = '2' if include else '1'
+            rows.append(row)
+        name = self._sire_complement_name('RCEINEX', self._sire_next_correlative('include_exclude'))
+        return self._sire_tus_upload('include_exclude', name, rows, '55', SIRE_UPLOAD_ENDPOINT)
+
+    def _sire_send_exchange_rates(self, rates):
+        """5.10 con el archivo del anexo 10 (RCETCA), en multipart y no por TUS."""
+        self.ensure_one()
+        self._sire_check_can_submit()
+        usd_books = self.company_id.currency_id.name == 'USD'
+        rows = [[self._sire_period(), self._sire_fmt_date(date), currency, '%.3f' % rate,
+                 '%.3f' % rate if usd_books and currency == 'USD' else '']
+                for date, currency, rate in rates]
+        name = self._sire_complement_name('RCETCA', self._sire_next_correlative('exchange_rate'))
+        content = '\n'.join('|'.join(row) for row in rows).encode('utf-8')
+        token = self._sire_get_token(self.company_id)
+        response = self._sire_request(
+            'POST', token, '/libros/rce/propuesta/web/%s/%s/resumenfechatipocambio'
+            % (self._sire_period(), self._sire_upload_book_code()),
+            files={'archivo': (name, content, 'text/plain')})
+        return self._sire_new_operation(
+            'exchange_rate', ticket=self._sire_ticket_from(response), filename=name,
+            content=content, detail=_('%s tipos de cambio enviados.', len(rows)))
+
+    def _sire_previous_row(self, move, state='9'):
+        """Anexo 13 (5.1): ajuste de un periodo anterior al SIRE (registro de compras PLE)."""
+        period = self._sire_move_period_record(move)
+        vals = period._sire_system_line_vals(move)
+        serie, folio = period._sire_serie_folio(move)
+        amount = self._sire_fmt_amount
+        detraction_date = getattr(move, 'l10n_pe_detraction_date', False)
+        return [
+            '%s00' % period._sire_period(),
+            self._sire_text(move.name, 40).replace('&', ''),
+            'M1',
+            self._sire_fmt_date(vals['fecha_emision']),
+            self._sire_fmt_date(vals['fecha_vencimiento']) if vals['tipo_cp'] == '14' else '',
+            vals['tipo_cp'], serie, '', folio, '',
+            vals['tipo_doc_identidad'], vals['nro_doc_identidad'],
+            self._sire_text(vals['razon_social'], 100),
+            amount(vals['bi_gravada_dg']), amount(vals['igv_dg']),
+            amount(vals['bi_gravada_dgng']), amount(vals['igv_dgng']),
+            amount(vals['bi_gravada_dng']), amount(vals['igv_dng']),
+            amount(vals['valor_adq_ng']), amount(vals['isc']), amount(vals['icbper']),
+            amount(vals['otros_tributos']), amount(vals['total_cp']),
+            vals['moneda'], self._sire_fmt_rate(vals['tipo_cambio'], vals['moneda']),
+            self._sire_fmt_date(vals.get('fecha_emision_mod')),
+            vals.get('tipo_cp_mod') or '', vals.get('serie_cp_mod') or '', '',
+            vals.get('nro_cp_mod') or '',
+            self._sire_fmt_date(detraction_date) if detraction_date else '',
+            getattr(move, 'l10n_pe_detraction_number', '') or '',
+            '', vals.get('clasif_bienes') or '', '',
+            '', '', '', '', '', state,
+        ]
+
+    def _sire_upload_previous_adjustment(self, moves, state='9'):
+        """5.24: ajustes de periodos anteriores al SIRE, referidos al último generado."""
+        self.ensure_one()
+        if self.state != 'done' and not self.preliminary_registered:
+            raise UserError(_('Envíe los ajustes de periodos anteriores desde el último '
+                              'periodo generado en el SIRE.'))
+        correlative = self._sire_next_correlative('adjustment_previous')
+        operation = self._sire_tus_upload(
+            'adjustment_previous', self._sire_le_name('080400', '04', correlative),
+            [self._sire_previous_row(move) for move in moves],
+            '6', SIRE_UPLOAD_ADJUSTMENT_ENDPOINT)
+        operation.adjustment_kind = 'adjustment_previous'
+        return operation
+
+    #: Envío de los ajustes cargados (5.19, 5.22, 5.25): ruta y fase por tipo.
+    ADJUSTMENT_SEND = {
+        'adjustment': ('registrarajustesposterioresrc', '9'),
+        'adjustment_nd': ('registrarajustesposterioresrcnd', '10'),
+        'adjustment_previous': ('registrarajustesposterioresparc', '9'),
+    }
+
+    def _sire_send_adjustment(self, operation):
+        """Registra en SUNAT los ajustes posteriores ya cargados.
+
+        5.19 (ajustes del periodo) lleva solo el periodo y el origen del
+        envío en la ruta; 5.22 y 5.25 llevan además el número de ajuste
+        posterior y el ticket de la carga. El cuerpo es el de los ejemplos
+        del manual (la tabla dice «no aplica»).
+        """
+        self.ensure_one()
+        self._sire_check_can_submit()
+        kind = operation.adjustment_kind or operation.kind
+        path, phase = self.ADJUSTMENT_SEND[kind]
+        base = '/libros/rce/ajustesposteriores/web/comprobantesajuspost/%s' % self._sire_period()
+        if kind == 'adjustment':
+            endpoint = '%s/2/%s' % (base, path)
+        else:
+            if not operation.ticket:
+                raise UserError(_('La carga no devolvió ticket; no se puede enviar.'))
+            number = operation.adjustment_number or self._sire_find_adjustment_number(operation)
+            if not number:
+                raise UserError(_('Indique el número de ajuste posterior que muestra SUNAT '
+                                  'en la operación y vuelva a enviar.'))
+            operation.adjustment_number = number
+            endpoint = '%s/%s/%s/%s/%s' % (base, number, self._sire_upload_book_code(),
+                                          operation.ticket, path)
+        body = {'controlProcesos': {'lisFases': [{'codFase': phase}]},
+                'registrosLibros': {'indEnviadoAjuste': '1'}}
+        sent = self._sire_json_call('adjustment_send', 'POST', endpoint, body,
+                                    detail=operation.name)
+        operation.adjustment_sent = True
+        return sent
+
+    def _sire_find_adjustment_number(self, operation):
+        """Número de ajuste posterior de una carga, si SUNAT lo devuelve en 5.59.
+
+        El manual no documenta la respuesta de ``listarcap``: se busca un
+        registro con el ticket de la carga y un ``numAjustePosterior``.
+        """
+        token = self._sire_get_token(self.company_id)
+        try:
+            response = self._sire_get(
+                token, '/libros/rce/ajustesposteriores/web/comprobantesajuspost/%s/listarcap'
+                % self._sire_period(), params={'page': '1', 'perPage': '100'})
+            data = response.json()
+        except (UserError, ValueError):
+            return ''
+
+        def walk(node):
+            if isinstance(node, dict):
+                if node.get('numAjustePosterior') and (
+                        not node.get('numTicket') or str(node.get('numTicket')) == operation.ticket):
+                    return str(node['numAjustePosterior'])
+                return next(filter(None, (walk(v) for v in node.values())), '')
+            if isinstance(node, list):
+                return next(filter(None, (walk(v) for v in node)), '')
+            return ''
+        return walk(data)
 
     def _sire_line_errors(self, line):
         errors = super()._sire_line_errors(line)
@@ -292,3 +575,16 @@ class L10nPeSireRceLine(models.Model):
     imb = fields.Char(string='IMB')
     car_orig = fields.Char(string='CAR Orig/Ind E o I')
     detraccion = fields.Char(string='Detracción')
+
+    def action_sire_complement(self):
+        lines = self._sire_proposal_lines()
+        return lines._sire_period_record()._sire_upload_complement(lines)
+
+    def action_sire_exclude(self):
+        lines = self._sire_proposal_lines()
+        return lines._sire_period_record()._sire_upload_include_exclude(lines, include=False)
+
+    def action_sire_include(self):
+        lines = self._sire_proposal_lines()
+        return lines._sire_period_record()._sire_upload_include_exclude(lines, include=True)
+

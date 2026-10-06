@@ -204,6 +204,8 @@ class TestSireValidation(TestSire):
     def _poll(self, record, status, **patches):
         with patch.object(type(record), '_sire_get_token', return_value='tok'), \
                 patch.object(type(record), '_sire_ticket_status', return_value=status), \
+                patch.object(type(record), '_sire_ticket_register', return_value={
+                    'detalleTicket': {'codEstadoEnvio': status[0]}, 'archivoReporte': []}), \
                 patch.object(type(record), '_sire_download_report',
                              return_value=base64.b64encode(b'CABECERA')) as download:
             record._sire_poll_once()

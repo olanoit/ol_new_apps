@@ -9,3 +9,8 @@ access_sire_rvie_line_user,l10n_pe.sire.rvie.line user,model_l10n_pe_sire_rvie_l
 access_sire_rvie_line_read,l10n_pe.sire.rvie.line readonly,model_l10n_pe_sire_rvie_line,account.group_account_readonly,1,0,0,0
 access_sire_compare_field_user,l10n_pe.sire.compare.field user,model_l10n_pe_sire_compare_field,account.group_account_user,1,0,0,0
 access_sire_compare_field_manager,l10n_pe.sire.compare.field manager,model_l10n_pe_sire_compare_field,account.group_account_manager,1,1,1,1
+access_sire_operation_user,l10n_pe.sire.operation user,model_l10n_pe_sire_operation,account.group_account_user,1,1,1,0
+access_sire_operation_read,l10n_pe.sire.operation readonly,model_l10n_pe_sire_operation,account.group_account_readonly,1,0,0,0
+access_sire_action_wizard_user,l10n_pe.sire.action.wizard user,model_l10n_pe_sire_action_wizard,account.group_account_user,1,1,1,1
+access_sire_rce_nd_line_user,l10n_pe.sire.rce.nd.line user,model_l10n_pe_sire_rce_nd_line,account.group_account_user,1,1,1,1
+access_sire_rce_nd_line_read,l10n_pe.sire.rce.nd.line readonly,model_l10n_pe_sire_rce_nd_line,account.group_account_readonly,1,0,0,0

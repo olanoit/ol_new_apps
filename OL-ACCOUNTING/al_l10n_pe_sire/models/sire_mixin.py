@@ -802,9 +802,16 @@ class L10nPeSireMixin(models.AbstractModel):
         if not self.submission_ticket:
             raise UserError(_('Este periodo no tiene ningún envío.'))
         token = self._sire_get_token(self.company_id)
-        code, dummy = self._sire_ticket_status(
+        register = self._sire_ticket_register(
             token, self._sire_period(), self.submission_ticket)
+        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') \
+            or register.get('codEstadoProceso') or '00'
         self.submission_state = code if code in dict(TICKET_STATES) else '00'
+        if self.submission_state in TICKET_FINAL_STATES:
+            # Las inconsistencias que SUNAT encontró en el envío quedan
+            # adjuntas al periodo: sin ellas, «procesado con errores» no
+            # dice qué corregir.
+            self._sire_attach_reports(token, register)
         return True
 
     def action_register_preliminary(self):
@@ -1004,6 +1011,73 @@ class L10nPeSireMixin(models.AbstractModel):
                 record._sire_poll_retry(error=error)
             if not cron._commit_progress(1):
                 break
+
+    # ------------------------------------------------------------------
+    # Operaciones con SUNAT (historial, tickets y reportes)
+    # ------------------------------------------------------------------
+
+    def _sire_new_operation(self, kind, ticket='', filename=None, content=None,
+                            detail=None, poll=None):
+        """Registra una operación; con ticket, programa su consulta."""
+        self.ensure_one()
+        operation = self.env['l10n_pe.sire.operation'].create({
+            'kind': kind,
+            'res_model': self._name,
+            'res_id': self.id,
+            'company_id': self.company_id.id,
+            'ticket': ticket or False,
+            'ticket_state': '01' if ticket else False,
+            'state': 'sent' if ticket else 'done',
+            'file': base64.b64encode(content) if content else False,
+            'filename': filename,
+            'detail': detail,
+        })
+        if ticket and poll is not False:
+            operation._schedule_poll()
+        label = dict(self.env['l10n_pe.sire.operation']._fields['kind'].selection).get(kind)
+        self._sire_log(_('%(kind)s: %(result)s', kind=label,
+                         result=_('ticket %s', ticket) if ticket else (detail or _('hecho'))))
+        return operation
+
+    def _sire_attach_reports(self, token, register):
+        """Descarga los archivos que SUNAT dejó en el ticket y los adjunta al periodo."""
+        self.ensure_one()
+        attachments = self.env['ir.attachment']
+        existing = set(self.env['ir.attachment'].search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id),
+        ]).mapped('name'))
+        for report in register.get('archivoReporte') or []:
+            name = report.get('nomArchivoReporte')
+            if not name or name in existing:
+                continue
+            try:
+                content = self._sire_download_file(token, report, self._sire_upload_book_code())
+            except UserError as error:
+                self._sire_log(_('No se pudo descargar el reporte %(name)s: %(error)s',
+                                 name=name, error=error))
+                continue
+            attachments |= self.env['ir.attachment'].create({
+                'name': name,
+                'raw': content,
+                'res_model': self._name,
+                'res_id': self.id,
+            })
+        if attachments:
+            self.message_post(
+                body=_('Reportes de SUNAT del ticket %s.', register.get('numTicket') or ''),
+                attachment_ids=attachments.ids)
+        return attachments
+
+    def _sire_operation_finished(self, operation):
+        """Gancho al terminar un ticket de operación; por defecto, solo avisa."""
+        if operation.state == 'error':
+            self._sire_warn(_('SUNAT procesó con errores el ticket %(ticket)s (%(kind)s). '
+                              'Revise los reportes adjuntos.', ticket=operation.ticket,
+                              kind=dict(self.env['l10n_pe.sire.operation']._fields['kind'].selection).get(operation.kind)))
+        else:
+            self._sire_log(_('SUNAT terminó el ticket %(ticket)s (%(kind)s).',
+                             ticket=operation.ticket,
+                             kind=dict(self.env['l10n_pe.sire.operation']._fields['kind'].selection).get(operation.kind)))
 
     # ------------------------------------------------------------------
     # Otros

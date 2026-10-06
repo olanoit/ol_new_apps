@@ -72,6 +72,34 @@ cargarlo a mano en SOL.
 > falta de credenciales de producción: la primera ejecución conviene hacerla con un
 > periodo de prueba.
 
+## Operaciones con SUNAT (pestaña «SUNAT»)
+
+Cada llamada queda en el historial de operaciones del periodo con su ticket,
+el archivo enviado y los reportes que SUNAT devuelve. Un cron consulta los
+tickets con espera creciente y adjunta los reportes al terminar.
+
+| Fase | Qué hace | Dónde |
+|---|---|---|
+| Reportes | Reportes del ticket (inconsistencias del envío), resumen de inconsistencias (tipos 1-4), inconsistencias del preliminar registrado y constancia de recepción | Pestaña SUNAT |
+| Tipo de cambio | RVIE: JSON a `guardacomplementomasivo`; RCE: archivo RCETCA (anexo 10) en multipart; RVIE individual (5.12) | Pestaña SUNAT y acción por comprobante |
+| No domiciliados | Registro 8.5 (anexo 9, 35 campos, codProceso 56) con los datos de renta de la factura y el país SUNAT (tabla 16); exportación del preliminar | Pestaña «No domiciliados» del RCE; pestaña «No domiciliado (SIRE)» de la factura |
+| Complementos | RCE: completar o reubicar datos (RCECOM, 54), excluir o volver a incluir (RCEINEX, 55); nuevos CP en la propuesta (CPF / CP, 1) o en el preliminar (4) | Acciones por comprobante |
+| Ajustes posteriores | Del periodo (RVIE anexo 4, RCE anexo 12 en 8.4 y 8.5) con el CAR del anotado; de periodos anteriores al SIRE en formato general (RVIE 5.1, RCE 5.1); envío de los ajustes del RCE (5.19/5.22/5.25) | Acciones por comprobante, «Otras acciones» y la operación |
+| Eliminaciones y crédito fiscal | Exclusión definitiva (RVIE), eliminar de la propuesta o del preliminar, eliminar reemplazo o preliminar; reintegro, crédito especial y prorrata (RCE) | Acciones por comprobante y «Otras acciones» (solo responsables) |
+
+Fuentes: manuales API SIRE v22 y anexos de las R.S. 112-2021, 040-2022 y
+138-2023 en `docs/sire/oficial/`; resumen en `docs/sire/SERVICIOS_RVIE.md`,
+`SERVICIOS_RCE.md` y `ESTRUCTURAS_TXT.md`.
+
+**Decisiones ante contradicciones del manual** (sin probar contra SUNAT):
+
+- Tipo de cambio RVIE: fecha `AAAA-MM-DD` y moneda ISO, como el ejemplo (la tabla dice `dd/mm/aaaa` y código numérico).
+- Ajustes RVIE: `codProceso` 6/7 de la tabla (el ejemplo usa 87/88).
+- Periodo del archivo de no domiciliados: `AAAAMM` (la norma dice «AAAAMM3.», una errata).
+- Número de ajuste posterior del RCE: se busca en `listarcap` (respuesta no documentada); si no aparece, se escribe en la operación.
+- Constancia de recepción: el nombre se deduce del registro (`LE…01OIM2.pdf`) probando los indicadores; se puede fijar a mano.
+- Quedan fuera los ajustes de periodos anteriores en formato simplificado (5.2 / 5.3) y de no domiciliados anteriores al SIRE (5.2).
+
 ## Documentación
 
 - Guía funcional: [`docs/README.md`](docs/README.md)

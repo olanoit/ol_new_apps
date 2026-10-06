@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Los países de base son noupdate: el código SUNAT (tabla 16) se asigna
+         por función, en cada instalación y actualización. -->
+    <function model="res.country" name="_l10n_pe_sire_load_country_codes"/>
+
+</odoo>

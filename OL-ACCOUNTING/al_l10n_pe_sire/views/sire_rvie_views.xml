@@ -201,6 +201,32 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="SUNAT" name="sunat_operations">
+                            <div class="d-flex flex-wrap gap-2 mb-3" groups="account.group_account_user">
+                                <button name="action_sire_send_exchange_rates" type="object"
+                                        string="Enviar tipos de cambio" class="btn-secondary"
+                                        invisible="state in ('draft', 'requested', 'downloaded', 'sire_loaded')"/>
+                                <button name="action_sire_inconsistency_summary" type="object"
+                                        string="Resumen de inconsistencias" class="btn-secondary"
+                                        invisible="state == 'draft'"/>
+                                <button name="action_sire_preliminary_inconsistencies" type="object"
+                                        string="Inconsistencias del preliminar" class="btn-secondary"
+                                        invisible="not preliminary_registered"/>
+                                <button name="action_sire_receipt" type="object"
+                                        string="Constancia de recepción" class="btn-secondary"
+                                        invisible="not preliminary_registered"/>
+                                <button name="action_sire_open_lines" type="object"
+                                        string="Acciones por comprobante" class="btn-secondary"
+                                        invisible="state in ('draft', 'requested', 'downloaded')"/>
+                                <button name="action_sire_open_wizard" type="object"
+                                        string="Otras acciones" class="btn-secondary"
+                                        invisible="state == 'draft'"/>
+                            </div>
+                            <group>
+                                <field name="receipt_name" invisible="not preliminary_registered"/>
+                            </group>
+                            <field name="operation_ids" readonly="1"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <chatter/>

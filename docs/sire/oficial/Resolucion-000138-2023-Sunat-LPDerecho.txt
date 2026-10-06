@@ -1,0 +1,1964 @@
+                                 FUNDADO EL 22 DE OCTUBRE DE 1825 POR EL LIBERTADOR SIMÓN BOLÍVAR
+
+“AÑO DE LA UNIDAD, LA PAZ Y EL DESARROLLO”                                                          Viernes 30 de junio de 2023
+
+
+
+
+                   RESOLUCIÓN DE SUPERINTENDENCIA
+                         Nº 000138-2023/SUNAT
+
+
+           RESOLUCIÓN DE SUPERINTENDENCIA
+         QUE MODIFICA LAS RESOLUCIONES DE
+   SUPERINTENDENCIA Nºs. 000112-2021/SUNAT
+                 Y 000040-2022/SUNAT, RESPECTO
+          AL LLEVADO EN FORMA ELECTRÓNICA
+        DEL REGISTRO DE VENTAS E INGRESOS
+
+
+
+
+                           NORMAS LEGALES
+
+
+                                      SEPARATA ESPECIAL
+2   NORMAS LEGALES   Viernes 30 de junio de 2023 /   El Peruano
+    El Peruano / Viernes 30 de junio de 2023    NORMAS LEGALES                                                            3
+
+                                     RESOLUCIÓN DE SUPERINTENDENCIA
+                                           Nº 000138-2023/SUNAT
+
+               RESOLUCIÓN DE SUPERINTENDENCIA QUE MODIFICA LAS
+           RESOLUCIONES DE SUPERINTENDENCIA N.OS 000112-2021/SUNAT Y
+       000040-2022/SUNAT, RESPECTO AL LLEVADO EN FORMA ELECTRÓNICA DEL
+                         REGISTRO DE VENTAS E INGRESOS
+
+Lima, 27 de junio de 2023
+
+CONSIDERANDO:
+
+Que mediante la Resolución de Superintendencia N.° 000040-2022/SUNAT (Resolución Modiﬁcatoria) se aprueba, a
+partir del 1 de julio de 2023, el Sistema Integrado de Registros Electrónicos para que a través de él se lleve el Registro
+de Compras de manera electrónica (RCE) -cuyo módulo es aprobado por esa misma resolución- y el Registro de
+Ventas e Ingresos de manera electrónica (RVIE) -cuyo módulo fue aprobado por la Resolución de Superintendencia N.°
+000112-2021/SUNAT (Resolución), vigente desde el 1 de noviembre de 2021; siendo que dicho sistema se caracteriza
+por proporcionar las propuestas de RCE y de RVIE para que el sujeto pueda aceptarlas o ajustarlas mediante su
+complementación o reemplazo, en los términos señalados en dicha normativa;
+
+Que determinados aspectos que comparten el RCE y el RVIE han sido regulados de manera distinta. Así, tenemos que: i)
+la complementación de la propuesta de RCE permite no solo incluir documentos o incluir, modiﬁcar o reubicar determinada
+información, a diferencia de la complementación de la propuesta de RVIE que solo permite incluir documentos; ii) en la
+constancia de recepción de ajustes posteriores en el RCE pueden ﬁgurar uno o más periodos materia de ajuste, en tanto
+que en la constancia de recepción de ajustes posteriores en el RVIE solo puede ﬁgurar un periodo y iii) el generador
+puede anotar operaciones en el RCE aun cuando hubiera comunicado la suspensión temporal de actividades, lo que
+no ocurre en el caso del RVIE, en el que además es necesario comunicar previamente el reinicio de actividades. En
+consecuencia, se estima conveniente uniformizar el tratamiento dado en el RVIE con el del RCE, teniendo en cuenta
+las diferencias propias de cada registro, correspondiendo, por ello, realizar ajustes en los artículos 8 y 9 y en los anexos
+N.os 4 y 5 de la Resolución, así como en el texto que la Resolución Modiﬁcatoria propuso para sustituir el artículo 11 de
+la Resolución;
+
+Que es necesario facilitar la anotación en el RVIE, por lo que resulta pertinente realizar ajustes en la formulación de
+la propuesta de RVIE y en el reemplazo de esta. Además, es necesario que el RVIE permita la anotación de la factura
+emitida a extranjeros no domiciliados que ingresen al país en calidad de turistas, cuando corresponda al amparo de
+la normativa vigente, y que la normativa reﬂeje aquello que el módulo RVIE puede proporcionar. En consecuencia, es
+preciso modiﬁcar los anexos N.os 1 y 2 y los artículos 8 y 9 de la Resolución;
+
+Que, adicionalmente, es conveniente realizar determinados ajustes en las tablas 3, 5 y 8 del anexo N.° 1 y en
+los anexos N. os 2, 3, 4 y 5 de la Resolución, así como en el texto que la Resolución Modificatoria propuso para
+la tabla 7 del anexo N.° 1 y los anexos N. os 8, 12 y 13 de la Resolución para incluir cambios, en su mayoría, de
+carácter formal;
+
+En uso de las atribuciones conferidas por el numeral 16 del artículo 62 y los numerales 4 y 7 del artículo 87 del Código
+Tributario, cuyo último Texto Único Ordenado ha sido aprobado mediante el Decreto Supremo N.° 133-2013-EF; el inciso
+c) del tercer párrafo del artículo 65 de la Ley del Impuesto a la Renta, cuyo Texto Único Ordenado fue aprobado por el
+Decreto Supremo N.° 179-2004-EF; el numeral 1 del artículo 10 del Reglamento de la Ley del Impuesto General a las
+Ventas e Impuesto Selectivo al Consumo, aprobado por el Decreto Supremo N.° 029-94-EF; el artículo 11 del Decreto
+Legislativo N.° 501, Ley General de la SUNAT; el artículo 5 de la Ley N.° 29816, Ley de Fortalecimiento de la SUNAT, y el
+inciso k) del artículo 10 del Documento de Organización y Funciones Provisional de la SUNAT, aprobado por Resolución
+de Superintendencia N.° 000042-2022/SUNAT;
+
+SE RESUELVE:
+
+Artículo 1. Objeto
+
+1.1. La presente resolución tiene por objeto modiﬁcar aspectos relativos a la oportunidad en que se consideran
+     determinados comprobantes de pago en la propuesta de Registro de Ventas e Ingresos Electrónico (RVIE), a
+     que se reﬁere la Resolución de Superintendencia N.o 000112-2021/SUNAT; la complementación y reemplazo de
+     la propuesta de RVIE; la anotación de operaciones en el RVIE, cuando se hubiese comunicado la suspensión
+     temporal de actividades, los ajustes posteriores, entre otros.
+
+1.2. Para efecto de lo señalado en el párrafo anterior, se modiﬁcan:
+
+     a)    La Resolución de Superintendencia N.o 000112-2021/SUNAT, que dicta nuevas disposiciones para el
+           llevado del Registro de Ventas e Ingresos en forma electrónica y modiﬁca resoluciones de superintendencia
+           relacionadas con dicho tema.
+4                                                  NORMAS LEGALES                     Viernes 30 de junio de 2023 /   El Peruano
+
+     b)      La Resolución de Superintendencia N.° 000040-2022/SUNAT, que aprueba el Sistema Integrado de Registros
+             Electrónicos y el módulo para el llevado del Registro de Compras que se incorpora en dicho sistema.
+
+Artículo 2. Finalidad
+
+La presente resolución tiene por ﬁnalidad uniformizar determinados aspectos que comparten el RVIE y el Registro
+de Compras Electrónico que formarán parte del Sistema Integrado de Registros Electrónicos, teniendo en cuenta las
+diferencias propias de cada registro; dar facilidades para la anotación y/o realizar ajustes formales, entre otros.
+
+Artículo 3. Modiﬁcaciones a la Resolución de Superintendencia N.° 000112-2021/SUNAT
+
+3.1. Modifícase el primer párrafo del numeral 8.1.1. del párrafo 8.1. y los incisos b) y c) del primer párrafo y el segundo
+     párrafo del numeral 8.2.1. del párrafo 8.2. del artículo 8, el párrafo 9.2. y el segundo párrafo del inciso b) del párrafo
+     9.3. del artículo 9 y el inciso a) del párrafo 11.1 del artículo 11 de la Resolución de Superintendencia N.° 000112-
+     2021/SUNAT, en los términos siguientes:
+
+     “Artículo 8. Pasos a seguir para la generación del RVIE y/o la anotación de operaciones en dicho registro
+
+     (…)
+
+     8.1. (…)
+
+     8.1.1.A partir del segundo día calendario de cada mes, la SUNAT pone a disposición a través del módulo RVIE un
+     archivo plano con la propuesta de RVIE de ese mes, que contiene la información señalada en el anexo N.° 2, relativa
+     a los comprobantes de pago, notas de débito y de crédito indicados en la columna “Información de la propuesta”
+     de la tabla 3 del anexo N.° 1, que haya recibido del emisor, mediante el envío de ejemplares, declaraciones juradas
+     informativas y comunicaciones de baja. Tal propuesta:
+
+     a)      Puede presentarse en blanco, en caso la SUNAT no haya recibido la mencionada información.
+
+     b)      Por defecto, llena un campo con determinada información, solo si así lo señala el anexo N.° 2.
+
+     (…)
+
+     8.2. (…)
+
+     8.2.1. (…)
+
+     b)      Complementar la propuesta de RVIE si va a:
+
+             i)     Incluir comprobantes de pago, notas de débito o de crédito que, según la tabla 3 del anexo N.° 1, pueden
+                    estar comprendidas en la información que complementa la propuesta, aun cuando hayan sido dados de
+                    baja o anulados. A tal efecto, se debe usar la opción que permita incorporar la información pertinente de
+                    cada documento directamente en el formulario que obre en el módulo RVIE o en un archivo plano que
+                    cumpla con la estructura y reglas indicadas en el anexo N.° 2.
+
+             ii)    Incluir determinada información respecto de los comprobantes de pago, notas de débito o de crédito
+                    comprendidos en la propuesta de RVIE; cuando así lo señale el anexo N.° 2. A tal efecto, se debe usar la
+                    opción que le permita incluir la información pertinente de cada documento directamente en el formulario
+                    que obre en el módulo RVIE.
+
+             iii)   Modiﬁcar la información a que se reﬁere el inciso b) del numeral 8.1.1.; cuando así lo señale el anexo
+                    N.° 2. A tal efecto, se debe usar la opción que le permita modiﬁcar la información pertinente de cada
+                    documento directamente en el formulario que obre en el módulo RVIE.
+
+     c)      Reemplazar la propuesta de RVIE, para modiﬁcarla o añadir incluso información que no puede ser
+             considerada al complementar la propuesta, usando uno o más archivos planos que cumplan con la estructura
+             y reglas señaladas en el anexo N.° 3; luego de lo cual, de estimarlo pertinente, puede añadir información
+             de otros documentos directamente en el formulario que obre en el módulo RVIE. También se puede dejar
+             en blanco el archivo plano que reemplaza la propuesta de RVIE si no se han realizado operaciones en el
+             periodo.
+
+     Si el generador opta por complementar o reemplazar la propuesta de RVIE, se puede cargar la información
+     directamente en el formulario que obra en el módulo RVIE, salvo cuando se utilice el servicio web API SUNAT,
+     y/o en el(los) archivo(s) plano(s) respectivo(s), según corresponda. En caso se emplee(n) archivo(s) plano(s),
+     dicho módulo muestra el estado “atendido”, en caso se realice la carga a través de SUNAT Operaciones en Línea
+     o del aplicativo cliente SIRE, o, si se emplea el servicio web API SUNAT, se contará con un ticket con ese estado
+     y el Reporte de información recibida - Servicio web API SUNAT respectivo. A continuación, se puede generar el
+     preliminar del RVIE.
+
+     (…).”
+     El Peruano / Viernes 30 de junio de 2023    NORMAS LEGALES                                                                5
+     “Artículo 9. De los ajustes posteriores
+
+     (…)
+
+     9.2. Antes de realizar los ajustes posteriores, el generador puede descargar, por cada periodo, un archivo plano
+          en el que se pone a su disposición la información sobre sus comprobantes de pago, notas de débito o de
+          crédito que el emisor hubiera proporcionado a la SUNAT, mediante declaraciones juradas informativas o
+          comunicaciones de baja enviadas hasta el día calendario anterior y que impliquen cambios en lo anotado en
+          el RVIE.
+
+     9.3. (…)
+
+            b)      (…)
+
+                    Inmediatamente después se deposita en el buzón electrónico del generador la constancia de recepción,
+                    la cual contiene, por lo menos, la fecha y hora de la anotación; su número de RUC; el(los) periodo(s)
+                    respecto del(de los) cual(es) se realizan los ajustes posteriores; la denominación del archivo plano
+                    recibido; la cantidad de comprobantes de pago, notas de débito y de crédito u otros documentos que se
+                    anotan y la ﬁrma digital de la SUNAT.”
+
+     “Artículo 11. De la suspensión temporal de actividades o el reinicio de actividades
+
+     11.1. (…)
+
+            a)      Comunica la suspensión temporal de actividades, no está impedido de anotar información en los
+                    Registros Electrónicos, sin perjuicio de las sanciones que puedan corresponder por no comunicar el
+                    reinicio de actividades conforme a lo establecido en la Resolución de Superintendencia N.° 210-2004/
+                    SUNAT.
+
+            (…).”
+
+3.2. Modifícase las tablas 1, 3, 5 y 8 del anexo N.° 1 y los anexos N.os 2, 3, 4 y 5 de la Resolución de Superintendencia
+     N.° 000112-2021/SUNAT, en los términos y con las incorporaciones indicadas en los anexos I, II, III, IV y V de la
+     presente resolución.
+
+Artículo 4. Modiﬁcación de la Resolución de Superintendencia N.° 000040-2022/SUNAT
+
+Modifícase el texto que la Resolución de Superintendencia N.° 000040-2022/SUNAT dispone: en el anexo A para la
+tabla 7 del anexo N.° 1; en el anexo C para el anexo N.° 8; en el anexo G para el anexo N.° 12; y, en el anexo H para el
+anexo N.° 13 de la Resolución de Superintendencia N.° 000112-2021/SUNAT; en los términos y con las incorporaciones
+indicadas en los anexos VI, VII, VIII y IX de la presente resolución.
+
+                                           DISPOSICIÓN COMPLEMENTARIA FINAL
+
+Única. Vigencia
+
+La presente resolución entra en vigencia a partir del día siguiente de su publicación, salvo:
+
+a)   El artículo 3, en el extremo relativo al acápite iii) del inciso b) del primer párrafo del numeral 8.2.1. del párrafo 8.2.
+     del artículo 8, el segundo párrafo del inciso b) del párrafo 9.3. del artículo 9, el inciso a) del párrafo 11.1 del artículo
+     11 de la Resolución de Superintendencia N.° 000112-2021/SUNAT y lo señalado en los anexos II y V de esta
+     resolución, respecto del campo 3 y las notas 3 y 5 del anexo N.° 2 y la nota 1 del anexo N.° 5 de aquella resolución,
+     respectivamente, los cuales entran en vigencia desde el 1 de octubre de 2023.
+
+b)   El artículo 4, el cual rige desde el 1 de julio de 2023.
+
+
+Regístrese, comuníquese y publíquese.
+
+
+
+                                             LUIS ENRIQUE VERA CASTILLO
+                                                 Superintendente Nacional
+                                       SUPERINTENDENCIA NACIONAL DE ADUANAS
+                                           Y DE ADMINISTRACIÓN TRIBUTARIA
+6                                                             NORMAS LEGALES                            Viernes 30 de junio de 2023 /          El Peruano
+
+                                                                        ANEXO I
+
+"ANEXO N.° 1 – TABLAS
+
+(…)
+
+"TABLA 1: TIPO DE DOCUMENTO DE IDENTIDAD
+
+               N°                                                                    Descripción
+             (…)
+               G                                                                    Salvoconducto
+
+(…)
+
+
+"TABLA 3: TIPO DE COMPROBANTE DE PAGO O DOCUMENTO
+
+                                                                         Información   Serie/Número de la Máquina
+                                                                                                                                       Número
+                                                                          del archivo          registradora
+                                                        Información de
+                                                                          plano que
+      Código                  Descripción              la propuesta del
+                                                                        complementa
+                                                            RVIE (1)
+                                                                        la propuesta Longitud       Validaciones           Longitud       Validaciones
+                                                                         del RVIE (2)
+
+       (…)
+
+                                                                                              1. Obligatorio
+                                                                                              2. Numérico, si es físico,
+                                                                                                                                    1. Obligatorio
+                                                                                              comenzando por 0000 y
+                                                                                                                                    2. Numérico mayor a
+                                                                                              terminado con 9999.
+                                                                                                                                    cero (0),
+                                                                                              3. Alfanumérico, si es
+                                                                                                                                    3. Hasta 8, si la serie
+        4           Liquidación de Compra                                   SI          4     electrónico SEE-SOL de        Hasta 8
+                                                                                                                                    empieza con E. En
+                                                                                              Liquidación de Compra,
+                                                                                                                                    los demás casos es
+                                                                                              la serie debe ser E001
+                                                                                                                                    hasta 7.
+                                                                                              y alfanumérico debe
+                                                                                              ser LXXX (donde X es
+                                                                                              alfanumérico)
+
+                    Boletos de Transporte Aéreo
+                    que emiten las Compañías
+                    de Aviación Comercial por el
+                    servicio de transporte aéreo
+                    regular de pasajeros, emitido de                                          1. Obligatorio
+                    manera manual, mecanizada                                                 2. Consignar Tipo de
+                                                                                                                                    1. Obligatorio
+                    o por medios electrónicos                                                 Boleto:
+                                                                                                                                    2. Numérico mayor a
+                    (Boleto de Transporte Aéreo                                                   1= Boleto Manual
+        5                                                                   SI          1                                  Hasta 11 cero (0).
+                    no necesariamente impreso,                                                    2= Boleto Automático
+                                                                                                                                    .
+                    emitido por una Compañía de                                                   3= Boleto Electrónico
+                    Aviación Comercial debidamente                                                4= Otros
+                    autorizada por la SUNAT,                                                      5= Anulados
+                    otorgado por ella o por un
+                    Agente de Ventas a nombre de
+                    ella, empleando un Sistema de
+                    Emisión Globalizado - BME)
+
+       (…)
+
+                                                                                              1. Obligatorio
+                                                                                              2. Información para la
+                                                                                              propuesta:
+                                                                                              a) Numérico, en caso
+                                                                                              de contingencia,
+                                                                                              comenzando por 0000 y
+                                                                                              terminado con 9999.
+                                                                                              b) Alfanumérico, si es
+                                                                                              electrónico, la serie debe
+                                                                                                                                 1. Obligatorio.
+                                                                                              ser E001 o EB01 o FXXX
+        7           Nota de crédito                          Si             Si          4                                Hasta 8 2. Numérico mayor a
+                                                                                              o BXXX (donde X es
+                                                                                                                                 cero (0).
+                                                                                              alfanumérico).
+                                                                                              La serie debe ser SXXX si
+                                                                                              el documento modiﬁcado
+                                                                                              es tipo 14 o 36.
+                                                                                              3. Información para
+                                                                                              complementar:
+                                                                                              Numérico, comenzando
+                                                                                              por 0000 y terminado
+                                                                                              con 9999.
+El Peruano / Viernes 30 de junio de 2023                NORMAS LEGALES                                                                                7
+                                                                   Información   Serie/Número de la Máquina
+                                                                                                                                 Número
+                                                                    del archivo          registradora
+                                                  Información de
+                                                                    plano que
+Código                Descripción                la propuesta del
+                                                                  complementa
+                                                      RVIE (1)
+                                                                  la propuesta Longitud       Validaciones           Longitud       Validaciones
+                                                                   del RVIE (2)
+                                                                                          1. Obligatorio
+                                                                                          2. Información para la
+                                                                                          propuesta:
+                                                                                          a) Numérico, en caso
+                                                                                          de contingencia,
+                                                                                          comenzando por 0000 y
+                                                                                          terminado con 9999.
+                                                                                          b) Alfanumérico, si es
+                                                                                          electrónico, la serie debe
+                                                                                                                             1. Obligatorio.
+                                                                                          ser E001 o EB01 o FXXX
+  8         Nota de débito                             Si             Si          4                                  Hasta 8 2. Numérico mayor a
+                                                                                          o BXXX (donde X es
+                                                                                                                             cero (0).
+                                                                                          alfanumérico).
+                                                                                          La serie debe ser SXXX si
+                                                                                          el documento modiﬁcado
+                                                                                          es tipo 14 o 36.
+                                                                                          3. Información para
+                                                                                          complementar:
+                                                                                          Numérico, comenzando
+                                                                                          por 0000 y terminado
+                                                                                          con 9999.
+
+ (…)
+
+            Pólizas emitidas por las bolsas
+            de valores, bolsas de productos
+            o agentes de intermediación,
+            por operaciones realizadas en
+            las bolsas de valores o bolsas
+            de productos autorizadas por la
+                                                                                                                                1. Obligatorio.
+            Superintendencia del Mercado de                                               1. Optativo
+  11                                                                  Si       Hasta 20                                15       2. Numérico mayor a
+            Valores (SMV). Así como pólizas                                               2. Alfanumérico
+                                                                                                                                cero (0).
+            emitidas por los agentes de
+            intermediación, por operaciones
+            efectuadas fuera de las bolsas
+            de valores y bolsas de productos
+            autorizadas por la SMV, con
+            valores inscritos o no en ellas
+
+                                                                                        1. Optativo
+                                                                                        2. Alfanumérico (serie de
+                                                                                                                                1. Obligatorio.
+                                                                                        la máquina registradora)
+                                                                                                                                2. Numérico mayor a
+                                                                                        en caso sea físico.
+            Ticket o cinta emitido por máquina                                                                                  cero (0).
+                                                                                        3. Alfanumérico cuatro
+  12        registradora o Ticket POS o Ticket                        Si       Hasta 20                                20       3. Número de ticket
+                                                                                        posiciones las dos
+            Monedero Electrónico                                                                                                POS (corresponde al
+                                                                                        primeras de la izquierda
+                                                                                                                                número de ID de la
+                                                                                        CF. Será una serie única
+                                                                                                                                transacción).
+                                                                                        por PSE-CF en caso
+                                                                                        ticket POS.
+
+                                                                                        1. Optativo
+                                                                                        2. Información para la
+            Documentos emitidos por las
+                                                                                        propuesta:
+            empresas del sistema ﬁnanciero y
+                                                                                        a) Alfanumérico primera
+            de seguros, y por las cooperativas                                                                                  1. Obligatorio.
+                                                                                        letra con F en caso
+            de ahorro y crédito no autorizadas                                                                                  2. Alfanumérico. De
+  13                                                   Si             Si       Hasta 20 electrónico.                 Hasta 20
+            a captar recursos del público,                                                                                      ser numérico, mayor a
+                                                                                        3. Información para
+            que se encuentren bajo el control                                                                                   cero (0).
+                                                                                        complementar:
+            de la Superintendencia de
+                                                                                        a) Alfanumérico primera
+            Banca y Seguros y comprobante
+                                                                                        letra distinta a F en caso
+            empresas supervisadas SBS (7)
+                                                                                        sea físico.
+
+            Recibos emitidos por los
+            servicios públicos de suministro
+            de energía eléctrica y agua; así                                            1. Optativo.
+            como por los servicios públicos                                             2. Alfanumérico primera
+            de telecomunicaciones que                                                   letra distinta a S en caso
+                                                                                                                                1. Obligatorio.
+            se encuentren bajo el control                                               sea físico.
+                                                                                                                                2. Alfanumérico. De
+  14        del Ministerio de Transportes y            Si             Si       Hasta 20 3. Alfanumérico primera      Hasta 20
+                                                                                                                                ser numérico, mayor a
+            Comunicaciones y del Organismo                                              letra con S en caso
+                                                                                                                                cero (0).
+            Supervisor de Inversión                                                     electrónico.
+            Privada en Telecomunicaciones
+            (OSIPTEL) o Recibo electrónico
+            por servicios públicos (recibo
+            electrónico SP) (3)
+8                                                        NORMAS LEGALES                             Viernes 30 de junio de 2023 /       El Peruano
+
+                                                                    Información   Serie/Número de la Máquina
+                                                                                                                                Número
+                                                                     del archivo          registradora
+                                                   Información de
+                                                                     plano que
+    Código              Descripción               la propuesta del
+                                                                   complementa
+                                                       RVIE (1)
+                                                                   la propuesta Longitud       Validaciones         Longitud        Validaciones
+                                                                    del RVIE (2)
+             Boletos emitidos por el servicio
+                                                                                                                               1. Obligatorio
+             de transporte terrestre regular                                            1. Optativo
+                                                                                                                               2. Alfanumérico. De
+      15     urbano de pasajeros y el                                  Si      Hasta 20 2. Alfanumérico            Hasta 20
+                                                                                                                               ser numérico, mayor a
+             ferroviario público de pasajeros
+                                                                                                                               cero (0).
+             prestado en vía férrea local
+
+             Boletos de viaje emitidos por las
+             empresas de transporte nacional
+                                                                                        1. Optativo                         1. Obligatorio
+             de pasajeros, siempre que
+      16                                                               Si      Hasta 20 2. Alfanumérico            Hasta 20 2. Numérico mayor a
+             cuenten con la autorización de
+                                                                                                                            cero (0).
+             la autoridad competente, en las
+             rutas autorizadas (3)
+
+             Documentos emitidos por
+                                                                                        1. Optativo                         1. Obligatorio
+             la Iglesia Católica por el
+      17                                                               Si      Hasta 20 2. Alfanumérico            Hasta 20 2. Numérico mayor a
+             arrendamiento de sus bienes
+                                                                                                                            cero (0).
+             inmuebles (5)
+
+             Documentos emitidos por las
+             Administradoras Privadas de
+             Fondos de Pensiones y por
+                                                                                        1. Optativo
+             las Entidades Prestadoras
+                                                                                        2. Información para la
+             de Salud, que se encuentren
+                                                                                        propuesta:
+             bajo la supervisión de
+                                                                                        a) Alfanumérico primera
+             la Superintendencia de
+                                                                                        letra con B en caso sea             1. Obligatorio
+             Administradoras Privadas
+      18                                                Si             Si      Hasta 20 electrónico                Hasta 20 2. Numérico mayor a
+             de Fondos de Pensiones y
+                                                                                        3. Información. para                cero (0).
+             de la Superintendencia de
+                                                                                        complementar:
+             Entidades Prestadoras de Salud,
+                                                                                        a) Alfanumérico primera
+             respectivamente, cuando estén
+                                                                                        letra distinta a B en caso
+             referidos a las operaciones
+                                                                                        sea físico.
+             compatibles con sus actividades
+             según lo establecido por las
+             normas sobre la materia (3)
+
+             Boletos numerados o entradas
+                                                                                                                             1. Obligatorio.
+             que se entreguen por atracciones                                              1. Optativo.
+      19                                                Si                      Hasta 20                            Hasta 20 2. Numérico mayor a
+             o espectáculos públicos en                                                    2. Alfanumérico.
+                                                                                                                             cero (0).
+             general
+
+     (…)
+
+             Formato para los aportes Seguro                                                                                1. Obligatorio
+                                                                                           1. Optativo
+      27     Complementario de Trabajo de                              Si       Hasta 20                           Hasta 20 2. Numérico mayor a
+                                                                                           2. Alfanumérico
+             Riesgo                                                                                                         cero (0).
+
+             Documentos emitidos por
+             los servicios aeroportuarios
+             prestados a favor de los
+             pasajeros por CORPAC S.A. o                                                                                    1. Obligatorio
+      28                                                                                   1. Optativo
+             la empresa a la que el Estado                             Si       Hasta 20                           Hasta 20 2. Numérico mayor a
+                                                                                           2. Alfanumérico
+             Peruano haya dado en concesión                                                                                 cero (0).
+             algún aeropuerto o el Gobierno
+             Local o Regional que administre
+             un aeropuerto
+
+             Documentos emitidos por la
+             COFOPRI en calidad de oferta
+             de venta de terrenos, los
+             correspondientes a las subastas
+                                                                                                                               1. Obligatorio
+             públicas y a la retribución de los
+                                                                                           1. Optativo                         2. Numérico mayor a
+      29     servicios que presta, al amparo            Si                      Hasta 20                           Hasta 20
+                                                                                           2. Alfanumérico                     cero (0).
+             de lo establecido en la Tercera
+             Disposición Complementaria,
+             Transitoria y Final de la Ley Nº
+             27046
+
+     (…)
+
+             Documentos que emitan los
+             concesionarios del servicio de                                              1. Optativo                        1. Obligatorio
+      37     revisiones técnicas vehiculares,                          Si       Hasta 20 2. Alfanumérico           Hasta 20 2. Numérico mayor a
+             por la prestación de dicho                                                                                     cero (0).
+             servicio (3)
+      El Peruano / Viernes 30 de junio de 2023                  NORMAS LEGALES                                                                               9
+                                                                           Información   Serie/Número de la Máquina
+                                                                                                                                         Número
+                                                                            del archivo          registradora
+                                                          Información de
+                                                                            plano que
+      Código                 Descripción                 la propuesta del
+                                                                          complementa
+                                                              RVIE (1)
+                                                                          la propuesta Longitud       Validaciones            Longitud      Validaciones
+                                                                           del RVIE (2)
+                                                                                                1. Optativo
+                                                                                                2. Información para la
+                                                                                                propuesta:
+                  Documentos emitidos por las                                                   a) Alfanumérico primera
+                  empresas que desempeñan el rol                                                letra con F en caso sea                1. Obligatorio
+        42        adquiriente en los sistemas de               Si             Si       Hasta 20 electrónico.                  Hasta 20 2. Numérico mayor a
+                  pago mediante tarjetas de crédito                                             3. Información para                    cero (0).
+                  emitidas por ellas mismas (4)                                                 complementar:
+                                                                                                a) Alfanumérico primera
+                                                                                                letra distinta a la letra F
+                                                                                                en caso sea físico.
+                  Boletos emitidos por las
+                  Compañías de Aviación
+                                                                                                                                       1. Obligatorio
+                  Comercial que prestan servicios
+        43                                                                    Si       Hasta 20 1. Optativo                   Hasta 20 2. Numérico mayor a
+                  de transporte aéreo no regular
+                                                                                                2. Alfanumérico                        cero (0).
+                  de pasajeros y transporte aéreo
+                  especial de pasajeros (3)
+        (…)
+                  Documentos emitidos por
+                  centros educativos y culturales
+                  reconocidos por el Ministerio
+                                                                                                                                       1. Obligatorio
+                  de Educación, universidades,
+        45                                                                    Si       Hasta 20 1. Optativo                   Hasta 20 2. Numérico mayor a
+                  asociaciones y fundaciones, en
+                                                                                                2. Alfanumérico                        cero (0).
+                  lo referente a sus actividades
+                  no gravadas con tributos
+                  administrados por la SUNAT (3)
+                                                                                                  1. Optativo                      1. Obligatorio
+                  Comprobante de Operaciones -                                                    2. Numérico, comenzando          2. Numérico mayor a
+        48                                                                    Si           4                              Hasta 20
+                  Ley N° 29972 (6).                                                               por 0001 y terminado             cero (0).
+                                                                                                  con 9999
+        (…)
+
+                                                                                                  1. Obligatorio
+                                                                                                  2. Consignar Tipo de                 1. Obligatorio
+                  BVME para transporte ferroviario
+        55                                                                    Si           1      Boleto:                     Hasta 11 2. Numérico mayor a
+                  de pasajeros (3)
+                                                                                                      1= Boleto Manual                 cero (0).
+                                                                                                      2= Boleto Automático
+                                                                                                      5= Anulados
+        (…)
+                  Documento emitido respecto
+                  de servicios prestados con
+                  ocasión de brindar el servicio
+                  de transporte aéreo regular de
+                  pasajeros y por las empresas
+                  habilitadas a emitir el boleto
+                  referido en el literal a) del inciso
+                  6.1 del artículo 4 del Reglamento                                             1. Optativo                            1. Obligatorio
+        64        de Comprobantes de pago,                     Si                      Hasta 20 2. Alfanumérico               Hasta 20 2. Numérico mayor a
+                  dichos servicios pueden consistir                                                                                    cero (0).
+                  en proporcionar oxígeno durante
+                  el vuelo, acompañar menores que
+                  viajan solos, transportar mascotas
+                  acompañadas por un pasajero,
+                  permitir el exceso de equipaje,
+                  proporcionar dietas especiales y
+                  similares
+        (…)
+                                                                                                  1. Obligatorio                  1. Obligatorio
+                  Nota de Ajuste de Operaciones -                                                 2. Numérico, comenzando         2. Numérico mayor a
+        89                                                                    Si           4                              Hasta 7
+                  Ley N° 29972 (6)                                                                por 0001 y terminado            cero (0).
+                                                                                                  con 9999
+
+Nota:
+
+(…)
+
+3. Documentos autorizados que han sido reemplazados por factura electrónica o boleta de venta electrónica según la
+Resolución de Superintendencia N.° 318-2017/SUNAT y que por contingencia pueden ser emitidos sin utilizar el SEE
+con los cuales se complementará la propuesta del RVIE y que deben ser informados mediante declaración informativa
+conforme a lo dispuesto por el artículo 4-B de la Resolución de Superintendencia N.° 300-2014/SUNAT. Respecto del
+10                                              NORMAS LEGALES                     Viernes 30 de junio de 2023 /   El Peruano
+
+recibo electrónico SP, en los supuestos de concurrencia de corresponder (literales a y b del numeral 4.1 del artículo
+4), se pueden emitir los documentos autorizados con los cuales se complementará la propuesta del RVIE y que deben
+ser informados mediante declaración informativa, conforme a lo dispuesto por el artículo 4-B de la Resolución de
+Superintendencia Nº 300-2014/SUNAT.
+
+4. Documentos autorizados que deben emitirse de manera electrónica de acuerdo con la Resolución de Superintendencia
+Nº 013-2019/SUNAT y que por contingencia o concurrencia de corresponder pueden ser emitidos sin utilizar SEE con
+los cuales se complementara la propuesta del RVIE y que deben ser informados conforme a lo dispuesto por el artículo
+4-B de la Resolución de Superintendencia Nº 300-2014/SUNAT. Respecto del recibo electrónico SP, en los supuestos de
+concurrencia de corresponder (literales a y b del numeral 4.1 del artículo 4), se pueden emitir los documentos autorizados
+con los cuales se complementará la propuesta del RVIE y que deben ser informados mediante declaración informativa,
+conforme a lo dispuesto por el artículo 4-B de la Resolución de Superintendencia Nº 300-2014/SUNAT.
+
+5. Solo si se emiten en el supuesto indicado en el literal a) del numeral 4.1 del artículo 4 de la Resolución de
+Superintendencia Nº 300-2014-SUNAT, teniendo en cuenta lo dispuesto por la Resolución de Superintendencia N.º 123-
+2017/SUNAT.
+
+6. Cabe precisar que la Ley N.° 29972. fue derogada por la Ley N.° 31335. En ese sentido, los tipos 48 y 89 solo pueden
+utilizarse para la anotación de ajustes posteriores relativos a periodos anteriores a agosto de 2021 o incluso por el
+periodo agosto 2021 mientras estuvo vigente la Ley N.° 29972.
+
+7. Documento autorizado que pueden emitir las empresas del sistema ﬁnanciero y de seguros y las cooperativas de
+ahorro y crédito no autorizadas a captar recursos del público que se encuentren bajo el control de la Superintendencia de
+Banca, Seguros y Administradoras Privadas de Fondo de Pensiones en los casos que la Resolución de Superintendencia
+N.° 300-2014/SUNAT lo permite, en contingencia, respecto de las operaciones gravadas con el IGV y por los servicios
+de arrendamiento y/o subarrendamiento de bienes inmuebles situados en el país y por servicios de créditos hipotecarios,
+según lo dispuesto por las Resoluciones de Superintendencia N.° 123-2017/SUNAT y 245-2017/SUNAT. Respecto del
+comprobante empresas supervisadas SBS, en los supuestos de concurrencia de corresponder (literales a y b del numeral
+4.1 del artículo 4), se pueden emitir los documentos autorizados con los cuales se complementará la propuesta del RVIE
+y que deben ser informados mediante declaración informativa conforme a lo dispuesto por el artículo 4-B de la Resolución
+de Superintendencia Nº 300-2014/SUNAT."
+
+(…)
+
+"TABLA 5: REGLAS GENERALES DE LA INFORMACIÓN DEL RVIE
+
+Reglas Generales
+
+El módulo del RVIE valida el registro generado por el contribuyente en archivos en formato de texto cuando reemplaza o
+complementa la propuesta del RVIE en caso acepte la propuesta, o cuando realiza ajustes posteriores, con las estructuras
+que se indican en los Anexos 02, 04, 06 y 07, según corresponda. Los campos deben estar separados por el carácter "|"
+(conocido como pipe o palote). Adicionalmente, dichos archivos deben ser generados con los nombres que se detallan
+en la hoja "reglas de nombre de RVIE.
+
+(…)
+
+Reglas de tipo y número de documento
+
+Nro.                                                           Descripción (1)                          LO T L M
+(…)
+G                                                               Salvoconducto                             15AV-
+
+Donde
+
+(…)
+
+Nota:
+
+1. Cuando en la factura (CP tipo 01) emitida se haya consignado un guion (-) en "tipo de documento del adquiriente"
+por las operaciones mencionadas en el inciso a) del numeral 17.2 del artículo 17 de la Resolución de Superintendencia
+N.º 097- 2012/SUNAT y modiﬁcatorias (SEE - Del Contribuyente) o en el inciso a) del párrafo 19.2 del artículo 19 de la
+Resolución de Superintendencia N.º 117-2017/SUNAT y modiﬁcatorias (SEE - OSE), se colocará un guión (-) en los
+campos del RVIE "Tipo de Documento de Identidad del cliente" y "Número de RUC o Documento de Identidad del cliente."
+
+(…)
+
+
+"TABLA 8: PROCEDIMIENTO PARA AJUSTES POSTERIORES
+
+1. En caso el contribuyente requiera modiﬁcar un comprobante de pago o documento anotado con error en un RVIE
+generado en el SIRE, deberá presentar un archivo txt (Anexo 04) con lo siguiente:
+      El Peruano / Viernes 30 de junio de 2023               NORMAS LEGALES                                                                            11
+- La información completa y correcta del comprobante pago o documento objeto de ajuste.
+- El CAR del comprobante de pago o documento anotado, objeto de ajuste, consignarlo en el campo 41.
+
+2. En caso el generador requiera modiﬁcar un comprobante de pago o documento anotado con error en un Registro de
+Ventas e Ingresos generado en el PLE o Portal deberá presentar un archivo txt (Anexo 5) con la información correcta del
+comprobante de pago o documento a modiﬁcar.
+
+3. En el caso de incorporación de nuevo comprobante de pago no anotado anteriormente, remitirá todos los campos para
+la generación de un nuevo CAR."
+
+(…)
+
+
+                                                                          ANEXO II
+
+      “ANEXO N.º 2: INFORMACIÓN DE LA PROPUESTA RVIE/ESTRUCTURA Y REGLAS PARA ELABORAR EL
+                        ARCHIVO PLANO QUE COMPLEMENTA LA PROPUESTA RVIE (1)
+
+                        Parte del
+  N° del campo (7)                         Descripción (2)           Nemotécnico             Regla Global (2)            Longitud (2)   Formato (2)
+                        Registro
+
+         (…)
+
+                                    Apellidos y nombres,
+                                                                                    1. Los apellidos y nombres,
+                                    denominación o razón social
+                                                                                    denominación o razón social deben
+          2                Si       del generador o sujeto           ID                                               Hasta 1500        Alfanumérico
+                                                                                    pertenecer al RUC del campo 1.
+                                    obligado a llevar el Registro de
+                                                                                    2. Obligatorio.
+                                    Ventas e Ingresos
+
+                                                                                    1. Obligatorio.
+                                                                                    2. El formato debe ser YYYYMM.
+                                                                                    3. 01<=MM<=12.
+                                                                                    4. Corresponde al periodo de
+                                                                                    la propuesta del RVIE que se
+                                                                                    complementa.
+                                                                                    5. Si el campo 7 (Tipo de CP)
+                                                                                    = "14", la propuesta consignará
+          3                Si       Periodo                         Periodo                                                   6          Numérico
+                                                                                    como periodo el mes y año de la
+                                                                                    fecha de vencimiento. A partir del
+                                                                                    01 de octubre de 2023, para las
+                                                                                    empresas de servicios públicos
+                                                                                    de telecomunicaciones bajo la
+                                                                                    supervisión del MTC y OSIPTEL
+                                                                                    se les propondrá de acuerdo a la
+                                                                                    fecha de emisión. (6)
+
+                                    Código de Anotación de
+                                    Registro (CAR). Se estructura                   1. Consignar vacío.
+          4                Si                                     CAR SUNAT                                                  27         Alfanumérico
+                                    de acuerdo a la tabla 7 del                     2. Se completará automáticamente.
+                                    Anexo 1
+
+         (…)
+
+                                                                                    1. Obligatorio.
+                                                                                    2. Validar con tabla de
+                                                                                    Comprobantes de pago (tabla 3)
+                                                                                    del Anexo N.° 1.
+                                    Tipo de comprobante de pago
+                                                                                    3. Para el complemento solo
+                                    o documento, de acuerdo con
+          7                Si                                     Tipo CP/Doc.      se permitirá la anotación de los          2         Alfanumérico
+                                    lo indicado en la Tabla 3 del
+                                                                                    comprobantes de pago indicados
+                                    Anexo N.° 1
+                                                                                    en la tabla 3 del Anexo N.° 1
+                                                                                    en la columna “Información que
+                                                                                    complementa el archivo plano del
+                                                                                    RVIE” que tengan la marca “Si”.
+
+                                                                                    1. Validar con tabla de
+                                                                                    comprobantes de pago (tabla 3) del
+                                                                                    Anexo N.° 1.
+                                    Número de serie del                             2. Aplicar Regla General (por tipo
+                                    comprobante de pago o de la                     de doc.) (tabla 5) del Anexo N.°
+          8                Si                                       Serie del CDP                                         Hasta 20      Alfanumérico
+                                    máquina registradora según                      1. (9).
+                                    corresponda                                     3. Para efectos de complementar
+                                                                                    la propuesta, se permite consignar
+                                                                                    el número de serie de la máquina
+                                                                                    registradora.
+12                                                       NORMAS LEGALES                                     Viernes 30 de junio de 2023 /       El Peruano
+
+                    Parte del
+ N° del campo (7)                      Descripción (2)            Nemotécnico               Regla Global (2)                 Longitud (2)   Formato (2)
+                    Registro
+
+
+                                Número del comprobante
+                                de pago o documento. Para
+                                efectos de complementar
+                                la propuesta, se permite el
+                                registro de tickets o cintas
+                                emitidos por máquinas
+                                registradoras u otros
+                                comprobantes de pago o
+                                documentos que no otorguen                        1. Validar con tabla de
+                                derecho a crédito ﬁscal de                        Comprobantes de pago (tabla 3)
+                                                                  Nro CP o Doc.
+        9              Si       acuerdo a las normas de                           del Anexo N.° 1.                            Hasta 20      Alfanumérico
+                                                                  Nro Inicial
+                                Comprobantes de Pago y                            2. Aplicar Regla General por tipo
+                                opten por anotar el importe                       de doc. Tabla 5 del Anexo N.° 1. (9)
+                                total de las operaciones
+                                realizadas por día y por
+                                máquina registradora, registrar
+                                el número inicial Tratándose
+                                del IVAP, el usuario del servicio
+                                de pilado anotará la constancia
+                                de depósito por los retiros de
+                                bienes que hubiere efectuado
+
+
+
+
+                                1. Para efectos de
+                                complementar la propuesta
+                                se permite el registro de
+                                tickets o cintas emitidos por
+                                máquinas registradoras u                          1. Solo se permite cuando el tipo
+                                otros comprobantes de pago o                      de documento = '00','03','12', "13",
+                                documentos que no otorguen                        "18", "87" y "88".
+                                derecho a crédito ﬁscal de
+                                acuerdo a las normas de                           2. No se registra nada en
+                                Comprobantes de Pago y                            este campo cuando el tipo de
+                                opten por anotar el importe                       documento es <> '00','03','12', "13",
+                                total de las operaciones                          "18", "87" y "88"
+       10                       realizadas por día y por        Nro ﬁnal                                                      Hasta 20      Alfanumérico
+                                máquina registradora, registrar                   3. A partir del 1 de julio de 2016,
+                                el número ﬁnal                                    para el tipo de documento = '03'
+                                                                                  se deberá registrar de manera
+                                2. Se permite la consolidación                    detallada cuando el monto total sea
+                                diaria de:                                        igual o mayor a S/ 700.00.
+                                - Boletas de Venta                                4. Validar con tabla de
+                                - Documentos tipo “18”,                           Comprobantes de pago (tabla 3)
+                                siempre que dichos                                del Anexo N.° 1.
+                                documentos no otorguen
+                                derecho a crédito ﬁscal, a
+                                partir del 01 de octubre de
+                                2023
+
+
+
+
+                                                                                  1. Obligatorio (8), excepto cuando:
+                                                                                  a. campo 7 = '00','05','06','07','0
+                                                                                  8','11','12','13', '14', '15','16', '18'
+                                                                                  '28', 30, 34, 35, '36','37' '55','56',
+                                                                                  '87' y '88' o
+                                                                                  b. campo 7 = '07', '08', '87' y '88'
+                                                                                  y campo 30 = '03', '12', '13', '14'
+                                                                                  y '36'.
+                                                                                  c. campo 14> 0.00.
+                                                                                  d. campo 26 < 700.00 y campo
+                                Tipo de Documento de             Tipo Doc
+       11              Si                                                         7 = '03' y'12'. En caso estos                   1         Alfanumérico
+                                Identidad del cliente            Identidad
+                                                                                  documentos tengan información
+                                                                                  de identiﬁcación del tipo de
+                                                                                  documento, será obligatorio
+                                                                                  consignar la información en este
+                                                                                  campo.
+                                                                                  e. campo 10 <> vacío.
+                                                                                  En cuyos casos será opcional y no
+                                                                                  se aceptará el valor 0.
+                                                                                  2. Validar con parámetro tabla 1 y 5
+                                                                                  del Anexo N.° 1.
+  El Peruano / Viernes 30 de junio de 2023               NORMAS LEGALES                                                                                    13
+                    Parte del
+N° del campo (7)                       Descripción (2)          Nemotécnico               Regla Global (2)                   Longitud (2)   Formato (2)
+                    Registro
+
+
+                                                                               1. Obligatorio (8) excepto cuando:
+                                                                               a. campo 7 = '00','05','06','07','08',
+                                                                               '11','12','13', '14', '15','16', '18','28',
+                                                                               30, 34, 35, '36','37','55','56', '87'
+                                                                               y '88' o
+                                                                               b. campo 7 = '07', '08', '87' y '88' y
+                                                                               campo 30 = '03', '12', '13', '14' y '36'
+                                                                               c. campo 14 > 0.00
+                                                                               d. campo 26 < 700.00 y campo
+                                Número de RUC o Documento Nro Doc              7 = '03' y '12'. En caso estos
+      12               Si                                                                                                     Hasta 15      Alfanumérico
+                                de Identidad del cliente  Identidad            documentos tengan información
+                                                                               de identiﬁcación del tipo de
+                                                                               documento, será obligatorio
+                                                                               consignar la información en este
+                                                                               campo.
+                                                                               e. campo 10 <> vacío.
+                                                                               En cuyos casos será opcional.
+                                                                               2. Reglas Generales de la
+                                                                               información del RVIE, ver tabla 5
+                                                                               del Anexo N.° 1
+
+
+
+
+                                                                               1. Obligatorio (8) excepto cuando:
+                                                                               a. campo 7 = '00','05','06','07','08',
+                                                                               '11','12','13', '14', '15','16', '18','28',
+                                                                               30, 34, 35, '36','37','55','56', '87'
+                                                                               y '88' o
+                                                                               b. campo 7 = '07', '08', '87' y '88' y
+                                                                               campo 30 = '03', '12', '13', '14' y '36'
+                                                                               c. campo 14 > 0.00.
+                                                                               d. campo 26 < 700.00 y campo
+                                Apellidos y nombres,
+                                                                               7 = '03' y '12'. En caso estos
+                                denominación o razón
+                                                                               documentos tengan información
+                                social del cliente. En caso
+                                                               Apellidos       de identiﬁcación del tipo de
+                                de personas naturales se
+      13               Si                                      Nombres/        documento, será obligatorio                 Hasta 1500       Alfanumérico
+                                debe consignar los datos en
+                                                               Razón Social    consignar la información en este
+                                el siguiente orden: Apellido
+                                                                               campo.
+                                paterno, apellido materno y
+                                                                               e. campo 10 <> vacío.
+                                nombres
+                                                                               En cuyos casos será opcional.
+                                                                               2. En caso de personas naturales
+                                                                               se debe consignar los datos
+                                                                               en el siguiente orden: Apellido
+                                                                               paterno, apellido materno y nombre
+                                                                               completo.
+                                                                               3. Si no se consigna en el
+                                                                               comprobante de pago, el campo
+                                                                               debe estar vacío.
+
+
+
+
+      (…)
+
+
+
+
+                                                                             1. Obligatorio.
+                                                                             2. Aplicable solo si campo 7 = '07' o
+                                                                             '08' o '87' o '88'.
+                                                                             3. Formato DD/MM/AAAA.
+                                                                             4. Menor o igual al periodo
+                                                                             señalado en el campo 3.
+                                Fecha de emisión del
+                                                                             En caso de nota que modiﬁca
+                                comprobante de pago o          Fecha Emisión
+      29               Si                                                    uno o más comprobantes de                           10         Alfanumérico
+                                documento original que se      Doc Modiﬁcado
+                                                                             pago, no se valida parámetro del
+                                modiﬁca
+                                                                             campo(longitud). Deberá consignar
+                                                                             la totalidad de fechas vinculadas
+                                                                             al (a los) documento(s) original(es)
+                                                                             que se modiﬁca(n) separados por
+                                                                             una coma (,) en forma correlativa.
+                                                                             En este caso: longitud (1500).
+14                                                       NORMAS LEGALES                             Viernes 30 de junio de 2023 /       El Peruano
+
+                     Parte del
+  N° del campo (7)                     Descripción (2)        Nemotécnico            Regla Global (2)               Longitud (2)    Formato (2)
+                     Registro
+                                                                            1. Obligatorio.
+                                                                            2. Aplicable solo si campo 7 = '07' o
+                                                                            '08' o '87' o '88'
+                                                                            En caso de nota que modiﬁca
+                                                                            uno o más comprobantes de
+                                                                            pago no se valida parámetro
+                                                                            del campo(longitud). Deberá
+                                 Tipo del comprobante de pago Tipo CP       consignar la totalidad de tipos de
+        30              Si                                                                                               2           Numérico
+                                 que se modiﬁca               Modiﬁcado     comprobante vinculados al (a los)
+                                                                            documento(s) original(es) que se
+                                                                            modiﬁca(n) separados por una
+                                                                            coma (,) en forma correlativa.
+                                                                            En este caso: longitud (1500).
+                                                                            3. Validar con tabla de
+                                                                            Comprobantes de pago (tabla 3)
+                                                                            del Anexo N.° 1.
+                                                                            1. Obligatorio.
+                                                                            2. Aplicable solo si campo 7 = '07' o
+                                                                            '08' o '87' o '88'
+                                                                            En caso de nota que modiﬁca
+                                                                            uno o más comprobantes de
+                                                                            pago no se valida parámetro del
+                                                                            campo(longitud). Deberá consignar
+                                 Número de serie del
+                                                              Serie CP      la totalidad de números de series
+        31              Si       comprobante de pago que se                                                          Hasta 20       Alfanumérico
+                                                              Modiﬁcado     vinculados al (a los) documento(s)
+                                 modiﬁca
+                                                                            original(es) que se modiﬁca(n)
+                                                                            separados por una coma (,) en
+                                                                            forma correlativa.
+                                                                            En este caso: longitud (1500).
+                                                                            3. Validar con tabla de
+                                                                            Comprobantes de pago (tabla 3)
+                                                                            del Anexo N.° 1.
+                                                                            1. Obligatorio.
+                                                                            2. Aplicable solo si campo 7 = '07' o
+                                                                            '08' o '87' o '88'
+                                                                            En caso de nota que modiﬁca
+                                                                            uno o más comprobantes de
+                                                                            pago no se valida parámetro
+                                                                            del campo(longitud). Deberá
+                                 Número del comprobante de    Nro CP        consignar la totalidad de números
+        32              Si                                                                                           Hasta 20       Alfanumérico
+                                 pago que se modiﬁca          Modiﬁcado     de comprobantes vinculados al (a
+                                                                            los) documento(s) original(es) que
+                                                                            se modiﬁca(n) separados por una
+                                                                            coma (,) en forma correlativa.
+                                                                            En este caso: longitud (1500).
+                                                                            3. Validar con tabla de
+                                                                            Comprobantes de pago (tabla 3)
+                                                                            del Anexo N.° 1.
+        (…)
+
+
+Nota:
+
+(…)
+
+2. Describe las reglas que se cumplen para la elaboración de la propuesta del RVIE y para el archivo que el contribuyente
+use cuando complemente la propuesta del RVIE.
+
+3. El tipo de cambio que se utilizará en la propuesta del RVIE, corresponde al tipo de cambio venta de la fecha de emisión
+del comprobante, salvo para el documento 14 emitidas por contribuyentes que tengan como actividades distintas a las de
+telecomunicaciones, en cuyo caso se utiliza la fecha de vencimiento (tipo de cambio referencial, que podrá ser modiﬁcado
+por el deudor tributario). Asimismo, se precisa que, para el caso de la propuesta de las notas de crédito y débito se utiliza
+el tipo de cambio a la fecha de emisión del documento que modiﬁca y fecha de vencimiento para las notas de crédito y
+débito que modiﬁcan al documento tipo 14 emitidas por contribuyentes que tengan como actividades distintas a las de
+telecomunicaciones.
+
+Lo señalado en el párrafo anterior es aplicable a partir del 1 de octubre de 2023.
+En caso el generador complemente la propuesta del RVIE, deberá utilizar el tipo de cambio conforme a las normas sobre
+la materia.
+
+4. Los comprobantes de pago electrónicos con baja comunicada a la Administración, así como los comprobantes de pago
+físicos y/o documentos anulados deberán anotarse en cero.
+
+En el caso de los campos 22 y 23, esta nota es aplicable solo si el campo 7 es distinto al tipo 49.
+    El Peruano / Viernes 30 de junio de 2023                NORMAS LEGALES                                                                     15
+5. Los campos 28 y 33, pueden complementarse en la propuesta, es decir, se puede:
+
+- Incluir información en los campos 28 y 33.
+- Modiﬁcar información en el campo 28, aplicable a partir del 01 de octubre de 2023.
+
+6. Sin perjuicio de la oportunidad en que se propongan los comprobantes de pago tipo 14, el generador realizará la
+anotación conforme a las normas sobre la materia.
+
+7. Cuando el generador complementa la Propuesta del RVIE deberá remitir información de los campos del 1 al 33 y del
+41 al 57. La estructura no considerará los campos del 34 al 40; es decir será una estructura de 50 campos.
+
+8. Las excepciones señaladas solo serán aplicables cuando los comprobantes de pago y las notas vinculadas sean
+emitidos de manera física.
+
+9. Cuando se solicita validar la información con la tabla 5 del Anexo N.° 1, se debe evaluar las “Reglas Generales” de la
+referida tabla."
+
+
+                                                                     ANEXO III
+
+      "ANEXO N.º 3: ESTRUCTURA Y REGLAS PARA ELABORAR EL ARCHIVO PLANO QUE PERMITA LA
+               COMPARACIÓN CON LA PROPUESTA RVIE O REEMPLAZAR ESA ÚLTIMA (1)
+
+                Parte del
+   Campo (4)                          Descripción           Nemotécnico             Regla Global (2)             Longitud (2)   Formato (2)
+                Registro
+     (…)
+
+                            Apellidos y nombres,
+                                                                          1. Los apellidos y nombres,
+                            denominación o razón social,
+                                                                          denominación o razón social deben
+      2            Si       del generador o del sujeto    ID                                                     Hasta 1500     Alfanumérico
+                                                                          pertenecer al RUC del campo 1.
+                            obligado a llevar el Registro
+                                                                          2. Obligatorio.
+                            de Ventas e Ingresos.
+
+                                                                          1. Obligatorio.
+                                                                          2. El formato debe ser YYYYMM.
+                                                                          3. 01<=MM<=12.
+                                                                          4. Corresponde al periodo del RVIE
+                                                                          a generar.
+      3            Si       Periodo                        Periodo                                                    6          Numérico
+                                                                          5.- Si el campo 7 (Tipo de CP) =
+                                                                          "14", el generador consignará como
+                                                                          periodo el mes y año de acuerdo a
+                                                                          lo señalado en la normativa del IGV
+                                                                          correspondiente.
+
+     (…)
+
+                            Tipo de comprobante de
+                                                                          1. Obligatorio.
+                            pago o documento, de
+      7            Si                                     Tipo CP/Doc.    2. Validar con tabla de Comprobantes        2         Alfanumérico
+                            acuerdo con lo indicado en la
+                                                                          de pago (tabla 3) del Anexo N.° 1.
+                            Tabla 3 del Anexo N.° 1
+
+                            Número de serie del                           1.Validar con tabla de comprobantes
+                            comprobante de pago ó de la                   de pago (tabla 3) del Anexo N.° 1.
+      8            Si                                   Serie del CDP                                             Hasta 20      Alfanumérico
+                            máquina registradora según                    2. Aplicar Regla General por tipo de
+                            corresponda                                   doc. Tabla 5 del Anexo N.°1 (6).
+
+                            Número del comprobante
+                            de pago o documento.
+                            Para efectos del registro
+                            de tickets o cintas emitidos
+                            por máquinas registradoras
+                            u otros comprobantes de
+                            pago o documentos que no
+                            otorguen derecho a crédito
+                            ﬁscal de acuerdo a las
+                            normas de Comprobantes                       1. Validar con tabla de Comprobantes
+                            de Pago y opten por anotar     Nro CP o Doc. de pago (tabla 3) del Anexo N.° 1.
+      9            Si                                                                                             Hasta 20      Alfanumérico
+                            el importe total de las          Nro Inicial 2. Aplicar Regla General por tipo de
+                            operaciones realizadas                       doc.Tabla 5 del Anexo N.° 1.(6)
+                            por día y por máquina
+                            registradora, registrar el
+                            número inicial.
+                            Tratándose del IVAP, el
+                            usuario del servicio de
+                            pilado anotará la constancia
+                            de depósito por los retiros
+                            de bienes que hubiere
+                            efectuado
+16                                                      NORMAS LEGALES                                      Viernes 30 de junio de 2023 /     El Peruano
+
+             Parte del
+ Campo (4)                       Descripción           Nemotécnico               Regla Global (2)                    Longitud (2)      Formato (2)
+             Registro
+
+
+                         1. Para efectos de comparar
+                         o reemplazar la propuesta
+                         se permite el registro de
+                         tickets o cintas emitidos
+                         por máquinas registradoras
+                         u otros comprobantes de
+                         pago o documentos que no
+                                                                     1. Solo se permite cuando el tipo de
+                         otorguen derecho a crédito
+                                                                     documento = '00','03','12',"13", "18",
+                         ﬁscal de acuerdo a las
+                                                                     "87" y "88".
+                         normas de Comprobantes
+                                                                     2. No se registra nada en este campo
+                         de Pago y opten por anotar
+                                                                     cuando el tipo de documento es <>
+                         el importe total de las
+                                                                     '00','03','12',"13", "18","87" y "88".
+                         operaciones realizadas
+     10                                              Nro ﬁnal        3. A partir del 1 de julio de 2016, para         Hasta 20         Alfanumérico
+                         por día y por máquina
+                                                                     el tipo de documento = '03' se deberá
+                         registradora, registrar el
+                                                                     registrar de manera detallada cuando
+                         número ﬁnal
+                                                                     el monto total sea igual o mayor a
+                                                                     S/ 700.00.
+                         2. Se permite la
+                                                                     4. Validar con tabla de Comprobantes
+                         consolidación diaria de:
+                                                                     de pago (tabla 3) del Anexo N.° 1.
+                         - Boletas de Venta
+                         - Documentos tipo “18”,
+                         siempre que dichos
+                         documentos no otorguen
+                         derecho a crédito ﬁscal,
+                         a partir del 01 de octubre
+                         de 2023
+
+
+
+
+                                                                     1.Obligatorio (5), excepto cuando:
+                                                                     a. campo 7 = '00','05','06','07','08','1
+                                                                     1','12','13','14','15','16','18','19','23','
+                                                                     28','30','34','35','36','37','55','56','64'
+                                                                     , '87' y '88' o
+                                                                     b. campo 7 = '07', '08', '87' y '88' y
+                                                                     campo 30= '03', '12', '13', '14' y '36'.
+                                                                     c. campo 14> 0.00.
+                                                                     d. campo 26 < 700.00 y campo 7 =
+                         Tipo de Documento de         Tipo Doc
+     11         Si                                                   '03' y'12'. En caso estos documentos                 1            Alfanumérico
+                         Identidad del cliente        Identidad
+                                                                     tengan información de identiﬁcación
+                                                                     del tipo de documento, será
+                                                                     obligatorio consignar la información
+                                                                     en este campo.
+                                                                     e. campo 10 <> vacío.
+                                                                     En cuyos casos será opcional y no se
+                                                                     aceptará el valor 0.
+                                                                     2. Validar con parámetro tabla 1 y 5
+                                                                     del Anexo N.° 1.
+
+
+
+
+                                                                     1. Obligatorio (5) excepto cuando:
+                                                                     a. campo 7 = '00','05','06','07','08','1
+                                                                     1','12','13','14','15','16','18','19','23','2
+                                                                     8','30','34','35','36','37','55','56','64','8
+                                                                     7' y '88' o
+                                                                     b. campo 7 = '07', '08', '87', '88' y
+                                                                     campo 30 = '03', '12', '13', '14' y '36'
+                                                                     c. campo 14 > 0.00.
+                         Número de RUC o                             d. campo 26 < 700.00 y campo 7=
+                                                    Nro Doc
+     12         Si       Documento de Identidad del                  '03' y '12'. En caso estos documentos            Hasta 15         Alfanumérico
+                                                    Identidad
+                         cliente                                     tengan información de identiﬁcación
+                                                                     del tipo de documento, será
+                                                                     obligatorio consignar la información
+                                                                     en este campo.
+                                                                     e. campo 10 <> vacío.
+                                                                     En cuyos casos será opcional.
+                                                                     2. Reglas Generales de la
+                                                                     información del RVIE, ver tabla 5 del
+                                                                     Anexo N.° 1.
+ El Peruano / Viernes 30 de junio de 2023              NORMAS LEGALES                                                                          17
+             Parte del
+Campo (4)                       Descripción           Nemotécnico               Regla Global (2)               Longitud (2)     Formato (2)
+             Registro
+
+                                                                     1. Obligatorio (5) excepto cuando:
+                                                                     a. campo 7 = '00','05','06','07','08','1
+                                                                     1','12','13','14','15','16','18','19','23','2
+                                                                     8','30','34','35','36','37','55','56','64','8
+                                                                     7' y '88' o
+                                                                     b. campo 7 = '07', '08', '87', '88' y
+                                                                     campo 30 = '03', '12', '13', '14' y '36'
+                                                                     c. campo 14 > 0.00.
+                         Apellidos y nombres,
+                                                                     d. campo 26 < 700.00 y campo 7=
+                         denominación o razón
+                                                                     '03' y '12'. En caso estos documentos
+                         social del cliente. En caso
+                                                      Apellidos      tengan información de identiﬁcación
+                         de personas naturales se
+   13           Si                                    Nombres/       del tipo de documento, será                   Hasta 1500   Alfanumérico
+                         debe consignar los datos en
+                                                      Razón Social   obligatorio consignar la información
+                         el siguiente orden: Apellido
+                                                                     en este campo.
+                         paterno, apellido materno y
+                                                                     e. campo 10 <> vacío.
+                         nombres
+                                                                     En cuyos casos será opcional.
+                                                                     2. En caso de personas naturales
+                                                                     se debe consignar los datos en el
+                                                                     siguiente orden: Apellido paterno,
+                                                                     apellido materno y nombre completo.
+                                                                     3. Si no se consigna en el
+                                                                     comprobante de pago, el campo debe
+                                                                     estar vacío.
+
+
+  (…)
+
+
+                                                                   1. Obligatorio.
+                                                                   2. Aplicable solo si campo 7 = '07' o
+                                                                   '08' o '87' o '88'
+                                                                   3. Formato DD/MM/AAAA
+                                                                   4. Menor o igual al periodo señalado
+                                                                   en el campo 3.
+                         Fecha de emisión del
+                                                                   En caso de nota que modiﬁca uno
+                         comprobante de pago o       Fecha Emisión
+   29           Si                                                 o más comprobantes de pago no se                  10         Alfanumérico
+                         documento original que se   Doc Modiﬁcado
+                                                                   valida parámetro del campo(longitud).
+                         modiﬁca
+                                                                   Deberá consignar la totalidad
+                                                                   de fechas vinculados al(a los)
+                                                                   documento(s) original(es) que se
+                                                                   modiﬁca(n) separados por una coma
+                                                                   (,) en forma correlativa.
+                                                                   En este caso: longitud (1500).
+
+
+                                                                     1. Obligatorio.
+                                                                     2. Aplicable solo si campo 7 = '07' o
+                                                                     '08' o '87' o '88'
+                                                                     En caso de nota que modiﬁca uno
+                                                                     o más comprobantes de pago no se
+                                                                     valida parámetro del campo(longitud).
+                         Tipo del comprobante de     Tipo CP         Deberá consignar la totalidad de tipos
+   30           Si                                                                                                    2         Alfanumérico
+                         pago que se modiﬁca         Modiﬁcado       de comprobantes vinculados al(a
+                                                                     los) documento(s) original(es) que se
+                                                                     modiﬁca(n) separados por una coma
+                                                                     (,) en forma correlativa.
+                                                                     En este caso: longitud (1500).
+                                                                     3. Validar con tabla de Comprobantes
+                                                                     de pago (tabla 3) del Anexo N.° 1.
+
+
+                                                                     1. Obligatorio.
+                                                                     2. Aplicable solo si campo 7 = '07' o
+                                                                     '08' o '87' o '88'
+                                                                     En caso de nota que modiﬁca uno
+                                                                     o más comprobantes de pago no se
+                                                                     valida parámetro del campo(longitud).
+                         Número de serie del
+                                                    Serie CP         Deberá consignar la totalidad de
+   31           Si       comprobante de pago que se                                                              Hasta 20       Alfanumérico
+                                                    Modiﬁcado        números de series vinculados al(a
+                         modiﬁca
+                                                                     los) documento(s) original(es) que se
+                                                                     modiﬁca(n) separados por una coma
+                                                                     (,) en forma correlativa.
+                                                                     En este caso: longitud (1500).
+                                                                     3. Validar con tabla de Comprobantes
+                                                                     de pago (tabla 3) del Anexo N.° 1.
+18                                                             NORMAS LEGALES                               Viernes 30 de junio de 2023 /       El Peruano
+
+                  Parte del
+     Campo (4)                        Descripción            Nemotécnico              Regla Global (2)              Longitud (2)         Formato (2)
+                  Registro
+                                                                            1. Obligatorio.
+                                                                            2. Aplicable solo si campo 7 = '07' o
+                                                                            '08' o '87' o '88'
+                                                                            En caso de nota que modiﬁca uno
+                                                                            o más comprobantes de pago no se
+                                                                            valida parámetro del campo(longitud).
+                               Número del comprobante de Nro CP             Deberá consignar la totalidad de
+        32           Si                                                                                              Hasta 20            Alfanumérico
+                               pago que se modiﬁca       Modiﬁcado          números de comprobantes vinculados
+                                                                            al(a los) documento(s) original(es)
+                                                                            que se modiﬁca(n) separados por una
+                                                                            coma (,) en forma correlativa.
+                                                                            En este caso: longitud (1500).
+                                                                            3. Validar con tabla de Comprobantes
+                                                                            de pago (tabla 3) del Anexo N.° 1.
+        (…)
+
+
+Nota:
+
+1. Este anexo debe ser utilizado por el generador del RVIE, a ﬁn de construir su RVIE, en caso de reemplazar la propuesta
+del RVIE construida por SUNAT o realizar la comparación entre la propuesta del RVIE y el archivo del generador. En la
+construcción del RVIE elaborado por el generador, se deben cumplir las reglas establecidas en el presente anexo.
+
+(…)
+
+3. Los comprobantes de pago electrónicos con baja comunicada a la Administración, así como los comprobantes de pago
+y/o documentos físicos anulados deberán anotarse en cero. En el caso de los campos 22 y 23, esta nota es aplicable solo
+si el campo 7 es un comprobante de pago distinto al tipo 49.
+
+4. Los campos no informados por el contribuyente del 34 al 40 son completados automáticamente a partir de la información
+que obra en los sistemas informáticos de la Administración.
+
+5. Las excepciones señaladas solo serán aplicables cuando los comprobantes de pago y las notas vinculadas sean
+emitidos de manera física.
+
+6.Cuando se solicita validar la información con la tabla 5 del Anexo N.° 1, se debe evaluar las “Reglas Generales” de la
+referida tabla."
+
+
+                                                                       ANEXO IV
+
+             "ANEXO N.º 4: ESTRUCTURA Y REGLAS PARA ELABORAR EL ARCHIVO PLANO CON AJUSTES
+                             POSTERIORES RESPECTO DE LO ANOTADO EN EL RVIE (1)
+
+                    Parte del
+     Campo (4)                         Descripción (2)       Nemotécnico                 Regla Global (2)                 Longitud (2)      Formato (2)
+                    Registro
+
+        (…)
+
+                                  Apellidos y nombres,
+                                  denominación o razón                     1. Los apellidos y nombres, denominación
+                                  social, del generador o del              o razón social deben pertenecer al RUC del
+         2                Si                                  ID                                                           Hasta 1500       Alfanumérico
+                                  sujeto obligado a llevar                 campo 1.
+                                  el Registro de Ventas e                  2. Obligatorio.
+                                  Ingresos
+
+                                                                           1. Obligatorio.
+                                                                           2. El formato debe ser YYYYMM
+                                                                           3. 01<=MM<=12.
+                                                                           4. Corresponde al periodo del RVIE a
+                                                             Periodo
+         3                Si      Periodo                                  modiﬁcar.                                            6            Numérico
+                                                                           5. Si el campo 7 (Tipo de CP) = "14", el
+                                                                           generador consignará como periodo el mes y
+                                                                           año de acuerdo a lo señalado en la normativa
+                                                                           del IGV correspondiente.
+
+        (…)
+
+                                  Tipo de comprobante de
+                                  pago o documento, de                    1. Obligatorio.
+         7                Si      acuerdo con lo indicado    Tipo CP/Doc. 2. Validar con tabla de Comprobantes de               2           Alfanumérico
+                                  en la Tabla 3 del Anexo                 pago (tabla 3) del Anexo N.° 1.
+                                  N.° 1
+ El Peruano / Viernes 30 de junio de 2023              NORMAS LEGALES                                                                                      19
+               Parte del
+Campo (4)                       Descripción (2)       Nemotécnico                     Regla Global (2)                       Longitud (2)   Formato (2)
+               Registro
+
+                           Número de serie
+                                                                      1. Validar con tabla de comprobantes de pago
+                           del comprobante de
+                                                                      (tabla 3) del Anexo N.° 1.
+   8              Si       pago ó de la máquina       Serie del CDP                                                           Hasta 20      Alfanumérico
+                                                                      2. Aplicar Regla General por tipo de doc. tabla
+                           registradora según
+                                                                      5 del Anexo N.° 1 (6).
+                           corresponda
+
+                           Número del comprobante
+                           de pago o documento.
+                           Para efectos del registro
+                           de tickets o cintas
+                           emitidos por máquinas
+                           registradoras u otros
+                           comprobantes de pago
+                           o documentos que
+                           no otorguen derecho
+                           a crédito ﬁscal de
+                           acuerdo a las normas                     1. Validar con tabla de Comprobantes de
+                           de Comprobantes de         Nro CP o Doc. pago (tabla 3) del Anexo N.° 1
+   9              Si                                                                                                          Hasta 20      Alfanumérico
+                           Pago y opten por anotar Nro Inicial      2. Aplicar Regla General por tipo de doc.
+                           el importe total de las                  Tabla 5 del Anexo N.° 1 (6).
+                           operaciones realizadas
+                           por día y por máquina
+                           registradora, registrar el
+                           número inicial.
+                           Tratándose del IVAP,
+                           el usuario del servicio
+                           de pilado anotará la
+                           constancia de depósito
+                           por los retiros de bienes
+                           que hubiere efectuado
+
+                           1.Para efectos de los
+                           ajustes posteriores
+                           se permite el registro
+                           de tickets o cintas
+                           emitidos por máquinas
+                           registradoras u otros
+                           comprobantes de pago
+                           o documentos que
+                                                                      1. Solo se permite cuando el tipo de
+                           no otorguen derecho
+                                                                      documento = '00','03','12',"13", "18", "87" y
+                           a crédito ﬁscal de
+                                                                      "88".
+                           acuerdo a las normas
+                                                                      2. No se registra nada en este campo cuando
+                           de Comprobantes de
+                                                                      el tipo de documento es <> '00','03','12',"13",
+                           Pago y opten por anotar
+                                                                      "18","87" y "88".
+   10             Si       el importe total de las    Nro. Final                                                              Hasta 20      Alfanumérico
+                                                                      3. A partir del 1 de julio de 2016, para el tipo
+                           operaciones realizadas
+                                                                      de documento = '03' se deberá registrar de
+                           por día y por máquina
+                                                                      manera detallada cuando el monto total sea
+                           registradora, registrar el
+                                                                      igual o mayor a S/ 700.00.
+                           número ﬁnal.
+                                                                      4. Validar con tabla de Comprobantes de
+                           2. Se permite la
+                                                                      pago (tabla 3) del Anexo N.° 1.
+                           consolidación diaria de:
+                           - Boletas de Venta
+                           - Documentos tipo “18”,
+                           siempre que dichos
+                           documentos no otorguen
+                           derecho a crédito ﬁscal,
+                           a partir del 01 de octubre
+                           de 2023
+
+                                                                      1. Obligatorio (5), excepto cuando:
+                                                                      a. campo 7 = '00','05','06','07','08','11','12'
+                                                                      ,'13','14','15','16','18', '19','23','28','30','34',
+                                                                      '35','36','37','55','56','64', '87' y '88' o
+                                                                      b. campo 7 = '07', '08', '87' y '88' y campo 30=
+                                                                      '03', '12', '13', '14' y '36'.
+                                                                      c. campo 14> 0.00.
+                                                                      d. campo 26 < 700.00 y campo 7 = '03'
+                           Tipo de Documento de       Tipo Doc
+   11             Si                                                  y'12'. En caso estos documentos tengan                      1         Alfanumérico
+                           Identidad del cliente      Identidad
+                                                                      información de identiﬁcación del tipo de
+                                                                      documento, será obligatorio consignar la
+                                                                      información en este campo
+                                                                      e. campo 10 <> vacío.
+                                                                      En cuyos casos será opcional y no se
+                                                                      aceptará el valor 0.
+                                                                      2. Validar con parámetro tabla 1 y 5 del Anexo
+                                                                      N.° 1.
+20                                                           NORMAS LEGALES                                           Viernes 30 de junio de 2023 /              El Peruano
+
+                 Parte del
+     Campo (4)                    Descripción (2)          Nemotécnico                        Regla Global (2)                           Longitud (2)        Formato (2)
+                 Registro
+
+                                                                             1. Obligatorio (5) excepto cuando:
+                                                                            a. campo 7 = '00','05','06','07','08','11','12','13',
+                                                                            '14','15','16','18', '19','23','28','30','34', '35','36','
+                                                                            37','55','56','64','87' y '88' o
+                                                                            b. campo 7 = '07', '08', '87' y '88' y campo 30
+                                                                            = '03', '12', '13', '14' y '36'.
+                                                                            c. campo 14 > 0.00
+                             Número de RUC o
+                                                           Nro Doc          d. campo 26 < 700.00 y campo 7 = '03'
+        12          Si       Documento de Identidad                                                                                       Hasta 15          Alfanumérico
+                                                           Identidad        y '12'. En caso estos documentos tengan
+                             del cliente
+                                                                            información de identiﬁcación del tipo de
+                                                                            documento, será obligatorio consignar la
+                                                                            información en este campo.
+                                                                            e. campo 10 <> vacío.
+                                                                            En cuyos casos será opcional.
+                                                                            2. Reglas Generales de la información del
+                                                                            RVIE, ver tabla 5 del Anexo N.° 1
+
+
+
+                                                                      1. Obligatorio (5) excepto cuando:
+                                                                      a. campo 7 = '00','05','06','07','08','11','12','13',
+                                                                      '14','15','16','18', '19','23','28','30','34', '35','36','
+                                                                      37','55','56','64','87' y '88' o
+                                                                      b. campo 7 = '07', '08', '87', '88' y campo 30 =
+                                                                      '03', '12', '13', '14' y '36'.
+                             Apellidos y nombres,                     c. campo 14 > 0.00.
+                             denominación o razón                     d. campo 26 < 700.00 y campo 7= '03'
+                             social del cliente. En caso              y '12'. En caso estos documentos tengan
+                                                         Apellidos
+                             de personas naturales se                 información de identiﬁcación del tipo de
+        13          Si                                   Nombres/                                                                        Hasta 1500         Alfanumérico
+                             debe consignar los datos                 documento, será obligatorio consignar la
+                                                         Razón Social
+                             en el siguiente orden:                   información en este campo.
+                             Apellido paterno, apellido               e. campo 10 <> vacío.
+                             materno y nombres                        En cuyos casos será opcional.
+                                                                      2. En caso de personas naturales se debe
+                                                                      consignar los datos en el siguiente orden:
+                                                                      Apellido paterno, apellido materno y nombre
+                                                                      completo.
+                                                                      3. Si no se consigna en el comprobante de
+                                                                      pago, el campo debe estar vacío.
+
+
+
+       (…)
+
+
+
+                                                                   1. Obligatorio.
+                                                                   2.Aplicable solo si campo 7 = '07' o '08' o
+                                                                   '87' o '88'.
+                                                                   3. Formato DD/MM/AAAA
+                                                                   4. Menor o igual al periodo señalado en el
+                             Fecha de emisión del                  campo 3.
+                                                       Fecha
+                             comprobante de pago o                 En caso de nota que modiﬁca uno o
+        29          Si                                 Emisión Doc                                                                           10         Alfanumérico
+                             documento original que se             más comprobantes de pago no se valida
+                                                       Modiﬁcado
+                             modiﬁca                               parámetro del campo(longitud). Deberá
+                                                                   consignar la totalidad de Fechas vinculados
+                                                                   al(a los) documento(s) original(es) que se
+                                                                   modiﬁca(n) separados por una coma (,) en
+                                                                   forma correlativa.
+                                                                   En este caso: longitud (1500).
+
+
+
+                                                                            1. Obligatorio.
+                                                                            2. Aplicable solo si campo 7 = '07' o '08' o
+                                                                            '87' o '88'
+                                                                            En caso de nota que modiﬁca uno
+                                                                            o más comprobantes de pago no se
+                                                                            valida parámetro del campo(longitud).
+                             Tipo del comprobante de Tipo CP                Deberá consignar la totalidad de tipos
+        30          Si                                                                                                                        2               Numérico
+                             pago que se modiﬁca     Modiﬁcado              de comprobantes vinculados al(a los)
+                                                                            documento(s) original(es) que se modiﬁca(n)
+                                                                            separados por una coma (,) en forma
+                                                                            correlativa.
+                                                                            En este caso: longitud (1500).
+                                                                            3. Validar con tabla de Comprobantes de
+                                                                            pago (tabla 3) del Anexo N.° 1.
+      El Peruano / Viernes 30 de junio de 2023          NORMAS LEGALES                                                                                21
+                    Parte del
+   Campo (4)                        Descripción (2)    Nemotécnico                  Regla Global (2)                    Longitud (2)   Formato (2)
+                    Registro
+
+
+                                                                     1. Obligatorio.
+                                                                     2. Aplicable solo si campo 7 = '07' o '08' o
+                                                                     '87' o '88'
+                                                                     En caso de nota que modiﬁca uno o
+                                                                     más comprobantes de pago no se valida
+                                Número de serie del                  parámetro del campo(longitud). Deberá
+                                                        Serie CP
+        31             Si       comprobante de pago que              consignar la totalidad de números de series         Hasta 20      Alfanumérico
+                                                        Modiﬁcado
+                                se modiﬁca                           vinculados al(a los) documento(s) original(es)
+                                                                     que se modiﬁca(n) separados por una coma
+                                                                     (,) en forma correlativa.
+                                                                     En este caso: longitud (1500).
+                                                                     3. Validar con tabla de Comprobantes de
+                                                                     pago (tabla 3) del Anexo N.° 1.
+
+
+
+                                                                     1. Obligatorio.
+                                                                     2. Aplicable solo si campo 7 = '07' o '08' o
+                                                                     '87' o '88'.
+                                                                     En caso de nota que modiﬁca uno o
+                                                                     más comprobantes de pago no se valida
+                                                                     parámetro del campo(longitud). Deberá
+                                Número del comprobante Nro CP        consignar la totalidad de números de
+        32             Si                                                                                                Hasta 20      Alfanumérico
+                                de pago que se modiﬁca Modiﬁcado     comprobantes vinculados al(a los)
+                                                                     documento(s) original(es) que se modiﬁca(n)
+                                                                     separados por una coma (,) en forma
+                                                                     correlativa.
+                                                                     En este caso: longitud (1500)
+                                                                     3. Validar con tabla de Comprobantes de
+                                                                     pago (tabla 3) del Anexo N.° 1.
+
+
+
+        (…)
+
+
+
+                                                                     1.Obligatorio, siempre y cuando se
+                                                                     esté efectuando un ajuste respecto de
+                                                                     un comprobante de pago o documento
+        41             Si         CAR CP a modiﬁcar      CAR Orig                                                           27         Alfanumérico
+                                                                     previamente anotado.
+                                                                     2.CAR Corresponde a comprobante de pago
+                                                                     o documento anotado objeto de ajuste.
+
+
+
+                                                                     1. En caso de no tener la necesidad de
+                                    Campos de libre
+      42 al 57         SI                                  CLU       utilizarlos, no incluya ni la información ni los    hasta 200        Texto
+                                      utilización
+                                                                     palotes.
+
+
+
+
+Nota:
+
+1. Los ajustes posteriores que el generador vaya a realizar, deberán cumplir con el procedimiento indicado en la tabla 8.
+Se utiliza un archivo plano por cada periodo generado respecto del cual se realice ajustes posteriores.
+
+(…)
+
+3. Los comprobantes de pago electrónicos con baja comunicada a la Administración, así como los comprobantes de pago
+y/o documentos físicos anulados deberán anotarse en cero.
+
+En el caso de los campos 22 y 23, esta nota es aplicable solo si el campo 7 es un comprobante de pago distinto al tipo 49.
+
+4. Los campos no informados por el contribuyente del 34 al 40 son completados automáticamente a partir de la información
+que obra en los sistemas informáticos de la Administración.
+
+5. Las excepciones señaladas solo serán aplicables cuando los comprobantes de pago y las notas vinculadas sean
+emitidos de manera física.
+
+6. Cuando se solicita validar la información con la tabla 5 del Anexo 1, se debe evaluar las “Reglas Generales” de la
+referida tabla."
+22                                                          NORMAS LEGALES                            Viernes 30 de junio de 2023 /          El Peruano
+
+                                                                       ANEXO V
+
+     "ANEXO N.º 5 - ESTRUCTURA Y REGLAS PARA ELABORAR EL ARCHIVO PLANO CON AJUSTES
+POSTERIORES RESPECTO A LO ANOTADO EN REGISTROS DE VENTAS E INGRESOS DISTINTOS AL RVIE (1)
+
+5.1 REGISTRO DE VENTAS E INGRESOS
+
+
+                                   Llave
+      Campo    Long. Obligatorio                          Descripción                      Formato                         Observaciones
+                                   única
+
+
+                                                                                                            1. Obligatorio
+                                                                                                            2. Validar formato AAAAMM00
+                                                                                                            3. 01 <= MM <= 12
+                                                                                           Numérico         4. Menor al último periodo generado y
+        1        8       Si         Si     Periodo de ajuste
+                                                                                                            anterior al periodo de la obligatoriedad de
+                                                                                                            llevar su RVIE en el Módulo RVIE.
+                                                                                                            5. Si periodo es menor al último periodo
+                                                                                                            generado, entonces campo 35 = '8' y '9'
+
+
+       (…)
+
+
+                                                                                                            1. Obligatorio
+                                                                                                            2. Menor último periodo generado y anterior
+                                           Fecha de emisión del Comprobante de            DD/MM/AAAA
+        4       10       No         No                                                                      al periodo de la obligatoriedad de llevar su
+                                           Pago
+                                                                                                            RVIE en el Módulo RVIE.
+                                                                                                            3. Igual al periodo señalado en el campo 1.
+
+
+                                                                                                            1. Solo es obligatorio cuando el campo 6 =
+                                                                                                            '14' y campo 35= '8', '9'
+                                           Fecha de Vencimiento o Fecha de Pago                             2. Menor último periodo generado y anterior
+        5       10       No         No                                                    DD/MM/AAAA
+                                           (2)                                                              al periodo de la obligatoriedad de llevar su
+                                                                                                            RVIE en el Módulo RVIE.
+                                                                                                            3. Igual al periodo señalado en el campo 1.
+
+
+       (…)
+
+
+                                           1. Para efectos del registro de tickets                          1. Solo se permite cuando el tipo de
+                                           o cintas emitidos por máquinas                                   documento =
+                                           registradoras que no otorguen derecho                            '00', '03','12', "13", "18", "87" y "88".
+                                           a crédito ﬁscal de acuerdo a las normas                          2. No se registra nada en este campo
+                                           de Comprobantes de Pago y opten por                              cuando el
+                                           anotar el importe total de las operaciones                       tipo de documento es <> '00', '03','12', "13",
+               Hasta                       realizadas por día y por máquina                Numérico         "18",
+        9                No         No
+                20                         registradora, registrar el número ﬁnal (3).                      "87" y "88".
+                                           2. Se permite la consolidación diaria de:                        3. A partir del 1 de julio de 2016, para tipo
+                                           - Boletas de Venta                                               documento = '03' se deberá registrar de
+                                           - Documentos tipo “18”, siempre que                              manera
+                                           dichos documentos no otorguen derecho                            detallada cuando el monto total sea igual
+                                           a crédito ﬁscal, a partir del 01 del octubre                     o mayor
+                                           de 2023                                                          a S/ 700.00
+
+
+       (…)
+
+
+
+(1) Ajustes posteriores de periodos anteriores a la obligatoriedad de llevar su Registro de Ventas e Ingresos en el Módulo
+RVIE. Se puede utilizar un archivo plano por cada periodo generado respecto del cual se realice ajustes posteriores.
+Adicionalmente, a partir del 01 de octubre de 2023, en un mismo archivo plano podrán realizarse ajustes posteriores a
+varios periodos.
+
+(…)
+
+(3) También podrá efectuarse la anotación de manera consolidada cuando ésta corresponda a alguna de las
+situaciones previstas en el inciso e) del artículo 8 de la Resolución de Superintendencia N.° 286-2009/SUNAT
+respecto de operaciones por las que se emitieron comprobantes de pago que no otorgan derecho a crédito ﬁscal
+diferentes a los tickets o cintas emitidos por máquinas registradoras y siempre que por las mencionadas operaciones
+se lleve un sistema de control computarizado que mantenga la información detallada y que permita efectuar la
+veriﬁcación individual de cada documento, salvo para las operaciones registradas por el periodo del 10/07/2011 al
+28/08/2012.
+
+En el caso de las boletas de venta de acuerdo al numeral 3.10 del art. 8 del Reglamento de Comprobantes de Pago, a
+partir del 1 de julio de 2016, se deberá registrar de manera detallada cuando el monto total sea igual o mayor a S/ 700.00.
+(…)
+       El Peruano / Viernes 30 de junio de 2023               NORMAS LEGALES                                                                                     23
+5.2 REGISTRO DE VENTAS E INGRESOS SIMPLIFICADO (*)
+
+                                               Llave
+      Campo            Long.     Obligatorio                        Descripción                           Formato                       Observaciones
+                                               única
+                                                                                                                             1. Obligatorio
+                                                                                                                             2. Validar formato AAAAMM00
+                                                                                                                             3. 01 <= MM <= 12
+                                                                                                                             4. Menor al último periodo
+                                                                                                                             generado y anterior al periodo de la
+           1             8             Si        Si    Periodo de ajuste                       Numérico
+                                                                                                                             obligatoriedad de llevar su RVIE en el
+                                                                                                                             Módulo RVIE.
+                                                                                                                             5. Si periodo es menor al último
+                                                                                                                             periodo generado, entonces campo
+                                                                                                                             26 = '8' y '9'
+        (…)
+                                                       Número de serie del comprobante de                                    1. Obligatorio si campo 6 = '07' o '08'
+           22         Hasta 20       No         No                                             Alfanumérico
+                                                       pago que se modiﬁca (6)                                               y campo 26 = '8' y '9'
+                                                       Número del comprobante de pago que                                    1. Obligatorio si campo 6 = '07' o '08'
+           23         Hasta 20       No         No                                        Alfanumérico
+                                                       se modiﬁca (6)                                                        y campo 26 = '8' y '9'
+        (…)
+
+(*) La referencia a las notas aquí señaladas corresponden a las consignadas para el cuadro 5.1."
+
+                                                                           ANEXO VI
+
+"ANEXO N.º 1 – TABLAS
+
+(…)
+
+TABLA 7: CÓDIGO DE ANOTACIÓN DE REGISTRO (CAR SUNAT)
+
+(…)
+
+La asignación del CAR se creará de forma automática y permanente desde la Propuesta del RVIE y el RCE, el segundo
+día calendario del mes del periodo seleccionado, hasta la generación del RVIE y RCE. Cuando el ajuste posterior que se
+realiza implique la generación de un nuevo CAR, este se creará de forma automática y permanente.
+
+(…)”
+
+                                                                           ANEXO VII
+
+   "ANEXO 8. INFORMACIÓN DE LA PROPUESTA DEL RCE/ESTRUCTURA Y REGLAS PARA ELABORAR EL
+                  ARCHIVO PLANO QUE COMPLEMENTA LA PROPUESTA DEL RCE (1)
+
+8.4 Registro de Compras
+
+                                                                                     Regla Global (2)                                  Long. (2)      Formato (2)
+                                                  Incluir                                                                Excluir
+                                               información                                                          comprobantes
+           Parte del                                           Incluir comprobantes de pago,
+ Campo (8)           Descripción Nemotécnico o modiﬁcar o       notas de débito o de crédito u
+                                                                                                                     o documentos
+             RC                              reubicar aquella                                                       de la Propuesta
+                                                              otros documentos no propuestos
+                                            que, por defecto,                                                         o incluir los
+                                                                       por SUNAT (13)
+                                            la SUNAT coloca                                                          excluidos a la
+                                                    (5)                                                             propuesta (14)
+      (…)
+                                                                            1. Obligatorio.
+                                                                            2. Formato DD/MM/AAAA
+                                                                            3. AAAAMM debe ser menor o
+                                                                            igual al periodo de la propuesta del
+                                                                            RCE a generar (campo 3), excepto
+                                                                            los comprobantes o documentos
+                         Fecha de
+                                                                            propuestos - Tipo CP = '01', '08',
+                         emisión del
+                                            Fecha de   1. Consignar         '23', '30', '34', '42', '50', '52', '53', '54',
+       5         Sí      comprobante                                                                                                       10         Alfanumérico
+                                             emisión   vacío.               indicados en la Tabla 11 del Anexo 1. Consignar vacío.
+                         de pago o
+                                                       .                    N° 1, según las Validaciones del
+                         documento
+                                                                            rubro "Serie/Número de la Máquina
+                                                                            registradora", cuyo AAAAMM es
+                                                                            menor al periodo de la propuesta del
+                                                                            RCE a generar.
+                                                                            4. Validar con parámetro tabla 12 del
+                                                                            Anexo N° 1.
+      (…)
+
+(…)”
+24                                                           NORMAS LEGALES                             Viernes 30 de junio de 2023 /     El Peruano
+
+                                                                   ANEXO VIII
+
+"ANEXO 12 - ESTRUCTURA Y REGLAS PARA ELABORAR EL ARCHIVO PLANO CON AJUSTES POSTERIORES
+RELATIVOS AL RCE
+
+8.4 REGISTRO DE COMPRAS (1)
+
+                         Parte del
+     Campo (7)                           Descripción       Nemotécnico          Regla Global (2)         Long. (2)              Formato (2)
+                         Registro
+        (…)
+
+Notas:
+
+1. Los ajustes posteriores que el generador realice deben cumplir con el procedimiento indicado en la tabla 15 del Anexo
+N.° 1. Se utiliza un archivo plano por cada periodo generado respecto del cual se realice ajustes posteriores.
+
+(…)
+
+
+8.5 REGISTRO DE COMPRAS - INFORMACIÓN DE OPERACIONES CON SUJETOS NO OMICILIADOS (1)
+
+       Campo             Long. (2)       Descripción       Nemotécnico                  Formato (2)                       Observaciones (2)
+        (…)
+
+Notas:
+
+1. Los ajustes posteriores que el generador realice deben cumplir con el procedimiento indicado en la Tabla 15 del Anexo
+N.° 1. Se utiliza un archivo plano por cada periodo generado respecto del cual se realice ajustes posteriores.
+
+(…)"
+
+
+
+                                                                    ANEXO IX
+
+"ANEXO 13 - ESTRUCTURA Y REGLAS PARA ELABORAR EL ARCHIVO PLANO CON AJUSTES POSTERIORES
+RELATIVOS A REGISTROS DE COMPRAS DISTINTOS AL RCE (1)
+
+5.1 REGISTRO DE COMPRAS
+
+  Campo          Long.           Obligatorio       Llave única           Descripción                  Formato                 Observaciones
+      (…)
+
+(1) Ajustes posteriores de periodos anteriores a la obligatoriedad de llevar su Registro de Compras en el Sistema Integrado
+de Registros Electrónicos (SIRE). Se puede utilizar un archivo plano por cada periodo generado respecto del cual se
+realice ajustes posteriores e inclusive en un mismo archivo plano podrán realizarse ajustes posteriores a varios periodos.
+
+(…)
+
+
+5.2 REGISTRO DE COMPRAS - INFORMACIÓN DE OPERACIONES CON SUJETOS NO DOMICILIADOS (*)
+
+  Campo          Long.           Obligatorio       Llave única           Descripción                  Formato                 Observaciones
+      (…)
+
+(*) La referencia a las notas aquí señaladas corresponden a las consignadas para el cuadro 5.1.
+
+
+5.3 REGISTRO DE COMPRAS SIMPLIFICADO (*)
+
+  Campo          Long.           Obligatorio       Llave única           Descripción                  Formato                 Observaciones
+      (…)
+
+(*) La referencia a las notas aquí señaladas corresponden a las consignadas para el cuadro 5.1."
+
+
+
+
+2191659-1
+

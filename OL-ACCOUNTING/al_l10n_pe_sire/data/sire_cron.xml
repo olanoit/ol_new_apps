@@ -23,5 +23,14 @@
         <field name="interval_type">hours</field>
         <field name="active" eval="True"/>
     </record>
+    <record id="ir_cron_sire_operation_poll" model="ir.cron">
+        <field name="name">SIRE: consultar tickets de las operaciones</field>
+        <field name="model_id" ref="model_l10n_pe_sire_operation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_sire_poll_operations()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
 
 </odoo>

@@ -1,6 +1,7 @@
 import base64
 import io
 import json
+import re
 import zipfile
 from datetime import timedelta
 from urllib.parse import urljoin, urlparse
@@ -22,6 +23,13 @@ SIRE_ALLOWED_HOST_SUFFIX = '.sunat.gob.pe'
 #: Subida de archivos: SUNAT expone un servidor TUS (el manual documenta el
 #: cliente `tus-java-client` 0.5.0, que habla TUS 1.0.0).
 SIRE_UPLOAD_ENDPOINT = '/libros/rvierce/receptorpropuesta/web/propuesta/upload'
+#: Cargas TUS que van al preliminar (no domiciliados, nuevos CP del
+#: preliminar) y a los ajustes posteriores (manuales v22, 5.5 y 5.18).
+SIRE_UPLOAD_PRELIMINARY_ENDPOINT = '/libros/rvierce/receptorpreliminar/web/preliminar/upload'
+SIRE_UPLOAD_ADJUSTMENT_ENDPOINT = (
+    '/libros/rvierce/receptorajustesposteriores/web/ajustesposteriores/upload')
+#: Formato del ticket: AAAA + tipo de correlativo + correlativo (14 dígitos).
+SIRE_TICKET_RE = re.compile(r'^\d{14}$')
 TUS_VERSION = '1.0.0'
 #: SUNAT entrega los TXT en UTF-8, pero las razones sociales con tilde han
 #: llegado en latin-1 más de una vez. Se prueban en orden en vez de reventar
@@ -156,12 +164,18 @@ class L10nPeSireApi(models.AbstractModel):
         return headers
 
     def _sire_request(self, method, token, endpoint, params=None, headers=None,
-                      data=None, url=None):
+                      data=None, url=None, json_body=None, files=None):
         """Petición a la API con el manejo de errores unificado."""
+        if json_body is not None:
+            data = json.dumps(json_body)
+        request_headers = self._sire_headers(token, headers)
+        if files:
+            # requests arma el multipart y su frontera: no se fija a mano.
+            request_headers.pop('Content-Type', None)
         try:
             response = requests.request(
                 method, url or (SIRE_BASE_URL + endpoint), params=params or {},
-                headers=self._sire_headers(token, headers), data=data,
+                headers=request_headers, data=data, files=files,
                 timeout=SIRE_TIMEOUT)
         except requests.RequestException as error:
             raise UserError(_('No se pudo conectar con SUNAT: %s', error)) from error
@@ -177,12 +191,18 @@ class L10nPeSireApi(models.AbstractModel):
     def _sire_post(self, token, endpoint, params=None):
         return self._sire_request('POST', token, endpoint, params=params)
 
+    def _sire_send_json(self, method, token, endpoint, payload=None, params=None):
+        """POST/PUT/DELETE con cuerpo JSON; SUNAT responde «OK» o un ticket."""
+        return self._sire_request(method, token, endpoint, params=params,
+                                  json_body=payload)
+
     @staticmethod
     def _sire_ticket_from(response):
         """Número de ticket de una respuesta, mire donde mire SUNAT.
 
-        Los servicios de proceso lo devuelven en el JSON; los de carga TUS
-        no lo documentan y lo han puesto en cabecera.
+        Los servicios de proceso lo devuelven en el JSON; las cargas TUS, en
+        texto plano en el cuerpo de la última petición (manuales v22, p. ej.
+        «20230100000124»), y alguna vez ha llegado en cabecera.
         """
         try:
             data = response.json()
@@ -190,6 +210,12 @@ class L10nPeSireApi(models.AbstractModel):
             data = {}
         if isinstance(data, dict) and data.get('numTicket'):
             return str(data['numTicket'])
+        if isinstance(data, (int, str)) and SIRE_TICKET_RE.match(str(data)):
+            return str(data)
+        text = response.text if isinstance(response.text, str) else ''
+        text = text.strip().strip('"')
+        if SIRE_TICKET_RE.match(text):
+            return text
         for header in ('numTicket', 'num-ticket', 'Num-Ticket'):
             if response.headers.get(header):
                 return response.headers[header]
@@ -208,6 +234,17 @@ class L10nPeSireApi(models.AbstractModel):
 
     def _sire_ticket_status(self, token, period, num_ticket):
         """Consulta el estado de un ticket. Devuelve (codEstadoEnvio, nomArchivoReporte)."""
+        register = self._sire_ticket_register(token, period, num_ticket)
+        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') \
+            or register.get('codEstadoProceso') or '00'
+        filename = ''
+        reports = register.get('archivoReporte') or []
+        if reports:
+            filename = reports[0].get('nomArchivoReporte') or ''
+        return code, filename
+
+    def _sire_ticket_register(self, token, period, num_ticket):
+        """Registro completo del ticket (manual 5.16 RVIE / 5.31 RCE)."""
         response = self._sire_get(
             token, '/libros/rvierce/gestionprocesosmasivos/web/masivo/consultaestadotickets',
             params={
@@ -221,12 +258,29 @@ class L10nPeSireApi(models.AbstractModel):
         if not registers:
             raise UserError(_('SUNAT no devolvió información para el ticket %s.', num_ticket))
         register = registers[0]
-        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') or '00'
-        filename = ''
-        reports = register.get('archivoReporte') or []
-        if reports:
-            filename = reports[0].get('nomArchivoReporte') or ''
-        return code, filename
+        # En el RCE la tabla declara ``detalleTicket`` como lista y el
+        # ejemplo lo trae como objeto: se aceptan las dos formas.
+        detail = register.get('detalleTicket')
+        if isinstance(detail, list):
+            register['detalleTicket'] = detail[0] if detail else {}
+        return register
+
+    @staticmethod
+    def _sire_report_type(report):
+        """Tipo del archivo de reporte; el manual lo escribe ``codTipoAchivoReporte`` [sic]."""
+        value = report.get('codTipoAchivoReporte', report.get('codTipoArchivoReporte'))
+        return 'null' if value in (None, '') else str(value)
+
+    def _sire_download_file(self, token, report, book_code):
+        """Bytes de un archivo de reporte de un ticket (manual 5.17 / 5.32)."""
+        response = self._sire_get(
+            token, '/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte',
+            params={
+                'nomArchivoReporte': report.get('nomArchivoReporte'),
+                'codTipoArchivoReporte': self._sire_report_type(report),
+                'codLibro': book_code,
+            })
+        return response.content
 
     @staticmethod
     def _sire_decode(content):
@@ -290,7 +344,8 @@ class L10nPeSireApi(models.AbstractModel):
             '%s %s' % (key, base64.b64encode(str(value).encode('utf-8')).decode())
             for key, value in values.items())
 
-    def _sire_upload(self, token, filename, content, metadata):
+    def _sire_upload(self, token, filename, content, metadata,
+                     endpoint=SIRE_UPLOAD_ENDPOINT, ticket_required=True):
         """Sube un archivo por TUS y devuelve el número de ticket.
 
         Dos peticiones: una crea la subida y devuelve su ubicación en
@@ -299,7 +354,7 @@ class L10nPeSireApi(models.AbstractModel):
         de cliente TUS para esto.
         """
         create = self._sire_request(
-            'POST', token, SIRE_UPLOAD_ENDPOINT,
+            'POST', token, endpoint,
             headers={
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Tus-Resumable': TUS_VERSION,
@@ -309,7 +364,7 @@ class L10nPeSireApi(models.AbstractModel):
         location = create.headers.get('Location')
         if location:
             # ``Location`` puede venir relativa; y el token solo viaja a SUNAT.
-            location = urljoin(SIRE_BASE_URL + SIRE_UPLOAD_ENDPOINT, location)
+            location = urljoin(SIRE_BASE_URL + endpoint, location)
             parsed = urlparse(location)
             if parsed.scheme != 'https' or not (parsed.hostname or '').endswith(
                     SIRE_ALLOWED_HOST_SUFFIX):
@@ -331,6 +386,9 @@ class L10nPeSireApi(models.AbstractModel):
                 'Upload-Offset': '0',
             }, data=content)
         ticket = self._sire_ticket_from(upload)
+        if not ticket and not ticket_required:
+            # La carga de ajustes posteriores del RCE responde «OK» (5.18).
+            return ''
         if not ticket:
             raise UserError(_(
                 'SUNAT aceptó el archivo pero no devolvió su ticket. '

@@ -198,6 +198,70 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="No domiciliados" name="non_domiciled"
+                              invisible="state in ('draft', 'requested', 'downloaded')">
+                            <div class="d-flex flex-wrap gap-2 mb-3" groups="account.group_account_user">
+                                <button name="action_sire_load_nd" type="object"
+                                        string="Desplegar no domiciliados" class="btn-secondary"/>
+                                <button name="action_sire_send_nd" type="object"
+                                        string="Enviar no domiciliados" class="btn-primary"
+                                        invisible="not count_nd or count_nd_invalid or not (submission_ticket or preliminary_registered)"
+                                        confirm="Se cargará en SUNAT el registro de no domiciliados del periodo. ¿Continuar?"/>
+                                <button name="action_sire_export_nd" type="object"
+                                        string="Exportar preliminar de SUNAT" class="btn-secondary"
+                                        invisible="not (submission_ticket or preliminary_registered)"/>
+                            </div>
+                            <group>
+                                <field name="count_nd"/>
+                                <field name="count_nd_invalid" decoration-danger="count_nd_invalid"/>
+                            </group>
+                            <field name="nd_line_ids">
+                                <list editable="bottom" create="0" delete="0"
+                                      decoration-danger="check_detail">
+                                    <field name="move_id"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="tipo_cp"/>
+                                    <field name="serie_cp"/>
+                                    <field name="nro_cp"/>
+                                    <field name="razon_social"/>
+                                    <field name="pais"/>
+                                    <field name="tipo_renta"/>
+                                    <field name="convenio"/>
+                                    <field name="valor_adquisicion" sum="Total"/>
+                                    <field name="total_cp" sum="Total"/>
+                                    <field name="moneda" optional="show"/>
+                                    <field name="tipo_cambio" optional="hide"/>
+                                    <field name="car_sunat" optional="hide"/>
+                                    <field name="check_detail"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="SUNAT" name="sunat_operations">
+                            <div class="d-flex flex-wrap gap-2 mb-3" groups="account.group_account_user">
+                                <button name="action_sire_send_exchange_rates" type="object"
+                                        string="Enviar tipos de cambio" class="btn-secondary"
+                                        invisible="state in ('draft', 'requested', 'downloaded', 'sire_loaded')"/>
+                                <button name="action_sire_inconsistency_summary" type="object"
+                                        string="Resumen de inconsistencias" class="btn-secondary"
+                                        invisible="state == 'draft'"/>
+                                <button name="action_sire_preliminary_inconsistencies" type="object"
+                                        string="Inconsistencias del preliminar" class="btn-secondary"
+                                        invisible="not preliminary_registered"/>
+                                <button name="action_sire_receipt" type="object"
+                                        string="Constancia de recepción" class="btn-secondary"
+                                        invisible="not preliminary_registered"/>
+                                <button name="action_sire_open_lines" type="object"
+                                        string="Acciones por comprobante" class="btn-secondary"
+                                        invisible="state in ('draft', 'requested', 'downloaded')"/>
+                                <button name="action_sire_open_wizard" type="object"
+                                        string="Otras acciones" class="btn-secondary"
+                                        invisible="state == 'draft'"/>
+                            </div>
+                            <group>
+                                <field name="receipt_name" invisible="not preliminary_registered"/>
+                            </group>
+                            <field name="operation_ids" readonly="1"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <chatter/>

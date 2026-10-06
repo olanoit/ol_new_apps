@@ -356,8 +356,9 @@ class TestSire(TransactionCase):
         self.rvie.action_export_replacement()
         name, content = self._read_zip_txt(self.rvie)
         self.assertEqual(name, 'LE%s%s%s00140400021112.txt' % (RUC_TEST, PERIOD_YEAR, PERIOD_MONTH))
+        # Anexo 3: campos 1 a 33; la CLU (41-57) sin usar no lleva ni el palote.
         for row in content.split('\n'):
-            self.assertEqual(len(row.split('|')), 34)
+            self.assertEqual(len(row.split('|')), 33)
 
     def test_rce_replacement_txt(self):
         self._make_invoice('in_invoice', document_number='F002-35')
