@@ -1,0 +1,3512 @@
+              5.12 Servicio Web Api editar tipo de cambio individual
+
+Nombre Web           Servicio Web Api editar tipo de cambio individual
+Services
+Descripción          Servicio web api que edita el tipo de cambio individual en propuesta de ventas
+Url                  https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/{perTribu
+                     tario}/complementoindividual
+Parámetros[URL]                     Param-formato-tipo                                    Descripción
+                       perTributario-alfanumérico-String                    Periodo tributario (Obligatorio)
+Parámetros[body]                 Param-formato-tipo                                   Descripción
+                       Object                                      Object - inicio
+                       codCar-alfanumérico-String                  Código de Anotación de Registro (CAR SUNAT)
+                                                                   (Obligatorio)
+                       codMoneda-numérico-String                   Códigos de moneda (Obligatorio)
+                       mtoTipoCambio-decimal-String                Tipo de cambio de PEN (Soles) a USD (Dólares)
+                                                                   (Obligatorio)
+                       mtoCambioMonedaExt-decimal-String           Tipo de cambio de moneda extranjera a PEN
+                                                                   (Soles) (Opcional)
+                       Object                                      Object - fin
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                             Parámetros                                          valor
+                       Content-Type                application/json
+                       Accept                      application/json
+                       Authorization               Bearer token obtenido de la autenticación
+                     Método: PUT
+Parámetros[salida]    Parámetros          valor
+                      HTTP status         200
+                      Content-Type        application/json
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/202302/c
+                     omplementoindividual
+                     Headers
+
+
+
+
+                     Body
+
+
+
+
+                     Result OK
+
+
+
+
+                     Result Fail
+
+
+                                                                                                              36
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+
+
+
+
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1135 - El campo “codCar” no enviado o es vacío
+                          ● 1136 - Solo se permite dato numérico de 27 dígitos para el Codigo CAR.
+                          ● 1141 - Código tipo de moneda no permitido o no valido
+                          ● 1142 - No se permite el tipo de dato para codMoneda
+                          ● 1143 - El campo "codMoneda" es nulo o vacío
+                          ● 1144 - El campo "mtoTipoCambio" es nulo o vacío
+                          ● 1145 - Solo se permite dato numérico y decimal para el mtoTipoCambio
+
+
+
+              5.13 Servicio Web Api eliminar comprobante propuesta
+
+Nombre Web           Servicio Web Api eliminar comprobante de la propuesta
+Services
+Descripción          Permite eliminar un comprobante de la propuesta que ha sido agregado por el contribuyente
+Url                  https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/{perTribu
+                     tario}/eliminacomprobante
+Parámetros[URL]                       Param-formato-tipo                              Descripción
+                      perTributario-alfanumérico-String                      Periodo tributario (Obligatorio)
+Parámetros[body]             Param-formato-tipo                                 Descripción
+                      Array                                Array - inicio
+                      numSerieCDP-alfanumérico-String      Número de serie del comprobante de pago o
+                                                           documento (Obligatorio)
+                      numCDP-alfanumérico-String           Número del comprobante de pago o
+                                                           documento(Obligatorio)
+                      codCar-alfanumérico-String           Código de Anotación de Registro (CAR SUNAT)
+                                                           (Obligatorio)
+                      codTipoCDP-alfanumérico-String       Tipo de Comprobante de Pago o Documento.
+                                                           Solo permite los comprobantes de pago 00, 01, 03,
+                                                           05, 06, 07, 08, 11, 12, 13, 14, 15, 16, 18, 21, 24, 25,
+                                                           27, 28, 30, 32, 34, 35, 36, 37, 42, 43, 44, 45, 48, 49,
+                                                           55 y 56 (en tanto haya sido incorporado por
+                                                           importación o agregar en ningún caso se debe
+                                                           eliminar el CP propuesto) (Obligatorio)
+                      Array                                Array - fin
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                         Parámetros                                        valor
+                      Content-Type          application/json
+                      Accept                application/json
+                      Authorization         Bearer token obtenido de la autenticación
+                     Método: POST
+Parámetros[salida]                Parámetros                                        Valor
+
+
+                                                                                                                     37
+                       HTTP status                         200
+                       Content-Type                        application/json
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/202302/
+                     eliminacomprobante
+                     Headers
+
+
+
+
+                     Body
+
+
+
+
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                               Seleccionado
+                          ● 1135 - El campo “codCar” no enviado o es vacío
+                          ● 1136 - Solo se permite dato numérico de 27 dígitos para el Codigo CAR.
+                          ● 1323- El campo "numSerieCDP" es nulo o vacío
+                          ● 1011 - El campo “codTipoCDP” no enviado o es vacío
+                          ● 1012 - El codTipoCDP ingresado no existe o no es válido
+
+
+              5.14 Servicio Web Api eliminar comprobante preliminar
+
+Nombre Web           Servicio Web Api eliminar comprobante del preliminar RVIE
+Services
+Descripción          Permite eliminar un comprobante del preliminar RVIE
+Url                  https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibros/{
+                     perTributario}/comprobantepreliminar
+Parámetros[URL]                  Param-formato-tipo                              Descripción
+                       perTributario-alfanumérico-String       Periodo tributario (Obligatorio)
+
+Parámetros[body]               Param-formato-tipo                               Descripción
+                      Array                                     Array - inicio
+                      codCar-alfanumérico-String                Código de Anotación de Registro (CAR SUNAT)
+                                                                (Obligatorio)
+
+
+                                                                                                                38
+                      codTipoCDP-alfanumérico-String            Tipo de Comprobante de Pago o Documento.
+                                                                Se puede eliminar todos códigos de
+                                                                comprobantes de pago de la tabla 03 del anexo
+                                                                01, de la Resolución de Superintendencia 112-
+                                                                2021/SUNAT. (Obligatorio)
+                      numSerieCDP-alfanumérico-String           Número de serie del comprobante de pago o
+                                                                documento (Obligatorio)
+                      numCDP-alfanumérico-String                Número del comprobante de pago o
+                                                                documento(Obligatorio)
+                       Array                                    Array - fin
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                             Parámetros                                        valor
+                       Content-Type              application/json
+                       Accept                    application/json
+                       Authorization             Bearer token obtenido de la autenticación
+                     Método: PUT
+Parámetros[salida]                 Parámetros                                        Valor
+                       HTTP status                            200
+                       Content-Type                           application/json
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibros/
+                     202302/comprobantepreliminar
+                     Headers
+
+
+
+
+                     Body
+
+
+
+
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1135 - El campo “codCar” no enviado o es vacío
+                          ● 1136 - Solo se permite dato numérico de 27 dígitos para el Codigo CAR.
+                          ● 1323 - El campo "numSerieCDP" es nulo o vacío
+                          ● 1011 - El campo “codTipoCDP” no enviado o es vacío
+                          ● 1012 - El codTipoCDP ingresado no existe o no es válido
+
+                                                                                                                39
+              5.15 Servicio Web Api eliminar reemplazo propuesta
+
+Nombre Web            Servicio Web Api eliminar reemplazo propuesta
+Services
+Descripción           Permite eliminar el reemplazo de la propuesta.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibros/{
+                      perTributario}/eliminarreemplazo?codLibro={codLibro}
+Parámetros[URL]                   Param-formato-tipo                                 Descripción
+                        perTributario-alfanumérico-String          Periodo tributario (Obligatorio)
+                        codLibro-alfanumérico-String               Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]      (No aplica)
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                             Parámetros                                        valor
+                        Content-Type             application/json
+                        Accept                   application/json
+                        Authorization            Bearer token obtenido de la autenticación
+                      Método: PUT
+Parámetros[salida]                  Parámetros                                         Valor
+                        HTTP status                            200
+                        Content-Type                           application/json
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibros/
+                      202302/eliminarreemplazo?codLibro=140000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                       Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+              5.16 Servicio Web Api consultar estado de envío de ticket
+
+Nombre Web Services    Servicio Web Api consultar estado de envío de ticket.
+Descripción            Permite consultar el estado de envío del ticket.
+
+                                                                                                                 40
+Url                  https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/
+                     masivo/consultaestadotickets?perIni={perIni}&perFin={perFin}&page={page}&perPage={pe
+                     rPage}&numTicket={numTicket}
+Parámetros[URL]               Param-formato-tipo                                  Descripción
+                       perIni-alfanumérico-String            Periodo de consulta de documentos de
+                                                             comprobantes del RVIE preliminar Inicio.
+                                                             (Obligatorio)
+                       perFin-alfanumérico-String            Periodo de consulta de documentos de
+                                                             comprobantes del RVIE preliminar Final.
+                                                             (Obligatorio)
+                       page-numerico-int                     Ejemplo: 1 (Obligatorio)
+                       perPage-numerico-int                  Ejemplo: 20 (Obligatorio)
+                       numTicket-alfanumérico-String         Número de ticket de envío [AAAA99999999]
+                                                             AAAA: Año
+                                                             99: Tipo de correlativo
+                                                             99999999: Número correlativo de envío (Opcional)
+Parámetros[body]     No aplica
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                             Parámetros                                        valor
+                       Content-Type              application/json
+                       Accept                    application/json
+                       Authorization             Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]            Parámetros de Salida                                Descripcion
+                       paginacion-Object                     Object de paginación - inicio
+                       page- numérico-Int                    Ejemplo: 1 (Obligatorio)
+                       perPage- numérico-Int                 Ejemplo: 20 (Obligatorio)
+                       totalRegistros- numérico-Int          Total de registros (Obligatorio)
+                       paginacion-Object                     Object de paginación - fin
+                       registros-array-array                 Array de registros - inicio
+                       showReportesDescarga-                 Valores 0 y 1
+                       numérico-Integer                      0 - no muestra icono de archivo de texto
+                                                             1 - muestra ícono de archivo de texto
+                       perTributario-alfanumerico-String Periodo tributario
+                       numTicket-alfanumerico-String         Número de ticket de envío
+                       fecCargaImportacion-                  Fecha de la carga del archivo de importación, o
+                       dd/mm/yyyy,'T','hh:ii:ss'-Date        fecha de solicitud de generacion de archivo
+                       fecInicioProceso-yyyy-mm-dd-          Fecha de inicio de proceso
+                       String
+                       codProceso-alfanumerico-String        Código del indicador de carga masiva.
+                                                             (Ver Anexo I: Indicador de carga masiva)
+                       desProceso-alfanumerico-String        Descripcion del indicador de Carga Masiva.
+                                                             (Ver Anexo I: Indicador de carga masiva)
+                       codEstadoProceso-alfanumerico-        Código de estado de envio (Ver Anexo III: Código
+                       String                                de estado de envío)
+                       desEstadoProceso-alfanumerico-        Descripción de estado de envio (Ver Anexo III:
+                       String                                Código de estado de envío)
+                       nomArchivoImportacion-                Nombre del archivo de importación
+                       alfanumérico-String
+                       detalleTicket-Object                  Object detalle de ticket - inicio
+                       numTicket-alfanumerico-String         Número de ticket de envío [AAAA99999999]
+                                                             AAAA: Año
+                                                             99: Tipo de correlativo
+                                                             99999999: Número correlativo de envío
+                       fecCargaImportacion-                  Fecha de la carga del archivo de importación, o
+                       dd/mm/yyyy-Date                       fecha de solicitud de generacion de archivo
+
+
+
+
+                                                                                                            41
+              horaCargaImportacion-              (DetalleTicket.fecCargaImportacion).- Hora de la
+              hh:mm:ss'-Date                     carga del archivo de importación, o fecha de
+                                                 solicutud de generacion de archivo
+               codEstadoEnvio-alfanumérico-      Código del estado de envío
+               String
+               desEstadoEnvio-alfanumérico-      Descripción del estado de envío
+               String
+               nomArchivoReporte-                Nombre del archivo reporte
+               alfanumérico-String
+               cntFilasvalidada-numérico-        Cantidad de filas validadas o total de registros
+               Integer
+               cntCPError-numérico-Integer       Cantidad de comprobantes con error
+               cntCPInformados-numérico-         Cantidad de CP informados
+               Integer
+               detalleTicket-Object              Object detalle de ticket - fin
+               archivoReporte-Array              Array archivo reporte - inicio
+               codTipoAchivoReporte-             Código del tipo de archivo de reporte
+               alfanumerico-String
+               nomArchivoReporte-                Nombre del archivo de reporte
+               alfanumerico-String
+               nomArchivoContenido-              Nombre del archivo contenido
+               alfanumerico-String
+               archivoReporte- Array             Array archivo reporte - fin
+               registros-array-array             Array de registros - fin
+Evidencias   URL
+             https://api-
+             sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/
+             masivo/consultaestadotickets?perIni=202301&perFin=202305&page=1&perPage=20
+             Headers
+
+
+
+
+             Body
+             (No aplica)
+             Result OK
+
+
+
+
+                                                                                                     42
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1067 - El campo “perIni” no enviado o es vacío
+                           ● 1068 - Formato de perIni no cumple con el formato “yyyymm”
+                           ● 1069 - El perIni de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1071 - El campo “perFin” no enviado o es vacío
+                           ● 1072 - Formato de perFin no cumple con el formato “yyyymm”
+                           ● 1073 - El perFin de búsqueda no debe ser mayor a la fecha actual
+                           ● El campo “page” no enviado o es vacío
+                           ● El campo “page” debe ser numérico mayor a cero
+                           ● El campo “per_page” no enviado o es vacío
+                           ● El campo “per_page” debe ser numérico mayor a cero
+                           ● 1052 - Formato no permitido o no valido para el número de Ticket
+
+
+            5.17 Servicio Web Api descargar archivo
+
+Nombre Web Services   Servicio Web Api descargar archivo
+Descripción           Permite descargar los archivos generados zipeados y particionados guardados en el
+                      fileserver.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/
+                      masivo/archivoreporte?nomArchivoReporte={nomArchivoReporte}&codTipoArchivoReport
+                      e={codTipoArchivoReporte}&codLibro={codLibro}
+Parámetros[URL]                    Param-formato-tipo                               Descripción
+                        nomArchivoReporte-alfanumérico-String      Nombre del archivo generado (Parámetro
+                                                                   de salida del servicio 5.16 Servicio Web Api
+                                                                   consultar estado de envío de ticket:
+                                                                   archivoReporte.nomArchivoReporte)
+                                                                   (Obligatorio)
+
+                                                                                                             43
+                      codTipoArchivoReporte-numérico-String      Codigo del tipo de archivo (Parámetro de
+                                                                 salida del servicio 5.16 Servicio Web Api
+                                                                 consultar estado de envío de ticket:
+                                                                 archivoReporte.codTipoArchivoReporte)
+                                                                 (Obligatorio)
+                                                                 Nota: Si el campo codTipoAchivoReporte
+                                                                 que devuelve el API 5.16 es null, colocar el
+                                                                 mismo valor(null)
+
+
+
+
+                       codLibro-numérico-String                   Codigo de libro: RVIE 140000 (Obligatorio)
+Parámetros[body]     No aplica
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                            Parámetros                                      valor
+                       Content-Type             application/json
+                       Accept                   application/json
+                       Authorization            Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]                Parámetros de Salida                            Descripcion
+                       Buffer-binary-binary                       buffer: Arreglo de bits
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/
+                     masivo/archivoreporte?nomArchivoReporte=20100176450-CPF-202302-
+                     01.zip&codTipoArchivoReporte=01&codLibro=140000
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+
+                                                                                                                44
+                      Lista de errores 422:
+                           ● 1134 - El campo “nomArchivoReporte” no enviado o es vacío
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+             5.18 Servicio Web Api descargar propuesta
+
+Nombre Web Services   Servicio Web Api descargar propuesta
+Descripción           Permite descargar la propuesta de RVIE.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/{perTri
+                      butario}/exportapropuesta?mtoTotalDesde={mtoTotalDesde}&mtoTotalHasta={mtoTotalH
+                      asta}&fecDocumentoDesde={fecDocumentoDesde}&fecDocumentoHasta={fecDocumentoH
+                      asta}&numRucAdquiriente={numRucAdquiriente}&numCarSunat={numCarSunat}&codTipo
+                      CDP={codTipoCDP}&codTipoInconsistencia={codTipoInconsistencia}&codTipoArchivo={codT
+                      ipoArchivo}
+Parámetros[URL]                   Param-formato-tipo                                Descripción
+                        perTributario-alfanumérico-String          Periodo tributario (Obligatorio)
+                        codTipoArchivo-numérico-Integer            Código del tipo de archivo (Ver Anexo IV:
+                                                                   Extension del archivo a descargar)
+                                                                   (Obligatorio)
+                        mtoDesde-Numerico-decimal128               Importe total del comprobante de pago.
+                                                                   Monto del rango inicial (monto total)
+                                                                   (Opcional)
+                        mtoHasta-Numerico-decimal128               Importe total del comprobante de pago.
+                                                                   Monto final del rango (monto total)
+                                                                   (Opcional)
+                        codTipoCDP-alfanumérico-String             Tipo de Comprobante de Pago o Documento.
+                                                                   Se puede descargar todos los comprobantes
+                                                                   de pado indicados en la tabla 03 del anexo 1
+                                                                   de la Resolución de Superintendencia 112-
+                                                                   2021/SUNAT y modificatorias (Opcional)
+                        codTipoInconsistencia-numérico-String      Código de tipo de inconsistencia (Opcional)
+                        numCarSunat-alfanumerico-String            Numero de identificación del comprobante
+                                                                   (Opcional)
+                        fecDocumentoDesde-dd/mm/aaaa-              Fecha de emision desde (Opcional)
+                        String
+                        fecDocumentoHasta-dd/mm/aaaa-              Fecha de emisión hasta (Opcional)
+                        String
+                        numRucAdquiriente-numerico-String          Numero de ruc del adquiriente (Opcional)
+Parámetros[body]      No aplica
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                               Parámetros                                       valor
+                        Content-Type               application/json
+                        Accept                     application/json
+                        Authorization              Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                           Tipo
+                                                           Descripcion                         Formato
+                          de Salida                                                                         dato
+                                      Número de ticket de envío [AAAA99999999]
+                                      AAAA: Año
+                         numTicket                                                          alfanumerico String
+                                      99: Tipo de correlativo
+                                      99999999: Número correlativo de envío
+Evidencias            Evidencia 1: Existe datos en la propuesta
+                      URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/202305
+                      /exportapropuesta?codTipoArchivo=0
+
+
+                                                                                                               45
+                Headers
+
+
+
+
+                Body
+                (No aplica)
+                Result OK
+
+
+
+
+                Result Fail
+                { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+
+                Evidencia 2: No existe datos en la propuesta
+                URL
+                https://api-
+                sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/202301
+                /exportapropuesta?codTipoArchivo=0
+                Headers
+                (No aplica)
+                Body
+                (No aplica)
+                Result Fail 422:
+
+
+
+
+                Result Fail
+                { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error   { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                enviado o es vacío" }] }
+                Lista de errores 422:
+                     ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                     ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                     ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                          Seleccionado
+                     ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                     ● 1059 - Código tipo de Archivo no permitido o no valido
+                     ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                     ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                     ● 1112 - El Monto Total Desde debe ser mayor o igual al Monto Total Hasta
+                     ● 1113 - Si se realiza busqueda por monto Total, se debe ingresar los campos
+                          mtoTotalDesde y mtoTotalHasta
+                     ● 1114 - Fecha Documento Desde debe estar dentro del Periodo seleccionado
+
+                                                                                                         46
+                          ●    1115 - Debe cumplir con el siguiente formato ‘dd/mm/yyyy’
+                          ●    1116 - Fecha de documento Hasta debe ser mayor o igual al Fecha de documento
+                               Desde
+                          ●    1117 - Si se realiza busqueda por Fecha Documento, se debe ingresar los campos
+                               Fecha Documento Desde, Fecha Documento Hasta
+                          ●    1118 - Fecha Documento Hasta debe estar dentro del Periodo seleccionado
+                          ●    1104 - El código de tipo de comprobante de pago enviado no es válido
+                          ●    1119 - El código de tipo de inconsistencia enviado no es válido
+
+
+             5.19 Servicio Web Api descargar no incluidos
+
+Nombre Web Services   Servicio Web Api descargar no incluidos
+Descripción           Permite descargar los comprobantes excluidos. Solo aplicable para CP Excluidos del periodo
+                      vigente.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/noincluidos/{perTr
+                      ibutario}/exportanoincluidos?mtoTotalDesde={mtoTotalDesde}&mtoTotalHasta={mtoTotal
+                      Hasta}&fecDocumentoDesde={fecDocumentoDesde}&fecDocumentoHasta={fecDocumento
+                      Hasta}&numRucAdquiriente={numRucAdquiriente}&numCarSunat={numCarSunat}&codTip
+                      oCDP={codTipoCDP}&codTipoInconsistencia={codTipoInconsistencia}&codTipoArchivo={co
+                      dTipoArchivo}&codOrigenEnvio={codOrigenEnvio}
+Parámetros[URL]                     Param-formato-tipo                                Descripción
+                        codTipoArchivo-numérico-Integer                Código del tipo de archivo (Ver Anexo IV:
+                                                                       Extension del archivo a descargar)
+                                                                       (Obligatorio)
+                        perTributario Alfanumérico-String              Periodo tributario (Obligatorio)
+                        mtoTotalDesde-decimal-Decimal                  Monto total desde (Opcional)
+                        mtoTotalHasta-decimal-Decimal                  Monto total hasta (Opcional)
+                        fecDocumentoDesde-dd/mm/yyyy-Date              Fecha de emisión desde (Opcional)
+                        fecDocumentoHasta-dd/mm/yyyy-Date              Fecha de emisión hasta (Opcional)
+                        numRucAdquiriente- alfanumérico-String         Numero de ruc adquiriente (Opcional)
+                        numCarSunat-numérico-String                    Numero identificador del comprobante
+                                                                       (Opcional)
+                        codTipoCDP-numerico-integer                    Código de tipo de comprobante
+                                                                       (Opcional)
+                        codTipoInconsistencia-numerico-integer         Código del tipo de inconsistencia
+                                                                       (Opcional)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                       valor
+                        Content-Type               application/json
+                        Accept                     application/json
+                        Authorization              Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                          Tipo
+                                                           Descripcion                         Formato
+                          de Salida                                                                         dato
+                                      Número de ticket de envío [AAAA99999999]
+                                      AAAA: Año
+                         numTicket                                                          alfanumerico String
+                                      99: Tipo de correlativo
+                                      99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/noincluidos/20230
+                      1/exportanoincluidos?mtoTotalDesde=&mtoTotalHasta=&fecDocumentoDesde=&fecDocu
+                      mentoHasta=&numRucAdquiriente=&numCarSunat=&codTipoCDP=&codTipoInconsistenci
+                      a=&codTipoArchivo=0&codOrigenEnvio=2
+                      Headers
+
+
+                                                                                                              47
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1112 - El Monto Total Desde debe ser mayor o igual al Monto Total Hasta
+                           ● 1113 - Si se realiza busqueda por monto Total, se debe ingresar los campos
+                                mtoTotalDesde y mtoTotalHasta
+                           ● 1114 - Fecha Documento Desde debe estar dentro del Periodo seleccionado
+                           ● 1115 - Debe cumplir con el siguiente formato ‘dd/mm/yyyy’
+                           ● 1116 - Fecha de documento Hasta debe ser mayor o igual al Fecha de documento
+                                Desde
+                           ● 1117 - Si se realiza busqueda por Fecha Documento, se debe ingresar los campos
+                                Fecha Documento Desde, Fecha Documento Hasta
+                           ● 1118 - Fecha Documento Hasta debe estar dentro del Periodo seleccionado
+                           ● 1104 - El código de tipo de comprobante de pago enviado no es válido
+                           ● 1119 - El código de tipo de inconsistencia enviado no es válido
+                           ● 1059 - Código tipo de Archivo no permitido o no valido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+
+
+            5.20 Servicio Web Api descargar resumen
+
+Nombre Web Services   Servicio Web Api descargar resumen
+Descripción           Permite descargar todos los tipos de resumen, propuesta, incluidos o excluidos, preliminar,
+                      RVIE generado, ajustes posteriores
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/resumen/web/resumencompro
+                      bantes/{perTributario}/{codTipoResumen}/{codTipoArchivo}/exporta?codLibro={codLibro}
+Parámetros[URL]                   Param-formato-tipo                              Descripción
+                        perTributario-alfanumérico-String        Periodo tributario (Obligatorio)
+                        codTipoResumen-alfanumérico-String       Código de tipo resumen (Obligatorio)
+                        codTipoArchivo-numérico-Integer          Código del tipo de archivo (Ver Anexo IV:
+                                                                 Extension del archivo a descargar)
+                                                                 (Obligatorio)
+                        codLibro-alfanumérico-String             Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]      No aplica.
+
+
+                                                                                                               48
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                             Parámetros                                     valor
+                        Content-Type           application/json
+                        Accept                 application/json
+                        Authorization          Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]                 Parámetros de Salida                            Descripcion
+                        Buffer-binary-binary                       buffer: Arreglo de bits
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/resumen/web/resumencompro
+                      bantes/202301/1/0/exporta?codLibro=14000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+                           ● 1059 - Código tipo de Archivo no permitido o no valido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ● 1056 - Solo se permite dato numérico de 1 dígito para el codTipoResumen
+                           ● 1057 - El campo "codTipoResumen" es nulo o vacío
+
+
+             5.21 Servicio Web Api descargar resumen inconsistencias
+
+Nombre Web Services   Servicio Web Api descargar resumen de inconsistencias RVIE
+Descripción           Retorna una lista, con el resumen de inconsistencias de los comprobantes de pago de
+                      acuerdo al periodo y tipo de resumen asociado al código enviado, en formato json.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/resumen/web/resumeninconsis
+                      tencias/{perPeriodoTributario}?codTipoResumen={codTipoResumen}&codLibro={codLibro}
+Parámetros[URL]                    Param-formato-tipo                                Descripción
+
+                                                                                                            49
+                      perPeriodoTributario -alfanumérico-String    Periodo tributario (Obligatorio)
+                      codTipoResumen-numérico-Integer              Código del tipo de resumen. El valor
+                                                                   enviado debe ser numérico de un
+                                                                   carácter (1, 2, 3 ó 4) (Obligatorio)
+                      codLibro-alfanumérico-String                 Código de libro: 140000 RVIE
+                                                                   (Obligatorio)
+Parámetros[body]     No aplica.
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                              Parámetros                                       valor
+                       Content-Type               application/json
+                       Accept                     application/json
+                       Authorization              Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]           Parámetros de Salida                               Descripcion
+                       Object                               Object - inicio
+                       numRuc-alfanumérico-String           Número de ruc
+                       perPeriodoTributario-                Periodo tributario
+                       alfanumérico-String
+                       codTipoResumen-Numérico-             Código de tipo resumen
+                       Integer
+                       cantidad-Object                      Object cantidad - inicio
+                       porcentajeRelFiscal-Numerico-        Porcentaje de cantidad de comprobantes con
+                       decimal128                           inconsistencias Relacionadas al Crédito Fiscal
+                       porcentajeNoRelFiscal-Numerico- Porcentaje de cantidad de comprobantes con
+                       decimal128                           inconsistencias No Relacionadas al Crédito Fiscal
+                       porcentajeSinValidaciones-           Porcentaje de cantidad de comprobantes sin
+                       Numerico-decimal128                  inconsistencias
+                       total-Numerico-decimal128            Cantidad total de comprobantes en un
+                                                            determinado periodo
+                       cantidad-Object                      Object cantidad - fin
+                       monto-Object                         Object monto - inicio
+                       porcentajeRelFiscal-Numerico-        Porcentaje de montos de comprobantes con
+                       decimal128                           inconsistencias Relacionadas al Crédito
+                       porcentajeNoRelFiscal-Numerico- Porcentaje de montos de comprobantes con
+                       decimal128                           inconsistencias No Relacionadas al Crédito Fiscal
+                                                            en un determinado periodo
+                       porcentajeSinValidaciones-           Porcentaje de montos de comprobantes sin
+                       Numerico-decimal128                  inconsistencias en un determinado periodo
+                       total-Numerico-decimal128            Monto total de comprobantes en un determinado
+                                                            periodo
+                       monto-Object                         Object monto - fin
+                       Object                               Object - fin
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/resumen/web/resumeninconsis
+                     tencias/202304?codTipoResumen=1&codLibro=140000
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+                                                                                                           50
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+                           ● 1056 - Solo se permite dato numérico de 1 dígito para el codTipoResumen
+                           ● 1057 - El campo "codTipoResumen" es nulo o vacío
+
+
+            5.22 Servicio Web Api exportar preliminar de registro de Ventas
+
+Nombre Web Services   Servicio Web Api exportar preliminar del registro de Ventas electrónico
+Descripción           Permite descargar el preliminar del registro de Ventas eletrónico.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                      s/{perTributario}/reportepreliminar?mtoTotalDesde={mtoTotalDesde}&mtoTotalHasta={mt
+                      oTotalHasta}&fecDocumentoDesde={fecDocumentoDesde}&fecDocumentoHasta={fecDocu
+                      mentoHasta}&numRucAdquiriente={numRucAdquiriente}&numCarSunat={numCarSunat}&
+                      codTipoCDP={codTipoCDP}&codTipoInconsistencia={codTipoInconsistencia}&codTipoArchiv
+                      o={codTipoArchivo}
+Parámetros[URL]                    Param-formato-tipo                                 Descripción
+                        perTributario-alfanumérico-String              Periodo seleccionado (Obligatorio)
+                        mtoTotalDesde-decimal-Decimal                  Monto desde (Opcional)
+                        mtoTotalHasta-decimal-Decimal                  Monto hasta (Opcional)
+                        fecDocumentoDesde-dd/mm/yyyy-Date              Fecha del documento desde (Opcional)
+                        fecDocumentoHasta-dd/mm/yyyy-Date              Fecha del documento hasta (Opcional)
+                        numRucAdquiriente-alfanumérico-String          Número de RUC Cliente (Opcional)
+                        numCarSunat-alfanumérico-String                CAR SUNAT (Opcional)
+                        codTipoCDP-alfanumérico-String                 Tipo de documento (Opcional)
+                        codTipoArchivo-numérico-Integer                Código del tipo de archivo (Ver Anexo IV:
+                                                                       Extension del archivo a descargar)
+                                                                       (Obligatorio)
+                        codTipoInconsistencia-alfanumérico-String      Código de tipo de inconsistencia
+                                                                       (Opcional)
+Parámetros[body]      No aplica
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                       valor
+                        Content-Type               application/json
+
+
+                                                                                                              51
+                      Accept                     application/json
+                      Authorization              Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]    Parámetros                                                                        Tipo
+                                                        Descripcion                          Formato
+                       de Salida                                                                        dato
+                                      Número de ticket de envío [AAAA99999999]
+                                      AAAA: Año
+                       numTicket                                                        alfanumerico   String
+                                      99: Tipo de correlativo
+                                      99999999: Número correlativo de envío
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                     s/202212/reportepreliminar?codTipoArchivo=0
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                               Seleccionado
+                          ● 1112 - El Monto Total Desde debe ser mayor o igual al Monto Total Hasta
+                          ● 1113 - Si se realiza busqueda por monto Total, se debe ingresar los campos
+                               mtoTotalDesde y mtoTotalHasta
+                          ● 1114 - Fecha Documento Desde debe estar dentro del Periodo seleccionado
+                          ● 1115 - Debe cumplir con el siguiente formato ‘dd/mm/yyyy’
+                          ● 1116 - Fecha de documento Hasta debe ser mayor o igual al Fecha de documento
+                               Desde
+                          ● 1117 - Si se realiza busqueda por Fecha Documento, se debe ingresar los campos
+                               Fecha Documento Desde, Fecha Documento Hasta
+                          ● 1118 - Fecha Documento Hasta debe estar dentro del Periodo seleccionado
+                          ● 1104 - El código de tipo de comprobante de pago enviado no es válido
+                          ● 1119 - El código de tipo de inconsistencia enviado no es válido
+                          ● 1059 - Código tipo de Archivo no permitido o no valido
+                          ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                          ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                          ● 1135 - El campo “codCar” no enviado o es vacío
+                          ● 1136 - Solo se permite dato numérico de 27 dígitos para el Codigo CAR.
+
+
+
+
+                                                                                                             52
+             5.23 Servicio Web Api descargar reporte de casillas
+
+Nombre Web Services   Servicio Web Api reporte de casillas
+Descripción           Permite descargar todos los tipos de resumen, propuesta, incluidos o excluidos, preliminar,
+                      RVIE generado, ajustes posteriores
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/casillas/e/casillaspropuestas/{p
+                      erTributario}/reporte/{tipoReporte}/{tipoDescarga}
+Parámetros[URL]                     Param-formato-tipo                                  Descripción
+                        perTributario-alfanumérico-String             Periodo tributario (Obligatorio)
+                        tipoReporte-alfanumérico-String               preliminar 1, comparada 2 (Obligatorio)
+                        tipoDescarga-alfanumérico-String               Txt, xls, pdf (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                          valor
+                        Content-Type                application/json
+                        Accept                      application/json
+                        Authorization               Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                           Tipo
+                                                            Descripcion                            Formato
+                          de Salida                                                                          dato
+                                       Número de ticket de envío [AAAA99999999]
+                                       AAAA: Año
+                         numTicket                                                             alfanumerico String
+                                       99: Tipo de correlativo
+                                       99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/casillas/e/casillaspr
+                      opuestas/202301/reporte/2/txt
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1082 - Código tipo de Descarga no permitido o no valido
+
+
+                                                                                                                 53
+                           ●    1333 - El campo "codTipoReporte" es nulo o vacío
+                           ●    1334 - El campo "codTipoReporte" solo admite valores: 1 o 2
+                           ●    1009 - Solo se permite dato numérico de 1 dígito para el codTipoDescarga
+                           ●    1010 - El campo "codTipoDescarga" es nulo o vacío
+
+
+             5.24 Servicio Web Api descargar inconsistencias en registros preliminar
+             registrado
+
+Nombre Web Services   Servicio Web Api descargar inconsistencias en registros preliminar registrado
+Descripción           Permite descargar inconsistencias
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/casillas/inconsistenciaslibros/{p
+                      erTributario}/{numCas}/reporteinconsistencia?cntlimite={cntlimite}&
+                      mtoNoSustentado={mtoNoSustentado}&desMtoNoSustentado={desMtoNoSustentado}
+Parámetros[URL]                      Param-formato-tipo                               Descripción
+                        perTributario-alfanumérico-String               Periodo tributario (Obligatorio)
+                        numCas-alfanumérico-String                      Número de casilla (Obligatorio)
+                        cntlimite-numérico-int                          Cantidad de registros para validar el
+                                                                        top (Obligatorio)
+                        mtoNoSustentado-numérico-decimal                Monto no sustenado en registros del
+                                                                        fv0621 (Opcional)
+                        desMtoNoSustentado-alfanumérico-String          Descripcion del monto no sustentado
+                                                                        en registros del fv0621 (Opcional)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                      valor
+                        Content-Type             application/json
+                        Accept                   application/json
+                        Authorization            Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]                Parámetros de Salida                              Descripcion
+                        Buffer- binary-binary                     buffer: Arreglo de bits
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/casillas/inconsistenciaslibros/20
+                      2301/reporteinconsistencia/txt?cntlimite=10
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                                                                                                               54
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● El campo “numCas” no enviado o es vacío
+                           ● El campo “cntlimite” no enviado o es vacío
+
+
+            5.25 Servicio Web Api descargar inconsistencias por comprobante pago
+
+Nombre Web Services   Servicio Web Api descargar inconsistencias por comprobantes de pago
+Descripción           Permite exportar las inconsistencias por comprobantes de pago.
+Url                   https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/inconsistencias/web/p
+                      eriodoinconsistencias/{perTributario}/exporta?codTipoArchivo={codTipoArchivo}&fecEmisi
+                      onIni={fecEmisionIni}&fecEmisionFin={fecEmisionFin}&codInconsistencia={codInconsistenci
+                      a}&numDocAdquiriente={numDocAdquiriente}&codTipoCDP={codTipoCDP}&numSerieCDP
+                      ={numSerieCDP}&numCDP={numCDP}&s={s}&ord={ord}
+Parámetros[URL]                   Param-formato-tipo                               Descripción
+                       fecEmisionIni-dd/mm/aaaa-String            Fecha de emisión del Comprobante de Pago
+                                                                  o documento - Inicio (Opcional)
+                       fecEmisionFin-dd/mm/aaaa-String            Fecha de emisión del Comprobante de Pago
+                                                                  o documento - FIN (Opcional)
+                       codInconsistencia-alfanumerico-String      Código de inconsistencia funcional o
+                                                                  calculada, ejemplo:
+                                                                   301 - Fecha de emisión del comprobante de
+                                                                  pago o fecha de pago del impuesto se anota
+                                                                  luego de los doce meses siguientes a la fecha
+                                                                  de emisión del comprobante o del pago del
+                                                                  impuesto, según corresponda. (Opcional)
+                       numDocAdquiriente-alfanumérico-            Número de RUC o Documento de Identidad
+                       String                                     del adquiriente (Opcional)
+                       codTipoCDP-alfanumérico-String             Tipo de Comprobante de Pago o Documento.
+                                                                  Se puede eliminar todos los códigos de
+                                                                  comprobantes de la tabla 03 del anexo N.° 1
+                                                                  de la Resolución de Superintendencia 112-
+                                                                  2021/SUNAT y modificatorias. (Opcional)
+                       numSerieCDP-alfanumérico-String            Número de serie del comprobante de pago o
+                                                                  documento. (Opcional)
+                       numCDP-alfanumérico-String                 Número del comprobante de pago o
+                                                                  documento. Nro Incial (Rango) (Opcional)
+                       perTributario-alfanumerico-String          Periodo tributario (Obligatorio)
+                       codTipoArchivo-numérico-Integer            Código del tipo de archivo (Ver Anexo IV:
+                                                                  Extension del archivo a descargar)
+                                                                  (Obligatorio)
+
+
+                                                                                                             55
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                       valor
+                        Content-Type                application/json
+                        Accept                      application/json
+                        Authorization               Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                        Tipo
+                                                            Descripción                       Formato
+                          de Salida                                                                       dato
+                                       Número de ticket de envío [AAAA99999999]
+                                       AAAA: Año
+                         numTicket                                                         alfanumerico String
+                                       99: Tipo de correlativo
+                                       99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/inconsistencias/web/p
+                      eriodoinconsistencias/202212/exporta?codTipoArchivo=0&fecEmisionIni=01/12/2022&fec
+                      EmisionFin=31/12/2022&codInconsistencia=&numDocAdquiriente=&codTipoCDP=&numSe
+                      rieCDP=&numCDP=&s=&ord=
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1098 - Formato de fecha de emisión inicial no permitido o no válido para la fecha
+                           ● 1100 - Formato de fecha de emisión final no permitido o no válido para la fecha
+                           ● 1102 - La Fecha de Emisión Final debe ser mayor o igual a la Fecha de Emisión
+                                Inicial
+                           ● 1104 - El código de tipo de comprobante de pago enviado no es válido
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1059 - Código tipo de Archivo no permitido o no valido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+
+
+             5.26 Servicio Web Api descargar constancia de recepción
+
+Nombre Web Services   Servicio Web Api descargar constancia de recepción
+
+                                                                                                            56
+Descripción           Permite descargar la constancia de recepción.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                      s/constancia/archivo?nomArchivo={nomArchivo}
+Parámetros[URL]                   Param-formato-tipo                               Descripción
+                        nomArchivo-alfanumérico-String             Nombre de archivo (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                               Parámetros                                      valor
+                        Content-Type               application/json
+                        Accept                     application/json
+                        Authorization              Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]                Parámetros de Salida                             Descripcion
+                        archivoPdf-Base64-String                   Archivo en base64
+Evidencias            URL
+                      https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/re
+                      gistroslibros/constancia/archivo?nomArchivo=LE2010017645020221200140400011112.pdf
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1134 - El campo “nomArchivo” no enviado o es vacío
+
+
+              5.27 Servicio Web Api descargar RVIE por periodo
+
+Nombre Web Services   Servicio Web Api descargar RVIE por periodo
+Descripción           Permite descargar el reporte consolidado de registro por periodo.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+
+                                                                                                              57
+                     s/descarga?perTributario={perTributario}&codOrigenEnvio={codOrigenEnvio}&codTipoArch
+                     ivo={codTipoArchivo}&codProceso={codProceso}&codLibro={codLibro}
+Parámetros[URL]               Param-formato-tipo                                 Descripción
+                       perTributario-alfanumérico-String Periodo tributario (Obligatorio)
+                       codOrigenEnvio-alfanumérico-          Código de origen de envío: 2 Servicio web
+                       String                                (Obligatorio)
+                       codTipoArchivo-numérico-Integer Código del tipo de archivo (Ver Anexo IV:
+                                                             Extension del archivo a descargar) (Obligatorio)
+                       codProceso-alfanumérico-String        Código del indicador de carga masiva.
+                                                             (Ver Anexo I: Indicador de carga masiva)
+                                                             (Obligatorio)
+                       codLibro-alfanumérico-String          Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]     No aplica.
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                              Parámetros                                        valor
+                       Content-Type               application/json
+                       Accept                     application/json
+                       Authorization              Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]     Parámetros                                                                            Tipo
+                                                        Descripcion                           Formato
+                         de Salida                                                                           dato
+                                     Número de ticket de envío [AAAA99999999]
+                                     AAAA: Año
+                        numTicket                                                         alfanumerico      String
+                                     99: Tipo de correlativo
+                                     99999999: Número correlativo de envío
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                     s/descarga?perTributario=202301&codOrigenEnvio=2&codTipoArchivo=0&codProceso=23
+                     &codLibro=140000
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                               Seleccionado
+
+
+                                                                                                                58
+                           ●    1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                           ●    1029 - Código tipo de Origen de Envio no permitido o no valido
+                           ●    1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+                           ●    1059 - Código tipo de Archivo no permitido o no valido
+                           ●    1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ●    1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ●    1138 - El campo "codProceso" es nulo o vacío
+                           ●    1139 - Código de Proceso no permitido o no valido
+                           ●    1140 - El campo “codLibro” no enviado o es vacío
+
+
+             5.28 Servicio Web Api descargar reporte consolidado por periodo
+
+Nombre Web Services   Servicio Web Api descargar reporte consolidado de registros por período
+Descripción           Permite descargar el reporte consolidado de registro por periodo.
+Url                   https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/re
+                      gistroslibros/descarga?perTributario={perTributario}&codOrigenEnvio={codOrigenEnvio}&c
+                      odTipoArchivo={codTipoArchivo}&codProceso={codProceso}&codLibro={codLibro}
+Parámetros[URL]                 Param-formato-tipo                                 Descripción
+                        perTributario-alfanumérico-String       Periodo tributario (Obligatorio)
+                        codOrigenEnvio-alfanumérico-            Código de origen de envío: 2 Servicio web
+                        String                                  (Obligatorio)
+                        codTipoArchivo-numérico-Integer         Código del tipo de archivo (Ver Anexo IV:
+                                                                Extension del archivo a descargar) (Obligatorio)
+                        codProceso-alfanumérico-String          Código del indicador de carga masiva
+                                                                (Ver Anexo I: Indicador de carga masiva)
+                                                                (Obligatorio)
+                        codLibro-alfanumérico-String            Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                              Parámetros                                        valor
+                        Content-Type              application/json
+                        Accept                    application/json
+                        Authorization             Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                            Tipo
+                                                          Descripcion                          Formato
+                          de Salida                                                                          dato
+                                       Número de ticket de envío [AAAA99999999]
+                                       AAAA: Año
+                         numTicket                                                         alfanumerico     String
+                                       99: Tipo de correlativo
+                                       99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/re
+                      gistroslibros/descarga?perTributario=202302&codOrigenEnvio=2&codTipoArchivo=0&codP
+                      roceso=23&codLibro=140000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                                                                                                                59
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                           ● 1029 - Código tipo de Origen de Envío no permitido o no válido
+                           ● 1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+                           ● 1059 - Código tipo de Archivo no permitido o no válido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ● 1138 - El campo "codProceso" es nulo o vacío
+                           ● 1139 - Código de Proceso no permitido o no valido
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+            5.29 Servicio Web Api descargar ajustes posteriores
+
+Nombre Web Services   Servicio Web Api descargar ajustes posteriores
+Descripción           Permite exportar los ajustes posteriores del RVIE, en caso no se haya cargado ningún
+                      archivo entonces descarga la propuesta informativa de ajustes posteriores de la SUNAT.
+Url                   https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/re
+                      gistroslibros/descarga?perTributario={perTributario}&codOrigenEnvio={codOrigenEnvio}&c
+                      odTipoArchivo={codTipoArchivo}&codProceso={codProceso}&codLibro={codLibro}
+Parámetros[URL]                 Param-formato-tipo                                  Descripción
+                        perTributario-alfanumérico-String       Periodo tributario (Obligatorio)
+                        codOrigenEnvio-alfanumérico-            Código de origen de envío: 2 Servicio web
+                        String                                  (Obligatorio)
+                        codTipoArchivo-numérico-Integer         Código del tipo de archivo (Ver Anexo IV:
+                                                                Extension del archivo a descargar) (Obligatorio)
+                        codProceso-alfanumérico-String          Código del indicador de carga masiva
+                                                                (Ver Anexo I: Indicador de carga masiva)
+                                                                (Obligatorio)
+                        codLibro-alfanumérico-String            Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                            Parámetros                                        valor
+                        Content-Type          application/json
+                        Accept                application/json
+                        Authorization         Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                            Tipo
+                                                           Descripcion                         Formato
+                          de Salida                                                                          dato
+                                       Número de ticket de envío [AAAA99999999]
+                                       AAAA: Año
+                         numTicket                                                         alfanumerico     String
+                                       99: Tipo de correlativo
+                                       99999999: Número correlativo de envío
+
+                                                                                                                60
+Evidencias            URL
+                      https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/re
+                      gistroslibros/descarga?perTributario=202302&codOrigenEnvio=2&codTipoArchivo=0&codP
+                      roceso=23&codLibro=140000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                                Seleccionado
+                           ● 1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                           ● 1029 - Código tipo de Origen de Envio no permitido o no valido
+                           ● 1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+                           ● 1059 - Código tipo de Archivo no permitido o no válido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ● 1138 - El campo "codProceso" es nulo o vacío
+                           ● 1139 - Código de Proceso no permitido o no valido
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+             5.30 Servicio Web Api descargar ajustes posteriores de periodos
+             anteriores
+
+Nombre Web Services   Servicio Web Api descargar ajustes posteriores de periodos anteriores
+Descripción           Permite exportar los ajustes posteriores de periodos anteriores del RC en caso se hayan
+                      cargado ajustes por parte del generador.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                      s/descarga?perTributario={perTributario}&codOrigenEnvio={codOrigenEnvio}&codTipoArch
+                      ivo={codTipoArchivo}&codProceso={codProceso}&codLibro={codLibro}
+Parámetros[URL]                Param-formato-tipo                                 Descripción
+                        perTributario-alfanumérico-String      Periodo tributario (Obligatorio)
+                        codOrigenEnvio-alfanumérico-           Código de origen de envío: 2 Servicio web
+                        String                                 (Obligatorio)
+                        codTipoArchivo-numérico-Integer        Código del tipo de archivo (Ver Anexo IV:
+                                                               Extension del archivo a descargar) (Obligatorio)
+                        codProceso-alfanumérico-String         Código del indicador de carga masiva
+                                                               (Ver Anexo I: Indicador de carga masiva)
+
+                                                                                                             61
+                                                              (Obligatorio)
+                       codLibro-alfanumérico-String           Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]     No aplica.
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                           Parámetros                                       valor
+                       Content-Type         application/json
+                       Accept               application/json
+                       Authorization        Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]     Parámetros                                                                         Tipo
+                                                         Descripcion                        Formato
+                         de Salida                                                                        dato
+                                     Número de ticket de envío [AAAA99999999]
+                                     AAAA: Año
+                        numTicket                                                       alfanumerico     String
+                                     99: Tipo de correlativo
+                                     99999999: Número correlativo de envío
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibro
+                     s/descarga?perTributario=202302&codOrigenEnvio=2&codTipoArchivo=0&codProceso=23
+                     &codLibro=140000
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                               Seleccionado
+                          ● 1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                          ● 1029 - Código tipo de Origen de Envio no permitido o no valido
+                          ● 1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+                          ● 1059 - Código tipo de Archivo no permitido o no válido
+                          ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                          ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                          ● 1138 - El campo "codProceso" es nulo o vacío
+                          ● 1139 - Código de Proceso no permitido o no valido
+                          ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+
+                                                                                                              62
+             5.31 Servicio Web Api descargar reporte inconsistencias por periodo
+
+Nombre Web Services   Servicio Web Api descargar inconsistencias por periodo
+Descripción           Permite descargar las inconsistencias por periodo.
+Url                   https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/inconsistencias/web/in
+                      consistencia/{codRegistroLibro}/exporta?codOrigenEnvio={codOrigenEnvio}
+Parámetros[URL]                   Param-formato-tipo                                  Descripción
+                        codRegistroLibro-alfanumérico-String         Código registro de libro (Obligatorio)
+                        codOrigenEnvio-alfanumérico-String           Código de origen de envío: 2 Servicio web
+                                                                     (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                             Parámetros                                        valor
+                        Content-Type             application/json
+                        Accept                   application/json
+                        Authorization            Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                            Tipo
+                                                            Descripcion                          Formato
+                          de Salida                                                                          dato
+                                       Número de ticket de envío [AAAA99999999]
+                                       AAAA: Año
+                         numTicket                                                            alfanumerico String
+                                       99: Tipo de correlativo
+                                       99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/inconsistencias/web/inconsistenci
+                      a/6463788755ff7605f43b6a0a/exporta?codOrigenEnvio=2
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● El campo “codRegistroLibro” no enviado o es vacío
+                           ● 1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                           ● 1029 - Código tipo de Origen de Envio no permitido o no valido
+                           ● 1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+
+
+
+
+                                                                                                                63
+             5.32 Servicio Web Api descargar reporte CAR
+
+Nombre Web Services   Servicio Web Api descargar reporte de CAR
+Descripción           Permite descargar la lista de CAR dependiendo de la fase en que se encuentre.
+Url                   https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/comprobante
+                      slibros/{perTributario}/reportecar?codOrigenEnvio={codOrigenEnvio}&codLibro={codLibro}
+Parámetros[URL]                   Param-formato-tipo                                 Descripción
+                        perTributario-alfanumérico-String           Periodo tributario (Obligatorio)
+                        codOrigenEnvio-alfanumérico-String          Código de origen de envío: 2 Servicio web
+                                                                    (Obligatorio)
+                        codLibro-alfanumérico-String                Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                             Parámetros                                       valor
+                        Content-Type            application/json
+                        Accept                  application/json
+                        Authorization           Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]      Parámetros                                                                           Tipo
+                                                          Descripcion                          Formato
+                          de Salida                                                                          dato
+                                      Número de ticket de envío [AAAA99999999]
+                                      AAAA: Año
+                         numTicket                                                        alfanumerico      String
+                                      99: Tipo de correlativo
+                                      99999999: Número correlativo de envío
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/comprobante
+                      slibros/202301/reportecar?codOrigenEnvio=2&codLibro=140000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1028 - El campo “codOrigenEnvio” no enviado o es vacío
+                           ● 1029 - Código tipo de Origen de Envio no permitido o no valido
+                           ● 1030 - Solo se permite dato numérico de 1 dígito para el codOrigenEnvio
+
+
+                                                                                                                64
+                          ●    1140 - El campo “codLibro” no enviado o es vacío
+
+
+             5.33 Servicio Web Api descargar reporte estadístico
+
+Nombre Web Services   Servicio Web Api descargar reporte estadístico
+Descripción           Permite exportar resumen estadístico
+Url                   https://api.sire.sunat.gob.pev1/contribuyente/migeigv/libros/rvierce/estadistica/web/resu
+                      menestadistico/exportarvie
+                      ?numRuc={numRuc}&perTributario={perTributario}&codTipoArchivo={codTipoArchivo}&co
+                      dTipoReporte={codTipoReporte}&codLibro={codLibro}&fechaIni={fechaIni}&fechaFin={fech
+                      aFin}&codTipoCDP={codTipoCDP}
+Parámetros[URL]                   Param-formato-tipo                                  Descripción
+                        numRuc-numérico-int                         Número de RUC del generador (Opcional)
+                        perTributario-alfanumérico-String           Periodo tributario (Obligatorio)
+                        fechaIni-yyyy mm dd-date                    Fecha emision desde del comprobante de
+                                                                    pago (Opcional)
+                        fechaFin-yyyy mm dd-date                    Fecha emision hasta del comprobante de
+                                                                    pago (Opcional)
+                        codTipoDocIdentidadAdquiriente -            Código de tipo de documento de indentidad
+                        alfanumérico-String                         del adquiriente (Opcional)
+                        numDocIdentidadAdquiriente-                 Número de documento de identidad del
+                        alfanumérico-String                         aquiriente (Opcional)
+                        codTipoCDP-alfanumerico-alfanumerico Tipo de comprobante (Opcional)
+                        codTipoArchivo-numérico-Integer             Código del tipo de archivo (Ver Anexo IV:
+                                                                    Extension del archivo a descargar)
+                                                                    (Obligatorio)
+                        codTipoReporte-numérico-Integer             1. Reporte montos/proveedor
+                                                                    2. Reporte montos/Notas credito y notas de
+                                                                    debito (Obligatorio)
+                        codLibro-alfanumerico-String                Codigo del Libro (Obligatorio)
+Parámetros[body]      No aplica.
+Parámetros[header]    Descripción:
+                      Content-type: tipo de contenido a enviar
+                      Valores:
+                      Content-type: application/x-www-form-urlencoded
+                             Parámetros                                       valor
+                        Content-Type             application/json
+                        Accept                   application/json
+                        Authorization            Bearer token obtenido de la autenticación
+                      Método: GET
+Parámetros[salida]         Parámetros                                       valor
+                       HTTP status         200
+                       Content-Type        application/json
+                                           El sistema descarga el archivo con el siguiente formato de nombre:
+                                           1-REPORTE MONTOS/ ADQUIRIENTE
+                                           (estadisticaPorProveedor.<extensión>)
+                                           Razón Social|Monto|Porcentaje
+                                           Los constructores SAC|127 000|16%
+                                           El ingeniero perez|86 999|9%
+                       Content-            El consorcio unido|75 000|7%
+                       Disposition
+                                           2-REPORTE MONTOS/NOTAS CREDITO Y NOTAS DE DEBITO
+                                           (estadisticaPorProveedorNotaCreDeb.<extensión> )
+                                           Razón Social|Monto|Porcentaje
+                                           Los constructores SAC|12 000|16%
+                                           El ingeniero perez|8 999|9%
+                                           El consorcio unido|7 000|7%
+Evidencias            URL
+                      https://api-
+                      sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/estadistica/web/resumenestadi
+
+
+                                                                                                             65
+                      stico/exportarvie?numRuc=20195923753&perTributario=202203&codTipoArchivo=0&codT
+                      ipoReporte=1&codLibro=140000
+                      Headers
+
+
+
+
+                      Body
+                      (No aplica)
+                      Result OK
+
+
+
+
+                      Result Fail
+                      { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                      impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error         { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                      impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                      enviado o es vacío" }] }
+                      Lista de errores 422:
+                           ● 1002 –El campo “numRuc” solo se permite dato numérico de 11 dígitos para el
+                                número de RUC.
+                           ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                           ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                           ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                           ● 1059 - Código tipo de Archivo no permitido o no valido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ● 1333 - El campo "codTipoReporte" es nulo o vacío
+                           ● 1334 - El campo "codTipoReporte" solo admite valores: 1, 2, 3 ó 4
+                           ● 1325 -Fecha de inicio debe estar dentro del Periodo seleccionado
+                           ● 1326 - Debe cumplir con el siguiente formato “dd/mm/yyyy”.
+                           ● 1327 - Fecha Fin debe ser mayor o igual a la Fecha Inicio
+                           ● 1328 - Si se realiza busqueda por Fecha de emision de cp, se debe ingresar los
+                                campos: Fecha Inicio, Fecha Fin
+                           ● 1329 - Fecha Fin debe estar dentro del Periodo seleccionado
+                           ● 1330 - Debe cumplir con el siguiente formato “dd/mm/yyyy”.
+                           ● 1331 - Fecha Fin debe ser mayor o igual al Fecha Inicio
+                           ● 1332 - Si se realiza busqueda por Fecha de emision de cp, se debe ingresar los
+                                campos: Fecha Fin, Fecha Inicio
+                           ● 1011 - El campo “codTipoCDP” no enviado o es vacío
+                           ● 1059 - Código tipo de Archivo no permitido o no valido
+                           ● 1060 - Solo se permite dato numérico de 1 dígito para el codTipoArchivo
+                           ● 1061 - El campo "codTipoArchivo" es nulo o vacío
+                           ● 1333 - El campo "codTipoReporte" es nulo o vacío
+                           ● 1334 - El campo "codTipoReporte" solo admite valores: 1, 2, 3 ó 4
+                           ● 1140 - El campo “codLibro” no enviado o es vacío
+                           ● 1103 - Solo se permite dato alfanumérico con un tamaño máximo de 15 para el
+                                número de documento del adquiriente
+
+
+            5.34 Servicio Web Api descargar reporte de cumplimiento
+
+Nombre Web Services   Servicio Web Api descargar reporte de cumplimiento
+Descripción           Permite descargar el reporte de cumplimiento.
+
+
+
+                                                                                                            66
+Url                  https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/cumplimiento/web/omisos/{pe
+                     rTributario}/{codLibro}/consultaReporteCumplimiento/exportardocumento
+Parámetros[URL]                  Param-formato-tipo                               Descripción
+                       perTributario-alfanumérico-String         Periodo tributario (Obligatorio)
+                       codLibro-alfanumérico-String              Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]     No aplica
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                            Parámetros                                      Valor
+                       Content-Type             application/json
+                       Accept                   application/json
+                       Authorization            Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]                 Parámetros de Salida                              Descripción
+                       archivoPdf-Base64-String                       Base64 representando el archivo
+                       nombreArchivoPdf-alfanumérico-String           Nombre de archive de descarga
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/cumplimiento/web/omisos/202
+                     212/140000/consultaReporteCumplimiento/exportardocumento
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+                          ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ● 1070 - No se ha encontrado información de comprobantes de pago en Periodo
+                               Seleccionado
+                          ● 1140 - El campo “codLibro” no enviado o es vacío
+
+
+
+                                                                                                           67
+              5.35 Servicio Web Api reporte de exportadores
+
+Nombre Web           Servicio Web Api reporte de exportadores
+Services
+Descripción
+Url                  https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/exp
+                     ortadores/reporte?codRegistroLibro={codRegistroLibro}&perTributario={perTributario}
+Parámetros[URL]                      Param-formato-tipo                                  Descripción
+                       perTributario-alfanumérico-String                   Periodo tributario (Obligatorio)
+                       codRegistroLibro-alfanumérico-String                Código registro de libro (Obligatorio)
+Parámetros[body]     No aplica.
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                             Parámetros                                          valor
+                       Content-Type                 application/json
+                       Accept                       application/json
+                       Authorization                Bearer token obtenido de la autenticación
+                     Método: GET
+Parámetros[salida]    Parámetros          valor
+                      HTTP status         200
+                      Content-Type        application/json
+                                          El sistema descarga el archivo con el siguiente formato de nombre:
+                                          REPORTE DE EXPORTADORES
+                                          Código de Aduana|Año Dam|Correlativo Dam|Fecha de
+                      Content-
+                                          Embarque|Valor fob $|T.C.|Valor fob s/.|Tipo cdp|Serie cdp|Numero
+                      Disposition
+                                          cdp|Fecha cdp
+                                           | | | |0|0|0| | | |
+                                          TOTAL EXPORTACIONES: |0
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/exportadores/r
+                     eporte?codRegistroLibro=6441c029ea85012ac4a77d9b&perTributario=202302
+                     Headers
+
+
+
+
+                     Body
+                     (No aplica)
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+Mensaje Error        { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                     impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                     enviado o es vacío" }] }
+                     Lista de errores 422:
+
+                                                                                                                68
+                          ●      1005 - El campo ‘perTributario’ no enviado o es vacio
+                          ●      1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                          ●      1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                          ●      El campo “codRegistroLibro” no enviado o es vacío
+
+
+              5.36 Servicio Web Api eliminar preliminar registrado
+
+Nombre Web           Servicio Web Api eliminar el preliminar registrado
+Services
+Descripción          Permite eliminar el preliminar registrado
+Url                  https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/regi
+                     stroslibros/{perTributario}/eliminapreliminar?codLibro={codLibro}
+Parámetros[URL]                   Param-formato-tipo                                   Descripción
+                       perTributario-alfanumérico-String             Periodo tributario (Obligatorio)
+                       codLibro-alfanumérico-String                  Código de libro: 140000 RVIE (Obligatorio)
+Parámetros[body]                 Param-formato-tipo                                  Descripción
+                       id-alfanumérico-String                      Id de registro (Opcional)
+                       codTipoRegistro-alfanumérico-String         Código de tipo registro: 14 (Obligatorio)
+Parámetros[header]   Descripción:
+                     Content-type: tipo de contenido a enviar
+                     Valores:
+                     Content-type: application/x-www-form-urlencoded
+                              Parámetros                                         valor
+                       Content-Type                application/json
+                       Accept                      application/json
+                       Authorization               Bearer token obtenido de la autenticación
+                     Método: PUT
+Parámetros[salida]                  Parámetros                                         Valor
+                       HTTP status                             200
+                       Content-Type                            application/json
+Evidencias           URL
+                     https://api-
+                     sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionlibro/web/registroslibros/
+                     202304/eliminapreliminar?codLibro=140000
+                     Headers
+
+
+
+
+                     Body
+
+
+
+
+                     Result OK
+
+
+
+
+                     Result Fail
+                     { "cod":"500", "msg":"Internal Server Error - Se presento una condicion inesperada que
+                     impidio completar el Request", "exc":"java.lang.NullPointerException at ..." }
+
+
+
+
+                                                                                                               69
+Mensaje Error       { "cod":"422", "msg":"Unprocessable Entity - Se presentaron errores de validacion que
+                    impidieron completar el Request", "errors":[ { "cod":"1001", "msg":"El campo “numRuc” no
+                    enviado o es vacío" }] }
+                    Lista de errores 422:
+                         ● 1005 - El campo ‘perTributario’ no enviado o es vacio
+                         ● 1006 - Formato de perTributario no cumple con el formato ‘yyyymm’
+                         ● 1007 - El perTributario de búsqueda no debe ser mayor a la fecha actual
+                         ● El campo “codRegistroLibro” no enviado o es vacío
+                         ● 1010 - El libro electronico con los siguientes datos: numero de RUC: XXXXXXXX
+                              periodo Tributario: AAAAMM y codigo de Libro:140000 no existe.
+
+
+       6. Documentación TUS.IO
+            Tus.io es un protocolo abierto para carga reanudable basado en HTTP el cual te
+            permite poder implementarlo con cualquier lenguaje de programación, ya sea
+            angular, java, Python, Android, etc. Pero, lo único que necesita es de la
+            configuración de un servicio como servidor y otro como cliente.
+
+            Este manual api lo que proporciona es el endpoint servidor en donde los usuarios
+            pueden generar sus peticiones para la importación/carga de archivos
+            reanudables de manera rápida y segura.
+
+            Por lo tanto, el usuario que quiera cargar archivos a los servicios api mencionados
+            en el apartado “5. Documentación Servicios Web API”, deberá configurar su
+            cliente de acuerdo a su necesidad, por lo que podrá ubicar más detalle de ello en
+            la documentación que es propia del protocolo tus.io en la página web
+            https://tus.io/implementations
+
+
+
+
+                                                                                                               70
+    Servicios Web Api que funcionan como servidor para la importación de archivos:
+       5.3 Servicio Web Api importar reemplazo de la propuesta
+       5.4 Servicio Web Api importar nuevos comprobantes propuesta
+       5.5 Servicio Web Api importar nuevos comprobantes preliminar
+       5.6 Servicio Web Api importar ajustes posteriores
+       5.7 Servicio Web Api importar ajustes posteriores de periodos anteriores
+
+7. Anexos
+   7.1 Anexo I: Indicador de carga masiva
+
+  Código                                              Descripción
+     1     Importar CP - Propuesta
+     2     Aceptar propuesta
+     3     Reemplazo de la Propuesta
+     4     Importa CP - Preliminar
+     5     Generar libro RVIE
+     6     Cargar Ajuste posteriores al periodo actual
+     7     Cargar Ajuste posteriores anteriores a la vigencia
+     8     Generar registro Ajustes Posterior RVIE
+     9     Generar registro Ajustes Posterior Anterior RVIE
+    10     Generar archivo exportar propuesta
+    11     Generar archivo exportar no incluidos
+    12     Generar archivo exportar preliminar
+    13     Generar archivo exportar inconsistencias
+    14     Generar archivo exportar propuesta ajustes posteriores
+    15     Generar archivo exportar CAR
+    16     Generar reporte de observaciones de comparación
+    17     Generar archivo exportar Libro Venta
+    18     Generar reporte de ajustes posteriores individual
+    19     Generar reporte de ajustes posteriores consolidado
+    20     Generar reporte de ajustes posteriores de periodos anteriores individual
+    21     Generar reporte de ajustes posteriores de periodos anteriores consolidado
+    22     Generar reporte consolidado del libro y ajustes
+    23     Generar reporte Libro RVIE
+    24     Generar Archivo personalizado Libros RVIE
+    25     Generar Archivo personalizado Propuesta RVIE
+    26     Generar Archivo personalizado Ajustes Posteriores RVIE
+    27     Carga archivo de comparación - validación
+    28     Generar archivo exportar preliminar registrado
+    29     Generar archivo exportar preliminar ajustes posteriores registrado
+    30     Generar reporte de inconsistencias generación del RVIE
+    31     Generar reporte de inconsistencias ajustes posteriores del RVIE
+    32     Generar libro RVIE - Archivo exportar Libro Venta
+    33     Generar libro RVIE - Archivo reporte inconsistencias
+    34     Generar libro RVIE - Achivo Reporte Exportadores
+    35     Generar libro RVIE - Archivo Propuesta Casillas
+    36     Generar Ajustes Posteriroes RVIE - Archivo exportar Ajuste
+    37     Generar Ajustes Posteriroes RVIE - Archivo reporte inconsistencias
+    38     Generar Ajustes Posteriores de periodos anteriores RVIE - Archivo exportar Ajuste
+    39     Aceptar propuesta sin Movimiento
+    40     Carga Tipo de Cambio
+    41     Generar reportes Estadisticos
+    42     Generar Reporte de comparación
+    43     Descargar Registros Electronicos RVIE
+    44     Descargar Registros Electronicos RCE
+    45     Descargar Constancia de Recepción RVIE
+
+                                                                                               71
+  46     Descargar Constancia de Recepción RCE
+  47     Descargar Reporte de Inconcistencias RVIE
+  48     Descargar Reporte de Inconcistencias RCE
+  49     Descargar Reporte de Ajustes Posteriores RVIE
+  50     Descargar Reporte de Ajustes Posteriores RCE
+  51     Descargar Reporte de Casillas Vista Comparada
+  52     Descargar Reporte de Inconsistencias de Casillas
+  53     Generar Reporte de comparación RCE
+  54     Carga Complementar
+  55     Carga Incluir Excluir
+  56     Carga No Domiciliados
+  57     Carga Comparacion RCE
+  58     Carga Comparacion RVIE
+  59     importar CP en Ajustes Posteriores RCE
+  60     importar CP no domiciliados en Ajustes Posteriores
+  61     Reemplazo de la Propuesta
+  62     Generacion de Inconsistencia por Casilla
+  63     Generación de ventas por Casilla (100. 101)
+  64     Generacion Inconsistencias en Registros para Casillas
+  65     Validar Propuesta
+  66     Validar Preliminar
+  67     Validar No Domiciliados
+  68     Reporte de Ajustes posteriores de periodos anteriores del RCE
+  69     Descarga Consolidada de registros del RCE
+  70     Descarga RCE
+  71     Reporte de ajustes posteriores del RVIE
+  72     Reporte de Ajustes posteriores de periodos anteriores del RVIE
+  73     Descarga Consolidada de registros del RVIE
+  74     Descarga RVIE
+  75     Generación de ventas por Casilla (100. 101)
+  76     Generacion Inconsistencias en Registros para Casillas
+  77     Validar Propuesta
+  78     Validar Preliminar
+  79     Validar No Domiciliados
+  80     Generación de archivo personalizado Propuesta RCE).
+  81     Generación de archivo personalizado Preliminar RCE).
+  82     Generación de archivo personalizado Preliminar Registrado RCE).
+  83     Generación de archivo personalizado Registro Compras).
+  84     Generación de archivo personalizado Ajuste Posterior RCE).
+  85     Generacion de archivo del libro de Ajustes Posteriores RVIE).
+  86     Generacion de archivo de inconsistencias de libro de Ajustes Posteriores RVIE).
+  87     Importar CP en Ajustes Posteriores RVIE.
+  88     Importar CP en Ajustes Posteriores de periodos anteriores RVIE general.
+  89     Importar CP en Ajustes Posteriores de periodos anteriores RVIE simplificado.
+  90     Generación de documentos para Intranet).
+  91     Exportar detalle propuesta casilla - Registro).
+  92     Exportar inconsistencias en registro);
+  93     Importar CP en Ajustes Posteriores RCE de Periodos Anteriores Simplificado
+  94     Importar CP en Ajustes Posteriores RCE de Periodos Anteriores General
+  95     Importar CP no domiciliados en Ajustes Posteriores RCE de Periodos Anteriores
+  96     Generar archivo exportar preliminar - RCE No Domiciliados
+  97     Exportar comprobantes excluidos
+
+
+  7.2 Anexo II: Tipo de correlativo
+
+Código                                            Descripción
+  01     Tipo envíos masivos
+  02     Número operación de generación RVIE
+
+                                                                                           72
+              03      Solicitud de generación de archivo
+              04      Tipo carga archivo comparación
+
+
+              7.3 Anexo III: Código de estado de envío
+
+           Código                                            Descripción
+             01       Cargado (solicitado)
+             02       Validando Archivo (en proceso)
+             03       Procesado con Errores
+             04       Procesado sin errores (concluido)
+             05       En proceso
+             06       Terminado
+
+
+              7.4 Anexo IV: Extension del archivo a descargar
+
+           Código                                             Descripción
+             0        txt
+             1        excel
+             2        csv
+
+
+              7.5 Anexo V: Ejemplo cliente TUS JAVA
+Para poder hacer uso de las API-REST de carga de archivos SIRE es necesario tener configurado en su
+proyecto la librería “tus-java-client” en la versión “0-5-0”, la cual se puede encontrar en el repositorio Maven
+https://repo1.maven.org/maven2/io/tus/java/client/tus-java-client/0.5.0/tus-java-client-0.5.0.jar
+Esta librería tiene algunas deficiencias para la gestión de los mensajes de retorno y error.
+Por lo cual se tienen que hacer algunas adecuaciones para que se muestren de forma correcta los errores
+proporcionados por el servicio SIRE.
+ 1. Crear el paquete: io.tus.java.client y dentro crear las clases:
+     • TusResponseBody.java: transforma los errores a texto que se puede imprimir en la bitácora.
+     • Http401And403CodeException.java: Muestra los errores de autenticación o de autorización
+     • Http422CodeException.java: Muestra los errores de validación de negocio
+     • HttpErrorCodeException.java: Clase de ayuda para la gestión de errores
+     • TusClientCustom.java: Cliente tus personalizado que permite ver la gestión de errores.
+     • TusUploaderCustom.java: Uploader tus personalizado que permite ver la gestión de errores.
+
+2.   Crear la clase: Demo.java (puede usar el paquete que desee): se usará para realizar la operación de
+     carga de archivos del SIRE.
+
+
+Clase:: TusResponseBody.java
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+
+                                                                                                             73
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.net.HttpURLConnection;
+
+public class TusResponseBody implements Serializable {
+
+ private int responseCode;
+ private String responseMessage;
+ private String responseBody;
+
+ public TusResponseBody(HttpURLConnection connection)
+   throws IOException {
+   if (connection != null) {
+     responseCode = connection.getResponseCode();
+     responseBody = readResponseBody(connection);
+     responseMessage = connection.getResponseMessage();
+   }
+ }
+
+ public int getResponseCode() {
+   return responseCode;
+ }
+
+ public String getResponseBody() {
+   return responseBody;
+ }
+
+ public String getResponseMessage() {
+   return responseMessage;
+ }
+
+ private String readResponseBody (
+   HttpURLConnection connection
+ ) throws IOException {
+
+   ByteArrayOutputStream result = new ByteArrayOutputStream();
+   byte[] buffer = new byte[1024];
+   int length;
+   InputStream inputStream;
+   if (connection.getErrorStream() != null) {
+
+                                                                              74
+          inputStream = connection.getErrorStream();
+        } else {
+          try {
+            inputStream = connection.getInputStream();
+          } catch (IOException e) {
+            return e.getMessage();
+          }
+        }
+
+        if (inputStream == null) {
+          return "";
+        }
+        try {
+          while ((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+          }
+          connection.disconnect();
+        } catch (IOException e) {
+          return e.getMessage();
+        }
+        return result.toString("UTF-8");
+
+
+
+    }
+
+    @Override
+    public String toString() {
+      return responseBody.isEmpty()? responseMessage: responseBody;
+    }
+}
+
+
+
+
+                                                                      75
+Clase:: Http401And403CodeException.java
+
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.net.HttpURLConnection;
+
+public class Http401And403CodeException extends HttpErrorCodeException {
+
+    public Http401And403CodeException(
+      TusResponseBody response,
+      HttpURLConnection connection
+    ) {
+      super(response, connection);
+    }
+}
+
+
+
+
+                                                                              76
+Clase:: Http422CodeException.java
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
+public class Http422CodeException extends HttpErrorCodeException {
+  public Http422CodeException(
+    TusResponseBody response,
+    HttpURLConnection connection
+  ) throws IOException {
+    super(response, connection);
+  }
+}
+
+
+
+
+                                                                              77
+Clase:: HttpErrorCodeException.java
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.net.HttpURLConnection;
+
+public class HttpErrorCodeException extends ProtocolException {
+
+    private static final long serialVersionUID = 0l;
+
+    private final TusResponseBody response;
+
+    public HttpErrorCodeException(
+      TusResponseBody response,
+      HttpURLConnection connection
+    ) {
+      super(response.getResponseMessage(), connection);
+      this.response = response;
+    }
+
+    public TusResponseBody getResponseBody() {
+      return response;
+    }
+
+
+}
+
+
+
+
+                                                                              78
+Clase:: TusClientCustom.java
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.net.Proxy;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+
+/**
+ * This class is used for creating or resuming uploads.
+ */
+public class TusClientCustom {
+    /**
+     * Version of the tus protocol used by the client. The remote server
+needs to support this
+     * version, too.
+     */
+    public static final String TUS_VERSION = "1.0.0";
+
+    private URL uploadCreationURL;
+    private Proxy proxy;
+    private boolean resumingEnabled;
+    private boolean removeFingerprintOnSuccessEnabled;
+    private TusURLStore urlStore;
+    private Map<String, String> headers;
+    private int connectTimeout = 5000;
+
+
+
+                                                                              79
+   /**
+    * Create a new tus client.
+    */
+   public TusClientCustom() {
+
+   }
+
+    /**
+     * Set the URL used for creating new uploads. This is required if you
+want to initiate new
+     * uploads using {@link #createUpload} or {@link #resumeOrCreateUpload}
+but is not used if you
+     * only resume existing uploads.
+     *
+     * @param uploadCreationURL Absolute upload creation URL
+     */
+    public void setUploadCreationURL(URL uploadCreationURL) {
+        this.uploadCreationURL = uploadCreationURL;
+    }
+
+   /**
+    * Get the current upload creation URL.
+    *
+    * @return Current upload creation URL
+    */
+   public URL getUploadCreationURL() {
+       return uploadCreationURL;
+   }
+
+   /**
+    * Set the proxy that will be used for all requests.
+    *
+    * @param proxy Proxy to use
+    */
+   public void setProxy(Proxy proxy) {
+       this.proxy = proxy;
+   }
+
+   /**
+    * Get the current proxy used for all requests.
+    *
+    * @return Current proxy
+    */
+   public Proxy getProxy() {
+       return proxy;
+   }
+
+   /**
+
+
+                                                                              80
+     * Enable resuming already started uploads. This step is required if you
+want to use
+     * {@link #resumeUpload(TusUpload)}.
+     *
+     * @param urlStore Storage used to save and retrieve upload URLs by its
+fingerprint.
+     */
+    public void enableResuming(@NotNull TusURLStore urlStore) {
+        resumingEnabled = true;
+        this.urlStore = urlStore;
+    }
+
+   /**
+    * Disable resuming started uploads.
+    *
+    * @see #enableResuming(TusURLStore)
+    */
+   public void disableResuming() {
+       resumingEnabled = false;
+       this.urlStore = null;
+   }
+
+    /**
+     * Get the current status if resuming.
+     *
+     * @see #enableResuming(TusURLStore)
+     * @see #disableResuming()
+     *
+     * @return True if resuming has been enabled using {@link
+#enableResuming(TusURLStore)}
+     */
+    public boolean resumingEnabled() {
+        return resumingEnabled;
+    }
+
+   /**
+    * Enable removing fingerprints after a successful upload.
+    *
+    * @see #disableRemoveFingerprintOnSuccess()
+    */
+   public void enableRemoveFingerprintOnSuccess() {
+       removeFingerprintOnSuccessEnabled = true;
+   }
+
+   /**
+    * Disable removing fingerprints after a successful upload.
+    *
+    * @see #enableRemoveFingerprintOnSuccess()
+    */
+
+                                                                           81
+   public void disableRemoveFingerprintOnSuccess() {
+       removeFingerprintOnSuccessEnabled = false;
+   }
+
+    /**
+     * Get the current status if removing fingerprints after a successful
+upload.
+     *
+     * @see #enableRemoveFingerprintOnSuccess()
+     * @see #disableRemoveFingerprintOnSuccess()
+     *
+     * @return True if resuming has been enabled using {@link
+#enableResuming(TusURLStore)}
+     */
+    public boolean removeFingerprintOnSuccessEnabled() {
+        return removeFingerprintOnSuccessEnabled;
+    }
+
+
+    /**
+     * Set headers which will be added to every HTTP requestes made by this
+TusClient instance.
+     * These may to overwrite tus-specific headers, which can be identified
+by their Tus-*
+     * prefix, and can cause unexpected behavior.
+     *
+     * @see #getHeaders()
+     * @see #prepareConnection(HttpURLConnection)
+     *
+     * @param headers The map of HTTP headers
+     */
+    public void setHeaders(@Nullable Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    /**
+     * Get the HTTP headers which should be contained in every request and
+were configured using
+     * {@link #setHeaders(Map)}.
+     *
+     * @see #setHeaders(Map)
+     * @see #prepareConnection(HttpURLConnection)
+     *
+     * @return The map of configured HTTP headers
+     */
+    @Nullable
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+                                                                              82
+   /**
+    * Sets the timeout for a Connection.
+    * @param timeout in milliseconds
+    */
+   public void setConnectTimeout(int timeout) {
+       connectTimeout = timeout;
+   }
+
+   /**
+    * Returns the Connection Timeout.
+    * @return Timeout in milliseconds.
+    */
+   public int getConnectTimeout() {
+       return connectTimeout;
+   }
+
+    /**
+     * Create a new upload using the Creation extension. Before calling this
+function, an "upload
+     * creation URL" must be defined using {@link #setUploadCreationURL(URL)}
+or else this
+     * function will fail.
+     * In order to create the upload a POST request will be issued. The
+file's chunks must be
+     * uploaded manually using the returned {@link TusUploader} object.
+     *
+     * @param upload The file for which a new upload will be created
+     * @return Use {@link TusUploader} to upload the file's chunks.
+     * @throws ProtocolException Thrown if the remote server sent an
+unexpected response, e.g.
+     * wrong status codes or missing/invalid headers.
+     * @throws IOException Thrown if an exception occurs while issuing the
+HTTP request.
+     */
+    public TusUploaderCustom createUpload(@NotNull TusUpload upload) throws
+ProtocolException, IOException {
+        HttpURLConnection connection = openConnection(uploadCreationURL);
+        connection.setRequestMethod("POST");
+        prepareConnection(connection);
+
+        String encodedMetadata = upload.getEncodedMetadata();
+        if (encodedMetadata.length() > 0) {
+            connection.setRequestProperty("Upload-Metadata",
+encodedMetadata);
+        }
+
+        connection.addRequestProperty("Upload-Length",
+Long.toString(upload.getSize()));
+
+                                                                           83
+       connection.connect();
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 401 || responseCode == 403) {
+            throw new Http401And403CodeException(new
+TusResponseBody(connection), connection);
+        }
+
+        if(responseCode == 422) {
+            throw new Http422CodeException(new TusResponseBody(connection),
+connection);
+        }
+
+        if(!(responseCode >= 200 && responseCode < 300)) {
+            throw new ProtocolException("unexpected status code (" +
+responseCode + ") while creating upload", connection);
+        }
+
+        String urlStr = connection.getHeaderField("Location");
+        if (urlStr == null || urlStr.length() == 0) {
+            throw new ProtocolException("missing upload URL in response for
+creating upload", connection);
+        }
+
+        // The upload URL must be relative to the URL of the request by which
+is was returned,
+        // not the upload creation URL. In most cases, there is no difference
+between those two
+        // but there may be cases in which the POST request is redirected.
+        URL uploadURL = new URL(connection.getURL(), urlStr);
+
+       if (resumingEnabled) {
+           urlStore.set(upload.getFingerprint(), uploadURL);
+       }
+
+       return createUploader(upload, uploadURL, 0L);
+   }
+
+    @NotNull
+    private HttpURLConnection openConnection(@NotNull URL uploadURL) throws
+IOException {
+        if (proxy != null) {
+            return (HttpURLConnection) uploadURL.openConnection(proxy);
+        }
+        return (HttpURLConnection) uploadURL.openConnection();
+    }
+
+   @NotNull
+
+
+                                                                              84
+    private TusUploaderCustom createUploader(@NotNull TusUpload upload,
+@NotNull URL uploadURL, long offset)
+        throws IOException {
+        TusUploaderCustom uploader = new TusUploaderCustom(this, upload,
+uploadURL, upload.getTusInputStream(), offset);
+        uploader.setProxy(proxy);
+        return uploader;
+    }
+
+    /**
+     * Try to resume an already started upload. Before call this function,
+resuming must be
+     * enabled using {@link #enableResuming(TusURLStore)}. This method will
+look up the URL for this
+     * upload in the {@link TusURLStore} using the upload's fingerprint (see
+     * {@link TusUpload#getFingerprint()}). After a successful lookup a HEAD
+request will be issued
+     * to find the current offset without uploading the file, yet.
+     *
+     * @param upload The file for which an upload will be resumed
+     * @return Use {@link TusUploader} to upload the remaining file's chunks.
+     * @throws FingerprintNotFoundException Thrown if no matching fingerprint
+has been found in
+     * {@link TusURLStore}. Use {@link #createUpload(TusUpload)} to create a
+new upload.
+     * @throws ResumingNotEnabledException Throw if resuming has not been
+enabled using {@link
+     * #enableResuming(TusURLStore)}.
+     * @throws ProtocolException Thrown if the remote server sent an
+unexpected response, e.g.
+     * wrong status codes or missing/invalid headers.
+     * @throws IOException Thrown if an exception occurs while issuing the
+HTTP request.
+     */
+    public TusUploaderCustom resumeUpload(@NotNull TusUpload upload) throws
+            FingerprintNotFoundException, ResumingNotEnabledException,
+ProtocolException, IOException {
+        if (!resumingEnabled) {
+            throw new ResumingNotEnabledException();
+        }
+
+       URL uploadURL = urlStore.get(upload.getFingerprint());
+       if (uploadURL == null) {
+           throw new FingerprintNotFoundException(upload.getFingerprint());
+       }
+
+       return beginOrResumeUploadFromURL(upload, uploadURL);
+   }
+
+
+                                                                           85
+    /**
+     * Begin an upload or alternatively resume it if the upload has already
+been started before. In contrast to
+     * {@link #createUpload(TusUpload)} and {@link
+#resumeOrCreateUpload(TusUpload)} this method will not create a new
+     * upload. The user must obtain the upload location URL on their own as
+this method will not send the POST request
+     * which is normally used to create a new upload.
+     * Therefore, this method is only useful if you are uploading to a
+service which takes care of creating the tus
+     * upload for yourself. One example of such a service is the Vimeo API.
+     * When called a HEAD request will be issued to find the current offset
+without uploading the file, yet.
+     * The uploading can be started by using the returned {@link TusUploader}
+object.
+     *
+     * @param upload The file for which an upload will be resumed
+     * @param uploadURL The upload location URL at which has already been
+created and this file should be uploaded to.
+     * @return Use {@link TusUploader} to upload the remaining file's chunks.
+     * @throws ProtocolException Thrown if the remote server sent an
+unexpected response, e.g.
+     * wrong status codes or missing/invalid headers.
+     * @throws IOException Thrown if an exception occurs while issuing the
+HTTP request.
+     */
+    public TusUploaderCustom beginOrResumeUploadFromURL(@NotNull TusUpload
+upload, @NotNull URL uploadURL) throws
+            ProtocolException, IOException {
+        HttpURLConnection connection = openConnection(uploadURL);
+        connection.setRequestMethod("HEAD");
+        prepareConnection(connection);
+
+       connection.connect();
+
+       int responseCode = connection.getResponseCode();
+
+        if (responseCode == 401 || responseCode == 403) {
+            throw new Http401And403CodeException(new
+TusResponseBody(connection), connection);
+        }
+
+        if(responseCode == 422) {
+            throw new Http422CodeException(new TusResponseBody(connection),
+connection);
+        }
+
+       if(!(responseCode >= 200 && responseCode < 300)) {
+
+
+                                                                              86
+            throw new HttpErrorCodeException(new TusResponseBody(connection),
+connection);
+        }
+
+        String offsetStr = connection.getHeaderField("Upload-Offset");
+        if (offsetStr == null || offsetStr.length() == 0) {
+            throw new ProtocolException("missing upload offset in response
+for resuming upload", connection);
+        }
+        long offset = Long.parseLong(offsetStr);
+
+       return createUploader(upload, uploadURL, offset);
+   }
+
+    /**
+     * Try to resume an upload using {@link #resumeUpload(TusUpload)}. If the
+method call throws
+     * an {@link ResumingNotEnabledException} or {@link
+FingerprintNotFoundException}, a new upload
+     * will be created using {@link #createUpload(TusUpload)}.
+     *
+     * @param upload The file for which an upload will be resumed
+     * @throws ProtocolException Thrown if the remote server sent an
+unexpected response, e.g.
+     * wrong status codes or missing/invalid headers.
+     * @throws IOException Thrown if an exception occurs while issuing the
+HTTP request.
+     * @return {@link TusUploader} instance.
+     */
+    public TusUploaderCustom resumeOrCreateUpload(@NotNull TusUpload upload)
+throws ProtocolException, IOException {
+        try {
+            return resumeUpload(upload);
+        } catch (FingerprintNotFoundException e) {
+            return createUpload(upload);
+        } catch (ResumingNotEnabledException e) {
+            return createUpload(upload);
+        } catch (ProtocolException e) {
+            // If the attempt to resume returned a 404 Not Found, we
+immediately try to create a new
+            // one since TusExectuor would not retry this operation.
+            HttpURLConnection connection = e.getCausingConnection();
+            if (connection != null && connection.getResponseCode() == 404) {
+                return createUpload(upload);
+            }
+
+           throw e;
+       }
+   }
+
+                                                                             87
+    /**
+     * Set headers used for every HTTP request. Currently, this will add the
+Tus-Resumable header
+     * and any custom header which can be configured using {@link
+#setHeaders(Map)},
+     *
+     * @param connection The connection whose headers will be modified.
+     */
+    public void prepareConnection(@NotNull HttpURLConnection connection) {
+        // Only follow redirects, if the POST methods is preserved. If
+http.strictPostRedirect is
+        // disabled, a POST request will be transformed into a GET request
+which is not wanted by us.
+
+        // CHECKSTYLE:OFF
+        // LineLength - Necessary because of length of the link
+        // See:https://github.com/openjdk/jdk/blob/jdk7-
+b43/jdk/src/share/classes/sun/net/www/protocol/http/HttpURLConnection.java#L2
+020-L2035
+        // CHECKSTYLE:ON
+        connection.setInstanceFollowRedirects(Boolean.getBoolean("http.strict
+PostRedirect"));
+
+       connection.setConnectTimeout(connectTimeout);
+       connection.addRequestProperty("Tus-Resumable", TUS_VERSION);
+
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                connection.addRequestProperty(entry.getKey(),
+entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Actions to be performed after a successful upload completion.
+     * Manages URL removal from the URL store if remove fingerprint on
+success is enabled
+     *
+     * @param upload that has been finished
+     */
+    protected void uploadFinished(@NotNull TusUpload upload) {
+        if (resumingEnabled && removeFingerprintOnSuccessEnabled) {
+            urlStore.remove(upload.getFingerprint());
+        }
+    }
+}
+
+
+                                                                           88
+89
+Clase: TusUploaderCustom.java
+/**
+ *
+ * Copyright 2011-2024 the original author or authors.
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ * *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package io.tus.java.client;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Optional;
+
+/**
+ * This class is used for doing the actual upload of the files. Instances are
+returned by
+ * {@link TusClientCustom#createUpload(TusUpload)}, {@link
+TusClientCustom#createUpload(TusUpload)} and
+ * {@link TusClientCustom#resumeOrCreateUpload(TusUpload)}.
+ * <br>
+ * After obtaining an instance you can upload a file by following these
+steps:
+ * <ol>
+ * <li>Upload a chunk using {@link #uploadChunk()}</li>
+ * <li>Optionally get the new offset ({@link #getOffset()} to calculate the
+progress</li>
+ * <li>Repeat step 1 until the {@link #uploadChunk()} returns -1</li>
+ * <li>Close HTTP connection and InputStream using {@link #finish()} to free
+resources</li>
+ * </ol>
+ */
+public class TusUploaderCustom {
+
+
+
+                                                                              90
+   private URL uploadURL;
+   private Proxy proxy;
+   private TusInputStream input;
+   private long offset;
+   private TusClientCustom client;
+   private TusUpload upload;
+   private byte[] buffer;
+   private int requestPayloadSize = 10 * 1024 * 1024;
+   private int bytesRemainingForRequest;
+
+   private HttpURLConnection connection;
+   private OutputStream output;
+
+    /**
+     * Begin a new upload request by opening a PATCH request to specified
+upload URL. After this
+     * method returns a connection will be ready and you can upload chunks of
+the file.
+     *
+     * @param client Used for preparing a request ({@link
+TusClient#prepareConnection(HttpURLConnection)}
+     * @param upload {@link TusUpload} to be uploaded.
+     * @param uploadURL URL to send the request to
+     * @param input Stream to read (and seek) from and upload to the remote
+server
+     * @param offset Offset to read from
+     * @throws IOException Thrown if an exception occurs while issuing the
+HTTP request.
+     */
+    public TusUploaderCustom(TusClientCustom client, TusUpload upload, URL
+uploadURL, TusInputStream input, long offset)
+        throws IOException {
+        this.uploadURL = uploadURL;
+        this.input = input;
+        this.offset = offset;
+        this.client = client;
+        this.upload = upload;
+
+       input.seekTo(offset);
+
+       setChunkSize(2 * 1024 * 1024);
+   }
+
+   private void openConnection() throws IOException, ProtocolException {
+       // Only open a connection, if we have none open.
+       if (connection != null) {
+           return;
+       }
+
+
+                                                                           91
+       bytesRemainingForRequest = requestPayloadSize;
+       input.mark(requestPayloadSize);
+
+        if (proxy != null) {
+            connection = (HttpURLConnection) uploadURL.openConnection(proxy);
+        } else {
+            connection = (HttpURLConnection) uploadURL.openConnection();
+        }
+        client.prepareConnection(connection);
+        connection.setRequestProperty("Upload-Offset",
+Long.toString(offset));
+        connection.setRequestProperty("Content-Type",
+"application/offset+octet-stream");
+        connection.setRequestProperty("Expect", "100-continue");
+
+       try {
+           connection.setRequestMethod("PATCH");
+           // Check whether we are running on a buggy JRE
+       } catch (java.net.ProtocolException pe) {
+           connection.setRequestMethod("POST");
+           connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+       }
+
+        connection.setDoOutput(true);
+        connection.setChunkedStreamingMode(0);
+        try {
+            output = connection.getOutputStream();
+        } catch (java.net.ProtocolException pe) {
+            // If we already have a response code available, our expectation
+using the "Expect: 100-
+            // continue" header failed and we should handle this response.
+            if (connection.getResponseCode() != -1) {
+                finish();
+            }
+
+           throw pe;
+       }
+   }
+
+    /**
+     * Sets the used chunk size. This number is used by {@link
+#uploadChunk()} to indicate how
+     * much data is uploaded in a single take. When choosing a value for this
+parameter you need to
+     * consider that uploadChunk() will only return once the specified number
+of bytes has been
+     * sent. For slow internet connections this may take a long time. In
+addition, a buffer with
+     * the chunk size is allocated and kept in memory.
+
+                                                                           92
+    *
+    * @param size The new chunk size
+    */
+   public void setChunkSize(int size) {
+       buffer = new byte[size];
+   }
+
+   /**
+    * Returns the current chunk size set using {@link #setChunkSize(int)}.
+    *
+    * @return Current chunk size
+    */
+   public int getChunkSize() {
+       return buffer.length;
+   }
+
+    /**
+     * Set the maximum payload size for a single request counted in bytes.
+This is useful for splitting
+     * bigger uploads into multiple requests. For example, if you have a
+resource of 2MB and
+     * the payload size set to 1MB, the upload will be transferred by two
+requests of 1MB each.
+     *
+     * The default value for this setting is 10 * 1024 * 1024 bytes (10 MiB).
+     *
+     * Be aware that setting a low maximum payload size (in the low megabytes
+or even less range) will result in
+     * decreased performance since more requests need to be used for an
+upload. Each request will come with its overhead
+     * in terms of longer upload times.
+     *
+     * Be aware that setting a high maximum payload size may result in a high
+memory usage since
+     * tus-java-client usually allocates a buffer with the maximum payload
+size (this buffer is used
+     * to allow retransmission of lost data if necessary). If the client is
+running on a memory-
+     * constrained device (e.g. mobile app) and the maximum payload size is
+too high, it might
+     * result in an {@link OutOfMemoryError}.
+     *
+     * This method must not be called when the uploader has currently an open
+connection to the
+     * remote server. In general, try to set the payload size before invoking
+{@link #uploadChunk()}
+     * the first time.
+     *
+     * @see #getRequestPayloadSize()
+
+                                                                             93
+     *
+     * @param size Number of bytes for a single payload
+     * @throws IllegalStateException Thrown if the uploader currently has a
+connection open
+     */
+    public void setRequestPayloadSize(int size) throws IllegalStateException
+{
+        if (connection != null) {
+            throw new IllegalStateException("payload size for a single
+request must not be "
+                    + "modified as long as a request is in progress");
+        }
+
+       requestPayloadSize = size;
+   }
+
+   /**
+    * Get the current maximum payload size for a single request.
+    *
+    * @see #setChunkSize(int)
+    *
+    * @return Number of bytes for a single payload
+    */
+   public int getRequestPayloadSize() {
+       return requestPayloadSize;
+   }
+
+    /**
+     * Upload a part of the file by reading a chunk from the InputStream and
+writing
+     * it to the HTTP request's body. If the number of available bytes is
+lower than the chunk's
+     * size, all available bytes will be uploaded and nothing more.
+     * No new connection will be established when calling this method,
+instead the connection opened
+     * in the previous calls will be used.
+     * The size of the read chunk can be obtained using {@link
+#getChunkSize()} and changed
+     * using {@link #setChunkSize(int)}.
+     * In order to obtain the new offset, use {@link #getOffset()} after this
+method returns.
+     *
+     * @return Number of bytes read and written.
+     * @throws IOException Thrown if an exception occurs while reading from
+the source or writing
+     *                       to the HTTP request.
+     */
+    public int uploadChunk() throws IOException, ProtocolException {
+        openConnection();
+
+                                                                           94
+       int bytesToRead = Math.min(getChunkSize(), bytesRemainingForRequest);
+
+       int bytesRead = input.read(buffer, bytesToRead);
+       if (bytesRead == -1) {
+           // No bytes were read since the input stream is empty
+           return -1;
+       }
+
+       // Do not write the entire buffer to the stream since the array will
+       // be filled up with 0x00s if the number of read bytes is lower then
+       // the chunk's size.
+       output.write(buffer, 0, bytesRead);
+       output.flush();
+
+       offset += bytesRead;
+       bytesRemainingForRequest -= bytesRead;
+
+       if (bytesRemainingForRequest <= 0) {
+           finishConnection();
+       }
+
+       return bytesRead;
+   }
+
+    /**
+     * Upload a part of the file by read a chunks specified size from the
+InputStream and writing
+     * it to the HTTP request's body. If the number of available bytes is
+lower than the chunk's
+     * size, all available bytes will be uploaded and nothing more.
+     * No new connection will be established when calling this method,
+instead the connection opened
+     * in the previous calls will be used.
+     * In order to obtain the new offset, use {@link #getOffset()} after this
+method returns.
+     *
+     * This method ignored the payload size per request, which may be set
+using
+     * {@link #setRequestPayloadSize(int)}. Please, use {@link
+#uploadChunk()} instead.
+     *
+     * @deprecated This method is inefficient and has been replaced by {@link
+#setChunkSize(int)}
+     *             and {@link #uploadChunk()} and should not be used anymore.
+The reason is, that
+     *             this method allocates a new buffer with the supplied chunk
+size for each time
+
+
+                                                                           95
+     *             it's called without reusing it. This results in a high
+number of memory
+     *             allocations and should be avoided. The new methods do not
+have this issue.
+     *
+     * @param chunkSize Maximum number of bytes which will be uploaded. When
+choosing a value
+     *                  for this parameter you need to consider that the
+method call will only
+     *                  return once the specified number of bytes have been
+sent. For slow
+     *                  internet connections this may take a long time.
+     * @return Number of bytes read and written.
+     * @throws IOException Thrown if an exception occurs while reading from
+the source or writing
+     *                      to the HTTP request.
+     */
+    @Deprecated public int uploadChunk(int chunkSize) throws IOException,
+ProtocolException {
+        openConnection();
+
+       byte[] buf = new byte[chunkSize];
+       int bytesRead = input.read(buf, chunkSize);
+       if (bytesRead == -1) {
+           // No bytes were read since the input stream is empty
+           return -1;
+       }
+
+       // Do not write the entire buffer to the stream since the array will
+       // be filled up with 0x00s if the number of read bytes is lower then
+       // the chunk's size.
+       output.write(buf, 0, bytesRead);
+       output.flush();
+
+       offset += bytesRead;
+
+       return bytesRead;
+   }
+
+    /**
+     * Get the current offset for the upload. This is the number of all bytes
+uploaded in total and
+     * in all requests (not only this one). You can use it in conjunction
+with
+     * {@link TusUpload#getSize()} to calculate the progress.
+     *
+     * @return The upload's current offset.
+     */
+    public long getOffset() {
+
+                                                                           96
+       return offset;
+   }
+
+   /**
+    * This methods returns the destination {@link URL} of the upload.
+    * @return The {@link URL} of the upload.
+    */
+   public URL getUploadURL() {
+       return uploadURL;
+   }
+
+   /**
+    * Set the proxy that will be used when uploading.
+    *
+    * @param proxy Proxy to use
+    */
+   public void setProxy(Proxy proxy) {
+       this.proxy = proxy;
+   }
+
+   /**
+    * This methods returns the proxy used when uploading.
+    *
+    * @return The {@link Proxy} used for the upload or null when not set.
+    */
+   public Proxy getProxy() {
+       return proxy;
+   }
+
+    /**
+     * Finish the request by closing the HTTP connection and the InputStream.
+     * You can call this method even before the entire file has been
+uploaded. Use this behavior to
+     * enable pausing uploads.
+     * This method is equivalent to calling {@code finish(false)}.
+     *
+     * @throws ProtocolException Thrown if the server sends an unexpected
+status
+     * code
+     * @throws IOException Thrown if an exception occurs while cleaning up.
+     */
+    public Optional<TusResponseBody> finish() throws ProtocolException,
+IOException {
+        return finish(true);
+    }
+
+    /**
+     * Finish the request by closing the HTTP connection. You can choose
+whether to close the InputStream or not.
+
+                                                                            97
+     * You can call this method even before the entire file has been
+uploaded. Use this behavior to
+     * enable pausing uploads.
+     * Be aware that it doesn't automatically release local resources if
+{@code closeStream == false} and you do
+     * not close the InputStream on your own. To be safe use {@link
+TusUploader#finish()}.
+     * @param closeInputStream Determines whether the InputStream is closed
+with the HTTP connection. Not closing the
+     *                         Input Stream may be useful for future upload a
+future continuation of the upload.
+     * @throws ProtocolException Thrown if the server sends an unexpected
+status code
+     * @throws IOException Thrown if an exception occurs while cleaning up.
+     */
+    public Optional<TusResponseBody> finish(boolean closeInputStream) throws
+ProtocolException, IOException {
+      Optional<TusResponseBody> response = finishConnection();
+        if (upload.getSize() == offset) {
+            client.uploadFinished(upload);
+        }
+
+        // Close the TusInputStream after checking the response and closing
+the connection to ensure
+        // that we will not need to read from it again in the future.
+        if (closeInputStream) {
+            input.close();
+        }
+        return response;
+    }
+
+    private Optional<TusResponseBody> finishConnection() throws
+ProtocolException, IOException {
+        if (output != null) {
+            output.close();
+        }
+
+       if (connection == null) {
+           return Optional.empty();
+       }
+
+       int responseCode = connection.getResponseCode();
+       TusResponseBody response = new TusResponseBody(connection);
+       connection.disconnect();
+
+       if (responseCode == 401 || responseCode == 403) {
+           throw new Http401And403CodeException(response, connection);
+       }
+
+
+                                                                              98
+        if(responseCode == 422) {
+             throw new Http422CodeException(response, connection);
+        }
+
+        if (!(responseCode >= 200 && responseCode < 300)) {
+            throw new ProtocolException("unexpected status code (" +
+responseCode + ") while uploading chunk",
+                    connection);
+        }
+
+        // TODO detect changes and seek accordingly
+        long serverOffset = getHeaderFieldLong(connection, "Upload-Offset");
+        if (serverOffset == -1) {
+            throw new ProtocolException("response to PATCH request contains
+no or invalid Upload-Offset header",
+                    connection);
+        }
+        if (offset != serverOffset) {
+            throw new ProtocolException(
+                   String.format("response contains different Upload-Offset
+value (%d) than expected (%d)",
+                       serverOffset,
+                        offset),
+                   connection);
+        }
+
+        connection = null;
+
+        return Optional.of(response);
+    }
+
+    private long getHeaderFieldLong(URLConnection connection, String field) {
+        String value = connection.getHeaderField(field);
+        if (value == null) {
+            return -1;
+        }
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+}
+
+
+
+
+                                                                           99
+Clase:: Demo.java
+
+package pe.gob.sunat.tecnologia.client.tus.main;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.tus.java.client.HttpErrorCodeException;
+import io.tus.java.client.ProtocolException;
+import io.tus.java.client.TusClientCustom;
+import io.tus.java.client.TusExecutor;
+import io.tus.java.client.TusResponseBody;
+import io.tus.java.client.TusURLMemoryStore;
+import io.tus.java.client.TusUpload;
+import io.tus.java.client.TusUploaderCustom;
+
+
+public class Demo {
+
+  private static final String TOKEN = "";
+
+  private static final String HOST_PUBLICA = "https://api-
+sire.sunat.gob.pe/v1/contribuyente/migeigv/";
+  private static final String END_POINT_PROPUESTA =
+"libros/rvierce/receptorpropuesta/web/propuesta/upload";
+
+  private static final Logger log = LoggerFactory.getLogger(Demo.class);
+
+
+  public static void main(String[] args) {
+    try {
+      // Create a new TusClient instance
+      final TusClientCustom client = new TusClientCustom();
+
+
+
+      client.setUploadCreationURL(new URL(HOST_PUBLICA +
+END_POINT_PROPUESTA));
+      client.enableResuming(new TusURLMemoryStore());
+      Map<String, String> headers = new HashMap<>();
+      headers.put("authorization", "Bearer " + TOKEN);
+      client.setHeaders(headers);
+      File archivo = new File(
+
+                                                                           100
+        "D:\\migeigv\\archivos\\ajuste_posterior\\LE2010001749120231100140400
+03111201.zip"
+      );
+      final TusUpload upload = new TusUpload(archivo);
+      String[] extension = archivo.getName().split("\\.");
+      Map<String, String> metaData = new HashMap<>();
+      metaData.put("filename", archivo.getName());
+      metaData.put("filetype", extension[1]);
+      metaData.put("numRuc", "20108745216");
+      metaData.put("perTributario", "202304");
+      metaData.put("codOrigenEnvio", "3");
+      metaData.put("codLibro", "140000");
+      metaData.put("codProceso", "1");
+      metaData.put("codTipoCorrelativo", "1");
+      metaData.put("nomArchivoImportacion", archivo.getName());
+      upload.setMetadata(metaData);
+      log.info("Starting upload...");
+      TusExecutor executor = new TusExecutor() {
+        @Override
+        protected void makeAttempt() throws ProtocolException, IOException {
+          TusUploaderCustom uploader = client.resumeOrCreateUpload(upload);
+          uploader.setChunkSize(1024);
+          do {
+            long totalBytes = upload.getSize();
+            long bytesUploaded = uploader.getOffset();
+            double progress = (double) bytesUploaded / totalBytes * 100;
+            String porcentaje = String.format("%06.2f%%", progress);
+            log.info("Upload at {}.", porcentaje);
+          } while (uploader.uploadChunk() > -1);
+
+
+
+         Optional<TusResponseBody> response = uploader.finish();
+
+          response.ifPresent(resp -> {
+            log.info(
+              "************** ==============> code: {} message: {}
+<=============================== *****************",
+              resp.getResponseCode(),
+              resp.getResponseMessage()
+            );
+            log.info(
+              "************** ==============> Result {} {}
+<=============================== *****************",
+              "20108745216",
+              resp.getResponseBody()
+            );
+          });
+        }
+      };
+
+                                                                          101
+      executor.makeAttempts();
+    } catch (HttpErrorCodeException e) {
+        log.info(
+              "************** ==============> code: {} message: {}
+<=============================== *****************",
+              e.getResponseBody().getResponseCode(),
+              e.getResponseBody().getResponseMessage()
+            );
+      log.error("Error en la peticion: {}", e.getResponseBody(), e);
+    } catch (ProtocolException e) {
+      log.error("/////// //// ==> Error inesperado en la petición: ", e);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Exception ex) {
+
+            log.error("ex.getCause(): {}", ex.getMessage(), ex);
+
+        }
+    }
+}
+
+
+
+
+                                                                            102
+

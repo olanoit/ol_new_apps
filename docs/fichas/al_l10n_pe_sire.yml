@@ -376,7 +376,8 @@ funcionalidades:
   - grupo: Propuesta
     items:
       - Solicitud de la propuesta por API con ticket asíncrono y consulta de estado.
-      - Descarga de la propuesta cuando el ticket queda Terminado.
+      - "Consulta automática de los tickets de la propuesta y del envío, con espera creciente (2, 4, 8… hasta 60 minutos) y aviso si SUNAT falla."
+      - Descarga automática de la propuesta cuando el ticket queda Terminado.
       - Carga manual del TXT exportado desde SUNAT Operaciones en Línea.
       - Validación del número de columnas de cada línea del TXT.
       - Token de acceso reutilizado mientras no caduca.
@@ -387,9 +388,18 @@ funcionalidades:
       - Importes en soles con el tipo de cambio del asiento; notas de crédito en negativo y anuladas en cero.
       - "RVIE: notas de crédito de periodos anteriores en las columnas de descuento."
       - "RCE: clasificación de bienes y servicios y marca de detracción."
+      - "RCE: compras destinadas a operaciones gravadas (DG), gravadas y no gravadas (DGNG) o no gravadas (DNG) según el grupo del impuesto."
+      - Las líneas negativas (anticipos, descuentos) restan de su columna; las líneas sin impuesto van a inafecto o no gravado.
       - Cruce por CAR SUNAT con cuatro estados y detalle de cada campo distinto.
       - Aviso de CAR repetido en el sistema en lugar de descartarlo.
       - Campos de comparación activables por registro.
+  - grupo: Validación antes del envío
+    items:
+      - "RUC con dígito verificador (módulo 11) en la compañía, los clientes y los proveedores."
+      - "Tipo de comprobante de la tabla 10, serie de 4 caracteres y número de hasta 8 dígitos en facturas, boletas y notas."
+      - "IGV/IPM coherente con la base (18 % o 10 %), IVAP al 4 % y total igual a la suma de bases e impuestos."
+      - Moneda ISO con tipo de cambio, fechas dentro del periodo y notas con su comprobante modificado.
+      - Pestaña «Observaciones»; el reemplazo no se envía mientras haya líneas observadas.
   - grupo: Exportación y envío
     items:
       - XLSX con hojas SIRE y Sistema.
@@ -478,6 +488,13 @@ faq:
       reemplazo.
 
 novedades:
+  - version: 6.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Validación de las líneas del sistema antes del envío: RUC con dígito verificador, tipo de comprobante, serie y número, IGV frente a la base, total, moneda y tipo de cambio, fechas y notas sin comprobante modificado. Con observaciones, el reemplazo no se envía."
+      - "Los tickets de la propuesta y del envío se consultan solos, con espera creciente; la propuesta se descarga al terminar y, si SUNAT falla, queda una actividad para revisarlo."
+      - "RCE: columnas DG, DGNG y DNG según el grupo del impuesto de la compra."
+      - "Corregido: las líneas negativas (anticipos, descuentos) se sumaban a la base en vez de restar, y las líneas sin impuesto se informaban como gravadas sin IGV."
   - version: 5.20260803
     fecha: 27/09/2026
     cambios:

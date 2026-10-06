@@ -10,6 +10,8 @@ import requests
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
+from .sire_validation import ruc_is_valid
+
 SIRE_AUTH_URL = 'https://api-seguridad.sunat.gob.pe/v1/clientessol/%s/oauth2/token/'
 SIRE_SCOPE = 'https://api-sire.sunat.gob.pe'
 SIRE_BASE_URL = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv'
@@ -42,6 +44,10 @@ class L10nPeSireApi(models.AbstractModel):
         if len(ruc) != 11 or not ruc.isdigit():
             raise UserError(_(
                 'La compañía %s no tiene un RUC válido de 11 dígitos.', company.display_name))
+        if not ruc_is_valid(ruc):
+            raise UserError(_(
+                'El RUC %(ruc)s de la compañía %(company)s no es válido: el '
+                'dígito verificador no corresponde.', ruc=ruc, company=company.display_name))
         return ruc
 
     def _sire_credentials(self, company):

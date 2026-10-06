@@ -1,4 +1,6 @@
-from odoo import fields, models
+from odoo import _, fields, models
+
+from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
 
 # Notas de venta y documentos internos que no van al RVIE
 RVIE_EXCLUDED_DOC_TYPES = ('NV',)
@@ -21,12 +23,19 @@ class L10nPeSireRvie(models.Model):
         'l10n_pe.sire.rvie.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    invalid_line_ids = fields.One2many(
+        'l10n_pe.sire.rvie.line', 'sire_id', string='Observaciones', copy=False,
+        domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
+
     _period_uniq = models.Constraint(
         'unique (company_id, year, month)',
         'Ya existe un periodo RVIE para esta compañía y este mes.')
 
     def _sire_book_type(self):
         return 'rvie'
+
+    def _sire_poll_cron_xmlid(self):
+        return 'al_l10n_pe_sire.ir_cron_sire_rvie_poll'
 
     def _sire_ple_book_code(self):
         return '140400'
@@ -110,6 +119,10 @@ class L10nPeSireRvie(models.Model):
         def amount(value):
             return 0.0 if cancelled else round(sign * value, 2)
 
+        # El RVIE no distingue destinos: todo lo gravado va a la misma columna.
+        taxed = amounts['taxed'] + amounts['taxed_dgng'] + amounts['taxed_dng']
+        igv = amounts['igv'] + amounts['igv_dgng'] + amounts['igv_dng']
+
         # NC de un comprobante de periodo anterior: los montos van a las
         # columnas de descuento; del mismo periodo, a las columnas normales.
         origin = move.reversed_entry_id
@@ -127,10 +140,10 @@ class L10nPeSireRvie(models.Model):
             'nro_doc_identidad': partner.vat or '',
             'razon_social': partner.name or '',
             'valor_exportacion': amount(amounts['export']),
-            'bi_gravada': 0.0 if discount_columns else amount(amounts['taxed']),
-            'dscto_bi': amount(amounts['taxed']) if discount_columns else 0.0,
-            'igv_ipm': 0.0 if discount_columns else amount(amounts['igv']),
-            'dscto_igv': amount(amounts['igv']) if discount_columns else 0.0,
+            'bi_gravada': 0.0 if discount_columns else amount(taxed),
+            'dscto_bi': amount(taxed) if discount_columns else 0.0,
+            'igv_ipm': 0.0 if discount_columns else amount(igv),
+            'dscto_igv': amount(igv) if discount_columns else 0.0,
             'mto_exonerado': amount(amounts['exonerated']),
             'mto_inafecto': amount(amounts['unaffected']),
             'isc': amount(amounts['isc']),
@@ -151,6 +164,30 @@ class L10nPeSireRvie(models.Model):
             if doc_code == '07':
                 vals['tipo_nota'] = getattr(move, 'l10n_pe_edi_refund_reason', '') or ''
         return vals
+
+    def _sire_line_errors(self, line):
+        errors = super()._sire_line_errors(line)
+        date_from, dummy = self._sire_period_bounds()
+        if line.fecha_emision and line.fecha_emision < date_from:
+            errors.append(_('La fecha de emisión es anterior al periodo.'))
+        if line.tipo_cp == '01' and line.tipo_doc_identidad != '6' \
+                and not line.valor_exportacion:
+            errors.append(_('Una factura exige el RUC del cliente (salvo exportación).'))
+        if line.estado_cp == '2':
+            return errors
+        if tax_mismatch(line.bi_gravada, line.igv_ipm, IGV_RATES) \
+                or tax_mismatch(line.dscto_bi, line.dscto_igv, IGV_RATES):
+            errors.append(_('El IGV/IPM no corresponde a la base gravada (18 % o 10 %).'))
+        if tax_mismatch(line.bi_ivap, line.ivap, IVAP_RATES):
+            errors.append(_('El IVAP no corresponde a su base (4 %).'))
+        components = sum((
+            line.valor_exportacion, line.bi_gravada, line.dscto_bi, line.igv_ipm,
+            line.dscto_igv, line.mto_exonerado, line.mto_inafecto, line.isc,
+            line.bi_ivap, line.ivap, line.icbper, line.otros_tributos))
+        if abs(components - line.total_cp) > AMOUNT_TOLERANCE:
+            errors.append(_('El total %(total).2f no es la suma de bases e impuestos '
+                            '(%(sum).2f).', total=line.total_cp, sum=components))
+        return errors
 
     def _sire_xlsx_headers(self):
         return [

@@ -1,4 +1,6 @@
-from odoo import fields, models
+from odoo import _, fields, models
+
+from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
 
 # Tipos de documento que no van al RCE (recibos por honorarios van al RHE)
 RCE_EXCLUDED_DOC_TYPES = ('02', '91', '97', '98')
@@ -25,12 +27,19 @@ class L10nPeSireRce(models.Model):
         'l10n_pe.sire.rce.line', 'sire_id', string='Diferencias', copy=False,
         domain=[('compare_state', 'in', ('1', '2', '3'))])
 
+    invalid_line_ids = fields.One2many(
+        'l10n_pe.sire.rce.line', 'sire_id', string='Observaciones', copy=False,
+        domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
+
     _period_uniq = models.Constraint(
         'unique (company_id, year, month)',
         'Ya existe un periodo RCE para esta compañía y este mes.')
 
     def _sire_book_type(self):
         return 'rce'
+
+    def _sire_poll_cron_xmlid(self):
+        return 'al_l10n_pe_sire.ir_cron_sire_rce_poll'
 
     def _sire_ple_book_code(self):
         return '080400'
@@ -133,8 +142,13 @@ class L10nPeSireRce(models.Model):
             'nro_doc_identidad': partner.vat or '',
             'razon_social': partner.name or '',
             # El RCE no tiene columnas propias de IVAP: va con las gravadas.
+            # El destino (DG, DGNG, DNG) sale del grupo del impuesto.
             'bi_gravada_dg': amount(amounts['taxed'] + amounts['ivap_base']),
             'igv_dg': amount(amounts['igv'] + amounts['ivap']),
+            'bi_gravada_dgng': amount(amounts['taxed_dgng']),
+            'igv_dgng': amount(amounts['igv_dgng']),
+            'bi_gravada_dng': amount(amounts['taxed_dng']),
+            'igv_dng': amount(amounts['igv_dng']),
             'valor_adq_ng': amount(amounts['exonerated'] + amounts['unaffected']),
             'isc': amount(amounts['isc']),
             'icbper': amount(amounts['icbper']),
@@ -151,6 +165,28 @@ class L10nPeSireRce(models.Model):
             if doc_code == '07':
                 vals['tipo_nota'] = move.l10n_pe_edi_refund_reason or ''
         return vals
+
+    def _sire_line_errors(self, line):
+        errors = super()._sire_line_errors(line)
+        if line.tipo_cp == '01' and line.tipo_doc_identidad != '6':
+            errors.append(_('Una factura de compra exige el RUC del proveedor.'))
+        if line.tipo_cp in RCE_DUE_DATE_DOC_TYPES and not line.fecha_vencimiento:
+            errors.append(_('El tipo %s exige la fecha de vencimiento o pago.', line.tipo_cp))
+        if line.estado_cp == '2':
+            return errors
+        # DG admite IVAP (4 %): el RCE no tiene columnas propias para él.
+        if tax_mismatch(line.bi_gravada_dg, line.igv_dg, IGV_RATES + IVAP_RATES) \
+                or tax_mismatch(line.bi_gravada_dgng, line.igv_dgng, IGV_RATES) \
+                or tax_mismatch(line.bi_gravada_dng, line.igv_dng, IGV_RATES):
+            errors.append(_('El IGV/IPM no corresponde a la base gravada (18 % o 10 %).'))
+        components = sum((
+            line.bi_gravada_dg, line.igv_dg, line.bi_gravada_dgng, line.igv_dgng,
+            line.bi_gravada_dng, line.igv_dng, line.valor_adq_ng, line.isc,
+            line.icbper, line.otros_tributos))
+        if abs(components - line.total_cp) > AMOUNT_TOLERANCE:
+            errors.append(_('El total %(total).2f no es la suma de bases e impuestos '
+                            '(%(sum).2f).', total=line.total_cp, sum=components))
+        return errors
 
     def _sire_xlsx_headers(self):
         return [

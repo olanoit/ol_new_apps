@@ -33,6 +33,34 @@ queda bloqueado — rehacer las líneas no deshace lo declarado.
 La **generación del registro** se completa en el portal de SUNAT: no hay
 servicio web para hacerla desde fuera.
 
+## Validación antes del envío
+
+Al desplegar el sistema (y con el botón **Validar**) cada línea se revisa con
+las reglas de SUNAT; las que fallan aparecen en la pestaña **Observaciones** y
+**Enviar reemplazo** se niega mientras haya alguna:
+
+- RUC con dígito verificador (módulo 11), también el de la compañía; DNI de 8 dígitos.
+- Tipo de comprobante de la tabla 10; en 01/03/04/07/08, serie de 4
+  caracteres y número de hasta 8 dígitos.
+- IGV/IPM al 18 % o al 10 % (Ley 31556) de la base, IVAP al 4 %, total igual a
+  la suma de bases e impuestos (tolerancia S/ 1 por comprobante).
+- Moneda ISO con tipo de cambio, fechas dentro del periodo, notas con su
+  comprobante modificado, factura con RUC y, en el RCE, fecha de vencimiento en
+  los tipos que la exigen.
+
+## Consulta automática de tickets
+
+Tras solicitar la propuesta, aceptarla o enviar el reemplazo, un cron consulta
+el ticket con espera creciente (2, 4, 8, 16, 32 y luego 60 minutos, hasta 30
+intentos). La propuesta se descarga sola al terminar; si SUNAT falla o se
+agotan los intentos, queda una actividad en el periodo. Los botones manuales
+siguen disponibles.
+
+## RCE: destino de las compras gravadas
+
+La columna sale del grupo del impuesto del plan peruano: `IGV G NG 18%` →
+DGNG, `IGV NG 18%` → DNG, el resto → DG.
+
 Sin credenciales API se puede marcar **Carga manual** y subir el TXT exportado
 desde SUNAT Operaciones en Línea; el TXT de reemplazo también se descarga para
 cargarlo a mano en SOL.

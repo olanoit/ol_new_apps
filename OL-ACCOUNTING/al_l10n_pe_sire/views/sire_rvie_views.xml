@@ -44,6 +44,9 @@
                     <button name="action_load_system" string="Desplegar sistema"
                             type="object" class="btn-primary"
                             invisible="state != 'sire_loaded'"/>
+                    <button name="action_validate" string="Validar"
+                            type="object"
+                            invisible="state in ('draft', 'requested', 'downloaded', 'sire_loaded')"/>
                     <button name="action_compare" string="Comparar"
                             type="object" class="btn-primary"
                             invisible="state != 'system_loaded'"/>
@@ -87,6 +90,7 @@
                             <field name="ticket_number" readonly="1"/>
                             <field name="ticket_state" invisible="download_manual"/>
                             <field name="ticket_filename" invisible="download_manual"/>
+                            <field name="poll_next_date" invisible="not poll_next_date"/>
                             <field name="proposal_filename" invisible="1"/>
                             <field name="proposal_file" filename="proposal_filename"
                                    readonly="state not in ('draft', 'downloaded')"/>
@@ -107,6 +111,8 @@
                             <field name="count_diff"/>
                             <field name="count_only_sire"/>
                             <field name="count_only_system"/>
+                            <field name="count_invalid"
+                                   decoration-danger="count_invalid"/>
                         </group>
                     </group>
                     <notebook>
@@ -158,6 +164,21 @@
                                     <field name="moneda" optional="show"/>
                                     <field name="tipo_cambio" optional="hide"/>
                                     <field name="estado_cp" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Observaciones" name="invalid_lines"
+                              invisible="not count_invalid">
+                            <field name="invalid_line_ids" readonly="1">
+                                <list decoration-danger="1">
+                                    <field name="move_id"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="tipo_cp"/>
+                                    <field name="serie_cp"/>
+                                    <field name="nro_cp"/>
+                                    <field name="nro_doc_identidad" optional="show"/>
+                                    <field name="total_cp"/>
+                                    <field name="check_detail"/>
                                 </list>
                             </field>
                         </page>

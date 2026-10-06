@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261006 — 06/10/2026
+
+- Validación de las líneas del sistema antes del envío: RUC con dígito verificador, tipo de comprobante, serie y número, IGV frente a la base, total, moneda y tipo de cambio, fechas y notas sin comprobante modificado. Con observaciones, el reemplazo no se envía.
+- Los tickets de la propuesta y del envío se consultan solos, con espera creciente; la propuesta se descarga al terminar y, si SUNAT falla, queda una actividad para revisarlo.
+- RCE: columnas DG, DGNG y DNG según el grupo del impuesto de la compra.
+- Corregido: las líneas negativas (anticipos, descuentos) se sumaban a la base en vez de restar, y las líneas sin impuesto se informaban como gravadas sin IGV.
+
 ## 5.20260803 — 27/09/2026
 
 - Las credenciales de la API SIRE (usuario y clave SOL, client ID y secret) y el token solo los ven y editan los administradores; antes cualquier usuario interno podía leerlos.

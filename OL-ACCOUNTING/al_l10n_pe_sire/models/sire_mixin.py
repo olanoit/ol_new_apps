@@ -1,13 +1,22 @@
 import base64
 import io
+import logging
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
+import requests
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
+
+from .sire_validation import (
+    CURRENCY_RE, DOC_TYPES_TABLE_10, GENERIC_NUMBER_RE, GENERIC_SERIE_RE,
+    STRICT_NUMBER_RE, STRICT_NUMBERING_DOC_TYPES, STRICT_SERIE_RE, ruc_is_valid,
+)
+
+_logger = logging.getLogger(__name__)
 
 MONTH_SELECTION = [
     ('01', 'Enero'), ('02', 'Febrero'), ('03', 'Marzo'), ('04', 'Abril'),
@@ -24,6 +33,15 @@ TICKET_STATES = [
     ('05', 'En proceso'),
     ('06', 'Terminado'),
 ]
+
+#: Estados del ticket en que SUNAT ya no hará nada más.
+TICKET_FINAL_STATES = ('00', '03', '04', '06')
+TICKET_FAILED_STATES = ('00', '03')
+#: Espera entre consultas automáticas de un ticket, en minutos: SUNAT
+#: tarda de segundos a horas según la carga, así que se espera cada vez más.
+SIRE_POLL_DELAYS = (2, 4, 8, 16, 32, 60)
+#: Consultas antes de rendirse (unas 24 horas).
+SIRE_POLL_MAX_ATTEMPTS = 30
 
 # Afectaciones IGV (catálogo 07 SUNAT) por columna
 AFFECTATION_TAXED = {'10'}
@@ -42,6 +60,10 @@ TAX_CODE_FREE = '9996'
 TAX_CODE_OTHER = '9999'
 #: Tributos que se suman a la base de otro impuesto, no la determinan.
 TAX_CODES_SURCHARGE = (TAX_CODE_ISC, TAX_CODE_ICBPER, TAX_CODE_OTHER)
+#: Grupos de impuestos del plan peruano (``account.{compañía}_tax_group_*``)
+#: que indican el destino de una compra gravada en el RCE: el IGV de
+#: ``igv_g_ng`` va a DGNG y el de ``igv_ng`` a DNG; el resto, a DG.
+TAX_GROUP_DESTINATIONS = {'igv_g_ng': 'dgng', 'igv_ng': 'dng'}
 
 
 class L10nPeSireMixin(models.AbstractModel):
@@ -100,6 +122,11 @@ class L10nPeSireMixin(models.AbstractModel):
     submission_ticket = fields.Char(string='Ticket del envío', copy=False, readonly=True)
     submission_state = fields.Selection(
         selection=TICKET_STATES, string='Estado del envío', copy=False, readonly=True)
+    # --- Consulta automática de tickets (cron con espera creciente) ---
+    poll_next_date = fields.Datetime(
+        string='Próxima consulta automática', copy=False, readonly=True, index=True)
+    poll_attempts = fields.Integer(
+        string='Consultas automáticas', copy=False, readonly=True)
     preliminary_registered = fields.Boolean(
         string='Preliminar registrado', copy=False, readonly=True,
         help='El preliminar quedó registrado en SUNAT; la generación del '
@@ -120,8 +147,12 @@ class L10nPeSireMixin(models.AbstractModel):
         string='Solo en SIRE', compute='_compute_compare_counts')
     count_only_system = fields.Integer(
         string='Solo en el sistema', compute='_compute_compare_counts')
+    count_invalid = fields.Integer(
+        string='Con observaciones', compute='_compute_compare_counts',
+        help='Líneas del sistema que no pasan las validaciones de SUNAT.')
 
-    @api.depends('sire_line_ids.compare_state', 'system_line_ids.compare_state')
+    @api.depends('sire_line_ids.compare_state', 'system_line_ids.compare_state',
+                 'system_line_ids.check_detail')
     def _compute_compare_counts(self):
         for record in self:
             sire_lines = record.sire_line_ids
@@ -133,6 +164,7 @@ class L10nPeSireMixin(models.AbstractModel):
             record.count_only_sire = len(sire_lines.filtered(lambda l: l.compare_state == '2'))
             record.count_only_system = len(
                 system_lines.filtered(lambda l: l.compare_state == '3'))
+            record.count_invalid = len(system_lines.filtered('check_detail'))
 
     # ------------------------------------------------------------------
     # A definir por cada libro
@@ -227,6 +259,13 @@ class L10nPeSireMixin(models.AbstractModel):
                     'Ya existe un periodo %(name)s para %(company)s.',
                     name=record.name, company=record.company_id.display_name))
 
+    @api.constrains('year')
+    def _check_year(self):
+        for record in self:
+            if not 2000 <= record.year <= 2099:
+                raise ValidationError(_(
+                    'El año %s no es un periodo tributario válido (AAAAMM).', record.year))
+
     @api.model
     def _sire_parse_date(self, value):
         value = (value or '').strip()
@@ -299,6 +338,7 @@ class L10nPeSireMixin(models.AbstractModel):
         ticket = self._sire_request_proposal(
             token, self._sire_proposal_endpoint(), self._sire_period())
         self.write({'ticket_number': ticket, 'ticket_state': '01', 'state': 'requested'})
+        self._sire_schedule_poll()
         return True
 
     def action_check_ticket(self):
@@ -367,6 +407,7 @@ class L10nPeSireMixin(models.AbstractModel):
             commands.append((0, 0, vals))
         self.system_line_ids = commands
         self.state = 'system_loaded'
+        self._sire_validate_system_lines()
         return True
 
     # ------------------------------------------------------------------
@@ -424,19 +465,29 @@ class L10nPeSireMixin(models.AbstractModel):
         icbper, other_taxes.
         """
         result = dict.fromkeys(
-            ('taxed', 'exonerated', 'unaffected', 'export', 'free', 'ivap_base',
-             'igv', 'ivap', 'isc', 'icbper', 'other_taxes'), 0.0)
+            ('taxed', 'taxed_dgng', 'taxed_dng', 'exonerated', 'unaffected',
+             'export', 'free', 'ivap_base', 'igv', 'igv_dgng', 'igv_dng', 'ivap',
+             'isc', 'icbper', 'other_taxes'), 0.0)
         rate = self._sire_move_rate(move) or 1.0
+        destinations = self._sire_tax_group_destinations(move.company_id)
+        # Con signo: una línea negativa (deducción de un anticipo, descuento)
+        # resta de su columna en vez de sumarse.
+        direction = move.direction_sign
         for line in move.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
             # El impuesto que define la afectación es el principal (IGV,
             # IVAP, exonerado…), no un recargo como el ICBPER o el ISC.
             tax = line.tax_ids.filtered(
                 lambda t: t.l10n_pe_edi_tax_code not in TAX_CODES_SURCHARGE)[:1] \
                 or line.tax_ids[:1]
-            base = abs(line.balance) or abs(line.price_subtotal) * rate
+            base = (line.balance * direction) if line.balance else line.price_subtotal * rate
             if tax.l10n_pe_edi_tax_code == TAX_CODE_FREE:
                 subtotal = line.price_unit * (1 - (line.discount or 0.0) / 100.0) * line.quantity
                 result['free'] += subtotal * rate
+                continue
+            if not tax:
+                # Sin impuesto no hay base gravada: va a inafecto (RVIE) o a
+                # adquisición no gravada (RCE), no a una base sin IGV.
+                result['unaffected'] += base
                 continue
             reason = tax.l10n_pe_edi_affectation_reason
             if tax.l10n_pe_edi_tax_code == TAX_CODE_IVAP or reason in AFFECTATION_IVAP:
@@ -448,7 +499,8 @@ class L10nPeSireMixin(models.AbstractModel):
             elif reason in AFFECTATION_EXPORT:
                 result['export'] += base
             else:
-                result['taxed'] += base
+                suffix = destinations.get(tax.tax_group_id.id)
+                result['taxed_%s' % suffix if suffix else 'taxed'] += base
         keys = {
             TAX_CODE_IGV: 'igv',
             TAX_CODE_IVAP: 'ivap',
@@ -457,8 +509,22 @@ class L10nPeSireMixin(models.AbstractModel):
         }
         for line in move.line_ids.filtered('tax_line_id'):
             key = keys.get(line.tax_line_id.l10n_pe_edi_tax_code, 'other_taxes')
-            result[key] += abs(line.balance)
+            suffix = destinations.get(line.tax_line_id.tax_group_id.id)
+            if key == 'igv' and suffix:
+                key = 'igv_%s' % suffix
+            result[key] += line.balance * direction
         return result
+
+    @api.model
+    def _sire_tax_group_destinations(self, company):
+        """``{id del grupo de impuestos: 'dgng' | 'dng'}`` de la compañía."""
+        destinations = {}
+        for key, suffix in TAX_GROUP_DESTINATIONS.items():
+            group = self.env.ref(
+                'account.%s_tax_group_%s' % (company.id, key), raise_if_not_found=False)
+            if group:
+                destinations[group.id] = suffix
+        return destinations
 
     def _sire_reversed_doc_vals(self, move):
         """Datos del comprobante modificado (para notas de crédito/débito)."""
@@ -682,6 +748,7 @@ class L10nPeSireMixin(models.AbstractModel):
             'submission_state': '01',
             'state': 'submitted',
         })
+        self._sire_schedule_poll()
         self._sire_log(_('Propuesta aceptada. Ticket %s.', ticket))
         return True
 
@@ -690,6 +757,17 @@ class L10nPeSireMixin(models.AbstractModel):
         self.ensure_one()
         self._sire_check_can_submit()
         self._sire_check_submittable()
+        invalid = self._sire_validate_system_lines()
+        if invalid:
+            details = '\n'.join(
+                '• %s-%s: %s' % (line.serie_cp or '?', line.nro_cp or '?',
+                                 line.check_detail.replace('\n', '; '))
+                for line in invalid[:10])
+            raise UserError(_(
+                'Hay %(count)s líneas con observaciones; SUNAT rechazaría el '
+                'reemplazo. Corríjalas en los comprobantes y vuelva a desplegar '
+                'el sistema (pestaña «Observaciones»):\n%(details)s',
+                count=len(invalid), details=details))
         txt_name, payload = self._sire_replacement_zip()
         zip_name = txt_name.replace('.txt', '.zip')
         token = self._sire_get_token(self.company_id)
@@ -712,6 +790,7 @@ class L10nPeSireMixin(models.AbstractModel):
             'submission_state': '01',
             'state': 'submitted',
         })
+        self._sire_schedule_poll()
         self._sire_log(_('Reemplazo enviado (%(file)s). Ticket %(ticket)s.',
                          file=zip_name, ticket=ticket))
         return True
@@ -753,6 +832,180 @@ class L10nPeSireMixin(models.AbstractModel):
         self.message_post(body=body)
 
     # ------------------------------------------------------------------
+    # Validación de las líneas del sistema
+    # ------------------------------------------------------------------
+
+    def action_validate(self):
+        """Revisa las líneas del sistema y avisa del resultado."""
+        self.ensure_one()
+        invalid = self._sire_validate_system_lines()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'warning' if invalid else 'success',
+                'message': _('%s líneas con observaciones; revise la pestaña '
+                             '«Observaciones».', len(invalid)) if invalid
+                else _('Todas las líneas del sistema pasan las validaciones.'),
+                'next': {'type': 'ir.actions.act_window_close'},
+            },
+        }
+
+    def _sire_validate_system_lines(self):
+        """Escribe ``check_detail`` en cada línea del sistema; devuelve las que fallan.
+
+        Agrupado por texto, como la comparación: una escritura por cada
+        combinación de errores y no una por línea.
+        """
+        self.ensure_one()
+        by_detail = {}
+        for line in self.system_line_ids:
+            detail = '\n'.join(self._sire_line_errors(line)) or False
+            by_detail.setdefault(detail, []).append(line.id)
+        Line = self.env[self.system_line_ids._name]
+        for detail, ids in by_detail.items():
+            Line.browse(ids).write({'check_detail': detail})
+        return self.system_line_ids.filtered('check_detail')
+
+    def _sire_period_bounds(self):
+        date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
+        return date_from, fields.Date.end_of(date_from, 'month')
+
+    def _sire_line_errors(self, line):
+        """Reglas comunes a RVIE y RCE; cada libro añade las suyas."""
+        errors = []
+        doc = line.tipo_cp or ''
+        if doc not in DOC_TYPES_TABLE_10:
+            errors.append(_('Tipo de comprobante «%s» fuera de la tabla 10.', doc))
+        if doc in STRICT_NUMBERING_DOC_TYPES:
+            if not STRICT_SERIE_RE.match(line.serie_cp or ''):
+                errors.append(_('La serie «%s» debe tener 4 caracteres alfanuméricos.',
+                                line.serie_cp or ''))
+            if not STRICT_NUMBER_RE.match(line.nro_cp or ''):
+                errors.append(_('El número «%s» debe tener de 1 a 8 dígitos.',
+                                line.nro_cp or ''))
+        else:
+            if line.serie_cp and not GENERIC_SERIE_RE.match(line.serie_cp):
+                errors.append(_('La serie «%s» no es válida.', line.serie_cp))
+            if not GENERIC_NUMBER_RE.match(line.nro_cp or ''):
+                errors.append(_('El número «%s» debe ser numérico.', line.nro_cp or ''))
+        date_from, date_to = self._sire_period_bounds()
+        if not line.fecha_emision:
+            errors.append(_('Falta la fecha de emisión.'))
+        elif line.fecha_emision > date_to:
+            errors.append(_('La fecha de emisión es posterior al periodo.'))
+        id_type, id_number = line.tipo_doc_identidad or '', line.nro_doc_identidad or ''
+        if id_number and not id_type:
+            errors.append(_('Falta el tipo de documento de identidad.'))
+        elif id_type == '6' and not ruc_is_valid(id_number):
+            errors.append(_('El RUC %s no es válido (dígito verificador).', id_number or '—'))
+        elif id_type == '1' and not (len(id_number) == 8 and id_number.isdigit()):
+            errors.append(_('El DNI %s debe tener 8 dígitos.', id_number or '—'))
+        if not CURRENCY_RE.match(line.moneda or ''):
+            errors.append(_('Moneda «%s» no es un código ISO 4217.', line.moneda or ''))
+        elif line.moneda != 'PEN' and line.estado_cp != '2' and not line.tipo_cambio:
+            errors.append(_('Falta el tipo de cambio para %s.', line.moneda))
+        if doc in ('07', '08') and not (
+                line.tipo_cp_mod and line.serie_cp_mod and line.nro_cp_mod
+                and line.fecha_emision_mod):
+            errors.append(_('La nota no indica el comprobante que modifica.'))
+        return errors
+
+    # ------------------------------------------------------------------
+    # Consulta automática de tickets
+    # ------------------------------------------------------------------
+
+    def _sire_poll_cron_xmlid(self):
+        raise NotImplementedError()
+
+    def _sire_schedule_poll(self, attempt=0):
+        """Programa la próxima consulta automática del ticket pendiente."""
+        delay = SIRE_POLL_DELAYS[min(attempt, len(SIRE_POLL_DELAYS) - 1)]
+        next_date = fields.Datetime.now() + timedelta(minutes=delay)
+        self.write({'poll_next_date': next_date, 'poll_attempts': attempt})
+        cron = self.env.ref(self._sire_poll_cron_xmlid(), raise_if_not_found=False)
+        if cron:
+            # sudo: el contable no puede leer ir.cron, pero sí programar la
+            # consulta de su propio ticket.
+            cron_sudo = cron.sudo()
+            cron_sudo._trigger(at=next_date)
+
+    def _sire_stop_poll(self):
+        self.write({'poll_next_date': False, 'poll_attempts': 0})
+
+    def _sire_warn(self, message):
+        """Deja el aviso en el hilo y una actividad para quien creó el periodo."""
+        self._sire_log(message)
+        self.activity_schedule(
+            'mail.mail_activity_data_warning', summary=_('SIRE: revisar ticket'),
+            note=message, user_id=(self.create_uid.active and self.create_uid.id) or self.env.uid)
+
+    def _sire_poll_once(self):
+        """Una consulta del ticket pendiente: termina, sigue esperando o falla."""
+        self.ensure_one()
+        if self.state == 'requested' and self.ticket_number and not self.download_manual:
+            self.action_check_ticket()
+            code = self.ticket_state
+            if code == '06':
+                self.action_download_proposal()
+                self._sire_stop_poll()
+                self._sire_log(_('Propuesta descargada automáticamente (ticket %s).',
+                                 self.ticket_number))
+                return
+            if code in TICKET_FINAL_STATES:
+                self._sire_stop_poll()
+                self._sire_warn(_('SUNAT terminó el ticket de la propuesta %(ticket)s '
+                                  'sin entregarla (estado %(state)s).',
+                                  ticket=self.ticket_number,
+                                  state=dict(TICKET_STATES).get(code, code)))
+                return
+        elif self.submission_ticket and self.submission_state not in TICKET_FINAL_STATES:
+            self.action_check_submission()
+            code = self.submission_state
+            if code in TICKET_FAILED_STATES:
+                self._sire_stop_poll()
+                self._sire_warn(_('SUNAT rechazó el envío %(ticket)s (estado %(state)s). '
+                                  'Revise el detalle en SUNAT Operaciones en Línea.',
+                                  ticket=self.submission_ticket,
+                                  state=dict(TICKET_STATES).get(code, code)))
+                return
+            if code in TICKET_FINAL_STATES:
+                self._sire_stop_poll()
+                self._sire_log(_('SUNAT procesó el envío %s.', self.submission_ticket))
+                return
+        else:
+            self._sire_stop_poll()
+            return
+        self._sire_poll_retry()
+
+    def _sire_poll_retry(self, error=None):
+        attempt = self.poll_attempts + 1
+        if attempt >= SIRE_POLL_MAX_ATTEMPTS:
+            self._sire_stop_poll()
+            self._sire_warn(_('Se dejó de consultar el ticket tras %(count)s intentos%(error)s. '
+                              'Consúltelo a mano.', count=attempt,
+                              error=(': %s' % error) if error else ''))
+            return
+        self._sire_schedule_poll(attempt)
+
+    @api.model
+    def _cron_sire_poll_tickets(self):
+        """Consulta los tickets cuya próxima consulta ya venció."""
+        records = self.search([('poll_next_date', '<=', fields.Datetime.now())],
+                              order='poll_next_date')
+        cron = self.env['ir.cron']
+        cron._commit_progress(remaining=len(records))
+        for record in records:
+            try:
+                with self.env.cr.savepoint():
+                    record._sire_poll_once()
+            except (UserError, requests.RequestException) as error:
+                _logger.warning('SIRE %s: consulta del ticket fallida: %s', record.name, error)
+                record._sire_poll_retry(error=error)
+            if not cron._commit_progress(1):
+                break
+
+    # ------------------------------------------------------------------
     # Otros
     # ------------------------------------------------------------------
 
@@ -770,6 +1023,8 @@ class L10nPeSireMixin(models.AbstractModel):
             'export_file': False,
             'export_filename': False,
             'state': 'downloaded' if self.proposal_file else 'draft',
+            'poll_next_date': False,
+            'poll_attempts': 0,
         })
         return True
 
@@ -822,3 +1077,7 @@ class L10nPeSireLineMixin(models.AbstractModel):
         selection=[('1', 'Aceptado'), ('2', 'Anulado'), ('3', 'Desconocido')],
         string='Estado CP')
     incal = fields.Char(string='Inconsistencias')
+    check_detail = fields.Text(
+        string='Observaciones', readonly=True, copy=False,
+        help='Reglas de SUNAT que la línea no cumple; se revisan al '
+             'desplegar el sistema y antes de enviar el reemplazo.')
