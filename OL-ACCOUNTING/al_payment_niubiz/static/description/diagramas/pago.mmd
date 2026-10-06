@@ -1,0 +1,11 @@
+flowchart TD
+  A[Cliente elige Niubiz y pulsa Pagar] --> B[Odoo pide token y sesión a Niubiz]
+  B --> C[Página de pago con el modal de Niubiz]
+  C --> D{¿Medio elegido?}
+  D -- Tarjeta, Yape, Plin, Cuotéalo --> E[Odoo autoriza con el token]
+  E --> F{¿Aprobado?}
+  F -- Sí --> G[Pago confirmado:<br/>autorización, traza y marca]
+  F -- No --> H[Vuelve a la página de pago<br/>con el motivo del rechazo]
+  H --> C
+  D -- PagoEfectivo --> I[Código CIP: pendiente<br/>hasta pagar en efectivo]
+  G --> J[Mismo día: anular en Niubiz<br/>o después: devolución]

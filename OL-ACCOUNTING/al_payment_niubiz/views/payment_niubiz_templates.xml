@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="redirect_form" name="Niubiz Redirect Form">
+        <form method="get" action="/payment/niubiz/landing">
+            <input type="hidden" name="reference" t-att-value="reference"/>
+            <input type="hidden" name="access_token" t-att-value="access_token"/>
+        </form>
+    </template>
+
+    <template id="landing_page" name="Pago con Niubiz">
+        <t t-call="portal.frontend_layout">
+            <t t-set="page_title">Pago con Niubiz</t>
+            <t t-set="additional_title">Pago con Niubiz</t>
+
+            <style>
+                .o-niubiz-wrap {
+                    background: #f0f4f8;
+                    min-height: 80vh;
+                    display: flex;
+                    align-items: center;
+                }
+                .o-niubiz-card {
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 24px rgba(0,0,0,.10);
+                    padding: 2rem 2.25rem 2.25rem;
+                    max-width: 440px;
+                    width: 100%;
+                    margin: 2rem auto;
+                }
+                .o-niubiz-header {
+                    display: flex;
+                    align-items: center;
+                    gap: .75rem;
+                    margin-bottom: 1.75rem;
+                    padding-bottom: 1.25rem;
+                    border-bottom: 1px solid #e9ecef;
+                }
+                .o-niubiz-logo {
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                    color: #0d1a63;
+                    letter-spacing: -.3px;
+                }
+                .o-niubiz-logo span { color: #e30016; }
+                .o-niubiz-amount {
+                    margin-left: auto;
+                    font-size: 1.35rem;
+                    font-weight: 700;
+                    color: #0d1a63;
+                }
+                .o-niubiz-methods {
+                    margin-bottom: 1.5rem;
+                }
+                .o-niubiz-methods-title {
+                    font-size: .72rem;
+                    font-weight: 600;
+                    color: #6c757d;
+                    text-transform: uppercase;
+                    letter-spacing: .6px;
+                    margin-bottom: .65rem;
+                }
+                .o-niubiz-method-badges {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: .4rem;
+                    align-items: center;
+                }
+                .o-niubiz-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 6px;
+                    font-size: .7rem;
+                    font-weight: 700;
+                    padding: .25rem .55rem;
+                    line-height: 1;
+                    letter-spacing: .3px;
+                }
+                .o-niubiz-badge-visa { background: #1a1f71; color: #fff; }
+                .o-niubiz-badge-mc { background: #252525; color: #fff; }
+                .o-niubiz-badge-amex { background: #2557d6; color: #fff; }
+                .o-niubiz-badge-diners { background: #004b87; color: #fff; }
+                .o-niubiz-badge-yape { background: #5f259f; color: #fff; }
+                .o-niubiz-badge-plin { background: #00b0d8; color: #fff; }
+                .o-niubiz-badge-cuotealo { background: #e30016; color: #fff; }
+                .o-niubiz-badge-pe { background: #f5a623; color: #fff; }
+                .o-niubiz-info {
+                    background: #f8f9ff;
+                    border: 1px solid #e0e4f7;
+                    border-radius: 10px;
+                    padding: 1rem 1.1rem;
+                    margin-bottom: 1.5rem;
+                    font-size: .82rem;
+                    color: #495057;
+                    line-height: 1.5;
+                }
+                .o-niubiz-info strong { color: #0d1a63; }
+                .o-niubiz-errors {
+                    background: #fff5f5;
+                    border: 1px solid #fcc;
+                    border-radius: 8px;
+                    padding: .6rem .85rem;
+                    font-size: .82rem;
+                    color: #c0392b;
+                    margin-bottom: 1rem;
+                    display: none;
+                }
+                #o_niubiz_pay_btn {
+                    width: 100%;
+                    padding: .9rem 1rem;
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #0d1a63 0%, #1a3a8f 100%);
+                    border: none;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: opacity .2s, transform .1s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: .6rem;
+                }
+                #o_niubiz_pay_btn:hover:not(:disabled) { opacity: .9; }
+                #o_niubiz_pay_btn:active:not(:disabled) { transform: scale(.99); }
+                #o_niubiz_pay_btn:disabled { opacity: .6; cursor: not-allowed; }
+                .o-niubiz-lock {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: .4rem;
+                    font-size: .72rem;
+                    color: #adb5bd;
+                    margin-top: .85rem;
+                }
+                .o-niubiz-status {
+                    text-align: center;
+                    font-size: .85rem;
+                    color: #6c757d;
+                    margin-top: .75rem;
+                    min-height: 1.2em;
+                }
+                #o_niubiz_spinner {
+                    text-align: center;
+                    padding: 1.5rem 0;
+                }
+                .o-niubiz-spinner-ring {
+                    width: 36px;
+                    height: 36px;
+                    border: 3px solid #e9ecef;
+                    border-top-color: #0d1a63;
+                    border-radius: 50%;
+                    animation: o-niubiz-spin .7s linear infinite;
+                    margin: 0 auto .6rem;
+                }
+                @keyframes o-niubiz-spin { to { transform: rotate(360deg); } }
+            </style>
+
+            <div class="o-niubiz-wrap">
+                <div class="container">
+                    <div class="o-niubiz-card">
+
+                        <div class="o-niubiz-header">
+                            <div class="o-niubiz-logo">Niu<span>biz</span></div>
+                            <div id="o_niubiz_amount_display" class="o-niubiz-amount" style="display:none"/>
+                        </div>
+
+                        <!-- Previous decline error shown on retry -->
+                        <t t-if="payment_error">
+                            <div class="o-niubiz-errors" style="display:block">
+                                <t t-esc="payment_error"/>
+                            </div>
+                        </t>
+
+                        <div class="o-niubiz-methods">
+                            <div class="o-niubiz-methods-title">Métodos de pago aceptados</div>
+                            <div class="o-niubiz-method-badges">
+                                <span class="o-niubiz-badge o-niubiz-badge-visa">VISA</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-mc">Mastercard</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-amex">AMEX</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-diners">Diners</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-yape">Yape</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-plin">Plin</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-cuotealo">Cuotéalo BCP</span>
+                                <span class="o-niubiz-badge o-niubiz-badge-pe">Pago Efectivo</span>
+                            </div>
+                        </div>
+
+                        <div class="o-niubiz-info">
+                            <strong>Checkout seguro de Niubiz</strong><br/>
+                            Al hacer clic en "Pagar ahora" se abrirá el formulario de pago de Niubiz
+                            donde podrás elegir tu método de pago preferido.
+                        </div>
+
+                        <div id="o_niubiz_spinner" style="display:none">
+                            <div class="o-niubiz-spinner-ring"/>
+                            <p style="color:#6c757d;font-size:.82rem;margin:0">Cargando...</p>
+                        </div>
+
+                        <div id="o_payment_niubiz_form">
+                            <button id="o_niubiz_pay_btn" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                Pagar ahora
+                            </button>
+                            <div class="o-niubiz-lock">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                Pago 100% seguro · PCI DSS · Cifrado SSL
+                            </div>
+                        </div>
+
+                        <p id="o_niubiz_status_msg" class="o-niubiz-status"/>
+
+                    </div>
+                </div>
+            </div>
+
+            <script id="o_niubiz_config" type="application/json">
+                <t t-out="niubiz_config_json"/>
+            </script>
+
+            <script type="text/javascript">
+(function () {
+    var cfg = JSON.parse(document.getElementById('o_niubiz_config').textContent || '{}');
+
+    function showStatus(msg, isError) {
+        var el = document.getElementById('o_niubiz_status_msg');
+        if (!el) { return; }
+        el.textContent = msg;
+        el.style.color = isError ? '#c0392b' : '#6c757d';
+    }
+
+    function setLoading(loading) {
+        var spinner = document.getElementById('o_niubiz_spinner');
+        var form = document.getElementById('o_payment_niubiz_form');
+        if (spinner) { spinner.style.display = loading ? 'block' : 'none'; }
+        if (form) { form.style.display = loading ? 'none' : 'block'; }
+    }
+
+    if (!cfg.checkoutJsUrl || !cfg.sessionToken) {
+        showStatus('Error: configuración de pago incompleta.', true);
+        return;
+    }
+
+    if (cfg.amount) {
+        var amtEl = document.getElementById('o_niubiz_amount_display');
+        if (amtEl) {
+            amtEl.textContent = cfg.currency + ' ' + Number(cfg.amount).toFixed(2);
+            amtEl.style.display = 'block';
+        }
+    }
+
+    setLoading(true);
+
+    var script = document.createElement('script');
+    script.src = cfg.checkoutJsUrl;
+    script.async = false;
+
+    script.onload = function () {
+        setLoading(false);
+
+        if (typeof VisanetCheckout === 'undefined') {
+            showStatus('No se pudo cargar el módulo de pago. Recargue la página.', true);
+            return;
+        }
+
+        VisanetCheckout.configure({
+            // «action» es obligatorio para el SDK (sin él, open() solo muestra un
+            // alert): es la URL de retorno firmada a la que Niubiz envía el token.
+            action: cfg.returnUrl,
+            sessiontoken: cfg.sessionToken,
+            channel: 'web',
+            merchantid: cfg.merchantId,
+            purchasenumber: String(cfg.purchaseNumber),
+            amount: Number(cfg.amount).toFixed(2),
+            currency: cfg.currency,
+            language: 'es',
+            font: 'https://fonts.googleapis.com/css?family=Inter:400,500&amp;display=swap',
+            expirationminutes: String(cfg.expirationMinutes || '20'),
+            timeouturl: cfg.timeoutUrl || '/payment/status',
+            cardholdername: cfg.cardholderName,
+            cardholderlastname: cfg.cardholderLastName,
+            cardholderemail: cfg.cardholderEmail || '',
+            usertoken: '',
+            complete: function (params) {
+                if (!params || !params.transactionToken) {
+                    showStatus('No se recibió confirmación del pago. Intente nuevamente.', true);
+                    document.getElementById('o_niubiz_pay_btn').disabled = false;
+                    return;
+                }
+                showStatus('Verificando pago...');
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = cfg.returnUrl;
+                var fields = {
+                    transactionToken: params.transactionToken,
+                    channel: params.channel || 'web'
+                };
+                Object.keys(fields).forEach(function (key) {
+                    var inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = key;
+                    inp.value = fields[key];
+                    form.appendChild(inp);
+                });
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        document.getElementById('o_niubiz_pay_btn').addEventListener('click', function () {
+            this.disabled = true;
+            showStatus('Abriendo formulario de pago seguro...');
+            VisanetCheckout.open();
+        });
+    };
+
+    script.onerror = function () {
+        setLoading(false);
+        showStatus('No se pudo cargar Niubiz. Verifique su conexión e intente nuevamente.', true);
+    };
+
+    document.head.appendChild(script);
+})();
+            </script>
+        </t>
+    </template>
+
+    <template id="pagoefectivo_result" name="Niubiz PagoEfectivo CIP">
+        <t t-call="portal.frontend_layout">
+            <t t-set="page_title">Código de Pago - PagoEfectivo</t>
+            <t t-set="additional_title">PagoEfectivo - Niubiz</t>
+            <style>
+                .o-pe-wrap { background: #f0f4f8; min-height: 80vh; display: flex; align-items: center; }
+                .o-pe-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.10); padding: 2rem 2.25rem; max-width: 460px; width: 100%; margin: 2rem auto; text-align: center; }
+                .o-pe-header { font-weight: 700; font-size: 1.1rem; color: #0d1a63; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e9ecef; }
+                .o-pe-badge { display: inline-block; background: #f5a623; color: #fff; font-weight: 700; font-size: .75rem; border-radius: 6px; padding: .25rem .65rem; margin-bottom: 1rem; }
+                .o-pe-cip-label { font-size: .75rem; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: .6px; margin-bottom: .4rem; }
+                .o-pe-cip { font-size: 2.5rem; font-weight: 800; color: #0d1a63; letter-spacing: 4px; margin-bottom: 1.5rem; }
+                .o-pe-info { background: #fffbf0; border: 1px solid #ffe69c; border-radius: 10px; padding: .9rem 1rem; font-size: .82rem; color: #664d03; margin-bottom: 1.5rem; text-align: left; line-height: 1.6; }
+                .o-pe-expiry { font-size: .78rem; color: #6c757d; margin-bottom: 1.5rem; }
+            </style>
+            <div class="o-pe-wrap">
+                <div class="container">
+                    <div class="o-pe-card">
+                        <div class="o-pe-header">Niubiz · <span style="color:#f5a623">PagoEfectivo</span></div>
+                        <div class="o-pe-badge">PAGO EN EFECTIVO</div>
+                        <div class="o-pe-cip-label">Tu código CIP de pago</div>
+                        <div class="o-pe-cip"><t t-esc="cip"/></div>
+                        <div class="o-pe-info">
+                            <strong>¿Cómo pagar?</strong><br/>
+                            1. Ve a cualquier agente o banco de la red PagoEfectivo.<br/>
+                            2. Indica el código CIP de arriba.<br/>
+                            3. Paga el monto exacto: <strong><t t-esc="currency"/> <t t-esc="'%.2f' % amount"/></strong>.<br/>
+                            4. Guarda tu constancia de pago.
+                        </div>
+                        <t t-if="expiry_date">
+                            <div class="o-pe-expiry">Válido hasta: <strong><t t-esc="expiry_date"/></strong></div>
+                        </t>
+                        <t t-if="cip_url">
+                            <a t-att-href="cip_url" target="_blank" class="btn btn-warning btn-sm mb-3">
+                                Ver constancia de pago
+                            </a><br/>
+                        </t>
+                        <a href="/payment/status" class="btn btn-outline-secondary btn-sm">
+                            Ver estado del pedido
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="landing_error" name="Niubiz Error">
+        <t t-call="portal.frontend_layout">
+            <t t-set="page_title">Error de Pago</t>
+            <t t-set="additional_title">Error de Pago - Niubiz</t>
+            <div class="wrap">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <div class="alert alert-danger" role="alert">
+                                <h4 class="alert-heading">Error al iniciar el pago</h4>
+                                <p><t t-esc="error_message"/></p>
+                            </div>
+                            <a t-att-href="back_url" class="btn btn-primary">
+                                Volver al carrito
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

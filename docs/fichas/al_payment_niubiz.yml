@@ -1,0 +1,185 @@
+titulo: Pagos con Niubiz
+subtitulo: >-
+  El Checkout All-In-One de Niubiz en Odoo: tarjetas, Yape, Plin, Cuotéalo
+  BCP y PagoEfectivo en un solo modal, con anulación el mismo día y
+  devoluciones.
+categoria: Pagos · Perú
+etiquetas: [Niubiz, VisaNet, Tarjetas, Yape, Plin, PagoEfectivo, Anulación, Devoluciones]
+portada: screenshots/02-modal.png
+
+destacados_intro: >-
+  Validado con pagos reales contra el sandbox de Niubiz: aprobados,
+  rechazados y anulados.
+destacados:
+  - icono: "▣"
+    titulo: Todos los medios en un modal
+    texto: >-
+      Tarjetas Visa, Mastercard, Amex, Diners y UnionPay, billeteras con QR,
+      Yape, Cuotéalo BCP, PagoEfectivo y puntos.
+  - icono: "🔒"
+    titulo: Seguro
+    texto: >-
+      Los datos de la tarjeta los procesa Niubiz; Odoo solo recibe un token y
+      las rutas exigen una firma de la transacción.
+  - icono: "↻"
+    titulo: Reintento sin perder el pedido
+    texto: >-
+      Si el banco rechaza la tarjeta, el cliente ve el motivo y vuelve a pagar
+      desde la misma página.
+  - icono: "✕"
+    titulo: Anulación el mismo día
+    texto: >-
+      Un botón anula el pago en Niubiz y cancela la transacción y su pago
+      contable.
+  - icono: "−"
+    titulo: Devoluciones
+    texto: >-
+      Totales o parciales desde la transacción, hasta 6 meses después del
+      pago.
+  - icono: "S/"
+    titulo: Soles y dólares
+    texto: >-
+      Con el sandbox de Niubiz y sus credenciales de prueba para probar antes
+      de producción.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Niubiz (antes VisaNet) es la pasarela con la que trabajan la mayoría de
+    comercios afiliados en Perú, pero Odoo no la trae. Este módulo la agrega
+    como proveedor de pago: el cliente paga en el modal de Niubiz desde la
+    tienda en línea, el portal o un enlace de pago, y Odoo registra la
+    autorización, la traza y la marca de la tarjeta.
+  nota: >-
+    **Requisito:** una cuenta de comercio afiliada a Niubiz (código de
+    comercio, usuario y contraseña de la API). Para probar, basta el modo de
+    prueba con las credenciales públicas del sandbox.
+
+flujos_intro: >-
+  Del clic en «Pagar» a la confirmación en Odoo.
+flujos:
+  - id: pago
+    titulo: Pago con Niubiz
+    texto: >-
+      Odoo pide una sesión a Niubiz, el cliente paga en el modal y Odoo
+      autoriza el cargo con el token recibido.
+    mermaid: |
+      flowchart TD
+        A[Cliente elige Niubiz y pulsa Pagar] --> B[Odoo pide token y sesión a Niubiz]
+        B --> C[Página de pago con el modal de Niubiz]
+        C --> D{¿Medio elegido?}
+        D -- Tarjeta, Yape, Plin, Cuotéalo --> E[Odoo autoriza con el token]
+        E --> F{¿Aprobado?}
+        F -- Sí --> G[Pago confirmado:<br/>autorización, traza y marca]
+        F -- No --> H[Vuelve a la página de pago<br/>con el motivo del rechazo]
+        H --> C
+        D -- PagoEfectivo --> I[Código CIP: pendiente<br/>hasta pagar en efectivo]
+        G --> J[Mismo día: anular en Niubiz<br/>o después: devolución]
+
+pasos_intro: >-
+  Pagos reales contra el sandbox de Niubiz con las tarjetas de prueba.
+pasos:
+  - seccion: Configuración
+  - titulo: Credenciales de Niubiz
+    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Niubiz
+    texto: >-
+      Código de comercio, usuario y contraseña de la API y RUC del comercio
+      (para las devoluciones). En «Modo de prueba» la pantalla muestra las
+      credenciales públicas del sandbox.
+    imagen: screenshots/01-ajustes.png
+
+  - seccion: Pago
+  - titulo: El modal de Niubiz
+    ruta: Tienda, portal o enlace de pago ▸ Niubiz ▸ Pagar
+    texto: >-
+      Niubiz muestra todos los medios habilitados para el comercio: tarjeta,
+      billeteras con QR, PagoEfectivo, puntos y Yape.
+    imagen: screenshots/02-modal.png
+  - titulo: Datos de la tarjeta
+    ruta: Modal de Niubiz ▸ Tarjeta de crédito y débito
+    texto: >-
+      Nombre, apellido y correo llegan completados desde Odoo; el cliente
+      escribe la tarjeta y elige si paga en cuotas.
+    imagen: screenshots/03-tarjeta.png
+  - titulo: Pago aprobado
+    ruta: Confirmación del pago
+    texto: Odoo confirma el pago con el importe, la referencia y la marca de la tarjeta.
+    imagen: screenshots/04-aprobado.png
+  - titulo: Pago rechazado
+    ruta: Página de pago de Niubiz
+    texto: >-
+      Con una tarjeta rechazada (fondos insuficientes en el ejemplo), el
+      cliente ve el motivo y puede volver a pagar.
+    imagen: screenshots/05-rechazado.png
+
+  - seccion: Después del pago
+  - titulo: Anulación el mismo día
+    ruta: Transacción ▸ Anular en Niubiz
+    texto: >-
+      Niubiz anula el cargo, la transacción pasa a «Cancelada» y el pago
+      contable también se cancela. Se guardan la fecha y la traza de Niubiz.
+    imagen: screenshots/06-anulacion.png
+
+campos_intro: >-
+  Los campos que el módulo añade al proveedor y a la transacción.
+campos:
+  - grupo: Proveedor Niubiz
+    ruta: Proveedores de pago ▸ Niubiz ▸ Credenciales
+    campos:
+      - [Código de comercio, Asignado por Niubiz al afiliarse., "—", Uno por moneda]
+      - [Usuario API (access key), Usuario de la API de Niubiz., "—", "—"]
+      - [Contraseña API (secret key), Contraseña de la API., "—", Solo administradores]
+      - [RUC del comercio, Necesario para las devoluciones., "—", "11 dígitos"]
+  - grupo: Transacción
+    ruta: Pagos ▸ Transacciones
+    campos:
+      - [Fecha de la transacción Niubiz, Necesaria para anular., Automático, "—"]
+      - [Número de traza Niubiz, Necesario para devolver., Automático, "—"]
+      - [URL de la constancia PagoEfectivo, Constancia del código CIP., Automático, Solo PagoEfectivo]
+
+funcionalidades:
+  - grupo: Pago
+    items:
+      - Checkout All-In-One de Niubiz con todos los medios del comercio.
+      - Autorización en el servidor con el token del modal.
+      - Reintento tras un rechazo, con el motivo traducido.
+      - "PagoEfectivo: código CIP y transacción pendiente."
+  - grupo: Después del pago
+    items:
+      - Anulación el mismo día que cancela la transacción y el pago contable.
+      - Devoluciones parciales o totales.
+  - grupo: Seguridad
+    items:
+      - Datos de la tarjeta procesados por Niubiz (PCI DSS nivel 1).
+      - Rutas firmadas con la referencia de la transacción.
+      - Contraseña solo para administradores y borrada al neutralizar la base.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
+  - "Configure las credenciales en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Niubiz**."
+  - Pruebe en «Modo de prueba» con las tarjetas del sandbox y luego active el proveedor.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. Requiere una cuenta de comercio afiliada
+  a Niubiz y que el servidor de Odoo llegue a las API de Niubiz.
+
+faq:
+  - pregunta: "¿Puedo probar sin una cuenta de Niubiz?"
+    respuesta: >-
+      Sí. En «Modo de prueba» se usan el sandbox y las credenciales públicas
+      de Niubiz, con sus tarjetas de prueba.
+  - pregunta: "¿Qué diferencia hay entre anular y devolver?"
+    respuesta: >-
+      La anulación cancela el cargo el mismo día, antes de liquidarse. La
+      devolución se hace después, desde 48 horas hábiles y hasta 6 meses.
+  - pregunta: "¿Qué ve el cliente si su tarjeta es rechazada?"
+    respuesta: >-
+      Vuelve a la página de pago con el motivo (por ejemplo, fondos
+      insuficientes) y puede pagar con otra tarjeta sin rehacer el pedido.
+
+novedades:
+  - version: 1.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "Primera versión en la suite (adaptación de payment_niubiz): el modal ya se abre, la anulación cancela la transacción y el pago, rutas firmadas, contraseña solo para administradores, reintentos de conexión y pruebas; validado con pagos reales en el sandbox."
+
+relacionados: [al_payment_culqi, al_l10n_pe_invoice]

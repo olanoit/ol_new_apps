@@ -135,6 +135,8 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 8.20260828 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
 [al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 8.20260828 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
 [al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 5.20260803 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
+[al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
+[al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 1.20261006 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
 [l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 10.20260828 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 
 ### OL-INVOICING
@@ -142,6 +144,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 7.20260828 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
+[al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 1.20261006 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 11.20260828 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 
 ### OL-PAYROLL

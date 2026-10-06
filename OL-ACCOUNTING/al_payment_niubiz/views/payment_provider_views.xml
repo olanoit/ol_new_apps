@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_provider_niubiz_form" model="ir.ui.view">
+        <field name="name">payment.provider.niubiz.form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'niubiz'">
+                    <field
+                        name="niubiz_merchant_id"
+                        required="code == 'niubiz' and state != 'disabled'"
+                    />
+                    <field
+                        name="niubiz_access_key"
+                        required="code == 'niubiz' and state != 'disabled'"
+                    />
+                    <field
+                        name="niubiz_secret_key"
+                        password="True"
+                        groups="base.group_system"
+                        required="code == 'niubiz' and state != 'disabled'"
+                    />
+                    <field name="niubiz_ruc"
+                           placeholder="20123456789"
+                           help="RUC de 11 dígitos. Requerido para procesar devoluciones."/>
+                </group>
+            </group>
+            <group name="provider_credentials" position="after">
+                <div invisible="code != 'niubiz' or state != 'test'">
+                    <div class="alert alert-info mt-2" role="alert">
+                        <strong>Modo Sandbox activo — Checkout All-In-One</strong><br/>
+                        Credenciales de prueba Niubiz:<br/>
+                        Usuario API: <code>integraciones@niubiz.com.pe</code><br/>
+                        Contraseña: <code>_7z3@8fF</code><br/>
+                        Código de Comercio PEN: <code>456879852</code><br/>
+                        Código de Comercio USD: <code>456879853</code><br/>
+                        <br/>
+                        <strong>Métodos de pago disponibles en el checkout:</strong><br/>
+                        Tarjetas Visa/Mastercard/Amex/Diners · Yape · Plin · Cuotéalo BCP · Pago Efectivo
+                    </div>
+                </div>
+            </group>
+        </field>
+    </record>
+
+    <!-- Transaction form: add Anular (Reversa) button and Niubiz fields -->
+    <record id="payment_transaction_niubiz_form" model="ir.ui.view">
+        <field name="name">payment.transaction.niubiz.form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <!-- Anular button: shown for done Niubiz transactions (not refunds) -->
+            <button name="action_post_process" position="before">
+                <button name="action_niubiz_reverse"
+                        string="Anular en Niubiz"
+                        type="object"
+                        class="btn-danger"
+                        invisible="provider_code != 'niubiz' or state != 'done' or operation == 'refund'"
+                        confirm="¿Confirma la anulación (reversa) de este pago en Niubiz? Esta acción cancela la autorización antes de la liquidación y no se puede deshacer."
+                />
+            </button>
+            <!-- Niubiz-specific info fields -->
+            <group name="transaction_partner" position="inside">
+                <field name="niubiz_transaction_date"
+                       invisible="provider_code != 'niubiz' or not niubiz_transaction_date"
+                       readonly="1"
+                       string="Fecha de la transacción Niubiz"/>
+                <field name="niubiz_trace_number"
+                       invisible="provider_code != 'niubiz' or not niubiz_trace_number"
+                       readonly="1"
+                       string="Número de traza Niubiz"/>
+                <field name="niubiz_cip_url"
+                       invisible="provider_code != 'niubiz' or not niubiz_cip_url"
+                       readonly="1"
+                       string="URL de la constancia PagoEfectivo"
+                       widget="url"/>
+            </group>
+        </field>
+    </record>
+
+</odoo>

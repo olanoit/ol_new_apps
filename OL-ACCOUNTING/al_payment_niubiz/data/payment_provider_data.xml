@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="payment_provider_niubiz" model="payment.provider">
+        <field name="image_128" type="base64" file="al_payment_niubiz/static/description/icon.png"/>
+        <field name="name">Niubiz</field>
+        <field name="code">niubiz</field>
+        <field name="state">disabled</field>
+        <field name="is_published" eval="False"/>
+        <field name="module_id" ref="base.module_al_payment_niubiz"/>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="payment_method_ids" eval="[Command.set([
+            ref('payment.payment_method_card'),
+            ref('payment.payment_method_visa'),
+            ref('payment.payment_method_mastercard'),
+            ref('payment.payment_method_amex'),
+            ref('payment.payment_method_diners'),
+        ])]"/>
+    </record>
+
+</odoo>
