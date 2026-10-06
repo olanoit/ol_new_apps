@@ -24,8 +24,8 @@ tabla de los módulos que contiene.
 [ol-pos](ol-pos/) | Punto de venta: comprobantes electrónicos desde la caja, vendedor, catálogo, tema y marca blanca.
 [ol-inventory](ol-inventory/) | Inventario y existencias: kárdex valorizado.
 [ol-projects](ol-projects/) | Proyectos y obras: Gantt y requerimientos de materiales de obra.
-[ol-tools](ol-tools/) | Utilidades transversales: información de módulos, ubigeo, servidor MCP, licencia.
-[ol-third-party](ol-third-party/) | Módulos de otros autores, sin modificar, de los que depende algún módulo propio.
+[ol-tools](ol-tools/) | Utilidades transversales: información de módulos, servidor MCP, licencia.
+[ol-third-party](ol-third-party/) | Módulos de otros autores que usa el proyecto, con su autoría y licencia; los cambios locales, anotados en su CHANGELOG.
 
 Instalación: addons_path
 ------------------------
@@ -94,9 +94,8 @@ Convenciones
   sin ficha (terceros y algunas utilidades) lo mantienen a mano.
 - **Licencia** OPL-1 en todos los módulos propios. Excepciones, en
   `scripts/areas.py` con su motivo: `al_construction_material_request`
-  (LGPL-3, extiende `base_tier_validation`, que es AGPL-3) y `al_l10n_pe_city`
-  (LGPL-3, basado en el módulo de Laxicon Solution). Los de `ol-third-party/`
-  conservan la de su autor.
+  (LGPL-3, extiende `base_tier_validation`, que es AGPL-3). Los de
+  `ol-third-party/` conservan la de su autor.
 - **LICENSE** en cada módulo, con el texto de la licencia de su manifiesto.
   `gen_addons_table.py --check` verifica la licencia y los dos archivos.
 - **Idioma**: textos de origen en español, con solo la primera letra en
@@ -185,7 +184,6 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](ol-tools/al_base_module_info/) | 1.20260914 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_l10n_pe_city](ol-tools/al_l10n_pe_city/) | 2.20260730 | LGPL-3 | Datos de la ciudad
 [al_mcp_server](ol-tools/al_mcp_server/) | 5.20261005 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [ol_licencia_perpetua](ol-tools/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
 
@@ -193,6 +191,7 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
+[al_l10n_pe_city](ol-third-party/al_l10n_pe_city/) | 2.20260730 | LGPL-3 | Datos de la ciudad
 [base_tier_validation](ol-third-party/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](ol-third-party/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
 [//]: # (end addons-all)
@@ -202,6 +201,6 @@ Licencias
 
 Los módulos propios usan **OPL-1**, salvo excepciones documentadas en su
 manifiesto: `al_construction_material_request` es LGPL-3 porque depende de
-`base_tier_validation` (AGPL-3), y `al_l10n_pe_city` es LGPL-3. Los módulos de
+`base_tier_validation` (AGPL-3). Los módulos de
 `ol-third-party/` conservan la autoría y la licencia de su proyecto de origen.
 Revise el `__manifest__.py` de cada módulo.
