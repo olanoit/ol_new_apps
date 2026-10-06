@@ -74,6 +74,22 @@ queda en el estado «Sin datos», sin archivo.
 | Devoluciones con nota de crédito | No indicado | Sí |
 | Punto de venta (factura o boleta del pedido) | No | Sí |
 | Formatos 12.1 y 13.1 en Excel y PDF | Requiere otro módulo | Incluidos |
+| TXT del PLE de Enterprise con el documento guardado | Con otro módulo puente | Incluido |
+
+## TXT del PLE de inventarios (Enterprise)
+
+`l10n_pe_reports_stock` arma el TXT 12.1 / 13.1 en un único método y toma la
+primera factura de la línea de pedido. En vez de copiar ese método, el módulo
+corrige su resultado (`l10n_pe.stock.ple.wizard._get_ple_report_content`): en
+cada fila de movimiento el CUO es el id del movimiento, y se reemplazan la
+fecha (la del comprobante), el tipo, la serie y el número con lo guardado en
+el movimiento. Las filas sin documento guardado quedan como las genera
+Enterprise.
+
+Con los datos de `ol_pe_v19` corrige dos errores de Enterprise: la serie de
+las facturas salía duplicada (`FF001`, porque parte del nombre interno
+`F F001-…`) y las ventas del punto de venta salían como guía `09` con la serie
+`WHPOS`.
 
 ## Arquitectura (rendimiento)
 

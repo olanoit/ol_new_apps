@@ -131,6 +131,7 @@ funcionalidades:
       - "Corrección manual en el historial de movimientos o con el botón «Documento del kardex» de la transferencia; el llenado automático nunca la cambia."
       - "Acciones masivas: completar vacíos, recalcular (respeta los manuales) y volver al automático."
       - "Formato SUNAT validado: tipo de 2 dígitos, serie alfanumérica y número positivo de hasta 20."
+      - "El TXT del PLE de inventarios de Enterprise toma el mismo documento que el kardex."
   - grupo: Sin datos
     items:
       - "Sin movimientos ni saldos en el periodo no se genera ni se muestra nada: el Excel, el PDF, la vista y el segundo plano avisan al usuario."
@@ -210,6 +211,10 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: 6.20261006
+    fecha: 06/10/2026
+    cambios:
+      - "El TXT del PLE de inventarios de Enterprise (12.1 y 13.1) usa el documento guardado en cada movimiento: corrige la serie duplicada de las facturas (FF001 en vez de F001) y las ventas del punto de venta informadas como guía con la serie WHPOS."
   - version: 5.20261006
     fecha: 06/10/2026
     cambios:

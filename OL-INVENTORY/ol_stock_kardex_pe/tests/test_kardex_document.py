@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from freezegun import freeze_time
 
 from odoo import Command
@@ -221,3 +223,51 @@ class TestKardexDocument(TestKardexReport):
 for _name in dir(TestKardexReport):
     if _name.startswith('test_') and _name not in TestKardexDocument.__dict__:
         setattr(TestKardexDocument, _name, None)
+
+
+@tagged('post_install', 'post_install_l10n', '-at_install')
+class TestKardexPleBridge(TestKardexReport):
+    """El TXT del PLE de Enterprise usa el documento guardado en el movimiento."""
+
+    def _ple_rows(self):
+        wizard = self.env['l10n_pe.stock.ple.wizard'].create({
+            'date_from': '2024-01-01', 'date_to': '2024-01-31'})
+        content = wizard._get_ple_report_content('1301')
+        return wizard, [line.split('|') for line in content.split('\n') if line]
+
+    def test_40_ple_toma_el_documento_guardado(self):
+        self._build_moves()
+        delivery = self.env['stock.move'].search([
+            ('product_id', '=', self.product_kdx.id), ('state', '=', 'done'),
+            ('location_dest_id.usage', '=', 'customer')], limit=1)
+        delivery.write({'l10n_pe_kardex_doc_type': '03', 'l10n_pe_kardex_serie': 'B001',
+                        'l10n_pe_kardex_number': '00000777'})
+        wizard, rows = self._ple_rows()
+        i_date, i_type, i_serie, i_folio = wizard._l10n_pe_kardex_columns()
+        row = next(r for r in rows if r[1] == str(delivery.id).zfill(6))
+        self.assertEqual((row[i_type], row[i_serie], row[i_folio]), ('03', 'B001', '00000777'))
+        bill = self.env['account.move'].search([('move_type', '=', 'in_invoice')]).filtered(
+            lambda m: m.l10n_latam_document_number == 'F001-00000123')
+        receipt = bill.invoice_line_ids.purchase_line_id.move_ids
+        row = next(r for r in rows if r[1] == str(receipt.id).zfill(6))
+        self.assertEqual((row[i_date], row[i_type], row[i_serie], row[i_folio]),
+                         ('15/01/2024', '01', 'F001', '00000123'))
+        opening_and_moves = len(rows)
+        self.assertGreaterEqual(opening_and_moves, 3)
+
+    def test_41_sin_documento_queda_como_enterprise(self):
+        self._build_moves()
+        self.env['stock.move'].search([]).with_context(l10n_pe_kardex_auto=True).write({
+            'l10n_pe_kardex_doc_type': False, 'l10n_pe_kardex_serie': False,
+            'l10n_pe_kardex_number': False, 'l10n_pe_kardex_invoice_id': False})
+        wizard = self.env['l10n_pe.stock.ple.wizard'].create({
+            'date_from': '2024-01-01', 'date_to': '2024-01-31'})
+        with patch.object(type(wizard), '_l10n_pe_kardex_apply_documents', lambda self, c: c):
+            original = wizard._get_ple_report_content('1301')
+        self.assertTrue(original)
+        self.assertEqual(wizard._get_ple_report_content('1301'), original)
+
+
+for _name in dir(TestKardexReport):
+    if _name.startswith('test_') and _name not in TestKardexPleBridge.__dict__:
+        setattr(TestKardexPleBridge, _name, None)

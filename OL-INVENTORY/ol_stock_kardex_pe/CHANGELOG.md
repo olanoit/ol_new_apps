@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261006 — 06/10/2026
+
+- El TXT del PLE de inventarios de Enterprise (12.1 y 13.1) usa el documento guardado en cada movimiento: corrige la serie duplicada de las facturas (FF001 en vez de F001) y las ventas del punto de venta informadas como guía con la serie WHPOS.
+
 ## 5.20261006 — 06/10/2026
 
 - Sin datos no se descarga nada: el Excel, el PDF, la vista en pantalla y la generación en segundo plano muestran un mensaje en vez de un archivo vacío; los generados sin datos quedan en «Sin datos».
