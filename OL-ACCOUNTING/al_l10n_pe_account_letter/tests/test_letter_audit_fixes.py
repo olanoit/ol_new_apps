@@ -256,3 +256,48 @@ class TestLetterAuditFixes(TransactionCase):
     def test_massive_and_config_have_company_rules(self):
         self.assertTrue(self.env.ref('al_l10n_pe_account_letter.account_letter_massive_rule_company'))
         self.assertTrue(self.env.ref('al_l10n_pe_account_letter.account_letter_account_config_rule_company'))
+
+    # ------------------------------------------------------------------
+    # Revisión del 07/10/2026
+    # ------------------------------------------------------------------
+    def test_draft_unreconciles_invoice(self):
+        """Restablecer a borrador libera la factura: deja de figurar pagada y
+        se puede volver a canjear."""
+        letter = self._redeemed_letter()
+        invoice = letter.invoice_line_ids.move_line_id.move_id
+        self.assertEqual(invoice.payment_state, 'paid')
+        letter.action_draft()
+        self.assertNotEqual(invoice.payment_state, 'paid')
+        self.assertFalse(letter.invoice_line_ids.move_line_id.reconciled)
+        letter.action_cancel()
+        self.assertEqual(letter.account_id.state, 'cancel')
+
+    def test_same_invoice_cannot_be_redeemed_twice(self):
+        """Dos canjes con la misma factura: el segundo no se contabiliza."""
+        first = self._checked_letter()
+        term_line = first.invoice_line_ids.move_line_id
+        second = self.Letter.create({
+            'partner_id': self.partner.id, 'type': 'out_invoice',
+            'journal_id': self.letter_journal.id,
+            'invoice_line_ids': [(0, 0, {
+                'document_type_id': self.doc_type.id, 'move_line_id': term_line.id,
+                'account_id': term_line.account_id.id, 'imp_div': 3000.0})],
+        })
+        second.invoice_date = date(2026, 8, 10)
+        with self.assertRaises(UserError):
+            second.action_checked()
+        first.action_redeemed()
+        with self.assertRaises(UserError):
+            second._l10n_pe_check_invoice_balances()
+
+    def test_partial_difference_is_not_rounding(self):
+        """Letras por menos de lo que se canjea: no va a la cuenta de redondeo."""
+        letter = self._checked_letter()
+        letter.letter_line_ids[-1].imp_div -= 400.0
+        with self.assertRaises(UserError):
+            letter.action_redeemed()
+
+    def test_redeem_twice_is_blocked(self):
+        letter = self._redeemed_letter()
+        with self.assertRaises(UserError):
+            letter.action_redeemed()

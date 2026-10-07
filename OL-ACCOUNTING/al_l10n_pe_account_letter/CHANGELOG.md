@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- Canje: al restablecerlo a borrador se deshace la conciliación (antes la factura seguía «Pagado» y no se podía volver a canjear); no se restablece si hay pagos contra las letras; un documento no se canjea por más de su saldo ni en dos canjes a la vez; una diferencia entre facturas y letras mayor que el redondeo ya no va a la cuenta de redondeo; un canje ya contabilizado no se vuelve a canjear por doble clic.
+- Canjes en dólares: el asiento ya no queda descuadrado por un céntimo (la última letra absorbe la diferencia en soles).
+- Refinanciamiento: cierra la letra en la cuenta donde está realmente (cartera, banco o protestada); antes una letra en cobranza o protestada quedaba abierta y el cliente debía el doble. Una letra descontada no se renueva hasta que el banco la cobre o la proteste, y un refinanciamiento con letras ya enviadas al banco no se cancela.
+- El selector de documentos del canje solo ofrece documentos de la compañía y con saldo.
+
 ## 9.20261007 — 07/10/2026
 
 - Nuevo: liquidación del descuento con el banco (abono neto, intereses, comisiones y préstamo por el valor nominal).

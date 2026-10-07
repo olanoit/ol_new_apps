@@ -347,14 +347,35 @@ class L10nPeLetter(models.Model):
         return letter_imp_div
 
     # Método para botón borrador
+    def _l10n_pe_letter_paid_lines(self):
+        """Apuntes de letras del canje conciliados con un pago (no con el
+        envío al banco ni con una renovación, que se deshacen aparte)."""
+        own = self.account_id | self.canje_move_id | self.canje_move_ids
+        letter_lines = self.account_id.line_ids.filtered('l10n_pe_letter_line_id')
+        counterparts = (letter_lines.matched_debit_ids.debit_move_id
+                        | letter_lines.matched_credit_ids.credit_move_id)
+        return counterparts.filtered(
+            lambda l: l.move_id not in own
+            and not (self.refinance_id and l.move_id == self.refinance_id.account_id))
+
     def action_draft(self):
         if self.bank_move_ids.filtered(lambda m: m.state == 'posted'):
             raise UserError(self.env._(
                 'El canje %s tiene operaciones con el banco (descuento, cobro o protesto): '
                 'anúlelas antes de restablecerlo a borrador.', self.name))
+        if self.account_id and self._l10n_pe_letter_paid_lines():
+            # Volver a canjear reescribe el asiento y desconciliaba en
+            # silencio los pagos ya registrados contra las letras.
+            raise UserError(self.env._(
+                'Hay pagos conciliados con las letras del canje %s: anúlelos antes de '
+                'restablecerlo a borrador.', self.name))
         if self.account_id:
             if self.account_id.state == 'posted':
                 self.account_id.button_draft()
+            # button_draft no deshace la conciliación en Odoo 19: las facturas
+            # seguían «Pagado» contra un asiento en borrador y no se podían
+            # volver a canjear.
+            self.account_id.line_ids.remove_move_reconcile()
         if self.canje_move_id:
             self.canje_move_id.button_cancel()
             self.canje_move_id = False
@@ -397,11 +418,45 @@ class L10nPeLetter(models.Model):
         string='Referencia de nombre',
     )
 
+    def _l10n_pe_check_invoice_balances(self):
+        """Cada documento se canjea por lo que aún debe: sin esto, dos canjes
+        con la misma factura duplicaban la cartera."""
+        self.ensure_one()
+        for line in self.invoice_line_ids.filtered('move_line_id'):
+            move_line = line.move_line_id
+            currency = line.currency_id or self.company_id.currency_id
+            residual = abs(move_line.amount_residual_currency
+                           if move_line.currency_id != self.company_id.currency_id
+                           else move_line.amount_residual)
+            if move_line.reconciled or currency.compare_amounts(line.imp_div, residual) > 0:
+                raise UserError(self.env._(
+                    'El documento %(doc)s solo tiene %(residual)s por canjear y en el canje '
+                    'figura %(amount)s (¿está en otro canje o ya se pagó?).',
+                    doc=line.invoice_name or move_line.move_id.name,
+                    residual=currency.round(residual), amount=line.imp_div))
+            # Un borrador es trabajo en curso: el conflicto es con otro canje
+            # ya comprobado (los canjeados ya redujeron el saldo).
+            others = self.search([
+                ('id', '!=', self.id), ('state', '=', 'checked'),
+                ('invoice_line_ids.move_line_id', '=', move_line.id)])
+            if others and currency.compare_amounts(
+                    sum(others.invoice_line_ids.filtered(
+                        lambda l: l.move_line_id == move_line).mapped('imp_div'))
+                    + line.imp_div, residual) > 0:
+                raise UserError(self.env._(
+                    'El documento %(doc)s también está en %(others)s y entre ambos superan '
+                    'su saldo.', doc=line.invoice_name or move_line.move_id.name,
+                    others=', '.join(others.mapped('name'))))
+
     def action_checked(self):
+        if self.state != 'draft':
+            raise UserError(self.env._('Solo se comprueban canjes en borrador.'))
         if not self.invoice_line_ids:
             raise UserError('Necesitas añadir documentos antes de validar.')
         if not self.invoice_date:
             raise UserError('Necesitas añadir la fecha de canje.')
+        if not self.is_refinance_children:
+            self._l10n_pe_check_invoice_balances()
         if not self.confirmed_reference:
             self.confirmed_reference = self.name
         else:
@@ -417,7 +472,22 @@ class L10nPeLetter(models.Model):
                 raise UserError(self.env._(
                     'Solo se pueden cancelar canjes en borrador o comprobados. '
                     'Restablezca el canje %s a borrador antes de cancelarlo.', letter.name))
+            # Un refinanciamiento con letras ya enviadas al banco, cobradas o
+            # protestadas no se cancela: dejaría esos asientos huérfanos.
+            if letter.is_refinance_children and (
+                    letter.bank_move_ids.filtered(lambda m: m.state == 'posted')
+                    or (letter.canje_move_id | letter.canje_move_ids).filtered(
+                        lambda m: m.state == 'posted')
+                    or letter._l10n_pe_letter_paid_lines()):
+                raise UserError(self.env._(
+                    'Las letras del refinanciamiento %s ya se enviaron al banco o tienen '
+                    'pagos: anule esas operaciones antes de cancelarlo.', letter.name))
         for letter in self:
+            if not letter.is_refinance_children and letter.account_id \
+                    and letter.account_id.state == 'draft':
+                # Asiento del canje que quedó en borrador al restablecerlo.
+                letter.account_id.line_ids.remove_move_reconcile()
+                letter.account_id.button_cancel()
             # Si la letra es un refinanciamiento (hijo), limpiar las referencias
             # hacia los canjes de origen para permitir un nuevo refinanciamiento.
             if letter.is_refinance_children:
@@ -496,16 +566,50 @@ class L10nPeLetter(models.Model):
         }
         vals.update(extra)
         if currency_id != self.company_id.currency_id.id:
-            debit_credit = amount_currency * exchange_rate
+            # Redondeado como lo guarda el ORM: sin redondear, el asiento en USD
+            # podía quedar descuadrado por un céntimo y no contabilizarse.
+            debit_credit = self.company_id.currency_id.round(amount_currency * exchange_rate)
             vals['debit'] = debit_credit if debit_credit > 0 else 0.0
             vals['credit'] = -debit_credit if debit_credit < 0 else 0.0
         return vals
 
+    def _l10n_pe_balance_cents(self, lines):
+        """Lleva a la última letra el céntimo de diferencia en soles que deja
+        convertir cada apunte por separado."""
+        currency = self.company_id.currency_id
+        total = currency.round(sum(
+            vals.get('balance', vals.get('debit', 0.0) - vals.get('credit', 0.0))
+            for vals in lines if 'debit' in vals or 'balance' in vals))
+        if not total or abs(total) > 0.05:
+            return lines
+        target = next((vals for vals in reversed(lines)
+                       if vals.get('l10n_pe_letter_line_id') and 'debit' in vals), None)
+        if target:
+            net = currency.round(target['debit'] - target['credit'] - total)
+            target['debit'], target['credit'] = (net, 0.0) if net > 0 else (0.0, -net)
+        return lines
+
     # Método para botón de canjear
     def action_redeemed(self):
         self.ensure_one()
+        if self.state != 'checked':
+            # Por RPC o con doble clic reescribía un canje ya contabilizado y
+            # deshacía sus conciliaciones con el banco y los pagos.
+            raise UserError(self.env._('Solo se canjean canjes comprobados.'))
         if not self.letter_line_ids:
             raise UserError('Necesitas añadir letras antes de canjear.')
+        if not self.is_refinance_children:
+            self._l10n_pe_check_invoice_balances()
+            currency = self.currency_id or self.company_id.currency_id
+            # El residual es solo redondeo: una diferencia mayor es un canje
+            # parcial mal armado (p. ej. letras por 600 de una factura de 1000)
+            # y antes iba entera a la cuenta de redondeo.
+            if currency.compare_amounts(abs(self.rest_amount_currency or 0.0), 1.0) > 0:
+                raise UserError(self.env._(
+                    'Las letras no suman lo que se canjea de los documentos (diferencia '
+                    '%(diff)s %(currency)s). Ajuste el importe a canjear de las facturas o '
+                    'el de las letras: solo el redondeo va a la cuenta de redondeo.',
+                    diff=currency.round(self.rest_amount_currency), currency=currency.name))
         self.state = 'redeemed'
         if any(not letter.nro_letter for letter in self.letter_line_ids):
             raise UserError('Se necesita ingresar el número de letra de referencia.')
@@ -555,6 +659,7 @@ class L10nPeLetter(models.Model):
                     'partner_id': self.partner_id.id,
                     'balance': letter_residual.amount,
                 })
+            account_move_lines = self._l10n_pe_balance_cents(account_move_lines)
             move_line_commands = [(0, 0, line.copy()) for line in account_move_lines]
             update_line_commands = [(5, 0, 0)] + [(0, 0, line.copy()) for line in account_move_lines]
 
@@ -810,14 +915,12 @@ class L10nPeLetter(models.Model):
 
             origins = self._get_refinance_origins()
             for origin in origins:
-                if not origin.account_id:
-                    continue
                 for letter in origin.letter_line_ids:
-                    original_line = origin.account_id.line_ids.filtered(
-                        lambda ml: ml.l10n_pe_letter_line_id == letter and not ml.reconciled)
                     closing_line = move_id.line_ids.filtered(
                         lambda ml: ml.l10n_pe_letter_line_id == letter and not ml.reconciled)
-                    if original_line and closing_line:
+                    original_line = letter._l10n_pe_open_line(exclude_move=move_id)
+                    if original_line and closing_line \
+                            and original_line.account_id == closing_line.account_id:
                         (original_line + closing_line).reconcile()
             return
         else:
@@ -1373,13 +1476,26 @@ class L10nPeLetter(models.Model):
                 exchange_rate=exchange_rate,
                 l10n_pe_letter_line_id=invoice_line.id,
             ))
-        # Añade los apunte de las letras anteriores
+        # Añade los apunte de las letras anteriores: se cierra el apunte que hoy
+        # sostiene cada letra (cartera, banco o protesto), no siempre el de
+        # cartera; antes la letra en cobranza o protestada quedaba abierta y el
+        # cliente debía el doble.
         for origin_letter in origins:
             for invoice_line in origin_letter.letter_line_ids:
-                amount_currency = invoice_line.adeudado * (-1 if invoice_line.move_invoice_type == 'out_invoice' else 1)
+                open_line = invoice_line._l10n_pe_open_line()
+                if invoice_line.letter_type == 'discount' and open_line \
+                        and open_line.move_id in (origin_letter.canje_move_id
+                                                  | origin_letter.canje_move_ids):
+                    raise UserError(self.env._(
+                        'La letra %s está descontada en el banco: no se renueva hasta que '
+                        'el banco la cobre o la proteste.', invoice_line.nro_letter))
+                if not open_line:
+                    continue
+                amount_currency = abs(open_line.amount_residual_currency) * (
+                    -1 if invoice_line.move_invoice_type == 'out_invoice' else 1)
                 account_move_lines.append(self._build_letter_move_line_vals(
                     invoice_line.nro_letter,
-                    invoice_line.account_id.id,
+                    open_line.account_id.id,
                     invoice_line.partner_id.id,
                     amount_currency,
                     invoice_line.currency_id.id,
@@ -1387,6 +1503,7 @@ class L10nPeLetter(models.Model):
                     exchange_rate=exchange_rate,
                     l10n_pe_letter_line_id=invoice_line.id,
                 ))
+        account_move_lines = self._l10n_pe_balance_cents(account_move_lines)
         move_vals = {
             'ref': self.name,
             'journal_id': self.journal_id.id,

@@ -71,6 +71,10 @@ class L10nPeLetterInvoiceLine(models.Model):
                 ('currency_id', '=', record.currency_id.id),
                 ('parent_state', '=', 'posted'),
                 ('id', 'not in', record.letter_id.invoice_line_ids.move_line_id.ids),
+                # Solo documentos de la compañía del canje y con saldo: antes se
+                # podía elegir una factura de otra compañía o ya conciliada.
+                ('company_id', '=', (record.letter_id.company_id or self.env.company).id),
+                ('reconciled', '=', False),
             ]
             if code == '00':
                 # Asientos de apertura: el diario de apertura de la compañía o,

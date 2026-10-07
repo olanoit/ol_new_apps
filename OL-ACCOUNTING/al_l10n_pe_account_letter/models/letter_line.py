@@ -235,6 +235,24 @@ class L10nPeLetterLine(models.Model):
             lambda l: l.l10n_pe_letter_line_id == self and not l.reconciled
             and l.currency_id.compare_amounts(l.amount_residual_currency, 0.0) > 0)[:1]
 
+    def _l10n_pe_open_line(self, exclude_move=None):
+        """Apunte que hoy sostiene el saldo de la letra: el del canje (cartera),
+        el del envío al banco (cobranza/descuento) o el del protesto. Una
+        renovación tiene que cerrar este, no siempre el de cartera."""
+        self.ensure_one()
+        letter = self.letter_id
+        moves = (letter.account_id | letter.canje_move_id | letter.canje_move_ids
+                 | letter.bank_move_ids | self.protest_move_id).filtered(
+            lambda m: m.state == 'posted')
+        if exclude_move:
+            moves -= exclude_move
+        sign = 1 if self.move_invoice_type == 'out_invoice' else -1
+        lines = moves.line_ids.filtered(
+            lambda l: l.l10n_pe_letter_line_id == self and not l.reconciled
+            and l.account_id.reconcile
+            and l.currency_id.compare_amounts(sign * l.amount_residual_currency, 0.0) > 0)
+        return lines.sorted('id')[-1:]
+
     def _l10n_pe_bank_operation_allowed(self, operation):
         self.ensure_one()
         if self.move_invoice_type != 'out_invoice' or self.letter_type not in ('billing', 'discount'):
