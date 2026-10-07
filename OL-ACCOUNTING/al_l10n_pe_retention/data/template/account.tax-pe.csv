@@ -1,0 +1,5 @@
+"id","name","description","invoice_label","amount","amount_type","type_tax_use","sequence","include_base_amount","tax_group_id","repartition_line_ids/repartition_type","repartition_line_ids/document_type","repartition_line_ids/account_id","name@es","description@es","invoice_label@es","is_withholding_tax_on_payment","withholding_sequence_id"
+"purchase_tax_withholding_3","3% IGV Withholding","3% IGV Withholding","3% Retención IGV","-3","percent","purchase","2","0","tax_group_igv_withholding","base","invoice","","3% Retención IGV","3% Retención IGV","3% Retención IGV","True","l10n_pe_edi_withholding_sunat_sequence"
+"","","","","","","","","","","tax","invoice","chart40114","","","","",""
+"","","","","","","","","","","base","refund","","","","","",""
+"","","","","","","","","","","tax","refund","chart40114","","","","",""

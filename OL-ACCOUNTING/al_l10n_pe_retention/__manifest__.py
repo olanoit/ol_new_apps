@@ -27,7 +27,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '8.20260828',
+    'version': '9.20261007',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -35,6 +35,8 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'l10n_latam_invoice_document',
         # código SUNAT de los impuestos (IGV) para las excepciones
         'l10n_pe',
+        # Firma y envío del CRE con el proveedor electrónico de la compañía
+        'l10n_pe_edi',
         # El padrón SUNAT es la fuente de «buen contribuyente» y «agente
         # de retención» del contacto: las dos excepciones al régimen.
         'l10n_pe_vat_sunat',
@@ -45,7 +47,9 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',
         'views/retention_views.xml',
+        'reports/retention_report.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
 }

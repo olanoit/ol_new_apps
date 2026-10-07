@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- Nuevo: firma y envío del Comprobante de Retención Electrónico a SUNAT con el proveedor electrónico de la compañía (IAP, SUNAT directo o Estela), con el CDR guardado en el pago, y su representación impresa en PDF.
+- Corregido: el XML del comprobante no lo habría aceptado SUNAT (total pagado en el elemento equivocado y con el bruto, sin bloque de firma, sin datos completos del agente y del proveedor). Ahora sigue la estructura del módulo oficial de Odoo.
+- Corregido: dos facturas menores de S/ 700 pagadas juntas por más del mínimo no se retenían. El mínimo se decide ahora en el pago, sobre los comprobantes que se pagan juntos (art. 12 de la R.S. 037-2002/SUNAT).
+- Nuevas excepciones: agente de percepción (marca en el contacto) y comprobantes que el CRE no admite (solo 01, 08 y 12).
+- Preparado para Odoo 20: mismos campos, métodos, impuesto y secuencia que el módulo oficial l10n_pe_edi_withholding; las compañías peruanas reciben el impuesto de retención 3 % y la secuencia R001 sin configurarlos a mano.
+
 ## 8.20260828 — 27/09/2026
 
 - La retención solo se aplica a compras gravadas con IGV: quedan fuera los recibos por honorarios y las compras exoneradas o inafectas.

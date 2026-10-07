@@ -98,7 +98,7 @@ log('impuesto inyectado sin alterar total',
     'total=%.2f' % bill.amount_total)
 payment = env['account.payment'].search(
     [('partner_id', '=', partner.id),
-     ('l10n_pe_retention_number', '!=', False)], limit=1)
+     ('l10n_pe_edi_retention_number', '!=', False)], limit=1)
 if not payment:
     wizard = env['account.payment.register'].with_context(
         active_model='account.move', active_ids=bill.ids).create({
@@ -109,9 +109,9 @@ if not payment:
     payment = wizard._create_payments()
 else:
     log('wizard propone 3% del pago', True, '(pago ya existente)')
-log('comprobante numerado', bool(payment.l10n_pe_retention_number)
-    and payment.l10n_pe_retention_number.startswith('R001-'),
-    payment.l10n_pe_retention_number or '-')
+log('comprobante numerado', bool(payment.l10n_pe_edi_retention_number)
+    and payment.l10n_pe_edi_retention_number.startswith('R001-'),
+    payment.l10n_pe_edi_retention_number or '-')
 action = payment.action_l10n_pe_generate_cre_xml()
 attachment = env['ir.attachment'].search(
     [('res_model', '=', 'account.payment'), ('res_id', '=', payment.id),

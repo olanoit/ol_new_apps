@@ -268,12 +268,12 @@ def escenario_retencion_completo():
     ret_lines = payment._l10n_pe_retention_lines()
     check(bool(ret_lines), 'El pago lleva línea de retención',
           '%s línea(s)' % len(ret_lines))
-    check(bool(payment.l10n_pe_retention_number),
+    check(bool(payment.l10n_pe_edi_retention_number),
           'Se numera la constancia al emitir el pago',
-          payment.l10n_pe_retention_number or 'sin número')
-    check((payment.l10n_pe_retention_number or '').startswith('R001-'),
+          payment.l10n_pe_edi_retention_number or 'sin número')
+    check((payment.l10n_pe_edi_retention_number or '').startswith('R001-'),
           'La constancia sigue la serie R001-########',
-          payment.l10n_pe_retention_number or '')
+          payment.l10n_pe_edi_retention_number or '')
 
     # --- asiento contable --------------------------------------------
     if not check(bool(payment.move_id), 'El pago genera asiento contable',

@@ -73,7 +73,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
             numbers.setdefault(line.payment_id, []).append(line.name or '')
         company = self.company_id
         for payment, names in numbers.items():
-            documents = payment._l10n_pe_retention_documents()
+            documents = payment._l10n_pe_edi_get_retention_breakdown()
             if not documents:
                 # pago sin factura vinculada: una fila con el pago entero
                 def to_pen(amount):
@@ -82,22 +82,22 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
                 retained = sum(to_pen(abs(line.amount)) for line in lines
                                if line.payment_id == payment)
                 documents = [{
-                    'invoice': self.env['account.move'],
-                    'paid': to_pen(payment.amount),
-                    'retained': retained,
+                    'bill': self.env['account.move'],
+                    'bill_paid_pen': to_pen(payment.amount),
+                    'bill_retention_pen': retained,
                 }]
             for doc in documents:
-                invoice = doc['invoice']
+                invoice = doc['bill']
                 rows.append('|'.join([
                     payment.partner_id.vat or '',
                     (payment.partner_id.name or '')[:100],
                     invoice.ref or invoice.name or '',
                     str(payment.date),
-                    '%.2f' % doc['paid'],
+                    '%.2f' % doc['bill_paid_pen'],
                     ', '.join(name for name in names if name),
-                    '%.2f' % doc['retained'],
+                    '%.2f' % doc['bill_retention_pen'],
                 ]))
-                total += doc['retained']
+                total += doc['bill_retention_pen']
         content = '\r\n'.join(rows) + '\r\n'
         self.write({
             'file_name': 'retenciones_626_%04d%s.txt' % (

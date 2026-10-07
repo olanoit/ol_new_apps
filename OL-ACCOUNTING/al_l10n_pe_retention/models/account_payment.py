@@ -1,58 +1,28 @@
 # -*- coding: utf-8 -*-
-from markupsafe import escape
+"""Comprobante de Retención Electrónico (CRE, tipo 20) desde el pago.
+
+La interfaz sigue al módulo oficial de Odoo ``l10n_pe_edi_withholding``
+(Enterprise 19.4/20) para que al migrar se pueda cambiar a él: mismos campos
+(``l10n_pe_edi_status``, ``l10n_pe_edi_warnings``,
+``l10n_pe_edi_attachment_file``, ``l10n_pe_edi_retention_number``,
+``l10n_pe_edi_is_required``) y mismos métodos (reparto por comprobante,
+XML, nombre del archivo, envío y servicio de SUNAT). La implementación es
+propia y se apoya en los servicios de firma y envío de ``l10n_pe_edi`` 19.0.
+
+Diferencia deliberada con el oficial: la retención es el 3 % del importe
+pagado **con IGV** (R.S. 037-2002/SUNAT); en los XML de prueba oficiales sale
+el 3 % de la base sin IGV.
+"""
+from lxml import etree, objectify
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-CRE_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
-<Retention xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1"
- xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
- xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
- xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1">
-  <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
-  <cbc:CustomizationID>1.0</cbc:CustomizationID>
-  <cbc:ID>{number}</cbc:ID>
-  <cbc:IssueDate>{date}</cbc:IssueDate>
-  <cac:AgentParty>
-    <cac:PartyIdentification><cbc:ID schemeID="6">{agent_ruc}</cbc:ID></cac:PartyIdentification>
-    <cac:PartyLegalEntity><cbc:RegistrationName>{agent_name}</cbc:RegistrationName></cac:PartyLegalEntity>
-  </cac:AgentParty>
-  <cac:ReceiverParty>
-    <cac:PartyIdentification><cbc:ID schemeID="6">{supplier_ruc}</cbc:ID></cac:PartyIdentification>
-    <cac:PartyLegalEntity><cbc:RegistrationName>{supplier_name}</cbc:RegistrationName></cac:PartyLegalEntity>
-  </cac:ReceiverParty>
-  <sac:SUNATRetentionSystemCode>01</sac:SUNATRetentionSystemCode>
-  <sac:SUNATRetentionPercent>{rate}</sac:SUNATRetentionPercent>
-  <cbc:TotalInvoiceAmount currencyID="{pen}">{total_retained}</cbc:TotalInvoiceAmount>
-  <cbc:TotalPaid currencyID="{pen}">{total_paid}</cbc:TotalPaid>
-{documents}</Retention>
-"""
-
-# Importe del comprobante y del pago en su moneda; retención y neto siempre
-# en soles, con el tipo de cambio cuando el comprobante es en otra moneda.
-CRE_DOCUMENT = """  <sac:SUNATRetentionDocumentReference>
-    <cbc:ID schemeID="{doc_type}">{doc_number}</cbc:ID>
-    <cbc:IssueDate>{doc_date}</cbc:IssueDate>
-    <cbc:TotalInvoiceAmount currencyID="{doc_currency}">{doc_total}</cbc:TotalInvoiceAmount>
-    <cac:Payment>
-      <cbc:PaidAmount currencyID="{doc_currency}">{paid}</cbc:PaidAmount>
-      <cbc:PaidDate>{pay_date}</cbc:PaidDate>
-    </cac:Payment>
-    <sac:SUNATRetentionInformation>
-      <sac:SUNATRetentionAmount currencyID="{pen}">{retained}</sac:SUNATRetentionAmount>
-      <sac:SUNATRetentionDate>{pay_date}</sac:SUNATRetentionDate>
-      <sac:SUNATNetTotalPaid currencyID="{pen}">{net}</sac:SUNATNetTotalPaid>
-{exchange_rate}    </sac:SUNATRetentionInformation>
-  </sac:SUNATRetentionDocumentReference>
-"""
-
-CRE_EXCHANGE_RATE = """      <cac:ExchangeRate>
-        <cbc:SourceCurrencyCode>{source}</cbc:SourceCurrencyCode>
-        <cbc:TargetCurrencyCode>{pen}</cbc:TargetCurrencyCode>
-        <cbc:CalculationRate>{rate}</cbc:CalculationRate>
-        <cbc:Date>{date}</cbc:Date>
-      </cac:ExchangeRate>
-"""
+# Servicio de SUNAT para retenciones y percepciones (no es el de facturas).
+SUNAT_RETENTION_WSDL = {
+    'test': 'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService?wsdl',
+    'prod': 'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService?wsdl',
+}
 
 
 class AccountPayment(models.Model):
@@ -61,154 +31,255 @@ class AccountPayment(models.Model):
     # Etiqueta en español del marco nativo
     withholding_line_ids = fields.One2many(string='Retenciones')
 
-    l10n_pe_retention_number = fields.Char(
+    l10n_pe_edi_retention_number = fields.Char(
         string='Nº comprobante de retención',
-        compute='_compute_l10n_pe_retention_number', store=True)
+        compute='_compute_l10n_pe_edi_retention_number', store=True)
+    l10n_pe_edi_status = fields.Selection(
+        selection=[('to_send', 'Por enviar'), ('sent', 'Enviado'), ('cancelled', 'Anulado')],
+        string='Estado del CRE', copy=False, tracking=True)
+    l10n_pe_edi_warnings = fields.Json(string='Avisos del CRE', readonly=True, copy=False)
+    l10n_pe_edi_attachment_file = fields.Binary(
+        string='CRE firmado y CDR', attachment=True, copy=False)
+    l10n_pe_edi_is_required = fields.Boolean(
+        string='CRE por enviar', compute='_compute_l10n_pe_edi_is_required')
+    l10n_pe_edi_error_message = fields.Char(
+        string='Error del CRE', compute='_compute_l10n_pe_edi_error_message')
 
     def _l10n_pe_retention_lines(self):
         return self.withholding_line_ids.filtered(
             lambda l: l.tax_id == self.company_id.l10n_pe_retention_tax_id)
 
     @api.depends('withholding_line_ids.name')
-    def _compute_l10n_pe_retention_number(self):
+    def _compute_l10n_pe_edi_retention_number(self):
         for payment in self:
-            payment.l10n_pe_retention_number = ', '.join(
-                n for n in payment._l10n_pe_retention_lines().mapped('name')
-                if n) or False
+            payment.l10n_pe_edi_retention_number = ', '.join(
+                n for n in payment._l10n_pe_retention_lines().mapped('name') if n) or False
+
+    @api.depends('state', 'l10n_pe_edi_retention_number', 'l10n_pe_edi_status', 'country_code')
+    def _compute_l10n_pe_edi_is_required(self):
+        for payment in self:
+            payment.l10n_pe_edi_is_required = bool(
+                payment.state in ('in_process', 'paid')
+                and payment.l10n_pe_edi_retention_number
+                and payment.country_code == 'PE'
+                and payment.l10n_pe_edi_status not in ('sent', 'cancelled'))
+
+    @api.depends('l10n_pe_edi_warnings')
+    def _compute_l10n_pe_edi_error_message(self):
+        for payment in self:
+            error = (payment.l10n_pe_edi_warnings or {}).get('edi_error') or {}
+            payment.l10n_pe_edi_error_message = error.get('message') or False
 
     def action_post(self):
-        """El comprobante de retención se numera al emitir el pago (el
-        marco nativo lo haría recién al generar el asiento con el
-        extracto, tarde para el flujo SUNAT)."""
+        """El comprobante de retención se numera al emitir el pago (el marco
+        nativo lo haría recién al generar el asiento con el extracto, tarde
+        para el flujo SUNAT) y queda por enviar."""
         res = super().action_post()
         for payment in self:
-            for line in payment._l10n_pe_retention_lines().filtered(
-                    lambda l: not l.name and l.withholding_sequence_id):
+            lines = payment._l10n_pe_retention_lines()
+            for line in lines.filtered(lambda l: not l.name and l.withholding_sequence_id):
                 line.name = line.withholding_sequence_id.next_by_id()
+            if lines and not payment.l10n_pe_edi_status:
+                payment.l10n_pe_edi_status = 'to_send'
         return res
 
-    def _l10n_pe_retention_documents(self):
-        """Reparto del pago y de la retención entre sus comprobantes.
+    # ------------------------------------------------------------------
+    # Reparto por comprobante (misma salida que el oficial)
+    # ------------------------------------------------------------------
+    def _l10n_pe_edi_get_paid_per_bill(self):
+        """``{bill.id: importe}`` en la moneda de cada factura, según la
+        conciliación del pago. Vacío si el pago aún no tiene asiento (en 19.0
+        nace al conciliar el extracto)."""
+        self.ensure_one()
+        result = {}
+        if not self.move_id:
+            return result
+        payment_lines = self.move_id.line_ids
+        for bill in self.reconciled_bill_ids:
+            for partial in bill.line_ids.matched_debit_ids | bill.line_ids.matched_credit_ids:
+                if partial.debit_move_id in payment_lines:
+                    amount = partial.credit_amount_currency
+                elif partial.credit_move_id in payment_lines:
+                    amount = partial.debit_amount_currency
+                else:
+                    continue
+                result[bill.id] = result.get(bill.id, 0.0) + amount
+        return result
 
-        Devuelve una lista (una entrada por factura) con importes en soles
-        (moneda de la compañía) y, para el XML, en la moneda del
-        comprobante. El pagado de cada factura sale de la conciliación si
-        el pago ya tiene asiento; si no (Odoo 19 no lo genera hasta
-        conciliar el extracto), se reparte en proporción al total de cada
-        factura. La retención se reparte en proporción a lo pagado.
+    def _l10n_pe_edi_get_retention_breakdown(self):
+        """Reparto del pago y de la retención entre sus comprobantes, con las
+        mismas claves que el oficial: ``bill``, ``bill_paid_currency`` (moneda
+        de la factura), ``bill_paid_pen``, ``bill_retention_pen``,
+        ``net_total_paid_pen`` y ``exchange_rate`` (moneda de la factura a
+        soles, a la fecha del pago). Lo usan el XML, el PDF y el resumen 626.
+
+        Sin conciliación, el pago se reparte en proporción al total de cada
+        factura. La retención se reparte según lo pagado y el redondeo cae en
+        la última.
         """
         self.ensure_one()
         company = self.company_id
         company_currency = company.currency_id
-        invoices = self.invoice_ids or self.reconciled_bill_ids
-        if not invoices:
+        bills = self.invoice_ids or self.reconciled_bill_ids
+        if not bills:
             return []
-        # importe bruto del pago (antes de retener) en soles; el signado de
-        # la compañía sería el neto cuando el pago ya tiene asiento
-        total_paid = company_currency.round(self.currency_id._convert(
-            self.amount, company_currency, company, self.date))
-        total_retained = company_currency.round(sum(
-            self.currency_id._convert(abs(line.amount), company_currency, company,
-                                      self.date)
+        rates = {
+            bill: (1.0 if bill.currency_id == company_currency
+                   else self.env['res.currency']._get_conversion_rate(
+                       bill.currency_id, company_currency, company, self.date))
+            for bill in bills
+        }
+        paid_per_bill = self._l10n_pe_edi_get_paid_per_bill()
+        if not any(paid_per_bill.values()):
+            # importe bruto del pago (antes de retener) repartido por el total
+            gross_pen = self.currency_id._convert(self.amount, company_currency, company, self.date)
+            weights = {bill: abs(bill.amount_total_signed) for bill in bills}
+            total_weight = sum(weights.values()) or 1.0
+            paid_per_bill = {
+                bill.id: bill.currency_id.round(gross_pen * weights[bill] / total_weight / rates[bill])
+                for bill in bills}
+        retention_pen = company_currency.round(sum(
+            self.currency_id._convert(abs(line.amount), company_currency, company, self.date)
             for line in self._l10n_pe_retention_lines()))
 
-        paid_by_invoice = {}
-        if self.move_id:
-            payment_lines = self.move_id.line_ids
-            for invoice in invoices:
-                partials = (invoice.line_ids.matched_debit_ids
-                            | invoice.line_ids.matched_credit_ids)
-                paid_by_invoice[invoice] = sum(
-                    partial.amount for partial in partials
-                    if partial.debit_move_id in payment_lines
-                    or partial.credit_move_id in payment_lines)
-        if not any(paid_by_invoice.values()):
-            weights = {inv: abs(inv.amount_total_signed) for inv in invoices}
-            total_weight = sum(weights.values()) or 1.0
-            paid_by_invoice = {
-                inv: total_paid * weight / total_weight
-                for inv, weight in weights.items()}
-
-        documents = []
-        retained_left = total_retained
-        paid_sum = sum(paid_by_invoice.values()) or 1.0
-        for index, invoice in enumerate(invoices):
-            paid = company_currency.round(paid_by_invoice[invoice])
-            if index == len(invoices) - 1:
-                retained = retained_left  # el redondeo cae en el último
+        paid_pen = {bill: company_currency.round(paid_per_bill.get(bill.id, 0.0) * rates[bill])
+                    for bill in bills}
+        total_paid_pen = sum(paid_pen.values()) or 1.0
+        breakdown = []
+        retained_left = retention_pen
+        for index, bill in enumerate(bills):
+            if index == len(bills) - 1:
+                retained = retained_left
             else:
-                retained = company_currency.round(
-                    total_retained * paid_by_invoice[invoice] / paid_sum)
+                retained = company_currency.round(retention_pen * paid_pen[bill] / total_paid_pen)
                 retained_left -= retained
-            doc_currency = invoice.currency_id
-            documents.append({
-                'invoice': invoice,
-                'currency': doc_currency,
-                'paid': paid,
-                'retained': retained,
-                'net': paid - retained,
-                'doc_total': invoice.amount_total,
-                'doc_paid': company_currency._convert(
-                    paid, doc_currency, company, self.date),
-                'rate': self.env['res.currency']._get_conversion_rate(
-                    doc_currency, company_currency, company, self.date),
+            breakdown.append({
+                'bill': bill,
+                'bill_paid_currency': paid_per_bill.get(bill.id, 0.0),
+                'bill_paid_pen': paid_pen[bill],
+                'bill_retention_pen': retained,
+                'net_total_paid_pen': paid_pen[bill] - retained,
+                'exchange_rate': rates[bill],
             })
-        return documents
+        return breakdown
+
+    @api.model
+    def _l10n_pe_edi_retention_bill_number(self, bill):
+        """Serie-número del comprobante del proveedor (``F001-00000123``)."""
+        if bill.l10n_latam_use_documents and bill.l10n_latam_document_number:
+            number = bill.l10n_latam_document_number
+        else:
+            # sin documentos LATAM, el número del proveedor está en la referencia
+            number = bill.ref or bill.name or ''
+        return number.replace(' ', '')
+
+    # ------------------------------------------------------------------
+    # XML
+    # ------------------------------------------------------------------
+    def _l10n_pe_edi_generate_retention_bstr(self):
+        """XML del CRE con el hueco de la firma, en ISO-8859-1."""
+        self.ensure_one()
+        if not self._l10n_pe_retention_lines():
+            raise UserError(self.env._('El pago no tiene líneas de retención de IGV.'))
+        if not (self.invoice_ids or self.reconciled_bill_ids):
+            raise UserError(self.env._(
+                'El pago %(payment)s no está vinculado a ninguna factura: el comprobante de '
+                'retención debe citar los comprobantes pagados.', payment=self.display_name))
+        xml_content = self.env['account.edi.xml.ubl_pe_withholding']._export_retention(self)
+        edi_tree = objectify.fromstring(xml_content)
+        ubl_version = edi_tree.find('.//{*}UBLVersionID')
+        ubl_version.addprevious(objectify.fromstring(self.env['ir.qweb']._render(
+            'l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature')))
+        return etree.tostring(edi_tree, xml_declaration=True, encoding='ISO-8859-1',
+                              pretty_print=True)
+
+    def _l10n_pe_edi_generate_retention_filename(self):
+        """``RUC-20-R001-00000001``, como pide SUNAT para el ZIP y el XML."""
+        self.ensure_one()
+        return '%s-20-%s' % (self.company_id.vat,
+                             (self.l10n_pe_edi_retention_number or self.name).replace('/', '-'))
 
     def action_l10n_pe_generate_cre_xml(self):
-        """Genera el XML UBL del Comprobante de Retención Electrónico
-        (borrador sin firma: la firma y el envío corren por el OSE)."""
+        """Descarga el XML del CRE sin firmar (para revisión)."""
         self.ensure_one()
-        lines = self._l10n_pe_retention_lines()
-        if not lines:
-            raise UserError(self.env._(
-                'El pago no tiene líneas de retención de IGV.'))
-        company = self.company_id
-        company_currency = company.currency_id
-        pen = company_currency.name
-        documents = self._l10n_pe_retention_documents()
-        docs = []
-        for doc in documents:
-            invoice = doc['invoice']
-            exchange_rate = ''
-            if doc['currency'] != company_currency:
-                exchange_rate = CRE_EXCHANGE_RATE.format(
-                    source=doc['currency'].name, pen=pen,
-                    rate='%.6f' % doc['rate'], date=self.date)
-            docs.append(CRE_DOCUMENT.format(
-                doc_type=invoice.l10n_latam_document_type_id.code or '01',
-                doc_number=escape(invoice.ref or invoice.name),
-                doc_date=invoice.invoice_date or invoice.date,
-                doc_currency=doc['currency'].name,
-                doc_total='%.2f' % doc['doc_total'],
-                paid='%.2f' % doc['doc_paid'],
-                pay_date=self.date,
-                pen=pen,
-                retained='%.2f' % doc['retained'],
-                net='%.2f' % doc['net'],
-                exchange_rate=exchange_rate,
-            ))
-        xml = CRE_TEMPLATE.format(
-            number=escape(self.l10n_pe_retention_number or self.name),
-            date=self.date,
-            agent_ruc=escape(company.vat or ''),
-            agent_name=escape(company.name),
-            supplier_ruc=escape(self.partner_id.vat or ''),
-            supplier_name=escape(self.partner_id.name),
-            rate='%.0f' % company.l10n_pe_retention_rate,
-            pen=pen,
-            total_retained='%.2f' % sum(d['retained'] for d in documents),
-            total_paid='%.2f' % sum(d['paid'] for d in documents),
-            documents=''.join(docs),
-        )
-        filename = '%s-20-%s.xml' % (
-            company.vat or 'RUC',
-            (self.l10n_pe_retention_number or self.name).replace('/', '-'))
         attachment = self.env['ir.attachment'].create({
-            'name': filename, 'res_model': self._name, 'res_id': self.id,
-            'raw': xml.encode(), 'mimetype': 'application/xml'})
+            'name': '%s.xml' % self._l10n_pe_edi_generate_retention_filename(),
+            'res_model': self._name, 'res_id': self.id,
+            'raw': self._l10n_pe_edi_generate_retention_bstr(), 'mimetype': 'application/xml'})
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/content/%d?download=true' % attachment.id,
             'target': 'self',
         }
+
+    # ------------------------------------------------------------------
+    # Envío
+    # ------------------------------------------------------------------
+    def action_l10n_pe_edi_send_retention(self):
+        """Firma el CRE y lo envía con el proveedor electrónico de la compañía."""
+        ready = self.filtered('l10n_pe_edi_is_required')
+        if self - ready:
+            raise UserError(self.env._(
+                'Estos pagos no tienen un comprobante de retención por enviar: %s',
+                ', '.join((self - ready).mapped('display_name'))))
+        for payment in ready:
+            if not (payment.invoice_ids or payment.reconciled_bill_ids):
+                payment.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': {
+                    'edi_error': {'level': 'danger', 'message': self.env._(
+                        'El pago no está vinculado a ninguna factura: el comprobante de '
+                        'retención debe citar al menos un comprobante.')}}})
+                continue
+            result = payment._l10n_pe_edi_post_retention(
+                payment._l10n_pe_edi_generate_retention_bstr())
+            if result.get('success'):
+                filename = payment._l10n_pe_edi_generate_retention_filename()
+                attachment = self.env['ir.attachment'].create({
+                    'name': '%s.zip' % filename,
+                    'res_model': payment._name, 'res_id': payment.id,
+                    'res_field': 'l10n_pe_edi_attachment_file',
+                    'type': 'binary', 'raw': result['zip_document'],
+                })
+                payment.invalidate_recordset(['l10n_pe_edi_attachment_file'])
+                payment.write({'l10n_pe_edi_status': 'sent', 'l10n_pe_edi_warnings': False})
+                payment.message_post(
+                    body=self.env._('Comprobante de retención %(number)s aceptado por SUNAT.',
+                                    number=payment.l10n_pe_edi_retention_number),
+                    attachment_ids=attachment.ids)
+            else:
+                payment.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': {
+                    'edi_error': {'level': result.get('level', 'danger'),
+                                  'message': result.get('message')
+                                  or self.env._('Error desconocido')}}})
+        return True
+
+    def _l10n_pe_edi_post_retention(self, edi_str):
+        """Firma y envía con el proveedor de la compañía. Devuelve, como el
+        oficial, ``{'success': True, 'zip_document': …}`` o
+        ``{'message': …, 'level': …}``."""
+        self.ensure_one()
+        company = self.company_id
+        # el formato UBL peruano: sus métodos de credenciales piden un registro
+        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
+        filename = self._l10n_pe_edi_generate_retention_filename()
+        if company.l10n_pe_edi_provider == 'iap':
+            result = edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, '20')
+        else:
+            if company.l10n_pe_edi_provider == 'digiflow':
+                credentials = edi_format._l10n_pe_edi_get_digiflow_credentials(company)
+            else:
+                credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
+                credentials['wsdl'] = self._l10n_pe_edi_get_retention_sunat_wsdl()
+            result = edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
+                company, filename, edi_str, credentials, '20')
+        if not result.get('success'):
+            return {'message': result.get('error') or self.env._('Error desconocido'),
+                    'level': 'warning' if result.get('blocking_level') == 'warning' else 'danger'}
+        zip_document = edi_format._l10n_pe_edi_zip_edi_document([
+            ('%s.xml' % filename, result['xml_document']),
+            ('R-%s.xml' % filename, result['cdr']),
+        ])
+        return {'success': True, 'zip_document': zip_document}
+
+    def _l10n_pe_edi_get_retention_sunat_wsdl(self):
+        self.ensure_one()
+        return SUNAT_RETENTION_WSDL['test' if self.company_id.l10n_pe_edi_test_env else 'prod']

@@ -8,11 +8,23 @@
             <xpath expr="//page[@name='other_info']//group[1]"
                    position="inside">
                 <group string="Retención de IGV"
-                       invisible="not l10n_pe_retention_applies">
+                       invisible="not l10n_pe_retention_eligible">
+                    <field name="l10n_pe_retention_eligible"/>
                     <field name="l10n_pe_retention_applies"/>
                     <field name="l10n_pe_retention_amount"/>
                 </group>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_form_perception_agent" model="ir.ui.view">
+        <field name="name">res.partner.form.perception.agent.pe</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="l10n_pe_vat_sunat.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="is_retention_agent" position="after">
+                <field name="l10n_pe_is_perception_agent" invisible="not is_company"/>
+            </field>
         </field>
     </record>
 

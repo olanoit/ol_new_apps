@@ -142,9 +142,9 @@ class TestRetentionApplies(TransactionCase):
         payments = wizard._create_payments()
         self.assertAlmostEqual(
             payments._l10n_pe_retention_lines().amount, 35.40, 2)
-        self.assertTrue(payments.l10n_pe_retention_number)
+        self.assertTrue(payments.l10n_pe_edi_retention_number)
         self.assertTrue(
-            payments.l10n_pe_retention_number.startswith('R001-'))
+            payments.l10n_pe_edi_retention_number.startswith('R001-'))
 
     def test_payment_partial_retention(self):
         self._setup_retention_tax()
@@ -162,11 +162,16 @@ class TestRetentionApplies(TransactionCase):
         with self.assertRaises(UserError):
             bill.action_post()
 
-    def test_no_tax_injected_below_minimum(self):
+    def test_small_bill_paid_alone_is_not_retained(self):
+        """Comprendida en el régimen pero de S/ 590: pagada sola no se retiene."""
         tax, _account = self._setup_retention_tax()
         bill = self._bill(500.0)
         bill.action_post()
-        self.assertNotIn(tax, bill.invoice_line_ids.tax_ids)
+        self.assertTrue(bill.l10n_pe_retention_eligible)
+        self.assertFalse(bill.l10n_pe_retention_applies)
+        self.assertIn(tax, bill.invoice_line_ids.tax_ids)
+        wizard = self._register_payment(bill)
+        self.assertFalse(wizard.withholding_line_ids.filtered(lambda l: l.tax_id == tax))
 
     def test_outstanding_account_default(self):
         self._setup_retention_tax()
@@ -201,7 +206,7 @@ class TestRetentionApplies(TransactionCase):
         wizard = self._register_payment(bill)
         wizard.withholding_line_ids = [(5, 0, 0)]
         payments = wizard._create_payments()
-        self.assertFalse(payments.l10n_pe_retention_number)
+        self.assertFalse(payments.l10n_pe_edi_retention_number)
 
     def test_sequence_increments(self):
         self._setup_retention_tax()
@@ -210,7 +215,7 @@ class TestRetentionApplies(TransactionCase):
             bill = self._bill(1000.0)
             bill.action_post()
             payments = self._register_payment(bill)._create_payments()
-            numbers.append(payments.l10n_pe_retention_number)
+            numbers.append(payments.l10n_pe_edi_retention_number)
         self.assertTrue(all(n and n.startswith('R001-') for n in numbers))
         self.assertNotEqual(numbers[0], numbers[1])
 
@@ -242,10 +247,10 @@ class TestRetentionApplies(TransactionCase):
              ('res_id', '=', payments.id),
              ('mimetype', '=', 'application/xml')],
             limit=1, order='id desc')
-        xml = attachment.raw.decode()
+        xml = attachment.raw.decode('iso-8859-1')
         self.assertIn(self.company.vat, xml)
         self.assertIn(self.partner.vat, xml)
-        self.assertIn(payments.l10n_pe_retention_number, xml)
+        self.assertIn(payments.l10n_pe_edi_retention_number, xml)
         self.assertIn('<sac:SUNATRetentionPercent>3', xml)
         self.assertIn('35.40', xml)
 
@@ -416,7 +421,7 @@ class TestRetentionApplies(TransactionCase):
              ('res_id', '=', payment.id),
              ('mimetype', '=', 'application/xml')],
             limit=1, order='id desc')
-        return attachment.raw.decode()
+        return attachment.raw.decode('iso-8859-1')
 
     def test_cre_xml_one_document_per_invoice(self):
         """Un pago de dos facturas reparte pago y retención entre ellas."""
