@@ -189,6 +189,30 @@ class TestRvie144(AccountTestInvoicingCommon):
         fields_ = self._lines(self._export())[0].split('|')
         self.assertEqual(fields_[25], '1180.00')
 
+    def test_orphan_sales_credit_note_blocks_txt(self):
+        """Una NC de venta sin comprobante de origen bloquea el TXT (campos
+        29-32 obligatorios) con su nombre en el aviso."""
+        doc_07 = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '07'), ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        note = self.env['account.move'].with_company(self.company).create({
+            'move_type': 'out_refund',
+            'partner_id': self.customer.id,
+            'journal_id': self.sale_journal.id,
+            'invoice_date': date(2026, 3, 16),
+            'date': date(2026, 3, 16),
+            'l10n_latam_document_type_id': doc_07.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product.id, 'quantity': 1, 'price_unit': 100.0,
+                'tax_ids': [(6, 0, self.sale_tax.ids)] if self.sale_tax else False})],
+        })
+        note.action_post()
+        with self.assertRaisesRegex(UserError, '14.4'):
+            self._export()
+        # Anulada va en cero y ya no bloquea.
+        note.button_draft()
+        note.button_cancel()
+        self.assertTrue(self._export())
+
     def test_cancelled_invoice_is_reported_with_zero(self):
         """Nota 4 del anexo: los anulados se anotan en cero, no se excluyen."""
         invoice = self._create_invoice()

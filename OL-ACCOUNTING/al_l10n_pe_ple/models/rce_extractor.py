@@ -9,7 +9,8 @@ Ver ``docs/tecport/BUG_EE_RCE_SQL.md``.
 Aquí todo se obtiene con ``search`` y agregación en Python: más lento sobre
 volúmenes muy grandes, pero correcto y estable frente a cambios del ORM.
 """
-from odoo import api, models
+from odoo import _, api, models
+from odoo.exceptions import UserError
 
 # Grupos de impuestos de la localización peruana, por XMLID
 # ``account.{company_id}_tax_group_{clave}``.
@@ -258,6 +259,26 @@ class L10nPeRceExtractor(models.AbstractModel):
     # ------------------------------------------------------------------
     # Registro de ventas (RVIE)
     # ------------------------------------------------------------------
+    @api.model
+    def _ple_check_modified_documents(self, moves, book):
+        """Las notas (07/08/87/88) exigen los datos del comprobante que
+        modifican (campos 28-32 del 8.4, 29-32 del 14.4); sin ellos SUNAT
+        rechaza la línea. Se bloquea el TXT con la lista para corregirlas;
+        el Excel de revisión no se bloquea: sirve justo para encontrarlas."""
+        orphans = moves.filtered(
+            lambda move: move.l10n_latam_document_type_id.code
+            in ('07', '08', '87', '88')
+            and not (move.reversed_entry_id or move.debit_origin_id))
+        if orphans:
+            raise UserError(_(
+                'Estas notas de crédito o débito no están enlazadas al '
+                'comprobante que modifican (registro %(book)s) y SUNAT las '
+                'rechazaría. Regístrelas desde la factura de origen '
+                '(«Nota de crédito» / «Nota de débito»):\n%(moves)s',
+                book=book,
+                moves='\n'.join('· %s' % name for name in orphans.mapped(
+                    'display_name')[:30])))
+
     @api.model
     def _rvie_moves(self, company, date_from, date_to):
         """Comprobantes de venta del periodo, incluidos los anulados.

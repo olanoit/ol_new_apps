@@ -45,6 +45,9 @@ class L10nPeRvie144(models.AbstractModel):
 
         group_ids = extractor._rce_tax_group_ids(company)
         moves = extractor._rvie_moves(company, date_from, date_to)
+        # Las anuladas van en cero y no necesitan el documento de origen.
+        extractor._ple_check_modified_documents(
+            moves.filtered(lambda m: m.state == 'posted'), '14.4')
         rows = [
             self._l10n_pe_rvie_row(move, period, date_from, common, extractor,
                                    group_ids)

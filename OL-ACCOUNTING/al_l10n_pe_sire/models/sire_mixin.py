@@ -1005,7 +1005,7 @@ class L10nPeSireMixin(models.AbstractModel):
             errors.append(_('Moneda «%s» no es un código ISO 4217.', line.moneda or ''))
         elif line.moneda != 'PEN' and line.estado_cp != '2' and not line.tipo_cambio:
             errors.append(_('Falta el tipo de cambio para %s.', line.moneda))
-        if doc in ('07', '08') and not (
+        if doc in ('07', '08', '87', '88') and line.estado_cp != '2' and not (
                 line.tipo_cp_mod and line.serie_cp_mod and line.nro_cp_mod
                 and line.fecha_emision_mod):
             errors.append(_('La nota no indica el comprobante que modifica.'))

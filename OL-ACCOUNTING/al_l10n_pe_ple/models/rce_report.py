@@ -259,18 +259,7 @@ class L10nPeRce84(models.AbstractModel):
         modifican (campos 28-32); sin ellos SUNAT rechaza la línea. Mejor
         avisar antes de generar el TXT. El Excel de revisión no se bloquea:
         sirve justo para encontrarlas."""
-        orphans = moves.filtered(
-            lambda move: move.l10n_latam_document_type_id.code
-            in ('07', '08', '87', '88')
-            and not (move.reversed_entry_id or move.debit_origin_id))
-        if orphans:
-            raise UserError(_(
-                'Estas notas de crédito o débito no están enlazadas al '
-                'comprobante que modifican (campos 28-32 del 8.4) y SUNAT '
-                'las rechazaría. Regístrelas desde la factura de origen '
-                '(«Nota de crédito» / «Nota de débito»):\n%s',
-                '\n'.join('· %s' % name for name in orphans.mapped(
-                    'display_name')[:30])))
+        self.env['l10n_pe.rce.extractor']._ple_check_modified_documents(moves, '8.4')
 
     # ------------------------------------------------------------------
     # Campos que dependen de otros módulos de la localización

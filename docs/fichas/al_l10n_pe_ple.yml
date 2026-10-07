@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "RVIE 14.4: una nota de crédito o débito de venta sin el comprobante que modifica (campos 29-32) bloquea el TXT con la lista de notas a corregir, como ya hacía el RCE 8.4 con las de compra; las anuladas no bloquean (van en cero)."
   - version: 12.20261007
     fecha: 07/10/2026
     cambios:
