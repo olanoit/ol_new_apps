@@ -115,7 +115,9 @@ class L10nPeSireRvie(models.Model):
 
     def _sire_system_line_vals(self, move):
         sign = self._sire_move_sign(move)
-        cancelled = move.state == 'cancel'
+        # Anulado o con CDR rechazado: en cero (nota 4 del anexo 2 de la
+        # RS 112-2021); el rechazado sigue publicado en Odoo.
+        cancelled = move.state == 'cancel' or move._l10n_pe_cdr_rejected()
         amounts = self._sire_amount_split(move)
         serie, folio = self._sire_serie_folio(move)
         doc_code = move.l10n_latam_document_type_id.code or ''

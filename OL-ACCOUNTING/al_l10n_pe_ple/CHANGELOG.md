@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261007 — 07/10/2026
+
+- RVIE 14.4: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) se anota en cero, como los anulados (nota 4 del anexo 2 de la RS 112-2021). En Odoo 19 sigue publicado y «por enviar», así que antes iba con sus importes; las excepciones 0100-1999 (no recibido, se reenvía) no cuentan como rechazo.
+
 ## 11.20261007 — 07/10/2026
 
 - Corregido: el registro de compras (8.4 y 8.5) y el de ventas (14.4) informaban los comprobantes en dólares con los importes en dólares. Ahora van en soles, con la moneda y el tipo de cambio aparte, como los declara la contabilidad real (13 223,10 USD se informan como 46 214,73 con T.C. 3,495).

@@ -86,8 +86,9 @@ class L10nPeRvie144(models.AbstractModel):
         currency = move.currency_id.name or ''
 
         # Nota 4 del anexo: los comprobantes anulados o con CDR no aceptado se
-        # anotan con importe cero, no se excluyen del registro.
-        cancelled = move.state == 'cancel'
+        # anotan con importe cero, no se excluyen del registro. Antes uno
+        # rechazado por SUNAT, que en Odoo sigue publicado, iba con importes.
+        cancelled = move.state == 'cancel' or move._l10n_pe_cdr_rejected()
 
         # Una nota de crédito que modifica un comprobante de un periodo
         # anterior se informa como descuento (campos 16 y 18), no como base

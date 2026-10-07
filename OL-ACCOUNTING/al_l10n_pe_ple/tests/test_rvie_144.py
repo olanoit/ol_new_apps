@@ -160,6 +160,35 @@ class TestRvie144(AccountTestInvoicingCommon):
         self.assertEqual(fields_[4], '15/03/2026', 'campo 5: fecha de emisión')
         self.assertEqual(fields_[11], RUC_CUSTOMER, 'campo 12: RUC del cliente')
 
+    def _reject_cdr(self, move, code='2800'):
+        """Deja el CPE como lo deja l10n_pe_edi con un CDR de rechazo."""
+        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
+        document = move.edi_document_ids.filtered(lambda d: d.edi_format_id == edi_format)
+        vals = {'state': 'to_send', 'blocking_level': 'error',
+                'error': 'Error del OSE.<br/><br/><b>Original message:</b><br/>%s|Rechazo' % code}
+        if document:
+            document.write(vals)
+        else:
+            self.env['account.edi.document'].create(
+                dict(vals, move_id=move.id, edi_format_id=edi_format.id))
+
+    def test_rejected_cdr_is_reported_with_zero(self):
+        """CDR rechazado (2000-3999): en cero, aunque siga publicado."""
+        invoice = self._create_invoice()
+        self._reject_cdr(invoice)
+        self.assertTrue(invoice._l10n_pe_cdr_rejected())
+        fields_ = self._lines(self._export())[0].split('|')
+        self.assertEqual(fields_[14], '0.00', 'campo 15 en cero')
+        self.assertEqual(fields_[25], '0.00', 'campo 26 en cero')
+
+    def test_cdr_exception_is_not_a_rejection(self):
+        """Excepción 0100-1999 (no recibido): se reenvía, va con importes."""
+        invoice = self._create_invoice()
+        self._reject_cdr(invoice, code='0109')
+        self.assertFalse(invoice._l10n_pe_cdr_rejected())
+        fields_ = self._lines(self._export())[0].split('|')
+        self.assertEqual(fields_[25], '1180.00')
+
     def test_cancelled_invoice_is_reported_with_zero(self):
         """Nota 4 del anexo: los anulados se anotan en cero, no se excluyen."""
         invoice = self._create_invoice()

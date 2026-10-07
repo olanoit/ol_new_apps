@@ -672,6 +672,25 @@ class TestSire(TransactionCase):
         self.assertAlmostEqual(vals['bi_gravada'], 0.0, places=2)
         self.assertAlmostEqual(vals['igv_ipm'], 0.0, places=2)
 
+    def _reject_cdr(self, move, code='2800'):
+        """Deja el CPE como lo deja l10n_pe_edi con un CDR de rechazo."""
+        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
+        document = move.edi_document_ids.filtered(lambda d: d.edi_format_id == edi_format)
+        vals = {'state': 'to_send', 'blocking_level': 'error',
+                'error': 'Error del OSE.<br/><br/><b>Original message:</b><br/>%s|Rechazo' % code}
+        if document:
+            document.write(vals)
+        else:
+            self.env['account.edi.document'].create(
+                dict(vals, move_id=move.id, edi_format_id=edi_format.id))
+
+    def test_rejected_cdr_goes_with_zero(self):
+        invoice = self._make_invoice('out_invoice')
+        self._reject_cdr(invoice)
+        vals = self.rvie._sire_system_line_vals(invoice)
+        self.assertEqual(vals['estado_cp'], '2')
+        self.assertAlmostEqual(vals['total_cp'], 0.0)
+
     def test_non_json_answer_is_a_user_error(self):
         """Un 200 con HTML de SUNAT no acaba en traceback."""
         self.company.sudo().write({

@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 12.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "RVIE 14.4: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) se anota en cero, como los anulados (nota 4 del anexo 2 de la RS 112-2021). En Odoo 19 sigue publicado y «por enviar», así que antes iba con sus importes; las excepciones 0100-1999 (no recibido, se reenvía) no cuentan como rechazo."
   - version: 11.20261007
     fecha: 07/10/2026
     cambios:

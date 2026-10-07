@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- RVIE: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) va en cero y con estado 2, como los anulados; antes, al seguir publicado en Odoo, se comparaba con sus importes.
+
 ## 8.20261007 — 07/10/2026
 
 - Registro de compras: ya no anota compras anuladas (la norma lo prohíbe); el ISC de un ítem gravado va en su base; IVAP, exportación y líneas sin impuesto van al campo 21; DAM y DSI con aduana, año y número (antes faltaba el año y SUNAT rechazaba la fila). No domiciliados: valor de la adquisición completo y convenio «00» por defecto.

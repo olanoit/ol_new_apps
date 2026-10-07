@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from odoo import api, fields, models
 
 from .product_template import RCE_CLASSIFICATION
@@ -21,6 +23,27 @@ RCE_REVERSIBLE_DOC_TYPES = ('02', '04')
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
+
+    def _l10n_pe_cdr_rejected(self):
+        """El comprobante tiene un CDR de rechazo de SUNAT (códigos 2000-3999).
+
+        En v19 ``l10n_pe_edi`` deja el documento EDI «por enviar» con error
+        bloqueante, igual que uno que todavía no se envió; solo el código
+        del mensaje («2800|…») los distingue. Los códigos 0100-1999 son
+        excepciones (no se recibió: se reenvía) y los 4000+ observaciones
+        (aceptado).
+        """
+        self.ensure_one()
+        if 'edi_document_ids' not in self._fields:
+            return False
+        for document in self.edi_document_ids:
+            if document.state != 'to_send' or document.blocking_level != 'error' \
+                    or not document.error:
+                continue
+            codes = re.findall(r'(?<!\d)(\d{4})\|', document.error)
+            if any(2000 <= int(code) <= 3999 for code in codes):
+                return True
+        return False
 
     l10n_pe_rce_classification = fields.Selection(
         RCE_CLASSIFICATION,
