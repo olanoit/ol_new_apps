@@ -224,13 +224,14 @@ class L10nPeSireRvie(models.Model):
     def _sire_withdraw_lines(self, lines):
         """5.10: exclusión definitiva e irreversible, un CAR por llamada."""
         self._sire_check_dangerous()
-        for line in self._sire_lines_of(lines):
-            self._sire_json_call(
+        return self._sire_call_per_line(
+            self._sire_lines_of(lines),
+            lambda line: self._sire_json_call(
                 'withdraw', 'POST',
                 '/libros/rvie/propuesta/web/propuesta/%s/retiracomprobante' % self._sire_period(),
                 params={'codCar': line.car_sunat, 'codSituacion': '0'},
-                detail='%s %s-%s' % (line.tipo_cp, line.serie_cp, line.nro_cp))
-        return True
+                detail='%s %s-%s' % (line.tipo_cp, line.serie_cp, line.nro_cp)),
+            _('Exclusión de comprobantes'))
 
     def _sire_delete_proposal_lines(self, lines):
         # 5.13: solo comprobantes agregados por el contribuyente.
@@ -474,11 +475,13 @@ class L10nPeSireRvieLine(models.Model):
         """Tipo de cambio de cada comprobante seleccionado, con el del sistema (5.12)."""
         lines = self._sire_proposal_lines()
         period = lines._sire_period_record()
+        systems = []
         for line in lines:
             system = period.system_line_ids.filtered(lambda l: l.car_sunat == line.car_sunat)[:1]
             if not system.tipo_cambio:
                 raise UserError(_('El comprobante %(doc)s no tiene tipo de cambio en el '
                                   'sistema.', doc='%s-%s' % (line.serie_cp, line.nro_cp)))
-            period._sire_send_line_exchange_rate(system)
-        return True
+            systems.append(system)
+        return period._sire_call_per_line(
+            systems, period._sire_send_line_exchange_rate, _('Tipo de cambio'))
 

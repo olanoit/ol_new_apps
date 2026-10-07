@@ -445,7 +445,8 @@ class L10nPeSireRce(models.Model):
                 'registrosLibros': {'indEnviadoAjuste': '1'}}
         sent = self._sire_json_call('adjustment_send', 'POST', endpoint, body,
                                     detail=operation.name)
-        operation.adjustment_sent = True
+        # sudo: historial de solo lectura para el contable (lo escribe el módulo).
+        operation.sudo().adjustment_sent = True
         return sent
 
     def _sire_find_adjustment_number(self, operation):

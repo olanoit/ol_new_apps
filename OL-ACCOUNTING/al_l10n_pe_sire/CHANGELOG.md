@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- Transferencias gratuitas exoneradas (21) o inafectas (31-37) van a «valor de las operaciones gratuitas», no a la base exonerada o inafecta; manda la afectación de la línea del comprobante.
+- Exclusión definitiva y tipo de cambio por comprobante: si SUNAT falla a mitad, lo ya hecho queda registrado en el historial y se avisa cuál falló (antes el error borraba el registro de exclusiones que SUNAT ya había aplicado).
+- El historial de operaciones es de solo lectura para el contable (solo puede indicar el número de ajuste); antes podía cambiar por RPC el estado, el ticket o el archivo enviado.
+- Otras acciones en SUNAT: el asistente solo ofrece las del libro abierto y los comprobantes de ese libro y compañía (con sus sucursales).
+- Ajustes de periodos anteriores (anexo 13): una compra toma el periodo de su fecha contable, como el RCE, y no el de emisión.
+
 ## 9.20261007 — 07/10/2026
 
 - RVIE: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) va en cero y con estado 2, como los anulados; antes, al seguir publicado en Odoo, se comparaba con sus importes.

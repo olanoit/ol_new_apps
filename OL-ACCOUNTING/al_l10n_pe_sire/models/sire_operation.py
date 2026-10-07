@@ -3,7 +3,7 @@ from datetime import timedelta
 
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 from .sire_mixin import (
     SIRE_POLL_DELAYS, SIRE_POLL_MAX_ATTEMPTS, TICKET_FAILED_STATES,
@@ -93,6 +93,18 @@ class L10nPeSireOperation(models.Model):
                 and operation.kind in ('adjustment', 'adjustment_previous')
                 and operation.state == 'done' and not operation.adjustment_sent)
 
+    #: Lo único que el contable corrige a mano: el número de ajuste que
+    #: muestra SUNAT cuando la API no lo devuelve.
+    USER_WRITABLE_FIELDS = {'adjustment_number'}
+
+    def write(self, vals):
+        # El historial de envíos es la prueba de lo enviado a SUNAT: solo lo
+        # escribe el módulo (con sudo). Antes un contable podía cambiar por
+        # RPC el estado, el ticket o el archivo enviado.
+        if not self.env.su and set(vals) - self.USER_WRITABLE_FIELDS:
+            raise AccessError(_('El historial de operaciones SIRE no se modifica a mano.'))
+        return super().write(vals)
+
     def action_send_adjustment(self):
         self.ensure_one()
         # El botón se oculta, pero por RPC o doble clic se enviaba dos veces.
@@ -112,7 +124,8 @@ class L10nPeSireOperation(models.Model):
     def _schedule_poll(self, attempt=0):
         delay = SIRE_POLL_DELAYS[min(attempt, len(SIRE_POLL_DELAYS) - 1)]
         next_date = fields.Datetime.now() + timedelta(minutes=delay)
-        self.write({'poll_next_date': next_date, 'poll_attempts': attempt})
+        # sudo: el historial solo lo escribe el módulo (ACL de solo lectura).
+        self.sudo().write({'poll_next_date': next_date, 'poll_attempts': attempt})
         cron = self.env.ref('al_l10n_pe_sire.ir_cron_sire_operation_poll',
                             raise_if_not_found=False)
         if cron:
@@ -121,7 +134,8 @@ class L10nPeSireOperation(models.Model):
             cron_sudo._trigger(at=next_date)
 
     def _stop_poll(self):
-        self.write({'poll_next_date': False, 'poll_attempts': 0})
+        # sudo: ver _schedule_poll.
+        self.sudo().write({'poll_next_date': False, 'poll_attempts': 0})
 
     def action_check(self):
         """Consulta el ticket y, si terminó, descarga sus reportes."""
@@ -140,7 +154,10 @@ class L10nPeSireOperation(models.Model):
         register = period._sire_ticket_register(token, period._sire_period(), self.ticket)
         detail = register.get('detalleTicket') or {}
         code = period._sire_ticket_code(register)
-        self.write({
+        # sudo: el usuario consulta el ticket, pero el historial solo lo
+        # escribe el módulo.
+        operation_sudo = self.sudo()
+        operation_sudo.write({
             'ticket_state': code,
             'detail': _('Filas validadas: %(rows)s · CP con error: %(errors)s · '
                         'CP informados: %(informed)s',
@@ -152,8 +169,8 @@ class L10nPeSireOperation(models.Model):
             self._poll_retry()
             return
         self._stop_poll()
-        self.report_ids |= period._sire_attach_reports(token, register)
-        self.state = 'error' if code in TICKET_FAILED_STATES else 'done'
+        operation_sudo.report_ids |= period._sire_attach_reports(token, register)
+        operation_sudo.state = 'error' if code in TICKET_FAILED_STATES else 'done'
         period._sire_operation_finished(self)
 
     def _poll_retry(self, error=None):

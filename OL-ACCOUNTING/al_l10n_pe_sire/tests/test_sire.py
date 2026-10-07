@@ -691,6 +691,80 @@ class TestSire(TransactionCase):
         self.assertEqual(vals['estado_cp'], '2')
         self.assertAlmostEqual(vals['total_cp'], 0.0)
 
+    # ------------------------------------------------------------------
+    # Revisión de detalles menores (07/10/2026)
+    # ------------------------------------------------------------------
+    def test_wizard_only_offers_actions_of_its_book(self):
+        Wizard = self.env['l10n_pe.sire.action.wizard']
+        rvie_keys = {key for key, dummy in Wizard.with_context(
+            default_res_model='l10n_pe.sire.rvie')._selection_action()}
+        rce_keys = {key for key, dummy in Wizard.with_context(
+            default_res_model='l10n_pe.sire.rce')._selection_action()}
+        self.assertNotIn('fiscal_rcf', rvie_keys)
+        self.assertIn('delete_replacement', rvie_keys)
+        self.assertIn('fiscal_rcf', rce_keys)
+        self.assertNotIn('delete_replacement', rce_keys)
+
+    def test_operation_history_is_read_only_for_accountants(self):
+        from odoo.exceptions import AccessError
+        from odoo.tests.common import new_test_user
+        operation = self.rvie._sire_new_operation('export', detail='prueba')
+        accountant = new_test_user(self.env, 'sire_contable', groups='account.group_account_user',
+                                   company_id=self.company.id, company_ids=[self.company.id])
+        operation_user = operation.sudo(False).with_user(accountant)
+        with self.assertRaises(AccessError):
+            operation_user.write({'state': 'error'})
+        with self.assertRaises(AccessError):
+            self.env['l10n_pe.sire.operation'].with_user(accountant).create({
+                'kind': 'export', 'res_model': self.rvie._name, 'res_id': self.rvie.id,
+                'company_id': self.company.id})
+        operation_user.write({'adjustment_number': '12'})
+        self.assertEqual(operation.adjustment_number, '12')
+
+    def test_per_line_calls_keep_what_sunat_did(self):
+        """La exclusión es irreversible: si falla la segunda llamada, la
+        primera queda registrada y se avisa, en vez de deshacerse."""
+        self.rvie.proposal_file = _as_proposal([_rvie_row()])
+        self.rvie.action_load_sire()
+        line = self.rvie.sire_line_ids
+        calls = []
+
+        def call(record):
+            calls.append(record)
+            if len(calls) == 2:
+                raise UserError('SUNAT no responde')
+            self.rvie._sire_new_operation('withdraw', detail='ok')
+
+        before = self.env['l10n_pe.sire.operation'].search_count([('res_id', '=', self.rvie.id)])
+        result = self.rvie._sire_call_per_line([line, line, line], call, 'Exclusión')
+        self.assertEqual(len(calls), 2, 'se detiene en el primer error')
+        self.assertEqual(result['tag'], 'display_notification')
+        self.assertIn('1 de 3', result['params']['message'])
+        self.assertEqual(self.env['l10n_pe.sire.operation'].search_count(
+            [('res_id', '=', self.rvie.id)]), before + 1)
+
+    def test_free_exonerated_line_is_not_exonerated(self):
+        exo = self.env['account.tax'].search([
+            ('company_id', '=', self.company.id), ('type_tax_use', '=', 'sale'),
+            ('l10n_pe_edi_tax_code', '=', '9997')], limit=1)
+        self.assertTrue(exo)
+        invoice = self._make_invoice('out_invoice')
+        invoice.button_draft()
+        invoice.invoice_line_ids.write({'tax_ids': [(6, 0, exo.ids)]})
+        invoice.invoice_line_ids.l10n_pe_edi_affectation_reason = '21'
+        invoice.action_post()
+        vals = self.rvie._sire_system_line_vals(invoice)
+        self.assertAlmostEqual(vals['mto_exonerado'], 0.0)
+        self.assertAlmostEqual(vals['valor_gratuitas'], 1000.0, places=2)
+
+    def test_previous_adjustment_period_of_a_purchase_is_its_accounting_date(self):
+        bill = self._make_invoice('in_invoice')
+        bill.button_draft()
+        bill.write({'invoice_date': fields.Date.to_date('2026-06-20'),
+                    'date': fields.Date.to_date('2026-07-03')})
+        period = self.rce._sire_move_period_record(bill)
+        self.assertEqual((period.year, period.month), (2026, '07'))
+
     def test_non_json_answer_is_a_user_error(self):
         """Un 200 con HTML de SUNAT no acaba en traceback."""
         self.company.sudo().write({

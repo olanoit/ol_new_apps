@@ -83,8 +83,17 @@ class L10nPeSirePeriodServices(models.AbstractModel):
         return self._sire_fmt_amount(value) if value else ''
 
     def _sire_move_period_record(self, move):
-        """Periodo virtual del asiento: para calcular sus columnas como en su mes."""
-        date = move.invoice_date or move.date
+        """Periodo virtual del asiento: para calcular sus columnas como en su mes.
+
+        Es el periodo del registro: en compras el de anotación (fecha
+        contable), como el RCE; en ventas el de emisión. Antes el anexo 13
+        tomaba la emisión también en compras y una factura de enero anotada
+        en febrero salía con periodo de enero.
+        """
+        if move.is_purchase_document(include_receipts=True):
+            date = move.date or move.invoice_date
+        else:
+            date = move.invoice_date or move.date
         return self.new({'year': date.year, 'month': '%02d' % date.month,
                          'company_id': move.company_id.id})
 
@@ -129,6 +138,36 @@ class L10nPeSirePeriodServices(models.AbstractModel):
         response = self._sire_send_json(method, token, endpoint, payload, params=params)
         ticket = self._sire_ticket_from(response)
         return self._sire_new_operation(kind, ticket=ticket, detail=detail)
+
+    def _sire_call_per_line(self, lines, call, label):
+        """Una llamada a SUNAT por comprobante, cada una por su cuenta.
+
+        Si falla la tercera, las dos primeras ya están hechas en SUNAT (la
+        exclusión, por ejemplo, es irreversible). Antes el error deshacía en
+        Odoo su registro y el historial no decía que se habían enviado. Ahora
+        se queda lo hecho, se detiene en el primer error y se avisa.
+        """
+        self.ensure_one()
+        done = 0
+        for line in lines:
+            try:
+                with self.env.cr.savepoint():
+                    call(line)
+            except Exception as error:  # noqa: BLE001 — lo hecho en SUNAT no se deshace
+                message = _(
+                    '%(label)s: %(done)s de %(total)s comprobantes hechos en SUNAT. '
+                    'Falló %(doc)s: %(error)s. Los siguientes no se enviaron.',
+                    label=label, done=done, total=len(lines),
+                    doc='%s %s-%s' % (line.tipo_cp, line.serie_cp, line.nro_cp),
+                    error=str(error))
+                self._sire_warn(message)
+                return {
+                    'type': 'ir.actions.client', 'tag': 'display_notification',
+                    'params': {'title': label, 'message': message,
+                               'type': 'warning', 'sticky': True},
+                }
+            done += 1
+        return True
 
     @staticmethod
     def _sire_lines_cp(lines):

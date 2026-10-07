@@ -45,9 +45,14 @@ SIRE_POLL_MAX_ATTEMPTS = 30
 # Afectaciones IGV (catálogo 07 SUNAT) por columna
 AFFECTATION_TAXED = {'10'}
 AFFECTATION_IVAP = {'17'}
-AFFECTATION_EXONERATED = {'20', '21'}
-AFFECTATION_UNAFFECTED = {'30', '31', '32', '33', '34', '35', '36', '37'}
+AFFECTATION_EXONERATED = {'20'}
+AFFECTATION_UNAFFECTED = {'30'}
 AFFECTATION_EXPORT = {'40'}
+#: Transferencias gratuitas (catálogo 07): gravadas 11-16, exonerada 21 e
+#: inafectas 31-37. Van a «valor de las operaciones gratuitas», no a la base
+#: exonerada o inafecta.
+AFFECTATION_FREE = {'11', '12', '13', '14', '15', '16', '21',
+                    '31', '32', '33', '34', '35', '36', '37'}
 
 # Códigos de tributo SUNAT (catálogo 05, ``l10n_pe_edi_tax_code``). Clasificar
 # por código y no por el nombre del grupo, que es traducible.
@@ -523,7 +528,11 @@ class L10nPeSireMixin(models.AbstractModel):
                 lambda t: t.l10n_pe_edi_tax_code not in TAX_CODES_SURCHARGE)[:1] \
                 or line.tax_ids[:1]
             base = (line.balance * direction) if line.balance else line.price_subtotal * rate
-            if tax.l10n_pe_edi_tax_code == TAX_CODE_FREE:
+            # La afectación de la línea manda (l10n_pe_edi la deja editar);
+            # la del impuesto es solo su valor por defecto.
+            reason = line.l10n_pe_edi_affectation_reason \
+                or tax.l10n_pe_edi_affectation_reason
+            if tax.l10n_pe_edi_tax_code == TAX_CODE_FREE or reason in AFFECTATION_FREE:
                 subtotal = line.price_unit * (1 - (line.discount or 0.0) / 100.0) * line.quantity
                 result['free'] += subtotal * rate
                 continue
@@ -532,7 +541,6 @@ class L10nPeSireMixin(models.AbstractModel):
                 # adquisición no gravada (RCE), no a una base sin IGV.
                 result['unaffected'] += base
                 continue
-            reason = tax.l10n_pe_edi_affectation_reason
             if tax.l10n_pe_edi_tax_code == TAX_CODE_IVAP or reason in AFFECTATION_IVAP:
                 result['ivap_base'] += base
             elif reason in AFFECTATION_EXONERATED:
@@ -1112,11 +1120,15 @@ class L10nPeSireMixin(models.AbstractModel):
                             detail=None, poll=None):
         """Registra una operación; con ticket, programa su consulta."""
         self.ensure_one()
-        operation = self.env['l10n_pe.sire.operation'].create({
+        # sudo: el historial de operaciones es de solo lectura para el
+        # contable; lo registra el módulo. Se devuelve en sudo para que el
+        # que llama complete sus datos (tipo de ajuste, reportes).
+        operation = self.env['l10n_pe.sire.operation'].sudo().create({
             'kind': kind,
             'res_model': self._name,
             'res_id': self.id,
             'company_id': self.company_id.id,
+            'user_id': self.env.uid,
             'ticket': ticket or False,
             'ticket_state': '01' if ticket else False,
             'state': 'sent' if ticket else 'done',

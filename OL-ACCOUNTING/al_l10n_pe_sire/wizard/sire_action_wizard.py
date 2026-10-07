@@ -24,8 +24,8 @@ class L10nPeSireActionWizard(models.TransientModel):
     res_id = fields.Many2oneReference(model_field='res_model', required=True, readonly=True)
     book_type = fields.Char(compute='_compute_book_type')
     action = fields.Selection(
-        selection=[(key, label) for key, label, dummy in WIZARD_ACTIONS],
-        string='Acción', required=True)
+        selection='_selection_action', string='Acción', required=True)
+    company_id = fields.Many2one('res.company', compute='_compute_company_id')
     value = fields.Float(string='Importe o coeficiente', digits=(16, 4))
     move_ids = fields.Many2many(
         'account.move', string='Comprobantes a ajustar',
@@ -35,6 +35,23 @@ class L10nPeSireActionWizard(models.TransientModel):
         string='Estado del ajuste', default='9')
     confirm = fields.Boolean(
         string='Entiendo que la eliminación se hace en SUNAT y no se puede deshacer')
+
+    @api.model
+    def _selection_action(self):
+        """Solo las acciones del libro desde el que se abre el asistente
+        (antes el RVIE ofrecía las del RCE y fallaban al aplicar). Sin libro
+        en el contexto (validación del valor guardado), todas."""
+        res_model = self.env.context.get('default_res_model')
+        if res_model:
+            book = 'rce' if res_model == 'l10n_pe.sire.rce' else 'rvie'
+            return [(key, label) for key, label, books in WIZARD_ACTIONS if book in books]
+        return [(key, label) for key, label, dummy in WIZARD_ACTIONS]
+
+    @api.depends('res_model', 'res_id')
+    def _compute_company_id(self):
+        for wizard in self:
+            wizard.company_id = self.env[wizard.res_model].browse(wizard.res_id).company_id \
+                if wizard.res_model and wizard.res_id else False
 
     @api.depends('res_model')
     def _compute_book_type(self):
@@ -56,8 +73,10 @@ class L10nPeSireActionWizard(models.TransientModel):
                 raise UserError(_('Seleccione los comprobantes a ajustar.'))
             types = ('out_invoice', 'out_refund') if self.book_type == 'rvie' \
                 else ('in_invoice', 'in_refund')
+            # La compañía y sus sucursales: el registro es del RUC.
             moves = self.move_ids.filtered(
-                lambda m: m.company_id == period.company_id and m.move_type in types)
+                lambda m: m.company_id.root_id == period.company_id.root_id
+                and m.move_type in types)
             if not moves:
                 raise UserError(_('Ninguno de los comprobantes es de este registro y compañía.'))
             # El RCE solo admite el estado 9 (anexo 13); el RVIE, 8 o 9 (anexo 5).
