@@ -88,6 +88,7 @@ with Captura('al_l10n_pe_detraction') as c:
     # ---- Ventas ----------------------------------------------------------
     # 6. Factura de venta: pestaña Detracción
     factura(c, 'account.action_move_out_invoice_type', FACTURA_VENTA)
+    pestana(c, 'Facturación PE')
     pestana(c, 'Detracción')
     c.foto('06-factura-venta', selector='.o_form_view .o_form_sheet_bg')
 
@@ -99,6 +100,7 @@ with Captura('al_l10n_pe_detraction') as c:
     # ---- Compras ---------------------------------------------------------
     # 8. Factura de proveedor sin constancia: botón Registrar depósito
     factura(c, 'account.action_move_in_invoice_type', FACTURA_COMPRA)
+    pestana(c, 'Facturación PE')
     pestana(c, 'Detracción')
     c.foto('08-factura-compra', selector='.o_form_view .o_form_sheet_bg')
 
@@ -116,6 +118,7 @@ with Captura('al_l10n_pe_detraction') as c:
 
     # 10. Compra con reparto ya depositada: constancia guardada
     factura(c, 'account.action_move_in_invoice_type', COMPRA_REPARTO)
+    pestana(c, 'Facturación PE')
     pestana(c, 'Detracción')
     c.foto('10-constancia', selector='.o_form_view .o_form_sheet_bg')
 

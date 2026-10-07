@@ -99,7 +99,7 @@ if 2 in BLOQUES:
 
         # 03. Clasificación de bienes y servicios en la factura de proveedor
         c.abrir_registro('account.move', FACTURA_ID, ms=2000)
-        c.texto('Otra información')
+        c.texto('Contabilidad PE')
         c.foto('03-factura-clasificacion', selector=FORM)
 
         # 02. Campos de comparación

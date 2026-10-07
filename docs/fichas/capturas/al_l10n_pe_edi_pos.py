@@ -87,5 +87,5 @@ with Captura('al_l10n_pe_edi_pos') as c:
     # 7. Boleta retenida: casilla «Emisión SUNAT retenida»
     c.abrir('/odoo/action-account.action_move_out_invoice_type/%s' % BOLETA, ms=2500)
     c.js("document.querySelectorAll('.o_attachment_preview').forEach(e => e.remove())")
-    c.texto('Otra información', ms=800)
+    c.texto('Facturación PE', ms=800)
     c.foto('07-boleta-retenida', selector='.o_form_view .o_form_sheet_bg')

@@ -14,6 +14,8 @@ with Captura('al_l10n_pe_retention') as c:
 
     # 2. Factura de proveedor sujeta a retención
     c.abrir_registro('account.move', 326, ms=2000)
+    c.texto('Facturación PE')
+    c.texto('Retención IGV')
     c.foto('02-factura', selector='.o_form_view .o_form_sheet_bg')
 
     # 3. Asistente de pago con la línea de retención (factura «DEMO RET ficha»)

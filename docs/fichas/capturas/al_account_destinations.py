@@ -100,7 +100,8 @@ with Captura('al_account_destinations') as c:
 
         # 9. Factura de proveedor con el enlace al asiento de destino
         c.abrir_registro('account.move', INVOICE, ms=2000)
-        pestaña(c, 'Otra información')
+        pestaña(c, 'Contabilidad PE')
+        pestaña(c, 'Destinos')
         c.page.locator('.o_form_sheet .o_notebook_headers').first.evaluate(
             "e => e.scrollIntoView({block: 'start'})")
         c.esperar(600)
