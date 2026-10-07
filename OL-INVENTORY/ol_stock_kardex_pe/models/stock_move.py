@@ -102,7 +102,10 @@ class StockMove(models.Model):
         """
         pairs = {}
         groups = {}
-        for move in self.filtered(lambda m: m.state == 'done'):
+        # Solo los movimientos que entran o salen del inventario valorizado:
+        # en almacenes de 2 o 3 pasos el «pick» (existencias → salida) también
+        # lleva la línea de venta y se tomaba por devolución.
+        for move in self.filtered(lambda m: m.state == 'done' and (m.is_in or m.is_out)):
             line = move.sale_line_id or move.purchase_line_id
             if not line:
                 continue
@@ -111,10 +114,14 @@ class StockMove(models.Model):
             groups[key] |= move
         for (line, types), moves in groups.items():
             all_moves = (line.move_ids.filtered(
-                lambda m: m.state == 'done' and m._l10n_pe_kardex_invoice_types() == types)
+                lambda m: m.state == 'done' and (m.is_in or m.is_out)
+                and m._l10n_pe_kardex_invoice_types() == types)
                 | moves).sorted(lambda m: (m.date, m.id))
+            # Una factura revertida por nota de crédito ya no sustenta la
+            # entrega: la que vale es la que se emitió después.
             invoices = line.invoice_lines.move_id.filtered(
-                lambda inv: inv.state == 'posted' and inv.move_type in types).sorted('id')
+                lambda inv: inv.state == 'posted' and inv.move_type in types
+                and inv.payment_state != 'reversed').sorted('id')
             if not invoices:
                 continue
             for index, move in enumerate(all_moves):
@@ -159,6 +166,12 @@ class StockMove(models.Model):
             elif has_guide and move.picking_id.l10n_latam_document_number:
                 number, doc_type, invoice = move.picking_id.l10n_latam_document_number, '09', False
             else:
+                if force and move.l10n_pe_kardex_doc_type:
+                    # El comprobante que tenía se anuló o pasó a borrador: no
+                    # puede seguir en el kardex.
+                    move.with_context(l10n_pe_kardex_auto=True).write(
+                        dict.fromkeys(DOC_FIELDS + ('l10n_pe_kardex_invoice_id',), False))
+                    filled |= move
                 continue
             serie, folio = split_serie_number(number)
             if not folio:
@@ -225,6 +238,25 @@ class AccountMove(models.Model):
             # Comprobante antes que la guía: recalcula los automáticos (no los manuales).
             moves._l10n_pe_kardex_fill_documents(force=True)
         return posted
+
+
+    def button_draft(self):
+        res = super().button_draft()
+        self._l10n_pe_kardex_refresh_linked_moves()
+        return res
+
+    def button_cancel(self):
+        res = super().button_cancel()
+        self._l10n_pe_kardex_refresh_linked_moves()
+        return res
+
+    def _l10n_pe_kardex_refresh_linked_moves(self):
+        """Un comprobante que deja de estar publicado no sustenta ya sus
+        movimientos: se recalculan (los corregidos a mano no se tocan)."""
+        moves = self.env['stock.move'].search([
+            ('l10n_pe_kardex_invoice_id', 'in', self.ids),
+            ('l10n_pe_kardex_doc_manual', '=', False)])
+        moves._l10n_pe_kardex_fill_documents(force=True)
 
 
 class StockPicking(models.Model):

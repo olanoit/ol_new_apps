@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261007 — 07/10/2026
+
+- TXT del PLE (12.1 y 13.1): el periodo y los saldos iniciales se cortan en hora de Lima; antes un movimiento del 31 por la noche caía en el mes siguiente y el último día del mes quedaba fuera. Incluye las sucursales con el RUC de la compañía principal.
+- TXT del PLE: la unidad de medida es la del producto (la misma de la cantidad), el producto sin código interno lleva uno estable, el nombre no lleva «|», «/» ni «\», el saldo inicial lleva el tipo de existencia real y la fecha del documento nunca queda después del periodo.
+- Documento por movimiento: si el comprobante pasa a borrador o se anula, el movimiento deja de citarlo; una factura revertida por nota de crédito ya no se toma; en almacenes de 2 o 3 pasos el emparejamiento ya no confunde el traslado interno con una devolución.
+
 ## 6.20261006 — 06/10/2026
 
 - El TXT del PLE de inventarios de Enterprise (12.1 y 13.1) usa el documento guardado en cada movimiento: corrige la serie duplicada de las facturas (FF001 en vez de F001) y las ventas del punto de venta informadas como guía con la serie WHPOS.

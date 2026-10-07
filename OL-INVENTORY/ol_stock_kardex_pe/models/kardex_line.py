@@ -248,8 +248,16 @@ class L10nPeKardexLine(models.Model):
             # Sin documento guardado (historial anterior): cálculo al vuelo.
             # sorted('id'): account.move se ordena por fecha desc; sin esto
             # [:1] tomaría la última factura (p. ej. una nota de crédito).
-            invoice = move.sale_line_id.invoice_lines.move_id.sorted('id')[:1]
-            bill = move.purchase_line_id.invoice_lines.move_id.sorted('id')[:1]
+            # Solo comprobantes publicados y del tipo del movimiento (factura
+            # en la venta, nota de crédito en la devolución…), no revertidos.
+            types = move._l10n_pe_kardex_invoice_types()
+
+            def valid(invoices):
+                return invoices.filtered(
+                    lambda inv: inv.state == 'posted' and inv.move_type in types
+                    and inv.payment_state != 'reversed').sorted('id')[:1]
+            invoice = valid(move.sale_line_id.invoice_lines.move_id)
+            bill = valid(move.purchase_line_id.invoice_lines.move_id)
             doc = invoice or bill or move._l10n_pe_kardex_pos_invoice()
             delivery_number = has_latam and move.picking_id.l10n_latam_document_number
             if delivery_number:

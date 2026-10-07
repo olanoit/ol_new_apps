@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -266,6 +267,50 @@ class TestKardexPleBridge(TestKardexReport):
             original = wizard._get_ple_report_content('1301')
         self.assertTrue(original)
         self.assertEqual(wizard._get_ple_report_content('1301'), original)
+
+    # ------------------------------------------------------------------
+    # Revisión del 07/10/2026
+    # ------------------------------------------------------------------
+    def test_42_periodo_en_hora_de_lima(self):
+        """Un movimiento del 31/01 a las 20:00 en Lima (01/02 01:00 UTC) va
+        en el TXT de enero, y el último día del mes no se pierde."""
+        self._build_moves()
+        delivery = self.env['stock.move'].search([
+            ('product_id', '=', self.product_kdx.id), ('sale_line_id', '!=', False)], limit=1)
+        delivery.date = datetime(2024, 2, 1, 1, 0)   # 31/01 20:00 en Lima
+        wizard, rows = self._ple_rows()
+        i_date = wizard._l10n_pe_kardex_columns()[0]
+        row = next(r for r in rows if r[1] == str(delivery.id).zfill(6))
+        self.assertEqual(row[i_date][3:], '01/2024')
+
+    def test_43_unidad_codigo_y_nombre(self):
+        """Campo 16 en la unidad del producto; campo 7 obligatorio; el nombre
+        sin «|» ni «/»."""
+        self.product_kdx.write({'default_code': False, 'name': 'Tubo 1/2" | PVC'})
+        self._build_moves()
+        wizard, rows = self._ple_rows()
+        i_folio = wizard._l10n_pe_kardex_columns()[3]
+        move_rows = [r for r in rows if r[2] == 'M1']
+        self.assertTrue(move_rows)
+        for row in move_rows:
+            self.assertEqual(len(row), len(rows[0]), 'el «|» del nombre no parte la fila')
+            self.assertEqual(row[i_folio + 3],
+                             self.product_kdx.uom_id.l10n_pe_edi_measure_unit_code)
+            self.assertNotIn('|', row[i_folio + 2])
+            self.assertNotIn('/', row[i_folio + 2])
+        self.assertEqual(wizard._product_row_values(self.product_kdx)['default_code'],
+                         'P%06d' % self.product_kdx.id)
+
+    def test_44_factura_anulada_libera_el_movimiento(self):
+        """Si el comprobante pasa a borrador, el movimiento deja de citarlo."""
+        self._build_moves()
+        bill = self.env['account.move'].search([('move_type', '=', 'in_invoice')]).filtered(
+            lambda m: m.l10n_latam_document_number == 'F001-00000123')
+        move = bill.invoice_line_ids.purchase_line_id.move_ids
+        self.assertEqual(move.l10n_pe_kardex_invoice_id, bill)
+        bill.button_draft()
+        self.assertFalse(move.l10n_pe_kardex_invoice_id)
+        self.assertFalse(move.l10n_pe_kardex_number)
 
 
 for _name in dir(TestKardexReport):
