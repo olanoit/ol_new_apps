@@ -41,6 +41,16 @@ def short(description):
     «Código Único de la Operación (CUO)».
     """
     text = ' '.join(str(description).split())
+    # «1. Obligatorio…»: sin quitar la numeración, el corte en «. » dejaba
+    # el encabezado en «1».
+    numbered = re.match(r'^\d+\.\s*', text)
+    if numbered:
+        text = text[numbered.end():]
+        # «1. Contribuyentes del Régimen General: Código Único de la
+        # Operación…»: el nombre del campo sigue a los dos puntos iniciales.
+        head, sep, rest = text.partition(': ')
+        if sep and len(head) <= 50 and rest:
+            text = rest
     for cut in (', que ', '. ', '; ', ': '):
         if cut in text:
             text = text.split(cut, 1)[0]

@@ -30,7 +30,7 @@ RCE_DUE_DATE_DOC_TYPES = ('14', '46', '50', '51', '52', '53', '54')
 
 # Tipos de comprobante que representan una DAM o DSI: la serie lleva el código
 # de aduana y se informa el año de emisión.
-RCE_CUSTOMS_DOC_TYPES = ('50', '52')
+RCE_CUSTOMS_DOC_TYPES = ('50', '51', '52', '53', '54')
 
 # Tipos de comprobante que modifican otro documento (notas y anulaciones).
 RCE_MODIFYING_DOC_TYPES = ('07', '08', '87', '88', '97', '98')
@@ -68,7 +68,10 @@ class L10nPeRceCommon(models.AbstractModel):
     @api.model
     def _rce_text(self, value, maxlen):
         """Texto saneado: sin pipes ni saltos de línea, truncado a ``maxlen``."""
-        text = (value or '').replace('|', ' ').replace('\n', ' ')
+        # Tabla 12: el texto no admite «|», «/» ni «\».
+        text = (value or '')
+        for char in ('|', '/', '\\', '\n', '\r'):
+            text = text.replace(char, ' ')
         return ' '.join(text.split())[:maxlen]
 
     # ------------------------------------------------------------------
@@ -103,6 +106,9 @@ class L10nPeRceCommon(models.AbstractModel):
         generador(1). El indicador de generador es ``2`` («generado por el
         SIRE») en todos los formatos del RCE.
         """
+        # El libro es del RUC: el de la compañía raíz (una sucursal puede no
+        # tener RUC propio).
+        company = company.root_id
         ruc = (company.vat or '').strip()
         if len(ruc) != 11 or not ruc.isdigit():
             raise UserError(_(
@@ -136,6 +142,8 @@ class L10nPeRce84(models.AbstractModel):
 
         group_ids = extractor._rce_tax_group_ids(company)
         moves = extractor._rce_moves(company, date_from, date_to)
+        if not self.env.context.get('l10n_pe_rce_full_row'):
+            self._l10n_pe_rce_check_modified_documents(moves)
         rows = [
             self._l10n_pe_rce_84_row(move, period, common, extractor, group_ids)
             for move in moves
@@ -162,7 +170,16 @@ class L10nPeRce84(models.AbstractModel):
             extractor._rce_partner_document(move)
         mod_date, mod_type, mod_serie, mod_folio = \
             extractor._rce_modified_document(move)
-        amounts = extractor._rce_amounts(move, group_ids)
+        amounts = extractor._rce_amounts(move, group_ids, isc_in_base=True)
+        # Lo que no cae en ningún grupo (líneas sin impuesto, cargos) va al
+        # campo 21 para que los campos 15-24 sumen el total (campo 25).
+        informed = sum(amounts.get(key, 0.0) for key in (
+            'base_igv', 'tax_igv', 'base_igv_g_ng', 'tax_igv_g_ng',
+            'base_igv_ng', 'tax_igv_ng', 'base_exo', 'base_ina', 'base_gra',
+            'base_exp', 'base_ivap', 'tax_isc', 'tax_icbper', 'tax_other',
+            'tax_ivap'))
+        amounts['base_untaxed'] = round(
+            extractor._rce_total(move) - informed, 2)
         is_customs = doc_code in RCE_CUSTOMS_DOC_TYPES
         customs_code = _leading_digits(serie, 3)
         currency = move.currency_id.name or ''
@@ -176,8 +193,8 @@ class L10nPeRce84(models.AbstractModel):
 
         return [
             # 1-3 · identificación del generador y periodo
-            (move.company_id.vat or '').strip(),
-            common._rce_text(move.company_id.name, 1500),
+            (move.company_id.root_id.vat or '').strip(),
+            common._rce_text(move.company_id.root_id.name, 1500),
             period,
             # 4 · CAR: lo asigna SUNAT
             '',
@@ -189,7 +206,7 @@ class L10nPeRce84(models.AbstractModel):
             doc_code,
             customs_code if is_customs else serie,
             str(move.invoice_date.year) if (is_customs and move.invoice_date) else '',
-            folio.lstrip('0'),
+            folio.lstrip('0') or folio,
             '',                                    # 11 nº final del rango
             # 12-14 · proveedor
             partner_type,
@@ -203,10 +220,13 @@ class L10nPeRce84(models.AbstractModel):
             amount('base_igv_ng'),
             amount('tax_igv_ng'),
             # 21-25 · resto de importes
-            amount('base_exo', 'base_ina', 'base_gra'),
+            # 21: no gravadas, también la base del IVAP y de exportación
+            # (nota 3 del anexo 11); 24: otros tributos, también el IVAP.
+            amount('base_exo', 'base_ina', 'base_gra', 'base_exp',
+                   'base_ivap', 'base_untaxed'),
             amount('tax_isc'),
             amount('tax_icbper'),
-            amount('tax_other'),
+            amount('tax_other', 'tax_ivap'),
             common._rce_amount(0.0 if cancelled else extractor._rce_total(move)),
             # 26-27 · moneda
             currency,
@@ -232,6 +252,25 @@ class L10nPeRce84(models.AbstractModel):
             move.l10n_pe_rce_status or '',
             '',                                    # 41 inconsistencias (SUNAT)
         ]
+
+    @api.model
+    def _l10n_pe_rce_check_modified_documents(self, moves):
+        """Las notas (07/08/87/88) exigen los datos del comprobante que
+        modifican (campos 28-32); sin ellos SUNAT rechaza la línea. Mejor
+        avisar antes de generar el TXT. El Excel de revisión no se bloquea:
+        sirve justo para encontrarlas."""
+        orphans = moves.filtered(
+            lambda move: move.l10n_latam_document_type_id.code
+            in ('07', '08', '87', '88')
+            and not (move.reversed_entry_id or move.debit_origin_id))
+        if orphans:
+            raise UserError(_(
+                'Estas notas de crédito o débito no están enlazadas al '
+                'comprobante que modifican (campos 28-32 del 8.4) y SUNAT '
+                'las rechazaría. Regístrelas desde la factura de origen '
+                '(«Nota de crédito» / «Nota de débito»):\n%s',
+                '\n'.join('· %s' % name for name in orphans.mapped(
+                    'display_name')[:30])))
 
     # ------------------------------------------------------------------
     # Campos que dependen de otros módulos de la localización
@@ -316,8 +355,11 @@ class L10nPeRce85(models.AbstractModel):
             serie,
             folio.lstrip('0'),
             # 7-9 · importes
-            amount('base_igv', 'base_igv_g_ng', 'base_igv_ng',
-                   'base_exo', 'base_ina', 'base_gra'),
+            # 7: valor de la adquisición = total − otros conceptos (antes se
+            # perdían la base EXP/IVAP y las líneas sin impuesto).
+            common._rce_amount(0.0 if cancelled else
+                               extractor._rce_total(move)
+                               - amounts.get('tax_other', 0.0)),
             amount('tax_other'),
             common._rce_amount(0.0 if cancelled else extractor._rce_total(move)),
             # 10-13 · documento que sustenta el crédito fiscal
@@ -344,7 +386,7 @@ class L10nPeRce85(models.AbstractModel):
             # 25-29 · liquidación de la renta (no modelada en Odoo)
             '', '', '', '', '',
             # 30-34 · régimen aplicable
-            country.l10n_pe_agreement_code or '',
+            (country.l10n_pe_agreement_code or '0').zfill(2),  # 30 (t25)
             '',                                    # 31 exoneración aplicada
             move.l10n_pe_usage_type_id.code or '',
             move.l10n_pe_service_modality or '',

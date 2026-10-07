@@ -19,7 +19,8 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo.addons.al_l10n_pe_ple.models.ple_mixin import PLE_EXPECTED_FIELDS
 from odoo.addons.al_l10n_pe_ple.models.ple_official_headers import PLE_OFFICIAL_HEADERS
-from odoo.addons.al_l10n_pe_ple.models.ple_xlsx import PLE_XLSX_HEADERS, PLE_XLSX_TITLES
+from odoo.addons.al_l10n_pe_ple.models.ple_xlsx import (
+    AMOUNT_RE, PLE_XLSX_HEADERS, PLE_XLSX_TITLES)
 
 # Formatos que solo genera la localización oficial.
 NATIVE_BOOKS = ('010100', '010200', '030100', '030200', '030300', '030400',
@@ -27,7 +28,13 @@ NATIVE_BOOKS = ('010100', '010200', '030100', '030200', '030300', '030400',
                 '031400', '031500', '031601', '031602', '031700', '031800',
                 '032000', '032400', '032500', '050100', '050300', '060100',
                 '120100', '130100')
-GENERATOR = Path(__file__).resolve().parents[2] / 'docs' / 'ple' / 'oficial' / 'generar_encabezados.py'
+# El repositorio agrupa los módulos por área (OL-ACCOUNTING/…): se busca
+# docs/ple/oficial subiendo carpetas en vez de fijar la profundidad.
+GENERATOR = next(
+    (parent / 'docs' / 'ple' / 'oficial' / 'generar_encabezados.py'
+     for parent in Path(__file__).resolve().parents
+     if (parent / 'docs' / 'ple' / 'oficial' / 'generar_encabezados.py').exists()),
+    Path('/nonexistent'))
 
 
 def txt(rows):
@@ -99,19 +106,20 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
         line = ['20260300', 'CUO1', 'M1', '1011000', '', '', 'PEN', '', '', '00', '', '0', '',
                 '01/03/2026', '', '01/03/2026', 'Venta', '', '100.00', '0.00', '', '1']
         cases = (
-            ('l10n_pe_export_ple_51_to_txt', 'l10n_pe_export_ple_51_to_xlsx', 'PLE 5.1 Libro Diario'),
-            ('l10n_pe_export_ple_53_to_txt', 'l10n_pe_export_ple_53_to_xlsx', 'PLE 5.3 Plan Contable'),
-            ('l10n_pe_export_ple_61_to_txt', 'l10n_pe_export_ple_61_to_xlsx', 'PLE 6.1 Libro Mayor'),
+            ('l10n_pe_export_ple_51_to_txt', 'l10n_pe_export_ple_51_to_xlsx', 'PLE 5.1 Libro Diario', '050100'),
+            ('l10n_pe_export_ple_53_to_txt', 'l10n_pe_export_ple_53_to_xlsx', 'PLE 5.3 Plan Contable', '050300'),
+            ('l10n_pe_export_ple_61_to_txt', 'l10n_pe_export_ple_61_to_xlsx', 'PLE 6.1 Libro Mayor', '060100'),
         )
         handler_class = type(self.env['account.general.ledger.report.handler'])
-        for txt_method, xlsx_method, sheet in cases:
+        for txt_method, xlsx_method, sheet, code in cases:
             with self.subTest(method=xlsx_method), patch.object(
                     handler_class, txt_method, autospec=True, return_value={
                         'file_name': 'LE2051252845820260300050100001111',
-                        'file_content': txt([line[:21]]), 'file_type': 'txt'}):
+                        'file_content': txt([line[:PLE_EXPECTED_FIELDS[code]]]),
+                        'file_type': 'txt'}):
                 result = getattr(self._gl(), xlsx_method)(self.options)
                 self.assertEqual(result['file_type'], 'xlsx')
-                self.assertEqual(result['file_name'], 'LE2051252845820260300050100001111')
+                self.assertEqual(result['file_name'], 'LE2051252845820260300050100001111.xlsx')
                 rows = self._sheet_rows(result['file_content'], sheet)
                 self.assertIn(self.company.name, rows[0][0])
                 self.assertEqual(rows[1][:7], ['RUC', '20512528458', None, 'Período', '2026', 'Mes', '03'])
@@ -143,7 +151,8 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
                          ['PLE 3.1 Situación financiera', 'PLE 3.17 Balance comprobación'])
         rows = self._sheet_rows(result['file_content'], 'PLE 3.1 Situación financiera')
         self.assertEqual(rows[3][1:6], PLE_OFFICIAL_HEADERS['030100'])
-        self.assertEqual(rows[5][1:6], ['20260331', '01', '1D01ST', '1500.00', '1'])
+        # Los importes van como número (se pueden sumar en el Excel).
+        self.assertEqual(rows[5][1:6], ['20260331', '01', '1D01ST', 1500.0, '1'])
         empty = self._sheet_rows(result['file_content'], 'PLE 3.17 Balance comprobación')
         self.assertEqual(len(empty), 5, 'sin datos: solo las filas de encabezado')
 
@@ -194,7 +203,10 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
         self.assertGreater(worksheet.row_dimensions[5].height, 40)
         self.assertEqual(rows[3][1:28], PLE_OFFICIAL_HEADERS['130100'])
         # Las celdas vacías del TXT quedan vacías en la hoja.
-        self.assertEqual(rows[5][1:28], [value or None for value in line])
+        # Los importes van como número; los códigos, como texto.
+        self.assertEqual(rows[5][1:28], [
+            float(value) if AMOUNT_RE.match(value) else (value or None)
+            for value in line])
 
         with patch.object(wizard_class, '_get_ple_report_content', autospec=True,
                           return_value=''):

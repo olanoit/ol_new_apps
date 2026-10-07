@@ -7,13 +7,18 @@ numeración de columnas, banda de encabezados celeste (#afebff) combinada en
 dos filas, columna «Nº» y datos texto/número. Los DATOS provienen de la
 lógica actual del wizard (las mismas líneas del TXT).
 """
+import re
 from io import BytesIO
 
 import xlsxwriter
 
-from odoo import models
+from odoo import _, models
+from odoo.exceptions import UserError
 
 from .ple_official_headers import PLE_OFFICIAL_HEADERS
+
+#: Importe del TXT («1234.56», «-0.50», T.C. «3.437»): va al Excel como número.
+AMOUNT_RE = re.compile(r"^-?\d+\.\d{2,3}$")
 
 # Títulos de hoja (máx. 31 caracteres, restricción de Excel)
 PLE_XLSX_TITLES = {
@@ -520,10 +525,19 @@ class L10nPePleMixinXlsx(models.AbstractModel):
         row = 5
         for number, values in enumerate(lines, start=1):
             sheet.write(row, 0, number, fmt_gray)
-            for index, value in enumerate(values[:num_columns]):
+            if len(values) > num_columns:
+                raise UserError(_(
+                    'El formato %(code)s trae %(got)d campos y el Excel de '
+                    'revisión tiene %(expected)d columnas.', code=book_code,
+                    got=len(values), expected=num_columns))
+            for index, value in enumerate(values):
                 text = str(value) if value not in (False, None) else ''
-                fmt = fmt_number if text.isdecimal() else fmt_string
-                sheet.write(row, index + 1, text, fmt)
+                # Importes como número (para sumar y filtrar); los códigos
+                # con ceros a la izquierda siguen como texto.
+                if AMOUNT_RE.match(text):
+                    sheet.write_number(row, index + 1, float(text), fmt_number)
+                else:
+                    sheet.write(row, index + 1, text, fmt_string)
             row += 1
         return sheet
 

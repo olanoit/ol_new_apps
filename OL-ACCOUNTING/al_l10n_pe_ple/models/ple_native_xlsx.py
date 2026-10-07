@@ -51,7 +51,7 @@ class L10nPeGeneralLedgerXlsx(models.AbstractModel):
         year, month = _period(options)
         Mixin = self.env['l10n_pe.ple.mixin']
         return {
-            'file_name': result['file_name'],
+            'file_name': '%s.xlsx' % result['file_name'],
             'file_content': Mixin._ple_xlsx(
                 book_code, Mixin._ple_txt_rows(result['file_content']),
                 self.env.company, year, month),
@@ -87,7 +87,7 @@ class L10nPeGeneralLedgerXlsx(models.AbstractModel):
                     books.append((match.group(1), Mixin._ple_txt_rows(archive.read(name))))
         date_to = fields.Date.to_date(options['date']['date_to'])
         return {
-            'file_name': result['file_name'],
+            'file_name': '%s.xlsx' % result['file_name'],
             'file_content': Mixin._ple_xlsx_books(
                 books, self.env.company, date_to.year, '%02d' % date_to.month),
             'file_type': 'xlsx',

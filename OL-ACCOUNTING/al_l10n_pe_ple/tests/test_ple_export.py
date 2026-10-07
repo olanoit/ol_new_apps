@@ -111,7 +111,7 @@ class TestPleExport(TransactionCase):
         self.assertTrue(wizard.file_name.endswith('070100001111.txt')
                         or wizard.file_name.endswith('070100001112.txt'))
         lines = self._get_lines(wizard)
-        row = next(f.split('|') for f in lines
+        row = next(f[:-1].split('|') for f in lines
                    if 'AF-CAM-001' in f)
         self.assertEqual(len(row), 37)
         self.assertEqual(row[0], '20250000')
@@ -146,7 +146,7 @@ class TestPleExport(TransactionCase):
         move.action_post()
         wizard = self._wizard(export_71=True)
         wizard.action_export()
-        row = next(f.split('|') for f in self._get_lines(wizard)
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
                    if 'AF-CAM-001' in f)
         self.assertEqual(row[28], '0.00')     # dep. acumulada anterior
         self.assertEqual(row[29], '2400.00')  # dep. del ejercicio
@@ -166,7 +166,7 @@ class TestPleExport(TransactionCase):
         wizard = self._wizard(export_74=True)
         wizard.action_export()
         self.assertIn('070400', wizard.file_name)
-        row = next(f.split('|') for f in self._get_lines(wizard)
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
                    if 'CT-2025-001' in f)
         self.assertEqual(len(row), 11)
         self.assertEqual(row[4], 'CT-2025-001')
@@ -188,7 +188,7 @@ class TestPleExport(TransactionCase):
         wizard = self._wizard(export_73=True)
         wizard.action_export()
         self.assertIn('070300', wizard.file_name)
-        row = next(f.split('|') for f in self._get_lines(wizard)
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
                    if 'AF-CAM-001' in f)
         self.assertEqual(len(row), 15)
         self.assertEqual(row[6], '3200.00')
@@ -224,7 +224,7 @@ class TestPleExport(TransactionCase):
         self.assertIn('040100', wizard.file_name)
         lines = self._get_lines(wizard)
         self.assertEqual(len(lines), 1)
-        row = lines[0].split('|')
+        row = lines[0][:-1].split('|')
         self.assertEqual(len(row), 10)
         self.assertEqual(row[0], '20250300')
         self.assertEqual(row[2], 'M%d' % record.id)
@@ -281,7 +281,7 @@ class TestPleExport(TransactionCase):
         wizard.action_export()
         self.assertIn('090100', wizard.file_name)
         lines = self._get_lines(wizard)
-        row = next(f.split('|') for f in lines if 'CONS-001' in f)
+        row = next(f[:-1].split('|') for f in lines if 'CONS-001' in f)
         self.assertEqual(len(row), 22)
         self.assertEqual(row[0], '20250300')
         self.assertEqual(row[1], '9')           # catálogo propio
@@ -312,7 +312,7 @@ class TestPleExport(TransactionCase):
         self.assertIn('20251231', wizard.file_name)
         self.assertIn('03080001', wizard.file_name)
         lines = self._get_lines(wizard)
-        row = next(f.split('|') for f in lines
+        row = next(f[:-1].split('|') for f in lines
                    if 'Minera Andina' in f)
         self.assertEqual(len(row), 12)
         self.assertEqual(row[0], '20251231')
@@ -351,7 +351,7 @@ class TestPleExport(TransactionCase):
             export_39=True, balance_date=date(2025, 12, 31))
         wizard.action_export()
         self.assertIn('030900', wizard.file_name)
-        row = next(f.split('|') for f in self._get_lines(wizard)
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
                    if 'Licencia ERP' in f)
         self.assertEqual(len(row), 9)
         self.assertEqual(row[0], '20251231')
@@ -382,7 +382,7 @@ class TestPleExport(TransactionCase):
         self.assertIn('031900', wizard.file_name)
         lines = self._get_lines(wizard)
         self.assertEqual(len(lines), 1)
-        row = lines[0].split('|')
+        row = lines[0][:-1].split('|')
         self.assertEqual(len(row), 16)
         self.assertEqual(row[2], rubric.name[:6])
         self.assertEqual(row[3], '100000.00')   # capital
@@ -407,7 +407,7 @@ class TestPleExport(TransactionCase):
         self.assertIn('20250000100100', wizard.file_name)
         lines = self._get_lines(wizard)
         self.assertEqual(len(lines), 1)
-        row = lines[0].split('|')
+        row = lines[0][:-1].split('|')
         self.assertEqual(len(row), 6)
         self.assertEqual(row[0], '20250000')
         self.assertEqual(row[1], '10000.00')
@@ -426,7 +426,7 @@ class TestPleExport(TransactionCase):
         self.assertIn('100200', wizard.file_name)
         lines = self._get_lines(wizard)
         self.assertEqual(len(lines), 2)
-        first, second = lines[0].split('|'), lines[1].split('|')
+        first, second = lines[0][:-1].split('|'), lines[1][:-1].split('|')
         self.assertEqual(len(first), 8)
         # ordenado por mes dentro del archivo anual
         self.assertEqual(first[0], '20250100')
@@ -459,7 +459,7 @@ class TestPleExport(TransactionCase):
         names = archive.namelist()
         content_103 = next(archive.read(n).decode() for n in names
                            if '100300' in n)
-        row = next(f.split('|') for f in content_103.split('\r\n')
+        row = next(f[:-1].split('|') for f in content_103.split('\r\n')
                    if 'PR-01' in f)
         self.assertEqual(len(row), 13)
         self.assertEqual(row[1], 'PR-01')
@@ -467,7 +467,7 @@ class TestPleExport(TransactionCase):
         self.assertEqual(row[11], '1')         # agrupamiento t21
         content_104 = next(archive.read(n).decode() for n in names
                            if '100400' in n)
-        row = next(f.split('|') for f in content_104.split('\r\n')
+        row = next(f[:-1].split('|') for f in content_104.split('\r\n')
                    if 'CC-100' in f)
         self.assertEqual(len(row), 7)
         self.assertEqual(row[1], str(center.id))
@@ -528,8 +528,8 @@ class TestPleExport(TransactionCase):
         wizard = self._wizard(export_142=True)
         wizard.action_export()
         self.assertIn('140200', wizard.file_name)
-        row = next(f.split('|') for f in self._get_lines(wizard)
-                   if 'M%d' % invoice.id in f.split('|'))
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f[:-1].split('|'))
         self.assertEqual(len(row), 26)
         self.assertEqual(row[0], '20250300')
         self.assertEqual(row[3], '20/03/2025')
@@ -559,8 +559,8 @@ class TestPleExport(TransactionCase):
         invoice.action_post()
         wizard = self._wizard(export_142=True)
         wizard.action_export()
-        row = next(f.split('|') for f in self._get_lines(wizard)
-                   if 'M%d' % invoice.id in f.split('|'))
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f[:-1].split('|'))
         self.assertEqual((row[12], row[13], row[15], row[16]),
                          ('100.00', '18.00', '50.00', '168.00'))
 
@@ -571,8 +571,8 @@ class TestPleExport(TransactionCase):
         invoice.button_cancel()
         wizard = self._wizard(export_142=True)
         wizard.action_export()
-        row = next(f.split('|') for f in self._get_lines(wizard)
-                   if 'M%d' % invoice.id in f.split('|'))
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f[:-1].split('|'))
         self.assertEqual((row[16], row[25]), ('0.00', '2'))
 
     def test_83_previous_period_status(self):
@@ -584,8 +584,8 @@ class TestPleExport(TransactionCase):
         invoice.action_post()
         wizard = self._wizard(export_83=True)
         wizard.action_export()
-        row = next(f.split('|') for f in self._get_lines(wizard)
-                   if 'M%d' % invoice.id in f.split('|'))
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f[:-1].split('|'))
         self.assertEqual(row[31], '6', 'emitido en febrero y anotado en marzo')
 
     def test_export_83(self):
@@ -596,8 +596,8 @@ class TestPleExport(TransactionCase):
         wizard = self._wizard(export_83=True)
         wizard.action_export()
         self.assertIn('080300', wizard.file_name)
-        row = next(f.split('|') for f in self._get_lines(wizard)
-                   if 'M%d' % invoice.id in f.split('|'))
+        row = next(f[:-1].split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f[:-1].split('|'))
         self.assertEqual(len(row), 32)
         self.assertEqual(row[6], 'F001')          # serie del ref
         self.assertEqual(row[7], '00000123')      # folio del ref
@@ -632,8 +632,8 @@ class TestPleExport(TransactionCase):
         names = archive.namelist()
         content_52 = next(archive.read(n).decode() for n in names
                           if '050200' in n)
-        rows = [f.split('|') for f in content_52.split('\r\n')
-                if f and f.split('|')[1] == str(move.id)]
+        rows = [f[:-1].split('|') for f in content_52.split('\r\n')
+                if f and f[:-1].split('|')[1] == str(move.id)]
         self.assertEqual(len(rows), 2)            # dos apuntes del asiento
         row = rows[0]
         self.assertEqual(len(row), 21)
@@ -645,10 +645,18 @@ class TestPleExport(TransactionCase):
         self.assertEqual(row[20], '1')
         content_54 = next(archive.read(n).decode() for n in names
                           if '050400' in n)
-        first = content_54.split('\r\n')[0].split('|')
+        first = content_54.split('\r\n')[0][:-1].split('|')
         self.assertEqual(len(first), 8)
         self.assertEqual(first[0], '20250301')
-        self.assertEqual(first[3], '01')          # plan PCGE (t17)
+        # tabla 17: la de la compañía (PCGE 01 por defecto)
+        self.assertEqual(first[3], (getattr(
+            self.company, 'l10n_pe_chart_of_accounts', '') or '01').zfill(2))
+        unaffected = self.env['account.account'].with_company(
+            self.company).search([('account_type', '=', 'equity_unaffected')])
+        codes = {line[:-1].split('|')[1]
+                 for line in content_54.split('\r\n') if line}
+        self.assertFalse(codes & set(unaffected.mapped('code')),
+                         'sin la cuenta de resultados no distribuidos')
 
     # ------------------------------------------------------------------
     # Exportación Excel (formato v18)
@@ -692,7 +700,78 @@ class TestPleExport(TransactionCase):
             'l10n_pe_is_leasing': True,
             'l10n_pe_leasing_contract': 'CT-2025-001',
             'l10n_pe_leasing_date': date(2025, 1, 5),
+            'l10n_pe_leasing_installments': 36,
+            'l10n_pe_leasing_total': 15000.0,
         })
         wizard = self._wizard(export_71=True, export_74=True)
         wizard.action_export()
         self.assertTrue(wizard.file_name.endswith('.zip'))
+
+    def test_74_requires_installments_and_total(self):
+        """7.4, campos 9 y 10: obligatorios y positivos."""
+        self.asset.write({
+            'l10n_pe_is_leasing': True,
+            'l10n_pe_leasing_contract': 'CT-2025-002',
+            'l10n_pe_leasing_date': date(2025, 1, 5),
+        })
+        with self.assertRaises(UserError):
+            self._wizard(export_74=True).action_export()
+
+    # ------------------------------------------------------------------
+    # Revisión del 07/10/2026
+    # ------------------------------------------------------------------
+    def test_line_closes_with_pipe(self):
+        """Cada línea cierra con «|», como los TXT del PLE y de EE."""
+        line = self.mixin._ple_line('040100', ['x'] * 10)
+        self.assertTrue(line.endswith('|'))
+        self.assertTrue(self.mixin._ple_check_structure('040100', line))
+
+    def test_partner_doc_uses_company_and_infers_ruc(self):
+        """Tipo «VAT» genérico (código 0) con 11 dígitos → RUC (6); y se
+        informa la empresa, no el contacto."""
+        company = self.env['res.partner'].create({
+            'name': 'Proveedor Empresa SAC', 'is_company': True,
+            'vat': '20131312955',
+            'l10n_latam_identification_type_id': self.env.ref(
+                'l10n_latam_base.it_vat').id,
+        })
+        contact = self.env['res.partner'].create({
+            'name': 'Juan Pérez', 'parent_id': company.id})
+        code, number, name = self._wizard()._partner_doc(contact)
+        self.assertEqual((code, number, name),
+                         ('6', '20131312955', 'Proveedor Empresa SAC'))
+
+    def test_83_status_zero_and_due_date_only_for_type_14(self):
+        """8.3: estado 0 sin derecho a crédito fiscal (sin IGV) y fecha de
+        vencimiento solo en el tipo 14."""
+        self.company.l10n_pe_ple_simplified = True
+        invoice, tax = self._make_invoice('in_invoice', 'purchase')
+        wizard = self._wizard(export_83=True)
+        self.assertEqual(wizard._simplified_invoice_row(invoice)[4], '')
+        self.assertEqual(wizard._purchase_status(invoice),
+                         '1' if tax else '0')
+        invoice.button_draft()
+        invoice.invoice_line_ids.tax_ids = False
+        invoice.action_post()
+        self.assertEqual(wizard._purchase_status(invoice), '0')
+
+    def test_71_archived_closed_asset_and_imported_depreciation(self):
+        """El activo archivado sigue en el 7.1 y la depreciación importada
+        de un activo del ejercicio va al campo 30, no al 29."""
+        self.asset.write({'already_depreciated_amount_import': 500.0})
+        Book = self.env['l10n_pe.ple.asset.book']
+        values = dict(Book._asset_71_values(self.company, 2025))[self.asset]
+        self.assertEqual(values['dep_prior'], 0.0)
+        self.assertGreaterEqual(values['dep_year'], 500.0)
+        # Odoo 19 solo archiva activos cerrados.
+        self.asset.write({'state': 'close'})
+        self.asset.active = False
+        assets = [asset for asset, _vals in
+                  Book._asset_71_values(self.company, 2025)]
+        self.assertIn(self.asset, assets)
+
+    def test_71_start_date_not_before_acquisition(self):
+        self.asset.prorata_date = date(2025, 1, 1)
+        Book = self.env['l10n_pe.ple.asset.book']
+        values = dict(Book._asset_71_values(self.company, 2025))[self.asset]
+        self.assertEqual(values['start_date'], date(2025, 1, 10))

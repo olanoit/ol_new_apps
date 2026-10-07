@@ -105,8 +105,8 @@ class L10nPeRvie144(models.AbstractModel):
 
         return [
             # 1-3 · identificación del generador y periodo
-            (move.company_id.vat or '').strip(),
-            common._rce_text(move.company_id.name, 1500),
+            (move.company_id.root_id.vat or '').strip(),
+            common._rce_text(move.company_id.root_id.name, 1500),
             period,
             # 4 · CAR: lo asigna SUNAT
             '',
@@ -117,7 +117,7 @@ class L10nPeRvie144(models.AbstractModel):
             # 7-10 · comprobante
             doc_code,
             serie,
-            folio.lstrip('0'),
+            folio.lstrip('0') or folio,
             '',                                    # 10 nº final del rango
             # 11-13 · cliente
             partner_type,

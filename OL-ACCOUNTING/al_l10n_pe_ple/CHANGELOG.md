@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- Libros del asistente (retenciones, consignaciones, simplificados, activos, costos y libro 3): cada línea del TXT cierra con «|», como los archivos del PLE; antes el validador podía rechazarlos.
+- Registro de compras 8.4: ya no incluye comprobantes anulados (la norma lo prohíbe); el ISC de un ítem gravado va en la base imponible; IVAP, exportación y líneas sin impuesto se informan, y los campos 15-24 suman el total. 8.5: valor de la adquisición completo y convenio con dos dígitos.
+- Ventas 14.4: una línea gratuita ya no infla la base gravada y la retención del 3 % ya no reduce el total. Compras y ventas con el RUC de la compañía principal también desde una sucursal.
+- Simplificados y consignaciones: sucursales incluidas; proveedor con tipo «VAT» genérico informado como RUC o DNI y con el nombre de la empresa; estado 0 sin crédito fiscal; vencimiento solo en recibos de servicios públicos; prefijo A/C en apertura y cierre; consignaciones con hora de Perú y saldos iniciales sin movimientos. Plan de cuentas 5.4 con la tabla 17 configurada.
+- Activos y libro 3: los activos cerrados y archivados ya no desaparecen del 7.1 ni del 3.9; código de cuenta correcto aunque la compañía activa sea otra; depreciación importada y fecha de inicio de uso corregidas; porcentaje máximo 100; 7.3 y 7.4 validan catálogo, cuotas y monto; no se repiten filas del 10.3 ni del 3.19.
+- Excel de revisión: importes como número, archivos de los libros nativos con extensión .xlsx y encabezados con el nombre real del campo.
+- El TXT del 8.4 se bloquea si hay notas de crédito o débito sin enlazar al comprobante que modifican (SUNAT las rechazaría) y lista cuáles son; el Excel de revisión se sigue generando para encontrarlas.
+
 ## 9.20261007 — 07/10/2026
 
 - Corregido: el TXT del RCE 8.4 salía con 41 campos y el anexo 8 pide 37 (los campos 38 a 41 no van en el archivo); el Excel de revisión los sigue mostrando.

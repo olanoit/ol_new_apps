@@ -94,6 +94,11 @@ class L10nPePleCostProduction(models.Model):
         help='Código de agrupamiento de costos según la tabla 21 del '
              'Anexo 3 de SUNAT.')
 
+    _process_year_company_uniq = models.Constraint(
+        'unique (company_id, year, process_code)',
+        'El código de proceso no puede repetirse en el mismo ejercicio '
+        '(10.3, campo 2: llave única).')
+
 
 class L10nPePleCostCenter(models.Model):
     """PLE 10.4 — Centros de costos del ejercicio (puede precargarse desde

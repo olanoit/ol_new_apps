@@ -148,7 +148,9 @@ class L10nPePleMixin(models.AbstractModel):
                 'Estructura PLE inválida para %(code)s: se generaron '
                 '%(got)d campos y el Anexo 2 exige %(expected)d.',
                 code=book_code, got=len(values), expected=expected))
-        return '|'.join(str(v) for v in values)
+        # Cada línea cierra con «|», como los TXT del PLE y de EE: sin él,
+        # el validador lee un campo menos en la última columna.
+        return '|'.join(str(v) for v in values) + '|'
 
     @api.model
     def _ple_content(self, book_code, lines):
@@ -163,4 +165,5 @@ class L10nPePleMixin(models.AbstractModel):
     def _ple_check_structure(self, book_code, line):
         """Valida una línea ya serializada (usado por los tests)."""
         expected = PLE_EXPECTED_FIELDS.get(book_code)
-        return expected is not None and len(line.split('|')) == expected
+        return expected is not None and line.endswith('|') \
+            and len(line[:-1].split('|')) == expected

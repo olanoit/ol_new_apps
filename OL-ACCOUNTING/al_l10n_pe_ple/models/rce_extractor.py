@@ -85,8 +85,9 @@ class L10nPeRceExtractor(models.AbstractModel):
         Enterprise y en el SIRE: una factura recibida tarde se anota en el
         mes en que se registra, no en el de su emisión.
 
-        Se incluyen los anulados: SUNAT exige informarlos con su estado, no
-        omitirlos. La separación entre el 8.4 y el 8.5 la marca el tipo de
+        Solo comprobantes publicados: la nota 2 del anexo 11 (RS 040-2022)
+        prohíbe anotar en el RCE los dados de baja, revertidos o anulados
+        (la regla de anotarlos en cero es del RVIE). La separación entre el 8.4 y el 8.5 la marca el tipo de
         comprobante, no el país del proveedor: es el criterio de la norma y
         además evita depender de que el contacto tenga país informado.
         """
@@ -96,7 +97,9 @@ class L10nPeRceExtractor(models.AbstractModel):
             ('move_type', 'in', ('in_invoice', 'in_refund')),
             ('date', '>=', date_from),
             ('date', '<=', date_to),
-        ] + self._ple_issued_domain()
+            ('state', '=', 'posted'),
+            ('journal_id.l10n_latam_use_documents', '=', True),
+        ]
         operator = 'in' if non_domiciled else 'not in'
         domain.append(
             ('l10n_latam_document_type_id.code', operator,
@@ -120,7 +123,7 @@ class L10nPeRceExtractor(models.AbstractModel):
     # Importes por grupo de impuesto
     # ------------------------------------------------------------------
     @api.model
-    def _rce_amounts(self, move, group_ids):
+    def _rce_amounts(self, move, group_ids, isc_in_base=False):
         """Bases e impuestos del comprobante, en su propia moneda.
 
         Devuelve un diccionario con una entrada ``base_<clave>`` y otra
@@ -145,14 +148,29 @@ class L10nPeRceExtractor(models.AbstractModel):
             # Apunte de impuesto: aporta la cuota del grupo al que pertenece.
             if line.tax_line_id:
                 key = by_id.get(line.tax_line_id.tax_group_id.id)
+                if key == 'isc' and isc_in_base:
+                    # RCE (nota 3 del anexo 11): el ISC de un ítem gravado va
+                    # en la base del IGV de ese ítem (campos 15/17/19) y el de
+                    # uno no gravado, en el campo 21; el campo 22 queda para
+                    # el ISC deducible.
+                    igv_keys = [by_id.get(tax.tax_group_id.id)
+                                for tax in line.tax_ids]
+                    igv_keys = [k for k in igv_keys
+                                if k in ('igv', 'igv_g_ng', 'igv_ng')]
+                    target = igv_keys[0] if igv_keys else 'exo'
+                    amounts['base_%s' % target] += sign * line.amount_currency
+                    continue
                 if key:
                     amounts['tax_%s' % key] += sign * line.amount_currency
                 # El ISC lleva ``include_base_amount``: su apunte tiene el IGV en
-                # ``tax_ids`` y sumaba su importe a la base gravada. La base no
-                # incluye el ISC (anexo 112-2021, nota 4; igual en el RCE).
+                # ``tax_ids`` y sumaba su importe a la base gravada. En el RVIE
+                # la base no incluye el ISC (anexo 112-2021, nota 4).
                 continue
             # Apunte base: aporta la base imponible a cada grupo que lo grava.
-            for tax in line.tax_ids:
+            # Los impuestos de grupo (p. ej. «gratuito»: IGV + transferencia)
+            # se aplanan: el grupo padre es del IGV y sumaba la venta gratuita
+            # a la base gravada.
+            for tax in line.tax_ids.flatten_taxes_hierarchy():
                 key = by_id.get(tax.tax_group_id.id)
                 if key:
                     amounts['base_%s' % key] += sign * line.amount_currency
@@ -219,9 +237,19 @@ class L10nPeRceExtractor(models.AbstractModel):
 
     @api.model
     def _rce_total(self, move):
-        """Importe total en la moneda del comprobante, negativo si es abono."""
+        """Importe total en la moneda del comprobante, negativo si es abono.
+
+        La retención del IGV (3 %) no reduce el total del comprobante: Odoo la
+        resta de ``amount_total``, pero el XML y el registro llevan el
+        importe íntegro."""
         sign = -1 if move.move_type in ('in_refund', 'out_refund') else 1
-        return sign * move.amount_total
+        group = self.env.ref(
+            'account.%s_tax_group_igv_withholding' % move.company_id.root_id.id,
+            raise_if_not_found=False)
+        withheld = abs(sum(
+            line.amount_currency for line in move.line_ids
+            if group and line.tax_line_id.tax_group_id == group))
+        return sign * (move.amount_total + withheld)
 
     # ------------------------------------------------------------------
     # Registro de ventas (RVIE)

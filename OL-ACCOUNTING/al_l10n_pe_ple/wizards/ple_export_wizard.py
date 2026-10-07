@@ -6,6 +6,8 @@ import re
 import zipfile
 from datetime import date, datetime, time
 
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -92,6 +94,9 @@ class L10nPePleExportWizard(models.TransientModel):
     # ------------------------------------------------------------------
     def action_export(self):
         self.ensure_one()
+        # Los códigos de cuenta dependen de la compañía activa en v19: con
+        # otra compañía activa que la del asistente salían vacíos.
+        self = self.with_company(self.company_id)
         if self.company_id.account_fiscal_country_id.code != 'PE':
             raise UserError(_('La compañía %s no pertenece a la localización '
                               'peruana.', self.company_id.display_name))
@@ -219,11 +224,21 @@ class L10nPePleExportWizard(models.TransientModel):
                                  month=self.month)
 
     def _partner_doc(self, partner):
-        """(tipo doc tabla 2, nº doc, nombre) de una contraparte."""
+        """(tipo doc tabla 2, nº doc, nombre) de una contraparte.
+
+        Se informa la empresa (``commercial_partner_id``), no el contacto: el
+        RUC es de la empresa. El tipo «VAT» genérico de LATAM trae código 0,
+        que el 8.3 no admite: con 11 u 8 dígitos se infiere RUC o DNI."""
+        partner = partner.commercial_partner_id
         code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code
         vat = (partner.vat or '').strip()
-        if not code:
-            code = '6' if len(vat) == 11 and vat.isdigit() else '0'
+        if not code or code == '0':
+            if vat.isdigit() and len(vat) == 11:
+                code = '6'
+            elif vat.isdigit() and len(vat) == 8:
+                code = '1'
+            else:
+                code = '0'
         return code, self._ple_text(vat, 15, '-'), self._ple_text(
             partner.name, 100, '-')
 
@@ -303,18 +318,33 @@ class L10nPePleExportWizard(models.TransientModel):
         '090200': ('in_receipt', 'in_return', 'in_sale'),
     }
 
+    def _local_tz(self):
+        return pytz.timezone(self.env.user.tz or 'America/Lima')
+
+    def _utc_bound(self, day, end=False):
+        """Límite UTC (naive) del día local: ``stock.move.date`` está en UTC
+        y un movimiento del 31 a las 20:00 en Lima es del 1 en UTC."""
+        local = self._local_tz().localize(
+            datetime.combine(day, time.max if end else time.min))
+        return local.astimezone(pytz.utc).replace(tzinfo=None)
+
+    def _local_date(self, value):
+        return pytz.utc.localize(value).astimezone(self._local_tz()).date()
+
     def _consignment_moves(self, kinds, date_from, date_to):
         return self.env['stock.move'].search([
             ('company_id', '=', self.company_id.id),
             ('state', '=', 'done'),
             ('picking_id.l10n_pe_consignment', 'in', kinds),
-            ('date', '>=', datetime.combine(date_from, time.min)),
-            ('date', '<=', datetime.combine(date_to, time.max)),
+            ('date', '>=', self._utc_bound(date_from)),
+            ('date', '<=', self._utc_bound(date_to, end=True)),
         ], order='product_id, date, id')
 
     @api.model
     def _consignment_qty(self, move):
-        return move.quantity or move.product_uom_qty
+        # En la unidad del producto (la que se informa en el campo 7), no
+        # en la del movimiento.
+        return move.product_qty
 
     def _guia_parts(self, picking):
         """(serie, número) de la guía de remisión del albarán."""
@@ -365,7 +395,7 @@ class L10nPePleExportWizard(models.TransientModel):
             ('company_id', '=', self.company_id.id),
             ('state', '=', 'done'),
             ('picking_id.l10n_pe_consignment', 'in', kinds),
-            ('date', '<', datetime.combine(date_from, time.min)),
+            ('date', '<', self._utc_bound(date_from)),
         ])
         for move in prior_moves:
             key = (move.product_id, move.picking_id.partner_id)
@@ -396,12 +426,18 @@ class L10nPePleExportWizard(models.TransientModel):
             delivered = qty if kind in ('out_delivery', 'in_receipt') else 0.0
             returned = -qty if kind in ('out_return', 'in_return') else 0.0
             sold = -qty if kind in ('out_sale', 'in_sale') else 0.0
-            move_date = move.date.date()
+            move_date = self._local_date(move.date)
             serie, number = self._guia_parts(picking)
             lines.append(self._consignment_row(
                 book_code, move.product_id, partner, move.id, move_date,
                 serie, number, self._consignment_cdp(picking), move_date,
                 delivered, returned, sold))
+        # Saldos en poder del consignatario sin movimientos en el mes: la
+        # primera tupla de cada existencia es su saldo inicial (9.1 campo 19,
+        # 9.2 campo 18); antes el libro salía vacío.
+        for product, partner in sorted(
+                prior, key=lambda key: (key[0].id, key[1].id or 0)):
+            initial_row(product, partner)
         return self._make_file_monthly(book_code, lines)
 
     def _consignment_row(self, book_code, product, partner, cuo, guia_date,
@@ -409,6 +445,9 @@ class L10nPePleExportWizard(models.TransientModel):
                          delivered, returned, sold):
         existence, code, uom_code = self._consignment_product_data(product)
         cdp_type, cdp_date, cdp_serie, cdp_number = cdp
+        if book_code == '090200' and not cdp_date:
+            # 9.2 campo 12: obligatorio; sin comprobante, «01/01/0001».
+            cdp_date = '01/01/0001'
         row = [
             self._period_month(),                     # 1
             '9',                                      # 2 catálogo propio (t13)
@@ -514,14 +553,17 @@ class L10nPePleExportWizard(models.TransientModel):
             state_domain = ['|', ('state', '=', 'posted'),
                             '&', ('state', '=', 'cancel'), ('posted_before', '=', True)]
         return self.env['account.move'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('move_type', 'in', move_types),
             ('date', '>=', date_from), ('date', '<=', date_to),
         ] + state_domain, order='date, id')
 
     def _purchase_status(self, move):
-        """Estado del 8.3 (campo 32): 1 si el comprobante es del periodo; 6 si
-        es anterior y se anota dentro de los 12 meses; 7 si pasaron más."""
+        """Estado del 8.3 (campo 32): 0 si no da derecho a crédito fiscal
+        (sin IGV); 1 si el comprobante es del periodo; 6 si es anterior y se
+        anota dentro de los 12 meses; 7 si pasaron más."""
+        if not self._invoice_amounts(move)[1]:
+            return '0'
         issued = move.invoice_date or move.date
         date_from, _date_to = self._month_range()
         if not issued or issued >= date_from:
@@ -534,7 +576,7 @@ class L10nPePleExportWizard(models.TransientModel):
         5.1: una línea por apunte contable del mes."""
         date_from, date_to = self._month_range()
         moves = self.env['account.move'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('state', '=', 'posted'),
             ('date', '>=', date_from), ('date', '<=', date_to),
         ], order='date, id')
@@ -552,7 +594,7 @@ class L10nPePleExportWizard(models.TransientModel):
                 lines.append([
                     self._period_month(),                        # 1
                     move.id,                                     # 2 CUO
-                    'M%d' % line.id,                             # 3
+                    self._ple_cuo_prefix(move) + str(line.id),   # 3
                     self._ple_text(line.account_id.code, 24),    # 4
                     '',                                          # 5 unidad op.
                     '',                                          # 6 c. costos
@@ -576,20 +618,34 @@ class L10nPePleExportWizard(models.TransientModel):
                 ])
         return self._make_file_monthly('050200', lines)
 
+    @api.model
+    def _ple_cuo_prefix(self, move):
+        """Prefijo del correlativo: A apertura, C cierre, M movimiento."""
+        kind = getattr(move, 'l10n_pe_sunat_transaction_type', False)
+        return {'opening': 'A', 'closing': 'C'}.get(kind, 'M')
+
     def _export_54(self):
         """5.4 Plan contable del Diario Simplificado (8 campos, como 5.3)."""
         # with_company no filtra: en v19 conserva las demás compañías
         # permitidas y salían sus cuentas (con códigos repetidos).
         Account = self.env['account.account'].with_company(self.company_id)
-        accounts = Account.search(Account._check_company_domain(self.company_id), order='code')
+        # Sin la cuenta técnica de resultados no distribuidos (como el 5.3 de
+        # Enterprise): no es una cuenta del plan.
+        accounts = Account.search(
+            Account._check_company_domain(self.company_id)
+            + [('account_type', '!=', 'equity_unaffected')], order='code')
         period = '%04d%s01' % (self.year, self.month)
+        # Tabla 17: el plan de cuentas configurado en la compañía (Ajustes ▸
+        # Perú); PCGE (01) si no se indicó.
+        chart = (getattr(self.company_id, 'l10n_pe_chart_of_accounts', '')
+                 or '01').zfill(2)
         lines = []
         for account in accounts:
             lines.append([
                 period,                                          # 1
                 self._ple_text(account.code, 24),                # 2
                 self._ple_text(account.name, 100),               # 3
-                '01',                                            # 4 PCGE (t17)
+                chart,                                           # 4 (t17)
                 '',                                              # 5 (op)
                 '',                                              # 6 (op)
                 '',                                              # 7 (op)
@@ -617,7 +673,10 @@ class L10nPePleExportWizard(models.TransientModel):
             move.id,                                             # 2 CUO
             'M%d' % move.id,                                     # 3
             self._ple_date(move.invoice_date or move.date),      # 4
-            self._ple_date(move.invoice_date_due),               # 5 (op)
+            # 5: solo para el tipo 14 (servicios públicos); en los demás, una
+            # fecha posterior al mes siguiente hacía rechazar la línea.
+            self._ple_date(move.invoice_date_due)
+            if move.l10n_latam_document_type_id.code == '14' else '',  # 5
             move.l10n_latam_document_type_id.code or '00',       # 6 (t10)
             serie,                                               # 7
             folio or '-',                                        # 8
@@ -645,7 +704,8 @@ class L10nPePleExportWizard(models.TransientModel):
                                    24),                          # 25 constancia
                     '1' if getattr(move, 'l10n_pe_retention_applies',
                                    False) else '',               # 26 retención
-                    '',                                          # 27 clasificación
+                    getattr(move, 'l10n_pe_rce_classification', '')
+                    or '',                                       # 27 (t30)
                     '', '', '',                                  # 28-30 errores
                     '',                                          # 31 medio de pago
                     self._purchase_status(move)]                 # 32 estado
@@ -769,7 +829,8 @@ class L10nPePleExportWizard(models.TransientModel):
     INTANGIBLE_ACCOUNT_PREFIX = '34'
 
     def _export_39(self):
-        assets = self.env['account.asset'].search([
+        assets = self.env['account.asset'].with_context(
+            active_test=False).search([
             ('company_id', '=', self.company_id.id),
             ('state', 'in', ('open', 'paused', 'close')),
             ('parent_id', '=', False),
@@ -791,7 +852,11 @@ class L10nPePleExportWizard(models.TransientModel):
                 self._ple_date(asset.acquisition_date),      # 4 inicio operación
                 self._ple_text(asset.account_asset_id.code, 24),  # 5
                 self._ple_text(asset.name, 40),              # 6
-                self._ple_amount(asset.original_value),      # 7 valor contable
+                # 7: con los aumentos de valor (hijos), como su amortización
+                self._ple_amount(asset.original_value + sum(
+                    child.original_value for child in asset.with_context(
+                        active_test=False).children_ids
+                    if child.state in ('open', 'paused', 'close'))),
                 self._ple_amount(-abs(total_dep)),           # 8 amortización (−)
                 '1',                                         # 9 estado
             ])

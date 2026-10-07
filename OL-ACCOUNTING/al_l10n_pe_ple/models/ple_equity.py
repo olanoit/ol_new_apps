@@ -53,3 +53,8 @@ class L10nPePleEquity(models.Model):
         for record in self:
             record.catalog_code = (
                 record.rubric_id.sector or record.catalog_code or '01')
+
+    _date_rubric_company_uniq = models.Constraint(
+        'unique (company_id, date, rubric_id)',
+        'El rubro no puede repetirse en la misma fecha de EEFF (3.19, '
+        'campos 2 y 3: llave única).')

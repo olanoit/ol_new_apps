@@ -62,8 +62,10 @@ class TestRceSelection(RceExportCommon):
         self.assertIn(bill, self._moves(month=3))
         self.assertNotIn(bill, self._moves(month=2))
 
-    def test_cancelled_draft_is_not_reported(self):
-        """Un borrador cancelado nunca se emitió; el emitido y anulado sí va."""
+    def test_cancelled_bills_are_not_reported(self):
+        """Ni el borrador cancelado ni el emitido y anulado van al RCE: la
+        nota 2 del anexo 11 (RS 040-2022) prohíbe anotar los anulados (la
+        regla de anotarlos en cero es solo del RVIE)."""
         draft = self._create_bill(post=False)
         draft.button_cancel()
         issued = self._create_bill()
@@ -71,7 +73,7 @@ class TestRceSelection(RceExportCommon):
         issued.button_cancel()
         moves = self._moves()
         self.assertNotIn(draft, moves)
-        self.assertIn(issued, moves)
+        self.assertNotIn(issued, moves)
 
     def test_report_header_line_is_empty(self):
         """La línea cabecera del informe no muestra los datos de una factura."""
@@ -140,7 +142,7 @@ class TestPleWizardFixes(TransactionCase):
 
     def _rows(self, wizard, move):
         content = base64.b64decode(wizard.file_data).decode()
-        return [line.split('|') for line in content.split('\r\n')
+        return [line[:-1].split('|') for line in content.split('\r\n')
                 if line and (str(move.id) in line.split('|')
                              or 'M%d' % move.id in line.split('|'))]
 

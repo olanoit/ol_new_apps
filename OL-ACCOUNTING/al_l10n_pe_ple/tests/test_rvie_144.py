@@ -226,3 +226,40 @@ class TestRvie144(AccountTestInvoicingCommon):
         result = self._export(year=2026, month=7)
         self.assertEqual(result['file_content'], b'')
         self.assertEqual(result['file_name'][30], '0')
+
+    # ------------------------------------------------------------------
+    # Revisión del 07/10/2026
+    # ------------------------------------------------------------------
+    def _tax(self, xmlid):
+        tax = self.env.ref('account.%s_%s' % (self.company.id, xmlid),
+                           raise_if_not_found=False)
+        if not tax:
+            self.skipTest('sin el impuesto %s en la localización' % xmlid)
+        return tax
+
+    def _fields_of(self, invoice):
+        prefix = invoice.l10n_latam_document_number.replace(' ', '')
+        number = prefix.partition('-')[2].lstrip('0')
+        return next(line.split('|') for line in self._lines(self._export())
+                    if line.split('|')[8] == number)
+
+    def test_free_line_is_not_taxed_base(self):
+        """Una línea gratuita (impuesto de grupo) no infla la base gravada."""
+        free = self._tax('tax_free_group')
+        invoice = self._create_invoice(post=False)
+        invoice.write({'invoice_line_ids': [(0, 0, {
+            'product_id': self.product.id, 'quantity': 1, 'price_unit': 50.0,
+            'tax_ids': [(6, 0, free.ids)]})]})
+        invoice.action_post()
+        fields_ = self._fields_of(invoice)
+        self.assertEqual(fields_[14], '1000.00', 'campo 15: solo lo pagado')
+        self.assertEqual(fields_[16], '180.00', 'campo 17: su IGV')
+
+    def test_withholding_does_not_reduce_total(self):
+        """La retención del 3 % no reduce el total del comprobante (26)."""
+        withholding = self._tax('sale_tax_withholding_3')
+        invoice = self._create_invoice(post=False)
+        invoice.invoice_line_ids.tax_ids |= withholding
+        invoice.action_post()
+        fields_ = self._fields_of(invoice)
+        self.assertEqual(fields_[25], '1180.00')

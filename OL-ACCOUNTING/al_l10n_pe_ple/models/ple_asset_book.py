@@ -53,7 +53,10 @@ class L10nPePleAssetBook(models.AbstractModel):
             '|', ('disposal_date', '=', False),
             ('disposal_date', '>=', date_from),
         ]
-        return self.env['account.asset'].search(
+        # active_test=False: Odoo 19 permite archivar un activo cerrado, y
+        # con eso desaparecían su saldo inicial y su retiro del ejercicio.
+        return self.env['account.asset'].with_context(
+            active_test=False).search(
             domain + (extra_domain or []), order='acquisition_date, id')
 
     @api.model
@@ -68,7 +71,7 @@ class L10nPePleAssetBook(models.AbstractModel):
         Los asientos de baja o venta no son depreciación: su total ronda el
         valor original del activo y antes inflaba el campo 30.
         """
-        children = assets.children_ids
+        children = assets.with_context(active_test=False).children_ids
         root_of = {asset.id: asset.id for asset in assets}
         root_of.update({child.id: child.parent_id.id for child in children})
         result = {asset.id: dict.fromkeys(('prior', 'year', 'other'), 0.0)
@@ -89,8 +92,14 @@ class L10nPePleAssetBook(models.AbstractModel):
             else:
                 sums['other'] += move['depreciation_value']
         for asset in assets:
-            # depreciación importada de sistemas previos = acumulada anterior
-            result[asset.id]['prior'] += asset.already_depreciated_amount_import
+            # Depreciación importada de un sistema previo: es acumulada
+            # anterior solo si el activo es de un ejercicio pasado; si se
+            # adquirió en este, es depreciación del ejercicio (campo 30).
+            imported = asset.already_depreciated_amount_import
+            if asset.acquisition_date and asset.acquisition_date >= date_from:
+                result[asset.id]['year'] += imported
+            else:
+                result[asset.id]['prior'] += imported
         return result
 
     @api.model
@@ -119,7 +128,8 @@ class L10nPePleAssetBook(models.AbstractModel):
         dep_sums = self._asset_depreciation_sums(assets, date_from, date_to)
         result = []
         for asset in assets:
-            children = asset.children_ids.filtered(
+            children = asset.with_context(
+                active_test=False).children_ids.filtered(
                 lambda c: c.state in ASSET_BOOK_STATES)
             prior_children = sum(
                 c.original_value for c in children
@@ -164,7 +174,10 @@ class L10nPePleAssetBook(models.AbstractModel):
                 'inflation_adjust': 0.0,
                 'adjusted_value': historical,
                 'acquisition_date': asset.acquisition_date,
-                'start_date': asset.prorata_date or asset.acquisition_date,
+                # Sin prorrateo Odoo pone el inicio del año fiscal en
+                # prorata_date: el uso no puede empezar antes de la compra.
+                'start_date': max(filter(None, (asset.prorata_date,
+                                                asset.acquisition_date))),
                 'method': asset.l10n_pe_depre_method or '9',
                 'auth_doc': asset.l10n_pe_depre_auth_doc or '-',
                 'rate': asset.l10n_pe_depre_rate,
@@ -256,7 +269,7 @@ class L10nPePleAssetBook(models.AbstractModel):
                 self._asset_period(year),                          # 1
                 asset.id,                                          # 2 CUO
                 'M%d' % asset.id,                                  # 3
-                self._ple_text(asset.l10n_pe_ple_catalog, 1, '9'), # 4
+                self._asset_catalog_37_74(asset),                  # 4 (3/9)
                 self._asset_code(asset),                           # 5
                 self._ple_date(asset.acquisition_date),            # 6
                 self._ple_amount(asset.l10n_pe_fx_amount),         # 7
@@ -265,11 +278,23 @@ class L10nPePleAssetBook(models.AbstractModel):
                 self._ple_rate(close_rate),                        # 10
                 self._ple_amount(fx_adjust),                       # 11
                 self._ple_amount(dep_sums[asset.id]['year']),      # 12
-                self._ple_amount(0.0),                             # 13
+                # 13: depreciación de los retiros del ejercicio (cuadra con
+                # el campo 31 del 7.1).
+                self._ple_amount(-sum(dep_sums[asset.id].values())
+                                 if asset.disposal_date
+                                 and date_from <= asset.disposal_date <= date_to
+                                 else 0.0),                        # 13
                 self._ple_amount(dep_sums[asset.id]['other']),     # 14
                 '1',                                               # 15 estado
             ])
         return lines
+
+    @api.model
+    def _asset_catalog_37_74(self, asset):
+        """7.3 y 7.4, campo 4: la norma solo admite el catálogo 3 (OSCE)
+        o 9 (propio)."""
+        return asset.l10n_pe_ple_catalog \
+            if asset.l10n_pe_ple_catalog in ('3', '9') else '9'
 
     @api.model
     def _asset_74_lines(self, company, year):
@@ -278,13 +303,18 @@ class L10nPePleAssetBook(models.AbstractModel):
             company, year, [('l10n_pe_is_leasing', '=', True)])
         self._asset_require(assets, 'l10n_pe_leasing_contract', 'Nº contrato leasing')
         self._asset_require(assets, 'l10n_pe_leasing_date', 'Fecha del contrato')
+        # Campos 9 y 10: valores positivos obligatorios.
+        self._asset_require(assets, 'l10n_pe_leasing_installments',
+                            'Número de cuotas del leasing')
+        self._asset_require(assets, 'l10n_pe_leasing_total',
+                            'Monto total del contrato de leasing')
         lines = []
         for asset in assets:
             lines.append([
                 self._asset_period(year),                          # 1
                 asset.id,                                          # 2 CUO
                 'M%d' % asset.id,                                  # 3
-                self._ple_text(asset.l10n_pe_ple_catalog, 1, '9'), # 4
+                self._asset_catalog_37_74(asset),                  # 4 (3/9)
                 self._ple_text(asset.l10n_pe_leasing_contract, 20),  # 5
                 self._ple_date(asset.l10n_pe_leasing_date),        # 6
                 self._asset_code(asset),                           # 7

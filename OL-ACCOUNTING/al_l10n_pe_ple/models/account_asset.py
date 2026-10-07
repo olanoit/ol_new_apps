@@ -77,4 +77,5 @@ class AccountAsset(models.Model):
         for asset in self:
             years = asset.method_number * (
                 1.0 if asset.method_period == '12' else 1.0 / 12.0)
-            asset.l10n_pe_depre_rate = 100.0 / years if years else 0.0
+            # 7.1 campo 28: entre 0 y 100 (vida útil menor a un año → 100).
+            asset.l10n_pe_depre_rate = min(100.0, 100.0 / years) if years else 0.0

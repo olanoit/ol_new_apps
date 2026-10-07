@@ -2,6 +2,7 @@
 """Generación del archivo RCE 8.4 a partir de facturas de proveedor reales."""
 from datetime import date
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
@@ -314,3 +315,76 @@ class TestRceAudit20261007(RceExportCommon):
             'l10n_latam_document_number': 'FC01-00000001'}])
         refund.invoice_currency_rate = 1 / 3.800
         self.assertAlmostEqual(extractor._rce_exchange_rate(refund), 3.712, 3)
+
+
+@tagged('post_install', '-at_install')
+class TestRce84Review(RceExportCommon):
+    """Revisión del 07/10/2026: ISC y líneas sin impuesto en el 8.4."""
+
+    def _row(self, bill):
+        number = bill.l10n_latam_document_number.partition('-')[2].lstrip('0')
+        return next(line.split('|') for line in self._lines(self._export())
+                    if line.split('|')[9] == number)
+
+    def test_isc_goes_into_the_taxed_base(self):
+        """Nota 3 del anexo 11: el ISC de un ítem gravado va en la base
+        (campo 15), no en el campo 22."""
+        igv = self.env['account.tax'].search([
+            ('company_id', '=', self.company.id),
+            ('type_tax_use', '=', 'purchase'), ('amount', '=', 18.0),
+            ('amount_type', '=', 'percent')], limit=1)
+        isc_group = self.env.ref(
+            'account.%s_tax_group_isc' % self.company.id,
+            raise_if_not_found=False)
+        if not (igv and isc_group):
+            self.skipTest('sin IGV o grupo ISC en la localización')
+        isc = self.env['account.tax'].create({
+            'name': 'ISC 10% prueba', 'amount': 10.0, 'sequence': 0,
+            'type_tax_use': 'purchase', 'include_base_amount': True,
+            'tax_group_id': isc_group.id, 'company_id': self.company.id,
+        })
+        bill = self._create_bill(post=False)
+        bill.invoice_line_ids.tax_ids = isc | igv
+        bill.action_post()
+        row = self._row(bill)
+        self.assertEqual(row[14], '1100.00', 'campo 15 = valor + ISC')
+        self.assertEqual(row[15], '198.00')
+        self.assertEqual(row[21], '0.00', 'campo 22: ISC no deducible')
+        self.assertEqual(row[24], '1298.00')
+
+    def test_untaxed_line_goes_to_field_21(self):
+        """Lo que no tiene impuesto va al campo 21: los campos 15-24 suman
+        el total (campo 25)."""
+        bill = self._create_bill(post=False)
+        bill.write({'invoice_line_ids': [(0, 0, {
+            'name': 'Cargo sin impuesto', 'quantity': 1, 'price_unit': 50.0,
+            'tax_ids': False})]})
+        bill.action_post()
+        row = self._row(bill)
+        self.assertEqual(row[20], '50.00')
+        self.assertAlmostEqual(
+            sum(float(value) for value in row[14:24]), float(row[24]))
+
+    def test_orphan_credit_note_blocks_txt_but_not_review(self):
+        """Una NC sin documento de origen bloquea el TXT con su nombre; el
+        Excel de revisión (fila completa) sí se genera."""
+        doc_07 = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '07'),
+             ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        if not doc_07:
+            self.skipTest('sin tipo 07 en la localización')
+        note = self.env['account.move'].with_company(self.company).create({
+            'move_type': 'in_refund',
+            'partner_id': self.supplier.id,
+            'invoice_date': date(2026, 3, 9),
+            'date': date(2026, 3, 9),
+            'l10n_latam_document_type_id': doc_07.id,
+            'l10n_latam_document_number': 'FC01-00000077',
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product.id, 'quantity': 1,
+                'price_unit': 100.0})],
+        })
+        note.action_post()
+        with self.assertRaises(UserError):
+            self._export()
+        self.assertTrue(self._export(full_row=True)['file_content'])
