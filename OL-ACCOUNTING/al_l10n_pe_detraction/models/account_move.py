@@ -55,7 +55,7 @@ class AccountMove(models.Model):
         currency_field='company_currency_id',
         compute='_compute_l10n_pe_detraction_amount', store=True,
         help='Detracción en soles, redondeada a enteros (regla SUNAT), '
-             'sobre el importe total con IGV convertido a soles.')
+             'sobre el importe total con IGV convertido a soles al T.C. venta oficial de la fecha de emisión.')
     l10n_pe_detraction_net = fields.Monetary(
         string='Neto tras detracción',
         currency_field='company_currency_id',
@@ -67,6 +67,25 @@ class AccountMove(models.Model):
         self.ensure_one()
         return (self.move_type in ('out_invoice', 'in_invoice')
                 and self.country_code == 'PE')
+
+    def _l10n_pe_detraction_base(self):
+        """Importe de la operación en soles, IGV incluido, para el SPOT.
+
+        En moneda extranjera se convierte con la tasa oficial (venta SBS) de
+        la fecha de emisión, como manda la R.S. 183-2004/SUNAT y como hace el
+        XML nativo (``_l10n_pe_edi_get_spot``). No se usa el total en soles
+        de la factura: depende del T.C. que esta aplique (compra, con
+        ``al_l10n_pe_currency``, o editado a mano) y la detracción salía
+        distinta en la contabilidad y en el XML.
+        """
+        self.ensure_one()
+        company_currency = self.company_currency_id or self.company_id.currency_id
+        if not self.currency_id or self.currency_id == company_currency:
+            return abs(self.amount_total)
+        currency = self.currency_id.with_context(l10n_pe_exchange_rate_type=False)
+        return abs(currency._convert(
+            self.amount_total, company_currency, self.company_id,
+            self.invoice_date or self.date or fields.Date.context_today(self)))
 
     @staticmethod
     def _l10n_pe_product_detraction_percent(product):
@@ -108,7 +127,8 @@ class AccountMove(models.Model):
             move.l10n_pe_detraction_percent = percent
 
     @api.depends('l10n_pe_detraction_percent', 'l10n_pe_detraction_type_id',
-                 'amount_total_signed', 'move_type', 'country_code')
+                 'amount_total', 'currency_id', 'invoice_date', 'date',
+                 'move_type', 'country_code')
     def _compute_l10n_pe_detraction_applies(self):
         for move in self:
             dtype = move.l10n_pe_detraction_type_id
@@ -116,13 +136,13 @@ class AccountMove(models.Model):
             move.l10n_pe_detraction_applies = bool(
                 move._l10n_pe_detraction_eligible()
                 and move.l10n_pe_detraction_percent
-                and abs(move.amount_total_signed) > min_amount)
+                and move._l10n_pe_detraction_base() > min_amount)
 
     @api.depends('l10n_pe_detraction_applies', 'l10n_pe_detraction_percent',
-                 'amount_total_signed')
+                 'amount_total', 'currency_id', 'invoice_date', 'date')
     def _compute_l10n_pe_detraction_amount(self):
         for move in self:
-            base = abs(move.amount_total_signed)
+            base = move._l10n_pe_detraction_base() if move.l10n_pe_detraction_applies else 0.0
             amount = 0.0
             if move.l10n_pe_detraction_applies:
                 # depósito sin decimales, igual criterio que el XML nativo

@@ -388,7 +388,7 @@ campos:
       - [Tipo de detracción, Código dominante entre los productos., Calculado, Editable en borrador]
       - [Tipo de operación SPOT, "Tabla 5.5 del Banco de la Nación (01 a 05).", "01 - Venta de bienes, prestación de servicios…", Va en el archivo de depósito masivo]
       - ["% detracción", Porcentaje del tipo dominante., Calculado, Editable en borrador]
-      - [Monto de detracción, "Total con IGV en soles × %, redondeado a soles.", Calculado, Importe del depósito y del reparto]
+      - [Monto de detracción, "Total con IGV en soles (en moneda extranjera, al T.C. venta oficial de la fecha de emisión) × %, redondeado a soles.", Calculado, Importe del depósito y del reparto]
       - [Neto tras detracción, Total en soles menos la detracción., Calculado, Lo que se cobra o paga fuera del banco]
       - [Detracción, Número de la constancia de depósito., Vacío, "PLE 8.1 y 8.3; oculta «Registrar depósito»"]
       - [Fecha de detracción, Fecha de la constancia., Vacío, PLE 8.1 y 8.3]
@@ -582,6 +582,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: en facturas en moneda extranjera la detracción se calculaba sobre el total en soles de la factura, que depende del T.C. elegido (compra o editado a mano). Ahora se convierte siempre al T.C. venta oficial de la fecha de emisión, como manda la R.S. 183-2004/SUNAT, y coincide con el monto que va en el XML. Ejemplo: US$ 1 180 con venta 3.80 y factura a compra 3.70 daba S/ 524 en vez de S/ 538."
   - version: 12.20260827
     fecha: 27/09/2026
     cambios:

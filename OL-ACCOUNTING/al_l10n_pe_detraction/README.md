@@ -21,7 +21,8 @@ de punta a punta.
   aplica:
   - detección automática: código **dominante** (mayor %) entre los
     productos, y verificación del **monto mínimo** sobre el total con IGV
-    en soles;
+    en soles (en moneda extranjera, convertido al T.C. venta oficial de la
+    fecha de emisión, no al T.C. que use la factura);
   - **monto de la detracción redondeado a soles enteros** (regla SUNAT,
     mismo criterio que el XML nativo) y **neto** a cobrar/pagar;
   - al publicar una venta afecta se fija solo el **tipo de operación
