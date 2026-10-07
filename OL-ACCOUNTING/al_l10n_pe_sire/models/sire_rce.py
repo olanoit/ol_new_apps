@@ -3,7 +3,7 @@ from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 from .sire_api import SIRE_UPLOAD_ADJUSTMENT_ENDPOINT, SIRE_UPLOAD_ENDPOINT
-from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
+from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, tax_mismatch
 
 # Tipos de documento que no van al RCE (recibos por honorarios van al RHE)
 RCE_EXCLUDED_DOC_TYPES = ('02', '91', '97', '98')
@@ -11,6 +11,8 @@ RCE_EXCLUDED_DOC_TYPES = ('02', '91', '97', '98')
 RCE_SELF_ISSUED_DOC_TYPES = ('46', '50', '51', '52', '53', '54')
 # Tipos con fecha de vencimiento/pago obligatoria en el TXT de importación
 RCE_DUE_DATE_DOC_TYPES = ('14', '46', '50', '51', '52', '53', '54')
+#: DAM y DSI: la serie es el código de aduana y se informa el año (campo 9).
+RCE_CUSTOMS_DOC_TYPES = ('50', '51', '52', '53', '54')
 
 
 class L10nPeSireRce(models.Model):
@@ -118,6 +120,8 @@ class L10nPeSireRce(models.Model):
     def _sire_system_moves(self):
         return self.env['account.move'].search(
             self._sire_system_domain(('in_invoice', 'in_refund'), 'date') + [
+                # Nota 2 del anexo 11: no se anotan los anulados en el RCE.
+                ('state', '=', 'posted'),
                 ('l10n_latam_document_type_id.code', 'not in', RCE_EXCLUDED_DOC_TYPES),
                 # Los no domiciliados van a su propio registro (8.5).
                 ('l10n_pe_sire_is_non_domiciled', '=', False),
@@ -132,7 +136,7 @@ class L10nPeSireRce(models.Model):
         # El contacto de la factura puede ser una persona de la empresa: el
         # documento y la razón social son los de la entidad comercial.
         partner = move.commercial_partner_id
-        issuer_ruc = (self.company_id.vat if doc_code in RCE_SELF_ISSUED_DOC_TYPES
+        issuer_ruc = (self.company_id.root_id.vat if doc_code in RCE_SELF_ISSUED_DOC_TYPES
                       else partner.vat)
         rate = self._sire_move_rate(move)
 
@@ -146,33 +150,53 @@ class L10nPeSireRce(models.Model):
             'tipo_cp': doc_code,
             'serie_cp': serie,
             'nro_cp': folio,
-            'tipo_doc_identidad': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
+            'tipo_doc_identidad': self._sire_partner_doc_type(partner),
             'nro_doc_identidad': partner.vat or '',
             'razon_social': partner.name or '',
-            # El RCE no tiene columnas propias de IVAP: va con las gravadas.
-            # El destino (DG, DGNG, DNG) sale del grupo del impuesto.
-            'bi_gravada_dg': amount(amounts['taxed'] + amounts['ivap_base']),
-            'igv_dg': amount(amounts['igv'] + amounts['ivap']),
-            'bi_gravada_dgng': amount(amounts['taxed_dgng']),
+            # El destino (DG, DGNG, DNG) sale del grupo del impuesto. Nota 3
+            # del anexo 11: el ISC de un ítem gravado va en su base; IVAP y
+            # exportación, base al campo 21 e impuesto al 24.
+            'bi_gravada_dg': amount(amounts['taxed'] + amounts['isc_taxed']),
+            'igv_dg': amount(amounts['igv']),
+            'bi_gravada_dgng': amount(amounts['taxed_dgng'] + amounts['isc_taxed_dgng']),
             'igv_dgng': amount(amounts['igv_dgng']),
-            'bi_gravada_dng': amount(amounts['taxed_dng']),
+            'bi_gravada_dng': amount(amounts['taxed_dng'] + amounts['isc_taxed_dng']),
             'igv_dng': amount(amounts['igv_dng']),
-            'valor_adq_ng': amount(amounts['exonerated'] + amounts['unaffected']),
-            'isc': amount(amounts['isc']),
+            'valor_adq_ng': amount(amounts['exonerated'] + amounts['unaffected']
+                                   + amounts['ivap_base'] + amounts['export']
+                                   + amounts['isc_untaxed']),
+            # 22: solo el ISC deducible; el resto ya está en las bases.
+            'isc': 0.0,
             'icbper': amount(amounts['icbper']),
-            'otros_tributos': amount(amounts['other_taxes']),
-            'total_cp': amount(abs(move.amount_total_signed)),
+            'otros_tributos': amount(amounts['other_taxes'] + amounts['ivap']),
+            'total_cp': amount(self._sire_total(move)),
             'moneda': move.currency_id.name,
             'tipo_cambio': 0.0 if cancelled else rate,
             'clasif_bienes': move.l10n_pe_sire_goods_class or '',
             'detraccion': 'Si' if getattr(move, 'l10n_pe_detraction_applies', False) else 'No',
             'estado_cp': '2' if cancelled else '1',
         }
+        if doc_code in RCE_CUSTOMS_DOC_TYPES:
+            vals.update(self._sire_customs_parts(move))
         if doc_code in ('07', '08'):
             vals.update(self._sire_reversed_doc_vals(move))
             if doc_code == '07':
                 vals['tipo_nota'] = move.l10n_pe_edi_refund_reason or ''
         return vals
+
+    def _sire_customs_parts(self, move):
+        """Aduana (campo 8), año (9) y número (10) de una DAM o DSI.
+
+        «118-2024-10-012345» es aduana-año-régimen-número: cortar en el
+        primer guion daba serie 118 y número 2024, sin año, y SUNAT rechaza
+        la fila (el año es obligatorio en los tipos 50-54).
+        """
+        number = (move.l10n_latam_document_number or move.ref or '').replace(' ', '')
+        parts = [part for part in number.split('-') if part]
+        if len(parts) >= 3 and len(parts[1]) == 4 and parts[1].isdigit():
+            return {'serie_cp': parts[0][:3], 'anio_dam': parts[1],
+                    'nro_cp': parts[-1].lstrip('0') or parts[-1]}
+        return {}
 
     # ------------------------------------------------------------------
     # Servicios del manual de Compras v22 (docs/sire/SERVICIOS_RCE.md)
@@ -227,6 +251,7 @@ class L10nPeSireRce(models.Model):
             detail=_('Solo no domiciliados') if only_non_domiciled else _('Todo el preliminar'))
         if not only_non_domiciled:
             self.preliminary_registered = False
+            self._sire_clear_submission()
         return operation
 
     def _sire_send_fiscal_credit(self, field, value):
@@ -455,10 +480,16 @@ class L10nPeSireRce(models.Model):
             errors.append(_('Una factura de compra exige el RUC del proveedor.'))
         if line.tipo_cp in RCE_DUE_DATE_DOC_TYPES and not line.fecha_vencimiento:
             errors.append(_('El tipo %s exige la fecha de vencimiento o pago.', line.tipo_cp))
+        if line.tipo_cp in RCE_CUSTOMS_DOC_TYPES and not (
+                (line.anio_dam or '').isdigit() and int(line.anio_dam) > 1981):
+            errors.append(_(
+                'La DAM o DSI (tipo %s) exige el año (campo 9): registre su '
+                'número como aduana-año-régimen-número (p. ej. '
+                '118-2024-10-012345).', line.tipo_cp))
         if line.estado_cp == '2':
             return errors
-        # DG admite IVAP (4 %): el RCE no tiene columnas propias para él.
-        if tax_mismatch(line.bi_gravada_dg, line.igv_dg, IGV_RATES + IVAP_RATES) \
+        # El IVAP va a los campos 21 y 24 (nota 3 del anexo 11), no a DG.
+        if tax_mismatch(line.bi_gravada_dg, line.igv_dg, IGV_RATES) \
                 or tax_mismatch(line.bi_gravada_dgng, line.igv_dgng, IGV_RATES) \
                 or tax_mismatch(line.bi_gravada_dng, line.igv_dng, IGV_RATES):
             errors.append(_('El IGV/IPM no corresponde a la base gravada (18 % o 10 %).'))
@@ -489,7 +520,8 @@ class L10nPeSireRce(models.Model):
     def _sire_xlsx_row(self, line):
         estado = dict(line._fields['estado_cp'].selection).get(line.estado_cp, '')
         return [
-            self.company_id.vat or '', self.company_id.name or '', self._sire_period(),
+            self.company_id.root_id.vat or '',
+            self._sire_text(self.company_id.root_id.name), self._sire_period(),
             line.car_sunat or '', self._sire_fmt_date(line.fecha_emision),
             self._sire_fmt_date(line.fecha_vencimiento), line.tipo_cp or '',
             line.serie_cp or '', line.anio_dam or '', line.nro_cp or '',
@@ -510,8 +542,8 @@ class L10nPeSireRce(models.Model):
         due_date = (self._sire_fmt_date(line.fecha_vencimiento)
                     if line.tipo_cp in RCE_DUE_DATE_DOC_TYPES else '')
         return [
-            self.company_id.vat or '',
-            self.company_id.name or '',
+            self.company_id.root_id.vat or '',
+            self._sire_text(self.company_id.root_id.name),
             self._sire_period(),
             '',
             self._sire_fmt_date(line.fecha_emision),
@@ -523,7 +555,7 @@ class L10nPeSireRce(models.Model):
             line.nro_final or '',
             line.tipo_doc_identidad or '',
             line.nro_doc_identidad or '',
-            line.razon_social or '',
+            self._sire_text(line.razon_social),
             self._sire_fmt_amount(line.bi_gravada_dg),
             self._sire_fmt_amount(line.igv_dg),
             self._sire_fmt_amount(line.bi_gravada_dgng),

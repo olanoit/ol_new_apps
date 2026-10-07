@@ -113,7 +113,9 @@ class AccountMove(models.Model):
         help='Va al registro de compras de no domiciliados del SIRE (8.5) y no al RCE.')
     l10n_pe_sire_nd_credit_move_id = fields.Many2one(
         'account.move', string='Documento que sustenta el crédito fiscal',
-        domain="[('move_type', 'in', ('in_invoice', 'in_refund')), ('state', '=', 'posted')]",
+        check_company=True,
+        domain="[('move_type', 'in', ('in_invoice', 'in_refund')), ('state', '=', 'posted'),"
+               " ('company_id', '=', company_id)]",
         help='DUA, liquidación de compra o formulario de pago del IGV (tipos 00, 46, 50-53).')
     l10n_pe_sire_nd_igv_withholding = fields.Monetary(
         string='Retención del IGV', currency_field='company_currency_id')

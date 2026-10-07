@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261007 — 07/10/2026
+
+- Registro de compras: ya no anota compras anuladas (la norma lo prohíbe); el ISC de un ítem gravado va en su base; IVAP, exportación y líneas sin impuesto van al campo 21; DAM y DSI con aduana, año y número (antes faltaba el año y SUNAT rechazaba la fila). No domiciliados: valor de la adquisición completo y convenio «00» por defecto.
+- Ventas y compras: una línea gratuita ya no aparece como «otros tributos» negativos y la retención del 3 % ya no reduce el total; tipo de cambio de la factura (y el del documento modificado en las notas); proveedor con tipo «VAT» genérico informado como RUC o DNI; sucursales incluidas con el RUC de la compañía principal; razón social sin «|», «/» ni «\».
+- Envíos a SUNAT: tras un envío procesado con errores, o tras eliminar el reemplazo o el preliminar, el periodo admite un nuevo envío (antes quedaba bloqueado); el preliminar solo se registra con el envío concluido; un estado de ticket desconocido se sigue consultando en vez de darse por fallido; la propuesta se descarga como indica el manual (todos sus archivos); un token rechazado o un cambio de credenciales pide token nuevo; un periodo con error ya no detiene la consulta automática de los demás.
+- La descarga manual del reemplazo valida las líneas igual que el envío por la API, y su nombre lleva el indicador de moneda de la compañía.
+
 ## 7.20261006 — 06/10/2026
 
 - Historial de operaciones con SUNAT por periodo: ticket, archivo enviado y reportes; los tickets se consultan solos y los reportes (inconsistencias del envío, resumen, preliminar, constancia de recepción) quedan adjuntos.

@@ -109,7 +109,7 @@ class L10nPeSirePeriodServices(models.AbstractModel):
         ticket = self._sire_upload(token, zip_name, payload, {
             'filename': zip_name,
             'filetype': 'application/zip',
-            'numRuc': self.company_id.vat,
+            'numRuc': self._sire_check_ruc(self.company_id.root_id),
             'perTributario': self._sire_period(),
             'codOrigenEnvio': '2',
             'codProceso': process_code,

@@ -4,7 +4,6 @@ import logging
 import zipfile
 from datetime import datetime, timedelta
 
-import requests
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
@@ -349,7 +348,7 @@ class L10nPeSireMixin(models.AbstractModel):
         token = self._sire_get_token(self.company_id)
         code, filename = self._sire_ticket_status(token, self._sire_period(), self.ticket_number)
         self.write({
-            'ticket_state': code if code in dict(TICKET_STATES) else '00',
+            'ticket_state': code,
             'ticket_filename': filename or self.ticket_filename,
         })
         return True
@@ -361,7 +360,8 @@ class L10nPeSireMixin(models.AbstractModel):
             raise UserError(_('El ticket aún no está terminado (estado %s).', self.ticket_state or '-'))
         token = self._sire_get_token(self.company_id)
         content = self._sire_download_report(
-            token, self._sire_period(), self.ticket_number, self.ticket_filename)
+            token, self._sire_period(), self.ticket_number,
+            self._sire_upload_book_code())
         self.write({
             'proposal_file': content,
             'proposal_filename': 'Propuesta_%s_%s.txt' % (
@@ -430,10 +430,48 @@ class L10nPeSireMixin(models.AbstractModel):
         return '%s%s%s%s' % (ruc, code.zfill(2), serie.zfill(4), folio.zfill(10))
 
     def _sire_move_rate(self, move):
-        """Tipo de cambio implícito del asiento (0.0 si está en soles)."""
-        if move.currency_id == move.company_id.currency_id or not move.amount_total:
+        """Tipo de cambio del comprobante (0.0 si está en soles).
+
+        El de la factura (``invoice_currency_rate``, a la fecha de emisión) y,
+        en las notas, el del documento que modifican (nota 4 del anexo 11,
+        nota 3 del anexo 2). Antes se dividía el total en soles entre el
+        total en moneda extranjera: fallaba en notas y en gratuitas (total 0).
+        """
+        origin = move.reversed_entry_id or (
+            move.debit_origin_id if 'debit_origin_id' in move._fields else False)
+        if origin and origin.currency_id == move.currency_id:
+            return self._sire_move_rate(origin)
+        if move.currency_id == move.company_id.currency_id:
+            return 0.0
+        if move.invoice_currency_rate:
+            return 1.0 / move.invoice_currency_rate
+        if not move.amount_total:
             return 0.0
         return abs(move.amount_total_signed / move.amount_total)
+
+    def _sire_withheld(self, move):
+        """Retención del IGV (3 %) del comprobante, en soles: Odoo la resta
+        de ``amount_total``, pero el total del CP es el íntegro."""
+        group = self.env.ref(
+            'account.%s_tax_group_igv_withholding' % move.company_id.root_id.id,
+            raise_if_not_found=False)
+        return abs(sum(line.balance for line in move.line_ids
+                       if group and line.tax_line_id.tax_group_id == group))
+
+    def _sire_total(self, move):
+        return abs(move.amount_total_signed) + self._sire_withheld(move)
+
+    def _sire_partner_doc_type(self, partner):
+        """Tipo de documento (tabla 2) del contacto. El tipo «VAT» genérico
+        de LATAM tiene código 0: con 11 u 8 dígitos se infiere RUC o DNI."""
+        code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code or ''
+        vat = (partner.vat or '').strip()
+        if code in ('', '0') and vat.isdigit():
+            if len(vat) == 11:
+                return '6'
+            if len(vat) == 8:
+                return '1'
+        return code
 
     def _sire_system_domain(self, move_types, date_field):
         """Dominio común de los comprobantes del sistema del periodo.
@@ -446,13 +484,17 @@ class L10nPeSireMixin(models.AbstractModel):
         date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
         date_to = fields.Date.end_of(date_from, 'month')
         return [
-            ('company_id', '=', self.company_id.id),
+            # la compañía y sus sucursales: el registro es del RUC
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('move_type', 'in', move_types),
             '|', ('state', '=', 'posted'),
             '&', ('state', '=', 'cancel'), ('posted_before', '=', True),
             (date_field, '>=', date_from),
             (date_field, '<=', date_to),
             ('journal_id.l10n_pe_exclude_from_books', '=', False),
+            # Sin tipo de documento no es un comprobante (p. ej. diarios que no
+            # usan documentos LATAM): antes entraba con el tipo vacío.
+            ('l10n_latam_document_type_id', '!=', False),
         ]
 
     def _sire_move_sign(self, move):
@@ -467,7 +509,8 @@ class L10nPeSireMixin(models.AbstractModel):
         result = dict.fromkeys(
             ('taxed', 'taxed_dgng', 'taxed_dng', 'exonerated', 'unaffected',
              'export', 'free', 'ivap_base', 'igv', 'igv_dgng', 'igv_dng', 'ivap',
-             'isc', 'icbper', 'other_taxes'), 0.0)
+             'isc', 'icbper', 'other_taxes', 'isc_taxed', 'isc_taxed_dgng',
+             'isc_taxed_dng', 'isc_untaxed'), 0.0)
         rate = self._sire_move_rate(move) or 1.0
         destinations = self._sire_tax_group_destinations(move.company_id)
         # Con signo: una línea negativa (deducción de un anticipo, descuento)
@@ -507,11 +550,35 @@ class L10nPeSireMixin(models.AbstractModel):
             TAX_CODE_ISC: 'isc',
             TAX_CODE_ICBPER: 'icbper',
         }
+        root = move.company_id.root_id
+        skipped_groups = self.env['account.tax.group']
+        for key_group in ('free_invoice', 'gra', 'igv_withholding'):
+            skipped_groups |= self.env.ref(
+                'account.%s_tax_group_%s' % (root.id, key_group),
+                raise_if_not_found=False) or self.env['account.tax.group']
         for line in move.line_ids.filtered('tax_line_id'):
-            key = keys.get(line.tax_line_id.l10n_pe_edi_tax_code, 'other_taxes')
-            suffix = destinations.get(line.tax_line_id.tax_group_id.id)
+            tax = line.tax_line_id
+            # Gratuitas (grupo «free»: IGV + resta de la base) y retención
+            # del 3 %: no son tributos del comprobante. Antes caían en «otros
+            # tributos» con −100 % del valor o −3 % del total.
+            if tax.tax_group_id in skipped_groups \
+                    or tax.l10n_pe_edi_tax_code == TAX_CODE_FREE:
+                continue
+            key = keys.get(tax.l10n_pe_edi_tax_code, 'other_taxes')
+            suffix = destinations.get(tax.tax_group_id.id)
             if key == 'igv' and suffix:
                 key = 'igv_%s' % suffix
+            if key == 'isc':
+                # RCE (nota 3 del anexo 11): el ISC de un ítem gravado va en
+                # la base de su IGV; el de uno no gravado, al campo 21.
+                igv_taxes = line.tax_ids.filtered(
+                    lambda t: t.l10n_pe_edi_tax_code == TAX_CODE_IGV)
+                if igv_taxes:
+                    target = destinations.get(igv_taxes[:1].tax_group_id.id)
+                    result['isc_taxed_%s' % target if target else 'isc_taxed'] += \
+                        line.balance * direction
+                else:
+                    result['isc_untaxed'] += line.balance * direction
             result[key] += line.balance * direction
         return result
 
@@ -519,9 +586,11 @@ class L10nPeSireMixin(models.AbstractModel):
     def _sire_tax_group_destinations(self, company):
         """``{id del grupo de impuestos: 'dgng' | 'dng'}`` de la compañía."""
         destinations = {}
+        # Los grupos del plan viven en la compañía raíz (no en la sucursal).
         for key, suffix in TAX_GROUP_DESTINATIONS.items():
             group = self.env.ref(
-                'account.%s_tax_group_%s' % (company.id, key), raise_if_not_found=False)
+                'account.%s_tax_group_%s' % (company.root_id.id, key),
+                raise_if_not_found=False)
             if group:
                 destinations[group.id] = suffix
         return destinations
@@ -651,19 +720,37 @@ class L10nPeSireMixin(models.AbstractModel):
         self.ensure_one()
         if not self.system_line_ids:
             raise UserError(_('Primero despliegue las líneas del sistema.'))
-        ruc = self._sire_check_ruc(self.company_id)
+        ruc = self._sire_check_ruc(self.company_id.root_id)
         lines = self.system_line_ids.sorted(key=lambda l: (l.serie_cp or '', l.nro_cp or ''))
         content = '\n'.join('|'.join(self._sire_replacement_row(line)) for line in lines)
-        txt_name = 'LE%s%s00%s021112.txt' % (
-            ruc, self._sire_period(), self._sire_ple_book_code())
+        # Indicador de moneda (M): 2 si la contabilidad se lleva en dólares.
+        currency_flag = '2' if self.company_id.root_id.currency_id.name == 'USD' else '1'
+        txt_name = 'LE%s%s00%s0211%s2.txt' % (
+            ruc, self._sire_period(), self._sire_ple_book_code(), currency_flag)
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as archive:
             archive.writestr(txt_name, content.encode('utf-8'))
         return txt_name, buffer.getvalue()
 
+    def _sire_check_replacement_lines(self):
+        """El reemplazo no sale con líneas que SUNAT rechazaría, ni por la
+        API ni descargado para subirlo a mano."""
+        invalid = self._sire_validate_system_lines()
+        if invalid:
+            details = '\n'.join(
+                '• %s-%s: %s' % (line.serie_cp or '?', line.nro_cp or '?',
+                                 line.check_detail.replace('\n', '; '))
+                for line in invalid[:10])
+            raise UserError(_(
+                'Hay %(count)s líneas con observaciones; SUNAT rechazaría el '
+                'reemplazo. Corríjalas en los comprobantes y vuelva a desplegar '
+                'el sistema (pestaña «Observaciones»):\n%(details)s',
+                count=len(invalid), details=details))
+
     def action_export_replacement(self):
         """TXT de importación SUNAT (reemplazo de la propuesta) en ZIP."""
         self.ensure_one()
+        self._sire_check_replacement_lines()
         txt_name, payload = self._sire_replacement_zip()
         self.write({
             'export_file': base64.b64encode(payload),
@@ -717,7 +804,10 @@ class L10nPeSireMixin(models.AbstractModel):
             raise UserError(_(
                 'Compare la propuesta con el sistema antes de enviar nada a '
                 'SUNAT: el envío decide qué queda registrado en el periodo.'))
-        if self.submission_ticket:
+        # Tras un envío fallido (procesado con errores) se puede corregir y
+        # volver a enviar: antes el periodo quedaba bloqueado para siempre.
+        if self.submission_ticket \
+                and self.submission_state not in TICKET_FAILED_STATES:
             raise UserError(_(
                 'Este periodo ya tiene un envío en curso (ticket %s). '
                 'Consulte su estado antes de enviar otro.', self.submission_ticket))
@@ -757,24 +847,14 @@ class L10nPeSireMixin(models.AbstractModel):
         self.ensure_one()
         self._sire_check_can_submit()
         self._sire_check_submittable()
-        invalid = self._sire_validate_system_lines()
-        if invalid:
-            details = '\n'.join(
-                '• %s-%s: %s' % (line.serie_cp or '?', line.nro_cp or '?',
-                                 line.check_detail.replace('\n', '; '))
-                for line in invalid[:10])
-            raise UserError(_(
-                'Hay %(count)s líneas con observaciones; SUNAT rechazaría el '
-                'reemplazo. Corríjalas en los comprobantes y vuelva a desplegar '
-                'el sistema (pestaña «Observaciones»):\n%(details)s',
-                count=len(invalid), details=details))
+        self._sire_check_replacement_lines()
         txt_name, payload = self._sire_replacement_zip()
         zip_name = txt_name.replace('.txt', '.zip')
         token = self._sire_get_token(self.company_id)
         ticket = self._sire_upload(token, zip_name, payload, {
             'filename': zip_name,
             'filetype': 'application/zip',
-            'numRuc': self.company_id.vat,
+            'numRuc': self._sire_check_ruc(self.company_id.root_id),
             'perTributario': self._sire_period(),
             'codOrigenEnvio': '2',                      # servicio web
             'codProceso': self._sire_replacement_process_code(),
@@ -804,9 +884,7 @@ class L10nPeSireMixin(models.AbstractModel):
         token = self._sire_get_token(self.company_id)
         register = self._sire_ticket_register(
             token, self._sire_period(), self.submission_ticket)
-        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') \
-            or register.get('codEstadoProceso') or '00'
-        self.submission_state = code if code in dict(TICKET_STATES) else '00'
+        self.submission_state = self._sire_ticket_code(register)
         if self.submission_state in TICKET_FINAL_STATES:
             # Las inconsistencias que SUNAT encontró en el envío quedan
             # adjuntas al periodo: sin ellas, «procesado con errores» no
@@ -827,6 +905,13 @@ class L10nPeSireMixin(models.AbstractModel):
             raise UserError(_(
                 'Acepte la propuesta o envíe el reemplazo antes de registrar '
                 'el preliminar.'))
+        if self.submission_state not in ('04', '06'):
+            raise UserError(_(
+                'El envío %(ticket)s aún no terminó bien en SUNAT (estado '
+                '%(state)s): registre el preliminar cuando esté concluido.',
+                ticket=self.submission_ticket,
+                state=dict(TICKET_STATES).get(self.submission_state,
+                                              self.submission_state or '-')))
         token = self._sire_get_token(self.company_id)
         self._sire_register_preliminary(token, self._sire_preliminary_endpoint())
         self.write({'preliminary_registered': True, 'state': 'done'})
@@ -959,7 +1044,9 @@ class L10nPeSireMixin(models.AbstractModel):
                 self._sire_log(_('Propuesta descargada automáticamente (ticket %s).',
                                  self.ticket_number))
                 return
-            if code in TICKET_FINAL_STATES:
+            # La exportación de la propuesta termina en 06; un 04 intermedio
+            # no es el final (antes se dejaba de consultar sin descargarla).
+            if code in TICKET_FAILED_STATES:
                 self._sire_stop_poll()
                 self._sire_warn(_('SUNAT terminó el ticket de la propuesta %(ticket)s '
                                   'sin entregarla (estado %(state)s).',
@@ -1006,9 +1093,14 @@ class L10nPeSireMixin(models.AbstractModel):
             try:
                 with self.env.cr.savepoint():
                     record._sire_poll_once()
-            except (UserError, requests.RequestException) as error:
+            except Exception as error:  # noqa: BLE001 — un periodo no tumba el cron
                 _logger.warning('SIRE %s: consulta del ticket fallida: %s', record.name, error)
-                record._sire_poll_retry(error=error)
+                try:
+                    with self.env.cr.savepoint():
+                        record._sire_poll_retry(error=error)
+                except Exception:  # noqa: BLE001
+                    _logger.exception('SIRE %s: no se pudo reprogramar la consulta', record.name)
+                    record._sire_stop_poll()
             if not cron._commit_progress(1):
                 break
 
@@ -1067,6 +1159,20 @@ class L10nPeSireMixin(models.AbstractModel):
                 body=_('Reportes de SUNAT del ticket %s.', register.get('numTicket') or ''),
                 attachment_ids=attachments.ids)
         return attachments
+
+    def _sire_clear_submission(self):
+        """Tras eliminar en SUNAT el reemplazo o el preliminar, el periodo
+        vuelve a «comparado» y admite un nuevo envío (antes quedaba
+        bloqueado por el ticket del envío anterior)."""
+        self.ensure_one()
+        self.write({
+            'submission_ticket': False,
+            'submission_type': False,
+            'submission_state': False,
+            'state': 'compared' if self.state in ('submitted', 'done') else self.state,
+        })
+        self._sire_log(_('Envío anterior eliminado en SUNAT: el periodo admite '
+                         'un nuevo envío.'))
 
     def _sire_operation_finished(self, operation):
         """Gancho al terminar un ticket de operación; por defecto, solo avisa."""

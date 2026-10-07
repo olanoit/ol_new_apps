@@ -138,6 +138,8 @@ class TestSireValidation(TestSire):
             'move_type': 'out_invoice',
             'partner_id': self.partner.id,
             'invoice_date': PERIOD_DATE,
+            'journal_id': self.sale_journal.id,
+            'name': 'F990-00000900',
             'invoice_line_ids': [
                 (0, 0, {'name': 'Producto', 'quantity': 1, 'price_unit': 1000.0,
                         'tax_ids': [(6, 0, tax.ids)]}),
@@ -271,6 +273,74 @@ class TestSireValidation(TestSire):
             self.env['l10n_pe.sire.rvie']._cron_sire_poll_tickets()
         self.assertEqual(self.rvie.poll_attempts, 1)
         self.assertGreater(self.rvie.poll_next_date, fields.Datetime.now())
+
+    # ------------------------------------------------------------------
+    # Revisión del 07/10/2026
+    # ------------------------------------------------------------------
+    def _company_tax(self, xmlid):
+        tax = self.env.ref('account.%s_%s' % (self.company.root_id.id, xmlid),
+                           raise_if_not_found=False)
+        if not tax:
+            self.skipTest('sin el impuesto %s' % xmlid)
+        return tax
+
+    def test_cancelled_purchase_not_in_rce(self):
+        """Nota 2 del anexo 11: el RCE no anota compras anuladas."""
+        bill = self._make_invoice('in_invoice', document_number='F002-501')
+        bill.button_draft()
+        bill.button_cancel()
+        self.assertNotIn(bill, self.rce._sire_system_moves())
+
+    def test_free_line_not_in_other_taxes(self):
+        """Una línea gratuita no va a «otros tributos» ni a la base."""
+        free = self._company_tax('tax_free_group')
+        invoice = self._make_invoice('out_invoice')
+        invoice.button_draft()
+        invoice.write({'invoice_line_ids': [(0, 0, {
+            'name': 'Muestra gratuita', 'quantity': 1, 'price_unit': 100.0,
+            'tax_ids': [(6, 0, free.ids)]})]})
+        invoice.action_post()
+        line = self._system_line(self.rvie, invoice)
+        self.assertAlmostEqual(line.otros_tributos, 0.0, places=2)
+        self.assertAlmostEqual(line.bi_gravada, 1000.0, places=2)
+        self.assertAlmostEqual(line.total_cp, 1180.0, places=2)
+
+    def test_withholding_does_not_reduce_total(self):
+        """La retención del 3 % no reduce el total ni va a otros tributos."""
+        withholding = self._company_tax('sale_tax_withholding_3')
+        invoice = self._make_invoice('out_invoice')
+        invoice.button_draft()
+        invoice.invoice_line_ids.tax_ids |= withholding
+        invoice.action_post()
+        line = self._system_line(self.rvie, invoice)
+        self.assertAlmostEqual(line.otros_tributos, 0.0, places=2)
+        self.assertAlmostEqual(line.total_cp, 1180.0, places=2)
+
+    def test_partner_with_generic_vat_type_is_ruc(self):
+        """Tipo «VAT» genérico (código 0) con 11 dígitos → RUC (6)."""
+        self.partner.l10n_latam_identification_type_id = self.env.ref(
+            'l10n_latam_base.it_vat')
+        self.assertEqual(self.rvie._sire_partner_doc_type(self.partner), '6')
+
+    def test_ticket_code_unknown_keeps_polling(self):
+        """Sin código o con uno desconocido el ticket sigue «en proceso»; un
+        «6» numérico es «06»."""
+        api = self.env['l10n_pe.sire.api']
+        self.assertEqual(api._sire_ticket_code({}), '05')
+        self.assertEqual(api._sire_ticket_code({'codEstadoProceso': 6}), '06')
+        self.assertEqual(api._sire_ticket_code({'codEstadoProceso': '99'}), '05')
+
+    def test_failed_submission_can_be_resent(self):
+        """Tras un envío procesado con errores se puede volver a enviar."""
+        self.rvie.write({'state': 'compared', 'submission_ticket': 'T9',
+                         'submission_state': '03'})
+        self.rvie._sire_check_submittable()   # no lanza
+        self.rvie.submission_state = '02'
+        with self.assertRaises(UserError):
+            self.rvie._sire_check_submittable()
+        self.rvie._sire_clear_submission()
+        self.assertFalse(self.rvie.submission_ticket)
+        self.assertEqual(self.rvie.state, 'compared')
 
 
 # Los tests heredados de TestSire ya corren en su propia clase: aquí solo se

@@ -124,7 +124,11 @@ class L10nPeRceExtractor(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _rce_amounts(self, move, group_ids, isc_in_base=False):
-        """Bases e impuestos del comprobante, en su propia moneda.
+        """Bases e impuestos del comprobante, en soles (moneda de la compañía).
+
+        El registro lleva los importes convertidos con el T.C. y, aparte, la
+        moneda y el T.C. (campos 26-27): así los declara la contabilidad real
+        de referencia (13 223,10 USD → 46 214,73 con T.C. 3,495).
 
         Devuelve un diccionario con una entrada ``base_<clave>`` y otra
         ``tax_<clave>`` por cada grupo de impuestos peruano. Los importes se
@@ -158,10 +162,10 @@ class L10nPeRceExtractor(models.AbstractModel):
                     igv_keys = [k for k in igv_keys
                                 if k in ('igv', 'igv_g_ng', 'igv_ng')]
                     target = igv_keys[0] if igv_keys else 'exo'
-                    amounts['base_%s' % target] += sign * line.amount_currency
+                    amounts['base_%s' % target] += sign * line.balance
                     continue
                 if key:
-                    amounts['tax_%s' % key] += sign * line.amount_currency
+                    amounts['tax_%s' % key] += sign * line.balance
                 # El ISC lleva ``include_base_amount``: su apunte tiene el IGV en
                 # ``tax_ids`` y sumaba su importe a la base gravada. En el RVIE
                 # la base no incluye el ISC (anexo 112-2021, nota 4).
@@ -173,7 +177,7 @@ class L10nPeRceExtractor(models.AbstractModel):
             for tax in line.tax_ids.flatten_taxes_hierarchy():
                 key = by_id.get(tax.tax_group_id.id)
                 if key:
-                    amounts['base_%s' % key] += sign * line.amount_currency
+                    amounts['base_%s' % key] += sign * line.balance
         return amounts
 
     # ------------------------------------------------------------------
@@ -237,7 +241,7 @@ class L10nPeRceExtractor(models.AbstractModel):
 
     @api.model
     def _rce_total(self, move):
-        """Importe total en la moneda del comprobante, negativo si es abono.
+        """Importe total en soles, negativo si es abono.
 
         La retención del IGV (3 %) no reduce el total del comprobante: Odoo la
         resta de ``amount_total``, pero el XML y el registro llevan el
@@ -247,9 +251,9 @@ class L10nPeRceExtractor(models.AbstractModel):
             'account.%s_tax_group_igv_withholding' % move.company_id.root_id.id,
             raise_if_not_found=False)
         withheld = abs(sum(
-            line.amount_currency for line in move.line_ids
+            line.balance for line in move.line_ids
             if group and line.tax_line_id.tax_group_id == group))
-        return sign * (move.amount_total + withheld)
+        return sign * (abs(move.amount_total_signed) + withheld)
 
     # ------------------------------------------------------------------
     # Registro de ventas (RVIE)

@@ -16,7 +16,8 @@ from .sire_validation import ruc_is_valid
 SIRE_AUTH_URL = 'https://api-seguridad.sunat.gob.pe/v1/clientessol/%s/oauth2/token/'
 SIRE_SCOPE = 'https://api-sire.sunat.gob.pe'
 SIRE_BASE_URL = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv'
-SIRE_TIMEOUT = 60
+#: (conexión, lectura): una SUNAT caída falla en 10 s y no ocupa el worker.
+SIRE_TIMEOUT = (10, 60)
 #: Dominio de SUNAT: el token Bearer nunca se envía a otro host (p. ej. a
 #: un ``Location`` de TUS manipulado).
 SIRE_ALLOWED_HOST_SUFFIX = '.sunat.gob.pe'
@@ -179,6 +180,17 @@ class L10nPeSireApi(models.AbstractModel):
                 timeout=SIRE_TIMEOUT)
         except requests.RequestException as error:
             raise UserError(_('No se pudo conectar con SUNAT: %s', error)) from error
+        if response.status_code == 401:
+            # Token revocado antes de caducar: se descarta para que la
+            # próxima acción pida otro en vez de fallar hasta la caducidad.
+            # sudo: el token es de base.group_system; solo se borra el usado.
+            companies_sudo = self.env['res.company'].sudo().search(
+                [('l10n_pe_sire_token', '=', token)])
+            companies_sudo.write({'l10n_pe_sire_token': False,
+                                  'l10n_pe_sire_token_expiry': False})
+            raise UserError(_(
+                'SUNAT rechazó el token de acceso (HTTP 401). Se pidió uno '
+                'nuevo: vuelva a intentarlo.'))
         if response.status_code not in (200, 201, 204):
             raise UserError(_(
                 'SUNAT devolvió un error (HTTP %(code)s): %(text)s',
@@ -232,11 +244,23 @@ class L10nPeSireApi(models.AbstractModel):
             raise UserError(_('SUNAT no devolvió un número de ticket: %s', response.text[:300]))
         return ticket
 
+    @staticmethod
+    def _sire_ticket_code(register):
+        """Estado del ticket normalizado («6» → «06»).
+
+        El Anexo III va de 01 a 06: sin código, o con uno desconocido, el
+        ticket se sigue consultando (05, en proceso) en vez de darlo por
+        fallido y dejar el periodo sin envío posible.
+        """
+        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') \
+            or register.get('codEstadoProceso')
+        code = str(code).strip().zfill(2) if code not in (None, '') else ''
+        return code if code in ('01', '02', '03', '04', '05', '06') else '05'
+
     def _sire_ticket_status(self, token, period, num_ticket):
         """Consulta el estado de un ticket. Devuelve (codEstadoEnvio, nomArchivoReporte)."""
         register = self._sire_ticket_register(token, period, num_ticket)
-        code = (register.get('detalleTicket') or {}).get('codEstadoEnvio') \
-            or register.get('codEstadoProceso') or '00'
+        code = self._sire_ticket_code(register)
         filename = ''
         reports = register.get('archivoReporte') or []
         if reports:
@@ -292,24 +316,38 @@ class L10nPeSireApi(models.AbstractModel):
                 continue
         return content.decode('utf-8', errors='replace')
 
-    def _sire_download_report(self, token, period, num_ticket, report_name):
-        """Descarga el ZIP del reporte y devuelve el TXT interior (base64)."""
-        response = self._sire_get(
-            token, '/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte',
-            params={
-                'nomArchivoReporte': report_name,
-                'codTipoArchivoReporte': '00',
-                'perTributario': period,
-                'codProceso': '10',
-                'numTicket': num_ticket,
-            })
-        try:
-            archive = zipfile.ZipFile(io.BytesIO(response.content))
-            inner = archive.namelist()[0]
-            content = self._sire_decode(archive.read(inner))
-        except (zipfile.BadZipFile, IndexError) as error:
-            raise UserError(_('El archivo devuelto por SUNAT no es un ZIP válido: %s', error)) from error
-        return base64.b64encode(content.strip('\n').encode('utf-8'))
+    def _sire_download_report(self, token, period, num_ticket, book_code):
+        """Descarga la propuesta de un ticket terminado (manual 5.17).
+
+        Cada archivo de ``archivoReporte`` se pide con su nombre, su tipo y
+        el ``codLibro`` del registro, como exige el servicio. SUNAT entrega
+        la propuesta «zipeada y particionada»: se unen todos los TXT de
+        todos los ZIP, sin repetir la cabecera. Devuelve el TXT en base64.
+        """
+        register = self._sire_ticket_register(token, period, num_ticket)
+        reports = register.get('archivoReporte') or []
+        if not reports:
+            raise UserError(_('El ticket %s no tiene archivos que descargar.', num_ticket))
+        lines, header = [], None
+        for report in reports:
+            content = self._sire_download_file(token, report, book_code)
+            try:
+                archive = zipfile.ZipFile(io.BytesIO(content))
+            except zipfile.BadZipFile as error:
+                raise UserError(_(
+                    'El archivo devuelto por SUNAT no es un ZIP válido: %s', error)) from error
+            for inner in sorted(archive.namelist()):
+                text_lines = self._sire_decode(archive.read(inner)).splitlines()
+                if not text_lines:
+                    continue
+                if header is None:
+                    header = text_lines[0]
+                    lines.append(header)
+                    text_lines = text_lines[1:]
+                elif text_lines[0] == header:
+                    text_lines = text_lines[1:]
+                lines.extend(line for line in text_lines if line.strip())
+        return base64.b64encode('\n'.join(lines).encode('utf-8'))
 
     # ------------------------------------------------------------------
     # Procesos sobre la propuesta

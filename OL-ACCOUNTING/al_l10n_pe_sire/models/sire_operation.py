@@ -1,7 +1,6 @@
 import logging
 from datetime import timedelta
 
-import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -96,6 +95,10 @@ class L10nPeSireOperation(models.Model):
 
     def action_send_adjustment(self):
         self.ensure_one()
+        # El botón se oculta, pero por RPC o doble clic se enviaba dos veces.
+        if not self.can_send_adjustment:
+            raise UserError(_('Este ajuste no se puede enviar (ya se envió o '
+                              'su ticket no terminó bien).'))
         return self._period()._sire_send_adjustment(self)
 
     def _period(self):
@@ -136,8 +139,7 @@ class L10nPeSireOperation(models.Model):
         token = period._sire_get_token(period.company_id)
         register = period._sire_ticket_register(token, period._sire_period(), self.ticket)
         detail = register.get('detalleTicket') or {}
-        code = detail.get('codEstadoEnvio') or register.get('codEstadoProceso') or '00'
-        code = code if code in dict(TICKET_STATES) else '00'
+        code = period._sire_ticket_code(register)
         self.write({
             'ticket_state': code,
             'detail': _('Filas validadas: %(rows)s · CP con error: %(errors)s · '
@@ -176,9 +178,16 @@ class L10nPeSireOperation(models.Model):
             try:
                 with self.env.cr.savepoint():
                     operation._check_once()
-            except (UserError, requests.RequestException) as error:
+            except Exception as error:  # noqa: BLE001 — una operación no tumba el cron
                 _logger.warning('SIRE: consulta del ticket %s fallida: %s', operation.ticket, error)
-                operation._poll_retry(error=error)
+                try:
+                    with self.env.cr.savepoint():
+                        operation._poll_retry(error=error)
+                except Exception:  # noqa: BLE001
+                    # p. ej. el periodo se borró: no hay a quién avisar.
+                    _logger.exception('SIRE: operación %s sin periodo; se deja de consultar',
+                                      operation.id)
+                    operation._stop_poll()
             if not cron._commit_progress(1):
                 break
 

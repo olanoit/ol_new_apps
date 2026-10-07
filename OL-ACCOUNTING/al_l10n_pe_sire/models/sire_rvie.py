@@ -136,13 +136,13 @@ class L10nPeSireRvie(models.Model):
             sign < 0 and origin and origin.invoice_date
             and origin.invoice_date.strftime('%Y%m') != '%04d%s' % (self.year, self.month))
         vals = {
-            'car_sunat': self._sire_car_sunat(move, self.company_id.vat),
+            'car_sunat': self._sire_car_sunat(move, self.company_id.root_id.vat),
             'fecha_emision': move.invoice_date,
             'fecha_vencimiento': move.invoice_date_due or False,
             'tipo_cp': doc_code,
             'serie_cp': serie,
             'nro_cp': folio,
-            'tipo_doc_identidad': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
+            'tipo_doc_identidad': self._sire_partner_doc_type(partner),
             'nro_doc_identidad': partner.vat or '',
             'razon_social': partner.name or '',
             'valor_exportacion': amount(amounts['export']),
@@ -157,7 +157,7 @@ class L10nPeSireRvie(models.Model):
             'ivap': amount(amounts['ivap']),
             'icbper': amount(amounts['icbper']),
             'otros_tributos': amount(amounts['other_taxes']),
-            'total_cp': amount(abs(move.amount_total_signed)),
+            'total_cp': amount(self._sire_total(move)),
             'moneda': move.currency_id.name,
             'tipo_cambio': 0.0 if cancelled else rate,
             'valor_gratuitas': 0.0 if cancelled else round(amounts['free'], 2),
@@ -253,10 +253,12 @@ class L10nPeSireRvie(models.Model):
         # 5.15
         self.ensure_one()
         self._sire_check_dangerous()
-        return self._sire_json_call(
+        operation = self._sire_json_call(
             'delete_replacement', 'PUT',
             '/libros/rvierce/gestionlibro/web/registroslibros/%s/eliminarreemplazo'
             % self._sire_period(), params={'codLibro': self._sire_upload_book_code()})
+        self._sire_clear_submission()
+        return operation
 
     def action_sire_delete_registered_preliminary(self):
         # 5.36: ``id`` dejó de ser obligatorio en la v22.
@@ -268,6 +270,7 @@ class L10nPeSireRvie(models.Model):
             % self._sire_period(), {'codTipoRegistro': '14'},
             params={'codLibro': self._sire_upload_book_code()})
         self.preliminary_registered = False
+        self._sire_clear_submission()
         return operation
 
     # ------------------------------------------------------------------
@@ -379,7 +382,8 @@ class L10nPeSireRvie(models.Model):
     def _sire_xlsx_row(self, line):
         estado = dict(line._fields['estado_cp'].selection).get(line.estado_cp, '')
         return [
-            self.company_id.vat or '', self.company_id.name or '', self._sire_period(),
+            self.company_id.root_id.vat or '',
+            self._sire_text(self.company_id.root_id.name), self._sire_period(),
             line.car_sunat or '', self._sire_fmt_date(line.fecha_emision),
             self._sire_fmt_date(line.fecha_vencimiento), line.tipo_cp or '',
             line.serie_cp or '', line.nro_cp or '', line.nro_final or '',
@@ -399,8 +403,8 @@ class L10nPeSireRvie(models.Model):
         due_date = (self._sire_fmt_date(line.fecha_vencimiento)
                     if line.tipo_cp == '14' else '')
         return [
-            self.company_id.vat or '',
-            self.company_id.name or '',
+            self.company_id.root_id.vat or '',
+            self._sire_text(self.company_id.root_id.name),
             self._sire_period(),
             '',
             self._sire_fmt_date(line.fecha_emision),
@@ -411,7 +415,7 @@ class L10nPeSireRvie(models.Model):
             line.nro_final or '',
             line.tipo_doc_identidad or '',
             line.nro_doc_identidad or '',
-            line.razon_social or '',
+            self._sire_text(line.razon_social),
             self._sire_fmt_amount(line.valor_exportacion),
             self._sire_fmt_amount(line.bi_gravada),
             self._sire_fmt_amount(line.dscto_bi),

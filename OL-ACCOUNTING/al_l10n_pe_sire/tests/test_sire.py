@@ -130,6 +130,14 @@ class TestSire(TransactionCase):
             'company_id': cls.company.id,
             'download_manual': True,
         })
+        # Diario de ventas propio: el de la base puede arrastrar números mal
+        # formados (p. ej. «B00100000001») que la numeración nativa continúa,
+        # y entonces la serie no tendría 4 caracteres.
+        cls.sale_journal = cls.env['account.journal'].create({
+            'name': 'Ventas SIRE test', 'code': 'SIRT', 'type': 'sale',
+            'company_id': cls.company.id, 'l10n_latam_use_documents': True,
+        })
+        cls._sale_number = 0
         cls.partner = cls.env['res.partner'].create({
             'name': 'Socio SIRE Test',
             'vat': '20131312955',
@@ -160,6 +168,14 @@ class TestSire(TransactionCase):
                 'tax_ids': [(6, 0, tax.ids)],
             })],
         }
+        if move_type.startswith('out'):
+            type(self)._sale_number += 1
+            vals.update({
+                'journal_id': self.sale_journal.id,
+                # Serie que no existe en la base: el nombre de un CPE es único
+                # por RUC (l10n_pe_edi).
+                'name': document_number or 'F990-%08d' % self._sale_number,
+            })
         if move_type.startswith('in'):
             doc_type = self.env['l10n_latam.document.type'].search([
                 ('code', '=', '01'), ('country_id.code', '=', 'PE')], limit=1)
@@ -351,8 +367,11 @@ class TestSire(TransactionCase):
         return name, archive.read(name).decode('utf-8')
 
     def test_rvie_replacement_txt(self):
-        self._make_invoice('out_invoice')
-        self.rvie.action_load_system()
+        invoice = self._make_invoice('out_invoice')
+        # Solo la factura de la prueba: la base puede traer comprobantes del
+        # periodo con observaciones, que ahora bloquean la exportación.
+        with patch.object(type(self.rvie), '_sire_system_moves', return_value=invoice):
+            self.rvie.action_load_system()
         self.rvie.action_export_replacement()
         name, content = self._read_zip_txt(self.rvie)
         self.assertEqual(name, 'LE%s%s%s00140400021112.txt' % (RUC_TEST, PERIOD_YEAR, PERIOD_MONTH))
@@ -361,8 +380,9 @@ class TestSire(TransactionCase):
             self.assertEqual(len(row.split('|')), 33)
 
     def test_rce_replacement_txt(self):
-        self._make_invoice('in_invoice', document_number='F002-35')
-        self.rce.action_load_system()
+        bill = self._make_invoice('in_invoice', document_number='F002-35')
+        with patch.object(type(self.rce), '_sire_system_moves', return_value=bill):
+            self.rce.action_load_system()
         self.rce.action_export_replacement()
         name, content = self._read_zip_txt(self.rce)
         self.assertEqual(name, 'LE%s%s%s00080400021112.txt' % (RUC_TEST, PERIOD_YEAR, PERIOD_MONTH))
@@ -506,6 +526,10 @@ class TestSire(TransactionCase):
                 type(self.rce), '_sire_register_preliminary',
                 return_value=True) as register:
             self.rce.action_accept_proposal()
+            # Con el envío aún en curso no se registra el preliminar.
+            with self.assertRaises(UserError):
+                self.rce.action_register_preliminary()
+            self.rce.submission_state = '06'
             self.rce.action_register_preliminary()
         self.assertTrue(self.rce.preliminary_registered)
         self.assertEqual(self.rce.state, 'done')

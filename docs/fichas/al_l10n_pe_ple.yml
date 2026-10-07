@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 11.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: el registro de compras (8.4 y 8.5) y el de ventas (14.4) informaban los comprobantes en dólares con los importes en dólares. Ahora van en soles, con la moneda y el tipo de cambio aparte, como los declara la contabilidad real (13 223,10 USD se informan como 46 214,73 con T.C. 3,495)."
   - version: 10.20261007
     fecha: 07/10/2026
     cambios:

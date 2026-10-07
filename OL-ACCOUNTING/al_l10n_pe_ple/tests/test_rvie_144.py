@@ -263,3 +263,19 @@ class TestRvie144(AccountTestInvoicingCommon):
         invoice.action_post()
         fields_ = self._fields_of(invoice)
         self.assertEqual(fields_[25], '1180.00')
+
+    def test_foreign_currency_amounts_in_soles(self):
+        """Importes en soles con la moneda y el T.C. aparte, como la
+        contabilidad de referencia (13 223,10 USD → 46 214,73, T.C. 3,495)."""
+        usd = self.env.ref('base.USD')
+        usd.active = True
+        invoice = self._create_invoice(post=False)
+        invoice.currency_id = usd
+        invoice.invoice_currency_rate = 1 / 3.5
+        invoice.action_post()
+        fields_ = self._fields_of(invoice)
+        self.assertEqual(fields_[14], '3500.00', 'base en soles')
+        self.assertEqual(fields_[16], '630.00', 'IGV en soles')
+        self.assertEqual(fields_[25], '4130.00', 'total en soles')
+        self.assertEqual(fields_[26], 'USD')
+        self.assertEqual(fields_[27], '3.500')

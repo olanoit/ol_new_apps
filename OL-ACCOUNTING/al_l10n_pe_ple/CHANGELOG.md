@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Corregido: el registro de compras (8.4 y 8.5) y el de ventas (14.4) informaban los comprobantes en dólares con los importes en dólares. Ahora van en soles, con la moneda y el tipo de cambio aparte, como los declara la contabilidad real (13 223,10 USD se informan como 46 214,73 con T.C. 3,495).
+
 ## 10.20261007 — 07/10/2026
 
 - Libros del asistente (retenciones, consignaciones, simplificados, activos, costos y libro 3): cada línea del TXT cierra con «|», como los archivos del PLE; antes el validador podía rechazarlos.

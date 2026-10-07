@@ -62,7 +62,7 @@
                             type="object" invisible="not submission_ticket or state == 'done'"/>
                     <button name="action_register_preliminary" groups="account.group_account_user" string="Registrar preliminar"
                             type="object" class="btn-primary"
-                            invisible="not submission_ticket or preliminary_registered"/>
+                            invisible="not submission_ticket or preliminary_registered or submission_state not in ('04', '06')"/>
                     <button name="action_export_xlsx" string="Descargar XLSX"
                             type="object" invisible="state not in ('compared', 'submitted', 'done')"/>
                     <button name="action_export_replacement" string="TXT de reemplazo"

@@ -63,6 +63,7 @@ class L10nPeSireRce(models.Model):
     def _sire_nd_moves(self):
         return self.env['account.move'].search(
             self._sire_system_domain(('in_invoice', 'in_refund'), 'date') + [
+                ('state', '=', 'posted'),   # anulados: no se anotan (anexo 9)
                 ('l10n_pe_sire_is_non_domiciled', '=', True),
             ], order='invoice_date, name')
 
@@ -72,12 +73,12 @@ class L10nPeSireRce(models.Model):
         sign = self._sire_move_sign(move)
         if move.state == 'cancel':
             return 0.0, 0.0, 0.0
-        value = sum(amounts[key] for key in (
-            'taxed', 'taxed_dgng', 'taxed_dng', 'exonerated', 'unaffected', 'export',
-            'ivap_base'))
         others = sum(amounts[key] for key in ('other_taxes', 'isc', 'icbper'))
-        return (round(sign * value, 2), round(sign * others, 2),
-                round(sign * abs(move.amount_total_signed), 2))
+        total = self._sire_total(move)
+        # 7 = total − otros conceptos: así 7 + 8 = 9 aunque haya IGV,
+        # gratuitas o líneas sin impuesto.
+        return (round(sign * (total - others), 2), round(sign * others, 2),
+                round(sign * total, 2))
 
     def action_sire_load_nd(self):
         """Despliega los comprobantes de no domiciliados del periodo y los valida."""
@@ -101,7 +102,9 @@ class L10nPeSireRce(models.Model):
                 'pais': partner.country_id.l10n_pe_sire_country_code or '',
                 'razon_social': partner.name or '',
                 'nro_identificacion': partner.vat or '',
-                'convenio': move.l10n_pe_sire_nd_agreement or '',
+                # 30: obligatorio; «00» (sin convenio) para las anteriores a
+                # la instalación.
+                'convenio': move.l10n_pe_sire_nd_agreement or '00',
                 'tipo_renta': move.l10n_pe_sire_nd_income_type or '',
             }))
         self.nd_line_ids = commands

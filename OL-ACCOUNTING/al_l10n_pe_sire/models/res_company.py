@@ -27,6 +27,16 @@ class ResCompany(models.Model):
         groups='base.group_system')
 
 
+    def write(self, vals):
+        # Con otras credenciales el token guardado es de la cuenta anterior:
+        # se descarta para que la próxima llamada pida uno nuevo.
+        if {'l10n_pe_sire_sol_user', 'l10n_pe_sire_sol_password',
+                'l10n_pe_sire_client_id', 'l10n_pe_sire_client_secret'} & set(vals):
+            vals = dict(vals, l10n_pe_sire_token=False,
+                        l10n_pe_sire_token_expiry=False)
+        return super().write(vals)
+
+
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
