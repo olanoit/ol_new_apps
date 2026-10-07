@@ -153,6 +153,33 @@ class TestConstructionPayslip(TransactionCase):
         self.assertEqual(self._line(payslip, 'HE100'), 22.33,
                          '1 h × 11.1625 × 2 = 22.325 → 22.33')
 
+    def test_draft_payslip_takes_the_table_activated_later(self):
+        """Boleta en borrador creada sin tabla vigente: al activar la tabla y
+        recalcular toma el jornal (auditoría 07/10/2026; antes quedaba en 0)."""
+        employee = self._worker('OPE')
+        payslip = self.env['hr.payslip'].create({
+            'name': 'Semana 2027', 'employee_id': employee.id,
+            'company_id': self.company.id, 'struct_id': self.structure.id,
+            'date_from': date(2027, 1, 4), 'date_to': date(2027, 1, 10)})
+        self.assertFalse(payslip.l10n_pe_daily_wage)
+        table = self.env['l10n_pe.hr.construction.wage.table'].create({
+            'name': 'Convenio 2027 test', 'date_from': date(2027, 1, 1),
+            'date_to': date(2027, 12, 31),
+            'line_ids': [(0, 0, {'category_id': self.categories['OPE'].id,
+                                 'daily_wage': 95.0})]})
+        self.assertTrue(table.active)
+        payslip.compute_sheet()
+        self.assertEqual(payslip.l10n_pe_daily_wage, 95.0)
+
+    def test_tareaje_overtime_paid_at_construction_rates(self):
+        """El tareaje vuelca HE25/HE35 (régimen general): en construcción se
+        pagan al 60 % y al 100 % (auditoría 07/10/2026; antes salían en 0)."""
+        he25 = self.env.ref('al_hr_pe.wd_HE25')
+        he35 = self.env.ref('al_hr_pe.wd_HE35')
+        payslip = self._payslip(self._worker('OPE'), overtime={he25: 2.0, he35: 1.0})
+        self.assertEqual(self._line(payslip, 'HE60'), 35.72)
+        self.assertEqual(self._line(payslip, 'HE100'), 22.33)
+
     def test_overtime_is_not_the_general_regime(self):
         """El régimen general paga 25/35; aquí es 60/100."""
         payslip = self._payslip(self._worker('OPE'),

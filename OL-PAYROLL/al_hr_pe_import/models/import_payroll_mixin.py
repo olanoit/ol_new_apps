@@ -784,6 +784,7 @@ class ImportPayrollMixin(models.AbstractModel):
                          for _h, k in columns]
             for col_idx, val in enumerate(row_vals, start=1):
                 cell = ws.cell(row=idx, column=col_idx, value=val)
+                self._as_text(cell)
                 if fill is not None:
                     cell.fill = fill
 
@@ -832,6 +833,14 @@ class ImportPayrollMixin(models.AbstractModel):
             ts=fields.Datetime.now().strftime('%Y%m%d_%H%M%S'),
         )
         return buf.getvalue(), filename
+
+    @staticmethod
+    def _as_text(cell):
+        """Un valor del archivo del usuario que empieza por «=» se guardaba
+        como fórmula (p. ej. ``=HYPERLINK(...)``) y se ejecutaba al abrir el
+        reporte: se fuerza como texto."""
+        if isinstance(cell.value, str) and cell.value.startswith('='):
+            cell.data_type = 's'
 
     @staticmethod
     def _stringify(value):

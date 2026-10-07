@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Remuneración Mínima Vital (régimen laboral de la actividad privada) -->
+        <record model="l10n_pe.hr.rmv" id="rmv_20220501">
+            <field name="date_from">2022-05-01</field>
+            <field name="amount">1025</field>
+            <field name="legal_reference">D.S. 003-2022-TR</field>
+        </record>
+        <record model="l10n_pe.hr.rmv" id="rmv_20250101">
+            <field name="date_from">2025-01-01</field>
+            <field name="amount">1130</field>
+            <field name="legal_reference">D.S. 006-2024-TR</field>
+        </record>
+        <!-- Primera etapa del aumento a S/ 1 300; la segunda (S/ 70) la fijará
+             otro decreto en el primer semestre de 2027. -->
+        <record model="l10n_pe.hr.rmv" id="rmv_20261001">
+            <field name="date_from">2026-10-01</field>
+            <field name="amount">1230</field>
+            <field name="legal_reference">D.S. 015-2026-TR</field>
+        </record>
+    </data>
+</odoo>

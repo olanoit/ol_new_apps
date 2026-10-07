@@ -748,6 +748,12 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 8.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Renta de 5ta: ya no suma una gratificación de julio que el trabajador no cobra; las gratificaciones se proyectan en proporción a los meses completos desde el ingreso."
+      - "Renta de 5ta en el mes del cese: sin proyección de meses futuros ni gratificaciones, con divisor 1 (como la regularización de diciembre)."
+      - "Liquidación: las vacaciones adelantadas se descuentan en la boleta (antes solo se restaban en el total de la línea)."
   - version: 7.20260816
     fecha: 27/09/2026
     cambios:

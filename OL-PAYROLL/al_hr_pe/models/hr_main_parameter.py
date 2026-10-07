@@ -23,9 +23,11 @@ class HrMainParameter(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     rmv = fields.Float(
-        string='R.M.V.', default=1130.0,
-        help='Remuneración Mínima Vital vigente (S/ 1 130 desde enero '
-             '2025, D.S. 006-2024-TR).')
+        string='R.M.V.', default=1230.0,
+        help='Respaldo: la boleta toma la RMV de la tabla «RMV» vigente al '
+             'cierre de su periodo (S/ 1 230 desde el 01/10/2026, D.S. '
+             '015-2026-TR); este valor solo se usa si la tabla no cubre la '
+             'fecha.')
     family_allowance = fields.Float(
         string='Asignación familiar', compute='_compute_family_allowance',
         help='10 % de la RMV (Ley 25129).')

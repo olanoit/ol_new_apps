@@ -64,6 +64,8 @@
         parent="menu_hr_pe_cfg_social" action="hr_social_insurance_action" sequence="20"/>
     <menuitem id="menu_hr_pe_contributions" name="Aportes"
         parent="menu_hr_pe_cfg_social" action="hr_contributions_action" sequence="30"/>
+    <menuitem id="menu_hr_pe_rmv" name="RMV"
+        parent="menu_hr_pe_cfg_parameters" action="l10n_pe_hr_rmv_action" sequence="15"/>
     <menuitem id="menu_hr_pe_uit" name="UIT"
         parent="menu_hr_pe_cfg_parameters" action="l10n_pe_hr_uit_action" sequence="20"/>
     <menuitem id="menu_hr_pe_worker_type" name="Tipos de trabajador (T08)"

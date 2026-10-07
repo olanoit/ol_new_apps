@@ -54,3 +54,5 @@ access_l10n_pe_fin_entity_user,l10n_pe.hr.financial.entity user,model_l10n_pe_hr
 access_l10n_pe_fin_entity_manager,l10n_pe.hr.financial.entity manager,model_l10n_pe_hr_financial_entity,hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_l10n_pe_employee_education_user,l10n_pe.hr.employee.education user,model_l10n_pe_hr_employee_education,hr_payroll.group_hr_payroll_user,1,1,1,0
 access_l10n_pe_employee_education_manager,l10n_pe.hr.employee.education manager,model_l10n_pe_hr_employee_education,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_l10n_pe_hr_rmv_user,l10n_pe.hr.rmv user,model_l10n_pe_hr_rmv,base.group_user,1,0,0,0
+access_l10n_pe_hr_rmv_manager,l10n_pe.hr.rmv manager,model_l10n_pe_hr_rmv,hr_payroll.group_hr_payroll_manager,1,1,1,1

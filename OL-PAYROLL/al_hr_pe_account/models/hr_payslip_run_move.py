@@ -299,6 +299,16 @@ class HrPayslipRun(models.Model):
             raise UserError(self.env._(
                 'El lote ya tiene un asiento contable. Anúlelo y '
                 'elimínelo para generar uno nuevo.'))
+        # Con «asiento por lote» desactivado, el flujo nativo de nómina
+        # escribe el asiento en cada boleta y no en el lote: sin esta
+        # comprobación el gasto quedaba contabilizado dos veces.
+        posted_slips = self._pe_get_batch_slips().filtered('move_id')
+        if posted_slips:
+            raise UserError(self.env._(
+                'Las boletas %(slips)s ya tienen asiento contable (generado por la '
+                'nómina estándar: quite el diario de su estructura salarial para '
+                'usar el asiento peruano del lote).',
+                slips=', '.join(posted_slips[:10].mapped('employee_id.name'))))
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_batch_move_values()

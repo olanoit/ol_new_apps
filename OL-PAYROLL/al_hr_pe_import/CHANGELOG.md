@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- Seguridad: un valor del archivo que empieza por «=» ya no se escribe como fórmula en el Excel de resultados.
+
 ## 4.20260816 — 27/09/2026
 
 - Solo se puede importar en una compañía a la que el usuario tiene acceso.

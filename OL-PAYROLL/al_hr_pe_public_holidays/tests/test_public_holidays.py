@@ -289,6 +289,20 @@ class TestPeruPublicHolidays(TransactionCase):
                 applied, len(holidays),
                 'el cron debe aplicar todos los feriados de %s' % year)
 
+    def test_cron_reaches_companies_outside_the_session(self):
+        """El cron (superusuario) alcanza también a compañías que no están
+        en sus compañías activas (auditoría 07/10/2026)."""
+        other = self.env['res.company'].create({'name': 'Feriados otra SAC'})
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Calendario otra', 'company_id': other.id})
+        holiday = self.Holiday.search([('year', '=', date.today().year)], limit=1)
+        if not holiday:
+            self.skipTest('sin feriados del año en curso')
+        self.Holiday.with_context(allowed_company_ids=[self.env.company.id]) \
+            .cron_apply_yearly_holidays()
+        self.assertTrue(self.Leaves.search_count([
+            ('pe_public_holiday_id', '=', holiday.id), ('calendar_id', '=', calendar.id)]))
+
     def test_action_view_leaves_domain(self):
         """La acción de ver descansos filtra por el feriado."""
         holiday = self._holiday(day=date(2043, 12, 25))

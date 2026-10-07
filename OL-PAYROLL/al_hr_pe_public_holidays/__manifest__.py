@@ -27,7 +27,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '4.20260827',
+    'version': '5.20261007',
     'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada
     # de trabajo con el que la nómina computa el feriado.

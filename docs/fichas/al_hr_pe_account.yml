@@ -566,6 +566,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: si la nómina estándar ya había contabilizado las boletas una por una, el asiento peruano del lote duplicaba el gasto; ahora lo impide y explica cómo configurarlo."
   - version: 4.20260816
     fecha: 27/09/2026
     cambios:

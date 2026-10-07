@@ -181,8 +181,14 @@ class PeruPublicHoliday(models.Model):
         """
         this_year = date.today().year
         holidays = self.search([("year", "in", (this_year, this_year + 1))])
-        if holidays:
-            holidays.action_apply_to_calendars()
+        if not holidays:
+            return
+        # El cron corre como el superusuario, cuyas compañías activas son
+        # solo las suyas: una compañía creada después no recibía feriados.
+        # Se aplica a cada compañía con su propio contexto.
+        for company in self.env["res.company"].search([]):
+            holidays.with_company(company).with_context(
+                allowed_company_ids=company.ids).action_apply_to_calendars()
 
 
 class ResourceCalendarLeaves(models.Model):

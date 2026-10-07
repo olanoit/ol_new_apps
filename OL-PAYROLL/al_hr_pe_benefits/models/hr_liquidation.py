@@ -456,6 +456,12 @@ class HrLiquidation(models.Model):
             self._set_slip_input(
                 slip, param.truncated_vacation_input_id,
                 line.truncated_vacation)
+            # Las vacaciones adelantadas se restaban solo en el total de la
+            # línea: la boleta pagaba las truncas completas.
+            if line.advanced_vacation:
+                self._set_slip_input(
+                    slip, self.env.ref('al_hr_pe.input_type_ADE_VAC'),
+                    line.advanced_vacation)
         for line in self.liq_ext_concept_ids:
             slip = employee_slip(line.employee_id)
             for concept in line.conceptos_lines:
@@ -540,7 +546,7 @@ class HrLiquidationVacationLine(models.Model):
             # TODO(fase4-revisar): en v18 la exención por mayor de 65
             # solo se aplicaba en el recálculo manual de la línea; aquí
             # se aplica también en el cálculo inicial.
-            if month_slip.version_id.l10n_pe_is_older:
+            if month_slip.l10n_pe_is_older:
                 afp_si = 0.0
             afp_commission = custom_round(
                 month_slip.l10n_pe_commission / 100 * total_vacation, 2)

@@ -89,6 +89,17 @@ class TestReportsAuditFixes(TransactionCase, _PayslipCase):
         super().setUpClass()
         cls._setup_payslip()
 
+    def test_voucher_with_negative_net(self):
+        """Un neto negativo no impide generar la boleta (07/10/2026)."""
+        from unittest.mock import patch
+        Slip = type(self.slip)
+        Param = self.env['hr.main.parameter']
+        if not Param.search([('company_id', '=', self.slip.company_id.id)]):
+            Param.create({'company_id': self.slip.company_id.id})
+        with patch.object(Slip, 'net_wage', -150.5, create=False):
+            data = self.slip._get_voucher_report_data()
+        self.assertIn('MENOS', data['neto_letras'])
+
     def test_contract_template_is_sanitized(self):
         """El cuerpo se sanea pero conserva placeholders y estilos."""
         template = self.env['l10n_pe.hr.contract.template'].create({

@@ -604,6 +604,14 @@ class HrFifthCategoryLine(models.Model):
             uit = Uit.get_uit(year)
             year_start = date(year, 1, 1)
             employee, version = slip.employee_id, slip.version_id
+            # Mes del cese: nada que proyectar y se liquida el año como en
+            # diciembre (divisor 1). Antes se proyectaban los meses
+            # restantes y las dos gratificaciones completas.
+            cessation = version.contract_date_end
+            ceased = bool(cessation and slip.date_from <= cessation <= slip.date_to)
+            if ceased:
+                proy_month, rent_month = 0, 1
+            start = version.contract_date_start
 
             grat_july = grat_december = GratLine
             if month >= 7:
@@ -638,14 +646,30 @@ class HrFifthCategoryLine(models.Model):
             insurance_percent = version.social_insurance_id.percent or 0.0
             grat_proy = record.contrac_proy_rem \
                 * (1 + insurance_percent / 100)
-            grat_july_proy = grat_proy if not record.edit_proy \
-                else record.grat_july
+            # Proyección por meses completos del semestre desde el ingreso
+            # (Ley 27735): quien entró el 01/08 no cobra la de julio.
+            def semester_share(first_month):
+                months = sum(1 for m in range(first_month, first_month + 6)
+                             if not start or date(year, m, 1) >= start)
+                return grat_proy * months / 6.0
+            if record.edit_proy:
+                grat_july_proy = record.grat_july
+            elif ceased or month >= 8:
+                # Ya pagada (va en las remuneraciones pasadas o, en el cese,
+                # en las truncas del mes) o nunca devengada: no se proyecta.
+                grat_july_proy = 0.0
+            else:
+                grat_july_proy = semester_share(1)
             record.grat_july = (
                 sum(grat_july.mapped('total_grat'))
                 + sum(grat_july.mapped('bonus_essalud'))
             ) if month >= 7 and grat_july else grat_july_proy
-            grat_december_proy = grat_proy if not record.edit_proy \
-                else record.grat_december
+            if record.edit_proy:
+                grat_december_proy = record.grat_december
+            elif ceased:
+                grat_december_proy = 0.0
+            else:
+                grat_december_proy = semester_share(7)
             record.grat_december = (
                 sum(grat_december.mapped('total_grat'))
                 + sum(grat_december.mapped('bonus_essalud'))

@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261007 — 07/10/2026
+
+- Remuneración Mínima Vital por fecha de vigencia (nueva tabla «RMV»): cada boleta toma la vigente al cierre de su periodo. Incluye S/ 1 230 desde el 01/10/2026 (D.S. 015-2026-TR); antes era un único valor de S/ 1 130 por compañía. La asignación familiar sale del 10 % de esa RMV.
+- Tasas del SPP 2026: prima de seguros 1,37 % (antes 1,70 %) y remuneración máxima asegurable S/ 12 672,65; la SBS la actualiza cada trimestre.
+- Corregido: los códigos de excepción y de tipo de trabajo de AFPnet tenían rótulos de jornada; marcar a un trabajador a tiempo parcial con «I» anulaba sus aportes. Ahora siguen la guía de AFPnet y el pensionista por jubilación tampoco aporta.
+- La asignación familiar se paga también en un mes completo de vacaciones (la remuneración vacacional es la ordinaria); EsSalud y EPS aplican la base mínima de la RMV también con EPS; «mayor de 65» se mide al cierre del periodo de la boleta.
+- El .jor del PLAME ya no resta dos veces vacaciones y subsidios, y declara horas y minutos sin truncar.
+
 ## 16.20260925 — 27/09/2026
 
 - AFP y ONP se calculan por el tipo de afiliación y sus tasas, no por el nombre de la entidad: renombrar una AFP ya no deja su aporte en cero.

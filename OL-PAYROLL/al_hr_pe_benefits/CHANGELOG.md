@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261007 — 07/10/2026
+
+- Renta de 5ta: ya no suma una gratificación de julio que el trabajador no cobra; las gratificaciones se proyectan en proporción a los meses completos desde el ingreso.
+- Renta de 5ta en el mes del cese: sin proyección de meses futuros ni gratificaciones, con divisor 1 (como la regularización de diciembre).
+- Liquidación: las vacaciones adelantadas se descuentan en la boleta (antes solo se restaban en el total de la línea).
+
 ## 7.20260816 — 27/09/2026
 
 - CTS y gratificación: una falta ya no hace perder el mes entero; se descuenta una sola vez.

@@ -20,6 +20,10 @@ class HrPayslip(models.Model):
     periodo_id = fields.Many2one(
         'hr.period', string='Periodo', check_company=True, index=True,
         compute='_compute_periodo_id', store=True, readonly=False)
+    l10n_pe_is_older = fields.Boolean(
+        string='Mayor de 65 años', compute='_compute_l10n_pe_snapshot', store=True,
+        help='Edad a la fecha de cierre del periodo: los mayores de 65 no '
+             'pagan la prima de seguro AFP.')
     rmv = fields.Float(
         string='R.M.V.', compute='_compute_l10n_pe_snapshot', store=True,
         readonly=False,
@@ -107,7 +111,9 @@ class HrPayslip(models.Model):
             slip.periodo_id = min(periods, key=lambda p: p.duration_days) \
                 if periods else False
 
-    @api.depends('version_id', 'company_id', 'date_from')
+    @api.depends('version_id', 'company_id', 'date_from', 'date_to',
+                 'version_id.membership_id', 'version_id.l10n_pe_commission_type',
+                 'employee_id.birthday')
     def _compute_l10n_pe_snapshot(self):
         # Parámetros de todas las compañías del lote en un solo search.
         params = {
@@ -117,8 +123,20 @@ class HrPayslip(models.Model):
         }
         for slip in self:
             param = params.get(slip.company_id)
-            slip.rmv = param.rmv if param else 0.0
-            slip.family_allowance = param.family_allowance if param else 0.0
+            # RMV vigente al cierre del periodo de la boleta (tabla por
+            # fecha); el parámetro de la compañía solo como respaldo.
+            rmv = self.env['l10n_pe.hr.rmv'].get_rmv(slip.date_to or slip.date_from) \
+                if (slip.date_to or slip.date_from) else 0.0
+            slip.rmv = rmv or (param.rmv if param else 0.0)
+            # Ley 25129: 10 % de la RMV vigente
+            slip.family_allowance = round(slip.rmv * 0.10, 2)
+            # Edad al cierre del periodo (antes se medía a la fecha de la
+            # versión del contrato, que puede ser de años atrás).
+            birthday = slip.employee_id.birthday
+            ref = slip.date_to or slip.date_from
+            slip.l10n_pe_is_older = bool(
+                birthday and ref and (ref.year - birthday.year
+                                      - ((ref.month, ref.day) < (birthday.month, birthday.day))) >= 65)
             membership = slip.version_id.membership_id
             slip.l10n_pe_retirement_fund = membership.retirement_fund
             slip.l10n_pe_prima_insurance = membership.prima_insurance

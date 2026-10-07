@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_public_holidays.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- La aplicación automática de feriados alcanza a todas las compañías, también a las creadas después (antes solo a las del usuario técnico).
+
 ## 4.20260827 — 27/09/2026
 
 - El Domingo de Resurrección deja de figurar como feriado: no es feriado legal en el Perú. Quedan 16 feriados por año y los descansos que ya se habían creado para ese domingo se borran al actualizar.

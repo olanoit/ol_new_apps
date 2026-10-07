@@ -322,6 +322,10 @@ faq:
       compañías del usuario OdooBot.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "La aplicación automática de feriados alcanza a todas las compañías, también a las creadas después (antes solo a las del usuario técnico)."
   - version: 4.20260827
     fecha: 27/09/2026
     cambios:

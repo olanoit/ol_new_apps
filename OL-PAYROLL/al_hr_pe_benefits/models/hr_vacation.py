@@ -303,7 +303,7 @@ class HrVacation(models.Model):
                         retirement / 100.0 * total_vacation, 2)
                     prima_base = min(total_vacation, cap) \
                         if cap else total_vacation
-                    afp_si = 0.0 if version.l10n_pe_is_older \
+                    afp_si = 0.0 if month_slip.l10n_pe_is_older \
                         else custom_round(prima / 100.0 * prima_base, 2)
                     if version.l10n_pe_commission_type == 'mixed':
                         afp_mixed_com = custom_round(

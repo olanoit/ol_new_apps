@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Regímenes pensionarios (AFP / ONP). Globales: el override por compañía se gestiona en el modelo. -->
+        <!-- Regímenes pensionarios (AFP / ONP). Globales: el override por compañía se gestiona en el modelo.
+             Prima de seguros 1,37 % (2026) y remuneración máxima asegurable
+             S/ 12 672,65: la SBS la actualiza cada trimestre; revísela en
+             sbs.gob.pe ▸ SPP ▸ Empleadores ▸ Comisiones y primas. -->
         <record model="hr.membership" id="membership_AFP_HABIAT">
             <field name="name">AFP HABITAT</field>
             <field name="fixed_commision">1.47</field>
             <field name="mixed_commision">0</field>
-            <field name="prima_insurance">1.70</field>
+            <field name="prima_insurance">1.37</field>
             <field name="retirement_fund">10</field>
-            <field name="insurable_remuneration">11981.55</field>
+            <field name="insurable_remuneration">12672.65</field>
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_INTEGRA">
             <field name="name">AFP INTEGRA</field>
             <field name="fixed_commision">1.55</field>
             <field name="mixed_commision">0</field>
-            <field name="prima_insurance">1.70</field>
+            <field name="prima_insurance">1.37</field>
             <field name="retirement_fund">10</field>
-            <field name="insurable_remuneration">11981.55</field>
+            <field name="insurable_remuneration">12672.65</field>
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_PRIMA">
             <field name="name">AFP PRIMA</field>
             <field name="fixed_commision">1.6</field>
             <field name="mixed_commision">0</field>
-            <field name="prima_insurance">1.70</field>
+            <field name="prima_insurance">1.37</field>
             <field name="retirement_fund">10</field>
-            <field name="insurable_remuneration">11981.55</field>
+            <field name="insurable_remuneration">12672.65</field>
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_PROFUTURO">
             <field name="name">AFP PROFUTURO</field>
             <field name="fixed_commision">1.69</field>
             <field name="mixed_commision">0</field>
-            <field name="prima_insurance">1.70</field>
+            <field name="prima_insurance">1.37</field>
             <field name="retirement_fund">10</field>
-            <field name="insurable_remuneration">11981.55</field>
+            <field name="insurable_remuneration">12672.65</field>
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_ONP">

@@ -180,7 +180,7 @@ result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH
 # Ley 25129: no alcanza a los practicantes (modalidades formativas, Ley
 # 28518), que perciben una subvención y no una remuneración.
 if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'practicante':
-    if worked_days['DVAC'].number_of_days ==30 or worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:
+    if worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:
         result=0
     else:
         result = payslip.family_allowance
@@ -509,7 +509,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.l10n_pe_exception in ('I','O'):
+if version.l10n_pe_exception in ('I','J','O'):
     result=0
 else:
     result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI
@@ -599,7 +599,7 @@ else:
 # Prima de seguro sobre el afecto, con el tope asegurable de la SBS. Los
 # mayores de 65 no la pagan; las entidades sin prima (p. ej. jubilado en
 # tránsito) tienen tasa 0.
-if version.l10n_pe_is_older or not payslip.membership_id.is_afp:
+if payslip.l10n_pe_is_older or not payslip.membership_id.is_afp:
     result = 0
 elif AAFP &lt; payslip.l10n_pe_insurable_remuneration:
     result = round((payslip.l10n_pe_prima_insurance/100) * AAFP, 2)
@@ -822,7 +822,8 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="amount_python_compute">
 if version.l10n_pe_labor_regime != 'practicante':
     if version.social_insurance_id.name == 'EPS':
-        result = AESSALUD * version.social_insurance_id.percent/100
+        # base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS
+        result = max(AESSALUD, payslip.rmv) * version.social_insurance_id.percent/100
     else:
         if AESSALUD > payslip.rmv:
             result = AESSALUD * 0.09
@@ -843,7 +844,8 @@ else:
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 if version.social_insurance_id.name == 'EPS':
-    result = AESSALUD * 0.0225
+    # base mínima: la RMV (D.S. 009-97-SA, art. 6)
+    result = max(AESSALUD, payslip.rmv) * 0.0225
 else:
     result = 0
             </field>

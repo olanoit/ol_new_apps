@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- Corregido: si la nómina estándar ya había contabilizado las boletas una por una, el asiento peruano del lote duplicaba el gasto; ahora lo impide y explica cómo configurarlo.
+
 ## 4.20260816 — 27/09/2026
 
 - Los asientos de CTS, gratificación, liquidación y provisiones usan siempre las cuentas de la compañía del documento, aunque la compañía activa sea otra; y configurar los parámetros de una compañía ya no cambia las cuentas de otra.

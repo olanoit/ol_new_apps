@@ -52,7 +52,43 @@ L10N_PE_AUDIT_RULES = {
         'net_vac = VAC+VATRU-((TAT-QUINTA) * VACAFE)\nif net_rem < 0:\n    result = net_vac + net_rem\nelse:\n    result = (net_vac - ADE_VAC) if abs(net_vac - ADE_VAC) >0.1 else 0',
         '# El neto de remuneraciones SIN el tope en cero de NETREMU se recalcula\n# aquí: antes se leía la variable local de otra regla.\nnet_rem = TINGR-TDESN-VAC-VATRU-GRA_TRU-BON9_TRU-CTS_TRU-((TAT-QUINTA) * REMAFE)-QUINTA+ADE_VAC\nnet_vac = VAC+VATRU-((TAT-QUINTA) * VACAFE)\nif net_rem < 0:\n    result = net_vac + net_rem\nelse:\n    result = (net_vac - ADE_VAC) if abs(net_vac - ADE_VAC) >0.1 else 0',
     ),
+    # Auditoría del 07/10/2026: la excepción J (pensionista por jubilación,
+    # AFPnet) tampoco aporta, como la I (invalidez).
+    'salary_rule_AAFP': (
+        "if version.l10n_pe_exception in ('I','O'):\n    result=0\nelse:\n    result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI",
+        "if version.l10n_pe_exception in ('I','J','O'):\n    result=0\nelse:\n    result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI",
+    ),
 }
 
 
 L10N_PE_EXTRA_HOURS_TYPES = ('wd_HE25', 'wd_HE35', 'wd_HE100')
+
+
+# ----------------------------------------------------------------------
+# Auditoría del 07/10/2026: se encadenan sobre la fórmula vigente.
+# ----------------------------------------------------------------------
+def _chain(xmlid, transform):
+    """Nueva fórmula a partir de la vigente; la vigente pasa a «antes»."""
+    old, current = L10N_PE_AUDIT_RULES[xmlid]
+    old = old if isinstance(old, tuple) else (old,)
+    L10N_PE_AUDIT_RULES[xmlid] = (old + (current,), transform(current))
+
+
+# D.Leg. 713, art. 15: la remuneración vacacional es la ordinaria, que
+# incluye la asignación familiar; con 30 días de vacaciones se perdía.
+_chain('salary_rule_AF', lambda code: code.replace(
+    "worked_days['DVAC'].number_of_days ==30 or ", ''))
+# La edad se mide al cierre del periodo de la boleta, no a la fecha de la
+# versión del contrato.
+_chain('salary_rule_SEGI', lambda code: code.replace(
+    'version.l10n_pe_is_older', 'payslip.l10n_pe_is_older'))
+# EsSalud con EPS: también con la base mínima de la RMV (D.S. 009-97-SA, art. 6).
+_chain('salary_rule_ESSALUD', lambda code: code.replace(
+    "        result = AESSALUD * version.social_insurance_id.percent/100",
+    "        # base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS\n"
+    "        result = max(AESSALUD, payslip.rmv) * version.social_insurance_id.percent/100"))
+L10N_PE_AUDIT_RULES['salary_rule_EPS225'] = (
+    "if version.social_insurance_id.name == 'EPS':\n    result = AESSALUD * 0.0225\nelse:\n    result = 0",
+    "if version.social_insurance_id.name == 'EPS':\n    # base mínima: la RMV (D.S. 009-97-SA, art. 6)\n"
+    "    result = max(AESSALUD, payslip.rmv) * 0.0225\nelse:\n    result = 0",
+)

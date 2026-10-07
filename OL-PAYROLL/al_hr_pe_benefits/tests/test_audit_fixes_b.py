@@ -175,6 +175,36 @@ class TestAuditFixesB(BenefitsCaseBase):
             sum(exported.mapped('amount')),
             line.monthly_ret + line.ext_ret, places=2)
 
+    def _fifth_line_june(self):
+        fifth = self.env['hr.fifth.category'].create({
+            'payslip_run_id': self.batch_jun.id, 'company_id': self.company.id})
+        fifth.generate_fifth()
+        return fifth, fifth.line_ids.filtered(lambda l: l.employee_id == self.employee)
+
+    def test_quinta_mes_del_cese_no_proyecta(self):
+        """Cese el 30/06: sin meses restantes ni gratificaciones futuras.
+        Con 6 × 3 000 (< 7 UIT) no hay retención; antes se proyectaba el año
+        entero (42 000) y se retenía (auditoría 07/10/2026)."""
+        self._configure_fifth()
+        self.employee.version_id.contract_date_end = date(2026, 6, 30)
+        fifth, line = self._fifth_line_june()
+        self.assertFalse(line, 'sin renta neta no hay retención')
+        excluded = fifth.excluded_ids.filtered(lambda l: l.slip_id.employee_id == self.employee) \
+            if 'excluded_ids' in fifth._fields else False
+        if excluded:
+            self.assertAlmostEqual(excluded.total_proy, 6 * self.wage, places=2)
+
+    def test_quinta_gratificacion_proporcional_al_ingreso(self):
+        """Ingreso el 01/03: la gratificación de julio se proyecta por 4 de
+        6 meses (Ley 27735), no completa."""
+        self._configure_fifth()
+        self.employee.version_id.contract_date_start = date(2026, 3, 1)
+        fifth, line = self._fifth_line_june()
+        if not line:
+            self.skipTest('sin retención con estos datos')
+        self.assertAlmostEqual(line.grat_july, self.wage * 4 / 6, places=2)
+        self.assertAlmostEqual(line.grat_december, self.wage, places=2)
+
     # ------------------------------------------------------------------
     # Utilidades
     # ------------------------------------------------------------------

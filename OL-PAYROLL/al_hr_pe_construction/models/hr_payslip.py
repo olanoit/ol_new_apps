@@ -79,6 +79,17 @@ class HrPayslip(models.Model):
             payslip.l10n_pe_construction_category_id = \
                 version.l10n_pe_construction_category_id
 
+    def compute_sheet(self):
+        # El jornal sale de la tabla del convenio activa, que no está en las
+        # dependencias del cálculo: una boleta creada antes de activar la
+        # tabla nueva se quedaba con jornal 0. Se relee al calcular solo
+        # donde aún no hay línea del convenio: un jornal corregido a mano se
+        # respeta y las confirmadas no cambian (FROZEN_STATES).
+        self.filtered(lambda p: p.version_id.l10n_pe_is_construction
+                      and not p.l10n_pe_wage_line_id) \
+            ._compute_l10n_pe_construction_snapshot()
+        return super().compute_sheet()
+
     def _voucher_extra_hour_types(self, param, wd_types):
         """La boleta también cuenta como sobretiempo las extras al 60 %.
 
@@ -167,11 +178,19 @@ class HrPayslip(models.Model):
                 day += timedelta(days=1)
         return float(min(len(holidays), rest_days))
 
+    #: Sobretiempo del régimen general que el tareaje vuelca y que en
+    #: construcción se paga con las tasas del convenio: las dos primeras
+    #: horas del día al 60 % (en el general, 25 %) y las siguientes al 100 %
+    #: (35 %). Sin esta equivalencia el operario no cobraba sus horas extra.
+    CONSTRUCTION_OVERTIME_ALIASES = {'HE60': ('HE60', 'HE25'), 'HE100': ('HE100', 'HE35')}
+
     def _l10n_pe_construction_hours(self, code):
-        """Horas de un concepto de sobretiempo."""
+        """Horas de un concepto de sobretiempo (con sus equivalentes del
+        régimen general)."""
         self.ensure_one()
+        codes = self.CONSTRUCTION_OVERTIME_ALIASES.get(code, (code,))
         lines = self.worked_days_line_ids.filtered(
-            lambda wd: wd.work_entry_type_id.code == code)
+            lambda wd: wd.work_entry_type_id.code in codes)
         return sum(lines.mapped('number_of_hours'))
 
     # ------------------------------------------------------------------

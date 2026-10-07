@@ -61,6 +61,40 @@ class TestFase2Engine(TransactionCase):
     def _line(self, slip, code):
         return slip.line_ids.filtered(lambda l: l.code == code)
 
+    def test_jor_hours_and_minutes(self):
+        """El .jor declara horas y minutos (07/10/2026: antes truncaba)."""
+        run = self.env['hr.payslip.run']
+        self.assertEqual(run._l10n_pe_hours_minutes(10.5), (10, 30))
+        self.assertEqual(run._l10n_pe_hours_minutes(160.0), (160, 0))
+        self.assertEqual(run._l10n_pe_hours_minutes(0.0), (0, 0))
+
+    def test_rmv_by_period(self):
+        """RMV vigente al cierre de cada periodo: 1 130 en setiembre y 1 230
+        desde octubre de 2026 (D.S. 015-2026-TR), aunque el parámetro de la
+        compañía diga otra cosa."""
+        slips = {}
+        for month in (9, 10):
+            slip = self.env['hr.payslip'].create({
+                'name': 'Boleta RMV %s' % month, 'employee_id': self.employee.id,
+                'struct_id': self.structure.id,
+                'date_from': date(2026, month, 1),
+                'date_to': date(2026, month, 30)})
+            slips[month] = slip
+        self.assertEqual(slips[9].rmv, 1130.0)
+        self.assertEqual(slips[10].rmv, 1230.0)
+        self.assertAlmostEqual(slips[10].family_allowance, 123.0)
+
+    def test_snapshot_follows_the_membership(self):
+        """Cambiar de afiliación con la boleta en borrador rehace las tasas."""
+        slip = self._compute_slip()
+        onp = self.env['hr.membership'].search(
+            [('is_afp', '=', False), ('company_id', '=', False)], limit=1)
+        if not onp:
+            self.skipTest('sin ONP en los datos')
+        self.employee.version_id.membership_id = onp
+        self.assertEqual(slip.membership_id, onp)
+        self.assertAlmostEqual(slip.l10n_pe_retirement_fund, onp.retirement_fund)
+
     def test_snapshot(self):
         slip = self._compute_slip()
         self.assertEqual(slip.rmv, 1130.0)

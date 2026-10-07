@@ -149,3 +149,15 @@ class TestAccountFixes(AccountCaseBase):
         self.assertTrue(all(
             slip.state in ('validated', 'paid')
             for slip in self.batch._pe_get_batch_slips()))
+
+    def test_native_per_slip_move_blocks_the_batch_move(self):
+        """Sin «asiento por lote», el nativo escribe el asiento en la boleta:
+        el asiento peruano del lote no lo duplica (auditoría 07/10/2026)."""
+        slip = self.batch._pe_get_batch_slips()[:1]
+        self.assertTrue(slip)
+        native = self.env['account.move'].create({
+            'move_type': 'entry', 'journal_id': self.env['account.journal'].search(
+                [('company_id', '=', slip.company_id.id), ('type', '=', 'general')], limit=1).id})
+        slip.move_id = native
+        with self.assertRaises(UserError):
+            self.batch._pe_generate_batch_move(adjust_account=self.acc_ajuste)

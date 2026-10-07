@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261007 — 07/10/2026
+
+- Corregido: las horas extra que vuelca el tareaje (25 % y 35 % del régimen general) no se pagaban en construcción; ahora se pagan al 60 % y al 100 % del convenio.
+- Una boleta en borrador creada antes de activar la tabla del convenio toma el jornal al calcularse (antes quedaba en 0); un jornal corregido a mano se respeta.
+
 ## 12.20260925 — 27/09/2026
 
 - El feriado no laborado se paga: entra en los días pagados con su jornal, D.S.O. y BUC (D.Leg. 713). Antes una semana con feriado cobraba un jornal de menos.

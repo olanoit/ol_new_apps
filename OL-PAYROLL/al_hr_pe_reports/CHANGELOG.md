@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- TXT bancarios: Interbank en dólares ya no multiplica el total de cabecera; los haberes con cuenta de cargo en otra moneda se convierten a la fecha de pago; BBVA CTS usa el tipo de proceso configurado; el checksum de BCP CTS cuenta solo las cuentas del archivo; Scotiabank limpia los nombres antes de ajustarlos, usa el mismo tipo de documento en CTS y valida cuentas de 10 dígitos sin guiones.
+- Una boleta con neto negativo (adelanto o préstamo mayor que el ingreso) ya se puede imprimir y enviar.
+
 ## 9.20260925 — 27/09/2026
 
 - El TXT bancario solo paga boletas validadas o pagadas, no se puede generar con el lote aún abierto y deja fuera las cuentas en una moneda distinta a la de la cuenta de cargo.

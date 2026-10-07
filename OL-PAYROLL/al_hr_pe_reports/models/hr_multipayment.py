@@ -282,9 +282,9 @@ def bcp_haberes_txt(header, lines):
 def interbank_haberes_txt(header, lines):
     """TXT Interbank haberes (port de ``get_interbank_hr_txt``).
 
-    Rarezas v18 conservadas: el total USD de la cabecera se rellena a la
-    DERECHA (``left=True``) mientras el de soles va a la izquierda; el
-    detalle deja celular/email en blanco fijo.
+    Los totales de cabecera (soles o dólares) se alinean a la derecha con
+    ceros a la izquierda: v18 rellenaba el de dólares a la derecha y
+    multiplicaba el importe. El detalle deja celular/email en blanco fijo.
 
     Ojo con los nombres de los campos de la plantilla: Odoo 19 parchea
     ``str.format`` (``odoo/_monkeypatches/_cpython.py``) y, si algún campo
@@ -301,7 +301,7 @@ def interbank_haberes_txt(header, lines):
                count=txt_field(len(lines), 'int', 6, left=False),
                soles_total=txt_field(total, 'float', 15, left=False)
                if header['currency'] == 'PEN' else '0' * 15,
-               usd_total=txt_field(total, 'float', 15)
+               usd_total=txt_field(total, 'float', 15, left=False)
                if header['currency'] == 'USD' else '0' * 15,
            )]
     account_type = {'0': '001', '1': '002', '3': ' ' * 3}
@@ -350,10 +350,19 @@ def interbank_haberes_txt(header, lines):
     return ''.join(out)
 
 
+#: Tipo de documento SUNAT → código Scotiabank (DNI, CE, pasaporte).
+SCOTIABANK_DOC_TYPES = {'1': '1', '4': '2', '7': '3'}
+
+
+def _digits(value):
+    """Solo los dígitos de una cuenta («970-0123456» → «9700123456»)."""
+    return ''.join(char for char in (value or '') if char.isdigit())
+
+
 def scotiabank_haberes_txt(header, lines):
     """TXT Scotiabank haberes (port de ``get_scotiabank_hr_txt_2``, la
     variante viva del v18 — sin línea de cabecera)."""
-    doc_type = {'1': '1', '4': '2', '7': '3'}
+    doc_type = SCOTIABANK_DOC_TYPES
     out = []
     for line in lines:
         if line['amount'] <= 0:
@@ -367,11 +376,13 @@ def scotiabank_haberes_txt(header, lines):
                            (line['doc_number'] or '').strip(), 'str', 12),
                        employee_name=txt_field(line['name'], 'str', 60),
                        payment_way=header['payment_way'],
+                       # sin guiones antes de truncar: «970-0123456» se
+                       # convertía en otra cuenta
                        acc_number=txt_field(
-                           line['acc_number'] if not is_cci else '',
+                           _digits(line['acc_number']) if not is_cci else '',
                            'str', 10),
                        acc_number_cci=txt_field(
-                           line['acc_number'] if is_cci else '', 'str', 20),
+                           _digits(line['acc_number']) if is_cci else '', 'str', 20),
                        amount=txt_field(line['amount'], 'float', 11,
                                         left=False),
                        labor_regime='1',
@@ -431,10 +442,13 @@ def bbva_cts_txt(header, lines):
                account=_bbva_charge_account(header),
                currency='USD' if dollars else 'PEN',
                total=txt_field(total, 'float', 15, left=False),
-               process='F',
+               # tipo de proceso configurado (antes fijo «F» con la fecha en
+               # blanco si el tipo no era fecha futura)
+               process=header['process_type'],
                date=txt_field(header['payment_date'], 'date')
                if header['process_type'] == 'F' else ' ' * 8,
-               hour='D',
+               hour=header['process_hour']
+               if header['process_type'] == 'H' else 'D',
                reference=txt_field(header['glosa'], 'str', 25)
                if header['glosa'] else ' ' * 25,
                count=str(len(lines)).zfill(6),
@@ -474,16 +488,21 @@ def bbva_cts_txt(header, lines):
 def bcp_cts_txt(header, lines):
     """TXT BCP CTS (port de ``get_bcp_cts_txt``).
 
-    El checksum usa TODAS las cuentas destino del registro con monto > 0
-    en cualquiera de las dos monedas (``cts_checksum_accs``), no solo las
-    de la moneda emitida — rareza v18 conservada. El campo de monto del
-    detalle concatena monto + moneda + base computable ×4."""
+    El checksum suma la cuenta de cargo y las cuentas destino que van en el
+    archivo (las de la moneda emitida, con monto > 0). v18 sumaba también
+    las de la otra moneda y el checksum no cuadraba con el contenido. El
+    campo de monto del detalle concatena monto + moneda + base computable
+    ×4."""
     dollars = header['cts_dollars']
     currency = '1001' if dollars else '0001'
     total = sum(custom_round(line['amount'], 2) for line in lines)
+    # Solo las cuentas que van en el archivo (las de la moneda emitida y con
+    # importe): con un lote mixto PEN/USD el checksum no cuadraba y BCP
+    # rechazaba el archivo.
+    emitted_accs = [line['acc_number'] for line in lines if line['amount'] > 0]
     checksum = str(
         int(header['charge_acc'][3:])
-        + sum(int(acc[3:]) for acc in header['cts_checksum_accs'])
+        + sum(int(acc[3:]) for acc in emitted_accs if acc[3:].isdigit())
     ).rjust(15, '0')
     out = ['1{count}{date}{charge_type}{currency}{account}{company_doc}'
            '{company_ruc}{total}{reference}{check_sum}\r\n'.format(
@@ -536,7 +555,7 @@ def interbank_cts_txt(header, lines):
                count=txt_field(len(lines), 'int', 6, left=False),
                soles_total=txt_field(total, 'float', 15, left=False)
                if header['currency'] == 'PEN' else '0' * 15,
-               usd_total=txt_field(total, 'float', 15)
+               usd_total=txt_field(total, 'float', 15, left=False)
                if header['currency'] == 'USD' else '0' * 15,
            )]
     account_type = {'0': '001', '1': '007', '3': ' ' * 3}
@@ -599,14 +618,18 @@ def scotiabank_cts_txt(header, lines):
         out.append('{type_document}{number_document}{emp_name}'
                    '{payment_method}{cts_acc}{cci_acc}{rem_amount}'
                    '{cts_currency}{concept}{type_payment}\r\n'.format(
-                       type_document=line['doc_sunat'],
+                       # mismo mapa que haberes (CE=2, pasaporte=3)
+                       type_document=SCOTIABANK_DOC_TYPES.get(line['doc_sunat'], ' '),
                        number_document=(line['doc_number'] or '').ljust(12),
-                       emp_name=clean_text((line['name'] or '').ljust(60)),
+                       # limpiar, truncar y rellenar (al revés desplazaba
+                       # los campos siguientes)
+                       emp_name=txt_field(line['name'] or '', 'str', 60),
                        cts_currency='01' if dollars else '00',
                        payment_method='1',  # abono en cuenta CTS (CCI=2)
-                       cts_acc=line['acc_number'][0:10],
+                       cts_acc=txt_field(
+                           _digits(line['acc_number']) if not is_cci else '', 'str', 10),
                        cci_acc=txt_field(
-                           line['acc_number'] if is_cci else '', 'str', 20),
+                           _digits(line['acc_number']) if is_cci else '', 'str', 20),
                        rem_amount='{0:.2f}'.format(
                            line['amount_soles']).replace('.', '')
                        .zfill(11),
@@ -1083,10 +1106,11 @@ class HrAutomateMultipayment(models.Model):
                     'La cuenta %s debe tener 13 dígitos\n'
                 ) % account.acc_number
         elif bank == 'scotiabank':
+            # el archivo reserva 10 posiciones a la cuenta (sin CCI)
             if account.type_of_account in ('0', '1') \
-                    and len(account.acc_number) > 14:
+                    and len(_digits(account.acc_number)) != 10:
                 log += self.env._(
-                    'La cuenta %s debe tener menos de 14 dígitos\n'
+                    'La cuenta %s debe tener 10 dígitos\n'
                 ) % account.acc_number
         return log
 
@@ -1205,6 +1229,15 @@ class HrAutomateMultipayment(models.Model):
             amount = line.amount_usd
         else:
             amount = line.amount
+            # Haberes, gratificación, quincena o vacaciones con cuenta de
+            # cargo en otra moneda: el neto está en soles y se abonaba la
+            # misma cifra en dólares. Se convierte a la fecha de pago.
+            company_currency = self.company_id.currency_id
+            charge_currency = self.charge_account_id.currency_id or company_currency
+            if charge_currency != company_currency:
+                amount = company_currency._convert(
+                    amount, charge_currency, self.company_id,
+                    self.payment_date or fields.Date.context_today(self))
         # TODO(fase7-revisar): dirección/celular BanBif — v18 leía
         # user_partner_id.street/.mobile; aquí work_contact_id y el
         # mobile_phone del empleado. Validar con datos reales.

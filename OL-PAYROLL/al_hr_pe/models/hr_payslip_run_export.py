@@ -107,25 +107,24 @@ class HrPayslipRun(models.Model):
                 .l10n_pe_hr_sunat_code or '')
 
     def _l10n_pe_get_dlabs(self, slip, param):
-        """Días efectivamente laborados = DLAB − subsidios − vacaciones.
+        """Días efectivamente laborados: los tipos configurados como
+        laborados (DLAB, DOM…).
 
-        Port literal de ``hr.payslip.get_dlabs()`` v18 (aún no existe en
-        el ``hr.payslip`` v19; se define aquí como helper privado).
-        # TODO(fase2-revisar): cuando el motor de nómina (Fase 2) porte
-        # get_dlabs() a hr.payslip, borrar este helper y delegar en él.
+        v18 les restaba subsidios y vacaciones porque ahí venían incluidos.
+        En v19 son líneas aparte (y la línea DOM ya es el complemento del
+        mes), así que restarlos los descontaba dos veces: con 10 días de
+        vacaciones el .jor declaraba 80 h en vez de 160 h.
         """
         dlab_codes = param.wd_dlab.mapped('code')
-        dsub_codes = param.wd_dsub.mapped('code')
-        dvac_codes = param.wd_dvac.mapped('code')
         dlab = slip.worked_days_line_ids.filtered(
             lambda wd: wd.code in dlab_codes)
-        dsub = slip.worked_days_line_ids.filtered(
-            lambda wd: wd.code in dsub_codes)
-        dvac = slip.worked_days_line_ids.filtered(
-            lambda wd: wd.code in dvac_codes)
-        return (sum(dlab.mapped('number_of_days'))
-                - sum(dsub.mapped('number_of_days'))
-                - sum(dvac.mapped('number_of_days')))
+        return sum(dlab.mapped('number_of_days'))
+
+    @staticmethod
+    def _l10n_pe_hours_minutes(hours):
+        """10,5 → (10, 30), redondeando al minuto."""
+        total_minutes = int(round((hours or 0.0) * 60))
+        return divmod(total_minutes, 60)
 
     # ------------------------------------------------------------------
     # PLAME .rem — Remuneraciones por concepto
@@ -282,12 +281,15 @@ class HrPayslipRun(models.Model):
         for employee in sorted(
                 totals, key=lambda e: e.identification_id or ''):
             hlab, hext = totals[employee]
-            # v18: modf() separa la parte entera y %d la trunca.
-            output.write('%s|%s|%d|0|%d|0|\r\n' % (
+            # Horas y minutos (antes se truncaban las horas y los minutos
+            # iban siempre en 0: 10,5 h extra se declaraban como 10 h).
+            hlab_h, hlab_m = self._l10n_pe_hours_minutes(hlab)
+            hext_h, hext_m = self._l10n_pe_hours_minutes(hext)
+            output.write('%s|%s|%d|%d|%d|%d|\r\n' % (
                 self._l10n_pe_doc_type(employee),
                 employee.identification_id or '',
-                modf(hlab)[1],
-                hext,
+                hlab_h, hlab_m,
+                hext_h, hext_m,
             ))
 
         filename = self._l10n_pe_plame_filename('jor')

@@ -28,7 +28,7 @@ Fase 5 (actual):
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '4.20260816',
+    'version': '5.20261007',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],
     'data': [

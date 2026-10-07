@@ -313,6 +313,22 @@ class TestAuditFixesA(BenefitsCaseBase):
         self.assertAlmostEqual(first_semester.total_grat, self.wage,
                                delta=0.05)
 
+    def test_liquidation_exports_advanced_vacation(self):
+        """Las vacaciones adelantadas van a la boleta como descuento
+        (ADE_VAC), no solo restadas en el total de la línea (07/10/2026)."""
+        liquidation = self._cessation_in_july()
+        liquidation.get_liquidation()
+        line = liquidation.vacation_line_ids[:1]
+        if not line:
+            self.skipTest('el cese no generó línea de vacaciones')
+        line.advanced_vacation = 300.0
+        liquidation.export_liquidation()
+        slip = liquidation.payslip_run_id.slip_ids.filtered(
+            lambda s: s.employee_id == self.employee)
+        ade = slip.input_line_ids.filtered(
+            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_ADE_VAC'))
+        self.assertAlmostEqual(ade.amount, 300.0, 2)
+
     def test_liquidation_detail_views_do_not_crash(self):
         liquidation = self._cessation_in_july()
         cts_line = self.env['hr.cts.line'].create({

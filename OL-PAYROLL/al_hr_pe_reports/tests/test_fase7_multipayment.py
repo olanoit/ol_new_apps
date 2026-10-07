@@ -270,8 +270,8 @@ class TestFase7MultipaymentFormats(TransactionCase):
         self.assertEqual(head[16:20], '0001')
         self.assertEqual(head[40], '6')  # tipo de doc de la empresa: RUC
         self.assertEqual(head[41:53], '20123456789'.ljust(12))
-        expected = str(int('2345678901') + int('87654321098')
-                       + int('12223334445')).rjust(15, '0')
+        # solo las cuentas emitidas: la de la otra moneda no va en el archivo
+        expected = str(int('2345678901') + int('87654321098')).rjust(15, '0')
         self.assertEqual(head[110:125], expected)
         detail = result[1]
         self.assertEqual(len(detail), 214)
@@ -321,14 +321,14 @@ class TestFase7MultipaymentFormats(TransactionCase):
         self.assertEqual(detail[179:194], '0' * 15)
         self.assertEqual(detail[194:380], ' ' * 186)
 
-    def test_interbank_haberes_usd_pad_derecha(self):
-        """Total USD de cabecera: relleno de ceros a la DERECHA (rareza
-        v18 conservada)."""
+    def test_interbank_haberes_usd_total_alineado(self):
+        """Total USD de cabecera alineado a la derecha con ceros a la
+        izquierda (v18 rellenaba a la derecha y multiplicaba el importe)."""
         header = make_header(charge_acc='1231234567890', currency='USD')
         head = rows(interbank_haberes_txt(
             header, [make_line(amount=2000.25)]))[0]
         self.assertEqual(head[69:84], '0' * 15)
-        self.assertEqual(head[84:99], '200025000000000')
+        self.assertEqual(head[84:99], '000000000200025')
 
     def test_interbank_cts(self):
         """Cabecera '0106' y 7 TABs literales heredados en el detalle;

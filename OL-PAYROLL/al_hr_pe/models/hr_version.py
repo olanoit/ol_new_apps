@@ -80,24 +80,28 @@ class HrVersion(models.Model):
         help='Los mayores de 65 no aportan prima de seguro AFP sobre el '
              'tope asegurable.',
         groups='hr.group_hr_user')
+    # Códigos de AFPnet («Declarar y pagar planillas»): explican por qué no
+    # hay aporte en el mes. Antes los rótulos eran de jornada («I — Tiempo
+    # parcial») y marcar a un trabajador a tiempo parcial anulaba sus aportes.
     l10n_pe_exception = fields.Selection(
         selection=[
-            ('L', 'L — Trabajador de dirección'),
-            ('U', 'U — Sin fiscalización inmediata'),
-            ('J', 'J — Jornada reducida'),
-            ('I', 'I — Tiempo parcial'),
-            ('P', 'P — Servicio intermitente'),
-            ('O', 'O — Otros'),
+            ('L', 'L — Licencia sin goce de haber'),
+            ('U', 'U — Subsidio pagado directamente por EsSalud'),
+            ('J', 'J — Pensionista por jubilación'),
+            ('I', 'I — Pensionista por invalidez'),
+            ('P', 'P — Relación laboral iniciada en el mes, sin devengue'),
+            ('O', 'O — Otro motivo'),
         ],
-        string='Excepción de jornada (PLAME)', groups='hr.group_hr_user')
+        string='Excepción de aportar (AFPnet)', groups='hr.group_hr_user')
+    # AFPnet: tipo de trabajo o rubro (C es construcción civil, no confianza).
     l10n_pe_work_type = fields.Selection(
         selection=[
             ('N', 'N — Normal'),
-            ('C', 'C — Confianza'),
-            ('M', 'M — Minero'),
-            ('P', 'P — Pesquero'),
+            ('C', 'C — Construcción civil'),
+            ('M', 'M — Minería'),
+            ('P', 'P — Pesquería'),
         ],
-        string='Tipo de labor (PLAME)', default='N', groups='hr.group_hr_user')
+        string='Tipo de trabajo (AFPnet)', default='N', groups='hr.group_hr_user')
 
     # ------------------------------------------------------------------
     # T-Registro — estructura 05 «Datos del trabajador»
@@ -250,11 +254,12 @@ class HrVersion(models.Model):
                 raise ValidationError(_(
                     'El RUC del trabajador debe tener 11 dígitos.'))
 
-    @api.depends('employee_id.birthday', 'date_version')
+    @api.depends('employee_id.birthday')
     def _compute_l10n_pe_is_older(self):
         for version in self:
             birthday = version.employee_id.birthday
-            ref = version.date_version or fields.Date.today()
+            # Edad hoy (la boleta usa la suya, al cierre del periodo).
+            ref = fields.Date.today()
             version.l10n_pe_is_older = bool(
                 birthday
                 and (ref.year - birthday.year

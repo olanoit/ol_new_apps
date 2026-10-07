@@ -226,7 +226,10 @@ class HrPayslip(models.Model):
         if not neto:
             neto = self.net_wage
         neto = custom_round(neto)
-        neto_letras = 'SON: %s SOLES' % param.number_to_letter(neto)
+        # Un neto negativo (adelanto o préstamo mayor que el ingreso) hacía
+        # fallar la boleta entera: se escribe en letras su valor absoluto.
+        neto_letras = 'SON: %s%s SOLES' % (
+            'MENOS ' if neto < 0 else '', param.number_to_letter(abs(neto)))
 
         # --- Situación / cese (port de la lógica v18: la boleta marca
         # BAJA solo si el cese cae dentro del periodo) ---

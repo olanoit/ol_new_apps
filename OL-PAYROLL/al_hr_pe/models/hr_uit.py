@@ -31,3 +31,30 @@ class L10nPeHrUit(models.Model):
                 'No está registrada la UIT del año %(year)s '
                 '(Nómina → Configuración → Perú → UIT).', year=year))
         return uit.amount
+
+
+class L10nPeHrRmv(models.Model):
+    """Remuneración Mínima Vital por fecha de vigencia.
+
+    Es un valor nacional que cambia por decreto supremo a mitad de año
+    (p. ej. S/ 1 230 desde el 01/10/2026, D.S. 015-2026-TR): una boleta
+    toma la vigente al cierre de su periodo, y recalcular un borrador de
+    un mes anterior no aplica la nueva.
+    """
+    _name = 'l10n_pe.hr.rmv'
+    _description = 'Remuneración Mínima Vital'
+    _order = 'date_from desc'
+    _rec_name = 'date_from'
+
+    date_from = fields.Date(string='Vigente desde', required=True)
+    amount = fields.Float(string='RMV (S/)', required=True)
+    legal_reference = fields.Char(string='Norma')
+
+    _date_uniq = models.Constraint(
+        'UNIQUE(date_from)', 'Ya existe una RMV con esa fecha de vigencia.')
+
+    @api.model
+    def get_rmv(self, on_date):
+        """RMV vigente a ``on_date``; 0 si la tabla no la cubre."""
+        rmv = self.search([('date_from', '<=', on_date)], order='date_from desc', limit=1)
+        return rmv.amount

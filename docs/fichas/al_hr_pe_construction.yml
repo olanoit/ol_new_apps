@@ -598,6 +598,11 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: las horas extra que vuelca el tareaje (25 % y 35 % del régimen general) no se pagaban en construcción; ahora se pagan al 60 % y al 100 % del convenio."
+      - "Una boleta en borrador creada antes de activar la tabla del convenio toma el jornal al calcularse (antes quedaba en 0); un jornal corregido a mano se respeta."
   - version: 12.20260925
     fecha: 27/09/2026
     cambios:
