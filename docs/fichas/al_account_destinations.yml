@@ -402,6 +402,10 @@ faq:
       facturas y notas.
 
 novedades:
+  - version: 6.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Los destinos de la factura pasan a la pestaña interna «Contabilidad PE ▸ Destinos»."
   - version: 5.20261007
     fecha: 07/10/2026
     cambios:

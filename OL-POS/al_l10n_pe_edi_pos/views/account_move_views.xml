@@ -6,9 +6,10 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <!-- Pestaña Otra información: el usuario de backend desmarca la
-                 retención para que el cron/botón de EDI envíe a SUNAT. -->
-            <xpath expr="//field[@name='invoice_user_id']" position="after">
+            <!-- «Facturación PE ▸ Comprobante electrónico» (al_l10n_pe_invoice):
+                 el usuario de backend desmarca la retención para que el
+                 cron/botón de EDI envíe a SUNAT. -->
+            <xpath expr="//group[@name='l10n_pe_edi_document_options']" position="inside">
                 <field name="l10n_pe_edi_hold"
                        invisible="country_code != 'PE' or move_type not in ('out_invoice', 'out_refund')"/>
             </xpath>

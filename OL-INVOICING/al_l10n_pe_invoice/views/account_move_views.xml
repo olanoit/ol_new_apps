@@ -5,9 +5,34 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='delivery_date']" position="after">
-                <field name="sale_id" invisible="not sale_id" readonly="1"/>
-                <field name="external_purchase" invisible="move_type not in ('out_invoice', 'out_refund')"/>
+            <!-- «Facturación PE ▸ Comprobante electrónico»: reemplaza la página
+                 «Peruvian EDI» de l10n_pe_edi. Su grupo se mueve aquí (sigue
+                 existiendo con su nombre para otras herencias) y la página
+                 original queda oculta. -->
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Comprobante electrónico" name="l10n_pe_edi_document"
+                      invisible="not l10n_pe_edi_is_required and move_type not in ('out_invoice', 'out_refund')">
+                    <group>
+                        <group name="l10n_pe_edi_document_left"
+                               invisible="not l10n_pe_edi_is_required"/>
+                        <group name="l10n_pe_edi_document_options">
+                            <field name="sale_id" invisible="not sale_id" readonly="1"/>
+                            <field name="external_purchase"
+                                   invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <!-- «move» solo vale como hijo directo del nodo de herencia. -->
+            <xpath expr="//group[@name='l10n_pe_edi_document_left']" position="inside">
+                <xpath expr="//group[@name='l10n_pe_edi_electronic_info']" position="move"/>
+            </xpath>
+            <!-- La detracción (al_l10n_pe_detraction) después del comprobante. -->
+            <xpath expr="//page[@name='l10n_pe_edi_document']" position="after">
+                <xpath expr="//page[@name='l10n_pe_detraction']" position="move"/>
+            </xpath>
+            <xpath expr="//page[@name='l10n_pe_edi']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>

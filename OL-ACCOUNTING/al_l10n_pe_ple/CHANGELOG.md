@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261007 — 07/10/2026
+
+- Los datos del RCE (clasificación y estado), la importación y no domiciliados de l10n_pe_reports y el tipo de transacción de los asientos pasan a «Contabilidad PE ▸ Registros electrónicos».
+
 ## 13.20261007 — 07/10/2026
 
 - RVIE 14.4: una nota de crédito o débito de venta sin el comprobante que modifica (campos 29-32) bloquea el TXT con la lista de notas a corregir, como ya hacía el RCE 8.4 con las de compra; las anuladas no bloquean (van en cero).

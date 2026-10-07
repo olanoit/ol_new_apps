@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- Factura: nuevas páginas «Facturación PE» y «Contabilidad PE», cada una con pestañas internas donde los módulos de la localización ponen sus datos (anclas l10n_pe_invoicing_notebook, l10n_pe_accounting_notebook y «Registros electrónicos»). «Contabilidad PE» no se muestra en ventas.
+
 ## 4.20260815 — 27/09/2026
 
 - El botón **Restablecer a borrador** ya no aparece en los asientos bloqueados con hash ni en los comprobantes que exigen solicitar la anulación a SUNAT: allí el sistema lo rechazaba igualmente con un error.

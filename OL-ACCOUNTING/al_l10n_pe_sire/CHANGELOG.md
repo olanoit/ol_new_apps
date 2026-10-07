@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261007 — 07/10/2026
+
+- Los datos SIRE de la factura de proveedor van a «Contabilidad PE ▸ Registros electrónicos» y la pestaña de no domiciliados a «Contabilidad PE ▸ No domiciliado (SIRE)».
+
 ## 11.20261007 — 07/10/2026
 
 - Las notas 87 y 88 sin comprobante de origen también se marcan como observación y bloquean el reemplazo (antes solo las 07 y 08); las anuladas no.

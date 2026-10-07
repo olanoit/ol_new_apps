@@ -40,7 +40,7 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
-    'version': '12.20261007',
+    'version': '13.20261007',
     'license': 'OPL-1',
     'depends': [
         'account',

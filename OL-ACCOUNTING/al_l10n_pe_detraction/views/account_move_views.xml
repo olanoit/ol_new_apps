@@ -5,7 +5,8 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='other_info']" position="after">
+            <!-- Pestaña interna de «Facturación PE» (al_account_base). -->
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
                 <page string="Detracción" name="l10n_pe_detraction"
                       invisible="not l10n_pe_detraction_applies and not l10n_pe_detraction_type_id">
                     <group>
@@ -31,6 +32,12 @@
                         </group>
                     </group>
                 </page>
+            </xpath>
+            <!-- La constancia que l10n_pe_reports pone en «Otra información»
+                 de la factura de proveedor ya está en esta pestaña: así no
+                 sale dos veces. -->
+            <xpath expr="//group[@name='l10n_pe_group']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>

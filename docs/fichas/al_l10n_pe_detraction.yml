@@ -582,6 +582,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 14.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "La detracción pasa a la pestaña interna «Facturación PE ▸ Detracción». La constancia que l10n_pe_reports mostraba aparte en la factura de proveedor ya no sale duplicada."
   - version: 13.20261007
     fecha: 07/10/2026
     cambios:

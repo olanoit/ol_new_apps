@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "La página «Peruvian EDI» de l10n_pe_edi se reemplaza por «Facturación PE ▸ Comprobante electrónico» (motivos y leyendas), con la OC externa; la detracción va detrás. Test de estructura del formulario."
   - version: 12.20261007
     fecha: 07/10/2026
     cambios:

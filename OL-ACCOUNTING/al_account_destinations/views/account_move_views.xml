@@ -6,14 +6,17 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <!-- Destinos: enlaces al asiento de destino generado -->
-            <xpath expr="//page[@name='other_info']" position="inside">
-                <group string="Destinos"
-                       invisible="not l10n_pe_is_destiny_entry and not l10n_pe_destiny_move_id">
-                    <field name="l10n_pe_is_destiny_entry" invisible="not l10n_pe_is_destiny_entry"/>
-                    <field name="l10n_pe_destiny_move_id" invisible="not l10n_pe_destiny_move_id"/>
-                    <field name="l10n_pe_origin_move_id"
-                           invisible="not l10n_pe_is_destiny_entry or not l10n_pe_origin_move_id"/>
-                </group>
+            <!-- Pestaña interna de «Contabilidad PE» (al_account_base). -->
+            <xpath expr="//notebook[@name='l10n_pe_accounting_notebook']" position="inside">
+                <page string="Destinos" name="l10n_pe_destinations"
+                      invisible="not l10n_pe_is_destiny_entry and not l10n_pe_destiny_move_id">
+                    <group>
+                        <field name="l10n_pe_is_destiny_entry" invisible="not l10n_pe_is_destiny_entry"/>
+                        <field name="l10n_pe_destiny_move_id" invisible="not l10n_pe_destiny_move_id"/>
+                        <field name="l10n_pe_origin_move_id"
+                               invisible="not l10n_pe_is_destiny_entry or not l10n_pe_origin_move_id"/>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

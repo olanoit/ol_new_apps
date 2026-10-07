@@ -22,7 +22,7 @@ campos sin uso.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '4.20260815',
+    'version': '5.20261007',
     'license': 'OPL-1',
     'depends': ['account'],
     'data': [

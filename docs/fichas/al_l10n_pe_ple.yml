@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 14.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Los datos del RCE (clasificación y estado), la importación y no domiciliados de l10n_pe_reports y el tipo de transacción de los asientos pasan a «Contabilidad PE ▸ Registros electrónicos»."
   - version: 13.20261007
     fecha: 07/10/2026
     cambios:

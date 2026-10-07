@@ -17,6 +17,32 @@
                  salvo donde el servidor lo rechazaría igualmente: asiento ya
                  bloqueado con hash o comprobante enviado que exige solicitar
                  la anulación (button_draft lanza error en ambos casos). -->
+            <!-- Páginas «Facturación PE» y «Contabilidad PE»: cada módulo de la
+                 localización pone aquí sus datos, en una pestaña interna de su
+                 notebook, en vez de repartirlos por «Otra información» y la
+                 cabecera. Los nombres (l10n_pe_invoicing_notebook,
+                 l10n_pe_accounting_notebook, l10n_pe_books_left/right) son el
+                 punto de anclaje de los demás módulos. -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Facturación PE" name="l10n_pe_invoicing"
+                      invisible="country_code != 'PE' or move_type == 'entry'">
+                    <notebook name="l10n_pe_invoicing_notebook"/>
+                </page>
+                <!-- En ventas no hay datos contables PE propios (lo de SUNAT
+                     está en «Facturación PE»). -->
+                <page string="Contabilidad PE" name="l10n_pe_accounting"
+                      invisible="country_code != 'PE' or move_type in ('out_invoice', 'out_refund', 'out_receipt')">
+                    <notebook name="l10n_pe_accounting_notebook">
+                        <page string="Registros electrónicos" name="l10n_pe_books">
+                            <group name="l10n_pe_books_group">
+                                <group name="l10n_pe_books_left"/>
+                                <group name="l10n_pe_books_right"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </page>
+            </xpath>
+
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="invisible">state not in ('cancel', 'posted') or inalterable_hash or need_cancel_request</attribute>
             </xpath>

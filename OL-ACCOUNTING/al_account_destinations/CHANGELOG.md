@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261007 — 07/10/2026
+
+- Los destinos de la factura pasan a la pestaña interna «Contabilidad PE ▸ Destinos».
+
 ## 5.20261007 — 07/10/2026
 
 - Corregido: restablecer y volver a publicar un comprobante consumía otro número del diario de destinos y dejaba huecos en el correlativo; ahora conserva su número salvo que cambie el periodo.

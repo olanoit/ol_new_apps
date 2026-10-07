@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261007 — 07/10/2026
+
+- La página «Peruvian EDI» de l10n_pe_edi se reemplaza por «Facturación PE ▸ Comprobante electrónico» (motivos y leyendas), con la OC externa; la detracción va detrás. Test de estructura del formulario.
+
 ## 12.20261007 — 07/10/2026
 
 - Corregido: al facturar a un contacto de una empresa, el A4 imprimía el nombre del contacto y su documento (vacío); ahora muestra la empresa y su RUC, como el XML y el QR.

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261007 — 07/10/2026
+
+- La detracción pasa a la pestaña interna «Facturación PE ▸ Detracción». La constancia que l10n_pe_reports mostraba aparte en la factura de proveedor ya no sale duplicada.
+
 ## 13.20261007 — 07/10/2026
 
 - Corregido: en facturas en moneda extranjera la detracción se calculaba sobre el total en soles de la factura, que depende del T.C. elegido (compra o editado a mano). Ahora se convierte siempre al T.C. venta oficial de la fecha de emisión, como manda la R.S. 183-2004/SUNAT, y coincide con el monto que va en el XML. Ejemplo: US$ 1 180 con venta 3.80 y factura a compra 3.70 daba S/ 524 en vez de S/ 538.

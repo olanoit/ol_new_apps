@@ -24,12 +24,27 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <field name="invoice_date_due" position="after">
-                <field name="l10n_pe_rce_classification"
-                       invisible="country_code != 'PE' or move_type not in ('in_invoice', 'in_refund')"/>
-                <field name="l10n_pe_rce_status"
-                       invisible="country_code != 'PE' or move_type not in ('in_invoice', 'in_refund')"/>
-            </field>
+            <!-- «Contabilidad PE ▸ Registros electrónicos» (al_account_base). -->
+            <xpath expr="//group[@name='l10n_pe_books_left']" position="inside">
+                <group string="Registro de compras (PLE)" name="l10n_pe_rce_group" colspan="2"
+                       invisible="move_type not in ('in_invoice', 'in_refund')">
+                    <field name="l10n_pe_rce_classification"/>
+                    <field name="l10n_pe_rce_status"/>
+                </group>
+            </xpath>
+            <!-- De l10n_pe_reports: importación / no domiciliado (8.2) y el tipo
+                 de transacción de los asientos, debajo de las columnas. -->
+            <xpath expr="//group[@name='l10n_pe_books_group']" position="after">
+                <xpath expr="//group[@name='l10n_pe_group_foreign']" position="move"/>
+                <xpath expr="//group[@name='l10n_pe_sunat_transaction_type']" position="move"/>
+            </xpath>
+            <xpath expr="//group[@name='l10n_pe_group_foreign']" position="attributes">
+                <attribute name="string">Importación y no domiciliados (PLE)</attribute>
+            </xpath>
+            <!-- Solo en asientos, como en su sitio original (pestaña del asiento). -->
+            <xpath expr="//group[@name='l10n_pe_sunat_transaction_type']" position="attributes">
+                <attribute name="invisible">country_code != 'PE' or move_type != 'entry'</attribute>
+            </xpath>
         </field>
     </record>
 

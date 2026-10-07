@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Factura: nuevas páginas «Facturación PE» y «Contabilidad PE», cada una con pestañas internas donde los módulos de la localización ponen sus datos (anclas l10n_pe_invoicing_notebook, l10n_pe_accounting_notebook y «Registros electrónicos»). «Contabilidad PE» no se muestra en ventas."
   - version: 4.20260815
     fecha: 27/09/2026
     cambios:

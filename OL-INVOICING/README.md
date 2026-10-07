@@ -32,5 +32,5 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_complaints_book](al_l10n_pe_complaints_book/) | 1.20261006 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
 [al_l10n_pe_delivery_guide_report](al_l10n_pe_delivery_guide_report/) | 8.20261007 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](al_l10n_pe_edi_downpayment_discount/) | 2.20261007 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
-[al_l10n_pe_invoice](al_l10n_pe_invoice/) | 12.20261007 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
+[al_l10n_pe_invoice](al_l10n_pe_invoice/) | 13.20261007 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [//]: # (end addons)
