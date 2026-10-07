@@ -43,7 +43,8 @@ nativo de Odoo 19 (`l10n_account_withholding_tax`).
 
 Reversión del CRE (resumen diario de reversiones), letras y compensaciones
 como momento del pago, descuento de una nota de crédito posterior en la
-siguiente retención y alerta del plazo de 7 días para enviar el CRE. Ver
+siguiente retención. El módulo oficial de Odoo 20 tampoco implementa la
+reversión (solo reserva el estado «cancelled»). Ver
 `docs/retencion/INVESTIGACION_APPS_Y_NORMA.md`.
 
 ## Pruebas

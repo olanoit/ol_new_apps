@@ -10,6 +10,11 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
+
+#: Códigos SUNAT (catálogo 05): IGV e IVAP gravan la base; ICBPER aparte.
+IGV_TAX_CODES = ('1000', '1016')
+ICBPER_TAX_CODE = '7152'
+
 class L10nPePleExportWizard(models.TransientModel):
     _name = 'l10n_pe.ple.export.wizard'
     _inherit = 'l10n_pe.ple.mixin'
@@ -454,31 +459,44 @@ class L10nPePleExportWizard(models.TransientModel):
         """(BI gravada, IGV/IPM, ICBPER, otros conceptos) en moneda de la
         compañía, con signo (negativos en notas de crédito).
 
-        Todo en la misma moneda: antes el ICBPER salía del apunte (soles) y
-        el resto de los totales del documento (moneda extranjera).
+        Se reparte por código de tributo SUNAT y no por «la factura lleva
+        IGV»: con 100 gravado + 50 exonerado, la base salía 150. La base
+        gravada es la de las líneas con IGV/IVAP; el resto (exonerado,
+        inafecto, ISC, otros tributos) va a «otros conceptos». Un comprobante
+        anulado va en cero.
         """
+        if move.state == 'cancel':
+            return (0.0, 0.0, 0.0, 0.0)
         sign = -1 if move.move_type in ('in_refund', 'out_refund') else 1
-        icbper = 0.0
+        base = igv = icbper = 0.0
         for line in move.line_ids:
-            if line.tax_line_id and 'ICBPER' in (
-                    line.tax_line_id.name or '').upper():
-                icbper += abs(line.balance)
-        untaxed = abs(move.amount_untaxed_signed)
-        igv = max(abs(move.amount_tax_signed) - icbper, 0.0)
-        base = untaxed if igv else 0.0
-        others = untaxed if not igv else 0.0
+            if line.display_type in ('line_section', 'line_subsection', 'line_note'):
+                continue
+            if line.tax_line_id:
+                code = line.tax_line_id.l10n_pe_edi_tax_code
+                if code in IGV_TAX_CODES:
+                    igv += line.balance
+                elif code == ICBPER_TAX_CODE:
+                    icbper += line.balance
+            elif line.display_type == 'product' and any(
+                    tax.l10n_pe_edi_tax_code in IGV_TAX_CODES
+                    for tax in line.tax_ids.flatten_taxes_hierarchy()):
+                base += line.balance
+        base, igv, icbper = abs(base), abs(igv), abs(icbper)
+        others = max(abs(move.amount_total_signed) - base - igv - icbper, 0.0)
         return (sign * base, sign * igv, sign * icbper, sign * others)
 
     def _invoice_rate(self, move):
-        """TC #.### si el documento no está en soles; '' en caso contrario."""
-        if (move.currency_id != self.company_id.currency_id
-                and move.amount_total):
-            return '%.3f' % abs(move.amount_total_signed / move.amount_total)
-        return ''
+        """T.C. ``#.###`` del comprobante (el del documento modificado en las
+        notas). En soles, ``1.000``: en el 14.2 el campo 19 es obligatorio si
+        el 18 (moneda) tiene dato."""
+        rate = self.env['l10n_pe.rce.extractor']._rce_exchange_rate(move)
+        return '%.3f' % rate if rate else '1.000'
 
     def _reversed_doc(self, move):
         """(fecha, tipo, serie, número) del comprobante modificado (NC/ND)."""
-        origin = move.reversed_entry_id
+        # la ND guarda su origen en debit_origin_id, no en reversed_entry_id
+        origin = move.reversed_entry_id or move.debit_origin_id
         if not origin:
             return '', '', '', ''
         serie, folio = self._serie_folio(
@@ -487,14 +505,29 @@ class L10nPePleExportWizard(models.TransientModel):
                 origin.l10n_latam_document_type_id.code or '00',
                 serie, folio)
 
-    def _invoice_moves(self, move_types):
+    def _invoice_moves(self, move_types, include_cancelled=False):
+        """Comprobantes del mes; con ``include_cancelled``, también los
+        emitidos y luego anulados (el 14.2 los informa con estado 2)."""
         date_from, date_to = self._month_range()
+        state_domain = [('state', '=', 'posted')]
+        if include_cancelled:
+            state_domain = ['|', ('state', '=', 'posted'),
+                            '&', ('state', '=', 'cancel'), ('posted_before', '=', True)]
         return self.env['account.move'].search([
             ('company_id', '=', self.company_id.id),
             ('move_type', 'in', move_types),
-            ('state', '=', 'posted'),
             ('date', '>=', date_from), ('date', '<=', date_to),
-        ], order='date, id')
+        ] + state_domain, order='date, id')
+
+    def _purchase_status(self, move):
+        """Estado del 8.3 (campo 32): 1 si el comprobante es del periodo; 6 si
+        es anterior y se anota dentro de los 12 meses; 7 si pasaron más."""
+        issued = move.invoice_date or move.date
+        date_from, _date_to = self._month_range()
+        if not issued or issued >= date_from:
+            return '1'
+        months = (date_from.year - issued.year) * 12 + date_from.month - issued.month
+        return '6' if months <= 12 else '7'
 
     def _export_52(self):
         """5.2 Diario Simplificado — misma estructura de 21 campos que el
@@ -545,8 +578,10 @@ class L10nPePleExportWizard(models.TransientModel):
 
     def _export_54(self):
         """5.4 Plan contable del Diario Simplificado (8 campos, como 5.3)."""
-        accounts = self.env['account.account'].with_company(
-            self.company_id).search([], order='code')
+        # with_company no filtra: en v19 conserva las demás compañías
+        # permitidas y salían sus cuentas (con códigos repetidos).
+        Account = self.env['account.account'].with_company(self.company_id)
+        accounts = Account.search(Account._check_company_domain(self.company_id), order='code')
         period = '%04d%s01' % (self.year, self.month)
         lines = []
         for account in accounts:
@@ -613,18 +648,18 @@ class L10nPePleExportWizard(models.TransientModel):
                     '',                                          # 27 clasificación
                     '', '', '',                                  # 28-30 errores
                     '',                                          # 31 medio de pago
-                    '1']                                         # 32 estado
+                    self._purchase_status(move)]                 # 32 estado
             lines.append(row)
         return self._make_file_monthly('080300', lines)
 
     def _export_142(self):
         """14.2 Registro de Ventas e Ingresos Simplificado (26 campos)."""
         lines = []
-        for move in self._invoice_moves(('out_invoice', 'out_refund')):
+        for move in self._invoice_moves(('out_invoice', 'out_refund'), include_cancelled=True):
             row = self._simplified_invoice_row(move)
             row += ['',                                          # 24 error 1
                     '',                                          # 25 medio de pago
-                    '1']                                         # 26 estado
+                    '2' if move.state == 'cancel' else '1']      # 26 estado
             lines.append(row)
         return self._make_file_monthly('140200', lines)
 

@@ -30,9 +30,14 @@
                     </div>
 
                     <!-- TIPO Y NÚMERO DE DOCUMENTO -->
-                    <div class="alpe-doc">
+                    <div class="alpe-doc" t-if="peIssued">
                         <t t-esc="order.peDocTypeLabel"/><br/>
                         <t t-esc="peDocNumber"/>
+                    </div>
+                    <div class="alpe-doc" t-else="">
+                        COMPROBANTE ELECTRÓNICO PENDIENTE<br/>
+                        <small>Este ticket no es un comprobante de pago: solicite el
+                        comprobante emitido.</small>
                     </div>
 
                     <!-- DATOS DEL CLIENTE -->
@@ -100,12 +105,32 @@
                             <td class="alpe-label">Op. inafectas</td>
                             <td class="alpe-num" t-esc="formatCurrency(amounts.unaffected)"/>
                         </tr>
+                        <tr t-if="amounts.export">
+                            <td class="alpe-label">Op. exportación</td>
+                            <td class="alpe-num" t-esc="formatCurrency(amounts.export)"/>
+                        </tr>
+                        <tr t-if="amounts.free">
+                            <td class="alpe-label">Op. gratuitas</td>
+                            <td class="alpe-num" t-esc="formatCurrency(amounts.free)"/>
+                        </tr>
+                        <tr t-if="amounts.isc">
+                            <td class="alpe-label">ISC</td>
+                            <td class="alpe-num" t-esc="formatCurrency(amounts.isc)"/>
+                        </tr>
+                        <tr t-if="amounts.ivap">
+                            <td class="alpe-label">IVAP</td>
+                            <td class="alpe-num" t-esc="formatCurrency(amounts.ivap)"/>
+                        </tr>
                         <tr t-if="amounts.icbper">
                             <td class="alpe-label">ICBPER</td>
                             <td class="alpe-num" t-esc="formatCurrency(amounts.icbper)"/>
                         </tr>
+                        <tr t-if="amounts.others">
+                            <td class="alpe-label">Otros tributos</td>
+                            <td class="alpe-num" t-esc="formatCurrency(amounts.others)"/>
+                        </tr>
                         <tr>
-                            <td class="alpe-label">IGV (18%)</td>
+                            <td class="alpe-label" t-esc="amounts.igvLabel"/>
                             <td class="alpe-num" t-esc="formatCurrency(amounts.igv)"/>
                         </tr>
                         <tr class="alpe-total-row">
@@ -159,9 +184,11 @@
                     </div>
 
                     <div class="alpe-footer">
-                        <div>Representación impresa de la
-                            <t t-esc="order.peDocTypeLabel.toLowerCase()"/>.</div>
-                        <div>Consulte en www.sunat.gob.pe</div>
+                        <t t-if="peIssued">
+                            <div>Representación impresa de la
+                                <t t-esc="order.peDocTypeLabel.toLowerCase()"/>.</div>
+                            <div>Consulte en www.sunat.gob.pe</div>
+                        </t>
                         <div>Gracias por su preferencia.</div>
                         <div t-if="order.config.receipt_footer"
                              style="white-space:pre-line"

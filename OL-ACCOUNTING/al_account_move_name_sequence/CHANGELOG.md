@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_move_name_sequence.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Corregido: un usuario de facturación no podía borrar un borrador que nunca se publicó en diarios con numeración propia; ahora puede, y un comprobante que ya tuvo número sigue protegido.
+- La serie de un comprobante que ya fue numerado no se puede cambiar (quedaba el nombre de una serie y el contador de otra).
+
 ## 10.20261006 — 06/10/2026
 
 - Una factura o boleta publicada sin serie en un diario con varias series toma la primera: antes caía en la numeración nativa, que no movía el contador de la serie, y la siguiente boleta numerada por la serie repetía un número.

@@ -88,8 +88,10 @@ class TestGuideGrouping(TransactionCase):
     # ------------------------------------------------------------------
     # Agrupación del detalle
     # ------------------------------------------------------------------
-    def test_same_product_same_uom_is_one_line(self):
-        """Dos movimientos del mismo producto y UdM salen como una línea.
+    def test_one_line_per_move_like_the_xml(self):
+        """Dos movimientos del mismo producto salen como dos líneas, como
+        las dos ``DespatchLine`` del XML (auditoría 07/10/2026; antes se
+        consolidaban y la numeración no coincidía con el XML).
 
         El segundo movimiento se añade después de confirmar: al crearlos
         juntos, Odoo los fusiona y no habría nada que agrupar.
@@ -108,9 +110,12 @@ class TestGuideGrouping(TransactionCase):
         for move in picking.move_ids:
             move.quantity = move.product_uom_qty
         grouped = picking._get_grouped_move_lines()
-        self.assertEqual(len(grouped), 1, 'debe consolidarse en una línea')
-        self.assertEqual(grouped[0]['quantity'], 5.0)
-        self.assertEqual(grouped[0]['uom'], self.uom_unit)
+        self.assertEqual(len(grouped), 2, 'una línea por movimiento, como el XML')
+        self.assertEqual(sorted(g['quantity'] for g in grouped), [2.0, 3.0])
+
+    def test_quantity_keeps_decimals(self):
+        self.assertEqual(self.env['stock.picking']._l10n_pe_report_quantity(1.255), '1.255')
+        self.assertEqual(self.env['stock.picking']._l10n_pe_report_quantity(5.0), '5')
 
     def test_different_uom_are_separate_lines(self):
         """Mismo producto con UdM distinta no se puede sumar: dos líneas."""

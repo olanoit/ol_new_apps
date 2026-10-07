@@ -171,6 +171,18 @@ class TestRetentionCre(TestRetentionApplies):
             self.skipTest('sin tipo de documento 04')
         self.assertFalse(bill.l10n_pe_retention_eligible)
 
+    def test_send_deadline(self):
+        """R.S. 274-2015: 7 días calendario para enviar el CRE."""
+        from datetime import timedelta
+        payment = self._paid()
+        self.assertEqual(payment.l10n_pe_edi_deadline, payment.date + timedelta(days=7))
+        overdue = payment.date + timedelta(days=8)
+        with patch('odoo.fields.Date.context_today', return_value=overdue):
+            payment.invalidate_recordset(['l10n_pe_edi_overdue'])
+            self.assertTrue(payment.l10n_pe_edi_overdue)
+            self.assertIn(payment, self.env['account.payment'].search(
+                [('l10n_pe_edi_overdue', '=', True)]))
+
     def test_printed_representation(self):
         payment = self._paid()
         html = self.env['ir.actions.report']._render_qweb_html(

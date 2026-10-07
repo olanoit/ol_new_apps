@@ -175,6 +175,11 @@ faq:
       escenarios sin incumplimientos y con el mismo total que el asiento.
 
 novedades:
+  - version: 2.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: un anticipo con una nota de crédito parcial dejaba de citarse en la factura final y SUNAT la rechazaba; solo se excluye el anticipo revertido por completo."
+      - "Vuelve a bloquearse la nota de crédito con cantidad negativa e importe positivo, que SUNAT rechaza (las deducciones de anticipo siguen permitidas)."
   - version: 1.20261006
     fecha: 06/10/2026
     cambios:

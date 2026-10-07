@@ -65,7 +65,7 @@ class RceExportCommon(AccountTestInvoicingCommon):
             bill.action_post()
         return bill
 
-    def _export(self, year=2026, month=3):
+    def _export(self, year=2026, month=3, full_row=False):
         options = self.report.get_options({
             'date': {
                 'date_from': date(year, month, 1).strftime('%Y-%m-%d'),
@@ -75,7 +75,8 @@ class RceExportCommon(AccountTestInvoicingCommon):
             },
             'selected_variant_id': self.report.id,
         })
-        handler = self.env[self.report.custom_handler_model_name]
+        handler = self.env[self.report.custom_handler_model_name].with_context(
+            l10n_pe_rce_full_row=full_row)
         return handler.with_company(self.company).export_to_txt(options)
 
     def _lines(self, result):
@@ -85,16 +86,16 @@ class RceExportCommon(AccountTestInvoicingCommon):
 
 @tagged('post_install', '-at_install')
 class TestRce84Export(RceExportCommon):
-    """RCE 8.4 — Registro de Compras (41 campos)."""
+    """RCE 8.4 — Registro de Compras (37 campos en el TXT)."""
 
-    def test_export_produces_41_fields(self):
+    def test_export_produces_37_fields(self):
         self._create_bill()
         lines = self._lines(self._export())
         self.assertTrue(lines, 'la factura debería aparecer en el RCE 8.4')
         for line in lines:
             self.assertEqual(
-                line.count('|'), 41,
-                'cada línea del 8.4 lleva 41 campos y cierra con pipe:\n%s' % line)
+                line.count('|'), 37,
+                'cada línea del 8.4 lleva 37 campos y cierra con pipe:\n%s' % line)
 
     def test_export_filename_is_official(self):
         self._create_bill()
@@ -136,9 +137,11 @@ class TestRce84Export(RceExportCommon):
 
     def test_status_is_active_when_posted(self):
         self._create_bill()
-        fields_ = self._lines(self._export())[0].split('|')
+        fields_ = self._lines(self._export(full_row=True))[0].split('|')
         self.assertEqual(fields_[39], '1',
-                         'campo 40: comprobante publicado = activo')
+                         'campo 40 (solo en el Excel): comprobante publicado = activo')
+        txt = self._lines(self._export())[0].split('|')
+        self.assertEqual(len(txt), 38, 'el TXT no lleva los campos 38-41 (37 + cierre)')
 
     def test_status_is_void_when_cancelled(self):
         bill = self._create_bill()
@@ -288,3 +291,26 @@ class TestRce85Export(RceExportCommon):
                          'campo 19: domicilio en el extranjero')
         self.assertEqual(fields_[19], 'BE0425399042', 'campo 20: identificación')
 
+
+
+@tagged('post_install', '-at_install')
+class TestRceAudit20261007(RceExportCommon):
+    """Auditoría del 07/10/2026 contra los anexos oficiales."""
+
+    def test_credit_note_uses_origin_rate(self):
+        """Nota sobre un comprobante en USD: T.C. del documento modificado."""
+        extractor = self.env['l10n_pe.rce.extractor']
+        usd = self.env.ref('base.USD')
+        bill = self._create_bill()
+        bill.button_draft()
+        bill.currency_id = usd
+        bill.invoice_currency_rate = 1 / 3.712
+        bill.action_post()
+        nc_type = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '07'), ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        refund = bill._reverse_moves([{
+            'invoice_date': bill.invoice_date, 'ref': 'NC',
+            'l10n_latam_document_type_id': nc_type.id,
+            'l10n_latam_document_number': 'FC01-00000001'}])
+        refund.invoice_currency_rate = 1 / 3.800
+        self.assertAlmostEqual(extractor._rce_exchange_rate(refund), 3.712, 3)

@@ -11,7 +11,7 @@ Estrategias soportadas:
   1. **Por código de ubigeo** (6 dígitos, p. ej. ``150101``) — la más
      fiable cuando la API la devuelve.
   2. **Por nombres** (distrito + provincia + departamento) con
-     normalización ``=ilike`` y matching tolerante.
+     comparación sin tildes ni mayúsculas.
 """
 import logging
 import unicodedata
@@ -92,43 +92,39 @@ def resolve_by_names(env, *, district='', city='', state='', country_code='PE'):
     cities_sudo = env[M_CITY].sudo()
     states_sudo = env[M_STATE].sudo()
 
-    # 1) Match exacto distrito + ciudad
-    if district and city:
-        cities = cities_sudo.search([
-            ('name', '=ilike', city.strip()),
-            ('country_id', '=', country.id),
-        ])
-        if cities:
-            d = districts_sudo.search([
-                ('name', '=ilike', district.strip()),
-                ('city_id', 'in', cities.ids),
-            ], limit=1)
-            if d:
-                return _district_to_vals(d)
+    # Comparación sin tildes ni mayúsculas en Python: ``=ilike`` sí distingue
+    # tildes («Jaen» no encuentra «Jaén») y el distrito suelto acababa en
+    # otro del mismo nombre (hay 10 «Santa Rosa» en el país).
+    def matching(records, name):
+        target = _norm(name)
+        return records.filtered(lambda r: _norm(r.name) == target) if target else records.browse()
 
-    # 2) Distrito solo (la mayoría de distritos en PE son únicos)
-    if district:
-        d = districts_sudo.search([('name', '=ilike', district.strip())], limit=1)
-        if d:
+    states = matching(states_sudo.search([('country_id', '=', country.id)]), state) if state else None
+    city_domain = [('country_id', '=', country.id)]
+    if states:
+        city_domain.append(('state_id', 'in', states.ids))
+    cities = matching(cities_sudo.search(city_domain), city) if city else cities_sudo.browse()
+
+    # 1) Distrito dentro de la provincia (y departamento) indicados
+    if district and cities:
+        d = matching(districts_sudo.search([('city_id', 'in', cities.ids)]), district)
+        if len(d) == 1:
+            return _district_to_vals(d)
+
+    # 2) Distrito solo: únicamente si el nombre no se repite
+    if district and not cities:
+        domain = [('city_id.state_id', 'in', states.ids)] if states else []
+        d = matching(districts_sudo.search(domain), district)
+        if len(d) == 1:
             return _district_to_vals(d)
 
     # 3) Ciudad/Provincia
-    if city:
-        c = cities_sudo.search([
-            ('name', '=ilike', city.strip()),
-            ('country_id', '=', country.id),
-        ], limit=1)
-        if c:
-            return _city_to_vals(c, country)
+    if len(cities) == 1:
+        return _city_to_vals(cities, country)
 
     # 4) Departamento/Estado
-    if state:
-        s = states_sudo.search([
-            ('name', '=ilike', state.strip()),
-            ('country_id', '=', country.id),
-        ], limit=1)
-        if s:
-            return {'state_id': s.id, 'country_id': country.id}
+    if states and len(states) == 1:
+        return {'state_id': states.id, 'country_id': country.id}
 
     return {}
 

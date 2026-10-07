@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from odoo.exceptions import UserError
 from odoo import api, fields, models
 
 # Tipos de documento que numera una Serie CPE: factura, boleta y sus
@@ -158,6 +159,19 @@ class AccountMove(models.Model):
                 return name
         return name
 
+    def write(self, vals):
+        # Un comprobante que ya tuvo número conserva su serie: cambiarla
+        # dejaría el nombre de una serie y el contador de otra (y el TPV lee
+        # ``edi_series_id``).
+        if 'edi_series_id' in vals:
+            changed = self.filtered(lambda m: m.posted_before and m.edi_series_id
+                                    and m.edi_series_id.id != vals['edi_series_id'])
+            if changed:
+                raise UserError(self.env._(
+                    'No se puede cambiar la serie de %(moves)s: ya fue numerado con ella.',
+                    moves=', '.join(changed.mapped('display_name'))))
+        return super().write(vals)
+
     def _constrains_date_sequence(self):
         # El chequeo nativo nombre↔fecha no aplica cuando la numeración la
         # controla una ir.sequence del usuario (su prefijo puede llevar
@@ -166,13 +180,21 @@ class AccountMove(models.Model):
         return super(AccountMove, moves)._constrains_date_sequence()
 
     def _is_end_of_seq_chain(self):
-        """Sin aviso de renumeración al cancelar/eliminar en diarios con
-        secuencia no_gap: la secuencia no reutiliza números, el hueco es
-        deliberado."""
+        """En diarios con secuencia ``no_gap`` el número se toma al publicar.
+
+        - Un borrador que nunca se publicó no consumió número: se puede
+          borrar sin aviso, también quien no es gestor contable.
+        - Uno que ya tuvo número no es «fin de cadena»: borrarlo dejaría un
+          hueco en la serie SUNAT.
+
+        Antes se devolvía ``False`` para todos y el núcleo
+        (``_unlink_forbid_parts_of_chain``) impedía a un usuario de
+        facturación borrar cualquier borrador.
+        """
         seq_moves = self.filtered(
             lambda m: m._al_uses_name_sequence()
             and m._al_get_name_sequence().implementation == 'no_gap')
-        others = self - seq_moves
-        if seq_moves and not others:
+        if any(m.posted_before for m in seq_moves):
             return False
-        return super(AccountMove, others)._is_end_of_seq_chain()
+        others = self - seq_moves
+        return super(AccountMove, others)._is_end_of_seq_chain() if others else True

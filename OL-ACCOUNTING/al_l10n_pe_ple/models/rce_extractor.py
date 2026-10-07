@@ -48,9 +48,12 @@ class L10nPeRceExtractor(models.AbstractModel):
     def _rce_tax_group_ids(self, company):
         """``{clave: id}`` de los grupos de impuestos peruanos de la compañía."""
         groups = {}
+        # Los grupos del plan viven en la compañía raíz: desde una sucursal
+        # no se encontraban y todas las bases salían en cero.
+        root = company.root_id
         for key in RCE_TAX_GROUPS:
             group = self.env.ref(
-                'account.%s_tax_group_%s' % (company.id, key),
+                'account.%s_tax_group_%s' % (root.id, key),
                 raise_if_not_found=False)
             if group:
                 groups[key] = group.id
@@ -88,7 +91,8 @@ class L10nPeRceExtractor(models.AbstractModel):
         además evita depender de que el contacto tenga país informado.
         """
         domain = [
-            ('company_id', '=', company.id),
+            # la compañía y sus sucursales (el libro es del RUC)
+            ('company_id', 'child_of', company.root_id.id),
             ('move_type', 'in', ('in_invoice', 'in_refund')),
             ('date', '>=', date_from),
             ('date', '<=', date_to),
@@ -143,6 +147,10 @@ class L10nPeRceExtractor(models.AbstractModel):
                 key = by_id.get(line.tax_line_id.tax_group_id.id)
                 if key:
                     amounts['tax_%s' % key] += sign * line.amount_currency
+                # El ISC lleva ``include_base_amount``: su apunte tiene el IGV en
+                # ``tax_ids`` y sumaba su importe a la base gravada. La base no
+                # incluye el ISC (anexo 112-2021, nota 4; igual en el RCE).
+                continue
             # Apunte base: aporta la base imponible a cada grupo que lo grava.
             for tax in line.tax_ids:
                 key = by_id.get(tax.tax_group_id.id)
@@ -189,9 +197,22 @@ class L10nPeRceExtractor(models.AbstractModel):
 
     @api.model
     def _rce_exchange_rate(self, move):
-        """Tipo de cambio aplicado al comprobante."""
+        """Tipo de cambio del comprobante (moneda de la compañía por unidad).
+
+        - Notas de crédito y débito: el del documento que modifican (anexo
+          040-2022, nota 4; RVIE, nota 3).
+        - Resto: la tasa almacenada de la factura (``invoice_currency_rate``,
+          a la fecha de emisión). Antes se dividía el total en soles entre el
+          total en moneda extranjera: fallaba en notas, en comprobantes
+          gratuitos (total 0, sin T.C.) y por redondeo en importes pequeños.
+        """
+        origin = move.reversed_entry_id or move.debit_origin_id
+        if origin and origin.currency_id == move.currency_id:
+            return self._rce_exchange_rate(origin)
         if move.currency_id == move.company_currency_id:
             return 0.0
+        if move.invoice_currency_rate:
+            return 1.0 / move.invoice_currency_rate
         if not move.amount_total:
             return 0.0
         return abs(move.amount_total_signed / move.amount_total)
@@ -214,7 +235,8 @@ class L10nPeRceExtractor(models.AbstractModel):
         excluirlos del registro.
         """
         return self.env['account.move'].search([
-            ('company_id', '=', company.id),
+            # la compañía y sus sucursales (el libro es del RUC)
+            ('company_id', 'child_of', company.root_id.id),
             ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt')),
             ('invoice_date', '>=', date_from),
             ('invoice_date', '<=', date_to),

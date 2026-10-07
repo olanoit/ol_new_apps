@@ -373,6 +373,11 @@ faq:
       No. Sin la casilla, el diario numera igual que el Odoo estándar.
 
 novedades:
+  - version: 11.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: un usuario de facturación no podía borrar un borrador que nunca se publicó en diarios con numeración propia; ahora puede, y un comprobante que ya tuvo número sigue protegido."
+      - "La serie de un comprobante que ya fue numerado no se puede cambiar (quedaba el nombre de una serie y el contador de otra)."
   - version: 10.20261006
     fecha: 06/10/2026
     cambios:

@@ -539,8 +539,54 @@ class TestPleExport(TransactionCase):
             self.assertEqual(row[13], '18.00')    # IGV
             self.assertEqual(row[16], '118.00')   # total
         self.assertEqual(row[17], 'PEN')
-        self.assertEqual(row[18], '')             # TC vacío en soles
+        self.assertEqual(row[18], '1.000')        # TC en soles: obligatorio si hay moneda
         self.assertEqual(row[25], '1')
+
+    def test_142_mixed_taxes_split_by_operation(self):
+        """100 gravado + 50 exonerado: BI 100, no 150 (auditoría 07/10/2026)."""
+        self.company.l10n_pe_ple_simplified = True
+        invoice, tax = self._make_invoice('out_invoice', 'sale')
+        exonerated = self.env['account.tax'].search([
+            ('company_id', '=', self.company.id), ('type_tax_use', '=', 'sale'),
+            ('l10n_pe_edi_tax_code', '=', '9997')], limit=1)
+        if not (tax and exonerated):
+            self.skipTest('sin impuestos IGV/exonerado de venta')
+        invoice.button_draft()
+        invoice.write({'invoice_line_ids': [(0, 0, {
+            'name': 'Exonerado', 'quantity': 1.0, 'price_unit': 50.0,
+            'account_id': invoice.invoice_line_ids[:1].account_id.id,
+            'tax_ids': [(6, 0, exonerated.ids)]})]})
+        invoice.action_post()
+        wizard = self._wizard(export_142=True)
+        wizard.action_export()
+        row = next(f.split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f.split('|'))
+        self.assertEqual((row[12], row[13], row[15], row[16]),
+                         ('100.00', '18.00', '50.00', '168.00'))
+
+    def test_142_reports_cancelled_invoices(self):
+        self.company.l10n_pe_ple_simplified = True
+        invoice, tax = self._make_invoice('out_invoice', 'sale')
+        invoice.button_draft()
+        invoice.button_cancel()
+        wizard = self._wizard(export_142=True)
+        wizard.action_export()
+        row = next(f.split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f.split('|'))
+        self.assertEqual((row[16], row[25]), ('0.00', '2'))
+
+    def test_83_previous_period_status(self):
+        self.company.l10n_pe_ple_simplified = True
+        invoice, tax = self._make_invoice('in_invoice', 'purchase')
+        invoice.button_draft()
+        invoice.write({'invoice_date': date(2025, 2, 20)})
+        invoice.date = date(2025, 3, 20)
+        invoice.action_post()
+        wizard = self._wizard(export_83=True)
+        wizard.action_export()
+        row = next(f.split('|') for f in self._get_lines(wizard)
+                   if 'M%d' % invoice.id in f.split('|'))
+        self.assertEqual(row[31], '6', 'emitido en febrero y anotado en marzo')
 
     def test_export_83(self):
         self.company.l10n_pe_ple_simplified = True
@@ -612,9 +658,12 @@ class TestPleExport(TransactionCase):
             PLE_EXPECTED_FIELDS)
         from odoo.addons.al_l10n_pe_ple.models.ple_xlsx import (
             PLE_XLSX_HEADERS, PLE_XLSX_TITLES)
+        from odoo.addons.al_l10n_pe_ple.models.rce_report import RCE_84_FULL_FIELDS
+        # el Excel del 8.4 lleva también los campos 38-41, que el TXT omite
+        excel_only = {'080400': RCE_84_FULL_FIELDS}
         for code, headers in PLE_XLSX_HEADERS.items():
             self.assertEqual(
-                len(headers), PLE_EXPECTED_FIELDS[code],
+                len(headers), excel_only.get(code, PLE_EXPECTED_FIELDS[code]),
                 'Encabezados de %s no coinciden con el Anexo 2' % code)
             self.assertLessEqual(len(PLE_XLSX_TITLES[code]), 31)
 

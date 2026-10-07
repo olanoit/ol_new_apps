@@ -172,6 +172,10 @@ faq:
       y el vehículo.
 
 novedades:
+  - version: 8.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "La fecha de emisión impresa es la del XML enviado a SUNAT; el destinatario es la empresa cliente; las cantidades no se redondean a dos decimales y el detalle tiene una línea por movimiento, como el XML."
   - version: 7.20260828
     fecha: 27/09/2026
     cambios:

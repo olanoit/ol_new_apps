@@ -62,6 +62,13 @@ class TestPePaymentMethod(TransactionCase):
                 self.Catalog.search([('code', '=', code)], limit=1),
                 'falta el medio de pago %s del catálogo SUNAT' % code)
 
+    def test_catalog_matches_table_10(self):
+        """Tabla 10 vigente: el 011 no es «letras de cambio» y existen 012 y 013."""
+        names = {c.code: c.name for c in self.Catalog.search([('code', 'in', ('011', '012', '013'))])}
+        self.assertTrue(names['011'].startswith('DOCUMENTOS EMITIDOS POR LAS EDPYMES'))
+        self.assertIn('012', names)
+        self.assertIn('013', names)
+
     def test_catalog_display_name(self):
         """El nombre mostrado es «código - descripción»."""
         self.assertEqual(self.deposito.display_name, '001 - DEPÓSITO EN CUENTA')

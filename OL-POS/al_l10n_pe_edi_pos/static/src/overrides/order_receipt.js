@@ -16,8 +16,13 @@ patch(OrderReceipt.prototype, {
     get peMove() {
         return this.order.account_move || null;
     },
+    /** Hay comprobante electrónico publicado: si la factura falló, el ticket
+     * no puede presentarse como boleta/factura con un número inventado. */
+    get peIssued() {
+        return this.peMove?.state === "posted";
+    },
     get peDocNumber() {
-        return this.peMove?.l10n_latam_document_number || this.order.pos_reference;
+        return this.peIssued ? this.peMove.l10n_latam_document_number : "";
     },
     /**
      * Desglose SUNAT: del account.move cuando existe; si aún no se
@@ -31,7 +36,13 @@ patch(OrderReceipt.prototype, {
                 exonerated: move.l10n_pe_edi_amount_exonerated,
                 unaffected: move.l10n_pe_edi_amount_unaffected,
                 icbper: move.l10n_pe_edi_amount_icbper,
+                isc: move.l10n_pe_edi_amount_isc,
+                ivap: move.l10n_pe_edi_amount_ivap,
+                free: move.l10n_pe_edi_amount_free,
+                export: move.l10n_pe_edi_amount_export,
+                others: move.l10n_pe_edi_amount_others,
                 igv: move.l10n_pe_edi_amount_igv,
+                igvLabel: move.l10n_pe_pos_igv_label || "IGV",
                 total: move.amount_total,
                 words: move.l10n_pe_pos_amount_text,
                 fromMove: true,
@@ -42,7 +53,13 @@ patch(OrderReceipt.prototype, {
             exonerated: 0,
             unaffected: 0,
             icbper: 0,
+            isc: 0,
+            ivap: 0,
+            free: 0,
+            export: 0,
+            others: 0,
             igv: this.order.prices?.taxDetails?.tax_amount_currency ?? 0,
+            igvLabel: "IGV",
             total: this.order.priceIncl,
             words: null,
             fromMove: false,

@@ -75,14 +75,14 @@ class L10nPeRceCommon(models.AbstractModel):
     # Serialización
     # ------------------------------------------------------------------
     @api.model
-    def _rce_serialize(self, book_code, rows):
+    def _rce_serialize(self, book_code, rows, expected=None):
         """Une los campos con ``|`` y cierra cada línea con un pipe.
 
         Valida el número de campos contra la estructura oficial: un archivo
         con columnas de menos o de más es rechazado por SUNAT, así que es
         preferible fallar aquí que en la presentación.
         """
-        expected = PLE_EXPECTED_FIELDS[book_code]
+        expected = expected or PLE_EXPECTED_FIELDS[book_code]
         out = []
         for row in rows:
             if len(row) != expected:
@@ -114,8 +114,16 @@ class L10nPeRceCommon(models.AbstractModel):
             operations, '1' if has_data else '0', currency_flag)
 
 
+#: Tipos del documento modificado que son DAM: el campo 31 lleva su aduana.
+RCE_CUSTOMS_MOD_TYPES = ('50', '52')
+
+#: Campos 38-41 del 8.4: el anexo los describe pero no van en el TXT.
+RCE_84_FULL_FIELDS = 41
+
+
 class L10nPeRce84(models.AbstractModel):
-    """RCE 8.4 — Registro de Compras (41 campos)."""
+    """RCE 8.4 — Registro de Compras: 37 campos en el TXT y 41 en el Excel
+    de revisión (``context['l10n_pe_rce_full_row']``)."""
     _inherit = 'l10n_pe.tax.ple.8.1.report.handler'
 
     def export_to_txt(self, options):
@@ -133,7 +141,11 @@ class L10nPeRce84(models.AbstractModel):
             for move in moves
         ]
 
-        content = common._rce_serialize('080400', rows)
+        if self.env.context.get('l10n_pe_rce_full_row'):
+            content = common._rce_serialize('080400', rows, expected=RCE_84_FULL_FIELDS)
+        else:
+            content = common._rce_serialize(
+                '080400', [row[:PLE_EXPECTED_FIELDS['080400']] for row in rows])
         return {
             'file_name': common._rce_filename(
                 company, '080400', date_from, opportunity='02',
@@ -143,7 +155,7 @@ class L10nPeRce84(models.AbstractModel):
         }
 
     def _l10n_pe_rce_84_row(self, move, period, common, extractor, group_ids):
-        """Construye los 41 campos de una línea del 8.4."""
+        """Construye los 41 campos del anexo 8 (el TXT emite los 37 primeros)."""
         doc_code = move.l10n_latam_document_type_id.code or ''
         serie, folio = extractor._rce_serie_folio(move)
         partner_type, partner_vat, partner_name = \
@@ -202,8 +214,11 @@ class L10nPeRce84(models.AbstractModel):
             # 28-32 · documento modificado
             common._rce_date(mod_date),
             mod_type,
+            # 31: obligatorio si el documento modificado (campo 29) es DAM
+            # 50/52, con su dependencia aduanera; antes se llenaba con la
+            # aduana del propio comprobante.
             mod_serie,
-            customs_code if is_customs else '',
+            _leading_digits(mod_serie, 3) if mod_type in RCE_CUSTOMS_MOD_TYPES else '',
             mod_folio.lstrip('0'),
             # 33-37 · información complementaria
             move.l10n_pe_rce_classification or '',

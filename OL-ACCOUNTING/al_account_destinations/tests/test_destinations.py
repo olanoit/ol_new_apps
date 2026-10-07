@@ -222,3 +222,44 @@ class TestDestinations(TransactionCase):
                         'dest_account_id': self.d2.id, 'percentage': 0.4})
         move = self._post_entry(100.0)
         self.assertTrue(move.l10n_pe_destiny_move_id)
+
+    # ------------------------------------------------------------------
+    # Auditoría del 07/10/2026
+    # ------------------------------------------------------------------
+    def test_repost_keeps_destiny_number(self):
+        """Restablecer y volver a publicar no consume otro número del diario GA."""
+        self._configure()
+        move = self._post_entry()
+        dest = move.l10n_pe_destiny_move_id
+        number = dest.name
+        move.button_draft()
+        move.action_post()
+        self.assertEqual(move.l10n_pe_destiny_move_id, dest)
+        self.assertEqual(dest.name, number)
+
+    def test_destiny_lines_carry_the_analytic(self):
+        self._configure()
+        plan = self.env['account.analytic.plan'].create({'name': 'CC destinos test'})
+        cc = self.env['account.analytic.account'].create({'name': 'CC Norte', 'plan_id': plan.id})
+        move = self.env['account.move'].create({
+            'move_type': 'entry', 'journal_id': self.journal.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto', 'debit': 1000.0,
+                                'analytic_distribution': {str(cc.id): 100.0}}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco', 'credit': 1000.0}),
+            ]})
+        move.action_post()
+        dest = move.l10n_pe_destiny_move_id
+        nine = dest.line_ids.filtered(lambda l: l.account_id in (self.d1 | self.d2))
+        self.assertEqual(set(map(lambda l: tuple(l.analytic_distribution), nine)), {(str(cc.id),)})
+        self.assertFalse(dest.line_ids.filtered(lambda l: l.account_id == self.load).analytic_distribution)
+
+    def test_destiny_cancelled_when_nothing_left(self):
+        self._configure()
+        move = self._post_entry()
+        dest = move.l10n_pe_destiny_move_id
+        move.button_draft()
+        move.line_ids.filtered(lambda l: l.account_id == self.exp).account_id = self.d1
+        move.action_post()
+        self.assertFalse(move.l10n_pe_destiny_move_id)
+        self.assertEqual(dest.state, 'cancel')

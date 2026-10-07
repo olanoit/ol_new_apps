@@ -26,7 +26,7 @@ dependencia muerta de ``al_account_dua``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '4.20260828',
+    'version': '5.20261007',
     'license': 'OPL-1',
     'depends': [
         'account',

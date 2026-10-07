@@ -42,10 +42,11 @@ class PosOrder(models.Model):
                    else config.l10n_pe_boleta_journal_id)
         if doc_type == 'factura':
             vat = (self.partner_id.vat or '').strip()
-            if not self.partner_id or len(vat) != 11 or not vat.isdigit():
+            is_ruc = self.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'
+            if not self.partner_id or not is_ruc or len(vat) != 11 or not vat.isdigit():
                 raise UserError(_(
-                    'La factura electrónica requiere un cliente con RUC '
-                    '(11 dígitos). Seleccione el cliente o emita una boleta.'))
+                    'La factura electrónica requiere un cliente con RUC (tipo de '
+                    'documento RUC y 11 dígitos). Seleccione el cliente o emita una boleta.'))
         vals['journal_id'] = journal.id
         doc_code = '01' if doc_type == 'factura' else '03'
         # El tipo lo decide la caja. Sin esto, l10n_pe toma el primero que

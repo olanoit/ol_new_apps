@@ -93,14 +93,16 @@ def _refresh_partners(env, kind, rucs):
     field_name = next(f for f, k in PARTNER_FIELDS.items() if k == kind)
     # sudo(): el cron recorre los contactos de todas las compañías.
     partners_sudo = env['res.partner'].sudo().with_context(active_test=False)
+    # Los corregidos a mano no se tocan: el padrón puede ir por detrás de la
+    # designación de SUNAT (antes se desmarcaban cada noche).
     partners_sudo = partners_sudo.search_fetch(
-        [('vat', '!=', False)], ['vat', field_name])
+        [('vat', '!=', False), ('l10n_pe_padron_manual', '=', False)], ['vat', field_name])
     to_true = partners_sudo.filtered(
         lambda p: not p[field_name] and (p.vat or '').strip() in rucs)
     to_false = partners_sudo.filtered(
         lambda p: p[field_name] and (p.vat or '').strip() not in rucs)
-    to_true.write({field_name: True})
-    to_false.write({field_name: False})
+    to_true.with_context(l10n_pe_padron_auto=True).write({field_name: True})
+    to_false.with_context(l10n_pe_padron_auto=True).write({field_name: False})
 
 
 def has_data(env, kind):

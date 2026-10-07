@@ -22,7 +22,7 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '4.20260828',
+    'version': '5.20261007',
     'license': 'OPL-1',
     'depends': ['account', 'l10n_pe', 'al_account_base'],
     'data': [

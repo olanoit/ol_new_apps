@@ -104,6 +104,14 @@ def request(method, url, *, service='', headers=None, params=None,
             time.sleep(delay)
             delay *= backoff
             continue
+        except requests.RequestException as exc:
+            # Redirecciones infinitas, contenido corrupto, etc.: no se
+            # reintenta, pero se informa como fallo de la conexión para que
+            # el llamador pruebe la siguiente en vez de mostrar un traceback.
+            raise HttpError(
+                'Respuesta inválida de %s: %s' % (service, _redact(str(exc), params)),
+                status_code=None, service=service,
+            ) from exc
 
         if response.status_code in RETRYABLE_STATUS and attempt < retries:
             _logger.warning(

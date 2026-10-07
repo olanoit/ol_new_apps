@@ -22,7 +22,7 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
-    'version': '7.20260828',
+    'version': '8.20261007',
     'license': 'OPL-1',
     'depends': [
         'stock',

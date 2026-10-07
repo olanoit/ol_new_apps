@@ -402,6 +402,12 @@ faq:
       facturas y notas.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: restablecer y volver a publicar un comprobante consumía otro número del diario de destinos y dejaba huecos en el correlativo; ahora conserva su número salvo que cambie el periodo."
+      - "Las líneas del asiento de destino (clase 9) llevan la analítica de la línea de origen."
+      - "Si al republicar ya no queda nada que distribuir, el asiento de destino anterior se cancela en vez de quedar en borrador."
   - version: 4.20260828
     fecha: 27/09/2026
     cambios:

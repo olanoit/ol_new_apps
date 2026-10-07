@@ -262,3 +262,38 @@ class TestSunatRules(AccountTestInvoicingCommon):
         credit_note = self._credit_note(final)
         self.assertEqual(len(credit_note.invoice_line_ids), len(final.invoice_line_ids))
         self.assertEqual(credit_note.amount_total, final.amount_total)
+
+    # ------------------------------------------------- auditoría 07/10/2026
+    def test_downpayment_with_partial_credit_note_is_cited(self):
+        """Anticipo con una NC parcial: sigue citado en el PrepaidPayment.
+
+        Antes el filtro excluía todo anticipo con alguna reversión, el
+        importe de la deducción se perdía y SUNAT rechazaba (2509/3220).
+        """
+        order = self._sale([(self.p_a, 1, 1000.0, 0, self.igv)])
+        downpayment = self._post(self._wizard(order, 'fixed', 236.0))
+        final = self._post(self._wizard(order, 'delivered'))
+        wizard = self.env['account.move.reversal'].with_context(
+            active_model='account.move', active_ids=downpayment.ids).create({
+                'reason': 'Rebaja', 'journal_id': downpayment.journal_id.id,
+                'l10n_pe_edi_refund_reason': '01'})
+        refund = self.env['account.move'].browse(wizard.refund_moves()['res_id'])
+        refund.invoice_line_ids.price_unit = refund.invoice_line_ids.price_unit / 2
+        self._post(refund)
+        self.assertTrue(downpayment.reversal_move_ids)
+        root = self.assertSunatValid(final)
+        references = root.findall('cac:AdditionalDocumentReference', NS)
+        self.assertEqual([r.findtext('cbc:ID', namespaces=NS) for r in references],
+                         [downpayment.name.replace(' ', '')])
+
+    def test_credit_note_negative_quantity_is_blocked(self):
+        move = self._invoice([('Servicio', self.p_a, 1, 100.0, 0, self.igv)])
+        refund = self.env['account.move'].create({
+            'move_type': 'out_refund', 'partner_id': self.customer.id,
+            'journal_id': self.journal.id, 'reversed_entry_id': move.id,
+            'l10n_pe_edi_refund_reason': '01',
+            'invoice_line_ids': [(0, 0, {'name': 'Devolución', 'product_id': self.p_a.id,
+                                         'quantity': -1, 'price_unit': -100.0,
+                                         'tax_ids': [(6, 0, self.igv.ids)]})]})
+        errors = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')._check_move_configuration(refund)
+        self.assertTrue(any('cantidades negativas' in str(error) for error in errors))

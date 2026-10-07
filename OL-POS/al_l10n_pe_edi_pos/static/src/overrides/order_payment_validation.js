@@ -37,7 +37,24 @@ patch(OrderPaymentValidation.prototype, {
             this.order.setToInvoice(false);
             return res;
         }
-        // Boleta/factura emiten CPE: la orden siempre se factura.
+        // Boleta/factura emiten CPE: la orden siempre se factura. El control
+        // nativo «factura sin cliente» ya corrió con to_invoice=false: una
+        // boleta sin cliente va al Consumidor Final anónimo (si no, la venta
+        // no se sincronizaba y quedaba reintentando).
+        if (!this.order.getPartner()) {
+            const anonymous = this.pos.models["res.partner"].get(
+                this.pos.config._consumidor_final_anonimo_id
+            );
+            if (docType === "boleta" && anonymous) {
+                this.order.setPartner(anonymous);
+            } else {
+                this.pos.dialog.add(AlertDialog, {
+                    title: _t("Comprobante electrónico"),
+                    body: _t("Seleccione el cliente del comprobante."),
+                });
+                return false;
+            }
+        }
         this.order.setToInvoice(true);
         // Serie CPE resuelta al cobrar: fija de la caja > única disponible
         // (sin diálogo aquí; con varias series y ninguna elegida, la
@@ -57,7 +74,7 @@ patch(OrderPaymentValidation.prototype, {
                 this.pos.dialog.add(AlertDialog, {
                     title: _t("Factura electrónica"),
                     body: _t(
-                        "La factura requiere un cliente con RUC (11 dígitos). " +
+                        "La factura requiere un cliente con RUC (tipo de documento RUC y 11 dígitos). " +
                             "Seleccione el cliente o cambie a boleta."
                     ),
                 });

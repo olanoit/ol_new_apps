@@ -9,7 +9,15 @@ export function isValidPeRuc(vat) {
     return clean.length === 11 && /^\d+$/.test(clean);
 }
 
-/** El cliente sirve para emitir factura: existe y tiene RUC válido. */
+/**
+ * El cliente sirve para emitir factura: existe, su documento es RUC (código
+ * SUNAT 6) y el número es válido. Un número de 11 dígitos con otro tipo
+ * (p. ej. «VAT», código 0) daba una factura que SUNAT rechaza (2800).
+ */
 export function partnerCanInvoice(partner) {
-    return Boolean(partner) && isValidPeRuc(partner.vat);
+    return (
+        Boolean(partner) &&
+        partner.l10n_latam_identification_type_id?.l10n_pe_vat_code === "6" &&
+        isValidPeRuc(partner.vat)
+    );
 }

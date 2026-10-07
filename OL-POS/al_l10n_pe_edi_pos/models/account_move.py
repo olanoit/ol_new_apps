@@ -23,6 +23,15 @@ class AccountMove(models.Model):
     l10n_pe_pos_qr_str = fields.Char(
         string='QR de representación impresa (PE)',
         compute='_compute_l10n_pe_pos_qr_str')
+    l10n_pe_pos_igv_label = fields.Char(
+        string='Etiqueta del IGV (PE)', compute='_compute_l10n_pe_pos_igv_label',
+        help='«IGV (18%)» o «IGV (10.5%)» según la tasa aplicada (MYPE de restaurantes).')
+
+    @api.depends('invoice_line_ids.tax_ids')
+    def _compute_l10n_pe_pos_igv_label(self):
+        for move in self:
+            move.l10n_pe_pos_igv_label = (
+                move._l10n_pe_report_igv_label() if move.is_invoice() else 'IGV')
 
     @api.depends('amount_total', 'currency_id', 'state')
     def _compute_l10n_pe_pos_amount_text(self):
@@ -34,8 +43,8 @@ class AccountMove(models.Model):
                 move.l10n_pe_pos_amount_text = False
 
     @api.depends('state', 'name', 'amount_total', 'invoice_date',
-                 'l10n_pe_edi_amount_igv', 'partner_id.vat',
-                 'partner_id.l10n_latam_identification_type_id',
+                 'l10n_pe_edi_amount_igv', 'commercial_partner_id.vat',
+                 'commercial_partner_id.l10n_latam_identification_type_id',
                  'l10n_latam_document_number', 'l10n_latam_document_type_id',
                  'company_id.vat')
     def _compute_l10n_pe_pos_qr_str(self):
@@ -61,8 +70,9 @@ class AccountMove(models.Model):
                 f'{move.l10n_pe_edi_amount_igv:.2f}',
                 f'{move.amount_total:.2f}',
                 move.invoice_date.strftime('%Y-%m-%d') if move.invoice_date else '',
-                move.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
-                move.partner_id.vat or '',
+                # el adquirente es la entidad comercial, como en el XML
+                move.commercial_partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
+                move.commercial_partner_id.vat or '',
             ])
 
     @api.model
@@ -77,5 +87,9 @@ class AccountMove(models.Model):
                 'l10n_pe_edi_amount_exonerated',
                 'l10n_pe_edi_amount_unaffected',
                 'l10n_pe_edi_amount_icbper',
+                # el ticket debe cuadrar con el TaxTotal del XML
+                'l10n_pe_edi_amount_isc', 'l10n_pe_edi_amount_ivap',
+                'l10n_pe_edi_amount_free', 'l10n_pe_edi_amount_export',
+                'l10n_pe_edi_amount_others', 'l10n_pe_pos_igv_label',
             ]
         return result

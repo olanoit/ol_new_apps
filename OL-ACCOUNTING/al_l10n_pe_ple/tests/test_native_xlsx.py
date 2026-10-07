@@ -63,7 +63,8 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
                 continue  # reemplazados por el SIRE (8.4, 8.5 y 14.4)
             with self.subTest(book=code):
                 headers = self.env['l10n_pe.ple.mixin']._ple_xlsx_headers(code)
-                self.assertEqual(len(headers), count)
+                # el Excel del 8.4 añade los campos 38-41, que el TXT omite
+                self.assertEqual(len(headers), 41 if code == '080400' else count)
                 self.assertTrue(all(headers))
 
     def test_native_books_use_official_headers(self):

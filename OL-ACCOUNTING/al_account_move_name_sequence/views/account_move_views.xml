@@ -27,7 +27,7 @@
                     <field name="journal_edi_series_ids" invisible="1"/>
                     <field name="edi_series_id" class="oe_inline"
                         invisible="not journal_edi_series_ids or state != 'draft'"
-                        readonly="state != 'draft'"
+                        readonly="state != 'draft' or posted_before"
                         placeholder="Serie CPE"
                         options="{'no_create': True, 'no_open': True}"/>
                 </div>

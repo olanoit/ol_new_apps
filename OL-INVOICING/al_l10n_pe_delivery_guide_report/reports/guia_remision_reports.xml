@@ -88,9 +88,11 @@
                     <div class="gre-section-title">Información del traslado</div>
                     <table class="gre-info">
                         <tr>
-                            <td class="gre-label">Fecha y hora de emisión:</td>
+                            <td class="gre-label">Fecha de emisión:</td>
                             <td>
-                                <span t-if="o.date_done" t-field="o.date_done"
+                                <t t-set="issue_date" t-value="o._l10n_pe_report_issue_date()"/>
+                                <span t-if="issue_date" t-out="issue_date.strftime('%d/%m/%Y')"/>
+                                <span t-elif="o.date_done" t-field="o.date_done"
                                       t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
                                 <span t-else="" t-field="o.scheduled_date"
                                       t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
@@ -151,13 +153,13 @@
                                 <table class="gre-info">
                                     <tr>
                                         <td class="gre-label">Razón social:</td>
-                                        <td><span t-field="o.partner_id.name"/></td>
+                                        <td><span t-field="o.partner_id.commercial_partner_id.name"/></td>
                                     </tr>
                                     <tr>
                                         <td class="gre-label">
-                                            <span t-out="o.partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
+                                            <span t-out="o.partner_id.commercial_partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
                                         </td>
-                                        <td><span t-field="o.partner_id.vat"/></td>
+                                        <td><span t-field="o.partner_id.commercial_partner_id.vat"/></td>
                                     </tr>
                                     <tr>
                                         <td class="gre-label">Dirección:</td>
@@ -238,7 +240,7 @@
                                 <t t-else="">-</t>
                             </td>
                             <td><span t-field="line['uom'].name"/></td>
-                            <td><span t-out="'{0:,.2f}'.format(line['quantity'])"/></td>
+                            <td><span t-out="o._l10n_pe_report_quantity(line['quantity'])"/></td>
                             <td>No</td>
                         </tr>
                     </tbody>

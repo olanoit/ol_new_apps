@@ -111,6 +111,46 @@ class TestPosPeEdi(TestPoSCommon):
         with self.assertRaises(UserError):
             order._prepare_invoice_vals()
 
+    def test_factura_requiere_tipo_ruc(self):
+        """11 dígitos con tipo «VAT» (código 0) no es RUC: SUNAT rechazaría la factura."""
+        self.open_new_session()
+        partner = self.env['res.partner'].create({
+            'name': 'Cliente VAT 11', 'vat': '20557912879',
+            'l10n_latam_identification_type_id': self.env.ref('l10n_latam_base.it_vat').id})
+        order = self.env['pos.order'].create({
+            'session_id': self.pos_session.id, 'partner_id': partner.id,
+            'l10n_pe_doc_type': 'factura',
+            'amount_tax': 0, 'amount_total': 0, 'amount_paid': 0, 'amount_return': 0,
+        })
+        with self.assertRaises(UserError):
+            order._prepare_invoice_vals()
+
+    def test_ticket_carga_todos_los_totales_del_xml(self):
+        fields = self.env['account.move']._load_pos_data_fields(self.config)
+        for name in ('l10n_pe_edi_amount_isc', 'l10n_pe_edi_amount_ivap', 'l10n_pe_edi_amount_free',
+                     'l10n_pe_edi_amount_export', 'l10n_pe_pos_igv_label'):
+            self.assertIn(name, fields)
+
+    def test_qr_usa_la_entidad_comercial(self):
+        self.open_new_session()
+        contacto = self.env['res.partner'].create({
+            'name': 'Contacto compras', 'parent_id': self.partner_ruc.id})
+        igv = self.env['account.tax'].search([
+            ('company_id', '=', self.env.company.id), ('type_tax_use', '=', 'sale'),
+            ('l10n_pe_edi_tax_code', '=', '1000')], limit=1)
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': contacto.id,
+            'journal_id': self.journal_factura.id,
+            'l10n_latam_document_type_id': self.env.ref('l10n_pe.document_type01').id,
+            'invoice_line_ids': [(0, 0, {'name': 'Venta', 'quantity': 1, 'price_unit': 100.0,
+                                         'tax_ids': [(6, 0, igv.ids)]})]})
+        invoice.action_post()
+        self.assertIn(self.partner_ruc.vat, invoice.l10n_pe_pos_qr_str)
+
+    def test_tipo_de_identificacion_lleva_el_codigo_sunat(self):
+        fields = self.env['l10n_latam.identification.type']._load_pos_data_fields(self.config)
+        self.assertIn('l10n_pe_vat_code', fields)
+
     def test_serie_cpe_en_factura(self):
         """La serie elegida en caja viaja a la factura generada."""
         serie = self.env['edi.invoice.series'].create({

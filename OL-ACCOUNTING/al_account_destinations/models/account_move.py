@@ -96,6 +96,15 @@ class AccountMove(models.Model):
         self.ensure_one()
         line_vals = self._l10n_pe_get_destiny_lines()
         if not line_vals:
+            # Ya no hay nada que distribuir (p. ej. se cambió la cuenta 6 por
+            # otra sin destino): el destino anterior no puede quedar vivo.
+            destiny = self.l10n_pe_destiny_move_id
+            if destiny:
+                if destiny.state == 'posted':
+                    destiny.button_draft()
+                if destiny.state == 'draft':
+                    destiny.button_cancel()
+                self.l10n_pe_destiny_move_id = False
             return
         move_vals = {
             'move_type': 'entry',
@@ -113,7 +122,13 @@ class AccountMove(models.Model):
             if destiny.state != 'draft':
                 destiny.button_draft()
             destiny.line_ids.unlink()
-            destiny.write(dict(move_vals, name=False))
+            # Se conserva el número: borrarlo hacía que cada republicación
+            # consumiera uno nuevo del diario GA y dejara huecos en el
+            # correlativo del Libro Diario. Solo se renumera si cambió el
+            # periodo de la fecha.
+            destiny.write(move_vals)
+            if destiny.name and destiny.name != '/' and not destiny._sequence_matches_date():
+                destiny.name = False
         else:
             destiny = self.create(move_vals)
         destiny.action_post()
@@ -166,13 +181,16 @@ class AccountMove(models.Model):
                 amount = float_round(base_abs * dest.percentage,
                                      precision_rounding=currency.rounding)
             distributed += amount
-            vals.append(self._l10n_pe_prepare_line(line, dest.dest_account_id, amount, is_debit))
+            vals.append(self._l10n_pe_prepare_line(
+                line, dest.dest_account_id, amount, is_debit,
+                # la analítica (centro de costo) acompaña al destino, no a la carga 79
+                analytic_distribution=line.analytic_distribution))
         # Contrapartida: cuenta de carga con el signo opuesto por el total.
         vals.append(self._l10n_pe_prepare_line(
             line, account.l10n_pe_load_account_id, base_abs, not is_debit))
         return [(0, 0, v) for v in vals]
 
-    def _l10n_pe_prepare_line(self, line, account, amount, is_debit):
+    def _l10n_pe_prepare_line(self, line, account, amount, is_debit, analytic_distribution=None):
         # Moneda de la compañía: con la divisa del comprobante, el
         # ``amount_currency`` explícito quedaría con el importe en soles.
         currency = line.company_currency_id
@@ -185,4 +203,5 @@ class AccountMove(models.Model):
             'credit': 0.0 if is_debit else amount,
             'currency_id': currency.id,
             'amount_currency': amount if is_debit else -amount,
+            'analytic_distribution': analytic_distribution or False,
         }

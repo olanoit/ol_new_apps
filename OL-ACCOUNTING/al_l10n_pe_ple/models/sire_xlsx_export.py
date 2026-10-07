@@ -40,7 +40,8 @@ class L10nPeSireXlsxExport(models.AbstractModel):
     def l10n_pe_sire_export_to_xlsx(self, options):
         """Mismas líneas que el TXT, en una hoja de cálculo con cabeceras."""
         book_code, _label = SIRE_XLSX_BOOKS[self._get_report_number()]
-        result = self.export_to_txt(options)
+        # el Excel lleva también los campos que el TXT omite (8.4: 38-41)
+        result = self.with_context(l10n_pe_rce_full_row=True).export_to_txt(options)
         content = result['file_content'].decode() if result['file_content'] else ''
         rows = [line.rstrip('|').split('|')
                 for line in content.split('\r\n') if line.strip()]

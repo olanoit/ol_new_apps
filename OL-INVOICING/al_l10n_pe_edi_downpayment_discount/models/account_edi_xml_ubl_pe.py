@@ -191,9 +191,20 @@ class AccountEdiXmlUbl_Pe(models.AbstractModel):
                     prepayment_line, vals['total_grouping_function']).items()
                 if grouping_key
             )
+            # Se descarta solo el anticipo revertido por completo: uno con una
+            # nota de crédito parcial sigue cobrado en parte y el nativo suma
+            # su línea al PrepaidAmount (si se excluía, el importe se perdía
+            # y SUNAT rechazaba por 2509/3220).
             downpayment_lines = prepayment_line['record']._get_downpayment_lines().filtered(
-                lambda line: line.move_id.move_type == 'out_invoice' and not line.move_id.reversal_move_ids)
+                lambda line: line.move_id.move_type == 'out_invoice'
+                and line.move_id.state == 'posted'
+                and line.move_id.payment_state != 'reversed')
             moves = downpayment_lines.move_id
+            if not moves:
+                raise UserError(_(
+                    'La deducción de anticipo «%s» no está vinculada a ninguna factura de '
+                    'anticipo vigente: el comprobante no puede citar el anticipo.',
+                    prepayment_line['record'].name))
             if len(moves) == 1:
                 amounts[moves] += line_amount
                 continue

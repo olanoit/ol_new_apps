@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 
@@ -334,3 +335,34 @@ class TestMoveNameSequence(AccountTestInvoicingCommon):
         visible = self.env['edi.invoice.series'].with_user(user).search(
             [('id', '=', serie.id)])
         self.assertFalse(visible)
+
+    # ------------------------------------------------------------------
+    # Auditoría del 07/10/2026
+    # ------------------------------------------------------------------
+    def test_billing_user_can_delete_unposted_draft(self):
+        """Un borrador sin número se borra aunque el usuario no sea gestor."""
+        user = self.env['res.users'].create({
+            'name': 'Facturador seq', 'login': 'facturador_seq_test',
+            'group_ids': [(6, 0, [self.env.ref('account.group_account_invoice').id])],
+            'company_id': self.journal_seq.company_id.id,
+            'company_ids': [(6, 0, self.journal_seq.company_id.ids)]})
+        draft = self._invoice_draft(self.journal_seq)
+        draft.with_user(user).unlink()
+        self.assertFalse(draft.exists())
+
+    def test_numbered_draft_is_not_end_of_chain(self):
+        move = self._invoice(self.journal_seq)
+        move.button_draft()
+        self.assertFalse(move._is_end_of_seq_chain())
+
+    def test_series_locked_after_numbering(self):
+        s1, s2 = self._publish_series(('F301', 'FC31', 'FD31'), ('F302', 'FC32', 'FD32'))
+        journal = self.company_data['default_journal_sale'].copy({
+            'name': 'Series bloqueadas', 'code': 'JSBL', 'l10n_latam_use_documents': True,
+            'use_name_sequence': True, 'edi_series_ids': [(6, 0, (s1 | s2).ids)]})
+        move = self._invoice_draft(journal)
+        move.edi_series_id = s1
+        move.action_post()
+        move.button_draft()
+        with self.assertRaises(UserError):
+            move.edi_series_id = s2

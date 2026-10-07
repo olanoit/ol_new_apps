@@ -23,7 +23,10 @@ PLE_EXPECTED_FIELDS = {
     '140100': 35, '140200': 26,
     # RCE (SIRE) — RS 040-2022/SUNAT, anexos 8 y 9.
     # Ver docs/tecport/ESTRUCTURA_RCE_8_4_8_5.md
-    '080400': 41, '080500': 35,
+    # 8.4: el anexo 8 (nota 8 y campos 38-41: «no es considerado para la
+    # construcción del archivo de texto») deja el TXT en 37 campos; 38-41
+    # (detracción, tipo de nota, estado, inconsistencias) solo van al Excel.
+    '080400': 37, '080500': 35,
     # RVIE (SIRE) — RS 000112-2021/SUNAT, anexo 2. La nota 7 excluye del
     # archivo los campos 34 a 40, de ahí los 33.
     # Ver docs/tecport/ESTRUCTURA_RVIE_14_4.md

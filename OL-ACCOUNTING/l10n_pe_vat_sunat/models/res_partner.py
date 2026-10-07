@@ -76,10 +76,11 @@ class ResPartner(models.Model):
     # legacy del módulo. Internamente sólo se usa con ``write/read``,
     # no afecta a ``state_id`` (geográfico) ni al campo computado de
     # otros módulos.
+    # Sin valor por defecto: un contacto que nunca se consultó no es
+    # «ACTIVO» (antes lo parecía, junto a la alerta de consulta fallida).
     state = fields.Selection(
         SUNAT_STATE,
         string='Estado SUNAT',
-        default='ACTIVO',
     )
     sunat_condition = fields.Selection(
         SUNAT_CONDITION,
@@ -100,6 +101,12 @@ class ResPartner(models.Model):
         string='Agente de retención',
         help='Verificado contra el padrón SUNAT (caché diaria).',
     )
+    l10n_pe_padron_manual = fields.Boolean(
+        string='Padrón corregido a mano', copy=False,
+        help='Buen contribuyente o agente de retención se marcaron a mano en '
+             'contra del padrón (que puede ir por detrás de la designación de '
+             'SUNAT): la actualización diaria no los cambia. Se desmarca solo '
+             'cuando el valor vuelve a coincidir con el padrón.')
 
     # `country_id` con default de la compañía.
     country_id = fields.Many2one(
@@ -133,6 +140,15 @@ class ResPartner(models.Model):
     def _doc_number_change(self):
         """Consulta automática al escribir (onchange): silenciosa, solo marca
         alerta si falla — no interrumpe la edición."""
+        if (self.vat or '') != (self._origin.vat or ''):
+            # Otro documento: el estado, la condición y los padrones del
+            # anterior ya no valen (quedaban «ACTIVO/Habido» si la consulta
+            # del nuevo fallaba).
+            self.state = False
+            self.sunat_condition = False
+            if not self.l10n_pe_padron_manual:
+                self.is_good_taxpayer = False
+                self.is_retention_agent = False
         self._run_document_lookup(raise_on_fail=False)
 
     def _run_document_lookup(self, raise_on_fail=False):
@@ -151,6 +167,26 @@ class ResPartner(models.Model):
             self._validate_ruc(vat)
             self._fetch_document('ruc', raise_on_fail=raise_on_fail)
 
+    def write(self, vals):
+        """Una casilla del padrón escrita a mano que contradice al padrón
+        queda como corrección manual (el cron no la toca); si coincide, deja
+        de serlo. La API y el cron escriben con ``l10n_pe_padron_auto``."""
+        fields_ = set(sunat_padron.PARTNER_FIELDS) & set(vals)
+        if (not fields_ or self.env.context.get('l10n_pe_padron_auto')
+                or 'l10n_pe_padron_manual' in vals):
+            return super().write(vals)
+        for partner in self:
+            manual = False
+            for field_name in sunat_padron.PARTNER_FIELDS:
+                kind = sunat_padron.PARTNER_FIELDS[field_name]
+                value = vals[field_name] if field_name in vals else partner[field_name]
+                padron = (sunat_padron.has_ruc(self.env, kind, (partner.vat or '').strip())
+                          if sunat_padron.has_data(self.env, kind) else False)
+                if bool(value) != padron:
+                    manual = True
+            super(ResPartner, partner).write(dict(vals, l10n_pe_padron_manual=manual))
+        return True
+
     def btn_update_document(self):
         """Botón "Actualizar RUC/DNI": si falla, muestra el motivo real."""
         for partner in self:
@@ -165,13 +201,18 @@ class ResPartner(models.Model):
         if not REGEX_DNI.match(vat):
             raise UserError(_('El DNI ingresado no es válido (8 dígitos).'))
 
-    @staticmethod
-    def _validate_ruc(vat):
+    def _validate_ruc(self, vat):
         if not REGEX_RUC.match(vat):
-            raise UserError(_(
+            raise UserError(self.env._(
                 'El RUC ingresado no es válido (11 dígitos, '
                 'inicia con 10/15/17/20).'
             ))
+        # Dígito verificador (módulo 11): un RUC mal tipeado no se consulta
+        # (gastaba una consulta de pago y luego base_vat lo rechazaba).
+        from stdnum.pe import ruc as stdnum_ruc
+        if not stdnum_ruc.is_valid(vat):
+            raise UserError(self.env._(
+                'El RUC %s no es válido: el dígito verificador no corresponde.', vat))
 
     # ============================================================ #
     # Despacho a conexiones configuradas (config-driven)           #
@@ -240,7 +281,11 @@ class ResPartner(models.Model):
             for field_name, kind in sunat_padron.PARTNER_FIELDS.items():
                 if field_name not in vals and sunat_padron.has_data(self.env, kind):
                     vals[field_name] = sunat_padron.has_ruc(self.env, kind, self.vat)
-        self.write(vals)
+            if self.l10n_pe_padron_manual:
+                # lo corregido a mano manda sobre la API y el padrón
+                for field_name in sunat_padron.PARTNER_FIELDS:
+                    vals.pop(field_name, None)
+        self.with_context(l10n_pe_padron_auto=True).write(vals)
 
         # Los contactos hijos solo se crean en un contacto ya guardado (botón):
         # desde el onchange quedarían creados aunque se descarte el formulario.

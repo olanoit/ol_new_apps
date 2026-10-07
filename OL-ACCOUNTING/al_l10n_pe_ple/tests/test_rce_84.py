@@ -38,19 +38,19 @@ class TestRce84(TransactionCase):
     # ------------------------------------------------------------------
     # Serialización y estructura
     # ------------------------------------------------------------------
-    def test_line_has_41_fields_and_closing_pipe(self):
-        row = ['x'] * 41
+    def test_line_has_37_fields_and_closing_pipe(self):
+        row = ['x'] * 37
         content = self.common._rce_serialize('080400', [row]).decode()
         self.assertTrue(content.endswith('\r\n'),
                         'cada línea debe cerrarse con CRLF')
         line = content.rstrip('\r\n')
         self.assertTrue(line.endswith('|'),
                         'la línea debe terminar en pipe de cierre')
-        self.assertEqual(line.count('|'), 41,
-                         'el 8.4 tiene 41 campos, luego 41 pipes con el de cierre')
+        self.assertEqual(line.count('|'), 37,
+                         'el TXT del 8.4 tiene 37 campos (anexo 8, nota 8), luego 37 pipes')
 
     def test_wrong_field_count_is_rejected(self):
-        for size in (38, 40, 42):
+        for size in (36, 38, 41):
             with self.assertRaises(UserError, msg='%d campos debería fallar' % size):
                 self.common._rce_serialize('080400', [['x'] * size])
 

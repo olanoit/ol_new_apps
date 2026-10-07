@@ -27,6 +27,15 @@ class AccountEdiFormat(models.Model):
             for lang, _name in self.env['res.lang'].get_installed()
         }
         res = [message for message in res if str(message) not in blocked]
+        # El bloqueo nativo cubría también las cantidades negativas, que no se
+        # reparten: una NC con cantidad -1 saldría con CreditedQuantity
+        # negativo y SUNAT la rechaza.
+        # (Las de importe negativo sí se reparten: deducciones de anticipo.)
+        if move.move_type == 'out_refund' and any(
+                line.quantity < 0 and line.price_subtotal >= 0 for line in move.invoice_line_ids
+                if line.display_type not in ('line_section', 'line_subsection', 'line_note')):
+            res.append(_('La nota de crédito no puede tener cantidades negativas: use '
+                         'cantidades positivas e importes negativos para las deducciones.'))
         # Misma regla que el XML (account.edi.xml.ubl_pe._al_fold_negative_lines):
         # en notas se reparten todas las líneas negativas; en facturas solo las
         # de grupos no gravados, y la deducción de anticipo va aparte.

@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Corregido: la actualización diaria del padrón desmarcaba cada noche «agente de retención» o «buen contribuyente» puestos a mano; ahora una corrección que contradice al padrón queda como manual y se respeta.
+- La consulta automática al escribir el RUC es rápida también contra el portal de SUNAT (sin reintentos y con espera corta), para no bloquear el formulario.
+- La ubicación por nombre compara sin tildes y no asigna un distrito repetido de otra región.
+- Un RUC con dígito verificador inválido ya no se consulta, y una respuesta con formato inesperado se trata como fallo de la conexión (pasa a la siguiente) en vez de mostrar un error técnico.
+- Al cambiar el documento se limpian estado, condición y padrones del anterior; un contacto nunca consultado ya no aparece como «ACTIVO».
+
 ## 10.20260828 — 27/09/2026
 
 - El token de cada conexión solo lo ven los administradores; el resto de usuarios sigue consultando RUC y DNI con normalidad.

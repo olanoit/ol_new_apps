@@ -13,12 +13,17 @@ Diferencia deliberada con el oficial: la retención es el 3 % del importe
 pagado **con IGV** (R.S. 037-2002/SUNAT); en los XML de prueba oficiales sale
 el 3 % de la base sin IGV.
 """
+from datetime import timedelta
+
 from lxml import etree, objectify
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 # Servicio de SUNAT para retenciones y percepciones (no es el de facturas).
+# R.S. 274-2015/SUNAT: el CRE se envía a SUNAT u OSE dentro de los 7 días
+# calendario siguientes a su emisión; fuera de plazo no vale como CRE.
+SEND_DEADLINE_DAYS = 7
 SUNAT_RETENTION_WSDL = {
     'test': 'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService?wsdl',
     'prod': 'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService?wsdl',
@@ -42,6 +47,13 @@ class AccountPayment(models.Model):
         string='CRE firmado y CDR', attachment=True, copy=False)
     l10n_pe_edi_is_required = fields.Boolean(
         string='CRE por enviar', compute='_compute_l10n_pe_edi_is_required')
+    l10n_pe_edi_deadline = fields.Date(
+        string='Enviar el CRE hasta', compute='_compute_l10n_pe_edi_deadline', store=True,
+        help='Plazo de 7 días calendario desde la emisión del comprobante de retención '
+             '(fecha del pago) para enviarlo a SUNAT u OSE.')
+    l10n_pe_edi_overdue = fields.Boolean(
+        string='CRE fuera de plazo', compute='_compute_l10n_pe_edi_overdue',
+        search='_search_l10n_pe_edi_overdue')
     l10n_pe_edi_error_message = fields.Char(
         string='Error del CRE', compute='_compute_l10n_pe_edi_error_message')
 
@@ -63,6 +75,28 @@ class AccountPayment(models.Model):
                 and payment.l10n_pe_edi_retention_number
                 and payment.country_code == 'PE'
                 and payment.l10n_pe_edi_status not in ('sent', 'cancelled'))
+
+    @api.depends('date', 'l10n_pe_edi_retention_number')
+    def _compute_l10n_pe_edi_deadline(self):
+        for payment in self:
+            payment.l10n_pe_edi_deadline = (
+                payment.date + timedelta(days=SEND_DEADLINE_DAYS)
+                if payment.date and payment.l10n_pe_edi_retention_number else False)
+
+    @api.depends('l10n_pe_edi_deadline', 'l10n_pe_edi_status')
+    def _compute_l10n_pe_edi_overdue(self):
+        today = fields.Date.context_today(self)
+        for payment in self:
+            payment.l10n_pe_edi_overdue = bool(
+                payment.l10n_pe_edi_status == 'to_send'
+                and payment.l10n_pe_edi_deadline and payment.l10n_pe_edi_deadline < today)
+
+    def _search_l10n_pe_edi_overdue(self, operator, value):
+        if operator not in ('=', '!=') or not isinstance(value, bool):
+            return NotImplemented
+        domain = [('l10n_pe_edi_status', '=', 'to_send'),
+                  ('l10n_pe_edi_deadline', '<', fields.Date.context_today(self))]
+        return domain if (operator == '=') == value else ['!', '&', *domain]
 
     @api.depends('l10n_pe_edi_warnings')
     def _compute_l10n_pe_edi_error_message(self):

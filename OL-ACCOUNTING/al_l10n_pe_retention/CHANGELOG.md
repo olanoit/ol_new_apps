@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- Plazo de envío del comprobante de retención: cada pago muestra la fecha límite (7 días calendario desde el pago, R.S. 274-2015/SUNAT) y avisa si venció; filtros «CRE por enviar» y «CRE fuera de plazo» en Retenciones efectuadas.
+
 ## 9.20261007 — 07/10/2026
 
 - Nuevo: firma y envío del Comprobante de Retención Electrónico a SUNAT con el proveedor electrónico de la compañía (IAP, SUNAT directo o Estela), con el CDR guardado en el pago, y su representación impresa en PDF.

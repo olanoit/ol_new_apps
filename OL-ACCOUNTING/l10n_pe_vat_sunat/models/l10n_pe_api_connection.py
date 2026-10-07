@@ -176,11 +176,11 @@ class L10nPeApiConnection(models.Model):
             return self._fetch_rest(document, doc_type, quick=quick)
         if self.engine == 'sunat_oficial':
             result = sunat_oficial.fetch_ruc(
-                document, with_legal_reps=self.import_legal_reps,
-                with_annex=self.import_annexed_locals)
+                document, with_legal_reps=self.import_legal_reps and not quick,
+                with_annex=self.import_annexed_locals and not quick, quick=quick)
             return dataclasses.asdict(result)
         if self.engine == 'sunat_multi':
-            return dataclasses.asdict(sunat_oficial.fetch_ruc_multi(document))
+            return dataclasses.asdict(sunat_oficial.fetch_ruc_multi(document, quick=quick))
         raise UserError(_('Engine de conexión no soportado: %s', self.engine))
 
     def _fetch_rest(self, document, doc_type, quick=False):
@@ -225,7 +225,8 @@ class L10nPeApiConnection(models.Model):
             # para que el error sea accionable, no un genérico "HTTP 401".
             detail = ''
             try:
-                detail = (response.json() or {}).get('message') or ''
+                body = response.json()
+                detail = body.get('message') or '' if isinstance(body, dict) else ''
             except ValueError:
                 detail = ''
             raise http.HttpError(
@@ -247,9 +248,14 @@ class L10nPeApiConnection(models.Model):
             raise http.HttpError(
                 _('%(name)s: %(msg)s', name=self.name, msg=message),
                 status_code=200, body=response.text, service=self.name)
-        if self.data_root:
-            return engine.get_path(payload, self.data_root) or {}
-        return payload
+        data = engine.get_path(payload, self.data_root) if self.data_root else payload
+        if not isinstance(data, dict):
+            # Una lista o un texto donde se esperaba el objeto del
+            # contribuyente rompía el mapeo con un traceback.
+            raise http.HttpError(
+                _('%(name)s: la respuesta no tiene el formato esperado.', name=self.name),
+                status_code=200, body=response.text, service=self.name)
+        return data
 
     # ------------------------------------------------------------------ #
     # 2. Aplicar el mapeo genérico                                        #

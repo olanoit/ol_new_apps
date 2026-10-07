@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- Corregido: el TXT del RCE 8.4 salía con 41 campos y el anexo 8 pide 37 (los campos 38 a 41 no van en el archivo); el Excel de revisión los sigue mostrando.
+- Tipo de cambio de compras y ventas desde la tasa de la factura y, en notas de crédito y débito, el del documento modificado (antes se calculaba dividiendo totales).
+- Las sucursales se incluyen en los libros de la compañía y sus importes por grupo de impuestos ya no salen en cero.
+- La base imponible ya no incluye el ISC; el 8.3 y el 14.2 separan gravado, exonerado e inafecto; el 14.2 informa los anulados (estado 2) y lleva T.C. 1.000 en soles; el 8.3 marca estado 6 o 7 para comprobantes de periodos anteriores.
+- Las notas de débito informan el documento que modifican en el 8.3/14.2, el 5.4 ya no mezcla cuentas de otras compañías y el campo 31 del 8.4 lleva la aduana del documento modificado.
+
 ## 8.20260828 — 27/09/2026
 
 - El RCE 8.4 ya no incluye los comprobantes del 8.5 (tipo 00) ni los recibos por honorarios (02).

@@ -269,6 +269,10 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Tabla 10 de medios de pago según el anexo vigente: el 011 no es «letras de cambio» sino documentos de EDPYMES y cooperativas no autorizadas a captar depósitos; nuevos 012 y 013 (tarjetas de empresas no financieras y del exterior); descripciones completas de 006, 007 y 010."
   - version: 4.20260828
     fecha: 27/09/2026
     cambios:

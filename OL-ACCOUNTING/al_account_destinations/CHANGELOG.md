@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- Corregido: restablecer y volver a publicar un comprobante consumía otro número del diario de destinos y dejaba huecos en el correlativo; ahora conserva su número salvo que cambie el periodo.
+- Las líneas del asiento de destino (clase 9) llevan la analítica de la línea de origen.
+- Si al republicar ya no queda nada que distribuir, el asiento de destino anterior se cancela en vez de quedar en borrador.
+
 ## 4.20260828 — 27/09/2026
 
 - Eliminar un asiento de destino ya no borra el comprobante de origen. Al eliminar un comprobante en borrador, su asiento de destino se elimina con él.

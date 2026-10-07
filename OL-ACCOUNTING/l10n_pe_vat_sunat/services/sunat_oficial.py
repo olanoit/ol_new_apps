@@ -40,7 +40,13 @@ SUNAT_MAX_RETRIES = 2
 # Consulta individual (con representantes legales y locales anexos)      #
 # ---------------------------------------------------------------------- #
 
-def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False):
+def _call_opts(quick, retries):
+    """Consulta automática al escribir (``quick``): sin reintentos y con
+    timeout corto, para no dejar el formulario esperando minutos."""
+    return {'retries': 0, 'timeout': 5} if quick else {'retries': retries}
+
+
+def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False, quick=False):
     """Consulta individual al portal SUNAT.
 
     Devuelve un ``services.providers.RucResult`` poblado con los
@@ -55,7 +61,7 @@ def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False):
 
     # 1) GET inicial para obtener cookies y numRnd.
     r0 = http.get(
-        SUNAT_INDIVIDUAL, service='SUNAT', session=session, retries=1,
+        SUNAT_INDIVIDUAL, service='SUNAT', session=session, **_call_opts(quick, 1),
     )
     if r0.status_code != 200:
         raise http.HttpError(
@@ -74,7 +80,7 @@ def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False):
     }
     r1 = http.post(
         SUNAT_INDIVIDUAL, service='SUNAT', session=session,
-        data=seed_params, retries=SUNAT_MAX_RETRIES,
+        data=seed_params, **_call_opts(quick, SUNAT_MAX_RETRIES),
     )
     num_rnd = _extract_num_rnd(r1.text)
     if not num_rnd:
@@ -84,25 +90,26 @@ def fetch_ruc(ruc, *, with_legal_reps=False, with_annex=False):
         )
 
     # 3) Consulta del RUC propiamente dicho.
-    base = _query_ruc(session, ruc, num_rnd)
+    base = _query_ruc(session, ruc, num_rnd, quick=quick)
     result = _parse_ruc_html(base, ruc)
 
     if with_legal_reps:
         result.legal_representatives = _query_legal_reps(
-            session, ruc, result.name, num_rnd,
+            session, ruc, result.name, num_rnd, quick=quick,
         )
     if with_annex:
         result.annexed_locals = _query_annex(
-            session, ruc, result.name, num_rnd,
+            session, ruc, result.name, num_rnd, quick=quick,
         )
     return result
 
 
-def _query_ruc(session, ruc, num_rnd):
+def _query_ruc(session, ruc, num_rnd, quick=False):
     url = '%s?accion=consPorRuc&nroRuc=%s&contexto=ti-it&modo=1&numRnd=%s' % (
         SUNAT_INDIVIDUAL, ruc, num_rnd,
     )
-    r = http.post(url, service='SUNAT', session=session, retries=SUNAT_MAX_RETRIES)
+    r = http.post(url, service='SUNAT', session=session,
+                  **_call_opts(quick, SUNAT_MAX_RETRIES))
     if r.status_code != 200:
         raise http.HttpError(
             'SUNAT rechazó la consulta de RUC %s.' % ruc,
@@ -111,14 +118,15 @@ def _query_ruc(session, ruc, num_rnd):
     return r.text
 
 
-def _query_legal_reps(session, ruc, name, num_rnd):
+def _query_legal_reps(session, ruc, name, num_rnd, quick=False):
     url = ('%s?accion=getRepLeg&desRuc=%s&nroRuc=%s'
            '&contexto=ti-it&modo=1&numRnd=%s') % (
         SUNAT_INDIVIDUAL, name or '', ruc, num_rnd,
     )
     try:
         r = http.post(
-            url, service='SUNAT', session=session, retries=SUNAT_MAX_RETRIES,
+            url, service='SUNAT', session=session,
+            **_call_opts(quick, SUNAT_MAX_RETRIES),
         )
         return _parse_legal_reps(r.text)
     except http.HttpError as exc:
@@ -126,14 +134,15 @@ def _query_legal_reps(session, ruc, name, num_rnd):
         return []
 
 
-def _query_annex(session, ruc, name, num_rnd):
+def _query_annex(session, ruc, name, num_rnd, quick=False):
     url = ('%s?accion=getLocAnex&desRuc=%s&nroRuc=%s'
            '&contexto=ti-it&modo=1&numRnd=%s') % (
         SUNAT_INDIVIDUAL, name or '', ruc, num_rnd,
     )
     try:
         r = http.post(
-            url, service='SUNAT', session=session, retries=SUNAT_MAX_RETRIES,
+            url, service='SUNAT', session=session,
+            **_call_opts(quick, SUNAT_MAX_RETRIES),
         )
         return _parse_annex(r.text)
     except http.HttpError as exc:
@@ -307,7 +316,7 @@ def _parse_annex(html):
 # Consulta multi-RUC (ZIP CSV pipe-separado)                              #
 # ---------------------------------------------------------------------- #
 
-def fetch_ruc_multi(ruc):
+def fetch_ruc_multi(ruc, quick=False):
     """Consulta el portal multi-RUC y devuelve ``RucResult``."""
     from .results import RucResult
 
@@ -317,7 +326,7 @@ def fetch_ruc_multi(ruc):
     captcha = http.post(
         '%s/captcha' % SUNAT_MULTI.rsplit('/', 1)[0],
         service='SUNAT-multi', session=session,
-        data={'accion': 'random'}, retries=2,
+        data={'accion': 'random'}, **_call_opts(quick, 2),
     )
     if captcha.status_code != 200:
         raise http.HttpError(
@@ -333,7 +342,7 @@ def fetch_ruc_multi(ruc):
             'selRuc': ruc,
             'numRnd': captcha.text,
         },
-        retries=SUNAT_MAX_RETRIES,
+        **_call_opts(quick, SUNAT_MAX_RETRIES),
     )
     if r.status_code != 200:
         raise http.HttpError(
@@ -352,7 +361,7 @@ def fetch_ruc_multi(ruc):
     zip_name = link.get_text(strip=True)
     txt_name = zip_name.replace('.zip', '.txt')
 
-    zip_resp = http.get(zip_url, service='SUNAT-multi', retries=1)
+    zip_resp = http.get(zip_url, service='SUNAT-multi', **_call_opts(quick, 1))
     if zip_resp.status_code != 200:
         raise http.HttpError(
             'SUNAT Multi-RUC no entregó el ZIP de %s.' % ruc,

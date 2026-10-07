@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
+from lxml import etree
 
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class StockPicking(models.Model):
@@ -13,26 +13,45 @@ class StockPicking(models.Model):
         ).report_action(self)
 
     def _get_grouped_move_lines(self):
-        """Agrupa los ``move_ids`` por producto/UdM para el detalle de
-        bienes de la guía, con las series/lotes movidos de cada uno."""
+        """Detalle de bienes: una línea por movimiento, en el orden del XML
+        (``DespatchLine`` por movimiento con cantidad), con sus series o
+        lotes. Antes se agrupaba por producto y la numeración y el número de
+        líneas no coincidían con el XML enviado a SUNAT."""
         self.ensure_one()
-        grouped_data = defaultdict(lambda: {
-            'product': None, 'uom': None, 'quantity': 0, 'lots': set()})
-
+        lines = []
         for move in self.move_ids.filtered(lambda m: m.quantity > 0):
-            key = (move.product_id.id, move.product_uom.id)
-            grouped_data[key]['product'] = move.product_id
-            grouped_data[key]['uom'] = move.product_uom
-            grouped_data[key]['quantity'] += move.quantity
-            for move_line in move.move_line_ids:
-                if move_line.lot_id:
-                    grouped_data[key]['lots'].add(move_line.lot_id.name)
+            lines.append({
+                'product': move.product_id,
+                'uom': move.product_uom,
+                'quantity': move.quantity,
+                # ordenados: un set no tiene orden y cada impresión variaba
+                'lots': sorted({ml.lot_id.name for ml in move.move_line_ids if ml.lot_id}),
+            })
+        return lines
 
-        # Lotes ordenados: un set no tiene orden y cada impresión los
-        # listaba distinto.
-        for data in grouped_data.values():
-            data['lots'] = sorted(data['lots'])
-        return list(grouped_data.values())
+    @api.model
+    def _l10n_pe_report_quantity(self, quantity):
+        """Cantidad sin redondear a 2 decimales (el XML lleva hasta 10)."""
+        text = ('%.10f' % quantity).rstrip('0').rstrip('.')
+        return text or '0'
+
+    def _l10n_pe_report_issue_date(self):
+        """Fecha de emisión del XML enviado (``cbc:IssueDate``, la del envío
+        en hora de Lima); sin XML aún, la de validación de la entrega."""
+        self.ensure_one()
+        name = '%s-09-%s.xml' % (self.company_id.vat, self.l10n_latam_document_number)
+        attachment = self.env['ir.attachment'].search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id), ('name', '=', name),
+        ], limit=1, order='id desc') if self.l10n_latam_document_number else False
+        if attachment and attachment.raw:
+            try:
+                tree = etree.fromstring(attachment.raw)
+                issue = tree.findtext('{*}IssueDate')
+                if issue:
+                    return fields.Date.to_date(issue)
+            except etree.XMLSyntaxError:
+                pass
+        return False
 
     def _l10n_pe_report_departure_partner(self):
         """Punto de partida: el mismo contacto que usa el XML de la guía
