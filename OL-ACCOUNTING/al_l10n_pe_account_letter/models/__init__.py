@@ -9,3 +9,4 @@ from . import letter_type_wizard
 from . import letter_massive
 from . import letter_account_config
 from . import letter_residual
+from . import res_company

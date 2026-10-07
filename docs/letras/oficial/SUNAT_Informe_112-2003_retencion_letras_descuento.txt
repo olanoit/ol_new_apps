@@ -1,0 +1,117 @@
+ 
+ INFORME N° 112-2003-SUNAT/2B0000 
+ SUMILLA: 
+ 1. La venta de bienes a plazos mayores de un mes estará sujeta a la retención del 6%, salvo que dicha operación se realice con sujetos que tienen la condición de buenos contribuyentes o de Agentes de Retención o, si respecto de la misma se verifica alguno de los otros supuestos detallados en los artículos 2° y 5° de la Resolución. 
+ 2. Sea cual fuere la modalidad que se hubiese pactado para el pago de una operación de venta de bienes, incluido el pago mediante una letra de cambio, el obligado a efectuar la retención será quien realiza dicho pago, esto es, el comprador aceptante del referido título valor. 
+ En caso de pagos parciales, dicho sujeto deberá efectuar la retención sobre el importe de cada pago. Asimismo, y aun cuando el mencionado título valor haya sido entregado en descuento a una entidad bancaria, el referido sujeto estará obligado a emitir el respectivo Comprobante de Retención a su proveedor en la oportunidad en que realice el pago y la retención correspondiente. 
+ 3. En el caso de venta a plazos de bienes, en la que el pago de las cuotas se efectúa en forma anticipada a la entrega de los mismos, la retención procederá únicamente si el pago es superior a S/. 700.00, importe que coincidirá con el monto del comprobante de pago si la cancelación corresponde a una sola cuota. Si el pago versara respecto de varias cuotas, procederá la retención aún cuando el mismo sea inferior a S/. 700.00, si la sumatoria de los montos de los comprobantes de pago de las referidas cuotas supera dicho importe. 
+ Tratándose de la entrega de bienes en propiedad que se produzca semanalmente en el marco de un contrato de suministro celebrado a título oneroso, la retención procederá cuando el pago es superior a S/. 700.00 o cuando el monto del comprobante de pago o la sumatoria de los comprobantes de pago materia de cancelación supera dicho importe. 
+ 4. En la medida que en una misma oportunidad se realice el pago de operaciones sustentadas en varios comprobantes de pago, corresponderá la emisión de un solo Comprobante de Retención. 
+ No existe, sin embargo, norma alguna que posibilite la emisión de un solo Comprobante de Retención a fin de sustentar las retenciones practicadas respecto de diversos pagos efectuados en el transcurso de un mes, aún cuando se trate de una misma operación. 
+ INFORME N° 112-2003-SUNAT/2B0000 
+ MATERIA: 
+ Solicitan se efectúen las siguientes precisiones en relación con el Régimen de Retenciones del Impuesto General a las Ventas (IGV) aplicable a los proveedores, y regulado por Resolución de Superintendencia N° 037-2002/SUNAT: 
+ 1. ¿Debe aplicarse la retención del 6% en las ventas a plazos mayores de un mes?. 
+ 2. En el caso de ventas a plazo en que se emitan letras de cambio por el saldo del precio que, luego, son entregadas en descuento a una entidad bancaria: 
+ a) ¿Qué sucede en el caso de pagos parciales?. 
+ b) ¿El banco debe retener al aceptante y abonar el monto correspondiente, a la cuenta del cliente?. 
+ c) ¿Quién y en qué momento se emite la constancia de retención?. 
+ 3. El artículo 3° de la Resolución exceptúa de la obligación de retener, cuando el pago efectuado sea igual o inferior a S/. 700 y el monto de los comprobantes involucrados no supera dicho importe. Sería conveniente precisar el supuesto de hecho al que hace referencia dicha norma, ya que en el caso de ventas a plazos es posible que el monto total de la venta supere los S/. 700; aunque los pagos parciales no superen esta cantidad. En el supuesto antes descrito, ¿debe retenerse el 6% en los comprobantes de pago que no superen S/. 700?. 
+ Tratándose de operaciones de suministro, el monto de la entrega semanal puede no superar los S/. 700 pero es posible que el monto mensual del suministro sí lo supere. En dicho supuesto ¿se debe entender que cada entrega producida en el mes es una operación independiente, o forma parte de una operación mensual de suministro?. 
+ 4. En el caso de distintas operaciones de venta o prestación de servicios realizadas en el mes con un mismo proveedor, ¿se debe emitir un comprobante de retención por cada operación?. ¿Es posible emitir un solo comprobante de retención para acreditar todas las retenciones efectuadas en el mes, por pagos efectuados en el mes por una misma operación?. 
+ BASE LEGAL: 
+ - Texto Único Ordenado de la Ley del Impuesto General a las Ventas e Impuesto Selectivo al Consumo, aprobado por Decreto Supremo N° 055-99-EF, y normas modificatorias (en adelante, TUO de la Ley del IGV). 
+ - Reglamento de la Ley del Impuesto General a las Ventas e Impuesto Selectivo al Consumo, aprobado por el Decreto Supremo N° 029-94-EF, cuyo Título I fue sustituido por el Decreto Supremo N° 136-96-EF y modificatorias. 
+ - Resolución de Superintendencia N° 037-2002/SUNAT, que establece el Régimen de Retenciones del IGV aplicable a los proveedores, modificada por la Resolución de Superintendencia N° 050-2002/SUNAT. 
+ - Código Civil, aprobado por Decreto Legislativo N° 295, y normas modificatorias. 
+ - Reglamento de Comprobantes de Pago, aprobado por Resolución de Superintendencia N° 007-99/SUNAT, y normas modificatorias (en adelante, RCP). 
+ ANÁLISIS: 
+ 1. En relación con la primera consulta, de acuerdo con lo establecido en el artículo 2° y la Primera Disposición Final de la Resolución de Superintendencia N° 037-2002/SUNAT (en adelante, la Resolución), el Régimen de Retenciones del IGV regulado en este dispositivo resulta de aplicación en las operaciones de venta de bienes, primera venta de bienes inmuebles, prestación de servicios y contratos de construcción gravadas con dicho Impuesto, que se efectúen a partir del 1 de junio del presente año. 
+ Conforme lo señala el citado artículo 2° de la Resolución, el Régimen de Retenciones no será aplicable a las operaciones sustentadas con liquidaciones de compra y pólizas de adjudicación, las mismas que seguirán regulándose por lo dispuesto en el 
+RCP (1) . 
+ Asimismo, según lo dispone el artículo 5° de la Resolución, la retención del IGV a que se refiere la misma, no se efectuará en las siguientes operaciones: 
+ a) Las realizadas con proveedores que tengan la condición de buenos contribuyentes o de Agentes de Retención; 
+ b) Las operaciones de venta y prestación de servicios respecto de las cuales no exista la obligación de otorgar comprobantes de pago; 
+ c) Las operaciones en las que se emitan los documentos a que se refiere el numeral 6.1 del artículo 4° del RCP, así como las operaciones en las que se emitan boletas de ventas, tickets o cintas emitidas por máquinas registradoras que no permitan ejercer el derecho al crédito fiscal; 
+ d) Las operaciones en las cuales opere el Sistema de Pago de Obligaciones Tributarias con el Gobierno Central establecido por el Decreto Legislativo N° 
+917 (2) . 
+ Como se puede apreciar de las normas antes glosadas, la retención del IGV dispuesta por la Resolución no resulta de aplicación únicamente a las operaciones señaladas en los artículos 2° y 5° de la misma, cuya exclusión obedece a consideraciones que giran en torno a la calidad de los sujetos intervinientes, el tipo de comprobante de pago que las sustenta, o la existencia de normas que regulan algún otro tipo de retención o detracción aplicable. 
+ No existe norma alguna en la Resolución que, teniendo en consideración la oportunidad de nacimiento de la obligación del IGV en la venta de bienes a plazos, haya excluido esta operación de los alcances del Régimen de Retenciones. Por el contrario, según se desprende del tenor del artículo 7° de la Resolución, el legislador ha regulado el mencionado Régimen sin restringir su aplicación a los pagos que se efectúen en el período en que se produce el nacimiento de la obligación del IGV correspondiente a la operación materia de cancelación. 
+ Así, el artículo 7° de la Resolución establece que el Agente de Retención efectuará la retención en el momento en que se realice el pago, con prescindencia de la fecha en que se efectuó la operación gravada con el IGV. La citada norma agrega que, tratándose de pagos parciales, la tasa de retención (3) se aplicará sobre el importe de cada pago. Vale decir, que este artículo no subordina la retención a la verificación de la oportunidad en que se produjo el nacimiento de la obligación del IGV. 
+ En ese sentido, debemos concluir que, como regla general, la retención del 6% dispuesta por la Resolución resultará de aplicación al supuesto materia de consulta, esto es, la venta de bienes a plazos mayores de un mes. Dicha operación estará excluida de la retención, únicamente en caso se realice con sujetos que tienen la condición de buenos contribuyentes o de Agentes de Retención o, si respecto de la misma se verifica alguno de los otros supuestos detallados en los artículos 2° y 5° de la Resolución. 
+ Sin perjuicio de lo anterior, consideramos pertinente indicar que de acuerdo con el artículo 11° de la Resolución, el proveedor tiene expedito su derecho a deducir del impuesto a pagar en cada período, las retenciones que le hubiesen practicado por concepto de cada pago abonado hasta el último día de dicho período. 
+ 2. En cuanto a la segunda consulta debemos señalar que de acuerdo con el artículo 2° de la Resolución antes citado, el Régimen de Retenciones aplicable a los proveedores opera en las operaciones de venta de bienes , primera venta de inmuebles, prestación de servicios y contratos de construcción gravadas con el IGV. 
+ Según lo establece el artículo 7° de la Resolución, el Agente de Retención efectuará la retención en el momento en que realice el pago , con prescindencia de la fecha en que se efectuó la operación gravada con el IGV. La norma agrega que , en el caso que el pago se realice a un tercero el Agente de Retención deberá emitir y entregar el Comprobante de Retención al proveedor . Asimismo, indica que, 
+ tratándose de pagos parciales, la tasa de retención se aplicará sobre el importe de cada pago. 
+ Conforme se desprende de las normas citadas, tratándose de las operaciones de venta de bienes, sea cual fuere la modalidad que se hubiese pactado para el pago de las mismas (en efectivo o mediante un título valor), el sujeto obligado a efectuar la retención es quien realiza dicho pago, esto es, el comprador aceptante de la letra de cambio en el supuesto materia de consulta, en la medida que haya sido designado Agente de Retención. 
+ En caso que dicho cliente realice pagos parciales, estará obligado a efectuar la retención correspondiente sobre el importe de cada pago y abonarlo al fisco de acuerdo con lo establecido en el artículo 9° de la Resolución (4) . 
+ Tal y como lo ha señalado expresamente el citado artículo 7° de la Resolución, aún cuando en el supuesto materia de consulta el cliente abone el pago a un tercero, esto es, a la entidad bancaria que recibió la letra de cambio en descuento, será aquél el obligado a efectuar la retención y emitir el Comprobante de Retención respectivo. La emisión de dicho documento deberá efectuarse en la oportunidad en que se realice el pago y la retención correspondiente. 
+ 3. En lo que atañe a la tercera consulta, de acuerdo con lo establecido en el artículo 3° de la Resolución, el Agente de Retención no estará obligado a efectuar la retención cuando: 1) el pago que realice sea igual o inferior a S/. 700.00 y, 2) el monto de los comprobantes de pago involucrados no supere dicho importe; requisitos que según se desprende del tenor del citado artículo deben cumplirse en forma conjunta a fin que opere la excepción de la obligación de retener. 
+ Cabe señalar que cuando la norma hace referencia al "monto de los comprobantes de pago involucrados" debe entenderse como tal al monto del comprobante de pago (5) o la sumatoria de los montos de los comprobantes de pago materia de cancelación total o parcial, comprendidos dentro de los alcances del Régimen de Retenciones. 
+ En tal virtud, en caso que se efectúe un pago inferior a S/. 700.00 respecto de un único comprobante de pago que sí supera este importe, el Agente de Retención estará obligado a efectuar la retención respectiva. Ahora bien, si el pago que se va a realizar es inferior a S/. 700.00 pero la sumatoria de los montos de los comprobantes de pago involucrados supera dicho importe, la retención del 6% procederá por el total del monto cancelado aún cuando parte del mismo corresponda a un comprobante de pago cuya suma no excede de S/. 700.00. 
+ Adicionalmente, debe tenerse en cuenta que conforme a lo previsto en el numeral 1 del artículo 5° del RCP, en el caso de la transferencia de bienes muebles, los comprobantes de pago deben ser entregados en el momento en que se entregue el bien o en el momento en que se efectúe el pago, lo que ocurra primero. De otro lado, según lo establecido en el numeral 4 del artículo 5° del citado texto legal, tratándose de la transferencia de bienes, existe la obligación de entregar comprobante de pago por los pagos parciales recibidos anticipadamente a la entrega del bien o puesta a disposición del mismo, en la fecha y por el monto que se perciba. 
+ En ese sentido, partiendo de la premisa que la primera parte de la consulta está referida a la venta a plazos de bienes, en la que el pago de las cuotas se efectúa en forma anticipada a la entrega de los 
+mismos (6) , debemos concluir que en dicho supuesto la retención procederá únicamente si el pago es superior a S/. 700.00, importe que coincidirá con el monto del comprobante de pago si la cancelación corresponde a una sola cuota. Si el pago versara respecto de varias cuotas, procederá la retención aún cuando el mismo sea inferior a S/. 700.00, si la sumatoria de los montos de los comprobantes de pago respectivos supera dicho importe. 
+ Tratándose de la entrega de bienes en propiedad que se produzca semanalmente en el marco de un contrato de suministro celebrado a título 
+oneroso (7) , la retención procederá cuando el pago es superior a S/. 700.00 o cuando el monto del comprobante de pago o la sumatoria de los montos de los comprobantes de pago materia de cancelación supera dicho 
+importe (8) . 
+ 4. Finalmente, en lo que concierne a la cuarta consulta, el artículo 8° de la Resolución establece que al momento de efectuar la retención , el Agente de Retención entregará a su proveedor un Comprobante de Retención que deberá contener los requisitos mínimos detallados en dicha norma. 
+ Entre otros requisitos, el citado artículo señala como información no necesariamente impresa: a) los datos de identificación del proveedor (apellidos y nombres, denominación o razón social, y número de RUC); b) la fecha de emisión del Comprobante de Retención; c) identificación de los comprobantes de pago o notas de débito que dieron origen a la retención (tipo de documento, serie y número correlativo y, fecha de emisión); d) monto del pago; y, e) importe retenido. 
+ Tal como fluye de la citada norma, el Comprobante de Retención constituye un documento mediante el cual el Agente de Retención deja constancia de la retención practicada a su proveedor respecto de cada pago realizado sujeto a retención, el mismo que puede estar vinculado a uno o varios comprobantes de pago. 
+ Así, en la medida que en una misma oportunidad se realice el pago de las operaciones sustentadas en varios comprobantes de pago, corresponderá la emisión de un solo Comprobante de Retención. 
+ La posibilidad que dicho documento se emita para sustentar las retenciones practicadas respecto de diversos pagos efectuados en el transcurso de un mes, aún cuando se trate de una misma operación, no ha sido prevista en la norma; por el contrario, ésta obliga al Agente de Retención a emitir el respectivo Comprobante de Retención en el momento en que efectúa la retención. 
+ CONCLUSIONES: 
+ 1. La venta de bienes a plazos mayores de un mes estará sujeta a la retención del 6%, salvo que dicha operación se realice con sujetos que tienen la condición de buenos contribuyentes o de Agentes de Retención o, si respecto de la misma se verifica alguno de los otros supuestos detallados en los artículos 2° y 5° de la Resolución. 
+ 3. Sea cual fuere la modalidad que se hubiese pactado para el pago de una operación de venta de bienes, incluido el pago mediante una letra de cambio, el obligado a efectuar la retención será quien realiza dicho pago, esto es, el comprador aceptante del referido título valor. 
+ En caso de pagos parciales, dicho sujeto deberá efectuar la retención sobre el importe de cada pago. Asimismo, y aun cuando el mencionado título valor haya sido entregado en descuento a una entidad bancaria, el referido sujeto estará obligado a emitir el respectivo Comprobante de Retención a su proveedor en la oportunidad en que realice el pago y la retención correspondiente. 
+ 3. En el caso de venta a plazos de bienes, en la que el pago de las cuotas se efectúa en forma anticipada a la entrega de los mismos, la retención procederá únicamente si el pago es superior a S/. 700.00, importe que coincidirá con el monto del comprobante de pago si la cancelación corresponde a una sola cuota. Si el pago versara respecto de varias cuotas, procederá la retención aún cuando el mismo sea inferior a S/. 700.00, si la sumatoria de los montos de los comprobantes de pago de las referidas cuotas supera dicho importe. 
+ Tratándose de la entrega de bienes en propiedad que se produzca semanalmente en el marco de un contrato de suministro celebrado a título oneroso, la retención procederá cuando el pago es superior a S/. 700.00 o cuando el monto del comprobante de pago o la sumatoria de los comprobantes de pago materia de cancelación supera dicho importe. 
+ 4. En la medida que en una misma oportunidad se realice el pago de operaciones sustentadas en varios comprobantes de pago, corresponderá la emisión de un solo Comprobante de Retención. 
+ No existe, sin embargo, norma alguna que posibilite la emisión de un solo Comprobante de Retención a fin de sustentar las retenciones practicadas respecto de diversos pagos efectuados en el transcurso de un mes, aún cuando se trate de una misma operación. 
+ Lima, 17 de marzo de 2003. 
+ ORIGINAL FIRMADO POR: 
+CLARA URTEAGA GOLDSTEIN 
+ Intendente Nacional Jurídico (e) 
+ (1) 
+ El numeral 4 del artículo 4° y el literal g) del numeral 6.1 del artículo 
+4° del RCP designan como agentes de retención de los tributos que gravan la 
+operación sustentada con la liquidación de compra y la póliza de adjudicación 
+emitida con ocasión del remate o adjudicación de bienes por venta forzada, al 
+comprador y al martillero público o entidad que intervenga en dichos actos, 
+respectivamente. 
+ (2) 
+De acuerdo con la Resolución de Superintendencia N° 058-2002/SUNAT, dicho 
+Sistema es de aplicación a la venta de azúcar, alcohol etílico y arroz que se 
+realicen con los proveedores detallados en la Resolución. 
+ (3) 
+Según lo dispuesto en el artículo 6° de la Resolución: 6%. 
+ (4) 
+Dicho artículo dispone que el Agente de Retención declarará el monto total de 
+las retenciones practicadas en el período y efectuará el pago respectivo 
+utilizando el PDT- Agentes de Retención, Formulario Virtual N° 626. El 
+referido PDT deberá ser presentado inclusive cuando no se hubieran practicado 
+retenciones en el período. 
+ Asimismo, señala que la 
+declaración y el pago se realizarán de acuerdo al cronograma aprobado por la 
+SUNAT para el cumplimiento de sus obligaciones tributarias. El Agente de Retención 
+no podrá compensar el saldo a favor del exportador contra los pagos que tenga 
+que efectuar por retenciones realizadas. 
+ (5) 
+ Suma total que queda 
+obligado a pagar el adquirente, el usuario del servicio o quien encarga la 
+construcción, incluidos los tributos que graven la operación. 
+ (6) 
+En tanto que de haberse producido ya la entrega de los bienes, el monto del 
+comprobante de pago respectivo sería igual al importe total de la operación. 
+ (7) 
+ El 
+cual, entendemos, es el supuesto a que se refiere la consulta. 
+ (8) 
+ En 
+este supuesto también debe tenerse en cuenta lo previsto en el Reglamento de 
+Comprobantes de Pago respecto de la oportunidad en que corresponde emitir los 
+mismos. 
+ ZVS 
+2-AO547-D2 
+IMPUESTO GENERAL A LAS VENTAS  RÉGIMEN DE RETENCIONES APLICABLE A LOS PROVEEDORES. 
+

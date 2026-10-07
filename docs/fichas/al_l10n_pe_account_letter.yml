@@ -21,12 +21,13 @@ destacados:
     titulo: Letras generadas en un clic
     texto: >-
       Indique cantidad, primer vencimiento y días entre letras; el importe
-      total o parcial se reparte solo. El céntimo sobrante va a redondeo.
+      total o parcial se reparte solo y la última letra absorbe el céntimo.
   - icono: "BN"
     titulo: Cobranza libre o descuento
     texto: >-
-      Envíe todas las letras o una sola al banco con su código: el asiento
-      reclasifica la letra a la cuenta configurada para ese tipo y la concilia.
+      Envíe todas las letras o una sola al banco con su código; luego registre
+      la liquidación del descuento, el cobro del banco o el protesto, cada uno
+      con su asiento (4511, 6734, 6391) y su conciliación.
   - icono: "↻"
     titulo: Refinanciación
     texto: >-
@@ -245,7 +246,7 @@ pasos:
     imagen: screenshots/11-facturas-canjeadas.png
 
   - seccion: Letras en el banco
-    texto: Cobranza libre o descuento, de todas las letras o de una.
+    texto: Cobranza libre o descuento, de todas las letras o de una; liquidación, cobro y protesto.
   - titulo: Enviar letras a cobranza libre o descuento
     ruta: Canje ▸ Canje
     texto: >-
@@ -256,9 +257,22 @@ pasos:
       tipo y se concilia con el asiento del canje.
     puntos:
       - "**Fecha letra** muestra la fecha del asiento del canje: la fecha de canje no puede ser anterior ni futura."
-      - "El asiento se fecha con la **Fecha canje** del canje; la fecha del asistente se usa para el tipo de cambio."
+      - "El asiento lleva la **Fecha de canje** del asistente (la del envío al banco)."
       - El botón deja de mostrarse cuando todas las letras están pagadas.
     imagen: screenshots/08-asistente-canje.png
+  - titulo: Liquidar el descuento, registrar el cobro o el protesto
+    ruta: Canje ▸ Liquidar descuento / Cobro del banco / Protesto
+    texto: >-
+      Elija las letras, la **Fecha** y el **Banco**. En la liquidación indique
+      los **Intereses del descuento** y las **Comisiones y gastos**: el neto se
+      calcula solo. El cobro del banco deja la letra **Pagado**; el protesto la
+      pasa a **Protestada** y vuelve a quedar pendiente a cargo del cliente.
+    puntos:
+      - "Descuento: banco (neto), 6734 y 6391 contra 4511 por el valor nominal; al cobrarse, 4511 contra 1234."
+      - "Cobranza libre: banco (neto) y 6391 contra 1233."
+      - "Protesto de letra descontada: el banco carga su importe (4511 contra banco); los gastos de protesto van a 6391."
+      - "Si se protesta más de 15 días después del vencimiento (Ley 27287, art. 72), el canje lo anota."
+      - "El botón **Banco** del canje abre todos estos asientos."
 
   - titulo: Seguir las letras
     ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Letras
@@ -594,6 +608,13 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 9.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Nuevo: liquidación del descuento con el banco (abono neto, intereses, comisiones y préstamo por el valor nominal)."
+      - "Nuevo: cobro del banco en cobranza libre (con su comisión) y en descuento (cancela el préstamo); la letra queda pagada."
+      - "Nuevo: protesto de letras. La letra vuelve a cobrarse al cliente, el banco carga la letra descontada y los gastos de protesto van a gastos bancarios; se avisa si se protesta fuera del plazo de 15 días."
+      - "Los diarios de letras se marcan en el diario y las cuentas de redondeo, descuento e intereses se eligen en Ajustes; ya no se buscan por el nombre (al actualizar se adopta lo existente)."
   - version: 8.20261007
     fecha: 07/10/2026
     cambios:

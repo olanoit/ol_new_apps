@@ -111,6 +111,13 @@ class L10nPeLetterLine(models.Model):
         currency_field='company_currency_id',
         readonly=True,
         compute='_compute_debit_credit', default=0.0)
+    discount_move_id = fields.Many2one(
+        'account.move', string='Liquidación del descuento', readonly=True, copy=False)
+    collection_move_id = fields.Many2one(
+        'account.move', string='Asiento de cobro', readonly=True, copy=False)
+    protest_move_id = fields.Many2one(
+        'account.move', string='Asiento de protesto', readonly=True, copy=False)
+    protest_date = fields.Date(string='Fecha de protesto', readonly=True, copy=False)
     adeudado = fields.Monetary(
         string='Adeudado',
         currency_field='currency_id',
@@ -125,13 +132,14 @@ class L10nPeLetterLine(models.Model):
                  'letter_id.account_id.line_ids.amount_residual_currency',
                  'letter_id.account_id.line_ids.l10n_pe_letter_line_id',
                  'letter_id.canje_move_id.line_ids.amount_residual_currency',
-                 'letter_id.canje_move_ids.line_ids.amount_residual_currency')
+                 'letter_id.canje_move_ids.line_ids.amount_residual_currency',
+                 'letter_id.bank_move_ids.line_ids.amount_residual_currency')
     def compute_adeudado(self):
         """Lo que falta cobrar o pagar de la letra: el saldo de sus apuntes en el
-        canje y, si se envió al banco, en el asiento de cobranza o descuento."""
+        canje, en el envío al banco y en las operaciones del banco (protesto)."""
         for line in self:
             letter = line.letter_id
-            moves = letter.account_id | letter.canje_move_id | letter.canje_move_ids
+            moves = letter.account_id | letter.canje_move_id | letter.canje_move_ids | letter.bank_move_ids
             move_lines = moves.filtered(lambda m: m.state == 'posted').line_ids.filtered(
                 lambda move_line: move_line.l10n_pe_letter_line_id == line)
             if move_lines:
@@ -213,6 +221,52 @@ class L10nPeLetterLine(models.Model):
                 else:
                     raise UserError(self.env._(
                         'No se encontró una cuenta para la letra en la compañía %s.', company.name))
+
+    # ------------------------------------------------------------------
+    # Operaciones con el banco (asistente l10n_pe.letter.bank.wizard)
+    # ------------------------------------------------------------------
+    def _l10n_pe_open_bank_line(self):
+        """Apunte abierto de la letra en la cuenta de cobranza (1233) o
+        descuento (1234), creado al enviarla al banco."""
+        self.ensure_one()
+        letter = self.letter_id
+        return (letter.canje_move_id | letter.canje_move_ids).filtered(
+            lambda m: m.state == 'posted').line_ids.filtered(
+            lambda l: l.l10n_pe_letter_line_id == self and not l.reconciled
+            and l.currency_id.compare_amounts(l.amount_residual_currency, 0.0) > 0)[:1]
+
+    def _l10n_pe_bank_operation_allowed(self, operation):
+        self.ensure_one()
+        if self.move_invoice_type != 'out_invoice' or self.letter_type not in ('billing', 'discount'):
+            return False
+        if not self._l10n_pe_open_bank_line():
+            return False
+        if operation == 'settle_discount':
+            return self.letter_type == 'discount' and not self.discount_move_id
+        if operation == 'collected':
+            # En descuento, el banco cancela el préstamo: antes debe haberlo dado.
+            return self.letter_type == 'billing' or bool(self.discount_move_id)
+        return operation == 'protest'
+
+    def _l10n_pe_config_account(self, letter_type):
+        """Cuenta configurada para ``letter_type`` (o la de cartera)."""
+        self.ensure_one()
+        account_type = 'asset_receivable' if self.move_invoice_type == 'out_invoice' else 'liability_payable'
+        Config = self.env['l10n_pe.letter.account.config']
+        domain = [('account_type', '=', account_type), ('document_type', '=', 'letter'),
+                  ('currency_id', '=', self.currency_id.id),
+                  ('company_id', '=', self.letter_id.company_id.id)]
+        config = Config.search(domain + [('letter_type', '=', letter_type)], limit=1) or \
+            Config.search(domain + [('letter_type', '=', 'portfolio')], limit=1)
+        if not config:
+            raise UserError(self.env._('Configure la cuenta de letras «%s» de la compañía %s.',
+                                       letter_type, self.letter_id.company_id.name))
+        return config.account_id
+
+    def _l10n_pe_protested_account(self):
+        """Letras protestadas: la cuenta configurada o, sin ella, la de cartera
+        (el PCGE no tiene una subcuenta propia)."""
+        return self._l10n_pe_config_account('protested')
 
     BANK_FIELDS = ('bank_id', 'code', 'letter_type')
 

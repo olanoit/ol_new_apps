@@ -73,8 +73,11 @@ class L10nPeLetterInvoiceLine(models.Model):
                 ('id', 'not in', record.letter_id.invoice_line_ids.move_line_id.ids),
             ]
             if code == '00':
+                # Asientos de apertura: el diario de apertura de la compañía o,
+                # como antes, los diarios cuyo nombre dice «apertura».
+                opening_journal = (record.letter_id.company_id or self.env.company).account_opening_journal_id
                 domain += [
-                    ('journal_id.name', 'ilike', 'apertura'),
+                    '|', ('journal_id', '=', opening_journal.id), ('journal_id.name', 'ilike', 'apertura'),
                     ('move_type', '=', 'entry'),
                     ('account_id.reconcile', '=', True),
                     ('reconciled', '=', False),

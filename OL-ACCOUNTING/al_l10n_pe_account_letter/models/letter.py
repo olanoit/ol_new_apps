@@ -104,7 +104,7 @@ class L10nPeLetter(models.Model):
         string='Diario',
         tracking=True,
         check_company=True,
-        domain="[('name', 'ilike', 'letra')]",
+        domain="[('id', 'in', domain_letter_ids)]",
     )
 
     domain_letter_ids = fields.Many2many(
@@ -115,20 +115,19 @@ class L10nPeLetter(models.Model):
 
     @api.depends('type')
     def _compute_domain_letter_ids(self):
+        Journal = self.env['account.journal']
         for record in self:
-            # Filtrar por la compañía del canje
-            domain = [
-                ('company_id', '=', (record.company_id or self.env.company).id),
-                ('name', 'ilike', 'letra')
-            ]
-
-            if record.type == 'out_invoice':
-                domain += ['|', ('name', 'ilike', 'Cobrar'), ('name', 'ilike', 'cobrar')]
-            else:
-                domain += ['|', ('name', 'ilike', 'Pagar'), ('name', 'ilike', 'pagar')]
-
-            # Buscar los journals de la compañía actual
-            journals = self.env['account.journal'].search(domain)
+            company = record.company_id or self.env.company
+            letter_type = 'receivable' if record.type == 'out_invoice' else 'payable'
+            # Diarios marcados como de letras; si la compañía no marcó ninguno,
+            # se reconocen por el nombre, como antes de la v9.
+            journals = Journal.search([('company_id', '=', company.id),
+                                       ('l10n_pe_letter_type', '=', letter_type)])
+            if not journals and not Journal.search_count([
+                    ('company_id', '=', company.id), ('l10n_pe_letter_type', '!=', False)], limit=1):
+                word = 'cobrar' if letter_type == 'receivable' else 'pagar'
+                journals = Journal.search([('company_id', '=', company.id),
+                                           ('name', 'ilike', 'letra'), ('name', 'ilike', word)])
             record.domain_letter_ids = journals
 
     exchange_rate = fields.Float(
@@ -349,6 +348,10 @@ class L10nPeLetter(models.Model):
 
     # Método para botón borrador
     def action_draft(self):
+        if self.bank_move_ids.filtered(lambda m: m.state == 'posted'):
+            raise UserError(self.env._(
+                'El canje %s tiene operaciones con el banco (descuento, cobro o protesto): '
+                'anúlelas antes de restablecerlo a borrador.', self.name))
         if self.account_id:
             if self.account_id.state == 'posted':
                 self.account_id.button_draft()
@@ -608,6 +611,47 @@ class L10nPeLetter(models.Model):
     canje_move_id = fields.Many2one('account.move', string='Asiento de canje', readonly=True)
     canje_move_ids = fields.Many2many('account.move', 'account_letter_move_canje_rel', 'letter_id', 'move_id',
                                       string='Asientos de canje', readonly=True)
+    bank_move_ids = fields.Many2many(
+        'account.move', 'l10n_pe_letter_bank_move_rel', 'letter_id', 'move_id',
+        string='Operaciones con el banco', readonly=True, copy=False,
+        help='Liquidación del descuento, cobro del banco y protesto.')
+    bank_move_count = fields.Integer(compute='_compute_bank_move_count')
+
+    @api.depends('bank_move_ids')
+    def _compute_bank_move_count(self):
+        for record in self:
+            record.bank_move_count = len(record.bank_move_ids)
+
+    def _action_bank_operation(self, operation):
+        self.ensure_one()
+        names = dict(self.env['l10n_pe.letter.bank.wizard']._fields['operation'].selection)
+        return {
+            'name': names[operation],
+            'type': 'ir.actions.act_window',
+            'res_model': 'l10n_pe.letter.bank.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_letter_id': self.id, 'default_operation': operation},
+        }
+
+    def action_bank_settle_discount(self):
+        return self._action_bank_operation('settle_discount')
+
+    def action_bank_collected(self):
+        return self._action_bank_operation('collected')
+
+    def action_bank_protest(self):
+        return self._action_bank_operation('protest')
+
+    def action_open_bank_moves(self):
+        self.ensure_one()
+        return {
+            'name': self.env._('Operaciones con el banco'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.bank_move_ids.ids)],
+        }
 
     def action_canje(self):
         date_canje = fields.Date.context_today(self)
@@ -813,7 +857,7 @@ class L10nPeLetter(models.Model):
         for record in self.filtered(lambda l: l.state in ('redeemed', 'banked')):
             lines = record._banked_letter_lines()
             banked = bool(lines) and all(
-                line.bank_id and line.code and line.letter_type in ('billing', 'discount')
+                line.bank_id and line.code and line.letter_type in ('billing', 'discount', 'protested')
                 for line in lines)
             state = 'banked' if banked else 'redeemed'
             if record.state != state:

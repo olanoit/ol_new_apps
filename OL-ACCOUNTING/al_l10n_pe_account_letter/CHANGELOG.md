@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- Nuevo: liquidación del descuento con el banco (abono neto, intereses, comisiones y préstamo por el valor nominal).
+- Nuevo: cobro del banco en cobranza libre (con su comisión) y en descuento (cancela el préstamo); la letra queda pagada.
+- Nuevo: protesto de letras. La letra vuelve a cobrarse al cliente, el banco carga la letra descontada y los gastos de protesto van a gastos bancarios; se avisa si se protesta fuera del plazo de 15 días.
+- Los diarios de letras se marcan en el diario y las cuentas de redondeo, descuento e intereses se eligen en Ajustes; ya no se buscan por el nombre (al actualizar se adopta lo existente).
+
 ## 8.20261007 — 07/10/2026
 
 - Corregido: el importe se repartía sin redondear y el céntimo sobrante iba a gasto por redondeo (1 000 en 3 letras = 999,99); ahora la última letra absorbe la diferencia y las letras suman exactamente la deuda.

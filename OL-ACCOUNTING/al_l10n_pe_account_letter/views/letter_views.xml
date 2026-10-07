@@ -133,6 +133,12 @@
                                 icon="fa-link"
                                 invisible="state != 'redeemed' or account_id != False"/>
 
+                        <button name="action_bank_settle_discount" string="Liquidar descuento" type="object"
+                                invisible="type != 'out_invoice' or state not in ('redeemed', 'banked')"/>
+                        <button name="action_bank_collected" string="Cobro del banco" type="object"
+                                invisible="type != 'out_invoice' or state not in ('redeemed', 'banked')"/>
+                        <button name="action_bank_protest" string="Protesto" type="object"
+                                invisible="type != 'out_invoice' or state not in ('redeemed', 'banked')"/>
                         <button name="action_draft" string="Restablecer a borrador" type="object"
                                 invisible="state == 'draft'"/>
                         <button name="%(account_refinance_invoice_action)d" type="action" string="Refinanciar"
@@ -165,6 +171,10 @@
                                     <span class="o_stat_text">Vincular asiento</span>
                                     <span class="o_stat_value">Por referencia</span>
                                 </div>
+                            </button>
+                            <button name="action_open_bank_moves" type="object" class="oe_stat_button"
+                                    icon="fa-university" invisible="bank_move_count == 0">
+                                <field name="bank_move_count" string="Banco" widget="statinfo"/>
                             </button>
                             <button name="action_open_account_move"
                                     type="object"

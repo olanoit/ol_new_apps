@@ -1,0 +1,1888 @@
+                                        REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+
+                                    CAPÍTULO I
+
+                          DISPOSICIONES GENERALES
+
+Artículo 1.- DEFINICIÓN DE COMPROBANTE DE PAGO
+
+   El comprobante de pago es un documento que acredita la transferencia de bienes,
+la entrega en uso o la prestación de servicios.
+
+   En los casos en que las normas sobre la materia exijan la autorización de impresión
+y/o importación a que se refiere el numeral 1 del artículo 12 del presente reglamento,
+sólo se considerará que existe comprobante de pago si su impresión y/o importación
+ha sido autorizada por la SUNAT conforme al procedimiento señalado en el citado
+numeral. La inobservancia de dicho procedimiento acarreará la configuración de las
+infracciones previstas en los numerales 1, 4, 8 y 15 del artículo 174 del Código
+Tributario, según corresponda.
+
+(Artículo sustituido por el Artículo 2 de la Resolución Nº 156-2013-SUNAT,
+publicada el 15.5.2013, el mismo que entró en vigencia el 1.6.2013.)
+
+ TEXTO ANTERIOR
+
+ Artículo 1.- DEFINICION DE COMPROBANTE DE PAGO
+
+    El comprobante de pago es un documento que acredita la transferencia de
+ bienes, la entrega en uso, o la prestación de servicios.
+
+
+
+Artículo 2.- DOCUMENTOS CONSIDERADOS COMPROBANTES DE PAGO
+
+   Sólo se consideran comprobantes de pago, siempre que cumplan con todas las
+características y requisitos mínimos establecidos en el presente reglamento, los
+siguientes:
+
+a)   Facturas.
+
+b)   Recibos Por honorarios.
+
+c)   Boletas de venta.
+
+d)   Liquidaciones de compra.
+
+e)   Tickets o cintas emitidos por máquinas registradoras.
+
+f)   Los documentos autorizados en el numeral 6 del Artículo 4.
+                                          REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+g)     Otros documentos que por su contenido y sistema de emisión permitan un
+       adecuado control tributario y se encuentren expresamente autorizados, de
+       manera previa, por la SUNAT.
+
+h)     Comprobante de Operaciones - Ley Nº 29972.” (1)
+
+       (1) (Inciso incorporado por el Artículo 2 de la Resolución N° 362-2013
+       SUNAT, publicada el 20.12. 2013. La citada disposición entró en
+       vigencia a partir del 1.1.2014).
+
+i)     Ticket POS, el cual se rige por la resolución de superintendencia que lo crea la
+       cual regula, entre otros aspectos, los requisitos de dicho comprobante de pago
+       y la oportunidad de su emisión. (2)
+
+       (2) (Inciso i) incorporado por la Segunda Disposición Complementaria
+       Modificatoria de la Resolución de Superintendencia N° 141-2017-
+       SUNAT, publicada el 8.6.2017, la misma que entró en vigencia a partir
+       del 1.8.2017).
+
+j)     Ticket Monedero Electrónico, el cual se rige por la resolución de
+       superintendencia que lo crea. Esa resolución regula, entre otros aspectos, los
+       requisitos de dicho comprobante de pago. (3)
+
+       (3) (Inciso j) incorporado por la Segunda Disposición Complementaria
+       Modificatoria de la Resolución de Superintendencia N° 276-2017-
+       SUNAT, publicada el 31.10 2017, vigente el 1.2.2018).
+
+k)     Recibo electrónico por servicios públicos (recibo electrónico SP), el cual se rige
+       por la normativa sobre emisión electrónica. (4)
+
+       (4) (Inciso k) incorporado por la Primera Disposición Complementaria
+       Modificatoria de la Resolución de Superintendencia N° 206-2019-
+       SUNAT, publicada el 22.10.2019. La citada resolución entró en vigencia
+       el 1.12.2019).
+
+l)     Comprobante empresas supervisadas SBS, el cual se rige por la normativa
+       sobre emisión electrónica. (5)
+
+       (5) (Inciso l) incorporado por la Primera Disposición Complementaria
+       Modificatoria de la Resolución N° 252-2019-SUNAT, publicada el
+       30.11.2019. La citada resolución entró en vigencia el 1.12.2019).
+
+Artículo 3.- DE LAS DEFINICIONES
+
+     Para efecto del presente reglamento, se entenderá por:
+
+ Impuesto        :   Al Impuesto General a las Ventas y/o al Impuesto de Promoción
+                     Municipal. El Impuesto General a las Ventas y el Impuesto de
+                     Promoción Municipal podrán consignarse en un solo monto.
+                                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+ Documento        :     A los comprobantes de pago, notas de crédito, notas de débito y
+                        guías de remisión.
+ Provincia        de    A la provincia de Lima y a la Provincia Constitucional del Callao.
+ Lima              :
+
+(Artículo sustituido por el Artículo 1 de la Resolución de Superintendencia
+N° 064-2006-SUNAT, publicada el 25.4.2006; la misma que de conformidad
+con su Única Disposición Complementaria Final entrará en vigencia a partir
+del 1.5.2006.)
+
+ TEXTO ANTERIOR
+
+ Artículo 3.- DEFINICION DE IMPUESTO Y DE DOCUMENTO
+
+    Cualquier mención al término Impuesto, debe entenderse referida al Impuesto
+ General a las ventas y/o al Impuesto de Promoción Municipal. El Impuesto General
+ a las ventas y el Impuesto de Promoción Municipal podrán consignarse en un solo
+ monto.
+
+    Asimismo, cualquier mención al término documento, debe entenderse referida a
+ los comprobantes de pago, notas de crédito, notas de débito y guías de remisión.
+
+
+
+Artículo 4.- COMPROBANTES DE PAGO A EMITIRSE EN CADA CASO
+
+     Los comprobantes de pago serán emitidos en los siguientes casos:
+
+1.     FACTURAS
+
+       1.1. Se emitirán en los siguientes casos:
+
+             a)       Cuando la operación se realice con sujetos del Impuesto General a
+                      las ventas que tengan derecho al crédito fiscal.
+
+             b)       Cuando el comprador o usuario lo solicite a fin de sustentar gasto o
+                      costo para efecto tributario.
+
+             c)       Cuando el sujeto del Régimen Único Simplificado lo solicite a fin de
+                      sustentar crédito deducible.
+
+             d)       En las operaciones de exportación consideradas como tales por las
+                      normas del Impuesto General a las Ventas. En el caso de la venta
+                      de bienes en los establecimientos ubicados en la Zona Internacional
+                      de los aeropuertos de la República, si la operación se realiza con
+                      consumidores finales, se emitirán boletas de venta o tickets.
+
+                        No están comprendidas en este inciso las operaciones de
+                      exportación realizadas por los sujetos del Nuevo Régimen Único
+                      Simplificado.
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+(Inciso d) sustituido por el Artículo 1 de la Resolución de
+Superintendencia N° 143-2007-SUNAT, publicada el 10.7.2007.)
+
+ TEXTO ANTERIOR
+
+ d)    En las operaciones de exportación consideradas como tales por
+       las normas del Impuesto General a las ventas. En el caso de la
+       venta de bienes en los establecimientos ubicados en la Zona
+       Internacional de los aeropuertos de la República, si la operación
+       se realiza con consumidores finales, se emitirán boletas de venta
+       o tickets.
+
+
+
+e)    En los servicios de comisión mercantil prestados a sujetos no
+      domiciliados, en relación con la venta en el país de bienes
+      provenientes del exterior, siempre que el comisionista actúe como
+      intermediario entre un sujeto domiciliado en el país y otro no
+      domiciliado y la comisión sea pagada en el exterior.
+
+f)    En las operaciones que se realicen con las entidades a las que se
+      refiere el numeral 3.1 -con excepción de las comprendidas en el
+      literal h)- y el numeral 3.2 del artículo 3 del texto único ordenado
+      de la Ley de Contrataciones del Estado, aprobado por el Decreto
+      Supremo Nº 082-2019-EF, o con las unidades ejecutoras de las
+      citadas entidades; salvo que las mencionadas operaciones sean
+      realizadas por sujetos del Nuevo Régimen Único Simplificado o por
+      las personas comprendidas en el inciso 1.3 del numeral 1 del artículo
+      6 o que se acrediten con los documentos autorizados a que se refiere
+      el numeral 6 o con los comprobantes de pago señalados en los
+      incisos k) y l) del artículo 2.
+
+         Lo dispuesto en el párrafo anterior resulta aplicable a todas las
+      entidades que en él se indican sin considerar los supuestos excluidos
+      del ámbito de aplicación de la mencionada ley.
+
+      (Literal f) modificado por el Artículo 1 de la Resolución de
+      Superintendencia N° 000048-2021-SUNAT, publicada el
+      10.4.2021, vigente a partir del 1.10.2021.)
+
+ TEXTO ANTERIOR
+
+ f)    En las operaciones realizadas con las Unidades Ejecutoras y
+       Entidades del Sector Público Nacional a las que se refiere el
+       Decreto Supremo Nº 053-97-PCM y normas modificatorias,
+       cuando dichas Unidades Ejecutoras y Entidades adquieran los
+       bienes y/o servicios definidos como tales en el Artículo 1 del
+       citado Decreto Supremo; salvo que las mencionadas
+       adquisiciones se efectúen a sujetos del Régimen Unico
+                                  REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+            Simplificado o a las personas comprendidas en el numeral 3 del
+            Artículo 6 del presente reglamento, o que se acrediten con los
+            documentos autorizados a que se refiere el numeral 6 del
+            presente Artículo.
+
+
+
+     g)   En los servicios de comisión mercantil prestados a sujetos no
+          domiciliados, en relación con la compra de bienes nacionales o
+          nacionalizados, siempre que el comisionista actúe como
+          intermediario entre el(los) exportadores) y el sujeto no domiciliado
+          y la comisión sea pagada desde el exterior. (*)
+
+     (*) (Literal g) incorporado por el Articulo 1 de la Resolución de
+     Superintendencia N° 057-2006-SUNAT, publicada el 1.4.2006).
+
+     h)   Cuando se presten servicios de arrendamiento o subarrendamiento
+          de bienes inmuebles, salvo que corresponda la emisión del recibo a
+          que se refiere el literal a) del inciso 6.2 del numeral 6. (*)
+
+     (*) (Literal h) incorporado por el Numeral 1.1) de la Primera
+     Disposición Complementaria Modificatoria de la Resolución de
+     Superintendencia N° 245-2017-SUNAT, publicada el 30.12.2017,
+     el mismo que entró en vigencia el 1.10.2017).
+
+     i)   Cuando se presten servicios de créditos hipotecarios. (*)
+
+     (*) (Literal i) incorporado por el Numeral 2.1) de la Segunda
+     Disposición Complementaria Modificatoria de la Resolución de
+     Superintendencia N° 245-2017-SUNAT, publicada el 30.12.2017,
+     el mismo que rige desde el 1.7.2018).
+
+     j)   En la venta de bienes que realicen los Establecimientos Autorizados
+          a que hace referencia el inciso c) del artículo 11-A del Reglamento
+          de la Ley del Impuesto General a las Ventas e Impuesto Selectivo al
+          Consumo, aprobado por el Decreto Supremo Nº 029-94-EF y
+          normas modificatorias, a extranjeros no domiciliados que ingresen
+          al país en calidad de turistas, que sean llevados al exterior al retorno
+          a su país por vía aérea o marítima, siempre que los traslade el propio
+          turista. (*)
+
+     (*) (Literal j) incorporado por el Artículo 3 de la Resolución de
+     Superintendencia     Nº   000005-2023/SUNAT,        publicada   el
+     10.1.2023. La citada resolución entra en vigencia conjuntamente
+     con el Decreto Supremo Nº 226-2020-EF).
+
+1.2. Solo se emitirán a favor del adquirente o usuario que posea número de
+     Registro Único de Contribuyentes (RUC), exceptuándose de este requisito
+     a las operaciones referidas en los literales d), e), g) y j) del inciso
+     precedente. (*)
+                                    REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+      (*) (Primer párrafo modificado por el Artículo 3 de la Resolución
+      de Superintendencia Nº 000005-2023/SUNAT, publicada el
+      10.1.2023. La citada resolución entra en vigencia conjuntamente
+      con el Decreto Supremo Nº 226-2020-EF).
+
+         Tratándose del servicio indicado en el literal h) del inciso 1.1, se emitirá
+      a favor del usuario que posea número de RUC o un número de documento
+      de identidad. Sin embargo, si el usuario desea sustentar gasto por ese
+      servicio al amparo del inciso a) del segundo párrafo del artículo 46 de la
+      Ley del Impuesto a la Renta, aprobada por el Decreto Legislativo Nº 774,
+      cuyo último texto único ordenado fue aprobado por el Decreto Supremo
+      Nº 179-2004-EF y normas modificatorias, solo se puede identificar con un
+      número de RUC o con un número de documento nacional de identidad
+      (DNI). (*)
+
+      (*) (Párrafo modificado por el Numeral 1.1) de la Primera
+      Disposición Complementaria Modificatoria de la Resolución de
+      Superintendencia N° 245-2017-SUNAT, publicada el 30.12.2017,
+      vigente a partir del 1.10.2017).
+
+         Tratándose del servicio indicado en el literal i) del inciso 1.1, se emitirá
+      a favor del usuario que posea número de RUC o un número de documento
+      de identidad. Sin embargo, si el usuario desea sustentar gasto por ese
+      servicio al amparo del inciso b) del segundo párrafo del artículo 46 de la
+      Ley del Impuesto a la Renta solo se puede identificar con un número de
+      RUC o con un número de DNI. (*)
+
+      (*) (Tercer párrafo del numeral 1.2 incorporado por el numeral
+      2.1 de la Segunda Disposición Complementaria Modificatoria de la
+      Resolución de Superintendencia N.° 245-2017/SUNAT, publicada
+      el 30.9.2017 y vigente a partir del 1.7.2018).
+
+TEXTO ANTERIOR
+
+1.2    Solo se emitirán a favor del adquirente o usuario que posea número
+       de Registro Único de Contribuyentes (RUC), exceptuándose de este
+       requisito a las operaciones referidas en los literales d), e) y g) del
+       inciso precedente. (*)
+
+          Tratándose del servicio indicado en el literal h) del inciso 1.1, se
+       emitirá a favor del usuario que posea número de RUC o un número
+       de documento de identidad. Sin embargo, si el usuario desea
+       sustentar gasto por ese servicio al amparo del inciso a) del segundo
+       párrafo del artículo 46 de la Ley del Impuesto a la Renta, aprobada
+       por el Decreto Legislativo Nº 774, cuyo último texto único ordenado
+       fue aprobado por el Decreto Supremo Nº 179-2004-EF y normas
+       modificatorias, solo se puede identificar con un número de RUC o con
+       un número de documento nacional de identidad (DNI)
+                                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+      (*) Inciso 1.2) modificado por el Numeral 1.1) de la Primera Disposición
+      Complementaria Modificatoria de la Resolución de Superintendencia N°
+      245-2017-SUNAT, publicada el 30.12.2017, el mismo que entró en vigencia
+      el 1.10.2017
+
+
+       TEXTO ANTERIOR
+
+       1.2        Solo se emitirán a favor del adquirente o usuario que posea número
+                  de Registro Único de Contribuyentes (RUC), exceptuándose de este
+                  requisito a las operaciones referidas en los literales d), e) y g) del
+                  numeral precedente.
+
+                     También están exceptuadas de aquel requisito las operaciones
+                  indicadas en el inciso a) del segundo párrafo del artículo 46 de la
+                  Ley del Impuesto a la Renta cuando el usuario solicite factura, caso
+                  en el cual este puede indicar aquel número o el número de
+                  documento nacional de identidad. No están comprendidas en esa
+                  excepción las operaciones en las que el usuario sea una persona
+                  natural extranjera domiciliada en el país."(*)
+
+       Inciso 1.2) modificado por el Numeral 2.1 de la Segunda Disposición
+       Complementaria Modificatoria de la Resolución de Superintendencia N°
+       123-2017-SUNAT, publicada el 15.5.2017, el mismo que entró en vigencia
+       el 1.6.2017
+
+
+           TEXTO ANTERIOR
+
+           1.2 Sólo se emitirán a favor del adquirente o usuario que posea número
+               de Registro Único de Contribuyentes (RUC), exceptuándose de
+               este requisito a las operaciones referidas en los literales d), e) y
+               g) del numeral precedente.
+
+           Numeral 1.2 sustituído por el Articulo 1 de la Resolución de
+           Superintendencia N° 057-2006-SUNAT, publicada el 1.4.2006.
+
+
+               TEXTO ANTERIOR
+
+               1.2. Sólo se emitirán a favor del adquirente o usuario que posea
+                    número de Registro Unico de Contribuyente (RUC),
+                    exceptuándose de este requisito a las operaciones referidas en
+                    los literales d) y e) del numeral precedente.
+
+           .
+       .
+      ..
+
+2.   RECIBOS POR HONORARIOS
+
+     2.1. Se emitirán en los siguientes casos:
+                                        REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+          a)     Por la prestación de servicios a través del ejercicio individual de
+                 cualquier profesión, arte, ciencia u oficio.
+
+          b)     Por todo otro servicio que genere rentas de cuarta categoría, salvo
+                 lo establecido en el inciso 1.5 del numeral 1 del artículo 7 del
+                 presente reglamento. (*)
+
+          (*) (Literal b) sustituido por el Artículo 2 de la Resolución Nº 233-
+          2008-SUNAT, publicada el 31.12.2008.)
+
+           TEXTO ANTERIOR
+
+           b)    Por todo otro servicio que genere rentas de cuarta categoría, salvo
+                 lo establecido en el numeral 5 del Artículo 7 del presente
+                 reglamento.
+
+
+
+     2.2. Podrán ser utilizados a fin de sustentar gasto o costo para efecto tributario
+          y para sustentar crédito deducible.
+
+3.   BOLETAS DE VENTA
+
+     3.1. Se emitirán en los siguientes casos:
+
+          a)     En operaciones con consumidores o usuarios finales.
+
+          b)     En operaciones realizadas por los sujetos del Nuevo Régimen Único
+                 Simplificado, incluso en las de exportación que pueden efectuar
+                 dichos sujetos al amparo de las normas respectivas.
+
+          (Inciso b) sustituido por el Artículo 1 de la Resolución de
+          Superintendencia N° 143-2007-SUNAT, publicada el 10.7.2007)
+
+          (Ver artículo 9º de la Resolución de Superintendencia Nº 266-
+          2004/SUNAT, publicada el 04.11.2004, vigente a partir del
+          08.11.2004)
+
+           TEXTO ANTERIOR
+
+            b)   En operaciones realizadas por los sujetos del Régimen Único
+                 Simplificado.
+
+
+
+     3.2. La boleta de venta no permite ejercer derecho a crédito fiscal ni puede
+          sustentar gasto o costo para efecto tributario, salvo:
+
+          a)     Los casos en que la ley lo permita siempre que se identifique al
+                 adquirente o usuario con su número de RUC, así como con sus
+                 apellidos y nombres o denominación o razón social.
+                                           REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+              b)   La deducción de gastos de las rentas de cuarta y quinta categorías
+                   por concepto de los importes pagados por los servicios mencionados
+                   en el inciso d) del artículo 26-A del Reglamento de la Ley del
+                   Impuesto a la Renta, siempre que se identifique al usuario con el
+                   número de su documento nacional de identidad o de RUC.
+                   Tratándose de personas naturales extranjeras domiciliadas en el país
+                   se les debe identificar con su número de RUC.
+
+     (Inciso 3.2 modificado por la Sexta Disposición Complementaria
+     Modificatoria de la Resolución N° 303-2018-SUNAT, publicada el
+     31.12.2018.)
+
+      TEXTO ANTERIOR
+
+      3.2 No permitirán ejercer el derecho al crédito fiscal ni podrán sustentar
+          gasto o costo para efecto tributario, salvo en los casos que la ley lo
+          permita y siempre que se identifique al adquirente o usuario con su
+          número de RUC así como con sus apellidos y nombres o denominación
+          o razón social. (*)
+
+      (*) Inciso 3.2 sustituido por el Artículo 2 de la Resolución Nº 233-2008-
+      SUNAT, publicada el 31 diciembre 2008, disposición que entró en vigencia
+      el 1 de marzo de 2009, según su Segunda Disposición Complementaria
+      Final.
+
+
+           TEXTO ANTERIOR
+
+           3.2. No permitirán ejercer el derecho al crédito fiscal, ni podrán sustentar
+                gasto o costo para efecto tributario, ni crédito deducible, salvo en
+                los casos que la ley lo permita.
+
+      ..
+
+4.   LIQUIDACIONES DE COMPRA
+
+     4.1. Se emitirán en los casos señalados en el inciso 1.3 del numeral 1 del
+          artículo 6 del presente reglamento.
+
+     (Inciso sustituido por el Artículo 2 de la Resolución Nº 233-2008-
+     SUNAT, publicada el 31.12.2008.)
+
+      TEXTO ANTERIOR
+
+      4.1. Se emitirán en los casos señalados en el numeral 3 del Artículo 6 y
+           cuando se determine por Ley, Decreto Supremo o Resolución de
+           Superintendencia.
+                                      REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+    4.2. Podrán ser empleadas para sustentar gasto o costo para efecto tributario.
+
+    4.3. Permitirán ejercer el derecho al crédito fiscal, siempre que el Impuesto
+         sea retenido y pagado por el comprador.
+
+    (Numeral 4.3 sustituido por la Segunda Disposición Final de la
+    Resolución de Superintendencia N.° 112-2000/SUNAT, publicada el
+    3.11.2000, vigente a partir del 3.11.2000).
+
+     TEXTO ANTERIOR
+
+     4.3. Permitirán ejercer el derecho al crédito fiscal, siempre que se cumpla
+          con lo establecido en el numeral siguiente.
+
+
+
+    4.4. El Impuesto deberá ser retenido y pagado por el comprador, quien queda
+         designado como agente de retención.
+
+    (Numeral 4.4 sustituido por la Segunda Disposición Final de la
+    Resolución de Superintendencia N.° 112-2000/SUNAT, publicada el
+    3.11.2000, vigente a partir del 3.11.2000.)
+
+     TEXTO ANTERIOR
+
+     4.4. El comprador queda designado como agente de retención de los
+          tributos que gravan la operación.
+
+
+
+5. TICKETS O CINTAS EMITIDOS POR MAQUINAS REGISTRADORAS
+
+    5.1. Sólo podrán ser emitidos en moneda nacional.
+
+    5.2. Se emitirán en los siguientes casos:
+
+         a)    En operaciones con consumidores finales.
+
+         b)    En operaciones realizadas por los sujetos del Régimen Único
+               Simplificado.
+
+            No permitirán ejercer el derecho al crédito fiscal crédito deducible, ni
+         sustentarán gasto o costo para efecto tributario, salvo en los casos que la
+         ley lo permita.
+
+    5.3. Sustentarán crédito fiscal, gasto o costo para efecto tributario, o crédito
+         deducible, siempre que:
+
+         a)    Se identifique al adquirente o usuario con su número de RUC así
+               como con sus apellidos y nombres, o denominación o razón social.
+                                        REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+          b)     Se emitan como mínimo en original y una copia además de la cinta
+                 testigo.
+
+          c)     Se discrimine el monto del tributo que grava la operación, salvo que
+                 se trate de una operación gravada con el Impuesto a la Venta de
+                 Arroz Pilado
+
+          (Literal c) sustituido por la Segunda Disposición Final de la
+          Resolución de Superintendencia N.° 111-2004/SUNAT, publicada
+          el 8.5.2004, vigente a partir del 9.5.2004).
+
+           TEXTO ANTERIOR
+
+           c) Se discrimine el monto del tributo que grava la operación, salvo
+              que se trate de una operación que gravada con el Impuesto
+              Especial a las Ventas.
+
+           (Literal c) sustituido por la Segunda Disposición Final de la Resolución
+           de Superintendencia N.° 112-2000/SUNAT, publicada el 03.11.2000,
+           vigente a partir del 03.11.2000).
+
+           (En cuanto a la referencia al Impuesto General a las Ventas, ver
+           derogatoria efectuada por Decreto Legislativo N.° 918, publicado el
+           26.4.2001, vigente desde el 1.5.2001).
+
+
+               TEXTO ANTERIOR
+
+               c) Se discrimine el monto del Impuesto.
+
+           .
+
+     5.4. DEROGADO
+
+     Inciso 5.4 derogado por la Única Disposición Complementaria
+     Derogatoria de la Resolución de Superintendencia N° 000048-2021-
+     SUNAT, publicada el 10.4. 2021, vigente a partir del 1.10.2021.
+
+     TEXTO ANTERIOR
+
+      5.4. Los tickets que se emitan en las operaciones realizadas con las
+           Unidades Ejecutoras y Entidades del Sector Público Nacional a las que
+           se refiere el Decreto Supremo Nº 053-97-PCM y normas
+           modificatorias, cuando dichas Unidades Ejecutoras y Entidades
+           adquieran los bienes y/o servicios definidos como tales en el Artículo
+           1 del citado Decreto Supremo, deberán cumplir con lo dispuesto en
+           el numeral precedente, salvo que las adquisiciones se efectúen a
+           sujetos del Régimen Único Simplificado.
+
+
+
+6.   DOCUMENTOS AUTORIZADOS
+                                     REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+6.1. Los siguientes documentos permitirán sustentar gasto o costo para efecto
+     tributario y/o ejercer el derecho al crédito fiscal, según sea el caso,
+     siempre que se identifique al adquirente o usuario y se discrimine el
+     Impuesto: (*)
+
+(*) Encabezado del inciso 6.1 del numeral 6 del artículo 4° sustituido
+por el artículo 3° de la Resolución de Superintendencia N.° 233-
+2008/SUNAT, publicada el 31.12.2008, vigente a partir del 1.1.2009.
+
+ TEXTO ANTERIOR
+
+ 6.1     Los siguientes documentos permitirán sustentar gasto o costo para
+         efecto tributario y/o ejercer el derecho al crédito fiscal, según sea el
+         caso, siempre que se identifique al adquirente o usuario y se discrimine
+         el Impuesto:"(*)
+
+ (*) Encabezado del artículo 6.1 sustituido por el Artículo 3 de la Resolución
+ Nº 233-2008-SUNAT, publicada el 31.12.2008.
+
+
+     TEXTO ANTERIOR
+
+     6.1. Los siguientes documentos permitirán sustentar gasto o costo para
+          efecto tributario ejercer el derecho al crédito fiscal, o al crédito
+          deducible, según sea el caso siempre que se identifique al adquirente
+          o usuario y se discrimine el Impuesto:
+
+ .
+
+        a)    Boletos de Transporte Aéreo que emiten las Compañías de Aviación
+              Comercial por el servicio de transporte aéreo regular de pasajeros,
+              de conformidad con lo dispuesto en la Ley Nº 27261, Ley de
+              Aeronáutica Civil del Perú. (*)
+
+        (*) Literal a) del numeral 6.1 del artículo 4 del Reglamento de
+        Comprobantes de Pago, sustituido por la Tercera Disposición Final
+        de la Resolución de Superintendencia N° 166-2004-SUNAT,
+        publicada el 4.7.2004.
+
+         TEXTO ANTERIOR
+
+         a)    Boletos que expiden las compañías de aviación comercial por el
+               servicio de transporte aéreo de pasajeros.
+
+
+
+        b)    Documentos emitidos por las empresas del sistema financiero y de
+              seguros, y por las cooperativas de ahorro y crédito no autorizadas a
+              captar recursos del público, que se encuentren bajo el control de la
+              Superintendencia de Banca y Seguros. (*)
+                              REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+(*) Inciso b) del numeral 6.1. del Artículo 4 del Reglamento de
+Comprobantes de Pago, modificado por el Artículo 2 de la
+Resolución de Superintendencia Nº 058-2000-SUNAT, publicada
+el 15.4.2000.
+
+TEXTO ANTERIOR
+
+ b)    Documentos emitidos por las empresas del sistema financiero y
+       de seguros que se encuentren bajo el control de la
+       Superintendencia de Banca y Seguros.
+
+
+
+         Aquellos documentos no se pueden emitir por la contraprestación
+      relativa al servicio de arrendamiento y/o subarrendamiento de
+      bienes inmuebles situados en el país, salvo cuando se emitan en los
+      supuestos indicados en el literal a) del numeral 4.1 del artículo 4 o
+      en el artículo 4-A de la Resolución de Superintendencia N.° 300-
+      2014-SUNAT y normas modificatorias. (*)
+
+      (*) Segundo párrafo incorporado por el numeral 2.2 de la
+      Segunda Disposición Complementaria Modificatoria de la
+      Resolución de Superintendencia N.° 123-2017/SUNAT,
+      publicada el 15.5.2017 y vigente a partir del 1.7.2017.
+
+         Cualquiera sea la operación por la que se emita este documento
+      autorizado, si el emisor opta por emitirlo y otorgarlo de manera
+      electrónica y para ello genera un archivo en PDF que será otorgado
+      a través de una página web u otro medio electrónico, debe tener en
+      cuenta lo siguiente:
+
+      i.     El archivo proporcionado por esa vía será considerado un
+             ejemplar del documento autorizado.
+
+      ii.    Un mismo archivo puede contener varios documentos
+             autorizados; sin embargo, no se exime al emisor de cumplir
+             respecto de cada documento con los requisitos mínimos
+             correspondientes ni con la información requerida para
+             sustentar gasto o costo para efecto tributario y/o ejercer el
+             derecho al crédito fiscal, según sea el caso.
+
+      iii.   El otorgamiento se considera realizado desde que el ejemplar
+             del documento autorizado puede ser descargado y visualizado.
+             (*)
+
+      (*) Tercer párrafo del literal b) incorporado por el numeral
+      2.2 de la Segunda Disposición Complementaria Modificatoria
+      de la Resolución de Superintendencia N.° 245-2017/SUNAT,
+      publicada el 30.9.2017 y vigente a partir del 1.10.2017.
+                            REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+        No se deben emitir los documentos a que se refiere este literal
+     por los intereses por el servicio de crédito hipotecario, salvo cuando
+     se emitan en los supuestos indicados en el literal a) del numeral 4.1
+     del artículo 4 o en el artículo 4-A de la Resolución de
+     Superintendencia N.° 300-2014/SUNAT y normas modificatorias. De
+     emitirse esos documentos, se deben indicar como requisitos
+     mínimos la información referida en el inciso 1.19 del numeral 1 del
+     artículo 8. (*)
+
+     (*) Cuarto párrafo incorporado por el numeral 2.3 de la
+     Segunda Disposición Complementaria Modificatoria de la
+     Resolución de Superintendencia N.° 245-2017/SUNAT,
+     publicada el 30.9.2017 y vigente a partir del 1.7.2018.
+
+(*) De conformidad con la Única Disposición Complementaria
+Final de la Resolución de Superintendencia N° 000191-2020-
+SUNAT, publicada el 31 octubre 2020, excepcionalmente, hasta el
+de 30 de junio de 2021, el Banco de la Nación puede emitir los
+documentos autorizados a que se refiere el presente literal.
+
+c)   Documentos emitidos por las Administradoras Privadas de Fondos
+     de Pensiones y por las Entidades Prestadoras de Salud, que se
+     encuentren bajo la supervisión de la Superintendencia de
+     Administradoras Privadas de Fondos de Pensiones y de la
+     Superintendencia    de     Entidades    Prestadoras    de     Salud,
+     respectivamente, cuando estén referidos a las operaciones
+     compatibles con sus actividades según lo establecido por las normas
+     sobre la materia.
+
+d)   Recibos emitidos por los servicios públicos de suministro de energía
+     eléctrica y agua; así como por los servicios públicos de
+     telecomunicaciones que se encuentren bajo el control del Ministerio
+     de Transportes y Comunicaciones y del Organismo Supervisor de
+     Inversión Privada en Telecomunicaciones (OSIPTEL).
+
+       Los servicios complementarios a los servicios públicos señalados
+     podrán incluirse en el mismo recibo.
+
+        Las empresas concesionarias del servicio de telefonía que están
+     bajo el control de OSIPTEL podrán incluir en los comprobantes de
+     pago que emitan, los comprobantes de pago correspondientes a los
+     servicios indicados a continuación:
+
+     -    Los servicios de la serie 80C que prestan las empresas
+          suscriptoras autorizadas por OSIPTEL;
+
+     -    Los servicios de buscapersonas que prestan las empresas
+          concesionarias de los mismos utilizando la serie de numeración
+          16XX u otra aprobada para tal efecto por el Ministerio de
+          Transportes y Comunicaciones;
+                       REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+-    Los servicios portadores de larga distancia nacional o
+     internacional que prestan las empresas concesionarias de los
+     mismos, previo acuerdo con la empresa concesionaria del
+     servicio de telefonía o de acuerdo a lo establecido por OSIPTEL
+     mediante Resoluciones de Consejo Directivo N°s. 061-2001-
+     CD/OSIPTEL y 062-2001-CD-OSIPTEL.
+
+-    Los servicios especiales con interoperabilidad brindados por
+     los operadores del servicio telefónico fijo y móvil, en sus redes,
+     a través del código de numeración 15XX u otro código
+     aprobado para tal efecto por el Ministerio de Transportes y
+     Comunicaciones, de acuerdo a la normatividad emitida por
+     OSIPTEL.
+
+   El formato que se usará para incluir los comprobantes de pago
+antes indicados deberá permitir que se identifique claramente a
+cada una de las empresas. En cada comprobante de pago se deberá
+consignar como requisitos mínimos: los datos de identificación del
+obligado (número de RUC y razón o denominación social), el número
+correlativo del comprobante de pago, la fecha de emisión, la
+descripción o el tipo de servicio prestado o el concepto cobrado, el
+importe del mismo discriminando el monto de los tributos que
+gravan el servicio y otros cargos adicionales, en su caso y el importe
+total del servicio prestado.
+
+   Cada comprobante de pago incluido en el formato indicado en el
+párrafo anterior será considerado en forma independiente para todo
+efecto tributario, sin perjuicio que en aquellos casos que conforme
+con lo establecido en este reglamento u otra norma deban
+consignarse los datos de identificación del usuario y la fecha de
+emisión, éstos pueden colocarse por separado y como datos
+comunes a todos los comprobantes de pago.
+
+   La empresa concesionaria que, de acuerdo a este literal, en el
+comprobante de pago que emita incluya el(los) de otra(s)
+empresa(s), deberá, previamente y por única vez, comunicar a la
+SUNAT la primera oportunidad en que esto ocurra y adjuntar el
+formato que usará para ello. De presentarse la comunicación sin
+adjuntar el formato respectivo, se tendrá como no presentada la
+comunicación, quedando a salvo el derecho de la empresa a
+presentarla nuevamente adjuntando el aludido formato. El
+incumplimiento de la obligación de comunicar no afectará la validez
+de ninguno de los comprobantes de pago comprendidos en el
+formato, sin perjuicio que los mismos deban cumplir con lo señalado
+en el cuarto párrafo del presente literal para ser considerados
+comprobantes de pago.
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+          Los servicios públicos señalados en el primer párrafo del presente
+      literal no comprenden a aquéllos que son prestados con la finalidad
+      de ser comercializados a terceros.
+
+         Tratándose de recibos emitidos a nombre del arrendador o
+      subarrendador del inmueble, se entenderá identificado al
+      arrendatario o subarrendatario como usuario de los servicios
+      públicos a los que se refiere el presente literal, siempre que en el
+      contrato de arrendamiento o subarrendamiento se estipule que la
+      cesión del uso del inmueble incluye a los servicios públicos
+      suministrados en beneficio del bien y que las firmas de los
+      contratantes estén autenticadas notarialmente.
+
+         Para efecto de lo dispuesto en el párrafo anterior, si las firmas
+      son autenticadas con posterioridad al inicio del plazo del
+      arrendamiento o subarrendamiento, sólo permitirán sustentar gasto
+      o costo para efecto tributario, crédito deducible o ejercer el derecho
+      al crédito fiscal, los recibos emitidos a partir de la fecha de
+      certificación de las firmas. (*)
+
+(*) Literal d) sustituido por el Artículo Único de la Resolución N°
+013-2013-SUNAT, publicada el 15.1.2013.
+
+ TEXTO ANTERIOR
+
+ d)    Recibos emitidos por los servicios públicos de suministro de
+       energía eléctrica y agua; así como por los servicios públicos de
+       telecomunicaciones que se encuentren bajo el control del
+       Ministerio de Transportes, Comunicaciones, Vivienda y
+       Construcción y del Organismo Supervisor de Inversión Privada
+       en Telecomunicaciones (OSIPTEL).
+
+        Los servicios complementarios a los servicios            públicos
+      señalados podrán incluirse en el mismo recibo.
+
+         “Las empresas concesionarias del servicio de telefonía que
+      están bajo el control de OSIPTEL podrán incluir en los
+      comprobantes de pago que emitan, según el formato que autorice
+      la SUNAT y bajo las condiciones que ésta establezca, los
+      comprobantes de pago correspondientes a:
+
+      - los servicios de la serie 80C que prestan las empresas
+        suscriptoras autorizadas por OSIPTEL;
+
+      - los servicios de buscapersonas que prestan las empresas
+        concesionarias de los mismos utilizando la serie de numeración
+        16XX u otra aprobada para tal efecto por el Ministerio de
+        Transportes, Comunicaciones, Vivienda y Construcción;
+                           REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+    - los servicios portadores de larga distancia nacional o
+      internacional que prestan las empresas concesionarias de los
+      mismos, previo acuerdo con la empresa concesionaria del
+      servicio de telefonía o de acuerdo a lo establecido por OSIPTEL
+      mediante Resoluciones de Consejo Directivo Nº s. 061-2001-
+      CD/OSIPTEL y 062-2001-CD/OSIPTEL." (1)
+
+       "El mencionado formato deberá identificar claramente a cada
+    una de las empresas, así como los servicios prestados,
+    consignando en cada caso, como mínimo: datos de identificación
+    del obligado (número de RUC y razón o denominación social),
+    número correlativo del comprobante de pago, descripción o tipo
+    de servicio prestado, importe del mismo discriminando el monto
+    de los tributos que gravan el servicio y otros cargos adicionales,
+    en su caso y el importe total del servicio prestado. Cada
+    comprobante incluido en el formato, será considerado en forma
+    independiente para todo efecto tributario.” (2)
+
+       Los servicios públicos señalados en el primer párrafo del
+     presente literal no comprenden a aquéllos que son prestados con
+     la finalidad de ser comercializados a terceros.
+
+      Tratándose de recibos emitidos a nombre del arrendador o
+     subarrendador del inmueble, se entenderá identificado al
+     arrendatario o subarrendatario como usuario de los servicios
+     públicos a los que se refiere el presente literal, siempre que en
+     el contrato de arrendamiento o subarrendamiento se estipule
+     que la cesión del uso del inmueble incluye a los servicios públicos
+     suministrados en beneficio del bien y que las firmas de los
+     contratantes estén autenticadas notarialmente.
+
+       Para efecto de lo dispuesto en el párrafo anterior si las firmas
+     son autenticadas con posterioridad al inicio del plazo del
+     arrendamiento o subarrendamiento, sólo permitirán sustentar
+     gasto o costo para efecto tributario, crédito deducible o ejercer
+     el derecho al crédito fiscal, los recibos emitidos a partir de la
+     fecha de certificación de las firmas.
+
+(1) Tercer párrafo sustituido por el Artículo 1 de la Resolución de
+    Superintendencia Nº 021-2002-SUNAT publicada el 23.2.2002.
+
+(2) Cuarto párrafo agregado por el Artículo 1 de la Resolución de
+    Superintendencia Nº 021-2002-SUNAT publicada el 23.2.2002.
+
+
+TEXTO ANTERIOR
+
+ d) Recibos emitidos por los servicios públicos de suministro de
+    energía eléctrica y agua; así como por los servicios públicos
+    de telecomunicaciones que se encuentren bajo el control del
+    Ministerio de Transportes, Comunicaciones, Vivienda y
+                        REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+    Construcción y del Organismo Supervisor de Inversión Privada
+    en Telecomunicaciones (OSIPTEL).
+
+      Los servicios complementarios a los servicios públicos
+    señalados podrán incluirse en el mismo recibo.
+
+       “Las empresas concesionarias del servicio de telefonía que
+    están bajo el control de OSIPTEL podrán incluir en los
+    comprobantes de pago que emitan, según el formato que
+    autorice la SUNAT y bajo las condiciones que ésta establezca,
+    los recibos correspondientes a:
+
+    -   los servicios de la serie 80C que prestan las empresas
+        suscriptoras autorizadas por OSIPTEL;
+
+    -   los servicios de buscapersonas que prestan las empresas
+        concesionarias de los mismos utilizando la serie de
+        numeración 16XX u otra aprobada para tal efecto por el
+        Ministerio de Transportes, Comunicaciones, Vivienda y
+        Construcción;
+
+    -   los servicios portadores de larga distancia nacional o
+        internacional que prestan las empresas concesionarias de
+        los mismos, previo acuerdo con la empresa concesionaria
+        del servicio de telefonía. (*)
+
+       Los servicios públicos señalados en el primer párrafo del
+    presente literal no comprenden a aquéllos que son prestados
+    con la finalidad de ser comercializados a terceros” (*)
+
+      Tratándose de recibos emitidos a nombre del arrendador o
+   subarrendador del inmueble, se entenderá identificado al
+   arrendatario o subarrendatario como usuario de los servicios
+   públicos a los que se refiere el presente literal, siempre que
+   en el contrato de arrendamiento o subarrendamiento se
+   estipule que la cesión del uso del inmueble incluye a los
+   servicios públicos suministrados en beneficio del bien y que
+   las firmas de los contratantes estén autenticadas
+   notarialmente.
+
+      Para efecto de lo dispuesto en el párrafo anterior si las
+   firmas son autenticadas con posterioridad al inicio del plazo
+   del arrendamiento o subarrendamiento, sólo permitirán
+   sustentar gasto o costo para efecto tributario, crédito
+   deducible o ejercer el derecho al crédito fiscal, los recibos
+   emitidos a partir de la fecha de certificación de las firmas.
+
+(*) Tercer y Cuarto párrafos modificados por el Artículo 2 de la
+Resolución de Superintendencia Nº 077-99-SUNAT, publicada el
+13.7.99.
+                                  REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+
+         TEXTO ANTERIOR
+
+         d)    Recibos emitidos por los servicios públicos de suministro
+               de energía eléctrica y agua; así como por los servicios
+               públicos de telecomunicaciones que se encuentren bajo el
+               control del Ministerio de Transportes, Comunicaciones,
+               Vivienda y Construcción y del Organismo Supervisor de
+               Inversión Privada en Telecomunicaciones (OSIPTEL).
+
+                 Los servicios complementarios a los servicios públicos
+               señalados podrán incluirse en el mismo recibo.
+
+                   Las empresas concesionarias del servicio de telefonía
+               que están bajo el control de OSIPTEL podrán incluir en los
+               comprobantes de pago que emitan, los recibos
+               correspondientes a los servicios de la serie que prestan las
+               empresas suscriptoras autorizadas por OSIPTEL, según el
+               formato que autorice la SUNAT y bajo las condiciones que
+               ésta establezca.
+
+                 Los servicios públicos señalados en los párrafos
+               anteriores no comprenden a aquellos que son prestados
+               con la finalidad de ser comercializados a terceros.
+
+                 Tratándose de recibos emitidos a nombre del arrendador
+              o subarrendador del inmueble, se entenderá identificado al
+              arrendatario o subarrendatario como usuario de los servicios
+              públicos a los que se refiere el presente literal, siempre que
+              en el contrato de arrendamiento o subarrendamiento se
+              estipule que la cesión del uso del inmueble incluye a los
+              servicios públicos suministrados en beneficio del bien y que
+              las firmas de los contratantes estén autenticadas
+              notarialmente.
+
+                 Para efecto de lo dispuesto en el párrafo anterior si las
+              firmas son autenticadas con posterioridad al inicio del plazo
+              del arrendamiento o subarrendamiento, sólo permitirán
+              sustentar gasto o costo para efecto tributario, crédito
+              deducible o ejercer el derecho al crédito fiscal, los recibos
+              emitidos a partir de la fecha de certificación de las firmas.
+
+     .
+.
+
+e)        Pólizas emitidas por las bolsas de valores, bolsas de productos o
+          agentes de intermediación, por operaciones realizadas en las bolsas
+          de valores o bolsas de productos autorizadas por la CONASEV.
+                            REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+        Pólizas emitidas por los agentes de intermediación, por
+     operaciones efectuadas fuera de las bolsas de valores y bolsas de
+     productos autorizadas por la CONASEV, con valores inscritos o no en
+     ellas.
+
+f)   Cartas de porte aéreo y conocimientos de embarque por el servicio
+     de transporte de carga aérea y marítima, respectivamente. (*)
+
+(Ver Resolución de Superintendencia Nº 044-97/SUNAT,
+publicada el 24.5.1997, vigente a partir del 9.6.1997).
+
+(*) Literal derogado de conformidad con la primera disposición
+complementaria     derogatoria       de    la Resolución    de
+Superintendencia    N.°   000048-2026/SUNAT,    publicada    el
+31.3.20126, vigente a partir del 1.8.2026.
+
+(Con respecto de los documentos autorizados referidos en el
+presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+Disposición Complementaria Final de la Resolución de
+Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+31.3.20126, vigente a partir del 1.8.2026. )
+
+g)   Pólizas de adjudicación emitidas con ocasión del remate o
+     adjudicación de bienes por venta forzada, por los martilleros
+     públicos y todas las entidades que rematen o subasten bienes por
+     cuenta de terceros.
+
+        Los martilleros públicos y las entidades que intervengan en estos
+     actos deberán contar con autorización de la SUNAT, quedando
+     designados como agentes de retención del Impuesto que
+     corresponda al ejecutado.
+
+(Ver Resolución de Superintendencia Nº 038-98/SUNAT,
+publicada el 21.03.1998, vigente a partir del 01.04.1998).
+
+(Ver artículo 3º de la Resolución de Superintendencia Nº 266-
+2004/SUNAT, publicada el 04.11.2004, vigente a partir del
+08.11.2004)
+
+h)   Certificados de pago de regalías emitidos por PERUPETRO S.A.,
+     siempre que cumplan con los requisitos y características
+     establecidos por Resolución Ministerial.
+
+i)   Formatos proporcionados por el Instituto Peruano de Seguridad
+     Social (IPSS) para los aportes al Seguro Complementario de Trabajo
+     de Riesgo que efectúen las entidades empleadoras a través de las
+     empresas del Sistema Financiero Nacional.
+
+j)   Documentos emitidos por las empresas que desempeñan el rol
+     adquirente en los sistemas de pago mediante tarjetas de crédito y/o
+                            REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+     débito emitidas por bancos e instituciones financieras o crediticias,
+     domiciliados o no en el país. Estas empresas podrán incluir en los
+     comprobantes de pago que emitan, según el formato que autorice
+     la SUNAT y bajo las condiciones que ésta establezca, las comisiones
+     que los referidos bancos e instituciones perciban de los
+     establecimientos afiliados a los mencionados sistemas de pago.
+
+(Literal J) incorporado por el artículo 3° de la Resolución de
+Superintendencia N.° 058-2000/SUNAT, publicado el 15.04.2000,
+vigente a partir del 16.04.2000.)
+
+k)   Documentos que emitan las empresas recaudadoras de la
+     denominada Garantía de Red Principal a la que hace referencia el
+     numeral 7.6 del artículo 7° de la Ley N° 27133 – Ley de Promoción
+     del Desarrollo de la Industria del Gas Natural por los servicios que
+     prestan, en los que se podrán incluir, según el formato que autorice
+     la SUNAT y bajo las condiciones que ésta establezca, los
+     comprobantes de pago correspondientes a la Garantía de Red
+     Principal.
+
+        El mencionado formato deberá identificar claramente a cada una
+     de las empresas, así como los servicios prestados o conceptos
+     cobrados, consignando en cada caso, como mínimo: datos de
+     identificación del obligado (número de RUC y razón o denominación
+     social), número correlativo del comprobante de pago, descripción o
+     tipo de servicio prestado o concepto cobrado, importe del mismo
+     discriminando el monto de los tributos que gravan el servicio y otros
+     cargos adicionales, en su caso y el importe total. Cada comprobante
+     incluido en el formato, será considerado en forma independiente
+     para todo efecto tributario.
+
+(Inciso K) incorporado por el artículo 1° de la Resolución de
+Superintendencia N.° 006-2003/SUNAT, publicada el 10.1.2003,
+vigente a partir del 11.1.2003.)
+
+l)   Boletos de viaje emitidos por las empresas de transporte nacional
+     de pasajeros, siempre que cuenten con la autorización de la
+     autoridad competente, en las rutas autorizadas. (*)
+
+(Inciso l) incorporado por el artículo 1° de la Resolución de
+Superintendencia N.° 155-2003/SUNAT, publicada el 16.8.2003.)
+
+(Ver Resolución de Superintendencia Nº 156-2003/SUNAT,
+publicada el 16.8.2003, vigente a partir del 17.8.2003)
+
+(*) Literal derogado de conformidad con la primera disposición
+complementaria     derogatoria       de    la Resolución    de
+Superintendencia    N.°   000048-2026/SUNAT,     publicada   el
+31.3.20126, vigente a partir del 1.8.2026.
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+(Con respecto de los documentos autorizados referidos en el
+presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+Disposición Complementaria Final de la Resolución de
+Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+31.3.20126, vigente a partir del 1.8.2026. )
+
+ll)   Boletos emitidos por las Compañías de Aviación Comercial que
+      prestan servicios de transporte aéreo no regular de pasajeros y
+      transporte aéreo especial de pasajeros. (*)
+
+(Inciso ll) incorporado por la Cuarta Disposición Final de la
+Resolución de Superintendencia N.° 166-2004/SUNAT, publicada
+el 4.7.2004, vigente a partir del 15.7.2004.)
+
+(*) Literal derogado de conformidad con la primera disposición
+complementaria     derogatoria       de    la Resolución    de
+Superintendencia    N.°   000048-2026/SUNAT,     publicada   el
+31.3.20126, vigente a partir del 1.8.2026.
+
+(Con respecto de los documentos autorizados referidos en el
+presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+Disposición Complementaria Final de la Resolución de
+Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+31.3.20126, vigente a partir del 1.8.2026. )
+
+m)    Documentos emitidos por el operador de las sociedades irregulares,
+      consorcios, joint ventures u otras formas de contratos de
+      colaboración empresarial, que no lleven contabilidad independiente
+      y que se dediquen a actividades de exploración y explotación de
+      hidrocarburos, por la transferencia de bienes obtenidos por la
+      ejecución del contrato o sociedad, que el operador y las demás
+      partes realicen conjuntamente en una misma operación.
+
+         El documento que emita el operador incluirá, bajo las condiciones
+      que la SUNAT establezca, a los documentos a que se refiere el inciso
+      n) del presente numeral. Cada comprobante será considerado en
+      forma independiente para todo efecto tributario.
+
+(Inciso m) incorporado por el artículo 1° de la Resolución de
+Superintendencia N.° 179-2004/SUNAT, publicada el 4.8.2004,
+vigente a partir del 5.8.2004.)
+
+(Ver Resolución de Superintendencia N.º 180-2004/SUNAT,
+publicada el 4.8.2004, vigente a partir del 5.8.2004).
+
+n)    Documentos correspondientes a las demás partes, distintas del
+      operador, de las sociedades irregulares, consorcios, joint ventures u
+      otras formas de contratos de colaboración empresarial, que no
+      lleven contabilidad independiente y que se dediquen a actividades
+                            REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+     de exploración y explotación de hidrocarburos, por la transferencia
+     de bienes obtenidos por la ejecución del contrato o sociedad, que
+     todas las partes realicen conjuntamente en una misma operación.
+
+        Estos documentos serán incluidos, bajo las condiciones que la
+     SUNAT establezca, en el documento a que se refiere el inciso m) del
+     presente numeral. Cada comprobante será considerado en forma
+     independiente para todo efecto tributario.
+
+(Inciso n) incorporado por el artículo 1° de la Resolución de
+Superintendencia N.° 179-2004/SUNAT, publicada el 4.8.2004,
+vigente a partir del 5.8.2004.)
+
+(Ver Resolución de Superintendencia Nº 180-2004/SUNAT,
+publicada el 4.8.2004, vigente a partir del 5.8.2004).
+
+o)   Recibos emitidos por el servicio público de distribución de gas
+     natural por red de ductos, prestado por las empresas concesionarias
+     de dicho servicio, a que se refiere el Reglamento de Distribución de
+     Gas Natural por Red de Ductos, aprobado por Decreto Supremo N°
+     042-99-EM y normas modificatorias.
+
+        El recibo incluirá los cargos detallados en el artículo 106° del
+     Reglamento de Distribución de Gas Natural por Red de Ductos y
+     podrá servir asimismo para facturar los conceptos a que se refieren
+     los artículos 67, 68 y 77 del citado reglamento.
+
+        Para efectos de la emisión de este recibo, el servicio público de
+     distribución de gas natural por red de ductos no comprende a aquél
+     que es prestado con la finalidad de ser comercializado a terceros.
+
+(Inciso o) incorporado por el artículo 1 de la Resolución de
+Superintendencia N.° 197-2004/SUNAT, publicado el 28.8.2004,
+vigente a partir del 29.8.2004.)
+
+(Ver Resolución de Superintendencia Nº 198-2004/SUNAT,
+publicada el 28.08.2004, vigente a partir del 29.08.2004).
+
+p)   Documentos que emitan los concesionarios del servicio de revisiones
+     técnicas vehiculares, a las que se refiere el artículo 103 del
+     Reglamento Nacional de Vehículos, aprobado por Decreto Supremo
+     Nº 058-2003-MTC y normas modificatorias, y el artículo 4 de la
+     Ordenanza N° 694 de la Municipalidad Metropolitana de Lima, por la
+     prestación de dicho servicio.
+
+        Los concesionarios del servicio de revisiones técnicas vehiculares
+     podrán realizar la impresión de estos documentos, previa solicitud
+     de autorización a la SUNAT a través del Formulario N° 806 -
+     "Formulario de Autorización de Impresión", mediante sistema
+     computarizado, respecto de la serie asignada al punto de emisión y
+                       REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+el rango de comprobantes de pago a imprimir. En dicho formulario,
+se consignará los datos del concesionario del servicio de revisiones
+técnicas vehiculares en el rubro destinado a la identificación de la
+imprenta.
+
+   Los referidos documentos deberán cumplir con los siguientes
+requisitos y características, necesariamente impresos:
+
+1.   Datos de identificación del concesionario del servicio de
+     revisiones técnicas vehiculares:
+
+     -     Denominación o razón social. Adicionalmente, deberá
+           consignar su nombre comercial, si lo tuviera.
+
+     -     Número de RUC.
+
+     -     Dirección del domicilio fiscal y del establecimiento donde
+           esté localizado el punto de emisión del comprobante de
+           pago. Podrá consignarse la totalidad de direcciones de
+           los    diversos    establecimientos      que    posee    el
+           contribuyente.
+
+2.   Numeración: Serie y número correlativo, debiéndose cumplir
+     con lo dispuesto en el numeral 4 del artículo 9° del presente
+     reglamento.
+
+3.   Número de autorización de impresión otorgado por la SUNAT.
+
+4.   Destino del original y copia:
+
+     -     En el original: USUARIO.
+
+     -     En la copia: EMISOR.
+
+        El destino del original y la copia deberá imprimirse en el
+     extremo inferior derecho del comprobante de pago.
+
+       La emisión de documentos en más copias que las exigidas,
+     deberá llevar la leyenda "COPIA NO VÁLIDA PARA EFECTO
+     TRIBUTARIO" colocada en caracteres destacados.
+
+5.   Apellidos y nombres, o denominación o razón social, del
+     propietario del vehículo.
+
+6.   Número de RUC del propietario del vehículo. Si éste es una
+     persona natural que no requiera sustentar crédito fiscal, gasto
+     o costo para efecto tributario: tipo y número de su documento
+     de identidad.
+                            REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+    7.    Clase de revisión técnica, de acuerdo con lo señalado en el
+          artículo 103° del Reglamento Nacional de Vehículos, aprobado
+          por Decreto Supremo Nº 058-2003-MTC y normas
+          modificatorias, y el artículo 4° de la Ordenanza N° 694 de la
+          Municipalidad Metropolitana de Lima.
+
+    8.    Importe unitario de los servicios de revisión técnica prestados.
+
+    9.    Importe del servicio de revisión técnica prestado, sin incluir los
+          tributos que afecten la operación, ni otros cargos adicionales
+          si los hubiere.
+
+    10.   Monto discriminado de los tributos que gravan la operación y
+          otros cargos adicionales, en su caso, indicando el nombre del
+          tributo y/o concepto y la tasa respectiva.
+
+    11.   Importe total del servicio de revisión técnica prestado,
+          expresado numérica y literalmente.
+
+    12.   Fecha de emisión.
+
+    13.   Signo que permita identificar la moneda en la cual se emite el
+          comprobante de pago.
+
+    14.   Número de la revisión técnica.
+
+    15.   Datos del vehículo:
+
+          -     Tipo de vehículo, según la clasificación detallada en el
+                numeral 8 del artículo 3 de la Resolución de
+                Superintendencia N° 244-2005/SUNAT.
+
+          -     Marca y modelo.
+
+          -     Placa de rodaje.
+
+       El concesionario del servicio de revisiones técnicas deberá
+    mantener una copia almacenada en archivos magnéticos u otro
+    medio de almacenamiento de información, el cual estará a
+    disposición de la SUNAT cuando ésta lo requiera. La referida copia
+    podrá ser un registro cuyos campos sean cada uno de los requisitos
+    antes enumerados, con excepción del previsto en el numeral 1 del
+    presente literal. Asimismo, el concesionario del servicio de
+    revisiones técnicas deberá mantener la copia emisor impresa en un
+    archivo ordenado de manera correlativa. (*)
+
+(Inciso p) incorporado por el artículo 1 de la Resolución de
+Superintendencia N.° 244-2005/SUNAT, publicada el 1.12.2005,
+vigente a partir del 2.12.2005.)
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+(*) Literal derogado de conformidad con la primera disposición
+complementaria     derogatoria       de    la Resolución    de
+Superintendencia    N.°   000048-2026/SUNAT,    publicada    el
+31.3.20126, vigente a partir del 1.8.2026.
+
+(Con respecto de los documentos autorizados referidos en el
+presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+Disposición Complementaria Final de la Resolución de
+Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+31.3.20126, vigente a partir del 1.8.2026. )
+
+q)   Documentos emitidos por las empresas que desempeñan el rol
+     adquiriente en los sistemas de pago mediante tarjetas de crédito
+     emitidas por ellas mismas.
+
+(Literal q) incorporado por el artículo 3 de la Resolución de
+Superintendencia N.° 233-2008/SUNAT, publicada el 31.12.2008,
+vigente a partir del 1.1.2009.)
+
+r)   Documento emitido respecto de servicios prestados con ocasión de
+     brindar el servicio de transporte aéreo regular de pasajeros y por
+     las empresas habilitadas a emitir el boleto referido en el literal a) de
+     este inciso. Dichos servicios pueden consistir en proporcionar
+     oxígeno durante el vuelo, acompañar menores que viajan solos,
+     transportar mascotas acompañadas por un pasajero, permitir el
+     exceso de equipaje, proporcionar dietas especiales y similares. (*)
+     (**) (***)
+
+(*) Literal r) incorporado por el artículo 1 de la Resolución de
+Superintendencia N.° 363-2015/SUNAT, publicada el 30.12.2015,
+vigente a partir del 1.1.2016.
+
+(**) De conformidad con el Inciso 2.3.2. del Numeral 2.2 del
+Artículo 2 de la Resolución de Superintendencia N° 013-2019-
+SUNAT, publicada el 21.1.2019, solo puede emitir sin utilizar el
+SEE los documentos autorizados a que se refieren los literales g),
+j), m), n), o) y q) del presente inciso, según corresponda, por las
+operaciones contempladas en el párrafo 2.1 si la Resolución de
+Superintendencia N.º 300-2014-SUNAT y normas modificatorias
+permite su emisión.      La citada resolución entró en vigencia el
+1.1.2020.
+
+(***) De conformidad con el Numeral 1.2 de la Única Disposición
+Complementaria Transitoria de la Resolución N° 252-2019-
+SUNAT, publicada el 30.11.2019, lo dispuesto en el párrafo
+anterior del citado numeral también se aplica a los documentos
+autorizados a que se refiere el literal b) del presente inciso que se
+emiten cuando la Resolución de Superintendencia Nº 300-2014-
+SUNAT lo permite. La citada resolución entró en vigencia el
+1.12.2019.
+                                   REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+6.2. Los siguientes documentos permitirán sustentar gasto, costo o crédito
+     deducible para efecto tributario, según sea el caso, siempre que se
+     identifique al adquirente o usuario:
+
+     a)   Recibos por el arrendamiento o subarrendamiento de bienes
+          muebles e inmuebles que generen rentas de primera categoría para
+          efecto del Impuesto a la Renta, los cuales serán proporcionados por
+          la SUNAT.
+
+     (Ver Resolución de Superintendencia N.º 076-96-EF/SUNAT,
+     publicada el 18.9.1996, vigente a partir del 19.9.1996.)
+
+     b)   Documentos emitidos por la Iglesia Católica por el arrendamiento
+          de sus bienes inmuebles, solo si se emiten en los supuestos
+          indicados en el literal a) del numeral 4.1 del artículo 4 o en el artículo
+          4-A de la Resolución de Superintendencia N° 300-2014-SUNAT y
+          normas modificatorias. En ese caso debe indicar el número de RUC
+          del usuario o su número de documento nacional de identidad. (*)
+
+     (Con respecto de los documentos autorizados referidos en el
+     presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+     Disposición Complementaria Final de la Resolución de
+     Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+     31.3.20126, vigente a partir del 1.8.2026. )
+
+     (Literal b) sustituido por el numeral 2.2 de la Segunda Disposición
+     Complementaria        Modificatoria    de     la   Resolución    de
+     Superintendencia N.° 123-2017/SUNAT, publicada el 15.5.2017,
+     vigente a partir del 1.7.2017).
+
+      TEXTO ANTERIOR
+
+      b) Documentos emitidos por la Iglesia Católica por el arrendamiento
+         de sus bienes inmuebles.
+
+
+
+     (*) Literal derogado de conformidad con la primera disposición
+     complementaria      derogatoria      de    la Resolución    de
+     Superintendencia    N.°   000048-2026/SUNAT,     publicada   el
+     31.3.20126, vigente a partir del 1.8.2026.
+
+     c)   DEROGADO
+
+     Inciso derogado por el artículo 2° de la Resolución de
+     Superintendencia N.° 155- 2003/SUNAT, publicada el 16.8.2003.
+
+      TEXTO ANTERIOR
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+ c)   Boletos de viaje emitidos por las empresas de transporte público
+      interprovincial de pasajeros dentro del país, siempre que cuenten
+      con    la   autorización    del   Ministerio     de  Transportes,
+      Comunicaciones, Vivienda y Construcción, en las rutas
+      autorizadas.
+
+ (Ver Resolución de Superintendencia Nº 007-96/SUNAT, publicada el
+ 30.1.1996, vigente desde el 19.2.1996).
+
+
+
+d)    Boletos emitidos por el servicio de transporte:
+
+      d.1)   Terrestre regular urbano de pasajeros.
+
+      d.2)   Ferroviario público de pasajeros prestado en vía férrea local,
+             a que se refieren las normas sobre la materia.
+
+Literal d) sustituido por la Quinta Disposición Complementaria
+Final de la Resolución de Superintendencia N.° 173-2008/SUNAT,
+publicada el 16.9.2008.
+
+ TEXTO ANTERIOR
+
+ d)    Boletos emitidos por las empresas de transporte público urbano
+       de pasajeros.
+
+
+
+e)    Boletos numerados o entradas que se entreguen por atracciones o
+      espectáculos públicos en general.
+
+f)    DEROGADO
+
+(Literal f) derogado por el literal a) de la Única Disposición
+Complementaria       Derogatoria   de    la   Resolución    de
+Superintendencia N.° 318-2017/SUNAT, publicada el 30.11.2017
+y vigente a partir del 1.12.2017).
+
+ TEXTO ANTERIOR
+
+ f)   Recibos por el pago de la tarifa por uso de agua superficial con
+      fines agrarios y por el pago de la cuota a los que se refieren los
+      Artículos 28 y 48, respectivamente, del Reglamento de Tarifas
+      y Cuotas por el Uso de Agua aprobado por Decreto Supremo Nº
+      003-90-AG.
+
+
+
+g)    Documentos emitidos por los servicios aeroportuarios prestados a
+      favor de los pasajeros por CORPAC S.A. o la empresa a la que el
+                                   REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+           Estado Peruano haya dado en concesión algún aeropuerto o el
+           Gobierno Local o Regional que administre un aeropuerto.
+
+           Para la emisión de dichos documentos se podrá utilizar los siguientes
+           mecanismos:
+
+           -     Etiquetas autoadhesivas.
+
+           Literal g) sustituido por la Única Disposición Complementaria
+           Modificatoria de la Resolución de Superintendencia N.° 182-
+           2010-SUNAT, publicada el 5.6.2010, vigente a partir del
+           7.6.2010.
+
+
+      Literal g) modificado por el numeral 3 del artículo 4 de la
+      Resolución de Superintendencia N.° 000048-2026/SUNAT,
+      publicada el 31.3.20126, vigente a partir del 1.11.2026.
+
+      g)       Documentos emitidos por los servicios aeroportuarios
+               prestados a favor de los pasajeros por CORPAC S.A. o la
+               empresa a la que el Estado Peruano haya dado en concesión
+               algún aeropuerto o el gobierno local o regional que
+               administre un aeropuerto. Para la emisión de dichos
+               documentos se podrá utilizar el mecanismo de etiquetas
+               autoadhesivas.
+
+      TEXTO ANTERIOR
+
+      g)        Etiquetas autoadhesivas emitidas por el pago de la Tarifa
+               Unificada de Uso de Aeropuerto (TUUA) que cobra CORPAC S.A.
+               a los pasajeros que utilizan los servicios aeroportuarios.
+
+
+
+     h)    Documentos emitidos por la COFOPRI en calidad de oferta de venta
+           de terrenos, los correspondientes a las subastas públicas y a la
+           retribución de los servicios que presta, al amparo de lo establecido
+           en la Tercera Disposición Complementaria, Transitoria y Final de la
+           Ley N° 27046.
+
+     Literal h) incorporado por el artículo 3° de la Resolución de
+     Superintendencia N.° 077-99/SUNAT, publicada el 13.7.1999,
+     vigente a partir del 14.7.1999.
+
+        Tratándose de los documentos mencionados en los literales d), e) y g),
+     no será necesario identificar al usuario.
+
+6.3. No permitirán sustentar gasto o costo para efecto tributario, crédito
+     deducible, ni ejercer el derecho al crédito fiscal:
+
+     a)    Billetes de lotería, rifas y apuestas.
+                             REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+b)   Documentos emitidos por centros educativos y culturales
+     reconocidos por el Ministerio de Educación, universidades,
+     asociaciones y fundaciones, en lo referente a sus actividades no
+     gravadas con tributos administrados por la SUNAT. En caso de
+     operaciones con sujetos que requieran sustentar gasto o costo para
+     efecto tributario, se requerirá la emisión de facturas. (*)
+
+(*) Literal derogado de conformidad con la primera disposición
+complementaria     derogatoria       de    la Resolución    de
+Superintendencia    N.°   000048-2026/SUNAT,     publicada   el
+31.3.20126, vigente a partir del 1.8.2026.
+
+(Con respecto de los documentos autorizados referidos en el
+presente literal, que se emitan hasta el 31.7.2026, ver Segunda
+Disposición Complementaria Final de la Resolución de
+Superintendencia     N.°  000048-2026/SUNAT,      publicada   el
+31.3.20126, vigente a partir del 1.8.2026. )
+
+c)   Documentos emitidos por la Iglesia Católica por el arrendamiento
+     de sus bienes inmuebles.
+
+(Literal c) incorporado por el numeral 2.2 de la Segunda
+Disposición Complementaria Modificatoria de la Resolución de
+Superintendencia N.° 123-2017-SUNAT, publicada el 15.5.2017,
+vigente a partir del 1.7.2017).
+
+   Los sujetos del Nuevo Régimen Único Simplificado no podrán emitir
+facturas, recibos por honorarios, liquidaciones de compra, tickets que
+permitan sustentar gasto o costo para efecto tributario o dar derecho al
+crédito fiscal del Impuesto.
+
+(Último párrafo del numeral 6.3 del artículo 4 sustituido por el
+artículo 6 de la Resolución de Superintendencia N.º 340-
+2017/SUNAT, publicada el 30.12.2017, vigente a partir del
+1.1.2018)
+
+ TEXTO ANTERIOR
+
+     “Los sujetos del Nuevo Régimen Único Simplificado no podrán emitir
+ facturas, recibos por honorarios, liquidaciones de compra, tickets que
+ permitan sustentar gasto o costo para efecto tributario o dar derecho
+ al crédito fiscal del Impuesto, notas de crédito ni notas de débito.” (*)
+
+ (*) Párrafo sustituido por el Artículo 2 de la Resolución de
+ Superintendencia N° 064-2006-SUNAT, publicada el 25.4.2006, la
+ misma que de conformidad con su Única Disposición Complementaria
+ Final entrará en vigencia a partir del 1.5.2006.
+                                     REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+       (Ver artículo 35º de la Resolución de Superintendencia N.º 266-
+       2004/SUNAT, publicada el 4.11.2004, vigente a partir del 8.11.2004)
+
+
+        TEXTO ANTERIOR
+
+            “ Los sujetos del Nuevo Régimen Único Simplificado no podrán
+        emitir facturas, recibos por honorarios, liquidaciones de compra,
+        tickets que permitan sustentar gasto o costo para efecto tributario o
+        dar derecho al crédito fiscal del Impuesto, notas de crédito, notas de
+        débito, ni guías de remisión del remitente.” (*)
+
+            (*) Párrafo sustituido por el Artículo 2 de la Resolución de
+            Superintendencia N° 219-2004-SUNAT, publicada el 26.9.2004,
+            disposición que entró en vigencia el 1.10.2004.
+
+
+            TEXTO ANTERIOR
+
+              Los sujetos del Régimen Único Simplificado no podrán emitir
+            facturas, recibos por honorarios, liquidaciones de compra, tickets
+            que permitan sustentar gasto o costo para efecto tributario o dar
+            derecho al crédito fiscal del Impuesto, notas de crédito, notas de
+            débito, ni guías de remisión.
+
+        .
+       ..
+
+         Los sujetos incluidos en las publicaciones a que se refieren los artículos
+     7 y 12 del Decreto Legislativo Nº 1532, que regula el procedimiento de
+     atribución de la condición de sujeto sin capacidad operativa, no pueden
+     emitir comprobantes de pago que permitan ejercer el derecho al crédito
+     fiscal y/o sustentar costo o gasto para efectos del Impuesto a la Renta,
+     con excepción de las liquidaciones de compra, durante el plazo en el que
+     deban mantenerse dichas publicaciones, de acuerdo con lo establecido en
+     el mencionado decreto legislativo y su reglamento.
+
+     Último párrafo del inciso 6.3 del numeral 6 del artículo 4
+     incorporado por la Primera Disposición Complementaria
+     Modificatoria de la Resolución de Superintendencia N.° 000302-
+     2024-SUNAT, publicada el 30.12.2024, vigente a partir del
+     31.12.2024.
+
+6.4. Los documentos detallados en los numerales 6.1, 6.2 y 6.3 del presente
+     artículo deberán contener el número de RUC del emisor y un número
+     correlativo que los identifique.
+
+6.5. Tratándose de los documentos autorizados a los que se refieren el literal
+     r) del inciso 6.1 y los literales e) y h) del inciso 6.2 y las notas de crédito
+     y las notas de débito vinculadas a aquellos, el sujeto que los emita debe
+     informarlos a la SUNAT utilizando la declaración jurada informativa
+                                       REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+          resumen de documentos autorizados - anexo II de la Resolución de
+          Superintendencia N° 159-2017-SUNAT y normas modificatorias.
+
+             La aludida declaración debe ser enviada el día en que se emitieron los
+          documentos o, a más tardar, hasta el sétimo día calendario contado desde
+          el día calendario siguiente al de su emisión y debe incluir los documentos
+          autorizados, las notas de crédito y las notas de débito emitidas en una
+          misma fecha.
+
+             La referida declaración se considera enviada a la SUNAT si cumple con
+          lo siguiente:
+
+          a.    Tener un número de RUC que no se encuentre en estado de baja de
+                inscripción y estar afecto en el RUC al impuesto a la renta por rentas
+                de tercera categoría, de generar este tipo de renta.
+
+          b.    Enviar un resumen a través del Programa de Envío de Información
+                (PEI), aprobado por la Resolución de Superintendencia N° 159-
+                2017-SUNAT y normas modificatorias, en la forma y las condiciones
+                señaladas en la referida resolución y obtener la constancia de
+                recepción por el envió realizado.
+
+            En caso el emisor del documento autorizado envíe dentro del plazo
+          antes indicado más de un resumen de documentos autorizados respecto
+          de una misma fecha, se considera que el último enviado sustituye al
+          anterior en su totalidad.
+
+            Si el emisor del documento autorizado envía uno o más resúmenes de
+            documentos autorizados luego del referido plazo y respecto de una
+          misma fecha, el último enviado reemplaza al anterior y será considerado
+          como una declaración jurada rectificatoria.
+
+     (Inciso 6.5 del numeral 6 del artículo 4° incorporado por la Quinta
+     Disposición Complementaria Modificatoria de la Resolución de
+     Superintendencia N.° 013-2019/SUNAT, publicada el 21.1.2019,
+     vigente a partir del 1.1.2020.)
+
+7.   COMPROBANTES DE OPERACIONES – LEY N° 29972
+
+     7.1. Se emitirán en los casos señalados en el inciso 1.5 del numeral 1 del
+          artículo 6 del presente reglamento.
+
+     7.2. Permitirán sustentar gastos o costo para efecto tributario.
+
+(Numeral 7 del artículo 4 incorporado por el artículo 3 de la Resolución de
+Superintendencia N.° 362-2013/SUNAT, publicada el 20.12.2013, vigente a
+partir del 1.1.2014.)
+
+Artículo 5º.- OPORTUNIDAD               EMISIÓN       Y     OTORGAMIENTO          DE
+COMPROBANTES DE PAGO
+                                         REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+  Los comprobantes de pago deberán ser emitidos y otorgados en la oportunidad
+que se indica: (1)
+
+1.    En la transferencia de bienes muebles, en el momento en que se entregue el
+      bien o en el momento en que se efectúe el pago, lo que ocurra primero.
+
+         En el caso que la transferencia sea concertada por Internet, teléfono, telefax
+      u otros medios similares, en los que el pago se efectúe mediante tarjeta de
+      crédito o de débito y/o abono en cuenta con anterioridad a la entrega del bien,
+      el comprobante de pago deberá emitirse en la fecha en que se reciba la
+      conformidad de la operación por parte del administrador del medio de pago o
+      se perciba el ingreso, según sea el caso, y otorgarse conjuntamente con el bien.
+      Sin embargo, si el adquirente solicita que el bien sea entregado a un sujeto
+      distinto, el comprobante de pago se le podrá otorgar a aquél hasta la fecha de
+      entrega del bien.
+
+         Tratándose de la venta de bienes en consignación, la SUNAT no aplicará la
+      sanción referida a la infracción tipificada en el numeral 1 del artículo 174 del
+      Código Tributario al sujeto que entrega el bien al consignatario, siempre que
+      aquél cumpla con emitir y otorgar el comprobante de pago respectivo dentro
+      de los nueve (9) días hábiles siguientes a la fecha en que el consignatario venda
+      los mencionados bienes. (2)
+
+(1) (Epígrafe y encabezado del artículo 5° sustituidos por el artículo 4° de
+la Resolución de Superintendencia N.° 233-2008/SUNAT, publicada el
+31.12.2008, vigente a partir del 1.1.2009).
+
+(2) Numeral sustituido por el Artículo 4 de la Resolución Nº 233-2008-
+SUNAT, publicada el 31.12.2008, disposición que entró en vigencia el
+1.3.2009.
+
+ TEXTO ANTERIOR
+
+ Artículo 5º.- OPORTUNIDAD DE ENTREGA DE LOS COMPROBANTES DE
+ PAGO
+
+    Los comprobantes de pago deberán ser entregados en la oportunidad que se
+ indica:
+
+ 1.   En la transferencia de bienes muebles, en el momento en que se entregue
+      el bien o en el momento en que se efectúe el pago, lo que ocurra primero.
+
+         En el caso que la transferencia sea concertada por Internet, teléfono,
+      telefax u otros medios similares, en los que el pago se efectúe mediante
+      tarjeta de crédito o de débito y/o abono en cuenta con anterioridad a la
+      entrega del bien, el comprobante de pago deberá emitirse en la fecha en
+      que se perciba el ingreso y entregarse conjuntamente con el bien.
+                                          REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+        Tratándose de la venta de bienes en consignación, la SUNAT no aplicará
+     la sanción referida a la infracción tipificada en el numeral 1 del Artículo 174
+     del Código Tributario al sujeto que entrega el bien al consignatario, siempre
+     que aquél cumpla con emitir el comprobante de pago respectivo dentro de
+     los nueve (9) días hábiles siguientes a la fecha en que se realice la operación.
+
+
+
+        Tratándose del suministro de bienes con entregas periódicas en el que se
+     transfiere la propiedad de los bienes suministrados, siempre que por esa
+     operación corresponda emitir comprobantes de pago que permitan sustentar
+     gasto o costo para efecto tributario y/o ejercer el derecho al crédito fiscal y no
+     se hayan realizado pagos anticipados a la entrega de los bienes, el comprobante
+     de pago se emite y otorga de acuerdo a lo siguiente:
+
+     a)   Por la totalidad de los bienes suministrados durante un mes calendario
+          hasta el momento de la emisión, en la oportunidad que ocurra primero:
+
+          i.     El día que se percibe o se pone a disposición el pago parcial o total;
+                 o
+
+          ii.    El día que se realiza la liquidación de la operación; o
+
+          iii.   El día que culmina el contrato; o
+
+          iv.    El último día del mes.
+
+     b)   Si la emisión del comprobante de pago se realiza en la oportunidad
+          indicada en i) o ii) y antes del último día del mes, se debe emitir y otorgar,
+          en la oportunidad que corresponda, el (los) comprobante(s) por los bienes
+          suministrados posteriormente hasta el último día de ese mes, de
+          corresponder.
+
+     (Cuarto párrafo del numeral 1 del artículo 5 incorporados por el artículo
+     1 de la Resolución de Superintendencia N.° 318-2016/SUNAT,
+     publicada el 12.12.2016 y vigente a partir del 13.12.2016)
+
+        Se entiende por día en que se realiza la liquidación de la operación, a la fecha
+     en la que se cuantifican los bienes suministrados.
+
+     (Quinto párrafo del numeral 1 del artículo 5 incorporados por el artículo
+     1 de la Resolución de Superintendencia N.° 318-2016/SUNAT,
+     publicada el 12.12.2016 y vigente a partir del 13.12.2016)
+
+2.   En el caso de retiro de bienes muebles a que se refiere la Ley del Impuesto
+     General a las Ventas e Impuesto Selectivo al Consumo, en la fecha del retiro.
+
+3.   En la transferencia de bienes inmuebles, en la fecha en que se perciba el ingreso
+     o en la fecha en que se celebre el contrato, lo que ocurra primero.
+                                          REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+         En la primera venta de bienes inmuebles que realice el constructor, en la
+      fecha en que se perciba el ingreso, por el monto que se perciba, sea total o
+      parcial.
+
+         Tratándose de naves y aeronaves, en la fecha en que se suscribe el
+      respectivo contrato.
+
+4.    En la transferencia de bienes, por los pagos parciales recibidos anticipadamente
+      a la entrega del bien o puesta a disposición del mismo, en la fecha y por el
+      monto percibido.
+
+5.    En la prestación de servicios, incluyendo el arrendamiento y arrendamiento
+      financiero, cuando alguno de los siguientes supuestos ocurra primero:
+
+      a)   La culminación del servicio.
+
+      b)   La percepción de la retribución, parcial o total, debiéndose emitir el
+           comprobante de pago por el monto percibido.
+
+      c)   El vencimiento del plazo o de cada uno de los plazos fijados o convenidos
+           para el pago del servicio, debiéndose emitir el comprobante de pago por
+           el monto que corresponda a cada vencimiento.
+
+         Los documentos autorizados a los que se refieren los literales j) y q) del
+      inciso 6.1 del numeral 6 del artículo 4 del presente reglamento, deberán ser
+      emitidos y otorgados en el mes en que se perciba la retribución, pudiendo
+      realizarse la emisión y otorgamiento, a opción del obligado, en forma semanal,
+      quincenal o mensual.
+
+         Lo dispuesto en el presente numeral no es aplicable a la prestación de
+      servicios generadores de rentas de cuarta categoría a título oneroso, en cuyo
+      caso los comprobantes de pago deberán ser emitidos y otorgados en el
+      momento en que se perciba la retribución y por el monto de la misma.
+
+(Ver Directiva Nº 002-96/SUNAT, publicada el 5.9.1996, vigente desde el
+6.9.1996)
+
+(Numeral sustituido por el Artículo 4 de la Resolución Nº 233-2008-SUNAT,
+publicada el 31.12.2008.)
+
+ TEXTO ANTERIOR
+
+ 5.    En la prestación de servicios, incluyendo el arrendamiento y arrendamiento
+       financiero, cuando alguno de los siguientes supuestos ocurra primero:
+
+       -     La culminación del servicio.
+
+       -     La percepción de la retribución, parcial o total debiéndose emitir el
+             comprobante de pago por el monto percibido.
+                                        REGLAMENTO DE COMPROBANTES DE PAGO
+
+
+
+
+       -     El vencimiento del plazo o de cada uno de los plazos fijados o
+             convenidos para el pago del servicio, debiéndose emitir el
+             comprobante de pago por el monto que corresponda a cada
+             vencimiento.
+
+           Tratándose de los documentos a que se refiere el numeral 6.1 del
+       Artículo 4 del presente reglamento, la SUNAT podrá autorizar la emisión
+       del respectivo comprobante de pago en momentos distintos a los señalados
+       en el párrafo anterior, siempre que permita a la SUNAT un adecuado control
+       tributario.
+
+          Lo dispuesto en el presente numeral no es aplicable a la prestación de
+       servicios generadores de rentas de cuarta categoría a título oneroso, en
+       cuyo caso los comprobantes de pago deberán ser entregados en el
+       momento en que se perciba la retribución y por el monto de la misma.
+
+
+
+6.   En los contratos de construcción, en la fecha de percepción del ingreso, sea
+     total o parcial y por el monto efectivamente percibido.
+
+7.   En los casos de entrega de depósito, garantía, arras o similares, cuando
+     impliquen el nacimiento de la obligación tributaria para efecto del Impuesto, en
+     el momento y por el monto percibido.
+
+   La emisión y otorgamiento de los comprobantes de pago podrá anticiparse a las
+fechas antes señaladas. (*)
+
+(*) Párrafo sustituido por el Artículo 4 de la Resolución Nº 233-2008-SUNAT,
+publicada el 31.12.2008.
+
+ TEXTO ANTERIOR
+
+    La entrega de los comprobantes de pago podrá anticiparse a las fechas antes
+ señaladas.
+
+
+
+   La obligación de otorgar comprobantes de pago rige aún cuando la transferencia
+de bienes, entrega en uso o prestación de servicios no se encuentre afecta a tributos,
+o cuando éstos hubieren sido liquidados, percibidos o retenidos con anterioridad al
+otorgamiento de los mismos.
+

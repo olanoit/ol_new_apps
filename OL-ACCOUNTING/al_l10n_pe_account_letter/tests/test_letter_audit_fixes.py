@@ -206,6 +206,8 @@ class TestLetterAuditFixes(TransactionCase):
 
     def test_residual_account_is_from_letter_company(self):
         Account = self.env['account.account']
+        self.company.write({'l10n_pe_letter_rounding_loss_account_id': False,
+                            'l10n_pe_letter_rounding_gain_account_id': False})
         Account.with_company(self.company).search(
             [('name', '=', 'Redondeo')]).write({'name': 'Redondeo anterior'})
         company_b = self.env['res.company'].create({'name': 'Compañía B redondeo'})

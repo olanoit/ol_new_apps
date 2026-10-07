@@ -64,6 +64,11 @@ class L10nPeLetterMassive(models.Model):
     def action_cancel(self):
         self._raise_not_for_massive()
 
+    # El masivo no opera con el banco (sus letras cuelgan de cada canje), pero
+    # la tabla heredada chocaría con la del canje normal.
+    bank_move_ids = fields.Many2many(
+        'account.move', 'l10n_pe_letter_massive_bank_move_rel', 'letter_id', 'move_id',
+        string='Operaciones con el banco', readonly=True, copy=False)
     canje_move_ids = fields.Many2many('account.move', 'account_letter_move_massive_canje_rel', 'letter_id', 'move_id',
                                       string='Asientos de canje', readonly=True)
 

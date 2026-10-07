@@ -36,7 +36,7 @@ se usaban en la lógica del módulo).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '8.20261007',
+    'version': '9.20261007',
     'license': 'OPL-1',
     'depends': [
         'mail',
@@ -63,6 +63,7 @@ se usaban en la lógica del módulo).
         'views/account_move_view.xml',
         'views/account_move_line_view.xml',
         'views/letter_canje_wizard_views.xml',
+        'views/letter_bank_views.xml',
         'views/menuitem_views.xml',
         # Datos
         'data/document_type_letter.xml',

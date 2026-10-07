@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Asistente de operaciones con el banco -->
+    <record id="view_l10n_pe_letter_bank_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.letter.bank.wizard.form</field>
+        <field name="model">l10n_pe.letter.bank.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="alert alert-info" role="alert" invisible="operation != 'settle_discount'">
+                    El banco abona el neto y registra el préstamo (4511) por el valor nominal;
+                    la letra sigue en descuento hasta que el cliente la pague o se proteste.
+                </div>
+                <div class="alert alert-info" role="alert" invisible="operation != 'collected'">
+                    Cobranza libre: el banco abona el neto. Descuento: el pago del cliente cancela el préstamo.
+                </div>
+                <div class="alert alert-warning" role="alert" invisible="operation != 'protest'">
+                    La letra vuelve a cobrarse al cliente. En descuento, el banco carga en cuenta su importe.
+                </div>
+                <group>
+                    <group>
+                        <field name="letter_id" readonly="1"/>
+                        <field name="operation" readonly="1"/>
+                        <field name="date"/>
+                        <field name="bank_journal_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="nominal_amount"/>
+                        <field name="interest_amount" invisible="operation != 'settle_discount'"/>
+                        <field name="fee_amount"/>
+                        <field name="net_amount" invisible="operation == 'protest'"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="available_line_ids" invisible="1"/>
+                    </group>
+                </group>
+                <field name="letter_line_ids" options="{'no_create': True}">
+                    <list>
+                        <field name="nro_letter"/>
+                        <field name="letter_type"/>
+                        <field name="bank_id"/>
+                        <field name="code"/>
+                        <field name="expiration_date"/>
+                        <field name="imp_div" sum="Total"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_apply" string="Registrar" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Diario de letras -->
+    <record id="view_account_journal_form_letter" model="ir.ui.view">
+        <field name="name">account.journal.form.l10n_pe.letter</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="l10n_pe_letter_type" invisible="type != 'general'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Ajustes: cuentas de las operaciones con letras -->
+    <record id="res_config_settings_view_form_letter" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.letter</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="63"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Letras de cambio" name="pe_letter_block">
+                    <setting string="Descuento y gastos bancarios"
+                             help="Préstamo del banco en el descuento (4511), intereses (6734) y comisiones y gastos de protesto (6391).">
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="l10n_pe_letter_loan_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_letter_loan_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_letter_interest_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_letter_interest_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_letter_fee_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_letter_fee_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Redondeo del canje"
+                             help="Diferencia entre lo facturado y lo canjeado. Sin cuenta, se usa la llamada «Redondeo».">
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="l10n_pe_letter_rounding_loss_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_letter_rounding_loss_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_letter_rounding_gain_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_letter_rounding_gain_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,744 @@
+ 
+ CONSULTAS FRECUENTES 
+ CONSULTAS FRECUENTES 
+ DEFINICIÓN 
+ 1. ¿Todas 
+las operaciones que se efectúen con el Agente de Retención están sujetas a 
+retención? 
+ El Régimen de Retenciones del IGV es aplicable a los 
+proveedores únicamente por las operaciones de venta de bienes muebles, primera 
+venta de bienes inmuebles, prestación de servicios y contratos de 
+construcción, afectas a dicho impuesto. 
+ Las operaciones que están exoneradas o inafectas del IGV no 
+están sujetas a retención alguna. 
+ Los comprobantes de pago que se emitan por operaciones 
+gravadas con el IGV que se encuentren comprendidas en el Régimen de Retenciones 
+no podrán incluir operaciones no gravadas con el impuesto. 
+ Ejemplo: 
+ En la compra que realiza un Agente de Retención a un 
+proveedor de la Amazonía para consumo en la zona, no se retiene por el pago de 
+la operación. Pero, si es para su consumo fuera de la zona, si se retiene. 
+ OPORTUNIDAD DE EFECTUAR LA RETENCIÓN 
+ 2. ¿Cuándo se debe efectuar la retención? 
+ El Agente de Retención efectuará la retención en el 
+momento en que se realice el pago, con prescindencia de la fecha en que se 
+efectuó la operación gravada con el IGV. El Régimen de Retenciones se aplica 
+a partir del 01.06.2002. 
+ En el caso de pagos parciales, la retención se aplicará 
+sobre el importe de cada pago. 
+ EMISIÓN DE NOTAS DE DÉBITO 
+ 3. ¿Cuál es el procedimiento para determinar el Importe de 
+la Operación, en el caso de la emisión de Notas de Débito? 
+ Previamente, cabe recordar que la emisión de una Nota de 
+Débito permite sustentar el aumento del valor de las operaciones de venta 
+producto del mayor valor del precio de venta, de errores o de omisiones en el 
+importe de la operación. 
+ La situación del importe de la operación varía dependiendo 
+si se efectuó o no el pago del Comprobante de Pago antes de la emisión de la 
+Nota de Débito. A continuación presentamos varios supuestos: 
+ Importe del comprobante de pago 
+ Importe de la Nota de Débito 
+ Importe total de la operación 
+ Condición a la fecha de emisión de la Nota de Débito 
+ Se efectúa la retención? 
+ S/. 690 
+ S/. 30 
+ S/. 720 
+ Se pagó el importe del Comprobante de Pago sin retención. 
+ SI, por el importe de la Nota 
+ de Débito 
+ S/. 690 
+ S/. 30 
+ S/. 720 
+ No se pagó el importe del Comprobante de Pago. 
+ SI, por el importe total de la 
+ operación 
+ S/. 710 
+ S/. 30 
+ S/. 740 
+ Se pagó el importe del Comprobante de Pago con retención. 
+ SI, por el importe de la Nota 
+ de Débito 
+ Importe del comprobante de pago 
+ Importe de la Nota de Débito 
+ Importe total de la operación 
+ Condición a la fecha de emisión de la Nota de Débito 
+ Se efectúa la retención? 
+ S/. 710 
+ S/. 30 
+ S/. 740 
+ No se pagó el importe del Comprobante de Pago con retención. 
+ SI, por el importe total de la 
+ operación 
+ S/. 600 
+ S/. 30 
+ S/. 630 
+ Importe del Comprobante pagado o pendiente de pago. 
+ NO , porque el importe de la 
+ operación incluida la Nota de Débito, no supera el monto mínimo de S/. 
+ 700 
+ EMISIÓN DE NOTAS DE CRÉDITO 
+ 4. ¿Cuál es el procedimiento para determinar el Importe de 
+la Operación, en el caso de la emisión de Notas de Crédito? 
+ La emisión de la Nota de Crédito permite sustentar 
+la reducción del valor de las operaciones por descuentos, bonificaciones, 
+anulación parcial o total por devolución de bienes. 
+ La situación del importe de la operación varía dependiendo 
+si se efectuó o no el pago del Comprobante de Pago antes de la emisión de la 
+Nota de Crédito. A continuación presentamos varios supuestos: 
+ Importe del comprobante de pago 
+ Importe de la Nota de Crédito 
+ Importe total de la operación 
+ Condición a la fecha de emisión de la Nota de 
+ Crédito 
+ Se mantiene la retención realizada? 
+ S/. 750 
+ S/. 60 
+ S/. 690 
+ Se pagó el importe del Comprobante de Pago con retención. 
+ Sí, la retención persiste por 
+ el monto del Comprobante de Pago y no se devuelve (1) 
+ S/. 750 
+ S/. 60 
+ S/. 690 
+ No se pagó el importe del Comprobante de Pago. 
+ NO , el importe de la 
+ operación incluida la Nota de Crédito, no supera el monto mínimo de 
+ S/.700 
+ S/. 630 
+ S/. 30 
+ S/. 600 
+ Importe del Comprobante pagado o pendiente de pago. 
+ NO , el importe de la 
+ operación no supera el monto mínimo de S/.700 
+ (1) En este caso, 
+ la retención correspondiente al monto de las Notas de Crédito, podrá 
+ deducirse de la retención que corresponda a operaciones con el mismo 
+ proveedor respecto de las cuales aún no ha operado la retención. Es decir, 
+ S/. 3.6 (6% de S/.60) podrá deducirse de las retenciones que corresponda 
+ efectuar por otras operaciones (Si en una próxima operación, se emite una 
+ factura al mismo proveedor por un importe total de S/. 800, la retención que 
+ le correspondería sería S/. 48 - 3.6 = 44.4). 
+ 5. ¿Cuál es el procedimiento para deducir el importe de la 
+retención de las Notas de Crédito cuyo comprobante de pago relacionado ya 
+sufrió la retención? 
+ Las Notas de Crédito emitidas por operaciones respecto de 
+las cuales se efectuó la retención no darán lugar a una modificación de los 
+importes retenidos ni a su devolución por parte del Agente de Retención; sin 
+perjuicio de que el IGV retenido sea deducido del Impuesto Bruto mensual. 
+ La retención correspondiente al monto de las Notas de 
+Crédito podrá deducirse de la retención que corresponda a operaciones con el 
+mismo proveedor, respecto de las cuales aún no ha operado la retención. 
+ Ejemplo: 
+ El 15.06.02 la empresa Margaritas S.A.C. adquirió de su 
+proveedor mercadería por un precio de venta de S/. 1,700, y que fue cancelada 
+inmediatamente. 
+ El 25.06.02 su proveedor le emite una Nota de Crédito por 
+S/. 1,700, por la anulación de la venta citada. 
+ En la misma fecha recibe del mismo proveedor una factura por 
+S/.4,012 incluido IGV por la adquisición de otra mercadería. ¿Cuánto debe 
+retener? 
+ Solución: 
+ Por la factura de S/. 1,700 se aplicó la retención de S/. 
+102 en la fecha del pago. La emisión de la Nota de Crédito por la anulación 
+de la operación, no da lugar a la devolución del monto retenido. 
+ Sin embargo, la empresa podrá deducir los S/. 102 retenidos 
+aplicándolo al importe de la retención correspondiente a la factura de S/. 
+4,012. 
+ Valor de Venta 3,400 
+IGV 
+612 
+ Precio de 
+Venta 4,012 
+ Retención: 
+6% x 4,012 = S/. 241 
+ S/. 241 - S/. 102 (ya retenido) = S/ 139 
+ INAPLICACIÓN DEL RÉGIMEN DE RETENCIONES 
+ 6. ¿Cuándo no se aplica el Régimen de Retenciones del IGV? 
+ El régimen de retenciones se aplica exclusivamente en 
+operaciones gravadas con el IGV; en este sentido, no es de aplicación en 
+operaciones que estén exoneradas e inafectas. 
+ Asimismo, el Agente de Retención no efectuará la retención 
+del IGV, en las siguientes operaciones: 
+ Realizadas con Proveedores que tengan la calidad de 
+ Buenos 
+Contribuyentes . 
+ Realizadas con otros sujetos que tengan la condición de Agente 
+de Retención . 
+ En operaciones en las cuales se emitan Boletos de 
+aviación, recibos por servicios públicos de luz, agua, y otros documentos a 
+que se refiere el numeral 6.1. del artículo 4° del Reglamento de Comprobantes 
+de Pago. 
+ En las que se emitan boletas de ventas, tickets o cintas 
+emitidas por máquinas registradoras, respecto de las cuales no se permita 
+ejercer el derecho al crédito fiscal. 
+ En la venta y prestación de servicios, respecto de las 
+cuales no exista la obligación de otorgar comprobantes de pago, conforme a lo 
+dispuesto en el artículo 7° del Reglamento de Comprobantes de Pago. 
+ En las cuales opere el Sistema de Pago de Obligaciones 
+Tributarias con el Gobierno Central establecido por el Decreto Legislativo N° 
+917. 
+ Cuando el pago efectuado sea igual o menor a S/.700 y la 
+suma de los importes de los comprobantes involucrados, ajustados por las notas 
+de contabilidad que correspondan, no supere dicho importe. 
+ En las operaciones sustentadas con las liquidaciones de 
+compra y pólizas de adjudicación. Estas operaciones seguirán regulándose 
+conforme a lo dispuesto por el Reglamento de Comprobantes de Pago. 
+ Realizadas por Unidades Ejecutoras del Sector Público que 
+tengan la condición de Agentes de Retención, cuando dichas operaciones las 
+efectúen a través de un tercero, bajo la modalidad de encargo, sea éste otra 
+Unidad Ejecutora, entidad u organismo público o privado. 
+ En los casos de venta interna y bienes donados cuyo monto, 
+incluyendo el IGV, es depositado en las cuentas especiales de los Fondos 
+Contravalor, de conformidad con el Decreto Ley N° 25774 y normas 
+modificatorias. 
+EXCEPCIÓN DE RETENER 
+ 7. ¿Cuándo se exceptúa de la obligación de retener? 
+ Cuando el pago efectuado es igual o inferior a S/.700 y la 
+suma del importe de la operación de los comprobantes involucrados, ajustados 
+por las notas de contabilidad que correspondan, no supera dicho importe. 
+ Importe Pagado 
+ Importe de la(s) Operación(es) 
+ Se efectúa la retención 
+ Más de S/. 700 
+ Más de S/. 700 (a) 
+ SI 
+ Menos de S/. 700 
+ Más de S/. 700 
+ SI 
+ Menos de S/. 700 
+ NO 
+ (a) Para efecto del cuadro, se incluye los casos en que se ha 
+emitido más de un Comprobante de Pago por montos inferiores a S/. 700, pero que 
+la operación que representa es superior a S/. 700. Igualmente se aplicará 
+retención cuando la suma de comprobantes de pago cada uno con montos menores a 
+S/700, sumados superen dicho monto. 
+ Donde: 
+ El importe de la(s) operación(es), incluye el monto 
+total del comprobante de pago o la suma de los montos de los comprobantes de 
+pago involucrados en el pago que otorgan derecho a crédito fiscal o gasto 
+deducible para el Impuesto a la Renta, (tales como facturas, nota de debito, 
+ticket de maquina registradora que otorgan derecho a crédito fiscal). 
+ La base de la retención corresponde al precio de venta del 
+comprobante de pago el mismo que incluye el IGV. 
+ Ejemplo 1: 
+ El proveedor empresa "A" realiza una venta de 
+mercadería a su cliente empresa "B" por el importe de S/. 1,200 el 10 
+de abril, pactándose el pago en 2 partes: 
+ 10 de abril - Factura 1 por S/. 800 
+ 26 de abril - Factura 2 por S/. 400 
+ Sin embargo, luego de emitida la factura 1 el proveedor 
+emitió una Nota de Crédito el 12 de abril por disminución de la operación, 
+por un valor de S/. 350. 
+ El cliente empresa "B", realizó pagos parciales 
+por S/. 600: 
+ 10 de abril - Factura 1 por S/. 400 
+ 26 de abril - Factura 2 por S/. 200 
+ Solución: 
+ Factura 
+1: S/. 800 
+ (-) Nota de Crédito ( 350) 
+ 450 
+ Factura 
+2: S/. 400 
+ Importe total de la operación S/. 850 
+ Importe de pagos parciales (600) 
+ En este caso habría retención, a pesar que los pagos 
+parciales no superan los S/. 700, pero la suma del importe de cada comprobante 
+de pago (ajustado por la Notas de Crédito emitida) supera dicho importe. 
+ Ejemplo 2 
+ El proveedor empresa "A" realiza una venta de mercadería a su 
+cliente empresa "B" por el importe de S/. 1,500 el 5 de junio, 
+pactándose el pago en 2 partes: 
+ 11 de junio Factura 1 por S/. 1,000 
+ 15 de julio Factura 2 por S/. 500 
+ El cliente, la empresa "B" realiza los siguientes pagos parciales: 
+ 11 de junio Factura 1 por S/. 1,000 
+ 11 de junio Factura 2 por S/. 300 (adelantó el pago) 
+ 15 de julio Factura 2 por S/. 200 (por la diferencia) 
+ Solución: 
+ Primer pago parcial: sí se efectúa la retención por 
+los S/. 1300, porque el pago supera los S/. 700 y la suma del importe de las 
+facturas involucradas superan dicho importe. 
+ Segundo pago parcial: sí se efectúa la retención , 
+porque el importe de la operación de venta supera los S/. 700. 
+ Ejemplo 3 
+ El proveedor empresa "A" realiza una venta de mercadería a su 
+cliente empresa "B" por el importe de S/. 1,800 el 16 de agosto, 
+pactándose el pago en 3 partes: 
+ 16 de agosto Factura 1 por S/. 600 
+ 23 de agosto Factura 2 por S/. 600 
+ 29 de agosto Factura 3 por S/. 600 
+ Se debe retener? 
+ Solución: 
+ Sí se retiene en cada pago , 
+porque no obstante el pago parcial a realizar por cada factura no supera los S/. 
+700, el importe de la operación supera dicho importe. 
+ COMPROBANTES DE PAGO 
+ 8. ¿Se debe efectuar la retención del IGV en las 
+operaciones en las cuales se emitan documentos a que se refiere el numeral 6.1. 
+del Artículo 4° del Reglamento de Comprobantes de Pago? 
+ No se efectuará la retención en operaciones en las cuales 
+se emitan boletos de aviación, recibos por servicios públicos de luz, agua, 
+documentos emitidos por bancos y otros documentos a que se refiere el numeral 
+6.1. del artículo 4° del Reglamento de Comprobantes de Pago. 
+ Ejemplo: 
+ En caso de un banco que no es Agente de Retención y que 
+por las operaciones que realiza emite documentos señalados en el num.6.1 del 
+art. 4° del Reglamento de Comprobantes de Pago, no se procede retener. 
+ Sin embargo, si el banco por una operación determinada, 
+emite factura, esta operación sí está sujeta a retención . 
+ APLICACIÓN DEL PORCENTAJE O ALÍCUOTA DE LA RETENCIÓN 
+ 9. ¿Se debe aplicar 6% sobre el valor de venta? 
+ No, la retención del 6% se debe efectuar sobre la suma total 
+que queda obligado a pagar el adquiriente, el usuario del servicio o quien 
+encarga la construcción, por la operación realizada incluido los tributos que 
+la graven. Es decir, sobre el precio de venta. 
+ 10. ¿Cómo se aplica el porcentaje en caso de pagos parciales? 
+ Tratándose de pagos parciales, el porcentaje o alícuota del 
+6% de la retención se aplicará sobre el importe de cada pago. 
+ MOMENTO DEL PAGO DE LA OPERACIÓN PARA REALIZAR LA RETENCIÓN 
+ 11. ¿Para el Régimen de Retenciones el IGV, cuándo se considera que se ha 
+realizado el pago? 
+ En pagos en efectivo: 
+La fecha de entrega o puesta a disposición del efectivo. 
+ En los pagos con cheques : 
+En la fecha en que se pone a disposición la retribución. 
+ Para el caso de cheques diferidos : 
+Se considerará pagado en la fecha de vencimiento (el mismo que no puede ser 
+mayor a 30 días desde su emisión). 
+ Para el caso de letras de cambio : 
+En la fecha de vencimiento o cuando se hace efectivo el pago, lo que ocurra 
+primero. 
+ 12. ¿Si la factura se emite el 31.05.2002 y el pago se 
+efectúa el día 15.02.03 se efectúa la retención? 
+ No, porque se trata de una operación anterior a la vigencia 
+del Régimen de Retenciones. De conformidad con la R. 
+S. 037-2002/SUNAT , la retención se 
+aplicará a las operaciones que se efectúen a partir del 1° de junio del 2002. 
+ OPERACIONES EN MONEDA EXTRANJERA 
+ 13. ¿Cuál es el procedimiento a seguir en caso de facturas emitidas en 
+dólares? 
+ Para efectos del cálculo del monto de la retención, la 
+conversión a moneda nacional se efectuará al tipo de cambio promedio ponderado 
+venta publicado por la Superintendecia de Banca y Seguros en la fecha de pago. 
+En los días en que no se publique el tipo de cambio referido se utilizará el 
+último publicado. 
+ RETENCIÓN EN PAGOS EN ESPECIE 
+ 14. ¿En qué momento se efectúa la retención en los pagos 
+en especie? 
+ Debe efectuarse en el momento en que se entregue o ponga a 
+disposición los bienes. 
+PAGO DE OPERACIONES CON TITULO VALOR 
+ 15. ¿Cuándo debe efectuarse la retención en el caso de 
+canje de factura por letra de cambio? 
+ En la fecha de vencimiento de la letra de cambio o cuando se 
+hace efectivo el pago, lo que ocurra primero. 
+ 16. ¿Cuándo debe efectuarse la retención en el caso de 
+canje de factura por letra de cambio, y esta es renovada por otra letra de 
+cambio? 
+ En la fecha de vencimiento de la última letra de cambio o 
+cuando se hace efectivo el pago, lo que ocurra primero. 
+ 17. ¿Cómo se efectúa la retención en el caso de canje de 
+facturas por letras de cambio? 
+ Ejemplo: 
+LETRA EN DESCUENTO 
+ El 13 de junio el proveedor empresa "A" emite a su 
+cliente empresa "B" (AGENTE DE RETENCIÓN) la factura por un 
+precio de venta de S/. 5,900. 
+ El 15 de junio se canjea la factura por una Letra de Cambio 
+cuyo fecha de vencimiento es el 15 de julio. La letra se emite deduciendo el 
+monto de la retención. 
+ Precio de Venta: S/. 5,900 
+Retención 6% ( 354) 
+ Valor de la Letra Cambio 5,546 
+ Al vencimiento de la letra, 15 de julio, la empresa 
+"B" (agente de retención) efectúa el pago de la letra, se produce la 
+retención y se hará entrega del Comprobante de Retención al proveedor, 
+empresa "A". 
+FORMA DE DECLARAR 
+ La empresa "B" presentará su declaración pago 
+mediante el PDT 
+Agentes de Retención, Formulario Virtual N° 626, 
+dentro del Cronograma de Vencimientos del mes de julio (que vence en agosto), 
+por el importe de S/. 354. 
+ La empresa "A" presentará su declaración pago 
+mediante el PDT IGV Renta Mensual, formulario Virtual 621, dentro del Cronograma 
+de Vencimientos del mes de julio (que vence en agosto), en el que consignará el 
+impuesto que se le hubiera retenido durante el período, a efecto de su 
+deducción del tributo a pagar. 
+ 18. ¿Cómo se efectúa la entrega del Comprobante de 
+Retención en el caso del pago de dos facturas con un cheque? 
+ Ejemplo: 
+ El 01 de junio el señor Chacaltana, empresa unipersonal, 
+vende mercadería a la empresa Industrial ABC S.A. por importes de S/. 500 y S/. 
+600. 
+ La empresa -agente retenedora- acuerda con el Sr. Chacaltana 
+cancelar los importes adeudados en dos partes: el 01 de junio el importe de S/. 
+500 y el 12 de julio el importe de S/. 600. Sin embargo, posteriormente acuerda 
+realizar el pago el 01 de septiembre y con un mismo cheque. 
+ Las retenciones se efectuarán en el momento del pago, el que 
+constará en el Comprobante de Retenciones, tal como se detalla a continuación: 
+ 19. ¿Cómo debe efectuarse la emisión de la factura en la 
+venta de inmuebles y cómo procede la retención? 
+ Emisión del comprobante de pago: 
+ En caso que el constructor efectúe la primera venta de un 
+bien inmueble a un AGENTE DE RETENCIÓN , esta operación está afecta al 
+IGV, debiéndose emitir el comprobante de pago en la fecha en que se perciba el 
+ingreso, por el monto total o parcial que se perciba, y con los requisitos 
+establecidos en el Reglamento de Comprobantes de Pago. 
+ Cabe indicar que si existe pagos parciales, la emisión y la 
+entrega del comprobante de pago deberá efectuarse en la oportunidad en que se 
+perciba cada pago parcial. El valor de venta en estos casos, será el monto del 
+pago parcial efectuado. 
+ Se debe precisar que el terreno no esta gravado con el IGV, pero si la 
+construcción y que la retención se efectúa por este ultimo concepto. 
+ Retención del 6%: 
+ Si la primera venta del inmueble efectuada por el constructor 
+se paga al contado, la retención del 6% se efectuará en la fecha en que se 
+efectúe el pago citado y se calculará sobre la base del importe del mismo, 
+incluidos los tributos respectivos. 
+ Si la primera venta del inmueble efectuada por el constructor 
+se paga en partes (pagos parciales), deberá considerarse que cada uno de dichos 
+pagos constituye una operación independiente y, en consecuencia, la retención 
+del 6% deberá realizarse en la fecha en que se efectúe cada pago parcial y se 
+calculará sobre la base del importe del mismo, incluidos los tributos 
+respectivos. 
+PAGOS PARCIALES DE OPERACIONES 
+ 20. ¿Cómo se efectúa la retención cuando existen pagos 
+parciales? 
+ Ejemplo: 
+ El Sr. Rodolfo Paz efectúa dos ventas a la empresa 
+Industrial ABC S.A., la primera el 19 de junio del 2002 y la segunda el 22 de 
+julio del 2002, cuyos montos ascienden a S/. 1,500 y S/. 2,000 respectivamente. 
+ La empresa acuerda con el Sr. Paz en amortizar parte de ambas 
+deudas con 1,000 nuevos soles, el día 01 de agosto del 2002. Las 
+retenciones por ambas operaciones, se efectuarán en el momento del pago, el que 
+constará en el Comprobante de Retenciones, tal como se detalla a continuación: 
+ COMPROBANTE DE RETENCIÓN 
+ 21. ¿Los Comprobantes de Retención pueden tener como 
+dimensiones 25 cm. de ancho y 16 cm. de alto? 
+ El numeral 3 del articulo 8° de la R.S. 037-2002/SUNAT 
+modificada por la R.S. 050-2002/SUNAT, señala que las dimensiones mínimas del 
+Comprobante de Retención es de 21 cm. de ancho y 14 cm. de alto, no existiendo 
+inconveniente que dichas dimensiones sean mayores. Lo señalado sólo es 
+aplicable si es impreso por la imprenta autorizada. 
+ 22. ¿Para la impresión de Comprobantes de Retención, los 
+agentes de retención necesariamente tendrán que utilizar el Formulario N° 
+816? 
+ No, los Agentes de Retención podrán realizar la impresión 
+de sus Comprobantes de Retención mediante sistema computarizado, previa 
+solicitud de autorización a la SUNAT a través del formulario N° 806 de la 
+serie asignada al punto de emisión y del rango de comprobantes a imprimir sin 
+necesidad de utilizar una imprenta. Deberá consignar como código del 
+documento, el N° 20 en el formulario N° 806. 
+ La SUNAT le asignará un número de autorización. 
+ Dichos comprobantes deberán cumplir con los requisitos 
+mínimos establecidos en el artículo 8° de la R.S. 037-2002/SUNAT modificado 
+por la R.S. 050-2002/SUNAT, con excepción de los datos de la imprenta y las 
+obligaciones contenidas en el numeral 1 del articulo 9° del Reglamento de 
+Comprobantes de pago, referidas a las dimensiones y denominación del 
+comprobante, y destinos de las copias. 
+ OPORTUNIDAD DE ENTREGA DEL COMPROBANTES DE RETENCIÓN 
+ 23. ¿Cuándo se debe efectuar la entrega del Comprobante de Retención? 
+ El Agente de Retención efectuará la retención y entregará 
+el Comprobante de Retención en el momento en que se realice el pago, con 
+prescindencia de la fecha en que se efectuó la operación gravada con el IGV. 
+ En el caso que el pago se realice a un tercero, el Agente de 
+Retención deberá emitir y entregar el Comprobante de Retención 
+ al proveedor EN LA FECHA DEL PAGO . 
+ DECLARACIÓN Y PAGO DEL AGENTE DE RETENCIÓN 
+ 24. ¿Cómo realiza su Declaración y Pago el Agente de 
+Retención? 
+ El Agente de Retención declarará el monto total de 
+las retenciones practicadas en el período y efectuará el pago respectivo, 
+utilizando el PDT-Agentes 
+de Retención, Formulario Virtual N° 626. 
+ El Agente de Retención deberá presentar el referido PDT 
+inclusive cuando no se hubieran practicado retenciones en el periodo. 
+ La declaración y el pago se realizará de acuerdo con el cronograma 
+para el cumplimiento de sus obligaciones tributarias. 
+ El Agente de Retención no podrá compensar el saldo a favor 
+del exportador contra los pagos que tenga que efectuar por retenciones 
+realizadas. 
+ A continuación presentamos un esquema de la declaración y 
+del Pago del Agente de Retención: 
+ DECLARACIÓN DEL PROVEEDOR Y DEDUCCIÓN DEL MONTO RETENIDO 
+ 25.- ¿Cómo efectuará la declaración el Proveedor? 
+ La Declaración del Proveedor será presentada al vencimiento 
+de sus obligaciones tributarias regulares, de conformidad con el cronograma de 
+pago que publica la Administración Tributaria. 
+ El Proveedor utilizará el PDT- 
+IGV-RENTA mensual, formulario virtual 621, 
+y podrá deducir del impuesto que le corresponda pagar, las retenciones que le 
+hubieran efectuado hasta el último día hábil del periodo al que corresponde 
+la declaración. 
+ Si no existieran operaciones gravadas o si éstas resultaran 
+insuficientes para absorber las retenciones que le hubieran practicado, el 
+exceso se arrastrará a los períodos siguientes hasta agotarlo, no pudiendo ser 
+materia de compensación con otra deuda tributaria. 
+ A continuación presentamos un esquema de la declaración del 
+Proveedor y la deducción del monto retenido: 
+DEVOLUCIÓN DE RETENCIONES NO APLICADAS E INDEBIDAS 
+ 26. ¿Se puede solicitar la devolución de retenciones? 
+ El Proveedor podrá solicitar la devolución de las 
+retenciones no aplicadas que consten en la declaración del IGV, siempre que 
+hubiera mantenido un monto no aplicado por dicho concepto en un plazo no menor 
+de 3 períodos consecutivos. A menos que le sea de aplicación la Quinta 
+Disposición Final de la R. S. N° 128-2002 del Régimen de Percepciones del IGV 
+aplicable a la adquisición de combustible, en cuyo caso: 
+ Deducirá de su impuesto a pagar en primer lugar las 
+ percepciones y luego las retenciones que le hubieran efectuado. 
+ Podrá solicitar la devolución de las retenciones no 
+ aplicadas que consten en la declaración del IGV, siempre que hubiera 
+ mantenido un monto no aplicado por dicho concepto en un plazo no menor de 2 
+ periodos consecutivos. 
+DEDUCCIONES A LAS RETENCIONES 
+ 27. ¿Cómo se efectúa la deducción de las retenciones? 
+ El Proveedor podrá deducir del impuesto a pagar las 
+retenciones que le hubieran efectuado, hasta el último día del período al que 
+corresponde la declaración. 
+ Ejemplo: 
+ La empresa "A" ha determinado un Impuesto General a 
+las Ventas a pagar de S/. 200 correspondiente a las operaciones de venta de 
+mercadería realizadas en enero del 2003 y cuenta con un monto a deducir de S/. 
+150 producto de las retenciones que ha sido objeto EN DICHO MES por las 
+adquisiciones realizadas a la empresa transnacional "X", designado 
+agente de retención, y sustentado con Comprobantes de Retención. 
+ Al deducir el importe retenido del IGV declarado, la empresa 
+"A" solo pagará el importe de S/. 50. 
+ 28. ¿Qué sucede si no tengo operaciones gravadas o si el IGV a pagar es 
+menor a las retenciones que me han efectuado? 
+ Si no existiera impuesto a pagar producto de operaciones gravadas o si estas 
+resultaran insuficientes para absorber las retenciones que se hubieran efectuado 
+en el periodo, el exceso se arrastrará a los períodos siguientes hasta 
+agotarlo. Cabe 
+la posibilidad de la devolución del saldo de retenciones no aplicadas. 
+ Asimismo, cabe también la posibilidad de compensar el crédito por 
+retenciones y/o percepciones del IGV no aplicadas según lo establecido en la Decimo 
+Segunda Disposición Complementaria Final del Decreto Legislativo N° 981 
+y de acuerdo al procedimiento establecido en la Resolución 
+de Superintendencia N° 175-2007/SUNAT. 
+ Usted podrá encontrar información detallada del procedimiento de 
+compensación establecido. Haga clic aquí 
+FUNCIONAMIENTO DEL RÉGIMEN 
+ 29. ¿Cómo se aplica el Régimen de Retenciones? 
+ CUENTAS Y REGISTRO DE CONTROL 
+ 30. ¿Que tipo de cuentas y registros de control debe llevar 
+el Agente de Retención por las retenciones realizadas al proveedor? 
+ El Agente de Retención abrirá en su contabilidad una cuenta 
+denominada "IGV - Retenciones por Pagar". En dicha cuenta 
+consignará mensualmente las retenciones efectuadas a los proveedores y 
+contabilizarán los pagos efectuados a la SUNAT. 
+ Asimismo, deberá llevar un "Registro del Régimen de 
+Retenciones" en el cual controlará los débitos y créditos con 
+respecto a la cuenta por pagar por cada proveedor. Dicho registro deberá 
+contener, como mínimo, la siguiente información en columnas separadas: 
+ Fecha de la transacción. 
+ Denominación y número del documento sustentatorio. 
+ Tipo de transacción realizada, tales como: compras, ajustes a la 
+ operación, pagos parciales o totales, compensaciones, canje de facturas por 
+ letras de cambio, entre otras. 
+ Importe de la transacción, anotado en la columna del debe o del haber, 
+ según corresponda a la naturaleza de la transacción. 
+ Saldo resultante de la cuenta por pagar por cada proveedor. 
+ 31. ¿Si el Agente de Retención lleva sistema de contabilidad computarizada? 
+ El Agente de Retención que utilice sistemas mecanizados o 
+computarizados de contabilidad podrá llevar dicho registro anotando el total de 
+las transacciones mensuales realizadas con cada Proveedor en forma consolidada, 
+siempre que en el sistema de enlace se mantenga la información requerida y se 
+pueda efectuar la verificación individual de cada transacción. 
+ 32. ¿Cuál es el plazo en que se debe consignar los 
+comprobantes en el Registro de Retenciones? 
+ El Registro del Régimen de Retenciones no podrá tener un 
+atraso mayor a 10 días hábiles, contados a partir del primer día hábil del 
+mes siguiente a aquél en que se reciba o emita, según corresponda, el 
+documento que sustenta las transacciones realizadas con los proveedores. 
+Además, le son de aplicación las disposiciones establecidas en la Resolución 
+de Superintendencia N° 132-2001/SUNAT, 
+que regula el procedimiento para la autorización de registros y libros 
+contables vinculados a asuntos tributarios. 
+ 33. ¿Que tipo de cuentas y registros de control debe llevar 
+el proveedor por las retenciones realizadas? 
+ El proveedor abrirá en su contabilidad una subcuenta 
+denominada "IGV Retenido" dentro de la cuenta "Impuesto 
+General a las Ventas". En dicha subcuenta se controlará las 
+retenciones que le hubieren efectuado los Agentes de Retención, así como las 
+aplicaciones de dichas retenciones al IGV por pagar. 
+OBLIGACIONES DE LOS AGENTES DE RETENCIÓN Y PROVEEDORES 
+ 34. ¿Cuáles son las principales obligaciones de los Agentes 
+de Retención y Proveedores? 
+ SISTEMA DE RETENCIONES DEL IGV 
+ Obligaciones 
+ Agentes de Retención 
+ Solicitar 
+ a la SUNAT la autorización de comprobantes de retención. 
+ Diferenciar 
+ los sujetos y operaciones a las cuales se debe aplicar la retención del 
+ IGV y efectuar la misma. 
+ Emitir 
+ los comprobantes de retención al momento del pago. 
+ Abrir 
+ en su contabilidad una cuentas denominada "IGV  Retenciones por 
+ Pagar. 
+ Optativamente, 
+ marcar en el Registro de Compras los comprobantes sujetos a retención. 
+ Poseer 
+ debidamente legalizado el Registro del Régimen de Retenciones, el cual 
+ podrá tener un máximo de 10 días de atraso el mencionado registro. 
+ Declarar y pagar a la SUNAT las 
+ retenciones efectuadas en el periodo utilizando el PDT 
+ Agentes de Retención, formulario virtual N° 626. 
+ Proveedor 
+ Aceptar 
+ la retención que efectuará el Agente de Retención. 
+ Emitir 
+ comprobantes diferenciados por operaciones gravadas y no gravadas. 
+ Abrir 
+ una subcuenta denominada "IGV retenido" dentro de la cuenta 
+ "Impuesto General a las Ventas" donde controlara las retenciones 
+ que le hubieren efectuado los Agentes de Retención, así como las 
+ aplicaciones de dichas retenciones al IGV por pagar. 
+ Deducir 
+ del importe del IGV a pagar la suma de los comprobantes de retención 
+ recibidos en el mes. 
+ Declarar 
+ en el PDT 
+ 621 IGV Renta mensual en el 
+ periodo al que corresponda el comprobante de retención recibido. 
+ REGISTRO DEL REGIMEN DE RETENCIONES 
+ 35. ¿Cómo llevar el Registro del Régimen de Retenciones 
+por las transacciones realizadas? 
+ Caso 1 Operación en 
+moneda nacional 
+ El 05.01.2003 la empresa ETEL EIRL. adquiere una computadora 
+al proveedor Comercial Verona S.A., según factura N° 001-3250 por un precio de 
+venta de S/.3,540. 
+ Valor venta: S/. 3,000 
+IGV: 
+540 
+Total: 
+3,540 
+ El 10.01.2003 le emiten la Nota de Crédito N° 001-054 por 
+el descuento del 10% del precio de venta, ascendente a S/.354. 
+ El 20.01.2003 efectúa un pago parcial por S/. 2,500 
+efectuando la retención y entregando el comprobante de retención N° 001-001. 
+ El 30.01.2003 cancela el saldo efectuando la retención 
+correspondiente, entregando el comprobante de retención N° 001-002. 
+ REGISTRO DEL RÉGIMEN DE RETENCIONES 
+PROVEEDOR: COMERCIAL VERONA S.A. 
+ Fecha de transacción 
+ Denominación de documento 
+ N° de documento 
+ Tipo de Transacción realizada 
+ Importe de transacción 
+ Saldo 
+ Debe 
+ Haber 
+ 05.01.2003 
+ Factura 
+ 001-3250 
+ Compra 
+ 3,540.00 
+ 3,540.00 
+ 10.01.2003 
+ Nota de Crédito 
+ 001-054 
+ Descuento recibido sobre factura: 001-3250 
+ 354.00 
+ 3,186.00 
+ 20.01.2003 
+ Cheque 
+ 001-25468 
+ Pago parcial de la factura: 001-3250 
+ 2,350.00 
+ 836.00 
+ * 
+ 20.01.2003 
+ Comprobante de retención 
+ 001-001 
+ Retención de IGV 
+ 150.00 
+ * 
+ 686.00 
+ * 
+ 30.01.2003 
+ Cheque 
+ 001-25540 
+ Cancelación de factura: 001-3250 
+ 644.84 
+ 41.16 
+ 30.01.2003 
+ Comprobante de retención 
+ 001-002 
+ Retención de IGV 
+ 41.16 
+ 0 
+ Caso 2 Operación en moneda 
+extranjera 
+ El día 01.01.2003 la empresa TWK EIRL. realiza la compra de 
+una maquina industrial al proveedor Comercial TLN S.A., según factura N° 
+004-150 por: 
+ Valor venta: US$ 10,000 
+IGV: 
+1,800 
+Total: 
+11,800 
+ Tipo de cambio aplicable a la fecha: 3.450 
+ El día 15.01.2003 efectúa un pago parcial mediante cheque 
+por US$ 5,000. El tipo de cambio aplicable a la fecha es de 3.455. 
+ El día 30.01.2003 cancela el saldo de US$ 6,800 mediante 
+cheque. El tipo de cambio aplicable a la fecha es de: 3.500. 
+ REGISTRO DEL RÉGIMEN DE RETENCIONES 
+ PROVEEDOR: COMERCIAL TLN S.A. 
+ Fecha de transacción 
+ Denominación de documento 
+ N° de documento 
+ Tipo de Transacción realizada 
+ Importe de transacción 
+ Saldo 
+ Debe 
+ Haber 
+ 01.01.2003 
+ Factura 
+ 004-150 
+ Compra 
+ 40,710.00 
+ 40,710.00 
+ 15.01.2003 
+ Voucher 
+ 060045 
+ Ajuste T/C cuenta por pagar 
+ 59.00 
+ 40,769.00 
+ 15.01.2003 
+ Cheque 
+ 000-10541 
+ Pago parcial de factura: 004-150 
+ 16,238.50 
+ 24,530.50 
+ 15.01.2003 
+ Comprobante de retención 
+ 001-001 
+ Retención de IGV 
+ 1,036.50 
+ 23,494.00 
+ 30.01.2003 
+ Voucher 
+ 060046 
+ Ajuste T/C cuenta por pagar 
+ 306.00 
+ 23,800.00 
+ 30.01.2003 
+ Cheque 
+ 000-10600 
+ Cancelación de factura: 004-150 
+ 22,372.00 
+ 1,428.00 
+ 30.01.2003 
+ Comprobante de retención 
+ 001-002 
+ Retención de IGV 
+ 1,428.00 
+ 0 
+

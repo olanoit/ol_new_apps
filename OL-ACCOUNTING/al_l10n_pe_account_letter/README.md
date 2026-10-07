@@ -31,6 +31,18 @@ condicionales. **Demo/validación funcional:**
 - **Canje individual de una letra** (cobranza libre o descuento) mediante
   el asistente `l10n_pe.letter.canje.wizard`, generando el asiento y
   conciliando contra el asiento del canje original.
+- **Operaciones con el banco** (`l10n_pe.letter.bank.wizard`, letras por
+  cobrar enviadas al banco; botones del canje):
+  - *Liquidar descuento*: banco (neto) + 6734 intereses + 6391 gastos contra
+    4511 préstamo por el valor nominal; la letra sigue en 1234.
+  - *Cobro del banco*: cobranza libre, banco (neto) + 6391 contra 1233;
+    descuento, 4511 contra 1234 (exige la liquidación previa). La letra queda
+    pagada.
+  - *Protesto*: la letra pasa a «Protestada» y vuelve a cobrarse al cliente
+    (cuenta de letras protestadas o, sin ella, la de cartera); en descuento
+    liquidado, el banco carga su importe (4511 contra banco); gastos de
+    protesto a 6391. Si se protesta más de 15 días después del vencimiento
+    (Ley 27287, art. 72), el canje lo anota en el chatter.
 - **Refinanciación de canjes**:
   - Individual (`l10n_pe.letter.refinance.wizard`): refinancia un canje
     generando uno nuevo con la fecha indicada, arrastrando el saldo
@@ -144,15 +156,19 @@ punto de entrada):
 
 ## Configuración previa
 
+Al instalar o actualizar se configura sola en las compañías peruanas; revísela en:
+
 1. **Perú ▸ Configuración ▸ Cuentas de letras** (`l10n_pe.letter.account.config`):
-   dar de alta la cuenta contable para cada combinación
-   (Por cobrar/Por pagar × tipo de letra × moneda × compañía) que se vaya a
-   usar.
-2. **Diarios**: crear diarios cuyo nombre contenga "letra" y "cobrar"
-   (clientes) o "letra" y "pagar" (proveedores) — es el filtro que usa el
-   campo `journal_id` del canje.
-3. Cuentas contables llamadas exactamente **"Redondeo"** (tipo *Gasto* y
-   tipo *Otros ingresos*) para el asiento de residual/redondeo.
+   cuenta de cada combinación (Por cobrar/Por pagar × tipo de letra × moneda ×
+   compañía). Por defecto, PCGE 1232, 1233, 1234 y 423. Para «Protestada» se
+   usa la de cartera si no se configura otra.
+2. **Diarios**: campo **Diario de letras** (Letras por cobrar/pagar) en el
+   diario. Si la compañía no marca ninguno, vale el nombre («letra» y
+   «cobrar»/«pagar»), como antes de la v9; al actualizar, esos diarios quedan
+   marcados.
+3. **Ajustes ▸ Contabilidad ▸ Letras de cambio**: préstamo del descuento
+   (4511), intereses (6734), gastos bancarios (6391) y cuentas de redondeo en
+   contra/a favor (sin ellas, las llamadas «Redondeo»).
 
 ## Dependencias
 

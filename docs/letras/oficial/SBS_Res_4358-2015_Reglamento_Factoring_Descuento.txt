@@ -1,0 +1,520 @@
+558244                                          NORMAS LEGALES                     Sábado 25 de julio de 2015 /   El Peruano
+
+de la SBS, del 25 de julio al 02 de agosto de 2015, a la      las disposiciones adicionales que sean necesarias para
+ciudad de Chicago, Estados Unidos de América, para los        tales efectos;
+fines expuestos en la parte considerativa de la presente          Que, mediante Resolución SBS N° 3082-2011 y
+Resolución.                                                   sus normas modificatorias, se aprobó el Texto Único
+    Artículo Segundo.- La citada funcionaria, dentro          de Procedimientos Administrativos (TUPA) de la
+de los 15 (quince) días calendario siguientes a su            Superintendencia de Banca, Seguros y Administradoras
+reincorporación, deberá presentar un informe detallado        Privadas de Fondos de Pensiones;
+describiendo las acciones realizadas y los resultados             Que, resulta necesario incorporar procedimientos para
+obtenidos durante el viaje autorizado.                        el registro de empresas de factoring no comprendidas
+    Artículo Tercero.- Los gastos que irrogue el              en el ámbito de la Ley General y para la adecuación a
+cumplimiento de la presente autorización, según se            empresas de factoring comprendidas en el ámbito de
+indica, serán cubiertos por esta Superintendencia con         la Ley General, en el Texto Único de Procedimientos
+cargo al Presupuesto correspondiente al ejercicio 2015,       Administrativos – TUPA de la Superintendencia de Banca,
+de acuerdo al siguiente detalle:                              Seguros y Administradoras Privadas de Fondos de
+                                                              Pensiones;
+   Pasajes     US$ 2,007.72                                       Que, a efectos de recoger las opiniones del público en
+   Viáticos    US$ 2,640.00                                   general respecto a la propuesta de normativa, se dispuso
+                                                              la prepublicación del proyecto de resolución sobre la
+   Artículo Cuarto.- La presente Resolución no otorga         materia en el portal electrónico de la Superintendencia,
+derecho a exoneración o liberación de impuestos de            al amparo de lo dispuesto en el Decreto Supremo Nº 001-
+Aduana de cualquier clase o denominación a favor de la        2009-JUS;
+funcionaria cuyo viaje se autoriza.                               Contando con el visto bueno de las Superintendencias
+                                                              Adjuntas de Banca y Microfinanzas, Riesgos, Estudios
+   Regístrese, comuníquese y publíquese.                      Económicos y Asesoría Jurídica; y,
+                                                                  En uso de las atribuciones conferidas por los
+   DANIEL SCHYDLOWSKY ROSENBERG                               numerales 7 y 9 del artículo 349º de la Ley General, así
+   Superintendente de Banca, Seguros y                        como las facultades otorgadas en la Ley Nº30308;
+   Administradoras Privadas de Fondos de Pensiones
+                                                                 RESUELVE:
+   1267312-1
+                                                                  Artículo Primero.- Aprobar el Reglamento de
+                                                              Factoring, Descuento y Empresas de Factoring, en los
+Aprueban el Reglamento de Factoring,                          siguientes términos:
+Descuento y Empresas de Factoring
+                                                                “REGLAMENTO DE FACTORING, DESCUENTO Y
+           Resolución SBS N° 4358- 2015                                EMPRESAS DE FACTORING
+
+   Lima, 23 de julio de 2015                                                      CAPÍTULO I
+                                                                           DISPOSICIONES GENERALES
+   El Superintendente de Banca, Seguros y
+   Administradoras Privadas de Fondos de                         Artículo 1º.- Definiciones
+   Pensiones                                                     Para efectos de lo dispuesto en el presente
+                                                              Reglamento se deberán considerar las definiciones que a
+   CONSIDERANDO:                                              continuación se señalan:
+
+    Que, el artículo 16º de la Ley General del Sistema           a) Beneficiario final:
+Financiero y del Sistema de Seguros y Orgánica de la
+Superintendencia de Banca y Seguros, Ley N° 26702                i. Propietario significativo; y/o,
+y sus normas modificatorias, en adelante Ley General,            ii. Quien individualmente o actuando como una unidad
+prevé el establecimiento de empresas de factoring que         o a través de otras personas o entes jurídicos, ostenten
+están definidas en el numeral 8 del artículo 282º de la Ley   facultades, por medios distintos a la propiedad para:
+General;
+    Que, mediante la Ley que modifica diversas normas             1. Controlar las decisiones de los órganos de gobierno
+para promover el financiamiento a través del factoring y      de la empresa, o
+el descuento, Ley N°30308, se modificó el numeral 8 del           2. Influir significativamente en la gestión.
+artículo 282° de la Ley General, variándose la definición
+de empresas de factoring comprendidas en el ámbito de              Beneficiarios finales se consideran también a las
+la Ley General;                                               personas naturales, personas jurídicas y entes jurídicos
+    Que, la Tercera Disposición Complementaria Final de       a través de los cuales se cumple con la definición de
+la Ley que modifica diversas normas para promover el          beneficiario final.
+financiamiento a través del factoring y el descuento, Ley          b) Control: de conformidad con lo señalado en el
+N°30308, dispone que la Superintendencia deberá emitir        artículo 9° de las Normas especiales sobre vinculación y
+las disposiciones que establezcan los criterios mínimos       grupo económico aprobadas por la Resolución SBS N°
+referidos en el artículo 1° de la Ley antes mencionada en     445-2000 y sus normas modificatorias.
+cuanto a volumen de las operaciones de las empresas                c) Entes jurídicos: son i) patrimonios autónomos
+de factoring y/o respecto al riesgo que estas empresas        gestionados por terceros, que carecen de personalidad
+puedan representar para la estabilidad del sistema            jurídica o ii) contratos en los que dos o más personas, que
+financiero; así como las normas reglamentarias referidas      se asocian temporalmente, tienen un derecho o interés
+al registro de las empresas de factoring no comprendidas      común para realizar una actividad determinada, sin
+en el ámbito de la Ley General creado en el artículo 2° de    constituir una persona jurídica. Entre otros determinados
+la referida Ley;                                              por la Superintendencia, se consideran en esta categoría
+    Que, mediante Resolución SBS N° 1021-98 se aprobó         a los fondos de inversión y fondos mutuos de inversión en
+el Reglamento de Factoring, Descuento y Empresas              valores que no son constituidos como personas jurídicas;
+de Factoring, en el que se establecen disposiciones           patrimonios fideicometidos y consorcios.
+aplicables a las empresas de factoring como objeto                 d) Grupo económico: de acuerdo con la definición
+social, autorización de organización y funcionamiento,        contemplada en las Normas Especiales sobre Vinculación
+autorización de adecuación, operaciones permitidas,           y Grupo Económico aprobadas por la Resolución SBS N°
+medidas prudenciales aplicables, entre otros;                 445-2000 y sus normas modificatorias.
+    Que, resulta necesario sustituir el Reglamento de              e) Influencia significativa en la gestión: poder para
+Factoring, Descuento y Empresas de Factoring aprobado         intervenir en las decisiones de política y de operación sin
+por la Resolución SBS N°1021-98, y emitir uno que             llegar a tener el control, sea a través de: i) representación
+incorpore las actualizaciones efectuadas por la Ley que       en el directorio u órgano que cumpla la misma finalidad,
+modifica diversas normas para promover el financiamiento      ii) participación en los procesos de establecimiento de
+a través del factoring y el descuento, Ley N°30308, al        políticas, entre los que se incluyen las decisiones sobre
+numeral 8 del artículo 282° de la Ley General y establecer    dividendos y otras distribuciones y iii) participación en
+    El Peruano / Sábado 25 de julio de 2015       NORMAS LEGALES                                                  558245
+la designación de gerentes y principales funcionarios           o cuando mediante cualquier otra forma se evidencie
+en el caso de personas jurídicas o del gestor, quien se         indubitablemente que el Deudor conoce del factoring.
+encuentra facultado para el manejo de los fondos, en el
+caso de entes jurídicos.                                                            subCapítulo II
+   f) Persona: persona natural o jurídica.                                           DEL FACTOR
+   g) Propietario significativo: persona o ente jurídico
+que directamente o por conducto de terceros, a través              Artículo 6º.- Derechos del Factor
+de cualquier modalidad de adquisición del capital social,          Son derechos mínimos del Factor:
+posee una participación significativa en la empresa.
+Se entenderá que existe una participación significativa             1. Realizar todos los actos de disposición con relación
+cuando ésta se encuentra por encima del diez por ciento         a los instrumentos adquiridos; y
+(10%) del capital social de las empresas.                           2. Cobrar las retribuciones que haya acordado con el
+   h) Principales funcionarios: de conformidad con lo           Cliente por la adquisición de los instrumentos y por los
+señalado en las Normas para el Registro de Directores,          servicios adicionales que haya brindado.
+Gerentes y Principales Funcionarios - REDIR, Circular Nº
+G- 119 -2004 y sus normas modificatorias.                           Artículo 7º.- Obligaciones del Factor
+                                                                    El Factor asume, por lo menos, las siguientes
+                                                                obligaciones:
+                CAPÍTULO II
+     DE LAS OPERACIONES DE FACTORING                               1. Adquirir los instrumentos de acuerdo con las
+REALIZADAS POR LAS EMPRESAS COMPRENDIDAS                        condiciones pactadas;
+      EN EL ÁMBITO DE LA LEY GENERAL                               2. Brindar los servicios adicionales pactados;
+                                                                   3. Pagar al Cliente por los instrumentos adquiridos; y,
+                      SUBCapÍtulo I                                4. Asumir el riesgo crediticio de los Deudores.
+                      DEL FACTORING
+                                                                    Artículo 8º.- Servicios adicionales
+    Artículo 2º.- Factoring                                         El Factor puede brindar al Cliente servicios adicionales
+    El factoring es la operación mediante la cual el Factor     a la adquisición de instrumentos, que pueden consistir en
+adquiere, a título oneroso, de una persona, denominada          investigación e información comercial, gestión y cobranza,
+Cliente, instrumentos de contenido crediticio, prestando        servicios contables, estudios de mercado, asesoría
+en algunos casos servicios adicionales a cambio de una          integral y otros de naturaleza similar.
+retribución. El Factor asume el riesgo crediticio de los
+deudores de los instrumentos adquiridos, en adelante                                subCapítulo III
+Deudores.                                                                            DEL CLIENTE
+
+    Artículo 3º.- Instrumentos con contenido crediticio             Artículo 9º.- Derechos del cliente
+    Los instrumentos con contenido crediticio, en adelante          El Cliente tiene, como mínimo, los siguientes derechos:
+los instrumentos, deben ser de libre disposición del                1. Exigir el pago por los instrumentos transferidos en el
+Cliente. Las operaciones de factoring no podrán realizarse      plazo establecido y conforme a las condiciones pactadas;
+con instrumentos vencidos u originados en operaciones           y,
+de financiamiento con empresas del sistema financiero o             2. Exigir el cumplimiento de los servicios adicionales
+empresas de factoring no comprendidas en el ámbito en           que se hubiesen pactado.
+la Ley General.
+    Los instrumentos objeto de factoring pueden ser                Artículo 10º.- Obligaciones del cliente
+facturas comerciales, facturas negociables, facturas               El Cliente tiene, al menos, las siguientes obligaciones:
+conformadas, títulos valores representativos de deuda
+y en general cualquier valor mobiliario representativo de            1. Garantizar la existencia, exigibilidad y vigencia de
+deuda, así definidos por las leyes y reglamentos de la          los instrumentos al tiempo de celebrarse el factoring, de
+materia, originados en las ventas de bienes o prestación        conformidad con el marco normativo vigente. En el caso
+de servicios no financieros. Dichos instrumentos se             de las operaciones de factoring realizadas con Facturas
+transfieren mediante endoso, anotación en cuenta, o             Negociables, resulta de aplicación lo señalado en la Ley
+por cualquier otra forma que permita la transferencia en        Nº 29623 y sus modificatorias;
+propiedad al Factor, según las leyes de la materia.                  2. Transferir al Factor los instrumentos en la forma
+                                                                acordada o establecida por la ley;
+    Artículo 4°.- Contrato de Factoring                              3. Comunicar la realización del factoring a sus
+    El factoring se perfecciona mediante contrato escrito       Deudores, cuando corresponda. En el caso de las
+entre el Factor y el Cliente. El contrato deberá contener       operaciones de factoring realizadas con Facturas
+como mínimo lo siguiente:                                       Negociables, resulta de aplicación lo señalado en el
+                                                                artículo 8° de la Ley Nº 29623 y sus modificatorias;
+    1. Nombre, razón o denominación social, domicilio de             4. Recibir los pagos que efectúen los Deudores y
+las partes;                                                     transferirlos al Factor. En el caso de las operaciones de
+    2. Identificación de los instrumentos que son objeto        factoring realizadas con Facturas Negociables, resulta de
+de factoring o, de ser el caso, precisar los criterios que      aplicación lo señalado en el artículo 8° de la Ley Nº 29623
+permitan identificar los instrumentos respectivos;              y sus modificatorias;
+    3. Precio a ser pagado por los instrumentos y la forma           5. Informar al Factor y cooperar con este para permitir
+de pago;                                                        la mejor evaluación de su propia situación patrimonial y
+    4. Retribución correspondiente al Factor, de ser el         comercial, así como la de sus Deudores;
+caso;                                                                6. Proporcionar toda la documentación vinculada con
+    5. Responsable de realizar la cobranza a los Deudores.      la transferencia de instrumentos; y,
+En el caso de las operaciones de factoring realizadas con            7. Retribuir al Factor por los servicios adicionales
+Facturas Negociables, resulta de aplicación lo señalado         recibidos.
+en el artículo 8° de la Ley Nº 29623 y sus modificatorias; y,
+    6. Momento a partir del cual el Factor asume el riesgo                      CAPÍTULO III
+crediticio de los Deudores.                                          DE LAS OPERACIONES DE DESCUENTO
+                                                                REALIZADAS POR LAS EMPRESAS COMPRENDIDAS
+    Artículo 5º.- Conocimiento del Factoring por los                  EN EL ÁMBITO DE LA LEY GENERAL
+Deudores
+    La operación de factoring debe realizarse con                   Artículo 11º.- Descuento
+conocimiento previo de los Deudores, a menos que                    El descuento es la operación mediante la cual el
+por la naturaleza de los instrumentos adquiridos, dicho         Descontante entrega una suma de dinero a una persona
+conocimiento no sea necesario.                                  denominada Cliente, por la transferencia de determinados
+    Se presumirá que los Deudores conocen del                   instrumentos de contenido crediticio. El Descontante
+factoring cuando se tenga evidencia de la recepción             asume el riesgo crediticio del Cliente, y este a su vez
+de la comunicación correspondiente en sus domicilios            el riesgo crediticio del Deudor de los instrumentos
+legales o en aquellos señalados en los instrumentos,            transferidos.
+558246                                           NORMAS LEGALES                     Sábado 25 de julio de 2015 /   El Peruano
+
+   Son aplicables al descuento las disposiciones                   Artículo 15º.- Adecuación
+contenidas en los artículos 3° y 5° del presente                   Las empresas de factoring que pasen a estar
+Reglamento. Asimismo, resulta de aplicación al                 comprendidas en el ámbito de la Ley General de
+Descontante lo dispuesto en el artículo 8°.                    acuerdo con lo establecido en el artículo 13° del presente
+                                                               Reglamento, deben presentar dentro de los ciento ochenta
+    Artículo 12º.- Contrato de Descuento                       (180) días calendario posteriores de haber incurrido en
+    El descuento se perfecciona mediante contrato escrito      cualquiera de los supuestos señalados en los literales a y
+entre el Descontante y el Cliente. El contrato deberá          b del referido artículo, la información que se señala en el
+contener como mínimo lo siguiente:                             siguiente procedimiento de adecuación:
+
+    1. Nombre, razón o denominación social y domicilio            1. Presentación de documentos
+de las partes;
+    2. Identificación de los instrumentos que son objeto           a) Acreditar el capital mínimo conforme a lo establecido
+de descuento o, de ser el caso, precisar los criterios que     en los artículos 16º y 18º de la Ley General.
+permitan identificar los instrumentos respectivos;                 b) Estados financieros de los últimos dos (2) años y del
+    3. Tasa de interés de descuento que será aplicada,         trimestre anterior al de la fecha de solicitud de adecuación.
+monto neto a desembolsar y forma del desembolso;               En caso se trate de empresas que tengan menos de dos
+    4. Comisiones y gastos pactados; de ser el caso; y         (2) años desde su constitución deberán remitir los estados
+    5. Responsable de realizar la cobranza a los Deudores.     financieros con los que cuente a la fecha de presentación
+En el caso de las operaciones de descuento realizadas con      de documentos.
+Facturas Negociables, resulta de aplicación lo señalado            c) Informe en el que describa su modelo y estrategia
+en el artículo 8° de la Ley Nº 29623 y sus modificatorias.     de negocios, así como su modelo operativo.
+                                                                   d) Proyecto de minuta de modificación parcial o total
+                CAPÍTULO IV                                    del estatuto social de la empresa, según sea el caso, para
+       DE LAS EMPRESAS DE FACTORING                            adecuarlo a la normatividad vigente.
+     COMPRENDIDAS EN EL ÁMBITO DE LA LEY                           e) Escritura pública de constitución social y todas
+                 GENERAL                                       las modificaciones a ésta, así como las constancias de
+                                                               inscripción registral correspondientes.
+    Artículo 13º.- Objeto social y supervisión de la               f) Señalar quiénes son los accionistas y su
+Superintendencia                                               participación en la propiedad de la empresa. En el caso
+    Las empresas de factoring son aquellas cuya                que el accionista sea una persona jurídica o ente jurídico
+especialidad consiste en la adquisición, mediante              deberá indicarse a sus beneficiarios finales y presentarse,
+factoring o descuento, de facturas comerciales, facturas       además:
+negociables, facturas conformadas, títulos valores
+representativos de deuda y en general cualquier valor              • Certificados de Vigencia o, en el caso de personas
+mobiliario representativo de deuda o instrumentos con          jurídicas o entes jurídicos constituidos en el extranjero,
+contenidos crediticio, de conformidad con lo señalado en       el documento que resulte equivalente en su país de
+el artículo 3º del presente Reglamento.                        constitución;
+    Las empresas de factoring comprendidas en el ámbito            • Estados financieros de los últimos dos (2) años y del
+de la Ley General son aquellas empresas de factoring que       trimestre anterior al de la fecha de solicitud de adecuación.
+cumplan con cualquiera de las siguientes condiciones:          En caso se trate de personas jurídicas o entes jurídicos
+                                                               que tengan menos de dos (2) años desde su constitución
+    a) El saldo contable de operaciones de factoring y/o       deberán remitir los estados financieros con los que cuente
+descuento como persona jurídica individual o en forma          a la fecha de presentación de documentos.
+consolidada como grupo de personas jurídicas que
+pertenecen a un grupo económico supera el importe                  g) Declaración jurada de los accionistas de no estar
+de ochocientos millones de Nuevos Soles (S/. 800               incursos en los impedimentos señalados en los artículos
+000 000) durante dos (2) trimestres consecutivos o su          52º y 54° de la Ley General.
+equivalente en moneda extranjera, para lo cual deberá              h) Declaración jurada de no tener antecedentes
+emplearse el tipo de cambio contable de cierre de cada         penales ni policiales en el país para los accionistas
+trimestre, o                                                   residentes, y en el país de domicilio para los accionistas
+    b) Pertenece a un conglomerado financiero o mixto,         no residentes.
+que esté conformado por al menos una empresa de                    i) Currículum Vitae y Declaración Jurada de los
+operaciones múltiples o una empresa de seguros a que           Directores y principales funcionarios de no encontrarse
+se refiere el artículo 16° de la Ley General.                  incursos en los impedimentos señalados en el artículo 81º
+                                                               de la Ley General.
+    Las empresas de factoring comprendidas en el ámbito            j) Relación de personas naturales, jurídicas
+de la Ley General deberán constituirse en el país y tener      o entes jurídicos con las que los accionistas se
+la forma societaria de sociedad anónima, de conformidad        encuentran vinculados, y con las que conforma un
+con lo establecido en el artículo 12° de la Ley General.       grupo económico de acuerdo con la reglamentación
+    Si una empresa de factoring que cumplía con alguno de      de la Superintendencia vigente sobre la materia. Dicha
+los requisitos antes mencionados deja de cumplirlo y, por      relación deberá incluir la estructura de propiedad y de
+lo tanto, no se encuentra más en alguno de los supuestos       gestión del grupo económico.
+previstos en el presente artículo, la Superintendencia,            k) Declaración jurada de no registrar protestos en los
+de oficio o a pedido de parte, determinará el período de       últimos cinco (5) años, tanto de los accionistas como de la
+tiempo durante el cual dicha empresa seguirá siendo            empresa en adecuación, en ninguna Cámara de Comercio
+considerada como empresa de factoring comprendida              del país, o en la entidad del extranjero que corresponda.
+en el ámbito de la Ley General. Culminado dicho plazo              l) Estructura orgánica actualizada de la empresa,
+la Superintendencia entregará a la empresa la constancia       con detalle del personal y oficinas en funcionamiento al
+de inscripción a que se refiere el artículo 27° del presente   momento de la solicitud de adecuación.
+Reglamento.                                                        m) Manuales de Organización y Funciones y de
+                                                               Procedimientos, los cuales deberán estar aprobados por
+    Artículo 14º.- Constitución                                el Directorio.
+    El proceso para la constitución de las empresas de             n) Demostrar la existencia de la infraestructura
+factoring comprendidas en el ámbito de la Ley General          adecuada para realizar las operaciones, en especial
+se regula por las disposiciones pertinentes contenidas         manuales, procedimientos, formatos, entre otros, así como
+en el Reglamento para la constitución, reorganización          para el cumplimiento de la regulación vigente relativa a
+y establecimiento de empresas y representantes de              la prevención del lavado de activos y financiamiento del
+los Sistemas Financiero y de Seguros, aprobado por la          terrorismo.
+Resolución SBS N° 10440-2008.                                      o) Informe que contenga el plan y plazo de adecuación
+    Las empresas de factoring comprendidas en el ámbito        a la normativa vigente emitida por la Superintendencia.
+de la Ley General se constituirán observando el capital            p) Señalar las políticas y procedimientos
+mínimo establecido en el artículo 16º de la Ley General, el    implementados de seguridad de la información y de
+que deberá mantenerse actualizado de conformidad con           continuidad de negocios para los procesos, productos y
+lo señalado en el artículo 18º de la Ley General.              servicios críticos.
+    El Peruano / Sábado 25 de julio de 2015      NORMAS LEGALES                                                  558247
+    q) Describir las medidas de seguridad física y ambiental   Crediticia, aprobado por la Resolución SBS Nº 1027-2001
+implementadas en sus centros de procesamiento de datos         y sus normas modificatorias.
+principal y alterno.
+    r) Describir las características principales de su            Artículo 19°.- Operaciones con personas
+plataforma tecnológica y la arquitectura de los sistemas       vinculadas
+informáticos empleados.                                           Es aplicable a las empresas de factoring comprendidas
+                                                               en el ámbito de la Ley General las Normas Prudenciales
+    En esta etapa del procedimiento, la Superintendencia       para las Operaciones con Personas Vinculadas a las
+puede solicitar las rectificaciones y/o subsanaciones de       Empresas del Sistema Financiero, aprobadas por la
+aquellos documentos e informaciones que considere              Resolución SBS N° 472-2006.
+incompletos o inadecuados, así como requerir información
+adicional cuando lo estime pertinente.                             Artículo 20°.- Sistema de Prevención de Lavado de
+    La constitución de la empresa en el país o su              Activos y Financiamiento del Terrorismo
+conversión para cumplir con lo establecido en el artículo          En materia de prevención de lavado de activos y
+13°, deberá efectuarse de manera previa a la presentación      financiamiento del terrorismo, a las empresas de factoring
+de los documentos antes mencionados.                           comprendidas en el ámbito de la Ley General, les será
+                                                               de aplicación el Reglamento de Gestión de Riesgos de
+    2. Publicación                                             Lavado de Activos y del Financiamiento del Terrorismo
+    La Superintendencia, después de verificar la               aprobado por la Resolución SBS N° 2660-2015.
+presentación completa y adecuada de la información
+requerida en el numeral anterior, mediante las                     Artículo 21°.- Otra normativa aplicable
+comprobaciones que resulten pertinentes, dispone que               Las disposiciones contenidas en la Ley General
+la empresa en adecuación publique por dos (2) veces            referidas a las empresas del sistema financiero son de
+alternadas en un plazo máximo de sesenta (60) días             aplicación a las empresas de factoring comprendidas en
+calendario, la primera en el Diario Oficial y la segunda en    el ámbito de la Ley General, en lo que resulte pertinente.
+uno de extensa circulación nacional, un aviso haciendo             Las empresas de factoring comprendidas en el ámbito
+saber al público sobre el proceso de adecuación, así           de la Ley General se encuentran sujetas, en lo que
+como los nombres de los accionistas, citando a toda            resulte pertinente, a toda norma o disposición emitida
+persona interesada para que, en el término de quince (15)      por la Superintendencia que contemple en su alcance a
+días, contado a partir de la fecha del último aviso, formule   las empresas de factoring; o que haga referencia en su
+cualquier objeción fundamentada a la adecuación de la          alcance o que resulte aplicable a las empresas del sistema
+empresa o a los accionistas que la conforman.                  financiero, a las empresas comprendidas en el artículo
+                                                               16° de la Ley General o las empresas especializadas
+    3. Autorización de Adecuación                              comprendidas en el literal B del artículo 16° de la misma
+    Vencidos los plazos de las publicaciones referidas         Ley.
+en el numeral anterior, sin que se produzcan objeciones
+fundamentadas y válidas, la Superintendencia, contando                        CAPÍTULO V
+con la opinión del Banco Central de Reserva, expide la           DISPOSICIONES GENERALES APLICABLES A
+correspondiente resolución autoritativa de adecuación, la        OPERACIONES DE FACTORING Y DESCUENTO
+que debe exhibirse permanentemente en las diferentes           REALIZADAS POR EMPRESAS COMPRENDIDAS EN
+oficinas de la empresa de factoring comprendida en                    EL ÁMBITO DE LA LEY GENERAL
+el ámbito de la Ley General, en lugar visible al público.
+La referida resolución autoritativa de adecuación es               Artículo 22°.- Información mínima requerida para
+de vigencia indefinida y puede ser cancelada por la            el otorgamiento, seguimiento, control, evaluación y
+Superintendencia como sanción a una falta muy grave en         clasificación de deudores de operaciones de factoring
+que incurra la empresa de factoring antes mencionada.          y descuento
+                                                                   En el caso de las operaciones de factoring, los informes
+    Las empresas a que se refiere el presente artículo que     comerciales a que se refiere la Circular N° B-2184-2010,
+no soliciten o no culminen satisfactoriamente el proceso de    F-524-2010, CM-371-2010, CR-240-2010, EF-2-2010,
+adecuación antes señalado, en los términos, condiciones        EAH-6-2010,        EAF-241-2010,      EDPYME-133-2010,
+y plazos establecidos por la Superintendencia, deberán         FOGAPI-36-2010, deben contener información y
+realizar los actos necesarios para no encontrarse en los       documentación tanto del Cliente como de los Deudores.
+supuestos del artículo 13° del presente reglamento o dejar     En el caso de las operaciones de descuento, dichos
+de realizar operaciones de factoring o descuento, en el        informes comerciales deben contener la información y
+plazo que establezca este organismo de control.                documentación respecto del Cliente.
+    El incumplimiento de lo señalado en el párrafo anterior
+originará que la Superintendencia imponga las sanciones            Artículo 23°.- Provisiones por riesgo de crédito
+y/o realice las acciones que a su juicio correspondan, así         Las empresas supervisadas por la Superintendencia
+como difunda al público respecto a la no presentación o        determinan las provisiones y el requerimiento de
+culminación satisfactoria de la solicitud de adecuación.       patrimonio efectivo por riesgo de crédito en relación a
+                                                               la clasificación del Deudor cuando realicen operaciones
+    Artículo 16º.- Operaciones                                 de factoring, y en relación a la que resulte menor entre
+    Las empresas de factoring comprendidas en el ámbito        la clasificación del Cliente y la clasificación del Deudor
+de la Ley General pueden realizar todas las operaciones        cuando realicen operaciones de descuento.
+que sean necesarias para el cumplimiento de su objeto
+social.                                                            Artículo 24°.- Límites aplicables
+                                                                   Las operaciones de factoring serán consideradas
+    Artículo 17°.- Administración del riesgo crediticio        como colocaciones, siendo aplicables a cada uno de los
+    Son aplicables a las empresas de factoring                 Deudores los límites establecidos en los artículos 201º,
+comprendidas en el ámbito de la Ley General las normas         202º, 206º, 207º, 208º, 209º y 211º de la Ley General.
+emitidas por la Superintendencia para la gestión del               En las operaciones de descuento los límites previstos
+riesgo crediticio (Reglamento para la Evaluación y             en los artículos 201º, 202º, 206º, 207º, 208º, 209º y 211º
+Clasificación del Deudor y la Exigencia de Provisiones,        de la Ley General, se aplicarán únicamente al Cliente y no
+aprobado por la Resolución SBS N° 11356-2008 y sus             al deudor de los instrumentos adquiridos.
+normas modificatorias; entre otras), para la gestión del
+riesgo cambiario crediticio, para la gestión del riesgo                        CAPÍTULO VI
+país, para la gestión del riesgo de sobre endeudamiento         REGISTRO DE LAS EMPRESAS DE FACTORING NO
+de deudores minoristas, así como para el tratamiento y               COMPRENDIDAS EN EL ÁMBITO DE LA
+provisiones de los bienes adjudicados.                                        LEY GENERAL
+
+   Artículo 18°.- Contratos de financiamiento con                  Artículo 25°.- Obligación de inscripción en el
+garantía de cartera crediticia                                 Registro
+   Es aplicable a las empresas de factoring comprendidas           Las empresas de factoring no comprendidas en
+en el ámbito de la Ley General el Reglamento de los            el ámbito de la Ley General tienen la obligación de
+Contratos de Financiamiento con Garantía de Cartera            inscribirse en el “Registro de empresas de factoring no
+558248                                             NORMAS LEGALES                      Sábado 25 de julio de 2015 /   El Peruano
+
+comprendidas en el ámbito de la Ley General” habilitado              En caso que las empresas de factoring que inicialmente
+por la Superintendencia, en adelante el Registro.                hayan estado obligadas a inscripción en el Registro, cumplan
+                                                                 con los requisitos para encontrarse comprendidas en el ámbito
+    Artículo 26°.- Comunicación y registro                       de la Ley General, conforme lo indicado en el artículo 13°,
+    Las empresas de factoring no comprendidas en                 deben cumplir con lo establecido en el artículo 15°. Mientras
+el ámbito de la Ley General, deben registrarse ante              culmina dicha adecuación, deben continuar cumpliendo con
+la Superintendencia, para lo cual deben presentar la             las obligaciones establecidas en el artículo 28°, salvo que la
+siguiente información:                                           Superintendencia disponga lo contrario.
+
+    a. Solicitud de inscripción suscrita por representante           Artículo 30°.- Publicación de la relación de
+legal, en la que se especifique: nombre de la entidad,           entidades registradas
+domicilio social, teléfono y correo electrónico. Tratándose          La Superintendencia publica en su portal web la
+de empresas constituidas fuera del país, estas deberán           relación de las empresas de factoring no comprendidas
+indicar un domicilio ubicado en el territorio nacional.          en el ámbito de la Ley General registradas en el marco de
+    b. Documento que sustente la vigencia de la personería       la presente norma.
+jurídica de la empresa o documento equivalente tratándose
+de empresas constituidas fuera del país.                                        DISPOSICIONES FINALES
+    c. Copia simple de la vigencia de poderes del
+representante legal de la empresa. Tratándose de                     Primera.- Registro de empresas de factoring que a
+empresas constituidas fuera del país, también deberán            la entrada en vigencia de la Resolución SBS N° 4358-
+inscribir los poderes de sus representantes legales en           2015 se encontraban bajo el ámbito de supervisión de
+los Registros Públicos del Perú. En caso de modificación         la Superintendencia
+en la designación del representante legal de la empresa,             Las empresas de factoring que a la entrada en vigencia
+esta deberá informar de este hecho a la Superintendencia         de la Resolución SBS N° 4358-2015 se encontraban bajo
+para fines del Registro en un plazo máximo de cinco              el ámbito de supervisión de la Superintendencia, y que
+(5) días hábiles de ocurrida la designación del nuevo            por aplicación de lo dispuesto en el artículo 13° no estén
+representante legal. Asimismo, la empresa deberá                 comprendidas en el ámbito de la Ley General, dejan, desde
+remitir a la Superintendencia la constancia registral de la      esa fecha, de ser supervisadas por la Superintendencia.
+designación del representante legal en un plazo máximo               En un plazo no mayor de treinta (30) días calendario
+de cinco (5) días hábiles de su inscripción en los Registros     siguientes a la entrada en vigencia de la Resolución antes
+Públicos del Perú.                                               mencionada, las empresas referidas en el párrafo anterior
+    d. Información sobre la conformación de la propiedad         deben registrarse ante la Superintendencia, para lo cual
+de la empresa por importe superior al 3%.                        deberán tener en cuenta lo establecido en el Capítulo
+    e. Declaración suscrita por representante legal, en la       VI del presente Reglamento y, excepcionalmente, para
+que se señale que la empresa se sujeta a las disposiciones       efectos de su inscripción al Registro, solo cumplir con
+que dicte la Superintendencia aplicables a dichas                presentar lo indicado en los literales a) y e) del artículo
+empresas y que, en tal sentido, pueden ser pasibles de la        26° del presente Reglamento.
+imposición de sanciones por parte de dicha entidad.
+                                                                      Segunda.- Fondos de inversión, fondos mutuos,
+    Las empresas de factoring no comprendidas en el              fideicomisos y otros vehículos
+ámbito de la Ley General, deben presentar la información              Se encuentran excluidos de las obligaciones
+antes mencionada, previo a poder realizar operaciones de         establecidas en el presente Reglamento los fideicomisos
+factoring y/o descuento en el país a partir de la entrada en     bancarios, fondos de inversión, fondos mutuos,
+vigencia del presente Reglamento. Una vez presentada             fideicomisos de titulización, sociedades de propósito
+la información estas empresas podrán realizar las                especial, o cualquier otro vehículo de naturaleza similar
+operaciones.                                                     domiciliados o no domiciliados en el país, que adquieran
+                                                                 mediante operaciones de factoring o descuento, facturas
+    Artículo 27°.- Constancia                                    comerciales, facturas negociables, facturas conformadas,
+    En el plazo máximo de treinta (30) días calendario           títulos valores representativos de deuda y, en general,
+contados a partir de la presentación de la documentación         cualquier valor mobiliario representativo de deuda.”
+a que se refiere el artículo 26° del presente Reglamento de
+forma completa a satisfacción de la Superintendencia, esta          Artículo Segundo.- Modificar el Reglamento de
+entregará la constancia de inscripción correspondiente a         Sanciones aprobado por Resolución SBS N° 816-2005 y
+las empresas de factoring no comprendidas en el ámbito           sus normas modificatorias, en los siguientes términos:
+de la Ley General, con la obligación de inscribirse en el
+Registro.                                                             1. Sustituir la denominación del Anexo 5 por
+                                                                 “Infracciones Aplicables a las Derramas, Cajas de
+    Artículo 28°.- Obligación de los registrados                 Beneficios, otros Fondos que reciban recursos de sus
+    Las empresas de factoring inscritas en el Registro           afiliados y otorguen pensiones de cesantía, jubilación
+deben cumplir con la entrega de la siguiente información         y similares, empresas de factoring no comprendidas
+en los plazos indicados:                                         en el ámbito de la Ley General y otros supervisados no
+                                                                 considerados en los demás anexos”.
+     a. Entrega trimestral, en marzo, junio, setiembre                2. Incorporar en la Sección I “Infracciones Leves” del
+y diciembre, del formato referido al saldo contable de           Anexo 5, las siguientes infracciones:
+operaciones de factoring y/o descuento señalado en el
+Anexo A del presente Reglamento, en los quince (15) días             4) No cumplir con el registro o no cumplir con el plazo
+calendario siguientes al cierre del trimestre, suscrito por el   para el registro previsto en la norma por parte de las
+representante legal de la empresa. El Anexo A se publica         empresas de factoring no comprendidas en el ámbito de
+en el Portal Institucional (www.sbs.gob.pe), conforme a lo       la Ley General.
+dispuesto en el Decreto Supremo N° 001-2009-JUS.                     5) No cumplir con las obligaciones establecidas o no
+     b. Entrega semestral, en junio y diciembre, de los          cumplir con el plazo previsto para el cumplimiento de las
+estados financieros, en los treinta (30) días calendario         obligaciones por parte de las empresas de factoring no
+siguientes al cierre del semestre.                               comprendidas en el ámbito de la Ley General.
+     c. Entrega trimestral, en marzo, junio, setiembre y
+diciembre, junto con la documentación señalada en el                3. Incorporar en la Sección II “Infracciones Graves” del
+literal a, de carta en la que informen sobre los cambios         Anexo 5, la siguiente infracción:
+producidos en dicho período en la propiedad de la
+empresa por un importe superior al 3%.                               3) No presentar oportunamente la información para
+                                                                 adecuarse como empresa de factoring comprendida en
+    Para fines de la remisión de la información antes            el ámbito de la Ley General cuando cumpla los requisitos
+señalada estas empresas deberán utilizar las definiciones        establecidos en el artículo 13° del Reglamento de
+de factoring y descuento del presente reglamento.                Factoring, Descuento y Empresas de Factoring.
+
+   Artículo 29°.- Empresas de factoring registradas                 Artículo Tercero.- Incorporar los procedimientos
+obligadas a iniciar su adecuación                                N°164 “Registro de empresas de factoring no
+    El Peruano / Sábado 25 de julio de 2015        NORMAS LEGALES                                                 558249
+comprendidas en el ámbito de la Ley General” y N° 165             de la Gerencia Sub Regional de Churcampa, Ordenanza
+“Autorización de adecuación a empresas de factoring               Regional Nº 260-GOB.REG.HVCA/CR, de fecha 19 de
+comprendidas en el ámbito de la Ley General” en                   Febrero de 2014, se aprueba el Cuadro Para Asignación
+el Texto Único de Procedimientos Administrativos –                de Personal (CAP) de la Gerencia Sub Regional de
+TUPA de la Superintendencia de Banca, Seguros y                   Acobamba, Ordenanza Regional Nº 255-GOB.REG.
+Administradoras Privadas de Fondos de Pensiones,                  HVCA/CR, de fecha 09 de Enero de 2014, se aprueba
+aprobado mediante Resolución SBS N° 3082-2011 y sus               el Cuadro Para Asignación de Personal (CAP) de la
+normas modificatorias, cuyo texto se anexa a la presente          Gerencia Sub Regional de Tayacaja, Ordenanza Regional
+resolución y se publica en el portal institucional (www.sbs.      Nº 267-GOB.REG.HVCA/CR, de fecha 13 de Marzo de
+gob.pe), conforme con lo dispuesto en el Reglamento de            2014, se aprueba el Cuadro Para Asignación de Personal
+la Ley N° 29091, aprobado por Decreto Supremo N° 004-             (CAP) de la Gerencia Sub Regional de Castrovirreyna,
+2008-PCM.                                                         Ordenanza Regional Nº 264-GOB.REG.HVCA/CR, de
+    Artículo Cuarto.- La presente Resolución entra en             fecha 20 de Febrero de 2014, se aprueba el Cuadro
+vigencia al día siguiente de su publicación en el Diario          Para Asignación de Personal (CAP) de la Gerencia Sub
+Oficial El Peruano, fecha a partir de la cual quedará             Regional de Angaraes y Ordenanza Regional Nº 263-
+sin efecto el Reglamento de Factoring, Descuento y                GOB.REG.HVCA/CR, de fecha 19 de Febrero de 2014, se
+Empresas de Factoring aprobado por la Resolución SBS              aprueba el Cuadro Para Asignación de Personal (CAP) de
+N°1021-98, teniendo las empresas un plazo de 60 días              la Gerencia Sub Regional de Huaytara; los mismos que
+calendario para adecuarse a las exigencias indicadas              han sufrido cambios desde las fechas de su aprobación;
+en los artículos 4° y 12° del Reglamento aprobado en el           consecuentemente requieren de una actualización al 31
+artículo primero de esta Resolución.                              de diciembre de 2014.
+                                                                      Que, para la aprobación de los documentos de gestión
+   Regístrese, comuníquese y publíquese.                          citados en el punto anterior se cuenta con opinión técnica
+                                                                  favorable de la Sub Gerencia de Desarrollo Institucional,
+   DANIEL SCHYDLOWSKY ROSENBERG                                   quienes dan su conformidad con la documentación
+   Superintendente de Banca, Seguros y                            correspondiente.
+   Administradoras Privadas de Fondos de Pensiones                    Que, mediante Decreto Supremo Nº 043-2004-PCM,
+                                                                  se aprueban los lineamientos para la elaboración y
+   1267518-1                                                      aprobación del Cuadro Para Asignación de Personal –
+                                                                  CAP de las Entidades de la Administración Pública.
+                                                                      Que, el numeral 1.1 del Artículo 1 de la Ley Nº 27658
+                                                                  - Ley Marco de Modernización de la Gestión del Estado,
+            GOBIERNOS REGIONALES                                  declara al Estado Peruano en proceso de modernización
+                                                                  en sus diferentes instancias, dependencias, entidades,
+                                                                  organizaciones y procedimientos, con la finalidad
+                                                                  de mejorar la gestión pública y construir un Estado
+             GOBIERNO REGIONAL                                    democrático, descentralizado y al servicio del ciudadano;
+                                                                      Que, el Artículo 38º de la Ley 27867 - Ley Orgánica de
+               DE HUANCAVELICA                                    los Gobiernos Regionales establece que las Ordenanzas
+                                                                  Regionales norman asuntos de carácter general, la
+                                                                  organización y administración del Gobierno Regional y
+Ordenanza Regional que aprueba Cuadro                             reglamentan materias de su competencia;
+para Asignación de Personal (CAP) de                                  Por lo que, en uso de las atribuciones conferidas
+                                                                  en la Constitución Política del Estado, Ley Orgánica de
+la Dirección Regional de Salud y de las                           Gobiernos Regionales, sus modificatorias y al Reglamento
+Gerencias Sub Regionales                                          Interno del Consejo Regional; con el voto unánime de sus
+                                                                  miembros,
+                ORDENANZA REGIONAL
+               Nº 296-GOB.REG-HVCA/CR                                ORDENA:
+
+   Huancavelica, 19 de marzo de 2015                                 Artículo Primero.- APROBAR el Cuadro Para
+                                                                  Asignación de Personal (CAP) del año 2014, de la de la
+   POR CUANTO:                                                    Unidad Ejecutora - Gerencia Sub Regional de Angaraes,
+                                                                  el mismo que forma parte integrante de la presente
+   EL CONSEJO REGIONAL DE HUANCAVELICA:                           Ordenanza Regional como anexo 1.
+                                                                     Artículo Segundo.- APROBAR el Cuadro Para
+   Ha dado la Ordenanza Regional siguiente:                       Asignación de Personal (CAP) del año 2014, de la
+                                                                  Unidad Ejecutora - Gerencia Sub Regional de Acobamba,
+ ORDENANZA REGIONAL QUE APRUEBA CUADRO                            el mismo que forma parte integrante de la presente
+   PARA ASIGNACIÓN DE PERSONAL (CAP) DE                           Ordenanza Regional como anexo 2.
+  LA DIRECCIÓN REGIONAL DE SALUD Y DE LAS                            Artículo Tercero.- APROBAR el Cuadro Para
+         GERENCIAS SUB REGIONALES                                 Asignación de Personal (CAP) del año 2014, de la Unidad
+                                                                  Ejecutora - Gerencia Sub Regional de Castrovirreyna,
+    Que, los Gobiernos Regionales emanan de                       el mismo que forma parte integrante de la presente
+la voluntad popular, son personas jurídicas de                    Ordenanza Regional como anexo 3.
+Derecho Público con autonomía política, económica                    Artículo Cuarto.- APROBAR el Cuadro Para
+y administrativa teniendo por misión organizar y                  Asignación de Personal (CAP) del año 2014, de la Unidad
+conducir la gestión pública regional de acuerdo a sus             Ejecutora - Gerencia Sub Regional de Churcampa,
+competencias exclusivas, comparativas y delegadas                 el mismo que forma parte integrante de la presente
+en el marco de las políticas nacionales y sectoriales             Ordenanza Regional como anexo 4.
+para la contribución al desarrollo integral y sostenible             Artículo Quinto.- APROBAR el Cuadro Para
+de la región, sus normas y disposiciones se rigen por             Asignación de Personal (CAP) del año 2014, de la Unidad
+los principios de exclusividad, territorialidad, legalidad y      Ejecutora - Gerencia Sub Regional de Huaytara, el mismo
+simplificación administrativa.                                    que forma parte integrante de la presente Ordenanza
+    Que, los literales a) y b) del artículo 15 de la Ley 27867,   Regional como anexo 5.
+Ley Orgánica de los Gobiernos Regionales establecen                  Artículo Sexto.- APROBAR el Cuadro Para
+que es atribución del Consejo Regional aprobar, modificar         Asignación de Personal (CAP) del año 2014, de la Unidad
+o derogar las normas que regulen o reglamente los                 Ejecutora - Gerencia Sub Regional de Tayacaja, el mismo
+asuntos materias de competencia del Gobierno Regional             que forma parte integrante de la presente Ordenanza
+    Que mediante Ordenanza Regional Nº 204-GOB.                   Regional como anexo 6.
+REG.HVCA/CR, de fecha 16 de Abril de 2012, se aprueba                Artículo Séptimo.- APROBAR el Cuadro Para
+el Cuadro Para Asignación de Personal (CAP) de la                 Asignación de Personal (CAP) del año 2014, de la Unidad
+Dirección Regional de Salud, Ordenanza Regional Nº 262/           Ejecutora – Dirección Regional de Salud de Huancavelica,
+GOB.REG.HVCA/CR, de fecha 19 de Febrero de 2014, se               el mismo que forma parte integrante de la presente
+aprueba el Cuadro Para Asignación de Personal (CAP)               Ordenanza Regional como anexo 7.
+

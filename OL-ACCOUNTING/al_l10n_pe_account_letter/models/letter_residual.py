@@ -78,7 +78,11 @@ class L10nPeLetterResidual(models.Model):
                 record.account_id = False
                 continue
             company = record.letter_id.company_id or self.env.company
-            record.account_id = Account.search([
+            configured = (company.l10n_pe_letter_rounding_loss_account_id
+                          if account_type == 'expense'
+                          else company.l10n_pe_letter_rounding_gain_account_id)
+            # Respaldo: la cuenta llamada «Redondeo», como antes de la v9.
+            record.account_id = configured or Account.search([
                 *Account._check_company_domain(company),
                 ('name', '=', 'Redondeo'),
                 ('account_type', '=', account_type),
