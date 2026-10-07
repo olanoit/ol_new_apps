@@ -18,6 +18,7 @@ RCE_CUSTOMS_DOC_TYPES = ('50', '51', '52', '53', '54')
 class L10nPeSireRce(models.Model):
     """Periodo del Registro de Compras Electrónico (RCE)."""
     _name = 'l10n_pe.sire.rce'
+    _check_company_auto = True
     _inherit = ['l10n_pe.sire.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'SIRE — Registro de Compras Electrónico'
     _order = 'year desc, month desc, id desc'
@@ -585,12 +586,14 @@ class L10nPeSireRce(models.Model):
 
 class L10nPeSireRceLine(models.Model):
     _name = 'l10n_pe.sire.rce.line'
+    _check_company_auto = True
     _inherit = 'l10n_pe.sire.line.mixin'
     _description = 'Línea SIRE RCE'
 
     sire_id = fields.Many2one(
         'l10n_pe.sire.rce', string='Periodo RCE', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='sire_id.company_id', store=True)
 
     anio_dam = fields.Char(string='Año (DAM o DSI)')

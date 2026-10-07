@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+
 ## 5.20261007 — 07/10/2026
 
 - Corregido: si la nómina estándar ya había contabilizado las boletas una por una, el asiento peruano del lote duplicaba el gasto; ahora lo impide y explica cómo configurarlo.

@@ -13,7 +13,7 @@
                 <field name="is_backup" optional="show"/>
                 <field name="website_ids" widget="many2many_tags" optional="show"/>
                 <field name="sirec_site_code" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -44,7 +44,7 @@
                             <field name="book_type"/>
                             <field name="is_backup" invisible="book_type != 'physical'"/>
                             <field name="address"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group string="Atención">

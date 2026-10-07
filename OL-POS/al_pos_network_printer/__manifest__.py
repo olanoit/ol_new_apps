@@ -24,7 +24,9 @@ Adaptación a la suite AL de la impresora de red del TPV de Mobilize
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
-    'version': '1.20261006',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/point_of_sale/static/description/icon.png',
+    'version': '2.20261008',
     'license': 'OPL-1',
     # Odoo 19 ya imprime por red sin IoT Box, pero solo en Epson (ePOS-XML:
     # ``pos.config.epson_printer_ip`` y ``printer_type = 'epson_epos'``). Este

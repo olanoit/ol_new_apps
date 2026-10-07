@@ -27,7 +27,7 @@
                 <field name="date_end" optional="show"/>
                 <field name="is_declared" widget="boolean_toggle"
                        optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'current'"
@@ -171,7 +171,7 @@
                 <field name="is_partner" widget="boolean_toggle"/>
                 <field name="is_unborn" widget="boolean_toggle"/>
                 <field name="requires_disability" widget="boolean_toggle"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -192,7 +192,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>

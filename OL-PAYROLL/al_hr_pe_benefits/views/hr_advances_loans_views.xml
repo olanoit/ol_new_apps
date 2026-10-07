@@ -27,7 +27,7 @@
                             <field name="advance_type_id" required="1" readonly="state == 'paid out'"/>
                             <field name="date" required="1" readonly="state == 'paid out'"/>
                             <field name="discount_date" required="1" readonly="state == 'paid out'"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <group name="notes_group" string="Observaciones">
@@ -53,7 +53,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
-                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" optional="hide" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -105,7 +105,7 @@
                             <field name="input_id" required="1"/>
                         </group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                 </sheet>
@@ -120,7 +120,7 @@
             <list editable="bottom">
                 <field name="name"/>
                 <field name="input_id"/>
-                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" optional="show" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -157,7 +157,7 @@
                         <group>
                             <field name="loan_type_id" required="1"/>
                             <field name="fees_number" required="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
@@ -197,7 +197,7 @@
                 <field name="date" optional="show"/>
                 <field name="fees_number" optional="show"/>
                 <field name="loan_type_id" optional="show"/>
-                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" optional="hide" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -246,7 +246,7 @@
                             <field name="input_id" required="1"/>
                         </group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                 </sheet>
@@ -261,7 +261,7 @@
             <list editable="bottom">
                 <field name="name"/>
                 <field name="input_id"/>
-                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" optional="show" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>

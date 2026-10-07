@@ -164,6 +164,10 @@ faq:
       de Patrimonio 3.19.
 
 novedades:
+  - version: 2.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - fecha: 17/09/2026
     cambios:
       - "Primera versión para Odoo 19: 3.19 Estado de Cambios en el Patrimonio Neto (migrado del v18 y corregido: signo, cuentas del PCGE, resultado del ejercicio y asientos de cierre) y menú Perú ▸ Estados financieros."

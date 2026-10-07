@@ -21,7 +21,7 @@
                 <field name="days_left" optional="show"/>
                 <field name="is_overdue" column_invisible="1"/>
                 <field name="sirec_state" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-info="state in ('submitted', 'in_progress')"
                        decoration-warning="state == 'suspended'"

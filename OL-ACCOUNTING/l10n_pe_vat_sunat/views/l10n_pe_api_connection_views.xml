@@ -10,7 +10,7 @@
                 <field name="engine"/>
                 <field name="document_type"/>
                 <field name="base_url"  widget="url" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="enabled" widget="boolean_toggle"/>
             </list>
         </field>
@@ -36,7 +36,7 @@
                             <field name="enabled" widget="boolean_toggle"/>
                         </group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
 

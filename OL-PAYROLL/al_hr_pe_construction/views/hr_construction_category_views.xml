@@ -10,7 +10,7 @@
                 <field name="name"/>
                 <field name="buc_percent"/>
                 <field name="allows_bae" widget="boolean_toggle"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>

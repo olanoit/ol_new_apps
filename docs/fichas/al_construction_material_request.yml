@@ -429,6 +429,12 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 5.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
+      - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
+      - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
   - fecha: 01/10/2026
     cambios:
       - "El reparto entre stock y compra sigue el algoritmo de la regla nativa «tomar de stock; si no hay, activar otra regla»: cálculo en la unidad del producto y el resto en la unidad de la línea, de modo que lo despachado más lo comprado siempre da lo pedido."

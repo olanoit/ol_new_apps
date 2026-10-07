@@ -46,7 +46,7 @@
                             <field name="year"
                                    readonly="state not in ('draft', 'computed')"/>
                             <field name="date"/>
-                            <field name="company_id" groups="base.group_multi_company"
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"
                                    options="{'no_create': True}"/>
                             <field name="company_currency_id" invisible="1"/>
                         </group>
@@ -155,7 +155,7 @@
                 <field name="amount_loss" sum="Pérdida"/>
                 <field name="amount_net" sum="Neto"/>
                 <field name="move_id" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'posted'"

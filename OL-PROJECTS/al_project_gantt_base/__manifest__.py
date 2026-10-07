@@ -37,7 +37,9 @@ y PDF.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'version': '14.20260818',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/project/static/description/icon.png',
+    'version': '15.20261008',
     'license': 'OPL-1',
     'depends': [
         'project',

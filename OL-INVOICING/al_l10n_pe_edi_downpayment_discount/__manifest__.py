@@ -25,7 +25,9 @@ El asiento contable no cambia: todo ocurre al generar el XML.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVOICING/Apps',
-    'version': '2.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '3.20261008',
     'license': 'OPL-1',
     'countries': ['pe'],
     # sale: los anticipos nacen del asistente de facturación del pedido

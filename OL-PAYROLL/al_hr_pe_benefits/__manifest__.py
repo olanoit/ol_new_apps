@@ -45,7 +45,9 @@ Fase 7.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '14.20261008',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/hr_payroll/static/description/icon.png',
+    'version': '16.20261008',
     'license': 'OPL-1',
     'depends': ['al_hr_pe', 'hr_holidays'],
     'data': [

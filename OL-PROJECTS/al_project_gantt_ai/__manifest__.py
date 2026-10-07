@@ -30,7 +30,9 @@ Principios de diseño
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'version': '3.20260817',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/project/static/description/icon.png',
+    'version': '4.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',

@@ -302,7 +302,7 @@ class HrProvisionesLineMixin(models.AbstractModel):
 
     provision_id = fields.Many2one(
         'hr.provisiones', string='Provisión', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True, check_company=True)
     company_id = fields.Many2one(
         related='provision_id.company_id', string='Compañía', store=True,
         index=True)
@@ -482,16 +482,20 @@ class HrProvisionesConcepto(models.Model):
     """
     _name = 'hr.provisiones.concepto'
     _description = 'Concepto adicional de provisión'
+    _check_company_auto = True
 
     cts_line_id = fields.Many2one(
         'hr.provisiones.cts.line', string='Línea CTS', ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     grati_line_id = fields.Many2one(
         'hr.provisiones.grati.line', string='Línea gratificación',
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     vaca_line_id = fields.Many2one(
         'hr.provisiones.vaca.line', string='Línea vacaciones',
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', store=True, index=True,
         compute='_compute_company_id')

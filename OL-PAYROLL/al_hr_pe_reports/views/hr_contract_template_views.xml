@@ -24,7 +24,7 @@
                             <field name="sequence"/>
                         </group>
                         <group>
-                            <field name="company_id"
+                            <field name="company_id" readonly="1"
                                    groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -62,7 +62,7 @@
             <list string="Plantillas de contrato">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
             </list>
         </field>

@@ -18,6 +18,7 @@ from odoo import api, fields, models
 class HrFotocheckConfig(models.Model):
     _name = 'hr.fotocheck.config'
     _description = 'Configuración de fotocheck'
+    _check_company_auto = True
     _order = 'company_id'
 
     name = fields.Char(

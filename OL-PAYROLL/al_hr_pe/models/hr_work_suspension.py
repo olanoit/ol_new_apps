@@ -28,7 +28,8 @@ class HrWorkSuspension(models.Model):
         check_company=True)
     suspension_type_id = fields.Many2one(
         'hr.suspension.type', string='Tipo de suspensión (T21)',
-        required=True)
+        required=True,
+        check_company=True)
     date_from = fields.Date(string='Desde')
     date_to = fields.Date(string='Hasta')
     days = fields.Integer(string='Días', required=True)

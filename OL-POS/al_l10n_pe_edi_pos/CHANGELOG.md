@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 10.20261007 — 07/10/2026
 
 - «Emisión SUNAT retenida» pasa a «Facturación PE ▸ Comprobante electrónico».

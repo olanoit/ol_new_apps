@@ -9,6 +9,7 @@ class L10nPePleInvestment(models.Model):
     Odoo no modela títulos/valores, por lo que el detalle se captura aquí."""
     _name = 'l10n_pe.ple.investment'
     _description = 'PLE 3.8 - Inversión mobiliaria (cta. 30)'
+    _check_company_auto = True
     _order = 'date, id'
 
     company_id = fields.Many2one(

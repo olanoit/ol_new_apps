@@ -41,6 +41,7 @@ class L10nPeHrEducationInstitution(models.Model):
     """TABLA 34 — Institución educativa."""
     _name = 'l10n_pe.hr.education.institution'
     _description = 'Institución educativa (T34)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
@@ -48,6 +49,7 @@ class L10nPeHrEducationCareer(models.Model):
     """TABLA 34 — Carrera de una institución educativa."""
     _name = 'l10n_pe.hr.education.career'
     _description = 'Carrera (T34)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
     _code_company_uniq = models.Constraint(
@@ -56,13 +58,15 @@ class L10nPeHrEducationCareer(models.Model):
 
     institution_id = fields.Many2one(
         'l10n_pe.hr.education.institution', string='Institución',
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
 
 
 class L10nPeHrFinancialEntity(models.Model):
     """TABLA 36 — Entidad del sistema financiero."""
     _name = 'l10n_pe.hr.financial.entity'
     _description = 'Entidad financiera (T36)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
@@ -110,16 +114,19 @@ class L10nPeHrEmployeeEducation(models.Model):
         required=True,
         domain=[('code', 'in', HIGHER_EDUCATION_CODES)],
         help='SUNAT solo admite aquí la situación educativa 11 (superior '
-             'completa) o 13 (universitaria completa).')
+             'completa) o 13 (universitaria completa).',
+        check_company=True)
     in_peru = fields.Boolean(
         string='Estudió en una institución del Perú', default=True,
         help='Si no, los datos de institución, carrera y año van vacíos '
              'en el archivo.')
     institution_id = fields.Many2one(
-        'l10n_pe.hr.education.institution', string='Institución educativa')
+        'l10n_pe.hr.education.institution', string='Institución educativa',
+        check_company=True)
     career_id = fields.Many2one(
         'l10n_pe.hr.education.career', string='Carrera',
-        domain="[('institution_id', '=?', institution_id)]")
+        domain="[('institution_id', '=?', institution_id)]",
+        check_company=True)
     graduation_year = fields.Integer(string='Año de egreso')
 
     @api.constrains('education_level_id')

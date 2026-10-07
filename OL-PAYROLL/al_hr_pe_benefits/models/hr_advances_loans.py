@@ -236,18 +236,21 @@ class HrLoan(models.Model):
 class HrLoanLine(models.Model):
     _name = 'hr.loan.line'
     _description = 'Cuota de préstamo'
+    _check_company_auto = True
     _order = 'loan_id, fee'
 
     loan_id = fields.Many2one(
         'hr.loan', string='Préstamo', ondelete='cascade', required=True,
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='loan_id.company_id', string='Compañía', store=True,
         index=True)
     employee_id = fields.Many2one(
         related='loan_id.employee_id', string='Empleado', store=True)
     loan_type_id = fields.Many2one(
-        'hr.loan.type', string='Tipo de préstamo')
+        'hr.loan.type', string='Tipo de préstamo',
+        check_company=True)
     fee = fields.Integer(string='Cuota')
     amount = fields.Float(string='Monto')
     date = fields.Date(string='Fecha de pago')

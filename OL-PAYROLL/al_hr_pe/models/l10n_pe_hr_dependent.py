@@ -36,6 +36,7 @@ class L10nPeHrDependentType(models.Model):
     """TABLA 19 — Vínculo familiar."""
     _name = 'l10n_pe.hr.dependent.type'
     _description = 'Vínculo familiar (T19)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
     is_child = fields.Boolean(
@@ -59,6 +60,7 @@ class L10nPeHrDependentEndReason(models.Model):
     """TABLA 20 — Motivo de baja como derechohabiente."""
     _name = 'l10n_pe.hr.dependent.end.reason'
     _description = 'Motivo de baja de derechohabiente (T20)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
@@ -66,6 +68,7 @@ class L10nPeHrDependentProof(models.Model):
     """TABLA 27 — Documento que sustenta el vínculo familiar."""
     _name = 'l10n_pe.hr.dependent.proof'
     _description = 'Documento que sustenta el vínculo (T27)'
+    _check_company_auto = True
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
@@ -86,7 +89,8 @@ class L10nPeHrDependent(models.Model):
         related='employee_id.company_id', store=True, index=True)
     type_id = fields.Many2one(
         'l10n_pe.hr.dependent.type', string='Tipo de derechohabiente',
-        required=True, ondelete='restrict')
+        required=True, ondelete='restrict',
+        check_company=True)
     is_child = fields.Boolean(related='type_id.is_child')
     is_unborn = fields.Boolean(related='type_id.is_unborn')
 
@@ -126,7 +130,8 @@ class L10nPeHrDependent(models.Model):
              'baja se declara al día siguiente.')
     end_reason_id = fields.Many2one(
         'l10n_pe.hr.dependent.end.reason', string='Motivo de baja',
-        ondelete='restrict')
+        ondelete='restrict',
+        check_company=True)
     active = fields.Boolean(default=True)
     state = fields.Selection(
         selection=[('draft', 'Por declarar'), ('current', 'Vigente'),
@@ -146,7 +151,8 @@ class L10nPeHrDependent(models.Model):
         help='Tabla 27 de SUNAT. Los tipos 01-03 aplican a la gestante, el '
              '04 al hijo mayor incapacitado, los 05-07 al cónyuge, los '
              '08, 09 y 11 al concubino y el 10 al hijo menor cuyo documento '
-             'no sea DNI.')
+             'no sea DNI.',
+        check_company=True)
     proof_document = fields.Char(
         string='N° del documento que acredita',
         help='Número o referencia del acta, partida, escritura o '

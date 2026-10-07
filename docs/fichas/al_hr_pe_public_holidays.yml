@@ -322,6 +322,10 @@ faq:
       compañías del usuario OdooBot.
 
 novedades:
+  - version: 8.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 7.20261008
     fecha: 08/10/2026
     cambios:

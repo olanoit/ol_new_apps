@@ -12,7 +12,7 @@
                     </div>
                     <group>
                         <group string="Generales">
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="rmv"/>
                             <field name="family_allowance"/>
                             <field name="reprentante_legal_id"/>

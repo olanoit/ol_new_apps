@@ -234,6 +234,10 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: 2.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - fecha: 05/10/2026
     cambios:
       - "Primera versión en la suite: marca neutra por defecto, textos en español y compatibilidad con los módulos TPV de la suite."

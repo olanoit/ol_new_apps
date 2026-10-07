@@ -9,7 +9,7 @@
                 <field name="resolution"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
                 <field name="source_url" optional="hide"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -32,7 +32,7 @@
                     <group>
                         <group>
                             <field name="resolution" placeholder="R.M. N.° 197-2025-TR"/>
-                            <field name="company_id" groups="base.group_multi_company"
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"
                                    placeholder="Vacío: tabla nacional"/>
                         </group>
                         <group>

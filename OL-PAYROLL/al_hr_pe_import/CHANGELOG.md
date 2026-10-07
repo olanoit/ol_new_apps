@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
 ## 5.20261007 — 07/10/2026
 
 - Seguridad: un valor del archivo que empieza por «=» ya no se escribe como fórmula en el Excel de resultados.

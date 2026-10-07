@@ -269,6 +269,10 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
+  - version: 6.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 5.20261007
     fecha: 07/10/2026
     cambios:

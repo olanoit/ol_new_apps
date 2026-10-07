@@ -173,8 +173,7 @@
                                            groups="analytic.group_analytic_accounting"/>
                                 </group>
                                 <group name="company">
-                                    <field name="company_id" groups="base.group_multi_company"
-                                           readonly="state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                                     <field name="project_manager_id" widget="many2one_avatar_user"/>
                                 </group>
                             </group>
@@ -201,7 +200,7 @@
                 <field name="date_required" optional="show" widget="remaining_days"
                        invisible="state in ('done', 'cancel')"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="amount_estimated" sum="Total" widget="monetary" optional="show"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="state" widget="badge"

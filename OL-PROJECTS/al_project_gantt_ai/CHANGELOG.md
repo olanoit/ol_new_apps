@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_ai.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 3.20260817 — 27/09/2026
 
 - Desmarcar «Enviar personas asignadas» en los ajustes ahora sí evita que los nombres se envíen al proveedor. Si ya lo había desmarcado, vuelva a guardarlo.

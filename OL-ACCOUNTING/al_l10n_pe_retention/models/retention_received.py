@@ -35,7 +35,8 @@ class L10nPeRetentionReceived(models.Model):
         string='Monto retenido', required=True,
         help='3% del pago según el comprobante del cliente.')
     entry_id = fields.Many2one(
-        'account.move', string='Asiento', readonly=True, copy=False)
+        'account.move', string='Asiento', readonly=True, copy=False,
+        check_company=True)
     state = fields.Selection(
         [('draft', 'Borrador'), ('posted', 'Registrado')],
         default='draft', string='Estado', copy=False)

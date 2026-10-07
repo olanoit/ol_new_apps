@@ -59,6 +59,7 @@ class L10nPeHrContractTemplate(models.Model):
     """
     _name = 'l10n_pe.hr.contract.template'
     _description = 'Plantilla de contrato de trabajo (PE)'
+    _check_company_auto = True
     _order = 'sequence, name'
 
     name = fields.Char(string='Nombre', required=True)

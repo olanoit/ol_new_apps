@@ -41,6 +41,7 @@ class L10nPeSireOperation(models.Model):
     """Una llamada a SUNAT sobre un periodo SIRE y lo que devolvió."""
     _name = 'l10n_pe.sire.operation'
     _description = 'Operación SIRE'
+    _check_company_auto = True
     _order = 'id desc'
 
     name = fields.Char(string='Operación', compute='_compute_name', store=True)
@@ -49,7 +50,8 @@ class L10nPeSireOperation(models.Model):
     res_id = fields.Many2oneReference(
         string='Periodo', model_field='res_model', required=True, readonly=True, index=True)
     company_id = fields.Many2one(
-        'res.company', string='Compañía', required=True, readonly=True, index=True)
+        'res.company', string='Compañía', required=True, readonly=True, index=True,
+        default=lambda self: self.env.company)
     user_id = fields.Many2one(
         'res.users', string='Usuario', readonly=True, default=lambda self: self.env.user)
     date = fields.Datetime(string='Fecha', readonly=True, default=fields.Datetime.now)

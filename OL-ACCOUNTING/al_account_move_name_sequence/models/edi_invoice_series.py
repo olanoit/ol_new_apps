@@ -45,13 +45,16 @@ class EdiInvoiceSeries(models.Model):
         help='Serie usada por las notas de débito (p. ej. FD01).')
     invoice_seq_id = fields.Many2one(
         'ir.sequence', string='Secuencia del comprobante', readonly=True,
-        copy=False)
+        copy=False,
+        check_company=True)
     credit_note_seq_id = fields.Many2one(
         'ir.sequence', string='Secuencia de nota de crédito', readonly=True,
-        copy=False)
+        copy=False,
+        check_company=True)
     debit_note_seq_id = fields.Many2one(
         'ir.sequence', string='Secuencia de nota de débito', readonly=True,
-        copy=False)
+        copy=False,
+        check_company=True)
     state = fields.Selection(
         [('draft', 'Borrador'),
          ('publish', 'Publicada'),

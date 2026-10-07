@@ -11,7 +11,9 @@
     'website': 'https://www.laxicon.in',
     'countries': ['pe'],
     'category': 'Accounting/Localizations',
-    'version': '2.20260730',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/contacts/static/description/icon.png',
+    'version': '3.20261008',
     'license': 'LGPL-3',
 
     'depends': ['base_address_extended'],

@@ -205,6 +205,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: 11.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 10.20261007
     fecha: 07/10/2026
     cambios:

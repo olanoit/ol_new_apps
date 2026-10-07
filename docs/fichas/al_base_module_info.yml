@@ -126,6 +126,11 @@ faq:
       como siempre.
 
 novedades:
+  - version: 2.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
+      - "Prueba de control multicompañía para todos los módulos de la suite (reglas, check_company y compañía de solo lectura)."
   - fecha: 14/09/2026
     cambios:
       - "Primera versión: ficha completa desde la tarjeta y desde el menú de la tarjeta en Aplicaciones."

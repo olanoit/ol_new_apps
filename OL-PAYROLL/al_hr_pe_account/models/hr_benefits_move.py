@@ -203,6 +203,9 @@ class HrCts(models.Model):
     _name = 'hr.cts'
     _inherit = ['hr.cts', 'hr.benefits.move.mixin']
 
+    # El mixin no tiene company_id: el chequeo va en el modelo concreto.
+    account_move_id = fields.Many2one(check_company=True)
+
     def _cts_semester_range(self):
         """Rango de provisiones del semestre del depósito (v18:
         may-oct para tipo '11', nov-abr para tipo '05')."""
@@ -294,6 +297,9 @@ class HrGratification(models.Model):
     """
     _name = 'hr.gratification'
     _inherit = ['hr.gratification', 'hr.benefits.move.mixin']
+
+    # El mixin no tiene company_id: el chequeo va en el modelo concreto.
+    account_move_id = fields.Many2one(check_company=True)
 
     def _grati_semester_range(self):
         """Semestre legal: ene-jun (tipo '07') o jul-dic (tipo '12')."""
@@ -493,9 +499,13 @@ class HrLiquidationMove(models.Model):
     _order = 'employee_id'
     _check_company_auto = True
 
+    # El mixin no tiene company_id: el chequeo va en el modelo concreto.
+    account_move_id = fields.Many2one(check_company=True)
+
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='liquidation_id.company_id', string='Compañía',
         store=True, index=True)
@@ -657,6 +667,9 @@ class HrProvisiones(models.Model):
     """
     _name = 'hr.provisiones'
     _inherit = ['hr.provisiones', 'hr.benefits.move.mixin']
+
+    # El mixin no tiene company_id: el chequeo va en el modelo concreto.
+    account_move_id = fields.Many2one(check_company=True)
 
     def _get_move_lines(self):
         self.ensure_one()

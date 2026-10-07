@@ -8,6 +8,7 @@ class L10nPePleEquity(models.Model):
     exige el Anexo 2; se prepara a partir del EEFF aprobado."""
     _name = 'l10n_pe.ple.equity'
     _description = 'PLE 3.19 - Cambios en el patrimonio neto'
+    _check_company_auto = True
     _order = 'date, id'
 
     company_id = fields.Many2one(

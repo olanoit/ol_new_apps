@@ -6,6 +6,7 @@ from odoo import models, fields, api
 class L10nPeLetterResidual(models.Model):
     _name = 'l10n_pe.letter.residual'
     _description = 'redondeo'
+    _check_company_auto = True
 
     name = fields.Char(
         string='Comprobantes',
@@ -13,7 +14,7 @@ class L10nPeLetterResidual(models.Model):
     letter_id = fields.Many2one(
         'l10n_pe.letter',
         string='Letra',
-        ondelete='cascade',
+        ondelete='cascade', check_company=True
     )
     # Compañía del canje, guardada: sin ella las listas de letras y la
     # búsqueda de documentos no podían filtrarse por compañía (reglas).

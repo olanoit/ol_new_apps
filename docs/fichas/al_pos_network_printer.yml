@@ -199,6 +199,10 @@ faq:
       en una caja o impresora de preparación activa.
 
 novedades:
+  - version: 2.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 1.20261006
     fecha: 06/10/2026
     cambios:

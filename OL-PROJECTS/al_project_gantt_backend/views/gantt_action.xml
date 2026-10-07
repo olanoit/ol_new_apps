@@ -9,7 +9,7 @@
 
     <menuitem id="menu_gantt_root"
               name="Gantt"
-              web_icon="al_project_gantt_backend,static/description/icon.png"
+              web_icon="project,static/description/icon.png"
               groups="al_project_gantt_base.group_gantt_user"
               sequence="45"/>
 

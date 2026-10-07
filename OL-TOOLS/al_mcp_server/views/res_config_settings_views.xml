@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app string="Servidor MCP" name="al_mcp_server"
-                     logo="/al_mcp_server/static/description/icon.png">
+                     logo="/ai/static/description/icon.png">
 
                     <block title="Retención del registro de auditoría" name="mcp_retention">
                         <setting string="Retención de sesiones (días)"

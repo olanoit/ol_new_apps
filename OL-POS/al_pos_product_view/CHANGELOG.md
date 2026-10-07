@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_product_view.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 4.20260925 — 27/09/2026
 
 - En la ficha de producto del TPV, los precios y totales del pedido vuelven a ocultarse a los empleados con permisos mínimos (Empleados activo), como en el Odoo estándar.

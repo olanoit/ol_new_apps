@@ -45,7 +45,9 @@ y regla de registro por compañía en el historial.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '5.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/hr_payroll/static/description/icon.png',
+    'version': '6.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',

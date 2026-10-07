@@ -7,7 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 4.20261001 — 01/10/2026
+## 5.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
+## 01/10/2026
 
 - El reparto entre stock y compra sigue el algoritmo de la regla nativa «tomar de stock; si no hay, activar otra regla»: cálculo en la unidad del producto y el resto en la unidad de la línea, de modo que lo despachado más lo comprado siempre da lo pedido.
 - Lo recibido en obra se calcula como en Compras: conversión con redondeo al medio y las devoluciones de la obra al almacén restan.

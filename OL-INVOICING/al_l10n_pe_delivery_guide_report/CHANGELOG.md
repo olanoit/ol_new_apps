@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 8.20261007 — 07/10/2026
 
 - La fecha de emisión impresa es la del XML enviado a SUNAT; el destinatario es la empresa cliente; las cantidades no se redondean a dos decimales y el detalle tiene una línea por movimiento, como el XML.

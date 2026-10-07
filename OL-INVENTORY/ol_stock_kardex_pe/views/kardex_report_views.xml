@@ -38,7 +38,7 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="report_type"/>
                             <field name="file_format"/>
                         </group>

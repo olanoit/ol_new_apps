@@ -21,6 +21,7 @@ class HrMembership(models.Model):
     """
     _name = 'hr.membership'
     _description = 'Afiliación (AFP/ONP)'
+    _check_company_auto = True
     _inherit = ['mail.thread']
     _order = 'name'
 

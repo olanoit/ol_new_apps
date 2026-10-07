@@ -15,7 +15,7 @@
                 <field name="amount" invisible="computation != 'fixed'"/>
                 <field name="category_ids" widget="many2many_tags" optional="show"/>
                 <field name="note" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>

@@ -126,11 +126,13 @@ class HrRateLimit(models.Model):
     """
     _name = 'hr.rate.limit'
     _description = 'Tramo de tasa de renta de 5ta categoría'
+    _check_company_auto = True
     _order = 'range'
 
     main_parameter_id = fields.Many2one(
         'hr.main.parameter', string='Parámetros principales',
-        ondelete='cascade', required=True, index=True)
+        ondelete='cascade', required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='main_parameter_id.company_id', string='Compañía',
         store=True, index=True)
@@ -180,7 +182,8 @@ class HrFifthCategory(models.Model):
         'hr.fifth.category', string='Quinta anterior',
         compute='_compute_previous_fifth_category_id', store=True,
         help='Quinta del lote inmediatamente anterior; habilita la '
-             'reproyección por saldo pendiente.')
+             'reproyección por saldo pendiente.',
+        check_company=True)
 
     _unique_run = models.Constraint(
         'UNIQUE(company_id, payslip_run_id)',
@@ -326,7 +329,8 @@ class HrFifthCategoryLine(models.Model):
 
     fifth_category_id = fields.Many2one(
         'hr.fifth.category', string='Quinta cat.', ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='fifth_category_id.company_id', string='Compañía',
         store=True, index=True)
@@ -405,7 +409,8 @@ class HrFifthCategoryLine(models.Model):
     previous_line_id = fields.Many2one(
         'hr.fifth.category.line', string='Línea anterior',
         compute='_compute_previous_line_id', store=True,
-        help='Línea del mismo empleado en la quinta del mes anterior.')
+        help='Línea del mismo empleado en la quinta del mes anterior.',
+        check_company=True)
 
     @api.depends('annual_ret', 'monthly_ret')
     def _compute_saldo_ret(self):
@@ -754,7 +759,8 @@ class HrFifthCategoryLineExcluidos(models.Model):
 
     fifth_category_id = fields.Many2one(
         'hr.fifth.category', string='Quinta cat.', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='fifth_category_id.company_id', string='Compañía',
         store=True, index=True)

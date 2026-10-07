@@ -22,7 +22,9 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '6.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '7.20261008',
     'license': 'OPL-1',
     'depends': ['account', 'l10n_pe', 'al_account_base'],
     'data': [

@@ -1431,7 +1431,8 @@ class HrAutomateMultipaymentLine(models.Model):
 
     multipayment_id = fields.Many2one(
         'hr.automate.multipayment', string='Pago masivo', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='multipayment_id.company_id', string='Compañía',
         store=True, index=True)
@@ -1441,7 +1442,8 @@ class HrAutomateMultipaymentLine(models.Model):
     identification_id = fields.Char(
         related='employee_id.identification_id', string='Nro. documento')
     bank_account_id = fields.Many2one(
-        'res.partner.bank', string='Cuenta destino')
+        'res.partner.bank', string='Cuenta destino',
+        check_company=True)
     bank_id = fields.Many2one(
         related='bank_account_id.bank_id', string='Banco')
     amount = fields.Float(string='Monto (S/)')

@@ -37,7 +37,8 @@ class L10nPeComplaintBook(models.Model):
              'virtual en un día calendario.')
     sequence_id = fields.Many2one(
         'ir.sequence', string='Numeración', readonly=True, copy=False,
-        help='Correlativa por año, sin huecos.')
+        help='Correlativa por año, sin huecos.',
+        check_company=True)
     website_ids = fields.Many2many(
         'website', string='Sitios web',
         help='Sitios donde se publica este libro. Sin sitios, el libro no se ofrece en la web.')

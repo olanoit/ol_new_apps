@@ -24,7 +24,9 @@ Una ficha cuenta como tal cuando la ha preparado
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-TOOLS/Apps',
-    'version': '1.20260914',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/base/static/description/settings.png',
+    'version': '2.20261008',
     'license': 'OPL-1',
     'depends': ['base'],
     'data': [

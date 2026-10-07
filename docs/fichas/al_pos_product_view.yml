@@ -205,6 +205,10 @@ faq:
       manda la última que eligió cada usuario.
 
 novedades:
+  - version: 5.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 4.20260925
     fecha: 27/09/2026
     cambios:

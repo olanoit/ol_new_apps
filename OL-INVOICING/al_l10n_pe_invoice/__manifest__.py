@@ -40,7 +40,9 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
-    'version': '13.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '14.20261008',
     'license': 'OPL-1',
     'depends': [
         'account',

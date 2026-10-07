@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_move_name_sequence.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
 ## 11.20261007 — 07/10/2026
 
 - Corregido: un usuario de facturación no podía borrar un borrador que nunca se publicó en diarios con numeración propia; ahora puede, y un comprobante que ya tuvo número sigue protegido.

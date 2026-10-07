@@ -503,7 +503,8 @@ class HrVacationLine(models.Model):
 
     vacation_id = fields.Many2one(
         'hr.vacation', string='Liquidación', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='vacation_id.company_id', store=True, string='Compañía',
         index=True)
@@ -719,15 +720,17 @@ class HrVacationLine(models.Model):
 class HrLeaveVacationLine(models.Model):
     _name = 'hr.leave.vacation.line'
     _description = 'Detalle de periodo de vacaciones'
+    _check_company_auto = True
     _order = 'periodo_id desc'
 
     leave_vacation_id = fields.Many2one(
         'hr.vacation.line', string='Línea de liquidación',
-        ondelete='cascade', required=True, index=True)
+        ondelete='cascade', required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='leave_vacation_id.company_id', store=True,
         string='Compañía', index=True)
-    periodo_id = fields.Many2one('hr.period', string='Periodo')
+    periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
     wage = fields.Float(string='Básico')
     household_allowance = fields.Float(string='Asignación familiar')
     commission = fields.Float(string='Comisiones')

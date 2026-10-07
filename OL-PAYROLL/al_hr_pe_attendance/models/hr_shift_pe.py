@@ -99,6 +99,7 @@ class L10nPeHrShiftCycle(models.Model):
     """
     _name = 'l10n_pe.hr.shift.cycle'
     _description = 'Ciclo de jornada atípica (Perú)'
+    _check_company_auto = True
     _order = 'days_work desc, days_rest'
 
     name = fields.Char(string='Nombre', required=True,

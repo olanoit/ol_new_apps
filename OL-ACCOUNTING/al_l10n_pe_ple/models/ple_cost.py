@@ -10,6 +10,7 @@ class L10nPePleCostSales(models.Model):
     podrá poblar automáticamente)."""
     _name = 'l10n_pe.ple.cost.sales'
     _description = 'PLE 10.1 - Costo de ventas anual'
+    _check_company_auto = True
     _order = 'year, id'
 
     company_id = fields.Many2one(
@@ -36,6 +37,7 @@ class L10nPePleCostElement(models.Model):
     archivo anual)."""
     _name = 'l10n_pe.ple.cost.element'
     _description = 'PLE 10.2 - Elementos del costo mensual'
+    _check_company_auto = True
     _order = 'year, month, id'
 
     company_id = fields.Many2one(
@@ -66,6 +68,7 @@ class L10nPePleCostProduction(models.Model):
     proceso productivo)."""
     _name = 'l10n_pe.ple.cost.production'
     _description = 'PLE 10.3 - Costo de producción valorizado anual'
+    _check_company_auto = True
     _order = 'year, id'
 
     company_id = fields.Many2one(

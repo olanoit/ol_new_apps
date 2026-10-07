@@ -7,6 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class L10nPeLetterLine(models.Model):
     _name = 'l10n_pe.letter.line'
     _description = 'Letras por cobrar'
+    _check_company_auto = True
 
     name = fields.Char(
         string='Nombre',
@@ -16,7 +17,7 @@ class L10nPeLetterLine(models.Model):
     letter_id = fields.Many2one(
         'l10n_pe.letter',
         string='Canje',
-        ondelete='cascade',
+        ondelete='cascade', check_company=True
     )
     journal_id = fields.Many2one(related='letter_id.journal_id', store=True)
     # Compañía del canje, guardada: sin ella las listas de letras y la
@@ -116,11 +117,14 @@ class L10nPeLetterLine(models.Model):
         readonly=True,
         compute='_compute_debit_credit', default=0.0)
     discount_move_id = fields.Many2one(
-        'account.move', string='Liquidación del descuento', readonly=True, copy=False)
+        'account.move', string='Liquidación del descuento', readonly=True, copy=False,
+        check_company=True)
     collection_move_id = fields.Many2one(
-        'account.move', string='Asiento de cobro', readonly=True, copy=False)
+        'account.move', string='Asiento de cobro', readonly=True, copy=False,
+        check_company=True)
     protest_move_id = fields.Many2one(
-        'account.move', string='Asiento de protesto', readonly=True, copy=False)
+        'account.move', string='Asiento de protesto', readonly=True, copy=False,
+        check_company=True)
     protest_date = fields.Date(string='Fecha de protesto', readonly=True, copy=False)
     adeudado = fields.Monetary(
         string='Adeudado',

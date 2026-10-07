@@ -205,7 +205,7 @@
                             <field name="with_bonus" readonly="state == 'exported'"/>
                             <field name="months_and_days" readonly="state == 'exported'"/>
                             <field name="exchange_type" readonly="state == 'exported'"/>
-                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
@@ -251,7 +251,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

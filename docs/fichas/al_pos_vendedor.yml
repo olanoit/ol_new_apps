@@ -206,6 +206,10 @@ faq:
       vendedor en el buscador.
 
 novedades:
+  - version: 3.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 2.20260721
     fecha: 27/09/2026
     cambios:

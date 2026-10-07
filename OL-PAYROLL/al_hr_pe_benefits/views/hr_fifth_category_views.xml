@@ -49,11 +49,13 @@
                             context="{'line_form': True}" class="oe_edit_only"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
+                        <div class="text-muted"><field name="identification_id" readonly="1"/></div>
+                    </div>
                     <group>
-                        <group>
+                        <group string="Proyección anual">
                             <field name="slip_id" readonly="1" invisible="1"/>
-                            <field name="employee_id" readonly="1"/>
-                            <field name="identification_id" readonly="1"/>
                             <field name="monthly_rem" readonly="1"/>
                             <field name="edit_proy" widget="boolean_toggle"/>
                             <field name="contrac_proy_rem" readonly="not edit_proy"/>
@@ -65,7 +67,7 @@
                             <field name="total_proy" readonly="1"/>
                             <field name="seven_uit" readonly="1"/>
                         </group>
-                        <group>
+                        <group string="Impuesto y retenciones">
                             <field name="net_rent" readonly="1"/>
                             <field name="tax_proy" readonly="1"/>
                             <field name="past_months_ret" readonly="1"/>
@@ -122,13 +124,13 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
+                        <div class="text-muted"><field name="identification_id" readonly="1"/></div>
+                    </div>
+                    <field name="slip_id" readonly="1" invisible="1"/>
                     <group>
-                        <group>
-                            <field name="slip_id" readonly="1" invisible="1"/>
-                            <field name="employee_id" readonly="1"/>
-                            <field name="identification_id" readonly="1"/>
-                        </group>
-                        <group>
+                        <group string="Proyección anual">
                             <field name="monthly_rem" readonly="1"/>
                             <field name="contrac_proy_rem" readonly="1"/>
                             <field name="proy_rem" readonly="1"/>
@@ -195,7 +197,7 @@
                             <field name="payslip_run_id" readonly="state == 'exported'"
                                    options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                             <field name="middle_month_number"/>
-                            <field name="company_id" readonly="state == 'exported'"
+                            <field name="company_id" readonly="1"
                                    groups="base.group_multi_company"/>
                         </group>
                         <group string="Anterior" invisible="not previous_fifth_category_id">
@@ -231,7 +233,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

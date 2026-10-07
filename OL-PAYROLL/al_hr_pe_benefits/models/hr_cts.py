@@ -178,10 +178,12 @@ class HrCtsLine(models.Model):
     _check_company_auto = True
 
     cts_id = fields.Many2one(
-        'hr.cts', string='Depósito CTS', ondelete='cascade', index=True)
+        'hr.cts', string='Depósito CTS', ondelete='cascade', index=True,
+        check_company=True)
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', store=True, index=True,
         compute='_compute_company_id')
@@ -313,15 +315,17 @@ class HrCtsLine(models.Model):
 class HrCtsLineDetalle(models.Model):
     _name = 'hr.cts.line.detalle'
     _description = 'Detalle de línea de CTS'
+    _check_company_auto = True
     _order = 'periodo_id desc'
 
     cts_line_id = fields.Many2one(
         'hr.cts.line', string='Línea de CTS', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='cts_line_id.company_id', string='Compañía', store=True,
         index=True)
-    periodo_id = fields.Many2one('hr.period', string='Periodo')
+    periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
     wage = fields.Float(string='Básico')
     household_allowance = fields.Float(string='Asignación familiar')
     commission = fields.Float(string='Comisiones')

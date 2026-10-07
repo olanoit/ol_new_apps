@@ -40,8 +40,7 @@
                         <group string="Series rectificativas">
                             <field name="name_nc" readonly="state != 'draft'"/>
                             <field name="name_nd" readonly="state != 'draft'"/>
-                            <field name="company_id" groups="base.group_multi_company"
-                                   readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
                         <group string="Secuencias" groups="base.group_no_one">
                             <field name="invoice_seq_id"/>
@@ -64,7 +63,7 @@
                 <field name="l10n_latam_document_type_id"/>
                 <field name="name_nc"/>
                 <field name="name_nd"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'publish'"
                        decoration-muted="state == 'canceled'"/>

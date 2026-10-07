@@ -22,6 +22,7 @@ STALE_MINUTES = 30
 class ImportPayrollProgress(models.Model):
     _name = 'al.import.payroll.progress'
     _description = 'Progreso de importación de planillas'
+    _check_company_auto = True
     _order = 'create_date desc'
 
     name = fields.Char(default='Importación')

@@ -715,7 +715,7 @@ class L10nPeLetter(models.Model):
                 else:
                     invoice_move.write({'l10n_pe_letter_redeemed_state': redeemed_state})
 
-    canje_move_id = fields.Many2one('account.move', string='Asiento de canje', readonly=True)
+    canje_move_id = fields.Many2one('account.move', string='Asiento de canje', readonly=True, check_company=True)
     canje_move_ids = fields.Many2many('account.move', 'account_letter_move_canje_rel', 'letter_id', 'move_id',
                                       string='Asientos de canje', readonly=True)
     bank_move_ids = fields.Many2many(
@@ -1298,11 +1298,11 @@ class L10nPeLetter(models.Model):
     # Refinanciamiento
     refinance_id = fields.Many2one(
         'l10n_pe.letter',
-        string='Canje refinanciado',
+        string='Canje refinanciado', check_company=True
     )
     inverse_id = fields.Many2one(
         'l10n_pe.letter',
-        string='Canje relacionado',
+        string='Canje relacionado', check_company=True
     )
 
     refinance_origin_ids = fields.Many2many(

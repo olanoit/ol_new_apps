@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
 ## 17.20261008 — 08/10/2026
 
 - Los datos de construcción civil del trabajador pasan a «Planilla PE ▸ Construcción civil»; nombres legibles en el resumen CONAFOVICER y la tabla de jornales.

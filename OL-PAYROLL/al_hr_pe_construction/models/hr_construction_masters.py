@@ -38,6 +38,7 @@ class L10nPeHrConstructionCategory(models.Model):
     """Categoría del trabajador de construcción civil."""
     _name = 'l10n_pe.hr.construction.category'
     _description = 'Categoría de construcción civil'
+    _check_company_auto = True
     _order = 'sequence, code'
 
     name = fields.Char(string='Categoría', required=True, translate=True)
@@ -277,6 +278,7 @@ class L10nPeHrConstructionBonus(models.Model):
     """
     _name = 'l10n_pe.hr.construction.bonus'
     _description = 'Bonificación de construcción civil'
+    _check_company_auto = True
     _order = 'bonus_type, sequence, code'
 
     name = fields.Char(string='Bonificación', required=True, translate=True)

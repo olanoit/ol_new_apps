@@ -11,7 +11,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -24,7 +24,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -37,7 +37,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -50,7 +50,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -74,7 +74,7 @@
                 <field name="insurable_remuneration"/>
                 <field name="l10n_pe_sbs_period" optional="show"/>
                 <field name="account_id" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -100,7 +100,7 @@
                         </group>
                         <group string="Configuración">
                             <field name="account_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                 </sheet>
@@ -116,7 +116,7 @@
             <list editable="bottom">
                 <field name="name"/>
                 <field name="percent"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -131,7 +131,7 @@
                 <field name="type"/>
                 <field name="tasa"/>
                 <field name="amount"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

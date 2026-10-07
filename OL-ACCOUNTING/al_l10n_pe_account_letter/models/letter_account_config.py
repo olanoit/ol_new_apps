@@ -32,7 +32,8 @@ class L10nPeLetterAccountConfig(models.Model):
     )
     group_id = fields.Many2one(
         'account.group',
-        string='Grupo')
+        string='Grupo',
+        check_company=True)
     account_id = fields.Many2one(
         'account.account',
         string='Cuenta',

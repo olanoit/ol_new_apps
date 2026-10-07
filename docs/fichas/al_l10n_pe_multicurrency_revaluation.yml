@@ -155,6 +155,10 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: 4.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 3.20261007
     fecha: 07/10/2026
     cambios:

@@ -31,7 +31,9 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '11.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '12.20261008',
     'license': 'OPL-1',
     'depends': [
         'account',

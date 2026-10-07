@@ -32,7 +32,9 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
-    'version': '2.20260721',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/point_of_sale/static/description/icon.png',
+    'version': '3.20261008',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

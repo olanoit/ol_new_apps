@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
+## 12.20261008 — 08/10/2026
+
+- Asignación de ciclo de turnos con el trabajador como título.
+
 ## 11.20261008 — 08/10/2026
 
 - «Sujeto a horas extras» pasa a «Planilla PE ▸ T-Registro»; el tareaje muestra su nombre como título; nombre legible en el monitor de asistencia.

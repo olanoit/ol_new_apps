@@ -10,6 +10,7 @@ class L10nPePleWithholding(models.Model):
     retenciones se capturan aquí (o se importan por XLSX estándar)."""
     _name = 'l10n_pe.ple.withholding'
     _description = 'PLE 4.1 - Retención Art. 34 LIR'
+    _check_company_auto = True
     _order = 'date, id'
 
     company_id = fields.Many2one(

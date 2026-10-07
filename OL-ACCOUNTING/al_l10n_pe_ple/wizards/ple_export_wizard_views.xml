@@ -7,7 +7,7 @@
             <form string="Exportar Libros PLE">
                 <group>
                     <group>
-                        <field name="company_id"
+                        <field name="company_id" readonly="1"
                                groups="base.group_multi_company"
                                options="{'no_create': True}"/>
                         <field name="year"/>

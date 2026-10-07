@@ -64,7 +64,9 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '5.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '6.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

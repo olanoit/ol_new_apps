@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
+## 15.20261008 — 08/10/2026
+
+- Fichas de quinta (afectos y excluidos), utilidades y saldo de vacaciones con el trabajador como título y bloques rotulados (proyección anual / impuesto y retenciones, trabajador / cálculo, saldo / días y montos).
+
 ## 14.20261008 — 08/10/2026
 
 - Formularios de CTS, gratificación, vacaciones, liquidación, utilidades y quincena con bloques rotulados («Periodo» a la izquierda; depósito, cálculo o factores a la derecha) y el año como lista desplegable.

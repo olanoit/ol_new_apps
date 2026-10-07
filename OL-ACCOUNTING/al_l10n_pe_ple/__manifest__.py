@@ -71,7 +71,9 @@ NO se reimplementan.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '14.20261007',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '15.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

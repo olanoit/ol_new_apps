@@ -14,7 +14,7 @@
           100 Configuración       (este archivo)
     -->
     <menuitem id="al_l10n_pe_root" name="Perú"
-              web_icon="al_account_base,static/description/icon.png"
+              web_icon="account,static/description/icon.png"
               sequence="-100"/>
 
     <menuitem id="al_l10n_pe_config" name="Configuración"

@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app data-string="Gantt IA" string="Gantt IA" name="al_project_gantt_ai"
-                     logo="/al_project_gantt_ai/static/description/icon.png">
+                     logo="/project/static/description/icon.png">
 
                     <block title="Conexión" name="al_gantt_ai_connection">
                         <setting string="Proveedor" help="Servicio al que se envían las consultas.">

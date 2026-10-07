@@ -8,6 +8,7 @@ from odoo.tools.float_utils import float_compare
 class L10nPeLetterInvoiceLine(models.Model):
     _name = 'l10n_pe.letter.invoice.line'
     _description = 'Facturas por cobrar'
+    _check_company_auto = True
 
     name = fields.Char(
         string='Nombre',
@@ -16,7 +17,7 @@ class L10nPeLetterInvoiceLine(models.Model):
     letter_id = fields.Many2one(
         'l10n_pe.letter',
         string='Letra',
-        ondelete='cascade',
+        ondelete='cascade', check_company=True
     )
     # Compañía del canje, guardada: sin ella las listas de letras y la
     # búsqueda de documentos no podían filtrarse por compañía (reglas).
@@ -43,7 +44,7 @@ class L10nPeLetterInvoiceLine(models.Model):
         self.move_line_id = False
         self.onchange_invoice_account()
 
-    move_line_id = fields.Many2one('account.move.line', string='Factura')
+    move_line_id = fields.Many2one('account.move.line', string='Factura', check_company=True)
     domain_move_line_id = fields.One2many('account.move.line', 'id', string='Domain',
                                           compute='_compute_domain_move_line_id')
     date_em = fields.Date('Fecha emisión', compute='_compute_date_em')

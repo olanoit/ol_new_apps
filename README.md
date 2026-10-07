@@ -122,84 +122,84 @@ python3 scripts/gen_addons_table.py
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](OL-ACCOUNTING/al_account_base/) | 5.20261007 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
-[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 6.20261007 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
-[al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 11.20261007 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
-[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 5.20261007 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
-[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 12.20261007 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
-[al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 8.20261007 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
-[al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 14.20261007 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
-[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 5.20261007 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
-[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 1.20260917 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
-[al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 3.20261007 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
-[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 14.20261007 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
-[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 11.20261007 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
-[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 12.20261007 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
+[al_account_base](OL-ACCOUNTING/al_account_base/) | 6.20261008 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 7.20261008 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
+[al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 12.20261008 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
+[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 6.20261008 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
+[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 13.20261008 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
+[al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 9.20261008 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
+[al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 15.20261008 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
+[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 6.20261008 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
+[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 2.20261008 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
+[al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 4.20261008 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
+[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 15.20261008 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
+[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 12.20261008 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
+[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 13.20261008 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 1.20261006 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 11.20261007 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
+[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 12.20261008 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 
 ### OL-INVOICING
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 1.20261006 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
-[al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 8.20261007 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
-[al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 2.20261007 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
-[al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 13.20261007 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
+[al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 2.20261008 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
+[al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 9.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
+[al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
+[al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 14.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 
 ### OL-PAYROLL
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 25.20261008 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
-[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 5.20261007 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 11.20261008 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
-[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 14.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 17.20261008 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
-[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 5.20261007 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
-[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 7.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 14.20261008 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 26.20261008 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 6.20261008 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
+[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 13.20261008 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 16.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 18.20261008 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 6.20261008 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
+[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 8.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 15.20261008 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 10.20261007 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
-[al_pos_network_printer](OL-POS/al_pos_network_printer/) | 1.20261006 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
-[al_pos_product_view](OL-POS/al_pos_product_view/) | 4.20260925 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
-[al_pos_theme](OL-POS/al_pos_theme/) | 1.20261005 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
-[al_pos_vendedor](OL-POS/al_pos_vendedor/) | 2.20260721 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
+[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 11.20261008 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_pos_network_printer](OL-POS/al_pos_network_printer/) | 2.20261008 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
+[al_pos_product_view](OL-POS/al_pos_product_view/) | 5.20261008 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
+[al_pos_theme](OL-POS/al_pos_theme/) | 2.20261008 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
+[al_pos_vendedor](OL-POS/al_pos_vendedor/) | 3.20261008 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
 
 ### OL-INVENTORY
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 8.20261007 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
+[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 9.20261008 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 
 ### OL-PROJECTS
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 4.20261001 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 3.20260817 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
-[al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 12.20260818 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
-[al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 14.20260818 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
-[al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 11.20260818 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
+[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 5.20261008 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 4.20261008 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
+[al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 13.20261008 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
+[al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 15.20261008 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
+[al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 12.20261008 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
 
 ### OL-TOOLS
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_base_module_info](OL-TOOLS/al_base_module_info/) | 1.20260914 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_mcp_server](OL-TOOLS/al_mcp_server/) | 5.20261005 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
+[al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
+[al_mcp_server](OL-TOOLS/al_mcp_server/) | 6.20261008 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
 
 ### OL-THIRD-PARTY
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_city](OL-THIRD-PARTY/al_l10n_pe_city/) | 2.20260730 | LGPL-3 | Datos de la ciudad
+[al_l10n_pe_city](OL-THIRD-PARTY/al_l10n_pe_city/) | 3.20261008 | LGPL-3 | Datos de la ciudad
 [base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
 [queue_job](OL-THIRD-PARTY/queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue

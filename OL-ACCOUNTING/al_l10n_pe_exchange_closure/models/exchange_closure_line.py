@@ -17,7 +17,8 @@ class L10nPeExchangeClosureLine(models.Model):
 
     closure_id = fields.Many2one(
         'l10n_pe.exchange.closure', string='Cierre', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='closure_id.company_id', store=True)
     company_currency_id = fields.Many2one(

@@ -184,10 +184,12 @@ class HrGratificationLine(models.Model):
 
     gratification_id = fields.Many2one(
         'hr.gratification', string='Gratificación', ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', store=True, index=True,
         compute='_compute_company_id')
@@ -308,15 +310,17 @@ class HrGratificationLine(models.Model):
 class HrGratificationLineDetalle(models.Model):
     _name = 'hr.gratification.line.detalle'
     _description = 'Detalle de línea de gratificación'
+    _check_company_auto = True
     _order = 'periodo_id desc'
 
     gratification_line_id = fields.Many2one(
         'hr.gratification.line', string='Línea de gratificación',
-        ondelete='cascade', required=True, index=True)
+        ondelete='cascade', required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='gratification_line_id.company_id', string='Compañía',
         store=True, index=True)
-    periodo_id = fields.Many2one('hr.period', string='Periodo')
+    periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
     wage = fields.Float(string='Básico')
     household_allowance = fields.Float(string='Asignación familiar')
     commission = fields.Float(string='Comisiones')

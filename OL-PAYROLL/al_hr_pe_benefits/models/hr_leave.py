@@ -49,7 +49,8 @@ class HrWorkSuspension(models.Model):
     leave_id = fields.Many2one(
         'hr.leave', string='Ausencia', index='btree_not_null',
         ondelete='cascade', readonly=True,
-        help='Ausencia aprobada que generó esta suspensión.')
+        help='Ausencia aprobada que generó esta suspensión.',
+        check_company=True)
 
 
 class HrLeave(models.Model):

@@ -869,7 +869,8 @@ class HrTareajeManagerLine(models.Model):
 
     tareaje_id = fields.Many2one(
         'hr.tareaje.manager', string='Tareaje', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='tareaje_id.company_id', store=True, index=True)
     employee_id = fields.Many2one(
@@ -914,7 +915,8 @@ class HrTareajeManagerLineAttendance(models.Model):
 
     tareaje_line_id = fields.Many2one(
         'hr.tareaje.manager.line', string='Línea de tareaje',
-        required=True, ondelete='cascade', index=True)
+        required=True, ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='tareaje_line_id.company_id', store=True, index=True)
     employee_id = fields.Many2one(

@@ -29,7 +29,7 @@
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="payslip_count" optional="show" string="Cant. de boletas"/>
-                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" optional="show" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -72,7 +72,7 @@
                             <field name="payslip_run_id" readonly="state != 'draft'"/>
                         </group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>

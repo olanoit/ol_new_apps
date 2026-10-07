@@ -21,7 +21,8 @@ class ConstructionMaterialRequestLine(models.Model):
 
     request_id = fields.Many2one(
         'construction.material.request', string='Requerimiento', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     sequence = fields.Integer(string='Secuencia', default=10)
     company_id = fields.Many2one(related='request_id.company_id', store=True, index=True)
     state = fields.Selection(related='request_id.state', string='Estado del requerimiento')

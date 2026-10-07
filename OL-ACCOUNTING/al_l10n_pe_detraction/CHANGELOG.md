@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
 ## 14.20261007 — 07/10/2026
 
 - La detracción pasa a la pestaña interna «Facturación PE ▸ Detracción». La constancia que l10n_pe_reports mostraba aparte en la factura de proveedor ya no sale duplicada.

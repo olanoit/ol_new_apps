@@ -178,6 +178,10 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: 4.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 3.20260817
     fecha: 27/09/2026
     cambios:

@@ -41,7 +41,7 @@
                             <field name="start_row"/>
                         </group>
                         <group string="Opciones">
-                            <field name="company_id"
+                            <field name="company_id" readonly="1"
                                    options="{'no_create': True}"
                                    groups="base.group_multi_company"/>
                             <field name="update_existing"/>

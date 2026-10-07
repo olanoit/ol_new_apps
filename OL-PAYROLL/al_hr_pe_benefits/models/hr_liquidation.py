@@ -492,7 +492,8 @@ class HrLiquidationVacationLine(models.Model):
 
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='liquidation_id.company_id', string='Compañía',
         store=True, index=True)
@@ -639,7 +640,8 @@ class HrLiquidationExtraConcepts(models.Model):
 
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='liquidation_id.company_id', string='Compañía',
         store=True, index=True)
@@ -694,10 +696,12 @@ class HrLiquidationExtraConcepts(models.Model):
 class HrExtraConceptLine(models.Model):
     _name = 'hr.extra.concept.line'
     _description = 'Línea de concepto adicional'
+    _check_company_auto = True
 
     extra_concept_id = fields.Many2one(
         'hr.liquidation.extra_concepts', string='Otros conceptos',
-        ondelete='cascade', required=True, index=True)
+        ondelete='cascade', required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='extra_concept_id.company_id', string='Compañía',
         store=True, index=True)

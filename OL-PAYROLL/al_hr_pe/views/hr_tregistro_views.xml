@@ -10,7 +10,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -25,7 +25,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -40,7 +40,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="occupation_field"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -56,7 +56,7 @@
                 <field name="name"/>
                 <field name="regime_kind"/>
                 <field name="description" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
@@ -323,7 +323,7 @@
             <list string="Tipos de vía (T05)" editable="bottom">
                 <field name="code"/>
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
             </list>
         </field>
@@ -335,7 +335,7 @@
             <list string="Tipos de zona (T06)" editable="bottom">
                 <field name="code"/>
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
             </list>
         </field>
@@ -451,7 +451,7 @@
             <list string="Entidades financieras (T36)" editable="bottom">
                 <field name="code"/>
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"
+                <field name="company_id" readonly="1" groups="base.group_multi_company"
                        optional="show"/>
             </list>
         </field>

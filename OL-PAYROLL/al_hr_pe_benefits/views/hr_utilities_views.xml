@@ -39,7 +39,7 @@
                             <field name="sum_number_of_days_year" readonly="1" force_save="1"/>
                             <field name="factor_salary" readonly="1" force_save="1"/>
                             <field name="factor_number_of_days" readonly="1" force_save="1"/>
-                            <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
@@ -68,7 +68,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -82,17 +82,18 @@
                     <button name="compute_utilitie_line" string="Recalcular" type="object" context="{'line_form': True}"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
+                        <div class="text-muted"><field name="employee_document" readonly="1"/></div>
+                    </div>
                     <group>
-                        <group>
+                        <group string="Trabajador">
                             <field name="preserve_record"/>
-                            <field name="employee_document" readonly="1"/>
-                            <field name="employee" readonly="1"/>
-                            <field name="employee_id" readonly="1"/>
                             <field name="version_id" readonly="1"/>
                             <field name="admission_date" readonly="1"/>
                             <field name="distribution_id" readonly="1"/>
                         </group>
-                        <group>
+                        <group string="Cálculo">
                             <field name="salary"/>
                             <field name="number_of_days"/>
                             <field name="for_salary" readonly="1" force_save="1"/>

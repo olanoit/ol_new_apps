@@ -2,7 +2,7 @@
 <odoo>
 
     <menuitem id="menu_complaints_root" name="Libro de reclamaciones"
-              web_icon="al_l10n_pe_complaints_book,static/description/icon.png"
+              web_icon="helpdesk,static/description/icon.png"
               groups="group_complaint_user" sequence="85"/>
 
     <menuitem id="menu_complaints" name="Hojas de reclamación" parent="menu_complaints_root"

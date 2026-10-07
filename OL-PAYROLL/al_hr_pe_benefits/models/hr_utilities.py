@@ -286,7 +286,8 @@ class HrUtilitiesLine(models.Model):
 
     main_id = fields.Many2one(
         'hr.utilities', string='Utilidades', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='main_id.company_id', string='Compañía', store=True,
         index=True)

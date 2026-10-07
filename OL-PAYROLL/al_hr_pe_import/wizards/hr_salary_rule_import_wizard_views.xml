@@ -45,7 +45,7 @@
                             <field name="struct_id"
                                    required="state == 'configure'"
                                    options="{'no_create': True}"/>
-                            <field name="company_id"
+                            <field name="company_id" readonly="1"
                                    options="{'no_create': True}"
                                    groups="base.group_multi_company"/>
                             <field name="sanitize_v18"/>

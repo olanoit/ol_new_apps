@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_website.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 11.20260818 — 27/09/2026
 
 - El menú «Gantt» del sitio solo lo ven los usuarios con acceso al Gantt (antes lo veían también visitantes y clientes del portal).

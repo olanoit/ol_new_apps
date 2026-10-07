@@ -175,6 +175,10 @@ faq:
       escenarios sin incumplimientos y con el mismo total que el asiento.
 
 novedades:
+  - version: 3.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
   - version: 2.20261007
     fecha: 07/10/2026
     cambios:

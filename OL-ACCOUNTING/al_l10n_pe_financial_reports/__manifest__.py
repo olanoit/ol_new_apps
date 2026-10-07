@@ -39,7 +39,9 @@ a PDF y XLSX con las herramientas estándar.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '1.20260917',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/account/static/description/icon.png',
+    'version': '2.20261008',
     'license': 'OPL-1',
     'depends': [
         'account_reports',

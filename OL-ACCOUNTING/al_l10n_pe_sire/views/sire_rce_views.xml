@@ -11,7 +11,7 @@
                 <field name="month"/>
                 <field name="ticket_number" optional="hide"/>
                 <field name="ticket_state" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 <field name="state" widget="badge"
                        decoration-info="state in ('requested', 'downloaded')"
                        decoration-warning="state in ('sire_loaded', 'system_loaded')"
@@ -82,7 +82,7 @@
                         <group string="Periodo">
                             <field name="year" readonly="state != 'draft'"/>
                             <field name="month" readonly="state != 'draft'"/>
-                            <field name="company_id" readonly="state != 'draft'"
+                            <field name="company_id" readonly="1"
                                    groups="base.group_multi_company"/>
                             <field name="download_manual" readonly="state != 'draft'"/>
                         </group>

@@ -276,7 +276,8 @@ class HrAccrualVacation(models.Model):
     _check_company_auto = True
 
     slip_id = fields.Many2one(
-        'hr.payslip', string='Boleta', ondelete='cascade', required=True)
+        'hr.payslip', string='Boleta', ondelete='cascade', required=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='slip_id.company_id', store=True, string='Compañía',
         index=True)

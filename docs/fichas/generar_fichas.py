@@ -497,10 +497,13 @@ def render_related(data):
         manifest = manifest_of(module)
         if not manifest:
             continue
-        icon = ''
-        if (module_dir(module) / 'static' / 'description' / 'icon.png').exists():
-            icon = ('<img src="/%s/static/description/icon.png" alt="" style="width:40px;'
-                    'height:40px;border-radius:8px;margin-bottom:10px;"/>' % module)
+        # El ícono del manifiesto (los módulos de la suite usan el nativo de
+        # su app, p. ej. /account/static/description/icon.png) o el propio.
+        icon_path = manifest.get('icon')
+        if not icon_path and (module_dir(module) / 'static' / 'description' / 'icon.png').exists():
+            icon_path = '/%s/static/description/icon.png' % module
+        icon = ('<img src="%s" alt="" style="width:40px;height:40px;border-radius:8px;'
+                'margin-bottom:10px;"/>' % icon_path) if icon_path else ''
         cards += (
             '<a href="/%s/static/description/index.html" target="_blank" rel="noopener" '
             'style="%sdisplay:block;text-decoration:none;">%s'

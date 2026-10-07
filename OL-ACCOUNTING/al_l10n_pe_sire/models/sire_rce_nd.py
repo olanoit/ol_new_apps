@@ -17,10 +17,13 @@ ND_CREDIT_DOC_TYPES = ('00', '46', '50', '51', '52', '53')
 class L10nPeSireRceNdLine(models.Model):
     _name = 'l10n_pe.sire.rce.nd.line'
     _description = 'SIRE — Línea de no domiciliados'
+    _check_company_auto = True
     _order = 'fecha_emision, serie_cp, nro_cp, id'
 
-    sire_id = fields.Many2one('l10n_pe.sire.rce', required=True, ondelete='cascade', index=True)
+    sire_id = fields.Many2one('l10n_pe.sire.rce', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='sire_id.company_id', store=True)
+    # Sin check_company: el periodo es de la compañía raíz y recoge
+    # comprobantes de sus sucursales.
     move_id = fields.Many2one('account.move', string='Comprobante', readonly=True)
     fecha_emision = fields.Date(string='Fecha de emisión', readonly=True)
     tipo_cp = fields.Char(string='Tipo CP', readonly=True)

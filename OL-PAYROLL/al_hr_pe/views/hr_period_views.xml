@@ -13,7 +13,7 @@
                 <field name="period_type"/>
                 <field name="parent_id" optional="show"/>
                 <field name="year" optional="hide" options="{'format': false}"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -39,7 +39,7 @@
                                    invisible="period_type != 'weekly'"
                                    required="period_type == 'weekly'"
                                    options="{'no_create': True}"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook invisible="period_type != 'monthly' or not child_ids">
@@ -69,7 +69,7 @@
                 <group>
                     <field name="year" options="{'format': false}"/>
                     <field name="generate_weekly"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 </group>
                 <footer>
                     <button name="action_generate" string="Generar periodos"

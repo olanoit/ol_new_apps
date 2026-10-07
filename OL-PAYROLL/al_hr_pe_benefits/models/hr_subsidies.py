@@ -170,7 +170,8 @@ class HrSubsidies(models.Model):
 
     subsidies_lot_id = fields.Many2one(
         'hr.subsidies.lot', string='Lote de subsidios',
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='subsidies_lot_id.company_id', string='Compañía',
         store=True, index=True)
@@ -474,15 +475,17 @@ class HrSubsidies(models.Model):
 class HrSubsidiesLine(models.Model):
     _name = 'hr.subsidies.line'
     _description = 'Línea de subsidio'
+    _check_company_auto = True
     _order = 'periodo_id'
 
     subsidies_id = fields.Many2one(
         'hr.subsidies', string='Subsidio', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='subsidies_id.company_id', string='Compañía', store=True,
         index=True)
-    periodo_id = fields.Many2one('hr.period', string='Periodo')
+    periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
     wage = fields.Float(string='Básico')
     vacation = fields.Float(string='Vacaciones')
     household_allowance = fields.Float(string='Asignación familiar')
@@ -511,10 +514,12 @@ class HrSubsidiesLine(models.Model):
 class HrSubsidiesTotal(models.Model):
     _name = 'hr.subsidies.total'
     _description = 'Total de subsidio'
+    _check_company_auto = True
 
     subsidies_id = fields.Many2one(
         'hr.subsidies', string='Subsidio', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='subsidies_id.company_id', string='Compañía', store=True,
         index=True)
@@ -533,17 +538,19 @@ class HrSubsidiesTotal(models.Model):
 class HrSubsidiesPeriodo(models.Model):
     _name = 'hr.subsidies.periodo'
     _description = 'Subsidio por periodo'
+    _check_company_auto = True
     _order = 'periodo_id'
 
     subsidies_id = fields.Many2one(
         'hr.subsidies', string='Subsidio', ondelete='cascade',
-        required=True, index=True)
+        required=True, index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='subsidies_id.company_id', string='Compañía', store=True,
         index=True)
     employee_id = fields.Many2one(
         related='subsidies_id.employee_id', string='Empleado', store=True)
-    periodo_id = fields.Many2one('hr.period', string='Periodo')
+    periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
     days = fields.Integer(string='Días')
     sub_dia = fields.Float(string='Sub. por día')
     total_sub = fields.Float(string='Total subsidio')

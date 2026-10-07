@@ -28,7 +28,9 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '25.20261008',
+    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
+    'icon': '/hr_payroll/static/description/icon.png',
+    'version': '26.20261008',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',

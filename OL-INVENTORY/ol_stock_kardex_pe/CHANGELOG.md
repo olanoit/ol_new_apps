@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+- La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
+
 ## 8.20261007 — 07/10/2026
 
 - PLE 13.1, campo 17 (método de valuación, tabla 14 del Anexo 3): el costo estándar se informa como «9 - Otros»; Enterprise ponía «3», que es el método de existencias básicas.

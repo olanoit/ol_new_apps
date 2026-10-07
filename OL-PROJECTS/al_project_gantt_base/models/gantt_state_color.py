@@ -18,6 +18,7 @@ FALLBACK_TEXT_COLOR = '#ffffff'
 class GanttStateColor(models.Model):
     _name = 'al.gantt.state.color'
     _description = 'Gantt — color por estado de tarea'
+    _check_company_auto = True
     _order = 'sequence, id'
 
     name = fields.Char(string='Etiqueta', required=True, translate=True)

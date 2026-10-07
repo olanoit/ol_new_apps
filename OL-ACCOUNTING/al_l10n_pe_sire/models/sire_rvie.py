@@ -12,6 +12,7 @@ RVIE_EXCLUDED_DOC_TYPES = ('NV',)
 class L10nPeSireRvie(models.Model):
     """Periodo del Registro de Ventas e Ingresos Electrónico (RVIE)."""
     _name = 'l10n_pe.sire.rvie'
+    _check_company_auto = True
     _inherit = ['l10n_pe.sire.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'SIRE — Registro de Ventas e Ingresos Electrónico'
     _order = 'year desc, month desc, id desc'
@@ -444,12 +445,14 @@ class L10nPeSireRvie(models.Model):
 
 class L10nPeSireRvieLine(models.Model):
     _name = 'l10n_pe.sire.rvie.line'
+    _check_company_auto = True
     _inherit = 'l10n_pe.sire.line.mixin'
     _description = 'Línea SIRE RVIE'
 
     sire_id = fields.Many2one(
         'l10n_pe.sire.rvie', string='Periodo RVIE', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='sire_id.company_id', store=True)
 
     valor_exportacion = fields.Float(string='Valor Facturado Exportación', digits=(16, 2))

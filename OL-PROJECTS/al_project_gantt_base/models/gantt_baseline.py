@@ -18,12 +18,13 @@ from odoo.exceptions import UserError
 class GanttBaseline(models.Model):
     _name = 'al.gantt.baseline'
     _description = 'Gantt — línea base'
+    _check_company_auto = True
     _order = 'date_captured desc, id desc'
 
     name = fields.Char(string='Nombre', required=True)
     project_id = fields.Many2one(
         'project.project', string='Proyecto', required=True,
-        ondelete='cascade', index=True,
+        ondelete='cascade', index=True, check_company=True
     )
     date_captured = fields.Datetime(
         string='Capturada el', required=True, readonly=True,

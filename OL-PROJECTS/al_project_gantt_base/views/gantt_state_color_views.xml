@@ -14,7 +14,7 @@
                 <field name="state_key"/>
                 <field name="color" widget="color"/>
                 <field name="text_color"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 <field name="active" column_invisible="True"/>
             </list>
         </field>
@@ -36,7 +36,7 @@
                         <group>
                             <field name="color" widget="color"/>
                             <field name="text_color"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active"/>
                         </group>
                     </group>

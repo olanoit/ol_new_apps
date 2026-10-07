@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_payments.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 5.20261007 — 07/10/2026
 
 - Tabla 10 de medios de pago según el anexo vigente: el 011 no es «letras de cambio» sino documentos de EDPYMES y cooperativas no autorizadas a captar depósitos; nuevos 012 y 013 (tarjetas de empresas no financieras y del exterior); descripciones completas de 006, 007 y 010.

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261008 — 08/10/2026
+
+- Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
+
 ## 12.20260818 — 27/09/2026
 
 - Al desmarcar un proyecto ya no desaparece de la barra: se puede volver a marcar, y «Todos» recupera todos los proyectos visibles.

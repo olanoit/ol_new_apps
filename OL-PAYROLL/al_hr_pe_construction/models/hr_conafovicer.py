@@ -227,7 +227,8 @@ class L10nPeHrConafovicerLine(models.Model):
 
     summary_id = fields.Many2one(
         'l10n_pe.hr.conafovicer', string='Resumen', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(
         related='summary_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='summary_id.currency_id')

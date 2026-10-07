@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <list string="Configuraciones de fotocheck">
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -32,7 +32,7 @@
                             <field name="logo_cert_5" widget="image" class="oe_avatar"/>
                         </group>
                         <group string="Carné">
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="fondo_front" widget="image" class="oe_avatar"/>
                             <field name="backimg" widget="image" class="oe_avatar"/>
                         </group>
