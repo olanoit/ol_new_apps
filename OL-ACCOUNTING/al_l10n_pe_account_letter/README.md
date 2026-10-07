@@ -50,8 +50,10 @@ condicionales. **Demo/validación funcional:**
   - Masiva (`l10n_pe.letter.refinance.massive.wizard`): refinancia varios
     canjes del mismo socio/diario/moneda/compañía en un único canje hijo.
 - **Canje masivo** (`l10n_pe.letter.massive`, botón "Método" con
-  `l10n_pe.letter.type.wizard`): agrupa canjes ya canjeados del mismo socio
-  en un registro consolidado.
+  `l10n_pe.letter.type.wizard`): envía al banco (cobranza libre o descuento,
+  con fecha, banco y código) las letras en cartera de varios canjes del mismo
+  socio, con el mismo asiento que el envío individual, y los agrupa en un
+  registro consolidado.
 - **Residuales/redondeo** (`l10n_pe.letter.residual`): registra la
   diferencia de redondeo entre el total facturado y el total canjeado.
 - **Vinculación de asientos por referencia**: reconecta un canje ya

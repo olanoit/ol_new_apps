@@ -410,6 +410,27 @@
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
+        <record id="account_letter_line_rule_company" model="ir.rule">
+            <field name="name">Letras multi-company</field>
+            <field name="model_id" ref="model_l10n_pe_letter_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="account_letter_invoice_line_rule_company" model="ir.rule">
+            <field name="name">Documentos del canje multi-company</field>
+            <field name="model_id" ref="model_l10n_pe_letter_invoice_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="account_letter_residual_rule_company" model="ir.rule">
+            <field name="name">Redondeo del canje multi-company</field>
+            <field name="model_id" ref="model_l10n_pe_letter_residual"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
         <record id="account_letter_account_config_rule_company" model="ir.rule">
             <field name="name">Cuentas de letras multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_account_config"/>

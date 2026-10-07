@@ -610,12 +610,14 @@ class L10nPeLetter(models.Model):
                     '%(diff)s %(currency)s). Ajuste el importe a canjear de las facturas o '
                     'el de las letras: solo el redondeo va a la cuenta de redondeo.',
                     diff=currency.round(self.rest_amount_currency), currency=currency.name))
-        self.state = 'redeemed'
         if any(not letter.nro_letter for letter in self.letter_line_ids):
             raise UserError('Se necesita ingresar el número de letra de referencia.')
         if self.is_refinance_children:
+            # El estado cambia después de validar y contabilizar.
             self.action_redeemed_refinance()
+            self.state = 'redeemed'
         else:
+            self.state = 'redeemed'
             account_move_lines = []
             # Apunte contable del comprobante
             for invoice_line in self.invoice_line_ids:
@@ -972,26 +974,64 @@ class L10nPeLetter(models.Model):
     )
 
     # Método para botón de canje masivo
-    def action_multi_redeemed(self, letter_type):
+    def action_multi_redeemed(self, letter_type, date_canje=None, bank_id=False, code=False):
+        """Envía al banco las letras en cartera de varios canjes del mismo socio.
+
+        Cada canje pasa por ``action_canje_create``, igual que el envío
+        individual: el asiento lleva la letra de cartera (1231/1232) a la
+        cuenta de cobranza o descuento. Antes solo se cambiaba el tipo de las
+        letras y la contabilidad seguía en cartera.
+
+        Una letra ya enviada no cambia de tipo (pasar de cobranza a descuento
+        necesita un asiento de reclasificación que el módulo no hace).
+        """
+        if letter_type not in ('billing', 'discount'):
+            raise UserError(self.env._(
+                'El canje masivo envía las letras al banco en cobranza libre o descuento.'))
+        date_canje = date_canje or fields.Date.context_today(self)
+        if date_canje > fields.Date.context_today(self):
+            raise UserError('La fecha de canje no puede ser mayor a la fecha actual.')
         selected_invoices = self.env['l10n_pe.letter'].browse(self.env.context.get('active_ids', []))
         if len(selected_invoices) < 2:
             raise UserError('Necesitas seleccionar al menos dos canjes para continuar.')
         partner_ids = set(invoice.partner_id.id for invoice in selected_invoices)
         if len(partner_ids) > 1:
             raise UserError('Las facturas seleccionadas no pertenecen al mismo socio.')
+        if len(selected_invoices.company_id) > 1 or len(set(selected_invoices.mapped('type'))) > 1:
+            raise UserError(self.env._(
+                'Los canjes deben ser de la misma compañía y del mismo tipo (cliente o proveedor).'))
         # extrae el partner_id de la ultima factura seleccionada
         partner_id = selected_invoices[-1].partner_id
         journal_id = selected_invoices[-1].journal_id
         type = selected_invoices[-1].type
+        to_send = {}
         for letter in selected_invoices:
             if letter.state not in ['redeemed', 'banked']:
                 raise UserError(f'La letra {letter.name} no está canjeada.')
+            if letter.account_id.date and date_canje < letter.account_id.date:
+                raise UserError(self.env._(
+                    'La fecha de canje no puede ser menor a la del canje %s.', letter.name))
+            pending = letter._get_letters_to_send()
+            sent = letter.letter_line_ids - pending
+            other_type = sent.filtered(
+                lambda line: line.payment_state != 'paid' and line.letter_type != letter_type)
+            if other_type:
+                raise UserError(self.env._(
+                    'Las letras %(letters)s ya se enviaron al banco con otro tipo: '
+                    'el canje masivo no las reclasifica.',
+                    letters=', '.join(other_type.mapped('nro_letter'))))
+            to_send[letter] = pending
+        for letter, pending in to_send.items():
             letter.is_massive_letter = True
-            # Modificar el tipo de letra
-            if letter.letter_line_ids:
-                letter.letter_line_ids.write({
-                    'letter_type': letter_type,
-                })
+            if not pending:
+                continue
+            letter.action_canje_create(letter_type, date_canje)
+            values = {'letter_type': letter_type}
+            if bank_id:
+                values['bank_id'] = bank_id
+            if code:
+                values['code'] = code
+            pending.write(values)
 
         # Crear un nuevo registro en l10n_pe.letter.massive
         massive_letter = self.env['l10n_pe.letter.massive'].create({
@@ -1010,6 +1050,7 @@ class L10nPeLetter(models.Model):
             'letter_invoices_ids': [(6, 0, invoice_lines.ids)],
             'letter_move_ids': [(6, 0, letter_lines.ids)],
         })
+        massive_letter._update_banked_state()
         return massive_letter
 
     def action_link_account_move_by_ref(self):
@@ -1128,7 +1169,10 @@ class L10nPeLetter(models.Model):
                     prefix = 'CLC'
                 else:
                     prefix = 'CLP'
-                sequence = self.env['ir.sequence'].next_by_code('l10n_pe.letter')
+                # La secuencia de la compañía del canje, si se configuró una
+                # propia; si no, la general.
+                company = self.env['res.company'].browse(vals.get('company_id')) or self.env.company
+                sequence = self.env['ir.sequence'].with_company(company).next_by_code('l10n_pe.letter')
                 vals['name'] = f'{prefix}{sequence}' if sequence else f"{prefix}{vals.get('id', '')}"
 
         return super().create(vals_list)
@@ -1503,6 +1547,24 @@ class L10nPeLetter(models.Model):
                     exchange_rate=exchange_rate,
                     l10n_pe_letter_line_id=invoice_line.id,
                 ))
+        # Lo que se renueva (letras pendientes y documentos añadidos) debe ser
+        # lo que suman las letras nuevas. Los intereses o gastos de la
+        # renovación no se suman a mano: se facturan con una nota de débito
+        # (forman parte de la base del IGV) que se añade como documento.
+        # Antes la diferencia acababa en «asiento descuadrado».
+        currency = self.currency_id or self.company_id.currency_id
+        difference = sum(vals['amount_currency'] for vals in account_move_lines)
+        if currency.compare_amounts(abs(difference), 0.05) > 0:
+            new_total = sum(self.letter_line_ids.mapped('imp_div'))
+            sign = 1 if self.type == 'out_invoice' else -1
+            raise UserError(self.env._(
+                'Las letras nuevas suman %(new)s %(currency)s y lo que se renueva '
+                '(letras pendientes y documentos añadidos) %(old)s %(currency)s. '
+                'Si la renovación lleva intereses o gastos, emita una nota de débito '
+                'por ellos y añádala como documento del refinanciamiento.',
+                new=currency.round(new_total),
+                old=currency.round(new_total - sign * difference),
+                currency=currency.name))
         account_move_lines = self._l10n_pe_balance_cents(account_move_lines)
         move_vals = {
             'ref': self.name,

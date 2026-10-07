@@ -19,6 +19,10 @@ class L10nPeLetterLine(models.Model):
         ondelete='cascade',
     )
     journal_id = fields.Many2one(related='letter_id.journal_id', store=True)
+    # Compañía del canje, guardada: sin ella las listas de letras y la
+    # búsqueda de documentos no podían filtrarse por compañía (reglas).
+    company_id = fields.Many2one(
+        related='letter_id.company_id', store=True, index=True, string='Compañía')
     related_invoice_names = fields.Char(related='letter_id.related_invoice_names', store=True)
     letter_name = fields.Char(related='letter_id.name', store=True, string='Código de canje')
 
@@ -305,6 +309,7 @@ class L10nPeLetterLine(models.Model):
                 letter = self.env['l10n_pe.letter.line'].search([
                     ('nro_letter', '=', record.nro_letter),
                     ('partner_id', '=', record.partner_id.id),
+                    ('company_id', '=', record.company_id.id),
                     ('id', '!=', record.id)
                 ])
                 if letter:

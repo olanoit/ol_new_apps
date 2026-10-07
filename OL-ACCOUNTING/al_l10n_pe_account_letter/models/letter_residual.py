@@ -15,6 +15,10 @@ class L10nPeLetterResidual(models.Model):
         string='Letra',
         ondelete='cascade',
     )
+    # Compañía del canje, guardada: sin ella las listas de letras y la
+    # búsqueda de documentos no podían filtrarse por compañía (reglas).
+    company_id = fields.Many2one(
+        related='letter_id.company_id', store=True, index=True, string='Compañía')
     type = fields.Selection(
         string='Tipo',
         related='letter_id.type',

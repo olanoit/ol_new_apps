@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Canje masivo: ahora envía al banco las letras en cartera con su asiento contable (cartera → cobranza libre o descuento), pidiendo fecha, banco y código. Antes solo cambiaba el tipo de las letras y la contabilidad seguía en cartera. No reclasifica letras ya enviadas con otro tipo.
+- Refinanciamiento con intereses: si las letras nuevas no suman lo que se renueva, se avisa que los intereses o gastos se facturan con una nota de débito, que se añade como documento del refinanciamiento y queda conciliada (antes: «asiento descuadrado»).
+- Multicompañía: las letras, los documentos y el redondeo del canje guardan la compañía y tienen su regla de acceso; el número de letra se repite solo dentro del socio y la compañía; la numeración del canje usa la secuencia de su compañía si se configura una.
+
 ## 10.20261007 — 07/10/2026
 
 - Canje: al restablecerlo a borrador se deshace la conciliación (antes la factura seguía «Pagado» y no se podía volver a canjear); no se restablece si hay pagos contra las letras; un documento no se canjea por más de su saldo ni en dos canjes a la vez; una diferencia entre facturas y letras mayor que el redondeo ya no va a la cuenta de redondeo; un canje ya contabilizado no se vuelve a canjear por doble clic.

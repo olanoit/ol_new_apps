@@ -8,6 +8,9 @@
                 <sheet>
                     <group>
                         <field name="letter_type" widget="radio"/>
+                        <field name="date_canje"/>
+                        <field name="bank_id" options="{'no_create': True}"/>
+                        <field name="code"/>
                     </group>
                 </sheet>
                 <footer>

@@ -132,6 +132,42 @@ class TestLetterAuditFixes(TransactionCase):
         with self.assertRaises(UserError):
             massive.create_letters()
 
+    def test_massive_sends_letters_with_entry(self):
+        """El canje masivo contabiliza el envío al banco de cada canje."""
+        letter_a = self._redeemed_letter(amount=1000.0)
+        letter_b = self._redeemed_letter(amount=500.0)
+        wizard = self.env['l10n_pe.letter.type.wizard'].with_context(
+            active_ids=(letter_a | letter_b).ids).create({
+                'letter_type': 'discount', 'date_canje': date(2026, 8, 20),
+                'bank_id': self.bank.id, 'code': 'MAS-001'})
+        action = wizard.action_multi_redeemed()
+        massive = self.env['l10n_pe.letter.massive'].browse(action['res_id'])
+        for letter in letter_a | letter_b:
+            self.assertEqual(letter.canje_move_id.state, 'posted')
+            self.assertEqual(letter.canje_move_id.date, date(2026, 8, 20))
+            self.assertEqual(letter.state, 'banked')
+            for line in letter.letter_line_ids:
+                self.assertEqual(line.letter_type, 'discount')
+                self.assertEqual(line.code, 'MAS-001')
+                # La letra queda abierta en el asiento de envío, no en cartera.
+                self.assertIn(line._l10n_pe_open_line().move_id, letter.canje_move_id)
+        self.assertEqual(massive.state, 'banked')
+
+    def test_massive_does_not_reclassify_sent_letters(self):
+        letter_a = self._redeemed_letter(amount=1000.0)
+        letter_b = self._redeemed_letter(amount=500.0)
+        self._send_to_bank(letter_a, date(2026, 8, 15))
+        Letter = self.Letter.with_context(active_ids=(letter_a | letter_b).ids)
+        with self.assertRaises(UserError):
+            Letter.action_multi_redeemed('discount')
+        with self.assertRaises(UserError):
+            Letter.action_multi_redeemed('protested')
+        self.assertFalse(letter_b.canje_move_id)
+        # Mismo tipo: solo se envía lo que sigue en cartera.
+        Letter.action_multi_redeemed('billing', date(2026, 8, 16))
+        self.assertTrue(letter_b.canje_move_id)
+        self.assertEqual(letter_a.canje_move_id.date, date(2026, 8, 15))
+
     def test_refinance_wizard_rejects_massive_context(self):
         letter = self._redeemed_letter()
         wizard = self.env['l10n_pe.letter.refinance.wizard'].with_context(
@@ -152,6 +188,50 @@ class TestLetterAuditFixes(TransactionCase):
         self.assertEqual(letter.state, 'draft')
         self.assertFalse(letter.refinance_id)
         self.assertFalse(child.exists(), 'el refinanciamiento se elimina')
+
+    def _refinance_child(self, letter, letters=3):
+        child = self.Letter.create_refinance(letter, date(2026, 8, 30))
+        child.action_checked()
+        child.write({'number_letter': letters, 'letter_end_date': date(2026, 11, 30),
+                     'range_date': 30})
+        child.create_letters()
+        for index, line in enumerate(child.letter_line_ids, start=1):
+            line.nro_letter = 'LRF-%d-%03d' % (child.id, index)
+        return child
+
+    def test_refinance_closes_origin_letters(self):
+        letter = self._redeemed_letter(amount=3000.0)
+        child = self._refinance_child(letter)
+        self.assertAlmostEqual(sum(child.letter_line_ids.mapped('imp_div')), 3000.0, places=2)
+        child.action_redeemed()
+        self.assertEqual(child.account_id.state, 'posted')
+        for line in letter.letter_line_ids:
+            self.assertFalse(line._l10n_pe_open_line(), 'la letra renovada queda cerrada')
+        for line in child.letter_line_ids:
+            self.assertTrue(line._l10n_pe_open_line())
+
+    def test_refinance_interest_needs_debit_note(self):
+        """Intereses de la renovación: sin documento que los respalde el
+        refinanciamiento se bloquea con un aviso claro; con la nota de débito
+        añadida como documento, se contabiliza y la concilia."""
+        letter = self._redeemed_letter(amount=3000.0)
+        child = self._refinance_child(letter)
+        last = child.letter_line_ids[-1]
+        last.imp_div += 100.0
+        with self.assertRaisesRegex(UserError, 'nota de débito'):
+            child.action_redeemed()
+        self.assertEqual(child.state, 'checked')
+        interest = self._invoice(100.0)
+        term_line = interest.line_ids.filtered(lambda l: l.display_type == 'payment_term')
+        child.write({'invoice_line_ids': [(0, 0, {
+            'document_type_id': self.doc_type.id,
+            'move_line_id': term_line.id,
+            'account_id': term_line.account_id.id,
+            'imp_div': 100.0,
+        })]})
+        child.action_redeemed()
+        self.assertEqual(child.state, 'redeemed')
+        self.assertEqual(interest.payment_state, 'paid', 'la nota de débito pasa a las letras')
 
     def test_refinance_requires_redeemed_and_only_once(self):
         draft_letter = self._checked_letter()
@@ -252,6 +332,14 @@ class TestLetterAuditFixes(TransactionCase):
         config.with_user(user).read(['account_type'])
         with self.assertRaises(AccessError):
             config.with_user(user).write({'letter_type': 'protested'})
+
+    def test_lines_carry_the_letter_company(self):
+        letter = self._redeemed_letter()
+        for line in list(letter.letter_line_ids) + list(letter.invoice_line_ids):
+            self.assertEqual(line.company_id, letter.company_id)
+        for xmlid in ('account_letter_line_rule_company', 'account_letter_invoice_line_rule_company',
+                      'account_letter_residual_rule_company'):
+            self.assertTrue(self.env.ref('al_l10n_pe_account_letter.' + xmlid))
 
     def test_massive_and_config_have_company_rules(self):
         self.assertTrue(self.env.ref('al_l10n_pe_account_letter.account_letter_massive_rule_company'))
