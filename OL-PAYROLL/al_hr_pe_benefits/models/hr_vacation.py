@@ -32,6 +32,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -70,81 +71,7 @@ class HrVacation(models.Model):
             if record.payslip_run_id:
                 record.name = 'Vacaciones %s' % record.payslip_run_id.name
 
-    def turn_draft(self):
-        self.write({'state': 'draft'})
-
-    def compute_vaca_line_all(self):
-        self.line_ids.compute_vacation_line()
-        return self._notify(self.env._('Se recalculó exitosamente.'))
-
-    def compute_fifth(self):
-        """Retención de 5ta proporcional a los días liquidados."""
-        self.ensure_one()
-        return self.line_ids.compute_quinta_line(self.payslip_run_id)
-
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
-    def _notify(self, message):
-        """Sustituye al ``popup.it`` v18 (no migrado)."""
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {'message': message, 'type': 'success'},
-        }
-
-    @api.model
-    def _get_admission_date(self, employee):
-        """Fecha de ingreso: versión con ``contract_date_start`` más
-        antigua (regla del refactor contrato → versión)."""
-        version = self.env['hr.version'].search(
-            [('employee_id', '=', employee.id),
-             ('contract_date_start', '!=', False)],
-            order='contract_date_start asc, date_version asc', limit=1)
-        return version.contract_date_start
-
-    @api.model
-    def _calculate_average(self, admission_date, date_from, months, lines):
-        """Promedio de conceptos variables: mismo criterio que
-        ``hr.main.parameter.calculate_bonus`` (≥3 MESES distintos con el
-        concepto en la ventana de 6 meses; ÷6, o ÷meses laborados si
-        ingresó dentro de la ventana)."""
-        return self.env['hr.main.parameter'].calculate_bonus(
-            admission_date, date_from, months, lines)
-
-    @api.model
-    def _check_configuration(self, param):
-        """Valida la configuración de promedios en Parámetros
-        Principales (port de ``check_vacation_values`` v18). Si el campo
-        aún no existe en el hr.main.parameter v19 (lo añade la fase de
-        configuración de beneficios) se omite la validación y el promedio
-        correspondiente vale 0 — mientras tanto todo se lee con
-        ``getattr`` con guard."""
-        missing = [
-            label for field_name, label in [
-                ('basic_sr_id', 'R.S. Básico'),
-                ('household_allowance_sr_id', 'R.S. Asignación familiar'),
-                ('commission_sr_ids', 'R.S. Comisiones'),
-                ('bonus_sr_ids', 'R.S. Bonificaciones regulares'),
-                ('extra_hours_sr_id', 'R.S. Sobretiempo'),
-            ] if field_name in param._fields
-            and not getattr(param, field_name, False)]
-        if missing:
-            raise UserError(self.env._(
-                'Faltan configuraciones de vacaciones en los Parámetros '
-                'Principales de Nómina: %(fields)s.',
-                fields=', '.join(missing)))
-
-    def _get_dom_record_days(self, version):
-        """Récord vacacional según el calendario: 260 días si la jornada
-        incluye descanso semanal DOM, 210 si no (v18 lo resolvía con SQL
-        crudo sobre resource_calendar_attendance)."""
-        dom_count = self.env['resource.calendar.attendance'].search_count([
-            ('calendar_id', '=', version.resource_calendar_id.id),
-            ('work_entry_type_id.code', '=', 'DOM'),
-        ])
-        return 260 if dom_count else 210
-
+    # Botones, en el mismo orden que en la vista
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
@@ -361,62 +288,14 @@ class HrVacation(models.Model):
             and line.employee_id in preserved_employees).unlink()
         return self._notify(self.env._('Se calculó exitosamente.'))
 
-    # ------------------------------------------------------------------
-    # Exportación al lote de nóminas
-    # ------------------------------------------------------------------
-    def _set_input_amount(self, slip, input_type, amount):
-        """Fija el importe del input en la boleta (creándolo si falta:
-        en v19 las líneas de input no se autogeneran como en v18)."""
-        line = slip.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == input_type)
-        if line:
-            line[:1].amount = amount
-        else:
-            slip.write({'input_line_ids': [(0, 0, {
-                'input_type_id': input_type.id,
-                'amount': amount,
-            })]})
+    def compute_vaca_line_all(self):
+        self.line_ids.compute_vacation_line()
+        return self._notify(self.env._('Se recalculó exitosamente.'))
 
-    def set_amounts(self, lines, lot):
-        """Acumula por empleado y vuelca a los inputs de su boleta:
-        VAC (goce), COMP_VAC (venta), ADE_VAC (adelanto neto) y QUINTA
-        (retención proporcional). v18 leía los input types de Parámetros
-        Principales; en v19 son data del módulo base."""
-        inp_vacation = self.env.ref('al_hr_pe.input_type_VAC')
-        inp_venta_vacation = self.env.ref('al_hr_pe.input_type_COMP_VAC')
-        inp_ade_vacation = self.env.ref('al_hr_pe.input_type_ADE_VAC')
-        inp_fifth = self.env.ref('al_hr_pe.input_type_QUINTA')
-
-        total_vacation = total_venta_vacation = 0.0
-        total_ade_vaca = total_quinta = 0.0
-        previous_employee = self.env['hr.employee']
-        for line in lines.sorted(key=lambda l: l.employee_id.id):
-            slip = lot.slip_ids.filtered(
-                lambda s: s.employee_id == line.employee_id)[:1]
-            if not slip:
-                continue
-            if line.employee_id == previous_employee:
-                if line.vacation_kind == 'rest':
-                    total_vacation += line.total_vacation
-                else:
-                    total_venta_vacation += line.total_vacation
-                total_ade_vaca += line.total
-                total_quinta += line.quinta
-            else:
-                if line.vacation_kind == 'rest':
-                    total_vacation = line.total_vacation
-                    total_venta_vacation = 0.0
-                else:
-                    total_vacation = 0.0
-                    total_venta_vacation = line.total_vacation
-                total_ade_vaca = line.total
-                total_quinta = line.quinta
-            self._set_input_amount(slip, inp_vacation, total_vacation)
-            self._set_input_amount(
-                slip, inp_venta_vacation, total_venta_vacation)
-            self._set_input_amount(slip, inp_ade_vacation, total_ade_vaca)
-            self._set_input_amount(slip, inp_fifth, total_quinta)
-            previous_employee = line.employee_id
+    def compute_fifth(self):
+        """Retención de 5ta proporcional a los días liquidados."""
+        self.ensure_one()
+        return self.line_ids.compute_quinta_line(self.payslip_run_id)
 
     def export_vacation(self):
         self.ensure_one()
@@ -491,6 +370,129 @@ class HrVacation(models.Model):
             'url': '/web/content/%s?download=true' % attachment.id,
             'target': 'self',
         }
+
+    def turn_draft(self):
+        self.write({'state': 'draft'})
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _notify(self, message):
+        """Sustituye al ``popup.it`` v18 (no migrado)."""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {'message': message, 'type': 'success'},
+        }
+
+    @api.model
+    def _get_admission_date(self, employee):
+        """Fecha de ingreso: versión con ``contract_date_start`` más
+        antigua (regla del refactor contrato → versión)."""
+        version = self.env['hr.version'].search(
+            [('employee_id', '=', employee.id),
+             ('contract_date_start', '!=', False)],
+            order='contract_date_start asc, date_version asc', limit=1)
+        return version.contract_date_start
+
+    @api.model
+    def _calculate_average(self, admission_date, date_from, months, lines):
+        """Promedio de conceptos variables: mismo criterio que
+        ``hr.main.parameter.calculate_bonus`` (≥3 MESES distintos con el
+        concepto en la ventana de 6 meses; ÷6, o ÷meses laborados si
+        ingresó dentro de la ventana)."""
+        return self.env['hr.main.parameter'].calculate_bonus(
+            admission_date, date_from, months, lines)
+
+    @api.model
+    def _check_configuration(self, param):
+        """Valida la configuración de promedios en Parámetros
+        Principales (port de ``check_vacation_values`` v18). Si el campo
+        aún no existe en el hr.main.parameter v19 (lo añade la fase de
+        configuración de beneficios) se omite la validación y el promedio
+        correspondiente vale 0 — mientras tanto todo se lee con
+        ``getattr`` con guard."""
+        missing = [
+            label for field_name, label in [
+                ('basic_sr_id', 'R.S. Básico'),
+                ('household_allowance_sr_id', 'R.S. Asignación familiar'),
+                ('commission_sr_ids', 'R.S. Comisiones'),
+                ('bonus_sr_ids', 'R.S. Bonificaciones regulares'),
+                ('extra_hours_sr_id', 'R.S. Sobretiempo'),
+            ] if field_name in param._fields
+            and not getattr(param, field_name, False)]
+        if missing:
+            raise UserError(self.env._(
+                'Faltan configuraciones de vacaciones en los Parámetros '
+                'Principales de Nómina: %(fields)s.',
+                fields=', '.join(missing)))
+
+    def _get_dom_record_days(self, version):
+        """Récord vacacional según el calendario: 260 días si la jornada
+        incluye descanso semanal DOM, 210 si no (v18 lo resolvía con SQL
+        crudo sobre resource_calendar_attendance)."""
+        dom_count = self.env['resource.calendar.attendance'].search_count([
+            ('calendar_id', '=', version.resource_calendar_id.id),
+            ('work_entry_type_id.code', '=', 'DOM'),
+        ])
+        return 260 if dom_count else 210
+
+    # ------------------------------------------------------------------
+    # Exportación al lote de nóminas
+    # ------------------------------------------------------------------
+    def _set_input_amount(self, slip, input_type, amount):
+        """Fija el importe del input en la boleta (creándolo si falta:
+        en v19 las líneas de input no se autogeneran como en v18)."""
+        line = slip.input_line_ids.filtered(
+            lambda inp: inp.input_type_id == input_type)
+        if line:
+            line[:1].amount = amount
+        else:
+            slip.write({'input_line_ids': [(0, 0, {
+                'input_type_id': input_type.id,
+                'amount': amount,
+            })]})
+
+    def set_amounts(self, lines, lot):
+        """Acumula por empleado y vuelca a los inputs de su boleta:
+        VAC (goce), COMP_VAC (venta), ADE_VAC (adelanto neto) y QUINTA
+        (retención proporcional). v18 leía los input types de Parámetros
+        Principales; en v19 son data del módulo base."""
+        inp_vacation = self.env.ref('al_hr_pe.input_type_VAC')
+        inp_venta_vacation = self.env.ref('al_hr_pe.input_type_COMP_VAC')
+        inp_ade_vacation = self.env.ref('al_hr_pe.input_type_ADE_VAC')
+        inp_fifth = self.env.ref('al_hr_pe.input_type_QUINTA')
+
+        total_vacation = total_venta_vacation = 0.0
+        total_ade_vaca = total_quinta = 0.0
+        previous_employee = self.env['hr.employee']
+        for line in lines.sorted(key=lambda l: l.employee_id.id):
+            slip = lot.slip_ids.filtered(
+                lambda s: s.employee_id == line.employee_id)[:1]
+            if not slip:
+                continue
+            if line.employee_id == previous_employee:
+                if line.vacation_kind == 'rest':
+                    total_vacation += line.total_vacation
+                else:
+                    total_venta_vacation += line.total_vacation
+                total_ade_vaca += line.total
+                total_quinta += line.quinta
+            else:
+                if line.vacation_kind == 'rest':
+                    total_vacation = line.total_vacation
+                    total_venta_vacation = 0.0
+                else:
+                    total_vacation = 0.0
+                    total_venta_vacation = line.total_vacation
+                total_ade_vaca = line.total
+                total_quinta = line.quinta
+            self._set_input_amount(slip, inp_vacation, total_vacation)
+            self._set_input_amount(
+                slip, inp_venta_vacation, total_venta_vacation)
+            self._set_input_amount(slip, inp_ade_vacation, total_ade_vaca)
+            self._set_input_amount(slip, inp_fifth, total_quinta)
+            previous_employee = line.employee_id
 
 
 class HrVacationLine(models.Model):
@@ -708,6 +710,11 @@ class HrVacationLine(models.Model):
             'target': 'new',
         }
 
+    @api.depends('vacation_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.vacation_id.display_name, rec.employee_id.name)
+
 
 class HrLeaveVacationLine(models.Model):
     _name = 'hr.leave.vacation.line'
@@ -736,3 +743,8 @@ class HrLeaveVacationLine(models.Model):
         for line in self:
             line.total = line.wage + line.household_allowance \
                 + line.commission + line.extra_hours + line.others_income
+
+    @api.depends('leave_vacation_id', 'periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.leave_vacation_id.display_name, rec.periodo_id.display_name)

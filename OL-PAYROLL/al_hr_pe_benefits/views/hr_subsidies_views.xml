@@ -22,10 +22,12 @@
                             </div>
                         </button>
                     </div>
+                    <div class="oe_title">
+                        <label for="periodo_id"/>
+                        <h1><field name="periodo_id" readonly="state == 'done'" placeholder="Periodo"/></h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="periodo_id" readonly="state == 'done'"/>
-                        </group>
+                        <group/>
                         <group>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
@@ -48,7 +50,10 @@
         <field name="arch" type="xml">
             <list>
                 <field name="periodo_id"/>
-                <field name="state" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="subsidies_count" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
@@ -69,9 +74,12 @@
                     <field name="state" widget="statusbar" readonly="1"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id" required="1" readonly="state == 'close'"
+                                   options="{'no_create': True}" placeholder="Trabajador"/></h1>
+                    </div>
                     <group>
                         <group>
-                            <field name="employee_id" required="1" readonly="state == 'close'" options="{'no_create': True}"/>
                             <field name="suspension_id" readonly="state == 'close'" options="{'no_create': True}"/>
                             <label for="date_start" string="Fechas de contingencia"/>
                             <div name="dates_contingencia">
@@ -85,7 +93,9 @@
                             <field name="company_id" invisible="1"/>
                         </group>
                     </group>
-                    <field name="subsidies_line_ids" invisible="state != 'close'">
+                    <notebook invisible="state != 'close'">
+                        <page string="Remuneraciones" name="remunerations">
+                    <field name="subsidies_line_ids">
                         <list editable="top">
                             <field name="periodo_id" optional="show"/>
                             <field name="wage" sum="Básico" optional="show"/>
@@ -98,7 +108,9 @@
                             <field name="total" sum="Total" optional="show"/>
                         </list>
                     </field>
-                    <group string="Cálculo de subsidio total" invisible="state != 'close'">
+                        </page>
+                        <page string="Cálculo" name="calculation">
+                    <group string="Subsidio total">
                         <field name="subsidies_total_ids" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="total_rem" optional="show"/>
@@ -109,7 +121,7 @@
                             </list>
                         </field>
                     </group>
-                    <group string="Cálculo de subsidio por periodos" invisible="state != 'close'">
+                    <group string="Subsidio por periodos">
                         <field name="subsidies_periodo_ids" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="periodo_id" optional="show"/>
@@ -124,6 +136,8 @@
                             </list>
                         </field>
                     </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>
@@ -141,7 +155,10 @@
                 <field name="suspension_id" optional="show"/>
                 <field name="date_start" optional="show"/>
                 <field name="date_end" optional="show"/>
-                <field name="state" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="company_id" optional="hide" groups="base.group_multi_company"/>
             </list>
         </field>

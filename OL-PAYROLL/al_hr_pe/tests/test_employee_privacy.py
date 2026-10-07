@@ -18,10 +18,10 @@ from odoo import Command
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
-# Bloques que el módulo añade a la pestaña «Personal» de la ficha.
+# Pestañas que el módulo añade a la ficha («Planilla PE» y su «Domicilio»).
 PRIVATE_BLOCKS = (
-    ('al_hr_pe.view_employee_form_tregistro_address', 'Domicilio (T-Registro)'),
-    ('al_hr_pe.hr_employee_view_form_inherit_pe', 'Perú — Identificación (PLAME)'),
+    ('al_hr_pe.view_employee_form_tregistro_address', 'Planilla PE ▸ Domicilio'),
+    ('al_hr_pe.hr_employee_view_form_inherit_pe', 'Planilla PE'),
 )
 # Prefijos de los módulos de la suite.
 OUR_MODULES = ('al_', 'ol_')
@@ -51,13 +51,16 @@ class TestEmployeePrivacy(TransactionCase):
                          'el usuario de la prueba no debe ser de Recursos Humanos')
 
     def test_injected_blocks_declare_the_group(self):
-        """Cada bloque inyectado en la pestaña personal lleva su grupo."""
+        """Cada bloque inyectado (pestaña, separador, grupo o campo de primer
+        nivel) lleva su grupo. Los nodos con ``position`` son los anclajes de
+        la herencia, no contenido."""
         for xmlid, label in PRIVATE_BLOCKS:
             with self.subTest(vista=xmlid):
                 arch = etree.fromstring(self.env.ref(xmlid).arch_db)
                 nodes = arch.xpath(
-                    "//*[self::separator or self::group or self::field]"
-                    "[not(ancestor::group) and not(ancestor::separator)]")
+                    "//*[self::page or self::separator or self::group or self::field]"
+                    "[not(@position)][not(ancestor::group) and not(ancestor::separator)"
+                    " and not(ancestor::page[not(@position)])]")
                 self.assertTrue(nodes, 'la vista %s ya no inyecta nada' % xmlid)
                 for node in nodes:
                     self.assertEqual(

@@ -29,6 +29,7 @@ from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -260,6 +261,11 @@ class HrLoanLine(models.Model):
 
     def set_not_payed(self):
         self.write({'validation': 'not payed'})
+
+    @api.depends('loan_id', 'fee')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.loan_id.display_name, 'Cuota %s' % rec.fee if rec.fee else '')
 
 
 class HrPayslip(models.Model):

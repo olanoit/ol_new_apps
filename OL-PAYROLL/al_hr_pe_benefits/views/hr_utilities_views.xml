@@ -23,16 +23,18 @@
                             </div>
                         </button>
                     </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="name" invisible="1"/>
-                            <field name="year" readonly="state == 'exported'"/>
+                        <group string="Renta a distribuir">
+                            <field name="year" readonly="state == 'exported'" widget="year_selection"/>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
                             <field name="annual_rent" readonly="state == 'exported'"/>
                             <field name="percentage" readonly="state == 'exported'"/>
                             <field name="distribution" readonly="1" force_save="1"/>
                         </group>
-                        <group>
-                            <field name="payslip_run_id" readonly="state == 'exported'"/>
+                        <group string="Factores">
                             <field name="sum_salary_year" readonly="1" force_save="1"/>
                             <field name="sum_number_of_days_year" readonly="1" force_save="1"/>
                             <field name="factor_salary" readonly="1" force_save="1"/>
@@ -58,11 +60,14 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name" optional="show"/>
-                <field name="year" optional="show"/>
+                <field name="year" optional="show" options="{'format': false}"/>
                 <field name="annual_rent" optional="show"/>
                 <field name="percentage" optional="show"/>
                 <field name="distribution" optional="show"/>
-                <field name="state" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>

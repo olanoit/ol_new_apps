@@ -50,6 +50,7 @@ No portado (veredictos):
 import re
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -1453,6 +1454,11 @@ class HrAutomateMultipaymentLine(models.Model):
              'los layouts BCP e Interbank.')
     reference = fields.Char(string='Referencia')
     is_txt = fields.Boolean(string='Incluir en TXT', default=True)
+
+    @api.depends('multipayment_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.multipayment_id.display_name, rec.employee_id.name)
 
 
 # ======================================================================

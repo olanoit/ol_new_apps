@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import display_name
 from . import l10n_pe_hr_catalogs
 from . import l10n_pe_hr_dependent
 from . import l10n_pe_hr_dependent_export

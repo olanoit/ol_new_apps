@@ -748,6 +748,12 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 14.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Formularios de CTS, gratificación, vacaciones, liquidación, utilidades y quincena con bloques rotulados («Periodo» a la izquierda; depósito, cálculo o factores a la derecha) y el año como lista desplegable."
+      - "Vistas reordenadas: título en CTS, gratificación, vacaciones, liquidación, utilidades, quinta, adelantos y préstamos; las líneas de CTS, gratificación y vacaciones van con el trabajador como título y su cálculo en pestañas (remuneración computable, cálculo, depósito o aportes); subsidios y préstamos con sus tablas en pestañas; estados con insignia de color; años sin separador de miles. Nombre legible en todas las líneas (ya no «hr.cts.line,5»). «Devengue de vacaciones» pasa a «Planilla PE» de la nómina."
+      - "El nombre de los lotes de CTS, gratificación, vacaciones, liquidación, utilidades y quinta (el que propone el sistema) ya no se puede editar a mano. El botón de detalle de las líneas de CTS, gratificación y vacaciones pasa al final de la fila, como en el resto de listas, y en la quincena «Volver a borrador» va al final de la barra, junto a «Reabrir quincena»."
   - version: 13.20261007
     fecha: 07/10/2026
     cambios:

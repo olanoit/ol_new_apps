@@ -85,9 +85,12 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <label for="payslip_run_id"/>
+                        <h1><field name="payslip_run_id" readonly="state == 'done'" placeholder="Lote de nóminas"/></h1>
+                    </div>
                     <group>
                         <group>
-                            <field name="payslip_run_id" readonly="state == 'done'"/>
                             <field name="gratificacion_id" readonly="state == 'done'"/>
                         </group>
                         <group>
@@ -172,7 +175,10 @@
             <list>
                 <field name="payslip_run_id"/>
                 <field name="gratificacion_id" optional="hide"/>
-                <field name="state"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>

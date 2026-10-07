@@ -32,6 +32,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
@@ -136,21 +137,7 @@ class HrLiquidation(models.Model):
             record.name = self.env._(
                 'Liquidación %(lot)s', lot=record.payslip_run_id.name)
 
-    def turn_draft(self):
-        """Reabre la liquidación a borrador para permitir recálculo."""
-        self.write({'state': 'draft'})
-
-    def get_liquidation_employees(self):
-        """Abre la lista de empleados incluidos en la liquidación."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.employee',
-            'views': [[False, 'list'], [False, 'form']],
-            'domain': [('id', 'in', self.employee_ids.ids)],
-            'name': self.env._('Empleados'),
-        }
-
+    # Botones, en el mismo orden que en la vista
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
@@ -207,6 +194,82 @@ class HrLiquidation(models.Model):
         self.cts_line_ids.compute_cts_line()
         self.vacation_line_ids.compute_vacation_line()
         return notify_success(self.env._('Se recalculó exitosamente.'))
+
+    def export_liquidation(self):
+        """Cierra la liquidación y vuelca los conceptos al payslip.
+
+        Escribe en el payslip de cada cesado los inputs truncos
+        configurados en ``hr.main.parameter``
+        (``truncated_gratification_input_id``,
+        ``truncated_bonus_nine_input_id``, ``truncated_cts_input_id``,
+        ``vacation_input_id``, ``truncated_vacation_input_id``) y los
+        inputs de cada línea de conceptos extra. Marca ``exported``.
+        """
+        self.ensure_one()
+        ensure_draft(self)
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        param.check_liquidation_values()
+        lot = self.payslip_run_id
+
+        def employee_slip(employee):
+            return lot.slip_ids.filtered(
+                lambda slip: slip.employee_id == employee)
+
+        # Un cesado de julio puede tener dos truncas (ene-jun y jul): el
+        # input lleva la suma, no la última línea.
+        for employee, lines in \
+                self.gratification_line_ids.grouped('employee_id').items():
+            slip = employee_slip(employee)
+            self._set_slip_input(
+                slip, param.truncated_gratification_input_id,
+                sum(lines.mapped('total_grat')))
+            self._set_slip_input(
+                slip, param.truncated_bonus_nine_input_id,
+                sum(lines.mapped('bonus_essalud')))
+        for line in self.cts_line_ids:
+            slip = employee_slip(line.employee_id)
+            self._set_slip_input(
+                slip, param.truncated_cts_input_id, line.total_cts)
+        for line in self.vacation_line_ids:
+            slip = employee_slip(line.employee_id)
+            self._set_slip_input(
+                slip, param.vacation_input_id, line.accrued_vacation)
+            self._set_slip_input(
+                slip, param.truncated_vacation_input_id,
+                line.truncated_vacation)
+            if line.vacation_indemnity:
+                self._set_slip_input(
+                    slip, self.env.ref('al_hr_pe.input_type_INDVAC'),
+                    line.vacation_indemnity)
+            # Las vacaciones adelantadas se restaban solo en el total de la
+            # línea: la boleta pagaba las truncas completas.
+            if line.advanced_vacation:
+                self._set_slip_input(
+                    slip, self.env.ref('al_hr_pe.input_type_ADE_VAC'),
+                    line.advanced_vacation)
+        for line in self.liq_ext_concept_ids:
+            slip = employee_slip(line.employee_id)
+            for concept in line.conceptos_lines:
+                self._set_slip_input(
+                    slip, concept.name_input_id, concept.amount)
+        self.state = 'exported'
+        return notify_success(self.env._('Se exportó exitosamente.'))
+
+    def turn_draft(self):
+        """Reabre la liquidación a borrador para permitir recálculo."""
+        self.write({'state': 'draft'})
+
+    def get_liquidation_employees(self):
+        """Abre la lista de empleados incluidos en la liquidación."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('id', 'in', self.employee_ids.ids)],
+            'name': self.env._('Empleados'),
+        }
 
     def _get_cessation_slips(self, include_less_than_four=True):
         """Boletas del lote cuyo trabajador cesa dentro del periodo."""
@@ -420,67 +483,6 @@ class HrLiquidation(models.Model):
                 'amount': amount,
             })]})
 
-    def export_liquidation(self):
-        """Cierra la liquidación y vuelca los conceptos al payslip.
-
-        Escribe en el payslip de cada cesado los inputs truncos
-        configurados en ``hr.main.parameter``
-        (``truncated_gratification_input_id``,
-        ``truncated_bonus_nine_input_id``, ``truncated_cts_input_id``,
-        ``vacation_input_id``, ``truncated_vacation_input_id``) y los
-        inputs de cada línea de conceptos extra. Marca ``exported``.
-        """
-        self.ensure_one()
-        ensure_draft(self)
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        param.check_liquidation_values()
-        lot = self.payslip_run_id
-
-        def employee_slip(employee):
-            return lot.slip_ids.filtered(
-                lambda slip: slip.employee_id == employee)
-
-        # Un cesado de julio puede tener dos truncas (ene-jun y jul): el
-        # input lleva la suma, no la última línea.
-        for employee, lines in \
-                self.gratification_line_ids.grouped('employee_id').items():
-            slip = employee_slip(employee)
-            self._set_slip_input(
-                slip, param.truncated_gratification_input_id,
-                sum(lines.mapped('total_grat')))
-            self._set_slip_input(
-                slip, param.truncated_bonus_nine_input_id,
-                sum(lines.mapped('bonus_essalud')))
-        for line in self.cts_line_ids:
-            slip = employee_slip(line.employee_id)
-            self._set_slip_input(
-                slip, param.truncated_cts_input_id, line.total_cts)
-        for line in self.vacation_line_ids:
-            slip = employee_slip(line.employee_id)
-            self._set_slip_input(
-                slip, param.vacation_input_id, line.accrued_vacation)
-            self._set_slip_input(
-                slip, param.truncated_vacation_input_id,
-                line.truncated_vacation)
-            if line.vacation_indemnity:
-                self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.input_type_INDVAC'),
-                    line.vacation_indemnity)
-            # Las vacaciones adelantadas se restaban solo en el total de la
-            # línea: la boleta pagaba las truncas completas.
-            if line.advanced_vacation:
-                self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.input_type_ADE_VAC'),
-                    line.advanced_vacation)
-        for line in self.liq_ext_concept_ids:
-            slip = employee_slip(line.employee_id)
-            for concept in line.conceptos_lines:
-                self._set_slip_input(
-                    slip, concept.name_input_id, concept.amount)
-        self.state = 'exported'
-        return notify_success(self.env._('Se exportó exitosamente.'))
-
 
 class HrLiquidationVacationLine(models.Model):
     _name = 'hr.liquidation.vacation.line'
@@ -623,6 +625,11 @@ class HrLiquidationVacationLine(models.Model):
             if record.total <= 0 and not self.env.context.get('line_form'):
                 record.unlink()
 
+    @api.depends('liquidation_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.liquidation_id.display_name, rec.employee_id.name)
+
 
 class HrLiquidationExtraConcepts(models.Model):
     _name = 'hr.liquidation.extra_concepts'
@@ -678,6 +685,11 @@ class HrLiquidationExtraConcepts(models.Model):
             'target': 'new',
         }
 
+    @api.depends('liquidation_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.liquidation_id.display_name, rec.employee_id.name)
+
 
 class HrExtraConceptLine(models.Model):
     _name = 'hr.extra.concept.line'
@@ -695,3 +707,8 @@ class HrExtraConceptLine(models.Model):
     type = fields.Selection(
         selection=[('in', 'Ingreso'), ('out', 'Descuento')],
         string='Tipo', default='in')
+
+    @api.depends('extra_concept_id', 'name_input_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.extra_concept_id.display_name, rec.name_input_id.display_name)

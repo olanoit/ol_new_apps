@@ -16,9 +16,11 @@
                     <widget name="web_ribbon" title="Archivado"
                             bg_color="text-bg-danger"
                             invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nombre"/></h1>
+                    </div>
                     <group>
                         <group>
-                            <field name="name"/>
                             <field name="sequence"/>
                         </group>
                         <group>
@@ -108,14 +110,16 @@
     <record id="hr_employee_view_form_inherit_pe_contract" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.al.hr.pe.reports</field>
         <field name="model">hr.employee</field>
-        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="inherit_id" ref="al_hr_pe.hr_employee_view_form_inherit_pe"/>
         <field name="arch" type="xml">
             <!-- groups: datos privados del trabajador; cada bloque declara
                  su grupo y no depende de la restricción de la pestaña. -->
-            <page name="payroll_information" position="inside">
-                <group string="Perú — Contrato de trabajo"
-                       name="l10n_pe_contract"
-                       groups="hr_payroll.group_hr_payroll_user">
+            <!-- Pestaña interna de «Planilla PE» (al_hr_pe), la primera tras la
+                 identificación: es lo que se mira al contratar. -->
+            <xpath expr="//page[@name='l10n_pe_identification']" position="after">
+                <page string="Contrato de trabajo" name="l10n_pe_contract_page"
+                      groups="hr_payroll.group_hr_payroll_user">
+                <group name="l10n_pe_contract">
                     <group>
                         <field name="l10n_pe_contract_template_id"/>
                         <field name="l10n_pe_trial_period_regime"/>
@@ -128,7 +132,8 @@
                                 colspan="2"/>
                     </group>
                 </group>
-            </page>
+                </page>
+            </xpath>
         </field>
     </record>
 

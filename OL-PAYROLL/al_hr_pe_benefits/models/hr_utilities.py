@@ -92,6 +92,102 @@ class HrUtilities(models.Model):
             record.distribution = \
                 record.annual_rent * (record.percentage / 100)
 
+    # Botones, en el mismo orden que en la vista
+    # ------------------------------------------------------------------
+    # Cálculo y exportación
+    # ------------------------------------------------------------------
+    def calculate(self):
+        """Genera las líneas del ejercicio (una por trabajador con la
+        regla de remuneración afecta) y ejecuta el reparto."""
+        self.ensure_one()
+        Line = self.env['hr.utilities.line']
+        preserved = self.utilities_line_ids.filtered('preserve_record')
+        (self.utilities_line_ids - preserved).unlink()
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        self._check_configuration(param)
+        rule = getattr(param, 'rule_total_income')
+        wd_dtrab = getattr(param, 'wd_dtrab')
+        wd_falt = getattr(param, 'wd_falt')
+        # Solo boletas cerradas y sin las quincenales (su neto ya viaja
+        # en la mensual; contarlas duplicaría sueldo y días).
+        slips = self.env['hr.payslip'].search([
+            ('date_to', '>=', date(self.year, 1, 1)),
+            ('date_to', '<=', date(self.year, 12, 31)),
+            ('company_id', '=', self.company_id.id),
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
+        ])
+        data = {}
+        for slip in slips:
+            rule_lines = slip.line_ids.filtered(
+                lambda line: line.salary_rule_id == rule)
+            worked_days = slip.worked_days_line_ids
+            bucket = data.setdefault(slip.employee_id, {
+                'salary': 0.0, 'days': 0.0, 'has_rule': False})
+            if rule_lines:
+                bucket['has_rule'] = True
+                bucket['salary'] += sum(rule_lines.mapped('total'))
+            bucket['days'] += sum(worked_days.filtered(
+                lambda line: line.work_entry_type_id in wd_dtrab
+            ).mapped('number_of_days'))
+            bucket['days'] -= sum(worked_days.filtered(
+                lambda line: line.work_entry_type_id in wd_falt
+            ).mapped('number_of_days'))
+        closing_date = date(self.year, 12, 31)
+        for employee in sorted(data, key=lambda emp: emp.id):
+            bucket = data[employee]
+            # Las líneas marcadas «No recalcular» se conservan: no se
+            # crea otra para ese trabajador (antes se creaba y se borraba
+            # DESPUÉS del reparto, que ya lo había contado dos veces).
+            if not bucket['has_rule'] \
+                    or employee in preserved.employee_id:
+                continue
+            # TODO(fase3-revisar): distribution_id (distribución
+            # analítica del contrato v18) sin equivalente en hr.version.
+            first_version = param.get_first_version(employee)
+            closing_version = employee._get_version(closing_date)
+            Line.create({
+                'main_id': self.id,
+                'employee_document': employee.identification_id or '',
+                'employee': employee.display_name,
+                'employee_id': employee.id,
+                'version_id': employee.version_id.id,
+                'admission_date': first_version.contract_date_start,
+                'salary': bucket['salary'],
+                'number_of_days': bucket['days'],
+                'monthly_remuneration': self._closing_remuneration(
+                    employee, closing_version, param, closing_date),
+            })
+        self._distribute()
+        return notify_success(self.env._('Se calculó exitosamente.'))
+
+    def compute_utilities_line_all(self):
+        """Recalcula el reparto completo tras ajustes manuales."""
+        self._distribute()
+        return notify_success(self.env._('Se recalculó exitosamente.'))
+
+    def export_utilities(self):
+        """Vuelca el total de cada línea al input de utilidades de la
+        boleta del trabajador en el lote de pago."""
+        self.ensure_one()
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        self._check_configuration(param)
+        input_utilities = getattr(param, 'hr_input_for_results')
+        for line in self.utilities_line_ids:
+            slip = self.payslip_run_id.slip_ids.filtered(
+                lambda slip: slip.employee_id == line.employee_id)[:1]
+            if not slip:
+                continue
+            slip._set_pe_input_amount(input_utilities, line.total_utilities)
+        self.state = 'exported'
+        return notify_success(self.env._(
+            'Se envió al lote de nóminas exitosamente.'))
+
+    def turn_draft(self):
+        self.write({'state': 'draft'})
+
     def action_open_utili(self):
         self.ensure_one()
         return {
@@ -101,14 +197,6 @@ class HrUtilities(models.Model):
             'domain': [('id', 'in', self.utilities_line_ids.ids)],
             'name': self.env._('Liquidaciones de utilidades'),
         }
-
-    def turn_draft(self):
-        self.write({'state': 'draft'})
-
-    def compute_utilities_line_all(self):
-        """Recalcula el reparto completo tras ajustes manuales."""
-        self._distribute()
-        return notify_success(self.env._('Se recalculó exitosamente.'))
 
     # ------------------------------------------------------------------
     # Helpers
@@ -188,93 +276,6 @@ class HrUtilities(models.Model):
                 else:
                     line.excess_utilities = 0.0
                 line.total_utilities = total
-
-    # ------------------------------------------------------------------
-    # Cálculo y exportación
-    # ------------------------------------------------------------------
-    def calculate(self):
-        """Genera las líneas del ejercicio (una por trabajador con la
-        regla de remuneración afecta) y ejecuta el reparto."""
-        self.ensure_one()
-        Line = self.env['hr.utilities.line']
-        preserved = self.utilities_line_ids.filtered('preserve_record')
-        (self.utilities_line_ids - preserved).unlink()
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        self._check_configuration(param)
-        rule = getattr(param, 'rule_total_income')
-        wd_dtrab = getattr(param, 'wd_dtrab')
-        wd_falt = getattr(param, 'wd_falt')
-        # Solo boletas cerradas y sin las quincenales (su neto ya viaja
-        # en la mensual; contarlas duplicaría sueldo y días).
-        slips = self.env['hr.payslip'].search([
-            ('date_to', '>=', date(self.year, 1, 1)),
-            ('date_to', '<=', date(self.year, 12, 31)),
-            ('company_id', '=', self.company_id.id),
-            ('state', 'in', ('validated', 'paid')),
-            ('fortnightly_id', '=', False),
-        ])
-        data = {}
-        for slip in slips:
-            rule_lines = slip.line_ids.filtered(
-                lambda line: line.salary_rule_id == rule)
-            worked_days = slip.worked_days_line_ids
-            bucket = data.setdefault(slip.employee_id, {
-                'salary': 0.0, 'days': 0.0, 'has_rule': False})
-            if rule_lines:
-                bucket['has_rule'] = True
-                bucket['salary'] += sum(rule_lines.mapped('total'))
-            bucket['days'] += sum(worked_days.filtered(
-                lambda line: line.work_entry_type_id in wd_dtrab
-            ).mapped('number_of_days'))
-            bucket['days'] -= sum(worked_days.filtered(
-                lambda line: line.work_entry_type_id in wd_falt
-            ).mapped('number_of_days'))
-        closing_date = date(self.year, 12, 31)
-        for employee in sorted(data, key=lambda emp: emp.id):
-            bucket = data[employee]
-            # Las líneas marcadas «No recalcular» se conservan: no se
-            # crea otra para ese trabajador (antes se creaba y se borraba
-            # DESPUÉS del reparto, que ya lo había contado dos veces).
-            if not bucket['has_rule'] \
-                    or employee in preserved.employee_id:
-                continue
-            # TODO(fase3-revisar): distribution_id (distribución
-            # analítica del contrato v18) sin equivalente en hr.version.
-            first_version = param.get_first_version(employee)
-            closing_version = employee._get_version(closing_date)
-            Line.create({
-                'main_id': self.id,
-                'employee_document': employee.identification_id or '',
-                'employee': employee.display_name,
-                'employee_id': employee.id,
-                'version_id': employee.version_id.id,
-                'admission_date': first_version.contract_date_start,
-                'salary': bucket['salary'],
-                'number_of_days': bucket['days'],
-                'monthly_remuneration': self._closing_remuneration(
-                    employee, closing_version, param, closing_date),
-            })
-        self._distribute()
-        return notify_success(self.env._('Se calculó exitosamente.'))
-
-    def export_utilities(self):
-        """Vuelca el total de cada línea al input de utilidades de la
-        boleta del trabajador en el lote de pago."""
-        self.ensure_one()
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        self._check_configuration(param)
-        input_utilities = getattr(param, 'hr_input_for_results')
-        for line in self.utilities_line_ids:
-            slip = self.payslip_run_id.slip_ids.filtered(
-                lambda slip: slip.employee_id == line.employee_id)[:1]
-            if not slip:
-                continue
-            slip._set_pe_input_amount(input_utilities, line.total_utilities)
-        self.state = 'exported'
-        return notify_success(self.env._(
-            'Se envió al lote de nóminas exitosamente.'))
 
 
 class HrUtilitiesLine(models.Model):

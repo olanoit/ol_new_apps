@@ -22,6 +22,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join, pe_range
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -256,6 +257,11 @@ class HrVacationRest(models.Model):
             'target': 'current',
         }
 
+    @api.depends('employee_id', 'date_from', 'date_end')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, pe_range(rec.env, rec.date_from, rec.date_end))
+
 
 class HrAccrualVacation(models.Model):
     """Devengue/goce mensual de vacaciones por boleta.
@@ -284,6 +290,11 @@ class HrAccrualVacation(models.Model):
     request_date_from = fields.Date(string='Fecha inicio')
     request_date_to = fields.Date(string='Fecha fin')
     motive = fields.Char(string='Motivo')
+
+    @api.depends('employee_id', 'periodo_id', 'days')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, rec.periodo_id.display_name, '%s días' % rec.days if rec.days else '')
 
 
 class HrPayslip(models.Model):

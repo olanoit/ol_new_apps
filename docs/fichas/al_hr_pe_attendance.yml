@@ -541,6 +541,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 11.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "«Sujeto a horas extras» pasa a «Planilla PE ▸ T-Registro»; el tareaje muestra su nombre como título; nombre legible en el monitor de asistencia."
   - version: 10.20261007
     fecha: 07/10/2026
     cambios:

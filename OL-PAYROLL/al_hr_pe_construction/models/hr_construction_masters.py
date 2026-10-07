@@ -15,6 +15,7 @@ todos los trabajadores.
 from decimal import Decimal
 
 from odoo import _, api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import ValidationError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -260,6 +261,11 @@ class L10nPeHrConstructionWageLine(models.Model):
         amounts = self._period_amounts(days)
         return custom_round(amounts['jornal'] + amounts['dso']
                             + amounts['buc'] + amounts['movilidad'])
+
+    @api.depends('table_id', 'category_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.table_id.display_name, rec.category_id.display_name)
 
 
 class L10nPeHrConstructionBonus(models.Model):

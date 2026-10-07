@@ -24,7 +24,10 @@
                 <field name="name"/>
                 <field name="date_start" optional="show"/>
                 <field name="date_end" optional="show"/>
-                <field name="state" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="payslip_count" optional="show" string="Cant. de boletas"/>
                 <field name="company_id" optional="show" groups="base.group_multi_company"/>
             </list>
@@ -38,13 +41,13 @@
             <form string="Adelanto quincenal">
                 <header>
                     <button name="generate_payslips" string="Generar quincena" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'verify'"
-                            confirm="Volver a borrador este adelanto de quincena eliminará todas las nóminas que existen actualmente. ¿Está seguro de que desea hacer esto?"/>
                     <button name="recompute_payslips" string="Recalcular" type="object" invisible="state != 'verify'"/>
                     <button name="import_advances_ade_quin" string="Importar adelantos" type="object" invisible="state != 'verify'"/>
                     <button name="import_loans_ade_quin" string="Importar préstamos" type="object" invisible="state != 'verify'"/>
                     <button name="export_quincena" string="Exportar quincena" type="object" class="oe_highlight" invisible="state != 'verify'"
                             confirm="¿Está seguro de que desea exportar el neto quincenal a su respectivo lote de nóminas?"/>
+                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'verify'"
+                            confirm="Volver a borrador este adelanto de quincena eliminará todas las nóminas que existen actualmente. ¿Está seguro de que desea hacer esto?"/>
                     <button name="reopen_payroll" string="Reabrir quincena" type="object" invisible="state != 'exported'"
                             groups="hr_payroll.group_hr_payroll_manager"/>
                     <field name="state" widget="statusbar"/>
@@ -63,12 +66,9 @@
                         <field name="name" readonly="state != 'draft'" placeholder="Quincena 01-2026"/>
                     </h1>
                     <group>
-                        <group>
-                            <label for="date_start" string="Periodo"/>
-                            <div class="o_row">
-                                <field name="date_start" class="oe_inline" readonly="state != 'draft'"/> -
-                                <field name="date_end" class="oe_inline" readonly="state != 'draft'"/>
-                            </div>
+                        <group string="Periodo">
+                            <field name="date_start" class="oe_inline" readonly="state != 'draft'"/>
+                            <field name="date_end" class="oe_inline" readonly="state != 'draft'"/>
                             <field name="payslip_run_id" readonly="state != 'draft'"/>
                         </group>
                         <group>

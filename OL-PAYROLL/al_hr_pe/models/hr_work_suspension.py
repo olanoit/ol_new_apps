@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from .display_name import pe_join, pe_range
 from odoo.exceptions import ValidationError
 
 
@@ -43,3 +44,8 @@ class HrWorkSuspension(models.Model):
             if suspension.days <= 0:
                 raise ValidationError(self.env._(
                     'Los días de suspensión deben ser positivos.'))
+
+    @api.depends('employee_id', 'suspension_type_id', 'date_from', 'date_to')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, rec.suspension_type_id.display_name, pe_range(rec.env, rec.date_from, rec.date_to))

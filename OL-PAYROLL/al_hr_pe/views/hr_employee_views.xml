@@ -6,24 +6,36 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <!-- groups: documento de identidad, nombres y cuenta de CTS son
-                 datos privados que no existen en hr.employee.public. -->
-            <page name="personal_information" position="inside">
-                <group string="Perú — Identificación (PLAME)" name="l10n_pe_plame"
-                       groups="hr.group_hr_user">
-                    <group>
-                        <field name="last_name"/>
-                        <field name="m_last_name"/>
-                        <field name="names"/>
-                        <field name="condition"/>
-                    </group>
-                    <group>
-                        <field name="l10n_latam_identification_type_id"
-                               options="{'no_create': True, 'no_open': True}"/>
-                        <field name="identification_id" string="Número de documento"/>
-                        <field name="cts_bank_account_id"/>
-                    </group>
-                </group>
+            <!-- «Planilla PE»: todos los datos peruanos del trabajador en una
+                 página con pestañas internas, en vez de repartirlos por
+                 «Personal» y «Nómina». Los demás módulos de planillas cuelgan
+                 sus pestañas de l10n_pe_payroll_notebook (heredando ESTA
+                 vista, para que la página ya exista).
+                 groups: documento, nombres, domicilio y cuentas son datos
+                 privados que no existen en hr.employee.public; cada pestaña
+                 declara su grupo (la restricción va dentro del arch). -->
+            <page name="payroll_information" position="after">
+                <page string="Planilla PE" name="l10n_pe_payroll"
+                      groups="hr.group_hr_user">
+                    <notebook name="l10n_pe_payroll_notebook">
+                        <page string="Identificación" name="l10n_pe_identification">
+                            <group name="l10n_pe_plame">
+                                <group string="Nombres (PLAME)">
+                                    <field name="last_name"/>
+                                    <field name="m_last_name"/>
+                                    <field name="names"/>
+                                    <field name="condition"/>
+                                </group>
+                                <group string="Documento">
+                                    <field name="l10n_latam_identification_type_id"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="identification_id" string="Número de documento"/>
+                                    <field name="cts_bank_account_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </page>
             </page>
         </field>
     </record>

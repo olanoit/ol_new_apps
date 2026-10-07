@@ -97,7 +97,7 @@
             <form string="Certificado de renta de 5ta categoría">
                 <group>
                     <group>
-                        <field name="year"/>
+                        <field name="year" widget="year_selection"/>
                         <field name="date"/>
                     </group>
                     <group>

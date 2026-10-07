@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261008 — 08/10/2026
+
+- Los datos de construcción civil del trabajador pasan a «Planilla PE ▸ Construcción civil»; nombres legibles en el resumen CONAFOVICER y la tabla de jornales.
+
 ## 16.20261007 — 07/10/2026
 
 - Corregido: los códigos PLAME del SCTR estaban invertidos (salud iba como 0805, que es pensión). Ahora usa los mismos de la estructura general, según la entidad contratada.

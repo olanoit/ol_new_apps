@@ -112,6 +112,7 @@ class HrFortnightly(models.Model):
                             raise_if_not_found=False) \
             or self.env.ref('al_hr_pe.base_structure')
 
+    # Botones, en el mismo orden que en la vista
     # ------------------------------------------------------------------
     # Generación de boletas quincenales
     # ------------------------------------------------------------------
@@ -153,6 +154,28 @@ class HrFortnightly(models.Model):
         """Recalcula todas las boletas del lote."""
         self.slip_ids.compute_sheet()
         return notify_success(self.env._('Se recalculó exitosamente.'))
+
+    # ------------------------------------------------------------------
+    # Adelantos/préstamos de quincena
+    # ------------------------------------------------------------------
+    def import_advances_ade_quin(self):
+        return self.slip_ids.import_advance_quin()
+
+    def import_loans_ade_quin(self):
+        return self.slip_ids.import_loan_quin()
+
+    def export_quincena(self):
+        """Cierra el lote quincenal volcando los montos al mensual; las
+        boletas quincenales pasan a validadas."""
+        self.ensure_one()
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        self._check_configuration(param)
+        self.set_amounts(self.slip_ids, self.payslip_run_id, param)
+        self.state = 'exported'
+        self.slip_ids.filtered(
+            lambda slip: slip.state == 'draft').action_payslip_done()
+        return notify_success(self.env._('Se exportó exitosamente.'))
 
     def set_draft(self):
         """Vuelve el lote a borrador eliminando sus boletas."""
@@ -234,28 +257,6 @@ class HrFortnightly(models.Model):
                     monthly_slip._set_pe_input_amount(
                         quin_advance.input_id,
                         sum(advances.mapped('amount')))
-
-    def export_quincena(self):
-        """Cierra el lote quincenal volcando los montos al mensual; las
-        boletas quincenales pasan a validadas."""
-        self.ensure_one()
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        self._check_configuration(param)
-        self.set_amounts(self.slip_ids, self.payslip_run_id, param)
-        self.state = 'exported'
-        self.slip_ids.filtered(
-            lambda slip: slip.state == 'draft').action_payslip_done()
-        return notify_success(self.env._('Se exportó exitosamente.'))
-
-    # ------------------------------------------------------------------
-    # Adelantos/préstamos de quincena
-    # ------------------------------------------------------------------
-    def import_advances_ade_quin(self):
-        return self.slip_ids.import_advance_quin()
-
-    def import_loans_ade_quin(self):
-        return self.slip_ids.import_loan_quin()
 
 
 class HrPayslip(models.Model):

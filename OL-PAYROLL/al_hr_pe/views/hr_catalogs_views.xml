@@ -141,7 +141,7 @@
         <field name="model">l10n_pe.hr.uit</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="year"/>
+                <field name="year" widget="year_selection" options="{'years_back': 15}"/>
                 <field name="amount"/>
             </list>
         </field>

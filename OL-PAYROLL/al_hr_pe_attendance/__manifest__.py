@@ -32,7 +32,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '10.20261007',
+    'version': '11.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',

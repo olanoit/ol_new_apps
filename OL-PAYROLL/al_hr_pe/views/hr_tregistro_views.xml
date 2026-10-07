@@ -145,16 +145,18 @@
     <record id="view_employee_form_tregistro" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.pe.tregistro</field>
         <field name="model">hr.employee</field>
-        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="inherit_id" ref="al_hr_pe.hr_employee_view_form_inherit_pe"/>
         <field name="arch" type="xml">
             <!-- groups: datos privados del trabajador (no existen en
                  hr.employee.public). La pestaña nativa ya los restringe, pero
                  cada bloque lo declara para no depender de ella. -->
-            <xpath expr="//page[@name='payroll_information']" position="inside">
-                <separator string="T-Registro (SUNAT)"
-                           name="l10n_pe_tregistro"
-                           groups="hr_payroll.group_hr_payroll_user"/>
-                    <group groups="hr_payroll.group_hr_payroll_user">
+            <xpath expr="//notebook[@name='l10n_pe_payroll_notebook']" position="inside">
+                <page string="T-Registro" name="l10n_pe_tregistro"
+                      groups="hr_payroll.group_hr_payroll_user">
+                    <!-- Ancla de versiones anteriores (al actualizar, las vistas
+                         hijas aún guardadas se validan contra esta). -->
+                    <separator name="l10n_pe_tregistro" invisible="1"/>
+                    <group name="l10n_pe_tregistro_main">
                         <group string="Condición laboral">
                             <field name="l10n_pe_labor_regime_id"
                                    options="{'no_create': True}"/>
@@ -177,7 +179,7 @@
                             <field name="l10n_pe_unionized"/>
                         </group>
                     </group>
-                    <group groups="hr_payroll.group_hr_payroll_user">
+                    <group name="l10n_pe_tregistro_status">
                         <group string="Situación">
                             <field name="l10n_pe_special_situation"/>
                             <field name="l10n_pe_fifth_income"/>
@@ -191,6 +193,7 @@
                             <field name="l10n_pe_mas_vida"/>
                         </group>
                     </group>
+                </page>
             </xpath>
         </field>
     </record>
@@ -215,7 +218,7 @@
     <record id="view_employee_form_tregistro_address" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.pe.address</field>
         <field name="model">hr.employee</field>
-        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="inherit_id" ref="al_hr_pe.hr_employee_view_form_inherit_pe"/>
         <field name="arch" type="xml">
             <!-- groups: el domicilio es dato privado del trabajador. Sin esto,
                  un usuario interno sin permiso de Recursos Humanos que abra la
@@ -223,10 +226,9 @@
                  existen en el perfil público del empleado
                  (hr.employee.public). La restricción va DENTRO del arch: en
                  Odoo 19 una vista heredada no admite «groups» en el registro. -->
-            <xpath expr="//page[@name='personal_information']" position="inside">
-                <separator string="Domicilio (T-Registro)"
-                           name="l10n_pe_address" groups="hr.group_hr_user"/>
-                <group groups="hr.group_hr_user">
+            <xpath expr="//notebook[@name='l10n_pe_payroll_notebook']" position="inside">
+                <page string="Domicilio" name="l10n_pe_address" groups="hr.group_hr_user">
+                <group name="l10n_pe_address_main">
                     <group string="Dirección 1">
                         <label for="l10n_pe_road_type_id" string="Vía"/>
                         <div class="o_row">
@@ -302,12 +304,13 @@
                                options="{'no_create': True}"/>
                     </group>
                 </group>
-                <group groups="hr.group_hr_user">
+                <group name="l10n_pe_address_foreign">
                     <group string="Documento (extranjeros)">
                         <field name="l10n_pe_country_emitter"/>
                         <field name="l10n_pe_nationality_code"/>
                     </group>
                 </group>
+                </page>
             </xpath>
         </field>
     </record>
@@ -381,8 +384,8 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="al_hr_pe.view_employee_form_tregistro"/>
         <field name="arch" type="xml">
-            <xpath expr="//separator[@name='l10n_pe_tregistro']" position="after">
-                <group groups="hr_payroll.group_hr_payroll_user">
+            <xpath expr="//group[@name='l10n_pe_tregistro_status']" position="after">
+                <group name="l10n_pe_tregistro_extra" groups="hr_payroll.group_hr_payroll_user">
                     <group string="Establecimientos (E17)">
                         <field name="work_location_id" readonly="1"
                                string="Lugar de trabajo principal"/>
@@ -394,9 +397,8 @@
                         <field name="primary_bank_account_id" readonly="1"/>
                     </group>
                 </group>
-                <field name="l10n_pe_education_ids"
-                       string="Estudios concluidos (E29)"
-                       groups="hr_payroll.group_hr_payroll_user">
+                <separator string="Estudios concluidos (E29)" groups="hr_payroll.group_hr_payroll_user"/>
+                <field name="l10n_pe_education_ids" nolabel="1" groups="hr_payroll.group_hr_payroll_user">
                     <list editable="bottom">
                         <field name="education_level_id"
                                options="{'no_create': True}"/>
@@ -407,7 +409,7 @@
                         <field name="career_id"
                                options="{'no_create': True}"
                                required="in_peru"/>
-                        <field name="graduation_year" required="in_peru"/>
+                        <field name="graduation_year" required="in_peru" options="{'format': false}"/>
                         <field name="company_id" column_invisible="1"/>
                     </list>
                 </field>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="al_hr_pe.YearSelectionField">
+        <span t-if="props.readonly" t-esc="value or ''"/>
+        <select t-else="" class="o_input o_field_year_selection pe-3"
+                t-att-id="props.id" t-on-change="onChange">
+            <option t-if="!isRequired or !value" value="" t-att-selected="!value"
+                    t-esc="props.placeholder or ''"/>
+            <t t-foreach="years" t-as="year" t-key="year">
+                <option t-att-value="year" t-att-selected="year === value" t-esc="year"/>
+            </t>
+        </select>
+    </t>
+</templates>

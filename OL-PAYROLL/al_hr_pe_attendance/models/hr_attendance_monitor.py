@@ -42,6 +42,7 @@ de 4 marcaciones: con varias ``hr.attendance`` por día la suma de
 que no necesita ver el horario de refrigerio planificado por columna.
 """
 from odoo import api, fields, models, tools
+from odoo.addons.al_hr_pe.models.display_name import pe_join, pe_date
 from odoo.tools import SQL
 
 
@@ -327,3 +328,8 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
             'res_id': self.leave_id.id,
             'target': 'new',
         }
+
+    @api.depends('employee_id', 'fecha')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, pe_date(rec.env, rec.fecha))

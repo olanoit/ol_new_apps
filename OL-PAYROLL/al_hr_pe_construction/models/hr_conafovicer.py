@@ -12,6 +12,7 @@ import io
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -254,3 +255,8 @@ class L10nPeHrConafovicerLine(models.Model):
                 raise ValidationError(_(
                     'La base de %(name)s no es el jornal más el D.S.O.',
                     name=line.employee_id.display_name))
+
+    @api.depends('summary_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.summary_id.display_name, rec.employee_id.name)

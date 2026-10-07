@@ -29,6 +29,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -78,54 +79,7 @@ class HrProvisiones(models.Model):
                 'No puedes eliminar una provisión ya cerrada. '
                 'Primero debes volverla a borrador.'))
 
-    def close_provisiones(self):
-        """Cierra la provisión y bloquea el recálculo."""
-        self.write({'state': 'done'})
-
-    def turn_draft(self):
-        """Reabre la provisión a borrador para permitir recálculo."""
-        self.write({'state': 'draft'})
-
-    def _get_variable_averages(self, param, employee):
-        """(comisión, bonificación, horas extras) promedios /6.
-
-        Regla v18: se suman las líneas de los 6 meses (lote actual y 5
-        previos, solo boletas con lote) y cada concepto promedia ÷6
-        únicamente si se percibió en al menos 3 MESES distintos; si no,
-        vale 0. Se cuentan meses, no líneas: dos reglas del mismo
-        concepto o dos boletas en un mes son un solo mes.
-        """
-        lot = self.payslip_run_id
-        date_from = lot.date_start - relativedelta(months=5)
-        slips = self.env['hr.payslip'].search([
-            ('employee_id', '=', employee.id),
-            ('company_id', '=', self.company_id.id),
-            ('date_from', '>=', date_from),
-            ('date_to', '<=', lot.date_end),
-            ('payslip_run_id', '!=', False),
-            ('state', 'in', ('validated', 'paid')),
-        ])
-        totals = {'commission': 0.0, 'bonus': 0.0, 'extra_hours': 0.0}
-        months = {'commission': set(), 'bonus': set(), 'extra_hours': set()}
-        for line in slips.line_ids:
-            if line.salary_rule_id in param.commission_sr_ids:
-                bucket = 'commission'
-            elif line.salary_rule_id in param.bonus_sr_ids:
-                bucket = 'bonus'
-            elif line.salary_rule_id == param.extra_hours_sr_id:
-                bucket = 'extra_hours'
-            else:
-                continue
-            totals[bucket] += line.total
-            if line.total:
-                months[bucket].add(
-                    (line.slip_id.date_to.year, line.slip_id.date_to.month))
-        return {
-            bucket: custom_round(totals[bucket] / 6, 2)
-            if len(months[bucket]) >= 3 else 0.0
-            for bucket in totals
-        }
-
+    # Botones, en el mismo orden que en la vista
     def actualizar(self):
         """Genera las líneas de provisión del lote.
 
@@ -208,13 +162,6 @@ class HrProvisiones(models.Model):
                 ))
         return notify_success(self.env._('Se actualizó exitosamente.'))
 
-    @staticmethod
-    def _anniversary(admission_date, year):
-        """Aniversario de ingreso en ``year`` (29/02 → 28/02)."""
-        day = min(admission_date.day,
-                  calendar.monthrange(year, admission_date.month)[1])
-        return date(year, admission_date.month, day)
-
     def compute_acumulado(self):
         """Acumulado provisionado por empleado (ORM, sin SQL).
 
@@ -284,6 +231,67 @@ class HrProvisiones(models.Model):
         return notify_success(self.env._(
             'Se obtuvo el acumulado de provisiones exitosamente.'))
 
+    def close_provisiones(self):
+        """Cierra la provisión y bloquea el recálculo."""
+        self.write({'state': 'done'})
+
+    def turn_draft(self):
+        """Reabre la provisión a borrador para permitir recálculo."""
+        self.write({'state': 'draft'})
+
+    def _get_variable_averages(self, param, employee):
+        """(comisión, bonificación, horas extras) promedios /6.
+
+        Regla v18: se suman las líneas de los 6 meses (lote actual y 5
+        previos, solo boletas con lote) y cada concepto promedia ÷6
+        únicamente si se percibió en al menos 3 MESES distintos; si no,
+        vale 0. Se cuentan meses, no líneas: dos reglas del mismo
+        concepto o dos boletas en un mes son un solo mes.
+        """
+        lot = self.payslip_run_id
+        date_from = lot.date_start - relativedelta(months=5)
+        slips = self.env['hr.payslip'].search([
+            ('employee_id', '=', employee.id),
+            ('company_id', '=', self.company_id.id),
+            ('date_from', '>=', date_from),
+            ('date_to', '<=', lot.date_end),
+            ('payslip_run_id', '!=', False),
+            ('state', 'in', ('validated', 'paid')),
+        ])
+        totals = {'commission': 0.0, 'bonus': 0.0, 'extra_hours': 0.0}
+        months = {'commission': set(), 'bonus': set(), 'extra_hours': set()}
+        for line in slips.line_ids:
+            if line.salary_rule_id in param.commission_sr_ids:
+                bucket = 'commission'
+            elif line.salary_rule_id in param.bonus_sr_ids:
+                bucket = 'bonus'
+            elif line.salary_rule_id == param.extra_hours_sr_id:
+                bucket = 'extra_hours'
+            else:
+                continue
+            totals[bucket] += line.total
+            if line.total:
+                months[bucket].add(
+                    (line.slip_id.date_to.year, line.slip_id.date_to.month))
+        return {
+            bucket: custom_round(totals[bucket] / 6, 2)
+            if len(months[bucket]) >= 3 else 0.0
+            for bucket in totals
+        }
+
+    @staticmethod
+    def _anniversary(admission_date, year):
+        """Aniversario de ingreso en ``year`` (29/02 → 28/02)."""
+        day = min(admission_date.day,
+                  calendar.monthrange(year, admission_date.month)[1])
+        return date(year, admission_date.month, day)
+
+
+    @api.depends('payslip_run_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join('Provisiones', rec.payslip_run_id.display_name)
+
 
 class HrProvisionesLineMixin(models.AbstractModel):
     """Campos y comportamiento comunes de las 3 líneas de provisión."""
@@ -338,6 +346,11 @@ class HrProvisionesLineMixin(models.AbstractModel):
             'views': [(view.id, 'form')],
             'target': 'new',
         }
+
+    @api.depends('provision_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.provision_id.display_name, rec.employee_id.name)
 
 
 class HrProvisionesCtsLine(models.Model):
@@ -492,3 +505,8 @@ class HrProvisionesConcepto(models.Model):
             record.company_id = (record.cts_line_id.company_id
                                  or record.grati_line_id.company_id
                                  or record.vaca_line_id.company_id)
+
+    @api.depends('concepto')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.concepto.display_name or ''

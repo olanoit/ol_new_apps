@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261008 — 08/10/2026
+
+- Nuevo widget «year_selection»: el año se elige de una lista que va del próximo año hacia atrás y avanza sola cada enero (sin catálogo ni cron; el campo sigue siendo entero). Se usa en la UIT (15 años atrás) y en los beneficios.
+- Empleado: página «Planilla PE» con pestañas internas (Identificación, T-Registro con E17/E29/E30, Domicilio), en vez de repartir los datos por «Personal» y «Nómina»; los demás módulos de planillas cuelgan sus pestañas de ahí. Nómina: «Planilla PE ▸ Cálculo». Nombres legibles (UIT, RMV, suspensiones, estudios) y títulos en periodos y parámetros.
+
 ## 24.20261007 — 07/10/2026
 
 - Tasas AFP automáticas desde la SBS: un proceso diario lee la tabla oficial de comisiones y primas (comisión sobre flujo, prima de seguros, aporte y remuneración máxima asegurable) y actualiza las AFP; también hay un botón «Actualizar tasas desde la SBS» en Afiliaciones. Si la página no responde o la tabla no cuadra, no se toca nada. La remuneración máxima asegurable pasa a S/ 12 732,70 (octubre-diciembre 2026).

@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261008 — 08/10/2026
+
+- Formularios de CTS, gratificación, vacaciones, liquidación, utilidades y quincena con bloques rotulados («Periodo» a la izquierda; depósito, cálculo o factores a la derecha) y el año como lista desplegable.
+- Vistas reordenadas: título en CTS, gratificación, vacaciones, liquidación, utilidades, quinta, adelantos y préstamos; las líneas de CTS, gratificación y vacaciones van con el trabajador como título y su cálculo en pestañas (remuneración computable, cálculo, depósito o aportes); subsidios y préstamos con sus tablas en pestañas; estados con insignia de color; años sin separador de miles. Nombre legible en todas las líneas (ya no «hr.cts.line,5»). «Devengue de vacaciones» pasa a «Planilla PE» de la nómina.
+- El nombre de los lotes de CTS, gratificación, vacaciones, liquidación, utilidades y quinta (el que propone el sistema) ya no se puede editar a mano. El botón de detalle de las líneas de CTS, gratificación y vacaciones pasa al final de la fila, como en el resto de listas, y en la quincena «Volver a borrador» va al final de la barra, junto a «Reabrir quincena».
+
 ## 13.20261007 — 07/10/2026
 
 - Adelanto quincenal con estructura propia («Adelanto quincenal»): adelanta el porcentaje configurado del sueldo o los días trabajados, más la asignación familiar si se pide, menos los adelantos y préstamos de quincena. Antes la quincena usaba la estructura general y calculaba EsSalud, AFP y 5ta de medio mes que la boleta mensual volvía a calcular. Los aportes van en el mes; solo se descuentan AFP/ONP a cuenta si la compañía lo activó.

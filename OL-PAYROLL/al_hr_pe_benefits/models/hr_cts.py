@@ -22,6 +22,7 @@ import calendar
 from datetime import date
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
@@ -93,22 +94,7 @@ class HrCts(models.Model):
             if run:
                 record.payslip_run_id = run.id
 
-    def action_open_cts(self):
-        """Abre las líneas del lote que califican al depósito."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.cts.line',
-            'views': [[False, 'list'], [False, 'form']],
-            'domain': [('id', 'in', self.line_ids.filtered(
-                lambda line: not line.less_than_one_month).ids)],
-            'name': self.env._('Certificados CTS'),
-        }
-
-    def turn_draft(self):
-        """Reabre el lote a borrador para permitir recálculo."""
-        self.write({'state': 'draft'})
-
+    # Botones, en el mismo orden que en la vista
     def get_cts(self):
         """Genera/recalcula las líneas del semestre.
 
@@ -133,6 +119,33 @@ class HrCts(models.Model):
         self.line_ids.compute_cts_line()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
+    def export_cts(self):
+        """Exporta los montos al lote de nómina y cierra el registro."""
+        self.ensure_one()
+        ensure_draft(self)
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        param.check_cts_values()
+        self.set_amounts(self.line_ids, self.payslip_run_id, param)
+        self.state = 'exported'
+        return notify_success(self.env._('Se exportó exitosamente.'))
+
+    def turn_draft(self):
+        """Reabre el lote a borrador para permitir recálculo."""
+        self.write({'state': 'draft'})
+
+    def action_open_cts(self):
+        """Abre las líneas del lote que califican al depósito."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.cts.line',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('id', 'in', self.line_ids.filtered(
+                lambda line: not line.less_than_one_month).ids)],
+            'name': self.env._('Certificados CTS'),
+        }
+
     def set_amounts(self, line_ids, lot, param):
         """Vuelca el ``total_cts`` de cada línea al input del payslip.
 
@@ -156,17 +169,6 @@ class HrCts(models.Model):
                     'input_type_id': input_cts.id,
                     'amount': line.total_cts,
                 })]})
-
-    def export_cts(self):
-        """Exporta los montos al lote de nómina y cierra el registro."""
-        self.ensure_one()
-        ensure_draft(self)
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        param.check_cts_values()
-        self.set_amounts(self.line_ids, self.payslip_run_id, param)
-        self.state = 'exported'
-        return notify_success(self.env._('Se exportó exitosamente.'))
 
 
 class HrCtsLine(models.Model):
@@ -302,6 +304,11 @@ class HrCtsLine(models.Model):
             'target': 'new',
         }
 
+    @api.depends('cts_id', 'liquidation_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join((rec.cts_id or rec.liquidation_id).display_name, rec.employee_id.name)
+
 
 class HrCtsLineDetalle(models.Model):
     _name = 'hr.cts.line.detalle'
@@ -331,3 +338,8 @@ class HrCtsLineDetalle(models.Model):
             line.total = (line.wage + line.household_allowance
                           + line.commission + line.extra_hours
                           + line.others_income)
+
+    @api.depends('cts_line_id', 'periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.cts_line_id.display_name, rec.periodo_id.display_name)

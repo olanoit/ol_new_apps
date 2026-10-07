@@ -58,11 +58,10 @@
                     <field name="state" widget="statusbar" readonly="1"/>
                 </header>
                 <sheet>
-                    <label for="name"/>
-                    <h2>
-                        <field name="name" required="1" readonly="state == 'done'"
-                            placeholder="p. ej. Tareaje enero 2026"/>
-                    </h2>
+                    <div class="oe_title">
+                        <h1><field name="name" required="1" readonly="state == 'done'"
+                            placeholder="p. ej. Tareaje enero 2026"/></h1>
+                    </div>
                     <group>
                         <group>
                             <label for="date_start" string="Periodo"/>
@@ -217,13 +216,12 @@
     <record id="hr_employee_view_form_inherit_tareaje" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.tareaje</field>
         <field name="model">hr.employee</field>
-        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="inherit_id" ref="al_hr_pe.view_employee_form_tregistro"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='payroll_information']" position="inside">
-                <group name="l10n_pe_tareaje" string="Tareaje (Perú)"
-                       groups="hr_payroll.group_hr_payroll_user">
-                    <field name="l10n_pe_is_overtime"/>
-                </group>
+            <!-- Un solo dato: va en «Planilla PE ▸ T-Registro ▸ Jornada»,
+                 junto a la jornada máxima y el horario nocturno. -->
+            <xpath expr="//field[@name='l10n_pe_unionized']" position="before">
+                <field name="l10n_pe_is_overtime" groups="hr_payroll.group_hr_payroll_user"/>
             </xpath>
         </field>
     </record>

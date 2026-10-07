@@ -37,6 +37,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join, pe_range
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -90,26 +91,7 @@ class HrSubsidiesLot(models.Model):
         for lot in self:
             lot.subsidies_count = len(lot.line_ids)
 
-    def action_open_subsidies(self):
-        """Abre la lista de subsidios del lote."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.subsidies',
-            'views': [[False, 'list'], [False, 'form']],
-            'domain': [('id', 'in', self.line_ids.ids)],
-            'name': self.env._('Subsidios'),
-        }
-
-    def turn_done(self):
-        """Cierra el lote: no se permite recalcular hasta reabrirlo."""
-        self.write({'state': 'done'})
-        return notify_success(self.env._('Se cerró exitosamente.'))
-
-    def turn_draft(self):
-        """Reabre el lote a borrador para permitir recalcular."""
-        self.write({'state': 'draft'})
-
+    # Botones, en el mismo orden que en la vista
     def get_subsidies(self):
         """Genera los subsidios del periodo desde las suspensiones.
 
@@ -150,6 +132,31 @@ class HrSubsidiesLot(models.Model):
             lambda sub: not sub.preserve_record
             and sub.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
+
+    def turn_done(self):
+        """Cierra el lote: no se permite recalcular hasta reabrirlo."""
+        self.write({'state': 'done'})
+        return notify_success(self.env._('Se cerró exitosamente.'))
+
+    def turn_draft(self):
+        """Reabre el lote a borrador para permitir recalcular."""
+        self.write({'state': 'draft'})
+
+    def action_open_subsidies(self):
+        """Abre la lista de subsidios del lote."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.subsidies',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('id', 'in', self.line_ids.ids)],
+            'name': self.env._('Subsidios'),
+        }
+
+    @api.depends('periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join('Subsidios', rec.periodo_id.display_name)
 
 
 class HrSubsidies(models.Model):
@@ -198,118 +205,7 @@ class HrSubsidies(models.Model):
              'fueron cubiertos en un descanso médico anterior del año.')
     preserve_record = fields.Boolean(string='No recalcular')
 
-    def set_draft(self):
-        """Reabre el subsidio eliminando todas las líneas calculadas."""
-        self.subsidies_line_ids.unlink()
-        self.subsidies_total_ids.unlink()
-        self.subsidies_periodo_ids.unlink()
-        self.write({'state': 'draft'})
-
-    @api.ondelete(at_uninstall=False)
-    def _unlink_if_draft(self):
-        """Borrar un subsidio cerrado rompería la trazabilidad del
-        descuento aplicado a la boleta y del reporte a EsSalud."""
-        if any(subsidy.state != 'draft' for subsidy in self):
-            raise UserError(self.env._(
-                'No puede eliminar este subsidio: no está en estado '
-                'borrador.'))
-
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
-    def _check_configuration(self, param):
-        """Port de ``check_maternidad_values`` v18."""
-        _check_param_config(param, [
-            ('basic_sr_id', 'R.S. básico'),
-            ('vacation_sr_id', 'R.S. vacaciones'),
-            ('household_allowance_sr_id', 'R.S. asignación familiar'),
-            ('commission_sr_ids', 'R.S. comisiones'),
-            ('extra_hours_sr_id', 'R.S. sobretiempo'),
-            ('otros_sr_ids', 'R.S. otros ingresos'),
-            ('lack_sr_ids', 'R.S. descuentos por inasistencias'),
-            ('maternidad_input_id', 'Input maternidad'),
-            ('enfermedad_input_id', 'Input enfermedad'),
-        ])
-
-    def _get_dmed_history(self):
-        """Días DMED por periodo en boletas BASE del año de la
-        contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18).
-
-        Solo boletas cerradas y anteriores al mes de la contingencia: la
-        del propio mes (o posteriores) puede traer el DMED de esta misma
-        contingencia y contarlo dos veces."""
-        self.ensure_one()
-        base_struct = self.env.ref('al_hr_pe.base_structure')
-        slips = self.env['hr.payslip'].search([
-            ('employee_id', '=', self.employee_id.id),
-            ('company_id', '=', self.company_id.id),
-            ('struct_id', '=', base_struct.id),
-            ('date_to', '>=', date(self.date_start.year, 1, 1)),
-            ('date_to', '<', date(self.date_start.year,
-                                  self.date_start.month, 1)),
-            ('state', 'in', ('validated', 'paid')),
-            ('fortnightly_id', '=', False),
-        ])
-        history = []
-        for slip in slips:
-            days = sum(slip.worked_days_line_ids.filtered(
-                lambda line: line.work_entry_type_id.code == 'DMED'
-            ).mapped('number_of_days'))
-            if days:
-                history.append((slip.periodo_id, days))
-        return history
-
-    def _get_salary_history(self, param):
-        """Histórico BASE de los 12 meses cerrados previos, agrupado por
-        periodo (sustituye al SQL ``_get_sql_salary`` v18)."""
-        self.ensure_one()
-        base_struct = self.env.ref('al_hr_pe.base_structure')
-        start_ref = self.date_start - relativedelta(months=12)
-        date_from = date(start_ref.year, start_ref.month, 1)
-        end_ref = self.date_start - relativedelta(months=1)
-        date_to = date(end_ref.year, end_ref.month, calendar.monthrange(
-            end_ref.year, end_ref.month)[1])
-        slips = self.env['hr.payslip'].search([
-            ('employee_id', '=', self.employee_id.id),
-            ('company_id', '=', self.company_id.id),
-            ('struct_id', '=', base_struct.id),
-            ('date_to', '>=', date_from),
-            ('date_to', '<=', date_to),
-            # Boletas cerradas y sin quincenales (misma estructura BASE):
-            # canceladas o quincenas inflarían el promedio diario.
-            ('state', 'in', ('validated', 'paid')),
-            ('fortnightly_id', '=', False),
-        ], order='date_to')
-        vacation_sr = getattr(param, 'vacation_sr_id')
-        otros_srs = getattr(param, 'otros_sr_ids')
-        lack_srs = getattr(param, 'lack_sr_ids')
-        history = {}
-        for slip in slips:
-            bucket = history.setdefault(slip.periodo_id, {
-                'wage': 0.0, 'vacation': 0.0, 'household_allowance': 0.0,
-                'commission': 0.0, 'extra_hours': 0.0,
-                'others_income': 0.0, 'lacks': 0.0,
-            })
-            for line in slip.line_ids:
-                if not line.total:
-                    continue
-                rule = line.salary_rule_id
-                if rule == param.basic_sr_id:
-                    bucket['wage'] += line.total
-                elif rule == vacation_sr:
-                    bucket['vacation'] += line.total
-                elif rule == param.household_allowance_sr_id:
-                    bucket['household_allowance'] += line.total
-                elif rule in param.commission_sr_ids:
-                    bucket['commission'] += line.total
-                elif rule == param.extra_hours_sr_id:
-                    bucket['extra_hours'] += line.total
-                elif rule in otros_srs:
-                    bucket['others_income'] += line.total
-                elif rule in lack_srs:
-                    bucket['lacks'] += line.total
-        return history
-
+    # Botones, en el mismo orden que en la vista
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
@@ -457,6 +353,123 @@ class HrSubsidies(models.Model):
             current = current + relativedelta(months=1)
         return notify_success(self.env._('Se calculó correctamente.'))
 
+    def set_draft(self):
+        """Reabre el subsidio eliminando todas las líneas calculadas."""
+        self.subsidies_line_ids.unlink()
+        self.subsidies_total_ids.unlink()
+        self.subsidies_periodo_ids.unlink()
+        self.write({'state': 'draft'})
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_draft(self):
+        """Borrar un subsidio cerrado rompería la trazabilidad del
+        descuento aplicado a la boleta y del reporte a EsSalud."""
+        if any(subsidy.state != 'draft' for subsidy in self):
+            raise UserError(self.env._(
+                'No puede eliminar este subsidio: no está en estado '
+                'borrador.'))
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _check_configuration(self, param):
+        """Port de ``check_maternidad_values`` v18."""
+        _check_param_config(param, [
+            ('basic_sr_id', 'R.S. básico'),
+            ('vacation_sr_id', 'R.S. vacaciones'),
+            ('household_allowance_sr_id', 'R.S. asignación familiar'),
+            ('commission_sr_ids', 'R.S. comisiones'),
+            ('extra_hours_sr_id', 'R.S. sobretiempo'),
+            ('otros_sr_ids', 'R.S. otros ingresos'),
+            ('lack_sr_ids', 'R.S. descuentos por inasistencias'),
+            ('maternidad_input_id', 'Input maternidad'),
+            ('enfermedad_input_id', 'Input enfermedad'),
+        ])
+
+    def _get_dmed_history(self):
+        """Días DMED por periodo en boletas BASE del año de la
+        contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18).
+
+        Solo boletas cerradas y anteriores al mes de la contingencia: la
+        del propio mes (o posteriores) puede traer el DMED de esta misma
+        contingencia y contarlo dos veces."""
+        self.ensure_one()
+        base_struct = self.env.ref('al_hr_pe.base_structure')
+        slips = self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('struct_id', '=', base_struct.id),
+            ('date_to', '>=', date(self.date_start.year, 1, 1)),
+            ('date_to', '<', date(self.date_start.year,
+                                  self.date_start.month, 1)),
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
+        ])
+        history = []
+        for slip in slips:
+            days = sum(slip.worked_days_line_ids.filtered(
+                lambda line: line.work_entry_type_id.code == 'DMED'
+            ).mapped('number_of_days'))
+            if days:
+                history.append((slip.periodo_id, days))
+        return history
+
+    def _get_salary_history(self, param):
+        """Histórico BASE de los 12 meses cerrados previos, agrupado por
+        periodo (sustituye al SQL ``_get_sql_salary`` v18)."""
+        self.ensure_one()
+        base_struct = self.env.ref('al_hr_pe.base_structure')
+        start_ref = self.date_start - relativedelta(months=12)
+        date_from = date(start_ref.year, start_ref.month, 1)
+        end_ref = self.date_start - relativedelta(months=1)
+        date_to = date(end_ref.year, end_ref.month, calendar.monthrange(
+            end_ref.year, end_ref.month)[1])
+        slips = self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('struct_id', '=', base_struct.id),
+            ('date_to', '>=', date_from),
+            ('date_to', '<=', date_to),
+            # Boletas cerradas y sin quincenales (misma estructura BASE):
+            # canceladas o quincenas inflarían el promedio diario.
+            ('state', 'in', ('validated', 'paid')),
+            ('fortnightly_id', '=', False),
+        ], order='date_to')
+        vacation_sr = getattr(param, 'vacation_sr_id')
+        otros_srs = getattr(param, 'otros_sr_ids')
+        lack_srs = getattr(param, 'lack_sr_ids')
+        history = {}
+        for slip in slips:
+            bucket = history.setdefault(slip.periodo_id, {
+                'wage': 0.0, 'vacation': 0.0, 'household_allowance': 0.0,
+                'commission': 0.0, 'extra_hours': 0.0,
+                'others_income': 0.0, 'lacks': 0.0,
+            })
+            for line in slip.line_ids:
+                if not line.total:
+                    continue
+                rule = line.salary_rule_id
+                if rule == param.basic_sr_id:
+                    bucket['wage'] += line.total
+                elif rule == vacation_sr:
+                    bucket['vacation'] += line.total
+                elif rule == param.household_allowance_sr_id:
+                    bucket['household_allowance'] += line.total
+                elif rule in param.commission_sr_ids:
+                    bucket['commission'] += line.total
+                elif rule == param.extra_hours_sr_id:
+                    bucket['extra_hours'] += line.total
+                elif rule in otros_srs:
+                    bucket['others_income'] += line.total
+                elif rule in lack_srs:
+                    bucket['lacks'] += line.total
+        return history
+
+    @api.depends('employee_id', 'type', 'date_start', 'date_end')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, dict(rec._fields['type']._description_selection(rec.env)).get(rec.type), pe_range(rec.env, rec.date_start, rec.date_end))
+
 
 class HrSubsidiesLine(models.Model):
     _name = 'hr.subsidies.line'
@@ -489,6 +502,11 @@ class HrSubsidiesLine(models.Model):
                           + line.extra_hours + line.others_income
                           - line.lacks)
 
+    @api.depends('subsidies_id', 'periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.subsidies_id.display_name, rec.periodo_id.display_name)
+
 
 class HrSubsidiesTotal(models.Model):
     _name = 'hr.subsidies.total'
@@ -505,6 +523,11 @@ class HrSubsidiesTotal(models.Model):
     days_total = fields.Integer(string='Total días')
     days = fields.Integer(string='Días sub.')
     total_sub = fields.Float(string='Total subsidio')
+
+    @api.depends('subsidies_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.subsidies_id.display_name, 'Total')
 
 
 class HrSubsidiesPeriodo(models.Model):
@@ -533,6 +556,11 @@ class HrSubsidiesPeriodo(models.Model):
 
     def set_not_payed(self):
         self.write({'validation': 'not payed'})
+
+    @api.depends('subsidies_id', 'periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.subsidies_id.display_name, rec.periodo_id.display_name)
 
 
 class HrPayslip(models.Model):

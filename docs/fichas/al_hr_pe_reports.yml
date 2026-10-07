@@ -482,6 +482,11 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 14.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Certificado de quinta: el año se elige de una lista."
+      - "La plantilla de contrato del trabajador pasa a «Planilla PE ▸ Contrato de trabajo»; título en la plantilla; nombre legible en las líneas de pago masivo; estados con insignia."
   - version: 13.20261007
     fecha: 07/10/2026
     cambios:

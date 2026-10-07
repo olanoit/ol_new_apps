@@ -17,6 +17,7 @@ carreras) y T36 (entidades del sistema financiero).
 import re
 
 from odoo import _, api, fields, models
+from .display_name import pe_join
 from odoo.exceptions import ValidationError
 
 #: T09: únicas situaciones educativas que admiten estudios concluidos.
@@ -165,6 +166,11 @@ class L10nPeHrEmployeeEducation(models.Model):
             if (record.career_id
                     and record.career_id.institution_id != record.institution_id):
                 record.career_id = False
+
+    @api.depends('employee_id', 'education_level_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.employee_id.name, rec.education_level_id.display_name)
 
 
 class HrEmployee(models.Model):

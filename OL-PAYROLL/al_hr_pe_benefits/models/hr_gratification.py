@@ -21,6 +21,7 @@ import calendar
 from datetime import date
 
 from odoo import api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
@@ -97,21 +98,7 @@ class HrGratification(models.Model):
             if run:
                 record.payslip_run_id = run.id
 
-    def action_open_grati(self):
-        """Abre las líneas de gratificación del lote."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.gratification.line',
-            'views': [[False, 'list'], [False, 'form']],
-            'domain': [('id', 'in', self.line_ids.ids)],
-            'name': self.env._('Boletas de gratificación'),
-        }
-
-    def turn_draft(self):
-        """Reabre el lote a borrador para permitir recálculo."""
-        self.write({'state': 'draft'})
-
+    # Botones, en el mismo orden que en la vista
     def get_gratification(self):
         """Genera/recalcula las líneas del semestre.
 
@@ -135,6 +122,32 @@ class HrGratification(models.Model):
         ensure_draft(self)
         self.line_ids.compute_grati_line()
         return notify_success(self.env._('Se recalculó exitosamente.'))
+
+    def export_gratification(self):
+        """Exporta los montos al lote de nómina y cierra el registro."""
+        self.ensure_one()
+        ensure_draft(self)
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        param.check_gratification_values()
+        self.set_amounts(self.line_ids, self.payslip_run_id, param)
+        self.state = 'exported'
+        return notify_success(self.env._('Se exportó exitosamente.'))
+
+    def turn_draft(self):
+        """Reabre el lote a borrador para permitir recálculo."""
+        self.write({'state': 'draft'})
+
+    def action_open_grati(self):
+        """Abre las líneas de gratificación del lote."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.gratification.line',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('id', 'in', self.line_ids.ids)],
+            'name': self.env._('Boletas de gratificación'),
+        }
 
     def set_amounts(self, line_ids, lot, param):
         """Vuelca gratificación + bono EsSalud al payslip del empleado.
@@ -161,17 +174,6 @@ class HrGratification(models.Model):
                         'input_type_id': input_type.id,
                         'amount': amount,
                     })]})
-
-    def export_gratification(self):
-        """Exporta los montos al lote de nómina y cierra el registro."""
-        self.ensure_one()
-        ensure_draft(self)
-        param = self.env['hr.main.parameter'].get_main_parameter(
-            self.company_id)
-        param.check_gratification_values()
-        self.set_amounts(self.line_ids, self.payslip_run_id, param)
-        self.state = 'exported'
-        return notify_success(self.env._('Se exportó exitosamente.'))
 
 
 class HrGratificationLine(models.Model):
@@ -297,6 +299,11 @@ class HrGratificationLine(models.Model):
             'target': 'new',
         }
 
+    @api.depends('gratification_id', 'liquidation_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join((rec.gratification_id or rec.liquidation_id).display_name, rec.employee_id.name)
+
 
 class HrGratificationLineDetalle(models.Model):
     _name = 'hr.gratification.line.detalle'
@@ -326,3 +333,8 @@ class HrGratificationLineDetalle(models.Model):
             line.total = (line.wage + line.household_allowance
                           + line.commission + line.extra_hours
                           + line.others_income)
+
+    @api.depends('gratification_line_id', 'periodo_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.gratification_line_id.display_name, rec.periodo_id.display_name)

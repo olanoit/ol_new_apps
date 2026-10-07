@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from .display_name import pe_date
 from odoo.exceptions import UserError
 
 
@@ -32,6 +33,11 @@ class L10nPeHrUit(models.Model):
                 '(Nómina → Configuración → Perú → UIT).', year=year))
         return uit.amount
 
+    @api.depends('year')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = 'UIT %s' % rec.year if rec.year else ''
+
 
 class L10nPeHrRmv(models.Model):
     """Remuneración Mínima Vital por fecha de vigencia.
@@ -58,3 +64,8 @@ class L10nPeHrRmv(models.Model):
         """RMV vigente a ``on_date``; 0 si la tabla no la cubre."""
         rmv = self.search([('date_from', '<=', on_date)], order='date_from desc', limit=1)
         return rmv.amount
+
+    @api.depends('date_from')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = 'RMV desde %s' % pe_date(rec.env, rec.date_from) if rec.date_from else ''

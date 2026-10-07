@@ -9,8 +9,13 @@
             <field name="struct_id" position="after">
                 <field name="periodo_id"/>
             </field>
-            <xpath expr="//notebook" position="inside"><!-- pestaña PE -->
-                <page string="Perú" name="l10n_pe">
+            <!-- «Planilla PE»: datos peruanos de la nómina en pestañas internas;
+                 los demás módulos cuelgan las suyas de l10n_pe_payslip_notebook
+                 heredando esta vista. -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Planilla PE" name="l10n_pe">
+                    <notebook name="l10n_pe_payslip_notebook">
+                    <page string="Cálculo" name="l10n_pe_calculation">
                     <group>
                         <group string="Snapshot del cálculo">
                             <field name="rmv"/>
@@ -27,6 +32,8 @@
                             <field name="employer_contributions"/>
                         </group>
                     </group>
+                    </page>
+                    </notebook>
                 </page>
             </xpath>
         </field>

@@ -31,6 +31,7 @@ para la Fase 7.
 from datetime import date, timedelta
 
 from odoo import Command, api, fields, models
+from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
@@ -139,6 +140,11 @@ class HrRateLimit(models.Model):
         help='Límite superior del tramo en soles (0 = sin tope).')
     rate = fields.Integer(string='Tasa (%)')
 
+    @api.depends('range')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = 'Tramo %s' % rec.range if rec.range else ''
+
 
 class HrFifthCategory(models.Model):
     _name = 'hr.fifth.category'
@@ -226,16 +232,7 @@ class HrFifthCategory(models.Model):
                         fifth.payslip_run_id.date_end, fifth.id))
             record.previous_fifth_category_id = previous
 
-    def turn_draft(self):
-        """Vuelve a borrador eliminando líneas afectas y excluidas."""
-        self.line_ids.unlink()
-        self.line_excluidos_ids.unlink()
-        self.write({'state': 'draft'})
-
-    def turn_verify(self):
-        """Reabre a «en proceso» para revisar antes de exportar."""
-        self.write({'state': 'verify'})
-
+    # Botones, en el mismo orden que en la vista
     def generate_fifth(self):
         """Crea una línea por boleta del lote y calcula la quinta."""
         self.ensure_one()
@@ -249,6 +246,24 @@ class HrFifthCategory(models.Model):
         self.state = 'verify'
         return notify_success(self.env._('Se generó la quinta '
                                          'correctamente.'))
+
+    def get_employees_excluidos(self):
+        """Wizard para reincorporar empleados excluidos como afectos."""
+        self.ensure_one()
+        wizard = self.env['hr.employee.excluidos.wizard'].create({
+            'fifth_category_id': self.id,
+            'company_id': self.company_id.id,
+        })
+        return {
+            'name': self.env._('Seleccionar empleados'),
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'res_model': 'hr.employee.excluidos.wizard',
+            'view_id': self.env.ref(
+                'al_hr_pe_benefits.view_hr_employee_excluidos_wizard').id,
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }
 
     def recompute_fifth(self):
         self.line_ids.compute_fifth_line()
@@ -286,23 +301,15 @@ class HrFifthCategory(models.Model):
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def get_employees_excluidos(self):
-        """Wizard para reincorporar empleados excluidos como afectos."""
-        self.ensure_one()
-        wizard = self.env['hr.employee.excluidos.wizard'].create({
-            'fifth_category_id': self.id,
-            'company_id': self.company_id.id,
-        })
-        return {
-            'name': self.env._('Seleccionar empleados'),
-            'res_id': wizard.id,
-            'view_mode': 'form',
-            'res_model': 'hr.employee.excluidos.wizard',
-            'view_id': self.env.ref(
-                'al_hr_pe_benefits.view_hr_employee_excluidos_wizard').id,
-            'target': 'new',
-            'type': 'ir.actions.act_window',
-        }
+    def turn_draft(self):
+        """Vuelve a borrador eliminando líneas afectas y excluidas."""
+        self.line_ids.unlink()
+        self.line_excluidos_ids.unlink()
+        self.write({'state': 'draft'})
+
+    def turn_verify(self):
+        """Reabre a «en proceso» para revisar antes de exportar."""
+        self.write({'state': 'verify'})
 
 
 class HrFifthCategoryLine(models.Model):
@@ -731,6 +738,11 @@ class HrFifthCategoryLine(models.Model):
                 })
                 record.unlink()
 
+    @api.depends('fifth_category_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.fifth_category_id.display_name, rec.employee_id.name)
+
 
 class HrFifthCategoryLineExcluidos(models.Model):
     """Empleado excluido de la retención (retención proyectada ≤ 0)."""
@@ -762,6 +774,11 @@ class HrFifthCategoryLineExcluidos(models.Model):
     total_proy = fields.Float(string='Rem. bruta anual')
     seven_uit = fields.Float(string='(-) Deducción (7 UIT)')
     net_rent = fields.Float(string='Rem. neta anual')
+
+    @api.depends('fifth_category_id', 'employee_id')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = pe_join(rec.fifth_category_id.display_name, rec.employee_id.name)
 
 
 class HrEmployeeExcluidosWizard(models.TransientModel):

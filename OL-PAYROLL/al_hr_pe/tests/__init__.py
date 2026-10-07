@@ -8,3 +8,4 @@ from . import test_tregistro_export
 from . import test_tregistro_extra
 from . import test_employee_privacy
 from . import test_sbs_rates
+from . import test_payroll_form_pages

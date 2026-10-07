@@ -598,6 +598,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los datos de construcción civil del trabajador pasan a «Planilla PE ▸ Construcción civil»; nombres legibles en el resumen CONAFOVICER y la tabla de jornales."
   - version: 16.20261007
     fecha: 07/10/2026
     cambios:

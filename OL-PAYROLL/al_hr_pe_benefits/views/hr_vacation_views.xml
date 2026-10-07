@@ -135,9 +135,10 @@
     <record id="hr_payslip_view_form_inherit_accrual_vacation" model="ir.ui.view">
         <field name="name">hr.payslip.form.accrual.vacation.al.hr.pe.benefits</field>
         <field name="model">hr.payslip</field>
-        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="inherit_id" ref="al_hr_pe.hr_payslip_view_form_inherit_pe"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
+            <!-- Pestaña interna de «Planilla PE» (al_hr_pe). -->
+            <xpath expr="//notebook[@name='l10n_pe_payslip_notebook']" position="inside">
                 <page string="Devengue de vacaciones" name="accrued_vacations">
                     <field name="accrual_vacation_ids">
                         <list editable="bottom">
@@ -166,46 +167,63 @@
                     <button name="compute_vacation_line" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id" readonly="1"/></h1>
+                        <div class="text-muted"><field name="identification_id" readonly="1"/></div>
+                    </div>
                     <group>
-                        <group>
+                        <group string="Trabajador">
                             <field name="preserve_record"/>
-                            <field name="employee_id" readonly="1"/>
                             <field name="version_id" readonly="1"/>
-                            <field name="identification_id"/>
-                            <field name="last_name"/>
-                            <field name="m_last_name"/>
-                            <field name="names"/>
                             <field name="vacation_kind"/>
+                            <field name="membership_id"/>
                             <field name="admission_date" readonly="1"/>
+                        </group>
+                        <group string="Periodo computable">
                             <field name="compute_date" readonly="1"/>
                             <field name="compute_date_ini" readonly="1"/>
                             <field name="compute_date_fin" readonly="1"/>
-                            <field name="membership_id"/>
                             <field name="months"/>
                             <field name="days"/>
                             <field name="lacks"/>
                             <field name="record_days" readonly="1"/>
                             <field name="total_days" readonly="1"/>
                         </group>
-                        <group>
-                            <field name="wage" readonly="1"/>
-                            <field name="household_allowance" readonly="1"/>
-                            <field name="commission"/>
-                            <field name="bonus"/>
-                            <field name="extra_hours"/>
-                            <field name="computable_remuneration" readonly="1"/>
-                            <field name="accrued_vacation"/>
-                            <field name="total_vacation" readonly="1"/>
-                            <field name="onp" readonly="1"/>
-                            <field name="afp_jub" readonly="1"/>
-                            <field name="afp_si" readonly="1"/>
-                            <field name="afp_mixed_com" readonly="1"/>
-                            <field name="afp_fixed_com" readonly="1"/>
-                            <field name="neto_total" readonly="1"/>
-                            <field name="quinta"/>
-                            <field name="total" readonly="1"/>
-                        </group>
                     </group>
+                    <notebook>
+                        <page string="Remuneración computable" name="remuneration">
+                            <group>
+                                <group>
+                                    <field name="wage" readonly="1"/>
+                                    <field name="household_allowance" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="commission"/>
+                                    <field name="bonus"/>
+                                    <field name="extra_hours"/>
+                                    <field name="computable_remuneration" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Aportes y neto" name="net">
+                            <group>
+                                <group>
+                                    <field name="accrued_vacation"/>
+                                    <field name="total_vacation" readonly="1"/>
+                                    <field name="onp" readonly="1"/>
+                                    <field name="afp_jub" readonly="1"/>
+                                    <field name="afp_si" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="afp_mixed_com" readonly="1"/>
+                                    <field name="afp_fixed_com" readonly="1"/>
+                                    <field name="neto_total" readonly="1"/>
+                                    <field name="quinta"/>
+                                    <field name="total" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -216,7 +234,6 @@
         <field name="model">hr.vacation.line</field>
         <field name="arch" type="xml">
             <list create="0" delete="0">
-                <button name="view_detail_vac" icon="fa-eye" type="object" title="Ver detalle"/>
                 <field name="preserve_record" string="No R." optional="show"/>
                 <field name="identification_id" string="Nro. doc." optional="show"/>
                 <field name="employee_id" optional="show"/>
@@ -246,6 +263,7 @@
                 <field name="neto_total" sum="Total neto" optional="show" force_save="1"/>
                 <field name="quinta" sum="Total quinta" optional="hide" force_save="1"/>
                 <field name="total" sum="Total a pagar" optional="show" force_save="1"/>
+                <button name="view_detail_vac" icon="fa-eye" type="object" title="Ver detalle"/>
             </list>
         </field>
     </record>
@@ -281,13 +299,15 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1" force_save="1" placeholder="Se propone al elegir el lote"/></h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="name" invisible="1"/>
-                            <field name="year" readonly="state == 'exported'"/>
+                        <group string="Periodo">
+                            <field name="year" readonly="state == 'exported'" widget="year_selection"/>
+                            <field name="payslip_run_id" readonly="state == 'exported'"/>
                         </group>
                         <group>
-                            <field name="payslip_run_id" readonly="state == 'exported'"/>
                             <field name="company_id" readonly="state == 'exported'" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -309,9 +329,12 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="year" optional="show"/>
+                <field name="year" optional="show" options="{'format': false}"/>
                 <field name="payslip_run_id"/>
-                <field name="state" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verify'"
+                       decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>

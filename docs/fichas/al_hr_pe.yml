@@ -677,6 +677,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 25.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Nuevo widget «year_selection»: el año se elige de una lista que va del próximo año hacia atrás y avanza sola cada enero (sin catálogo ni cron; el campo sigue siendo entero). Se usa en la UIT (15 años atrás) y en los beneficios."
+      - "Empleado: página «Planilla PE» con pestañas internas (Identificación, T-Registro con E17/E29/E30, Domicilio), en vez de repartir los datos por «Personal» y «Nómina»; los demás módulos de planillas cuelgan sus pestañas de ahí. Nómina: «Planilla PE ▸ Cálculo». Nombres legibles (UIT, RMV, suspensiones, estudios) y títulos en periodos y parámetros."
   - version: 24.20261007
     fecha: 07/10/2026
     cambios:
