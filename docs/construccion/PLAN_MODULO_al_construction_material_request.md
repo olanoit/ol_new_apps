@@ -462,3 +462,18 @@ aplicado:
 
 Versión `4.20261001`. 45 tests en verde (nuevos: cantidad en la UdM del
 producto, reparto con docenas no exactas y devolución de obra a almacén).
+
+---
+
+## F6 — Despliegue en Odoo.sh (compilación verde 07/10/2026; prueba funcional pendiente)
+
+- `vcatacora/DemoConstruccion`, rama **ConstruccionDEV** (desarrollo, base
+  nueva por compilación): submódulo `olanoit/ol_new_apps` subido de
+  `0a3b7ff` (01/09, módulos en la raíz) a `1392cc8` (módulos en `OL-*/`).
+  Commit `a9e8056`. ConstruccionMAIN sigue en `0a3b7ff`.
+- **Compilación en verde** (confirmado por Vicente): Odoo.sh recorre las
+  carpetas `OL-*/` del submódulo, así que la estructura por áreas sirve tal
+  cual. El plan B del §6 del guion no hizo falta.
+- Guion de prueba: [GUION_PRUEBA_F6.md](GUION_PRUEBA_F6.md) (compilación,
+  configuración, 100 bolsas con 60 en almacén, dos niveles, permisos,
+  cancelación).
