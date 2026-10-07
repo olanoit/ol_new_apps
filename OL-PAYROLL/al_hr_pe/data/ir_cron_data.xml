@@ -15,5 +15,19 @@
             <field name="nextcall" eval="(DateTime.now() + relativedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"/>
             <field name="active" eval="True"/>
         </record>
+        <!-- Comisiones, prima y RMA del SPP desde la tabla de la SBS (no
+             hay API oficial). Si la página no responde o no cuadra, no se
+             toca nada. -->
+        <record id="ir_cron_l10n_pe_sbs_rates" model="ir.cron">
+            <field name="name">Planillas PE: tasas AFP desde la SBS</field>
+            <field name="model_id" ref="model_hr_membership"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_l10n_pe_update_sbs_rates()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + relativedelta(days=1)).strftime('%Y-%m-%d 06:00:00')"/>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

@@ -60,6 +60,11 @@
         <field name="model">hr.membership</field>
         <field name="arch" type="xml">
             <list>
+                <header>
+                    <button name="action_l10n_pe_update_sbs_rates" type="object"
+                            string="Actualizar tasas desde la SBS" display="always"
+                            groups="hr_payroll.group_hr_payroll_manager"/>
+                </header>
                 <field name="name"/>
                 <field name="is_afp"/>
                 <field name="fixed_commision"/>
@@ -67,6 +72,7 @@
                 <field name="prima_insurance"/>
                 <field name="retirement_fund"/>
                 <field name="insurable_remuneration"/>
+                <field name="l10n_pe_sbs_period" optional="show"/>
                 <field name="account_id" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
             </list>
@@ -90,6 +96,7 @@
                             <field name="mixed_commision"/>
                             <field name="prima_insurance"/>
                             <field name="insurable_remuneration"/>
+                            <field name="l10n_pe_sbs_period"/>
                         </group>
                         <group string="Configuración">
                             <field name="account_id"/>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261007 — 07/10/2026
+
+- Tasas AFP automáticas desde la SBS: un proceso diario lee la tabla oficial de comisiones y primas (comisión sobre flujo, prima de seguros, aporte y remuneración máxima asegurable) y actualiza las AFP; también hay un botón «Actualizar tasas desde la SBS» en Afiliaciones. Si la página no responde o la tabla no cuadra, no se toca nada. La remuneración máxima asegurable pasa a S/ 12 732,70 (octubre-diciembre 2026).
+
 ## 23.20261007 — 07/10/2026
 
 - Resumen de planilla en Excel desde el lote (menú del lote ▸ Resumen de planilla): una fila por trabajador y una columna por concepto, con totales, y una hoja por concepto con su código SUNAT y categoría para conciliar con contabilidad.

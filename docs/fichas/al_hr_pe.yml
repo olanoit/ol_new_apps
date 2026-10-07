@@ -677,6 +677,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 24.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Tasas AFP automáticas desde la SBS: un proceso diario lee la tabla oficial de comisiones y primas (comisión sobre flujo, prima de seguros, aporte y remuneración máxima asegurable) y actualiza las AFP; también hay un botón «Actualizar tasas desde la SBS» en Afiliaciones. Si la página no responde o la tabla no cuadra, no se toca nada. La remuneración máxima asegurable pasa a S/ 12 732,70 (octubre-diciembre 2026)."
   - version: 23.20261007
     fecha: 07/10/2026
     cambios:

@@ -28,7 +28,7 @@ cero códigos hardcodeados (ver plan §5).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '23.20261007',
+    'version': '24.20261007',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
