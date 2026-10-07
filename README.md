@@ -175,7 +175,7 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 7.20261007 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
+[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 8.20261007 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 
 ### OL-PROJECTS
 

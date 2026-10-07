@@ -6,10 +6,14 @@ import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, models
+from odoo.tools import float_repr
 
 PE_TZ = pytz.timezone('America/Lima')
 #: Texto del PLE: la norma prohíbe «|», «/» y «\» (y el «"» hacía que el CSV
 #: de Enterprise entrecomillara el campo).
+#: Columnas numéricas del 13.1 (las que Enterprise formatea con 2 decimales).
+KARDEX_FLOAT_FIELDS = ('qty_in', 'cost_in', 'value_in', 'qty_out', 'cost_out',
+                       'value_out', 'remaining', 'unit_cost_final', 'value')
 TEXT_FORBIDDEN = re.compile(r'[|/\\"\r\n]')
 
 
@@ -82,6 +86,15 @@ class L10nPeStockPleWizard(models.TransientModel):
             for product, uom, value, qty in groups:
                 balances[product][0] += sign * uom._compute_quantity(qty, product.uom_id)
                 balances[product][1] += sign * value
+        # El valor del movimiento ya incluye los costos en destino validados
+        # después: los fechados en este periodo o en uno posterior no son
+        # saldo inicial (van como fila en su periodo).
+        for landed in self._l10n_pe_kardex_landed_costs([
+                ('move_id.date', '<', dt_from), ('cost_id.date', '>=', self.date_from)]):
+            product = landed['move'].product_id
+            if products is not None and (product.id in products) == exclude:
+                continue
+            balances[product][1] -= landed['value']
         return balances
 
     def _l10n_pe_kardex_opening_row(self, product, quantity, value, period, report,
@@ -153,6 +166,15 @@ class L10nPeStockPleWizard(models.TransientModel):
         return values
 
     @api.model
+    def _get_stock_valuation(self, category_id):
+        """Campo 17 del 13.1, tabla 14 del Anexo 3: 1 promedio ponderado,
+        2 PEPS, 3 existencias básicas, 9 otros. Enterprise ponía «3» al costo
+        estándar, que no es el método de existencias básicas: va como «9»."""
+        code = super()._get_stock_valuation(category_id)
+        cost_method = self.env['product.category'].browse(category_id).property_cost_method
+        return '9' if cost_method == 'standard' else code
+
+    @api.model
     def _product_name(self, product):
         return ' '.join(TEXT_FORBIDDEN.sub(' ', product.name or '').split())[:80]
 
@@ -161,7 +183,135 @@ class L10nPeStockPleWizard(models.TransientModel):
     # ------------------------------------------------------------------
     def _get_ple_report_content(self, report):
         content = super()._get_ple_report_content(report)
-        return self._l10n_pe_kardex_apply_documents(content) if content else content
+        if content:
+            content = self._l10n_pe_kardex_apply_documents(content)
+            if report == '1301':
+                content = self._l10n_pe_kardex_landed_by_period(content)
+        return content
+
+    # ------------------------------------------------------------------
+    # Costos en destino por periodo
+    # ------------------------------------------------------------------
+    def _l10n_pe_kardex_landed_costs(self, domain):
+        """Costos en destino validados (``stock_landed_costs``), si está
+        instalado: ``[{id, move, value, date, name}]``."""
+        if 'stock.valuation.adjustment.lines' not in self.env:
+            return []
+        # sudo: el libro lo genera quien ve inventario aunque no gestione los
+        # costos en destino (Enterprise también los lee con sudo).
+        lines_sudo = self.env['stock.valuation.adjustment.lines'].sudo().search(
+            [('cost_id.state', '=', 'done'),
+             ('move_id.company_id', 'child_of', self.env.company.root_id.id)] + domain)
+        return [{'id': line.id, 'move': line.move_id.sudo(False),
+                 'value': line.additional_landed_cost, 'date': line.cost_id.date,
+                 'name': line.cost_id.name or ''} for line in lines_sudo]
+
+    def _l10n_pe_kardex_landed_by_period(self, content):
+        """Cada costo en destino en el periodo de su fecha, no en el del
+        movimiento que encarece.
+
+        Enterprise (``l10n_pe_reports_stock_landed_costs``) cuelga el ajuste
+        del movimiento: uno validado en febrero para una compra de enero
+        salía en el TXT de enero (con fecha de febrero) y en el de febrero
+        quedaba dentro del saldo inicial. Aquí:
+
+        * se quitan las filas de costos fechados después del periodo
+          (Enterprise ya los descuenta de la fila del movimiento);
+        * se añaden las de costos del periodo sobre movimientos anteriores;
+        * se rehace el saldo acumulado de los productos tocados.
+        """
+        i_date = self._l10n_pe_kardex_columns()[0]
+        i_value_in = self._l10n_pe_kardex_columns()[3] + 7
+        lines = content.split('\n')
+        rows = [line.split('|') if line and '"' not in line else None for line in lines]
+        valued = [cols for cols in rows if cols and len(cols) > i_value_in + 7]
+        if not valued:
+            return content
+        dt_from, dt_to = self._l10n_pe_kardex_bounds()
+        period_moves = self._get_ple_reports_data()
+        later = {
+            landed['id']: landed for landed in self._l10n_pe_kardex_landed_costs([
+                ('move_id', 'in', period_moves.ids), ('cost_id.date', '>', self.date_to)])}
+        earlier = self._l10n_pe_kardex_landed_costs([
+            ('move_id.date', '<', dt_from),
+            ('cost_id.date', '>=', self.date_from), ('cost_id.date', '<=', self.date_to)])
+        if not later and not earlier:
+            return content
+
+        def product_key(cols):
+            return tuple(cols[4:i_date])
+
+        touched = set()
+        keep = []
+        for line, cols in zip(lines, rows):
+            landed_id = cols and cols[1].endswith('LC') and cols[1][:-2].lstrip('0')
+            if landed_id and landed_id.isdigit() and int(landed_id) in later:
+                # Enterprise ya lo descontó de la fila del movimiento: basta
+                # con quitar su fila y rehacer el saldo.
+                touched.add(product_key(cols))
+                continue
+            keep.append((line, cols))
+        period = '%s%s00' % (self.date_from.year, str(self.date_from.month).zfill(2))
+        for landed in sorted(earlier, key=lambda l: (l['date'], l['id'])):
+            move = landed['move']
+            serie_folio = self._get_serie_folio(landed['name'])
+            row = self._build_adjustment_line(move, move.product_id, period, {
+                'cuo': f"{landed['id']}LC".zfill(6),
+                'value': landed['value'],
+                'operation_type': '26',
+                'date': landed['date'].strftime('%d/%m/%Y'),
+                'document_type': '00',
+                'serie': serie_folio['serie'].replace(' ', '').replace('/', '') or '0',
+                'folio': serie_folio['folio'].replace(' ', '') or '0',
+            }, [0.0, 0.0])
+            row['uom'] = move.product_id.uom_id.l10n_pe_edi_measure_unit_code or row['uom']
+            # Mismo formato que Enterprise (importes con 2 decimales y palote final).
+            cols = [float_repr(round(float(v or 0.0), 2), precision_digits=2)
+                    if k in KARDEX_FLOAT_FIELDS else str(v) for k, v in row.items()] + ['']
+            key = product_key(cols)
+            touched.add(key)
+            # Tras el saldo inicial del producto y antes de sus filas de fecha posterior.
+            position = None
+            for index, (_line, other) in enumerate(keep):
+                if not other or product_key(other) != key:
+                    if position is not None:
+                        break
+                    continue
+                position = index + 1
+                if other[2] != 'A1' and self._l10n_pe_kardex_date(other[i_date]) > landed['date']:
+                    position = index
+                    break
+            if position is None:
+                position = len(keep)
+            keep.insert(position, ('|'.join(cols), cols))
+        # Saldo acumulado de los productos tocados.
+        running = {}
+        result = []
+        for line, cols in keep:
+            if cols and len(cols) > i_value_in + 7 and product_key(cols) in touched:
+                key = product_key(cols)
+                qty_in, value_in = float(cols[i_value_in - 2] or 0), float(cols[i_value_in] or 0)
+                qty_out, value_out = float(cols[i_value_in + 1] or 0), float(cols[i_value_in + 3] or 0)
+                if cols[2] == 'A1':
+                    qty, value = float(cols[i_value_in + 4] or 0), float(cols[i_value_in + 6] or 0)
+                else:
+                    qty, value = running.get(key, (0.0, 0.0))
+                    qty += qty_in + qty_out
+                    value += value_in + value_out
+                running[key] = (qty, value)
+                cols[i_value_in + 4] = float_repr(round(qty, 2), precision_digits=2)
+                cols[i_value_in + 5] = float_repr(round(abs(value / (qty or 1)), 2), precision_digits=2)
+                cols[i_value_in + 6] = float_repr(round(value, 2), precision_digits=2)
+                line = '|'.join(cols)
+            result.append(line)
+        return '\n'.join(result)
+
+    @api.model
+    def _l10n_pe_kardex_date(self, text):
+        try:
+            return datetime.strptime(text, '%d/%m/%Y').date()
+        except ValueError:
+            return datetime.max.date()
 
     def _l10n_pe_kardex_columns(self):
         """Posiciones de fecha, tipo, serie y número en la fila del TXT.

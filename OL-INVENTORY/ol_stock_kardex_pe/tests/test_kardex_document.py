@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -300,6 +300,61 @@ class TestKardexPleBridge(TestKardexReport):
             self.assertNotIn('/', row[i_folio + 2])
         self.assertEqual(wizard._product_row_values(self.product_kdx)['default_code'],
                          'P%06d' % self.product_kdx.id)
+
+    def test_45_metodo_de_valuacion_tabla_14(self):
+        Wizard = self.env['l10n_pe.stock.ple.wizard']
+        category = self.env['product.category'].create({'name': 'Categoría tabla 14'})
+        for method, code in (('average', '1'), ('fifo', '2'), ('standard', '9')):
+            category.property_cost_method = method
+            self.assertEqual(Wizard._get_stock_valuation(category.id), code, method)
+
+    def test_46_costo_en_destino_en_su_periodo(self):
+        """Un costo en destino de febrero sobre una compra de enero va en el
+        TXT de febrero (fila 26), no en el de enero ni en el saldo inicial."""
+        self._build_moves()
+        purchase_move = self.env['stock.move'].search([
+            ('product_id', '=', self.product_kdx.id), ('purchase_line_id', '!=', False)],
+            order='id', limit=1)
+        purchase_move.value += 30.0          # stock_landed_costs ya lo suma al movimiento
+        landed = {'id': 77, 'move': purchase_move, 'value': 30.0,
+                  'date': date(2024, 2, 10), 'name': 'LC/0001'}
+
+        def fake_landed(wizard, domain):
+            fields_ = {leaf[0] + leaf[1] for leaf in domain if isinstance(leaf, tuple)}
+            if 'move_idin' in fields_:                       # posteriores al periodo
+                return [landed] if wizard.date_to < landed['date'] else []
+            if 'cost_id.date<=' in fields_:                  # del periodo, movimiento anterior
+                return [landed] if wizard.date_from <= landed['date'] <= wizard.date_to else []
+            return [landed] if wizard.date_from <= landed['date'] else []   # saldo inicial
+
+        def fake_adjustments(wizard, moves):
+            if purchase_move in moves:
+                return {purchase_move.id: [{
+                    'cuo': '0077LC', 'value': 30.0, 'operation_type': '26',
+                    'date': '10/02/2024', 'document_type': '00', 'serie': 'LC', 'folio': '0001'}]}
+            return {}
+
+        Wizard = type(self.env['l10n_pe.stock.ple.wizard'])
+        with patch.object(Wizard, '_l10n_pe_kardex_landed_costs', fake_landed), \
+                patch.object(Wizard, '_get_move_valuation_adjustments', fake_adjustments):
+            wizard, rows = self._ple_rows()
+            i_value_in = wizard._l10n_pe_kardex_columns()[3] + 7
+            self.assertFalse([r for r in rows if r[1].endswith('LC')], 'enero sin el costo de febrero')
+            move_row = next(r for r in rows if r[1] == str(purchase_move.id).zfill(6))
+            self.assertEqual(move_row[i_value_in], '100.00')
+            self.assertEqual(rows[-1][i_value_in + 6], '225.00', 'saldo final de enero')
+
+            february = self.env['l10n_pe.stock.ple.wizard'].create({
+                'date_from': '2024-02-01', 'date_to': '2024-02-29'})
+            content = february._get_ple_report_content('1301')
+            rows = [line.split('|') for line in content.split('\n') if line]
+            opening = next(r for r in rows if r[2] == 'A1'
+                           and r[1] == f'{self.product_kdx.id}A1'.zfill(6))
+            self.assertEqual(opening[i_value_in + 6], '225.00', 'saldo inicial sin el costo')
+            lc_row = next(r for r in rows if r[1] == '0077LC')
+            self.assertEqual(lc_row[i_value_in], '30.00')
+            self.assertEqual(lc_row[i_value_in + 6], '255.00')
+            self.assertEqual(len(lc_row), len(opening))
 
     def test_44_factura_anulada_libera_el_movimiento(self):
         """Si el comprobante pasa a borrador, el movimiento deja de citarlo."""

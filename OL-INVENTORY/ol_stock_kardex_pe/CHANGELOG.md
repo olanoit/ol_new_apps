@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261007 — 07/10/2026
+
+- PLE 13.1, campo 17 (método de valuación, tabla 14 del Anexo 3): el costo estándar se informa como «9 - Otros»; Enterprise ponía «3», que es el método de existencias básicas.
+- PLE 13.1 y costos en destino: cada costo va en el periodo de su fecha (fila con operación 26). Antes uno validado en febrero para una compra de enero salía en el TXT de enero y en febrero quedaba escondido en el saldo inicial; ahora el saldo inicial no lo incluye y el saldo acumulado se rehace.
+
 ## 7.20261007 — 07/10/2026
 
 - TXT del PLE (12.1 y 13.1): el periodo y los saldos iniciales se cortan en hora de Lima; antes un movimiento del 31 por la noche caía en el mes siguiente y el último día del mes quedaba fuera. Incluye las sucursales con el RUC de la compañía principal.
