@@ -113,6 +113,26 @@ class AccountMove(models.Model):
                 amount += undiscounted - line.price_subtotal
         return self.currency_id.round(amount)
 
+    def _l10n_pe_report_payment_means(self):
+        """«CRÉDITO», «CONTADO» o vacío, como la forma de pago del XML.
+
+        Las notas de crédito y débito no la llevan en el XML
+        (``_add_invoice_payment_terms_nodes``): antes el PDF imprimía
+        «CRÉDITO» y un cuadro de cuotas en la nota que tenía vencimiento.
+        """
+        self.ensure_one()
+        if self.move_type in ('out_refund', 'in_refund'):
+            return ''
+        return 'CRÉDITO' if self.is_credit else 'CONTADO'
+
+    def _l10n_pe_report_net_pending(self):
+        """Monto neto pendiente de pago (R.S. 193-2020/SUNAT): el total menos
+        la detracción, el mismo importe que la forma de pago «Credito» del XML."""
+        self.ensure_one()
+        spot = self._l10n_pe_edi_get_spot() if self.is_sale_document() else {}
+        return self.currency_id.round(
+            abs(self.amount_total) - ((spot or {}).get('spot_amount') or 0.0))
+
     def get_data_dues(self):
         """Cuotas de crédito a mostrar en el reporte, con el mismo criterio
         que el XML (``_add_invoice_payment_terms_nodes`` de l10n_pe_edi):

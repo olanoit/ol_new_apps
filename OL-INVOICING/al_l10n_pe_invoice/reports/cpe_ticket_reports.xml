@@ -13,7 +13,9 @@
 
         <template id="report_cpe_ticket_document">
             <t t-set="o" t-value="o.with_context(lang=lang)"/>
-            <t t-set="partner" t-value="o.partner_id.parent_id or o.partner_id"/>
+            <!-- Adquirente: la entidad comercial, como en el XML y el QR -->
+            <t t-set="partner" t-value="o.commercial_partner_id"/>
+            <t t-set="payment_means" t-value="o._l10n_pe_report_payment_means()"/>
             <t t-set="extra_edi_vals" t-value="o._l10n_pe_edi_get_extra_report_values()"/>
             <!-- La clase "article" es obligatoria: _prepare_html() solo envuelve
                  en web.minimal_layout (charset UTF-8 + CSS) los divs .article;
@@ -64,9 +66,9 @@
                         <span t-field="o.invoice_date_due"
                               t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
                     </li>
-                    <li>
+                    <li t-if="payment_means">
                         <strong>Forma de pago:</strong>
-                        <t t-if="o.is_credit">CRÉDITO</t><t t-else="">CONTADO</t>
+                        <span t-out="payment_means"/>
                     </li>
                     <li>
                         <strong>Moneda:</strong>
@@ -221,6 +223,33 @@
                         <span t-field="o.ref"/>
                     </li>
                 </ul>
+
+                <!-- CRÉDITO: neto pendiente y cuotas (R.S. 193-2020/SUNAT) -->
+                <table class="cpe-ticket-detraction" t-if="payment_means == 'CRÉDITO'">
+                    <tr>
+                        <th colspan="3">Información del crédito</th>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            Monto neto pendiente de pago:
+                            <span t-out="o._l10n_pe_report_net_pending()"
+                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Cuota</th>
+                        <th>Vence</th>
+                        <th>Monto</th>
+                    </tr>
+                    <tr t-foreach="o.get_data_dues()" t-as="due">
+                        <td><span t-out="due.get('nro')"/></td>
+                        <td><span t-out="due.get('date')"/></td>
+                        <td>
+                            <span t-out="due.get('amount')"
+                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                </table>
 
                 <!-- DETRACCIÓN -->
                 <table class="cpe-ticket-detraction"

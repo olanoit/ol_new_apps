@@ -70,7 +70,10 @@
                     </tr>
                 </table>
 
-                <!-- CLIENTE Y FECHAS -->
+                <!-- CLIENTE Y FECHAS: el adquirente es la entidad comercial, como
+                     en el XML y el QR (no el contacto de la empresa) -->
+                <t t-set="buyer" t-value="o.commercial_partner_id"/>
+                <t t-set="payment_means" t-value="o._l10n_pe_report_payment_means()"/>
                 <div class="cpe-box">
                     <table class="cpe-partner">
                         <tr>
@@ -78,21 +81,21 @@
                                 <table>
                                     <tr>
                                         <td class="cpe-label">Señor(es):</td>
-                                        <td><span t-field="o.partner_id.name"/></td>
+                                        <td><span t-field="buyer.name"/></td>
                                     </tr>
                                     <tr>
                                         <td class="cpe-label">
-                                            <span t-out="o.partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
+                                            <span t-out="buyer.l10n_latam_identification_type_id.name or 'Doc.'"/>:
                                         </td>
-                                        <td><span t-field="o.partner_id.vat"/></td>
+                                        <td><span t-field="buyer.vat"/></td>
                                     </tr>
                                     <tr>
                                         <td class="cpe-label">Dirección:</td>
                                         <td><span t-out="o._l10n_pe_report_partner_address()"/></td>
                                     </tr>
-                                    <tr>
+                                    <tr t-if="payment_means">
                                         <td class="cpe-label">Forma de pago:</td>
-                                        <td><t t-if="o.is_credit">CRÉDITO</t><t t-else="">CONTADO</t></td>
+                                        <td><span t-out="payment_means"/></td>
                                     </tr>
                                     <tr t-if="o.sale_id">
                                         <td class="cpe-label">Pedido de venta:</td>
@@ -336,8 +339,13 @@
                 </div>
 
                 <!-- CRÉDITO / CUOTAS -->
-                <div class="cpe-note" t-if="o.is_credit">
+                <div class="cpe-note" t-if="payment_means == 'CRÉDITO'">
                     <div class="cpe-section-title">Información del crédito</div>
+                    <div>
+                        <strong>Monto neto pendiente de pago:</strong>
+                        <span t-out="o._l10n_pe_report_net_pending()"
+                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                    </div>
                     <t t-set="dues" t-value="o.get_data_dues()"/>
                     <table class="cpe-lines" style="width: 60%;">
                         <thead>

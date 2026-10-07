@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261007 — 07/10/2026
+
+- Corregido: al facturar a un contacto de una empresa, el A4 imprimía el nombre del contacto y su documento (vacío); ahora muestra la empresa y su RUC, como el XML y el QR.
+- Corregido: las notas de crédito y débito ya no imprimen forma de pago ni cuadro de cuotas, que el XML no lleva.
+- A crédito, el A4 y el ticket muestran el monto neto pendiente de pago (total menos detracción) y las cuotas, como exige la R.S. 193-2020/SUNAT; el ticket no mostraba ninguno de los dos.
+
 ## 11.20260828 — 27/09/2026
 
 - Las exportaciones y las operaciones gratuitas tienen su propia fila en el pie (**Op. exportación**, **Op. gratuitas**): antes la exportación no se sumaba y lo gratuito salía como «otros tributos», y el PDF no cuadraba con el XML.
