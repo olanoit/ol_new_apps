@@ -153,20 +153,57 @@ class TestLetterAuditFixes(TransactionCase):
                 self.assertIn(line._l10n_pe_open_line().move_id, letter.canje_move_id)
         self.assertEqual(massive.state, 'banked')
 
-    def test_massive_does_not_reclassify_sent_letters(self):
+    def _distinct_discount_account(self):
+        """Cuenta de descuento distinta de la de cobranza (en la base de
+        pruebas pueden coincidir y entonces no hay nada que reclasificar)."""
+        Config = self.env['l10n_pe.letter.account.config']
+        domain = [('account_type', '=', 'asset_receivable'), ('document_type', '=', 'letter'),
+                  ('currency_id', '=', self.pen.id), ('company_id', '=', self.company.id)]
+        billing = Config.search(domain + [('letter_type', '=', 'billing')], limit=1)
+        discount = Config.search(domain + [('letter_type', '=', 'discount')], limit=1)
+        if billing.account_id == discount.account_id:
+            discount.account_id = self.env['account.account'].create({
+                'name': 'Letras en descuento (prueba)', 'code': '123499',
+                'account_type': 'asset_receivable', 'reconcile': True,
+                'company_ids': [(6, 0, self.company.ids)]})
+        return discount.account_id
+
+    def test_reclassify_sent_letter(self):
+        """Una letra en cobranza libre pasa a descuento con su asiento."""
+        discount_account = self._distinct_discount_account()
+        letter = self._redeemed_letter(amount=1000.0)
+        line = letter.letter_line_ids[0]
+        self._send_to_bank(letter, date(2026, 8, 15), line)
+        billing_line = line._l10n_pe_open_line()
+        wizard_vals = {'letter_id': letter.id, 'date_canje': date(2026, 8, 18),
+                       'letter_type': 'discount', 'canje_type': 'one',
+                       'letter_line_id': line.id, 'bank_id': self.bank.id, 'code': 'DSC-1'}
+        self.env['l10n_pe.letter.canje.wizard'].create(wizard_vals).action_canje()
+        self.assertTrue(billing_line.reconciled, 'la cobranza libre queda cerrada')
+        new_line = line._l10n_pe_open_line()
+        self.assertEqual(new_line.account_id, discount_account)
+        self.assertEqual(new_line.move_id.date, date(2026, 8, 18))
+        self.assertAlmostEqual(new_line.amount_residual, billing_line.balance, places=2)
+        self.assertEqual(line.letter_type, 'discount')
+        self.assertTrue(line._l10n_pe_bank_operation_allowed('settle_discount'))
+        # Otra vez al mismo tipo: nada que hacer.
+        with self.assertRaises(UserError):
+            self.env['l10n_pe.letter.canje.wizard'].create(wizard_vals).action_canje()
+
+    def test_massive_reclassifies_sent_letters(self):
+        discount_account = self._distinct_discount_account()
         letter_a = self._redeemed_letter(amount=1000.0)
         letter_b = self._redeemed_letter(amount=500.0)
         self._send_to_bank(letter_a, date(2026, 8, 15))
         Letter = self.Letter.with_context(active_ids=(letter_a | letter_b).ids)
         with self.assertRaises(UserError):
-            Letter.action_multi_redeemed('discount')
-        with self.assertRaises(UserError):
             Letter.action_multi_redeemed('protested')
-        self.assertFalse(letter_b.canje_move_id)
-        # Mismo tipo: solo se envía lo que sigue en cartera.
-        Letter.action_multi_redeemed('billing', date(2026, 8, 16))
-        self.assertTrue(letter_b.canje_move_id)
+        Letter.action_multi_redeemed('discount', date(2026, 8, 16))
         self.assertEqual(letter_a.canje_move_id.date, date(2026, 8, 15))
+        self.assertTrue(letter_b.canje_move_id)
+        for line in letter_a.letter_line_ids | letter_b.letter_line_ids:
+            self.assertEqual(line.letter_type, 'discount')
+            self.assertEqual(line._l10n_pe_open_line().account_id, discount_account)
 
     def test_refinance_wizard_rejects_massive_context(self):
         letter = self._redeemed_letter()

@@ -790,6 +790,10 @@ class L10nPeLetter(models.Model):
         exchange_rate = 1
         letter_line_ids = self._get_letters_to_send()
         if letter_line_id:
+            if letter_line_id not in letter_line_ids:
+                # Ya enviada: se reclasifica (cobranza ↔ descuento) en vez de
+                # volver a sacarla de cartera, que ya no la tiene.
+                return self._l10n_pe_reclassify_sent(letter_line_id, letter_type, letter_date)
             letter_line_ids = letter_line_id
         if not letter_line_ids:
             raise UserError(self.env._('No quedan letras pendientes de enviar al banco en el canje %s.', self.name))
@@ -876,6 +880,61 @@ class L10nPeLetter(models.Model):
                 lambda line: line.l10n_pe_letter_line_id == letter_line_rec
                 and line.amount_currency * sum(counter_line.mapped('amount_currency')) < 0)
             (closing_line + counter_line).reconcile()
+
+    def _l10n_pe_reclassify_sent(self, letter_lines, letter_type, move_date):
+        """Pasa letras ya enviadas al banco de cobranza libre a descuento (o al
+        revés): un asiento lleva el saldo abierto de la cuenta actual (1233 o
+        1234) a la nueva, al mismo valor en soles (sin diferencia de cambio).
+
+        Solo letras que siguen en el asiento de envío: con el descuento ya
+        liquidado, cobradas o protestadas, el banco ya operó sobre ellas.
+        """
+        self.ensure_one()
+        letter_lines = letter_lines.filtered(lambda line: line.letter_type != letter_type)
+        if not letter_lines:
+            raise UserError(self.env._('Las letras ya están en %s.', dict(
+                self.env['l10n_pe.letter.line']._fields['letter_type'].selection)[letter_type]))
+        sent_moves = self.canje_move_id | self.canje_move_ids
+        move_lines = []
+        to_reconcile = []
+        for line in letter_lines:
+            open_line = line._l10n_pe_open_line()
+            if line.letter_type not in ('billing', 'discount') or line.discount_move_id \
+                    or not open_line or open_line.move_id not in sent_moves:
+                raise UserError(self.env._(
+                    'La letra %s no se puede reclasificar: no está en el banco a la espera '
+                    'de cobro (descuento ya liquidado, cobrada, protestada o en cartera).',
+                    line.nro_letter))
+            account = line._l10n_pe_config_account(letter_type)
+            if account == open_line.account_id:
+                continue
+            common = {'partner_id': line.partner_id.id, 'currency_id': open_line.currency_id.id,
+                      'l10n_pe_letter_line_id': line.id}
+            move_lines.append({**common, 'name': line.nro_letter, 'account_id': open_line.account_id.id,
+                               'amount_currency': -open_line.amount_residual_currency,
+                               'balance': -open_line.amount_residual})
+            move_lines.append({**common, 'name': line.nro_letter, 'account_id': account.id,
+                               'amount_currency': open_line.amount_residual_currency,
+                               'balance': open_line.amount_residual,
+                               'date_maturity': line.expiration_date})
+            to_reconcile.append((line, open_line))
+        if move_lines:
+            label = 'Letra en descuento ' if letter_type == 'discount' else 'Cobranza libre '
+            move = self.env['account.move'].create({
+                'ref': label + self.name + ' (reclasificación)',
+                'date': move_date,
+                'journal_id': self.journal_id.id,
+                'partner_id': self.partner_id.id,
+                'line_ids': [(0, 0, vals) for vals in move_lines],
+            })
+            move.action_post()
+            self.canje_move_ids = [(4, move.id)]
+            for line, open_line in to_reconcile:
+                closing = move.line_ids.filtered(
+                    lambda ml: ml.l10n_pe_letter_line_id == line and ml.account_id == open_line.account_id)
+                (closing + open_line).reconcile()
+        letter_lines.write({'letter_type': letter_type})
+        return True
 
     def _get_letters_to_send(self):
         """Letras que siguen en cartera: ni enviadas ya al banco (tienen
@@ -982,8 +1041,8 @@ class L10nPeLetter(models.Model):
         cuenta de cobranza o descuento. Antes solo se cambiaba el tipo de las
         letras y la contabilidad seguía en cartera.
 
-        Una letra ya enviada no cambia de tipo (pasar de cobranza a descuento
-        necesita un asiento de reclasificación que el módulo no hace).
+        Una letra ya enviada con otro tipo se reclasifica con su asiento
+        (``_l10n_pe_reclassify_sent``).
         """
         if letter_type not in ('billing', 'discount'):
             raise UserError(self.env._(
@@ -1015,14 +1074,12 @@ class L10nPeLetter(models.Model):
             sent = letter.letter_line_ids - pending
             other_type = sent.filtered(
                 lambda line: line.payment_state != 'paid' and line.letter_type != letter_type)
-            if other_type:
-                raise UserError(self.env._(
-                    'Las letras %(letters)s ya se enviaron al banco con otro tipo: '
-                    'el canje masivo no las reclasifica.',
-                    letters=', '.join(other_type.mapped('nro_letter'))))
-            to_send[letter] = pending
-        for letter, pending in to_send.items():
+            to_send[letter] = (pending, other_type)
+        for letter, (pending, other_type) in to_send.items():
             letter.is_massive_letter = True
+            if other_type:
+                # Enviadas con otro tipo: asiento de reclasificación.
+                letter._l10n_pe_reclassify_sent(other_type, letter_type, date_canje)
             if not pending:
                 continue
             letter.action_canje_create(letter_type, date_canje)

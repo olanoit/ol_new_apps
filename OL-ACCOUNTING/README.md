@@ -35,7 +35,7 @@ módulo | versión | licencia | resumen
 [al_account_destinations](al_account_destinations/) | 5.20261007 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](al_account_move_name_sequence/) | 11.20261007 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](al_account_payments/) | 5.20261007 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
-[al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 11.20261007 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
+[al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 12.20261007 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
 [al_l10n_pe_currency](al_l10n_pe_currency/) | 8.20261007 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
 [al_l10n_pe_detraction](al_l10n_pe_detraction/) | 13.20261007 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
 [al_l10n_pe_exchange_closure](al_l10n_pe_exchange_closure/) | 5.20261007 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
