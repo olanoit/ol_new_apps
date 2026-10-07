@@ -104,3 +104,10 @@ L10N_PE_AUDIT_RULES['salary_rule_TINGR'] = (
     "result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL",
     "result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM",
 )
+# Indemnización vacacional (INDVAC, 0504): llega al neto y es renta de 5ta
+# extraordinaria; no entra en las bases de aportes.
+_chain('salary_rule_TINGR', lambda code: code + '+INDVAC')
+L10N_PE_AUDIT_RULES['salary_rule_REAQ'] = (
+    "result = BONI_EX+UTIL",
+    "result = BONI_EX+UTIL+INDVAC",
+)

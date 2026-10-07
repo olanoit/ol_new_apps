@@ -457,13 +457,30 @@ result = inputs['CTS_TRU'].amount if inputs['CTS_TRU'] else 0
         <record model="hr.salary.rule" id="salary_rule_INDEM">
             <field name="name">Indemnizacion</field>
             <field name="code">INDEM</field>
-            <field name="sunat_code">0904</field>
+            <field name="sunat_code">0501</field>
             <field name="sequence">38</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 result = inputs['INDEM'].amount if inputs['INDEM'] else 0
+            </field>
+            <field name="category_id" ref="ING"/>
+            <field name="struct_id" ref="base_structure"/>
+        </record>
+        <!-- D.Leg. 713, art. 23: una remuneración por cada período de
+             vacaciones no gozado dentro del año siguiente. No paga aportes;
+             sí es renta de 5ta (extraordinaria, REAQ). -->
+        <record model="hr.salary.rule" id="salary_rule_INDVAC">
+            <field name="name">Indemnización vacacional</field>
+            <field name="code">INDVAC</field>
+            <field name="sunat_code">0504</field>
+            <field name="sequence">39</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['INDVAC'].amount if inputs['INDVAC'] else 0
             </field>
             <field name="category_id" ref="ING"/>
             <field name="struct_id" ref="base_structure"/>
@@ -505,7 +522,7 @@ result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM
+result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM+INDVAC
             </field>
             <field name="category_id" ref="SUB"/>
             <field name="struct_id" ref="base_structure"/>
@@ -999,7 +1016,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BONI_EX+UTIL
+result = BONI_EX+UTIL+INDVAC
             </field>
             <field name="category_id" ref="SUB"/>
             <field name="struct_id" ref="base_structure"/>

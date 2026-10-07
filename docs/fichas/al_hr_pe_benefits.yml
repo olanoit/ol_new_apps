@@ -748,6 +748,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 10.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "La indemnización vacacional de la liquidación va a la boleta por su propio concepto (INDVAC, PLAME 0504) y tributa como renta de 5ta extraordinaria."
   - version: 9.20261007
     fecha: 07/10/2026
     cambios:

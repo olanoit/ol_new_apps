@@ -343,8 +343,12 @@ class TestConstructionAuditFixes(TransactionCase):
 
     def test_sunat_codes_match_the_base_structure(self):
         """Los conceptos que existen en BASE usan su mismo código SUNAT."""
-        pairs = (('rule_INDEM', 'INDEM'), ('rule_BEXT', 'BONI_EX'),
-                 ('rule_VAC10', 'VAC'))
+        # La «indemnización» del convenio (15 %) es la CTS del régimen:
+        # 0904, no el 0501 de la indemnización por despido de BASE.
+        self.assertEqual(
+            self.env.ref('al_hr_pe_construction.rule_INDEM').sunat_code,
+            '0904')
+        pairs = (('rule_BEXT', 'BONI_EX'), ('rule_VAC10', 'VAC'))
         base_rules = self.env.ref('al_hr_pe.base_structure').rule_ids
         for xmlid, base_code in pairs:
             with self.subTest(regla=xmlid):

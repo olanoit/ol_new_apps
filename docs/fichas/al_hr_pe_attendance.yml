@@ -541,6 +541,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 9.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Turnos nocturnos con la convención estándar de Odoo (lunes 22-24 y martes 00-06): el turno se lee completo. Antes el lunes salía con 6 h extra falsas y el sábado como falta."
   - version: 8.20261007
     fecha: 07/10/2026
     cambios:

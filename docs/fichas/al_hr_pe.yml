@@ -677,6 +677,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 21.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Nueva regla «Indemnización vacacional» (INDVAC, PLAME 0504): llega al neto y a la renta extraordinaria de 5ta, sin pagar aportes."
+      - "Corregido: la indemnización genérica (INDEM) se declaraba en el PLAME como CTS (0904); ahora usa 0501, indemnización por despido."
   - version: 20.20261007
     fecha: 07/10/2026
     cambios:

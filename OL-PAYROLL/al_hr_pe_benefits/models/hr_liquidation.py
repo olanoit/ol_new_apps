@@ -465,7 +465,7 @@ class HrLiquidation(models.Model):
                 line.truncated_vacation)
             if line.vacation_indemnity:
                 self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.input_type_INDEM'),
+                    slip, self.env.ref('al_hr_pe.input_type_INDVAC'),
                     line.vacation_indemnity)
             # Las vacaciones adelantadas se restaban solo en el total de la
             # línea: la boleta pagaba las truncas completas.
@@ -534,7 +534,8 @@ class HrLiquidationVacationLine(models.Model):
         string='(+) Indemnización vacacional',
         help='D.Leg. 713, art. 23: una remuneración por cada período '
              'devengado que no se gozó dentro del año siguiente. No paga '
-             'AFP/ONP ni EsSalud; va a la boleta por el input INDEM.')
+             'AFP/ONP ni EsSalud (sí es renta de 5ta); va a la boleta por '
+             'el input INDVAC (PLAME 0504).')
     total_vacation = fields.Float(string='Total vacaciones')
     onp = fields.Float(string='(-) ONP')
     afp_jub = fields.Float(string='(-) AFP jubilación')

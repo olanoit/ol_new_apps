@@ -319,7 +319,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         self.assertEqual(len(winter), 1)
 
     def test_liquidation_exports_vacation_indemnity(self):
-        """La indemnización vacacional va a la boleta por INDEM y suma
+        """La indemnización vacacional va a la boleta por INDVAC y suma
         al neto de la línea sin pagar aportes."""
         liquidation = self._cessation_in_july()
         liquidation.get_liquidation()
@@ -337,7 +337,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         slip = liquidation.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         indem = slip.input_line_ids.filtered(
-            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_INDEM'))
+            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_INDVAC'))
         self.assertAlmostEqual(indem.amount, 1000.0, 2)
 
     def test_liquidation_july_pays_first_semester(self):

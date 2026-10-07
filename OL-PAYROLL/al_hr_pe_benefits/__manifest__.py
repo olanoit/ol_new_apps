@@ -45,7 +45,7 @@ Fase 7.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '9.20261007',
+    'version': '10.20261007',
     'license': 'OPL-1',
     'depends': ['al_hr_pe'],
     'data': [

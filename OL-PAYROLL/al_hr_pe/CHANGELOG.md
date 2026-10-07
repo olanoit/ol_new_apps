@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261007 — 07/10/2026
+
+- Nueva regla «Indemnización vacacional» (INDVAC, PLAME 0504): llega al neto y a la renta extraordinaria de 5ta, sin pagar aportes.
+- Corregido: la indemnización genérica (INDEM) se declaraba en el PLAME como CTS (0904); ahora usa 0501, indemnización por despido.
+
 ## 20.20261007 — 07/10/2026
 
 - PLAME: el tipo de documento sale con dos dígitos (01 = DNI) en el .rem, el .jor y el .toc; antes salía «1» y el PLAME lo rechazaba.

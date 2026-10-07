@@ -87,6 +87,12 @@
             <field name="country_id" ref="base.pe"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
+        <record id="input_type_INDVAC" model="hr.payslip.input.type">
+            <field name="name">INDEMNIZACION VACACIONAL</field>
+            <field name="code">INDVAC</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
         <record id="input_type_COMI" model="hr.payslip.input.type">
             <field name="name">COMISIONES</field>
             <field name="code">COMI</field>

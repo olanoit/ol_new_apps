@@ -664,6 +664,28 @@ class HrTareajeManager(models.Model):
         tratan como de una semana."""
         if not calendar:
             return None
+        if self._night_shift_on_next_day(calendar):
+            # Convención estándar de Odoo: el turno del lunes 22:00-06:00
+            # es lunes 22-24 + martes 00-06. La madrugada del día es la
+            # cola del turno de la víspera y no un turno propio; la del
+            # día siguiente completa el turno nocturno de hoy.
+            def day_tramos(weekday):
+                return [(att.hour_from, att.hour_to)
+                        for att in calendar.attendance_ids.sorted('hour_from')
+                        if att.dayofweek == str(weekday)
+                        and att.day_period != 'lunch']
+            today = [t for t in day_tramos(day.weekday())
+                     if not self._is_dawn_tramo(t)]
+            if not today:
+                return None
+            if today[-1][1] == 24.0:
+                today += [(desde + 24.0, hasta + 24.0)
+                          for desde, hasta in day_tramos((day.weekday() + 1) % 7)
+                          if self._is_dawn_tramo((desde, hasta))]
+            break_hours = sum(
+                max(0.0, today[i + 1][0] - today[i][1])
+                for i in range(len(today) - 1))
+            return (today[0][0], today[-1][1], break_hours)
         segments = calendar.attendance_ids.filtered(
             lambda att: att.dayofweek == str(day.weekday())
             and att.day_period != 'lunch')
@@ -691,6 +713,33 @@ class HrTareajeManager(models.Model):
             max(0.0, tramos[i + 1][0] - tramos[i][1])
             for i in range(len(tramos) - 1))
         return (tramos[0][0], tramos[-1][1], break_hours)
+
+    @staticmethod
+    def _is_dawn_tramo(tramo):
+        """Tramo de madrugada: empieza a las 00:00 y acaba antes del corte
+        nocturno (la cola de un turno que cruzó la medianoche)."""
+        return tramo[0] == 0.0 and tramo[1] <= NIGHT_SPLIT_HOUR
+
+    @api.model
+    def _night_shift_on_next_day(self, calendar):
+        """¿El calendario pone la madrugada del turno nocturno en el día
+        siguiente (convención estándar de Odoo)?
+
+        Es así cuando los días con tramo hasta las 24:00 y los días con
+        tramo de madrugada no coinciden, pero sí coinciden desplazando un
+        día (lunes noche → martes madrugada). Si coinciden tal cual, el
+        calendario sigue la convención de un solo día de la semana.
+        """
+        night_days, dawn_days = set(), set()
+        for att in calendar.attendance_ids:
+            if att.day_period == 'lunch':
+                continue
+            if att.hour_to == 24.0 and att.hour_from >= NIGHT_SPLIT_HOUR:
+                night_days.add(int(att.dayofweek))
+            elif self._is_dawn_tramo((att.hour_from, att.hour_to)):
+                dawn_days.add(int(att.dayofweek))
+        return bool(night_days) and night_days != dawn_days \
+            and {(d + 1) % 7 for d in night_days} == dawn_days
 
     @api.model
     def _to_local_date(self, value, tz_name):

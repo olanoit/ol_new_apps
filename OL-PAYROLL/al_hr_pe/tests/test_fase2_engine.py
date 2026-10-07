@@ -446,3 +446,23 @@ class TestFase2Engine(TransactionCase):
         slip.compute_sheet()
         self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 1000.0)
         self.assertAlmostEqual(self._line(slip, 'AAFP').total, aonp)
+
+    def test_vacation_indemnity_rule(self):
+        """INDVAC (PLAME 0504): llega al neto y a la renta extraordinaria
+        de 5ta, no a las bases de aportes; INDEM ya no se declara como
+        CTS (0904)."""
+        self.assertEqual(
+            self.env.ref('al_hr_pe.salary_rule_INDVAC').sunat_code, '0504')
+        self.assertNotEqual(
+            self.env.ref('al_hr_pe.salary_rule_INDEM').sunat_code, '0904')
+        slip = self._compute_slip()
+        net = self._line(slip, 'NETO').total
+        reaq = self._line(slip, 'REAQ').total
+        aafp = self._line(slip, 'AAFP').total
+        slip.write({'input_line_ids': [(0, 0, {
+            'input_type_id': self.env.ref('al_hr_pe.input_type_INDVAC').id,
+            'amount': 900.0})]})
+        slip.compute_sheet()
+        self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 900.0)
+        self.assertAlmostEqual(self._line(slip, 'REAQ').total, reaq + 900.0)
+        self.assertAlmostEqual(self._line(slip, 'AAFP').total, aafp)

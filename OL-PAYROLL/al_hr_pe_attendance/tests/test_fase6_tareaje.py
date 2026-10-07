@@ -227,6 +227,36 @@ class TestTareajeFlow(TransactionCase):
         self.assertAlmostEqual(valores['htn'], 8.0, places=2)
         self.assertAlmostEqual(valores['incos'], 0.0, places=2)
 
+    def test_schedule_cross_midnight_next_day_convention(self):
+        """Convención estándar de Odoo: lunes 22-24 + martes 00-06.
+
+        Antes el lunes se leía como un turno de 2 h (6 h extra falsas) y
+        el sábado, con solo la madrugada del viernes, como día laborable
+        sin marcación (falta).
+        """
+        tareaje = self._create_tareaje('Tareaje Nocturno Odoo')
+        calendario = self.env['resource.calendar'].create({
+            'name': 'Nocturno día siguiente',
+            'tz': 'America/Lima',
+            'attendance_ids': [(5, 0, 0)] + [
+                (0, 0, {'name': 'Noche %s' % dia, 'dayofweek': str(dia),
+                        'hour_from': 22.0, 'hour_to': 24.0,
+                        'day_period': 'afternoon'})
+                for dia in range(0, 5)] + [
+                (0, 0, {'name': 'Madrugada %s' % dia, 'dayofweek': str(dia),
+                        'hour_from': 0.0, 'hour_to': 6.0,
+                        'day_period': 'morning'})
+                for dia in range(1, 6)],
+        })
+        # 2026-01-05 es lunes; 2026-01-10, sábado.
+        self.assertEqual(tareaje._get_day_schedule(calendario, date(2026, 1, 5)),
+                         (22.0, 30.0, 0.0))
+        self.assertEqual(tareaje._get_day_schedule(calendario, date(2026, 1, 9)),
+                         (22.0, 30.0, 0.0))
+        self.assertIsNone(
+            tareaje._get_day_schedule(calendario, date(2026, 1, 10)),
+            'la madrugada del sábado es la cola del viernes: no es turno')
+
     def test_schedule_diurno_con_refrigerio(self):
         """El turno partido normal sigue calculando su refrigerio."""
         tareaje = self._create_tareaje('Tareaje Diurno')

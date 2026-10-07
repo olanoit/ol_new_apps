@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- Turnos nocturnos con la convención estándar de Odoo (lunes 22-24 y martes 00-06): el turno se lee completo. Antes el lunes salía con 6 h extra falsas y el sábado como falta.
+
 ## 8.20261007 — 07/10/2026
 
 - Un cierre de la compañía o un medio feriado ya no se tratan como feriado completo con sobretasa del 100 %: solo cuentan los feriados del calendario peruano.

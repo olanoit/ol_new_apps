@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- La indemnización vacacional de la liquidación va a la boleta por su propio concepto (INDVAC, PLAME 0504) y tributa como renta de 5ta extraordinaria.
+
 ## 9.20261007 — 07/10/2026
 
 - Liquidación: indemnización vacacional (D.Leg. 713, art. 23) por vacaciones vencidas no gozadas; suma al neto sin pagar aportes y va a la boleta como indemnización.
