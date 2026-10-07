@@ -677,6 +677,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 23.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Resumen de planilla en Excel desde el lote (menú del lote ▸ Resumen de planilla): una fila por trabajador y una columna por concepto, con totales, y una hoja por concepto con su código SUNAT y categoría para conciliar con contabilidad."
   - version: 22.20261007
     fecha: 07/10/2026
     cambios:

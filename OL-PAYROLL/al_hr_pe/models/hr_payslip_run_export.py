@@ -650,3 +650,112 @@ class HrPayslipRun(models.Model):
         workbook.save(buffer)
         return self._l10n_pe_download_attachment(
             'AFP_NET.xlsx', buffer.getvalue())
+
+    # ------------------------------------------------------------------
+    # Resumen de planilla (Excel para contabilidad)
+    # ------------------------------------------------------------------
+    def export_payroll_summary(self):
+        """Resumen de la planilla del lote en Excel.
+
+        * «Planilla»: una fila por boleta y una columna por concepto con
+          importe en alguna boleta (en el orden de las reglas), con fila
+          de totales.
+        * «Por concepto»: total, código SUNAT y categoría de cada regla;
+          es lo que contabilidad concilia contra el asiento de planilla.
+
+        Sustituye al «asiento planilla» de v18 (fuera de alcance en la
+        Fase 5).
+        """
+        self._l10n_pe_check_single(self.env._(
+            'Seleccione una sola nómina para el resumen.'))
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill
+
+        slips = self.slip_ids.filtered(lambda slip: slip.state != 'cancel') \
+            .sorted(lambda slip: slip.employee_id.name or '')
+        if not slips:
+            raise UserError(self.env._('El lote no tiene boletas.'))
+        lines = slips.line_ids.filtered(
+            lambda line: line.appears_on_payslip and line.total)
+        rules = lines.salary_rule_id.sorted(lambda rule: (rule.sequence, rule.code))
+        totals = {}
+        for line in lines:
+            key = (line.slip_id.id, line.salary_rule_id.id)
+            totals[key] = totals.get(key, 0.0) + line.total
+
+        bold = Font(bold=True)
+        header_font = Font(bold=True, color='FFFFFF')
+        header_fill = PatternFill('solid', fgColor='4F6228')
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = self.env._('Planilla')
+        company = self.company_id
+        sheet.append([self.env._('RESUMEN DE PLANILLA')])
+        sheet['A1'].font = Font(bold=True, size=12)
+        sheet.append([self.env._('Empleador'), company.name or ''])
+        sheet.append([self.env._('RUC'), company.vat or ''])
+        sheet.append([self.env._('Lote'), self.name or '', '%s al %s' % (
+            self.date_start.strftime('%d/%m/%Y'),
+            self.date_end.strftime('%d/%m/%Y'))])
+        sheet.append([])
+        fixed = [self.env._('Documento'), self.env._('Trabajador'),
+                 self.env._('Régimen pensionario'), self.env._('Boleta')]
+        sheet.append(fixed + ['%s\n%s' % (rule.code, rule.name) for rule in rules])
+        header_row = sheet.max_row
+        for cell in sheet[header_row]:
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal='center', vertical='center',
+                                       wrap_text=True)
+        sheet.row_dimensions[header_row].height = 45
+        for slip in slips:
+            sheet.append([
+                slip.employee_id.identification_id or '',
+                slip.employee_id.name or '',
+                slip.version_id.membership_id.name or '',
+                slip.name or '',
+            ] + [totals.get((slip.id, rule.id), 0.0) for rule in rules])
+        first_data, last_data = header_row + 1, sheet.max_row
+        sheet.append([self.env._('TOTAL'), '', '', ''] + [
+            sum(totals.get((slip.id, rule.id), 0.0) for slip in slips)
+            for rule in rules])
+        for cell in sheet[sheet.max_row]:
+            cell.font = bold
+        for row in sheet.iter_rows(min_row=first_data, max_row=sheet.max_row,
+                                   min_col=len(fixed) + 1):
+            for cell in row:
+                cell.number_format = '#,##0.00'
+        for index, width in enumerate((12, 34, 18, 14), start=1):
+            sheet.column_dimensions[
+                sheet.cell(row=header_row, column=index).column_letter
+            ].width = width
+        for index in range(len(fixed) + 1, len(fixed) + len(rules) + 1):
+            sheet.column_dimensions[
+                sheet.cell(row=header_row, column=index).column_letter
+            ].width = 13
+        sheet.freeze_panes = sheet.cell(row=header_row + 1, column=3)
+
+        by_rule = workbook.create_sheet(self.env._('Por concepto'))
+        by_rule.append([self.env._('Código'), self.env._('Concepto'),
+                        self.env._('Código SUNAT'), self.env._('Categoría'),
+                        self.env._('Trabajadores'), self.env._('Total')])
+        for cell in by_rule[1]:
+            cell.font = header_font
+            cell.fill = header_fill
+        for rule in rules:
+            amounts = [totals.get((slip.id, rule.id), 0.0) for slip in slips]
+            by_rule.append([
+                rule.code, rule.name, rule.sunat_code or '',
+                rule.category_id.name or '',
+                sum(1 for amount in amounts if amount), sum(amounts)])
+            by_rule.cell(row=by_rule.max_row, column=6).number_format = '#,##0.00'
+        for index, width in enumerate((12, 40, 14, 26, 13, 15), start=1):
+            by_rule.column_dimensions[
+                by_rule.cell(row=1, column=index).column_letter].width = width
+        by_rule.freeze_panes = 'A2'
+
+        stream = io.BytesIO()
+        workbook.save(stream)
+        filename = 'resumen_planilla_%s_%s.xlsx' % (
+            company.vat or company.id, self.date_end.strftime('%Y%m'))
+        return self._l10n_pe_download_attachment(filename, stream.getvalue())

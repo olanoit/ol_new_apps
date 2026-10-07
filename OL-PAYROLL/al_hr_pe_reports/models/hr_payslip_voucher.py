@@ -344,6 +344,13 @@ class HrPayslip(models.Model):
                 remapped[boleta if is_pe and not localized else report] |= payslip
         return remapped
 
+    def _l10n_pe_voucher_encrypted(self):
+        """¿La boleta que se envía por correo va cifrada?"""
+        self.ensure_one()
+        return bool(self.env['hr.main.parameter'].sudo().search([
+            ('company_id', '=', self.company_id.id)], limit=1
+        ).l10n_pe_voucher_encrypt)
+
     def action_send_voucher_by_email(self):
         """Envía la boleta por correo al trabajador (individual o masivo).
 
@@ -352,10 +359,9 @@ class HrPayslip(models.Model):
         de un lote no bloquee la transacción (mejora vs v18, que enviaba
         síncrono uno a uno).
 
-        TODO(fase7-revisar): v18 cifraba el PDF con el DNI del trabajador
-        (reportlab ``encrypt=``). QWeb-PDF no cifra; si el cliente lo
-        exige, post-procesar el adjunto con pypdf en un override de
-        ``_render_qweb_pdf``.
+        Con «Cifrar la boleta enviada por correo» en Parámetros
+        principales, el PDF adjunto se abre con el documento del
+        trabajador (ver ``ir_actions_report``).
         """
         template = self.env.ref('al_hr_pe_reports.email_template_boleta_pago')
         issues, sent = [], 0
@@ -374,8 +380,10 @@ class HrPayslip(models.Model):
             # generar el PDF) se deshace solo lo suyo y el resto del lote
             # sigue en una transacción sana.
             try:
+                encrypt = slip._l10n_pe_voucher_encrypted()
                 with self.env.cr.savepoint():
-                    template.send_mail(
+                    template.with_context(
+                        l10n_pe_encrypt_voucher=encrypt).send_mail(
                         slip.id, force_send=False,
                         email_layout_xmlid='mail.mail_notification_light')
                     slip.date_send = fields.Datetime.now()

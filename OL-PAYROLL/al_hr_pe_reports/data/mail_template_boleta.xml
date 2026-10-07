@@ -55,6 +55,10 @@
             </tr>
         </tbody>
     </table>
+    <p t-if="object._l10n_pe_voucher_encrypted()" style="margin-top: 12px;">
+        El archivo está protegido: ábralo con su número de documento de
+        identidad.
+    </p>
     <p style="margin-top: 12px;">
         Por favor confirme la recepción de su boleta con el siguiente
         botón:

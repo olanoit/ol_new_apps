@@ -759,6 +759,11 @@ class HrMainParameter(models.Model):
     ``journals_banks`` v18)."""
     _inherit = 'hr.main.parameter'
 
+    l10n_pe_voucher_encrypt = fields.Boolean(
+        string='Cifrar la boleta enviada por correo',
+        help='El PDF adjunto al correo se abre con el número de documento '
+             'del trabajador (como en v18). La impresión no cambia.')
+
     journals_banks = fields.Many2many(
         'account.journal', string='Diarios de pago masivo',
         domain=[('type', '=', 'bank')], check_company=True,

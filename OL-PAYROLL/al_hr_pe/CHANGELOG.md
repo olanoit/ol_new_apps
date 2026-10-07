@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261007 — 07/10/2026
+
+- Resumen de planilla en Excel desde el lote (menú del lote ▸ Resumen de planilla): una fila por trabajador y una columna por concepto, con totales, y una hoja por concepto con su código SUNAT y categoría para conciliar con contabilidad.
+
 ## 22.20261007 — 07/10/2026
 
 - SCTR (D.S. 003-98-SA) en la estructura general: reglas de salud y pensión para quien tiene la cobertura marcada, con tasas y entidad contratada en Parámetros principales ▸ SCTR. El PLAME declara el código de la entidad: salud 0806 (EsSalud) u 0810 (EPS), pensión 0813 (ONP) u 0814 (aseguradora).

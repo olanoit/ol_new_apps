@@ -66,6 +66,9 @@
                 <button name="afp_net" type="object"
                         class="btn btn-secondary" string="AFPNet (.xlsx)"
                         groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="export_payroll_summary" type="object"
+                        class="btn btn-secondary" string="Resumen de planilla (.xlsx)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
             </xpath>
         </field>
     </record>

@@ -496,3 +496,28 @@ class TestFase2Engine(TransactionCase):
         self.assertIn('0810', codes)
         self.assertIn('0813', codes)
         self.assertNotIn('0806', codes)
+
+    def test_payroll_summary_excel(self):
+        """Resumen de planilla: una columna por concepto con importe y la
+        hoja por concepto con su código SUNAT."""
+        import io
+        from openpyxl import load_workbook
+        self._set_dni()
+        slip = self._compute_slip()
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote resumen', 'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31), 'company_id': self.company.id})
+        slip.payslip_run_id = run
+        action = run.export_payroll_summary()
+        attachment = self.env['ir.attachment'].browse(
+            int(action['url'].split('/')[3].split('?')[0]))
+        workbook = load_workbook(io.BytesIO(attachment.raw))
+        planilla, by_rule = workbook.worksheets
+        headers = [cell.value for cell in planilla[6]]
+        self.assertEqual(headers[0], 'Documento')
+        self.assertTrue(any(h and h.startswith('NETO') for h in headers))
+        self.assertEqual(planilla.cell(row=7, column=1).value, '44556677')
+        self.assertEqual(planilla.cell(row=8, column=1).value, 'TOTAL')
+        rows = {row[0]: row for row in by_rule.iter_rows(min_row=2, values_only=True)}
+        self.assertAlmostEqual(rows['NETO'][5], self._line(slip, 'NETO').total)
+        self.assertEqual(rows['BAS'][2], '0121')

@@ -482,6 +482,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Opción para cifrar la boleta enviada por correo con el número de documento del trabajador (Parámetros principales ▸ Envío de boletas), como en v18. La impresión no cambia."
   - version: 12.20261007
     fecha: 07/10/2026
     cambios:

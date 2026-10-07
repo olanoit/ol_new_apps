@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261007 — 07/10/2026
+
+- Opción para cifrar la boleta enviada por correo con el número de documento del trabajador (Parámetros principales ▸ Envío de boletas), como en v18. La impresión no cambia.
+
 ## 12.20261007 — 07/10/2026
 
 - El enlace de confirmación de la boleta caduca a los 90 días del envío; reenviar la boleta lo renueva.

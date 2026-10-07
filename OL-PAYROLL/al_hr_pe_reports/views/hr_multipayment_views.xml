@@ -258,6 +258,11 @@
         <field name="inherit_id" ref="al_hr_pe.hr_main_parameter_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
+                <page string="Envío de boletas" name="voucher_mail">
+                    <group>
+                        <field name="l10n_pe_voucher_encrypt"/>
+                    </group>
+                </page>
                 <page string="Pagos bancarios" name="multipayment">
                     <group>
                         <field name="journals_banks" widget="many2many_tags"/>

@@ -5,3 +5,4 @@ from . import hr_certificates
 from . import hr_contract_template
 from . import hr_fifth_certificate
 from . import hr_multipayment
+from . import ir_actions_report
