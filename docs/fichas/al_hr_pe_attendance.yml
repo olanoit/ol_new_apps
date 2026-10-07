@@ -541,6 +541,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 8.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Un cierre de la compañía o un medio feriado ya no se tratan como feriado completo con sobretasa del 100 %: solo cuentan los feriados del calendario peruano."
   - version: 7.20261007
     fecha: 07/10/2026
     cambios:

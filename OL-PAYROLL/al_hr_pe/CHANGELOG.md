@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261007 — 07/10/2026
+
+- PLAME: el tipo de documento sale con dos dígitos (01 = DNI) en el .rem, el .jor y el .toc; antes salía «1» y el PLAME lo rechazaba.
+- PLAME .toc (estructura 26): declara el seguro +Vida de EsSalud (nuevo indicador en el contrato) y la condición de domiciliado de cada trabajador del mes. Antes marcaba como +Vida a quien tenía Seguro Vida Ley, que es otro seguro.
+- AFPnet: el correlativo empieza en 1 y no tiene huecos (antes empezaba en 0 y saltaba a los trabajadores de ONP).
+- T-Registro: los regímenes pensionarios y de salud traen su código SUNAT (tablas 11 y 32) y la validación avisa si falta; antes la estructura 11 salía sin régimen.
+- Las reglas salariales redondean con el criterio SUNAT (2,675 → 2,68), no con el redondeo al par de Python.
+- Corregido: la indemnización (input INDEM) aparecía en la boleta pero no llegaba al neto a pagar.
+- Devolución de 5ta: si al cese o en diciembre se retuvo de más, la boleta devuelve el exceso; en el PLAME esa retención se declara en 0.
+
 ## 19.20261007 — 07/10/2026
 
 - Sobretasa nocturna (nueva regla NOCT y tipo de entrada «Horas trabajo nocturno»): quien trabaja de noche no cobra menos de la RMV + 35 % (D.S. 007-2002-TR, art. 8), en proporción a sus horas nocturnas. Entra en el básico del mes, así que la toman AFP, ONP, EsSalud y 5ta. Microempresa, practicantes y construcción civil quedan fuera.

@@ -19,6 +19,7 @@ Port v18 → v19 de ``al_hr_payroll/hr_voucher`` con tres cambios de fondo
 """
 import logging
 from collections import defaultdict
+from datetime import timedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
@@ -30,6 +31,8 @@ _logger = logging.getLogger(__name__)
 
 #: Ámbito de la firma HMAC del enlace de confirmación (no reutilizar).
 VOUCHER_TOKEN_SCOPE = 'al_hr_pe_reports-boleta-confirm'
+#: Días que vale el enlace de confirmación desde el último envío.
+VOUCHER_LINK_DAYS = 90
 
 
 class HrPayslip(models.Model):
@@ -61,6 +64,14 @@ class HrPayslip(models.Model):
         self.ensure_one()
         return hmac_sign(self.env(su=True), VOUCHER_TOKEN_SCOPE,
                          str(self.id))
+
+    def _is_voucher_link_expired(self):
+        """El enlace caduca a los :data:`VOUCHER_LINK_DAYS` días del último
+        envío (reenviar la boleta lo renueva); sin fecha de envío no hay
+        plazo que medir."""
+        self.ensure_one()
+        return bool(self.date_send) and fields.Datetime.now() > \
+            self.date_send + timedelta(days=VOUCHER_LINK_DAYS)
 
     def _get_voucher_confirm_url(self):
         """URL absoluta del enlace «Confirmar recepción» del correo."""

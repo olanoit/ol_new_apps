@@ -194,6 +194,20 @@ class TestAuditFixesB(BenefitsCaseBase):
         if excluded:
             self.assertAlmostEqual(excluded.total_proy, 6 * self.wage, places=2)
 
+    def test_quinta_cese_devuelve_el_exceso(self):
+        """Cese con retenciones previas mayores que el impuesto del año:
+        la línea queda con retención negativa (devolución en la boleta) en
+        vez de pasar a excluidos."""
+        self._configure_fifth()
+        self.employee.version_id.contract_date_end = date(2026, 6, 30)
+        Line = type(self.Line)
+        with patch.object(Line, 'get_past_months_ret',
+                          lambda self, slip, date_from: 500.0):
+            fifth, line = self._fifth_line_june()
+        self.assertTrue(line, 'la devolución no se excluye')
+        self.assertAlmostEqual(line.monthly_ret + line.ext_ret, -500.0,
+                               places=2)
+
     def test_quinta_gratificacion_proporcional_al_ingreso(self):
         """Ingreso el 01/03: la gratificación de julio se proyecta por 4 de
         6 meses (Ley 27735), no completa."""
@@ -360,3 +374,32 @@ class TestAuditFixesB(BenefitsCaseBase):
         })
         self._slip(2026, 6).import_advances()
         self.assertEqual(advance.state, 'not payed')
+
+    def test_adelantos_reimportados_se_suman(self):
+        """Importar dos veces no pisa la primera tanda: el input lleva la
+        suma de todos los adelantos del periodo."""
+        self.param.grat_advance_id = self.env['hr.advance.type'].create({
+            'name': 'Adelanto de gratificación',
+            'company_id': self.company.id})
+        input_type = self.env.ref('al_hr_pe.input_type_INDEM').copy(
+            {'name': 'Adelanto prueba', 'code': 'ADE_PRUEBA'})
+        advance_type = self.env['hr.advance.type'].create({
+            'name': 'Adelanto', 'company_id': self.company.id,
+            'input_id': input_type.id})
+        slip = self._slip(2026, 6)
+
+        def advance(amount):
+            return self.env['hr.advance'].create({
+                'company_id': self.company.id,
+                'employee_id': self.employee.id,
+                'advance_type_id': advance_type.id,
+                'amount': amount,
+                'discount_date': date(2026, 6, 15),
+            })
+        advance(100.0)
+        slip.import_advances()
+        advance(50.0)
+        slip.import_advances()
+        line = slip.input_line_ids.filtered(
+            lambda inp: inp.input_type_id == input_type)
+        self.assertAlmostEqual(sum(line.mapped('amount')), 150.0)

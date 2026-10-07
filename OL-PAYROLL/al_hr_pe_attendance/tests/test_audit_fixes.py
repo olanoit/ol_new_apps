@@ -103,26 +103,47 @@ class TestTareajeAuditFixes(TransactionCase):
     # ------------------------------------------------------------------
     # Feriados en hora local
     # ------------------------------------------------------------------
-    def test_holiday_uses_local_date(self):
-        """Un feriado de 00:00 a 23:59 en Lima no marca el día siguiente."""
-        # 28/07 00:00-23:59:59 America/Lima en UTC.
-        date_from = datetime(2026, 7, 28, 5, 0, 0)
-        date_to = datetime(2026, 7, 29, 4, 59, 59)
-        leave = self.env['resource.calendar.leaves'].create({
+    def _global_leave(self, date_from, date_to, holiday=True):
+        vals = {
             'name': 'Feriado de prueba',
             'calendar_id': self.calendar.id,
             'company_id': self.env.company.id,
             'date_from': date_from,
             'date_to': date_to,
-        })
+        }
+        if holiday and 'pe.public.holiday' in self.env:
+            vals['pe_public_holiday_id'] = self.env['pe.public.holiday'] \
+                .create({'name': 'Feriado de prueba',
+                         'date': date_from.date()}).id
+        leave = self.env['resource.calendar.leaves'].create(vals)
         # hr_holidays reinterpreta en el create las fechas de un descanso
         # global como si vinieran en el huso del USUARIO; se fijan en UTC
         # con un write, igual que hace al_hr_pe_public_holidays.
         leave.write({'date_from': date_from, 'date_to': date_to})
+        return leave
+
+    def test_holiday_uses_local_date(self):
+        """Un feriado de 00:00 a 23:59 en Lima no marca el día siguiente."""
+        # 28/07 00:00-23:59:59 America/Lima en UTC.
+        self._global_leave(datetime(2026, 7, 28, 5, 0, 0),
+                           datetime(2026, 7, 29, 4, 59, 59))
         tareaje = self._tareaje(
             'Feriado local', date(2026, 7, 27), date(2026, 7, 30))
         holidays = tareaje._get_public_holidays()
         self.assertEqual(holidays[self.calendar.id], {date(2026, 7, 28)})
+
+    def test_closure_and_half_day_are_not_holidays(self):
+        """Un cierre de la compañía (descanso global sin feriado) y un
+        medio feriado no convierten el día en feriado con sobretasa."""
+        if 'pe.public.holiday' not in self.env:
+            self.skipTest('sin feriados PE no hay cómo distinguir un cierre')
+        self._global_leave(datetime(2026, 8, 3, 5, 0, 0),
+                           datetime(2026, 8, 4, 4, 59, 59), holiday=False)
+        self._global_leave(datetime(2026, 8, 5, 5, 0, 0),
+                           datetime(2026, 8, 5, 18, 0, 0))
+        tareaje = self._tareaje(
+            'Cierre', date(2026, 8, 3), date(2026, 8, 7))
+        self.assertFalse(tareaje._get_public_holidays()[self.calendar.id])
 
     # ------------------------------------------------------------------
     # Tareajes solapados

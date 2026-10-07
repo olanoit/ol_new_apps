@@ -777,4 +777,18 @@ class HrMainParameter(models.Model):
                     if cts and cts.line_ids.filtered(
                             lambda line: line.employee_id == employee):
                         continue
+                    # Trunca de cese: no se paga si el semestre ya se
+                    # depositó en una CTS regular (mismo criterio que la
+                    # gratificación).
+                    # En nov-dic la '05' es la del depósito de mayo
+                    # siguiente.
+                    deposit_year = year + 1 if record_type == '05' \
+                        and payslip_month in (11, 12) else year
+                    if self.env['hr.cts.line'].search_count([
+                            ('employee_id', '=', employee.id),
+                            ('cts_id.year', '=', deposit_year),
+                            ('cts_id.type', '=', record_type),
+                            ('cts_id.company_id', '=', company.id),
+                    ], limit=1):
+                        continue
                 self.env['hr.cts.line'].create(vals)

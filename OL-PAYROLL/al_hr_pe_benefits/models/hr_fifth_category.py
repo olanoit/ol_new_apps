@@ -706,6 +706,13 @@ class HrFifthCategoryLine(models.Model):
                 record.ext_ret = 0.0
             record.monthly_ret = custom_round(
                 record.annual_ret / rent_month, 2)
+            # Regularización final (cese o diciembre): si se retuvo de más,
+            # el empleador devuelve el exceso en la boleta (art. 40 del
+            # Reglamento LIR). Antes la línea pasaba a excluidos y el
+            # exceso se perdía.
+            final = ceased or month == 12
+            if final and record.monthly_ret + record.ext_ret < 0:
+                continue
 
             if not (record.monthly_ret + record.ext_ret) > 0 \
                     and not self.env.context.get('line_form') \

@@ -598,6 +598,11 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 15.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "El dominical (D.S.O.) ya no se infla en una semana con feriado trabajado: el feriado trabajado se paga aparte y no genera otro sexto."
+      - "Gratificación de la semana que cruza el 31 de julio o el 31 de diciembre: cada día devenga en su ventana (Fiestas Patrias ÷210, Navidad ÷150). Antes toda la semana tomaba la del mes de cierre."
   - version: 14.20261007
     fecha: 07/10/2026
     cambios:

@@ -505,7 +505,7 @@ result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL
+result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM
             </field>
             <field name="category_id" ref="SUB"/>
             <field name="struct_id" ref="base_structure"/>

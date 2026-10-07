@@ -249,6 +249,19 @@ class HrEmployee(models.Model):
                 if not version[field]:
                     issues.append(_('%(name)s: falta %(label)s.',
                                     name=name, label=label))
+            # E11: sin código T11/T32 el período sale sin régimen.
+            if version.membership_id \
+                    and not version.membership_id.l10n_pe_tregistro_code:
+                issues.append(_(
+                    '%(name)s: el régimen pensionario %(regime)s no tiene '
+                    'código T-Registro (T11).', name=name,
+                    regime=version.membership_id.name))
+            if version.social_insurance_id \
+                    and not version.social_insurance_id.l10n_pe_tregistro_code:
+                issues.append(_(
+                    '%(name)s: el régimen de salud %(regime)s no tiene '
+                    'código T-Registro (T32).', name=name,
+                    regime=version.social_insurance_id.name))
             # E17: el establecimiento es obligatorio en el alta.
             if not employee._l10n_pe_establishments():
                 issues.append(_(

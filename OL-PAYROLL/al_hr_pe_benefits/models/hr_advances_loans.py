@@ -297,8 +297,20 @@ class HrPayslip(models.Model):
             # tipo sin input nunca llega a descontarse en la boleta.
             pending = pending.filtered(
                 lambda advance: advance.advance_type_id.input_id)
+            # El input se recalcula con TODO lo del periodo, también lo
+            # importado antes: importar dos veces pisaba la primera tanda
+            # (ya marcada como pagada) con la segunda.
+            imported = self.env['hr.advance'].search([
+                ('discount_date', '>=', slip.date_from),
+                ('discount_date', '<=', slip.date_to),
+                ('employee_id', '=', slip.employee_id.id),
+                ('company_id', '=', slip.company_id.id),
+                ('state', '=', 'paid out'),
+                ('advance_type_id', 'not in', special_ids),
+                ('advance_type_id.input_id', '!=', False),
+            ]) if pending else self.env['hr.advance']
             amounts = defaultdict(float)
-            for advance in pending:
+            for advance in pending | imported:
                 amounts[advance.advance_type_id.input_id] += advance.amount
             # La regularización se suma una sola vez (v18 la repetía en
             # cada tipo de input).
@@ -343,8 +355,19 @@ class HrPayslip(models.Model):
             ])
             pending = pending.filtered(
                 lambda line: line.loan_type_id.input_id)
+            # Igual que en los adelantos: se suman también las cuotas del
+            # periodo importadas antes.
+            imported = self.env['hr.loan.line'].search([
+                ('date', '>=', slip.date_from),
+                ('date', '<=', slip.date_to),
+                ('employee_id', '=', slip.employee_id.id),
+                ('company_id', '=', slip.company_id.id),
+                ('validation', '=', 'paid out'),
+                ('loan_type_id', 'not in', special_ids),
+                ('loan_type_id.input_id', '!=', False),
+            ]) if pending else self.env['hr.loan.line']
             amounts = defaultdict(float)
-            for line in pending:
+            for line in pending | imported:
                 amounts[line.loan_type_id.input_id] += line.amount
             regularization = sum(paid_special.mapped('amount'))
             for input_type, amount in amounts.items():

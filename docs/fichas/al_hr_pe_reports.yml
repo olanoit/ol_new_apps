@@ -482,6 +482,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 12.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "El enlace de confirmación de la boleta caduca a los 90 días del envío; reenviar la boleta lo renueva."
   - version: 11.20261007
     fecha: 07/10/2026
     cambios:

@@ -12,3 +12,14 @@ def custom_round(value, digits=2):
     """
     quant = Decimal('1.' + '0' * digits)
     return float(Decimal(str(value)).quantize(quant, rounding=ROUND_HALF_UP))
+
+
+def round_half_up(value, ndigits=None):
+    """``round`` con el criterio SUNAT, para las fórmulas de las reglas.
+
+    Misma firma que el ``round`` de Python (sin ``ndigits`` devuelve un
+    entero), pero 2.675 → 2.68 en vez de 2.67.
+    """
+    if ndigits is None:
+        return int(custom_round(value, 0))
+    return custom_round(value, ndigits)

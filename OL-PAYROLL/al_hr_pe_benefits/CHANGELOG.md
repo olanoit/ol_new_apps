@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261007 — 07/10/2026
+
+- Liquidación: indemnización vacacional (D.Leg. 713, art. 23) por vacaciones vencidas no gozadas; suma al neto sin pagar aportes y va a la boleta como indemnización.
+- Cese en mayo antes del depósito: la liquidación paga la CTS de noviembre a abril, que antes no pagaba nadie. Si ya se depositó, no se duplica.
+- 5ta: al cese o en diciembre, la retención en exceso se devuelve en la boleta en vez de perderse en «excluidos».
+- Adelantos y préstamos: importarlos dos veces suma todo lo del periodo; antes la segunda importación pisaba la primera, que quedaba marcada como pagada sin descontarse.
+- Corregido: «Recalcular» una línea de vacaciones de la liquidación cambiaba el importe (los días se guardaban sin decimales).
+
 ## 8.20261007 — 07/10/2026
 
 - Renta de 5ta: ya no suma una gratificación de julio que el trabajador no cobra; las gratificaciones se proyectan en proporción a los meses completos desde el ingreso.

@@ -7,7 +7,7 @@
 * Campos propios en hr.version restringidos a nómina.
 * Certificados emitidos por la compañía del trabajador.
 """
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from odoo.tests import HttpCase, TransactionCase, tagged
 
@@ -80,6 +80,16 @@ class TestVoucherConfirmation(HttpCase, _PayslipCase):
         self.slip.invalidate_recordset(['is_verified'])
         self.assertFalse(self.slip.is_verified)
 
+
+    def test_expired_link_is_rejected(self):
+        """A los 90 días del envío el enlace caduca; reenviar lo renueva."""
+        self.slip.date_send = datetime.now() - timedelta(days=91)
+        response = self.url_open(self._path(), data={'confirm': '1'})
+        self.assertEqual(response.status_code, 410)
+        self.slip.invalidate_recordset(['is_verified'])
+        self.assertFalse(self.slip.is_verified)
+        self.slip.date_send = datetime.now()
+        self.assertFalse(self.slip._is_voucher_link_expired())
 
 @tagged('post_install', '-at_install')
 class TestReportsAuditFixes(TransactionCase, _PayslipCase):

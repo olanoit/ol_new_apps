@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261007 — 07/10/2026
+
+- El enlace de confirmación de la boleta caduca a los 90 días del envío; reenviar la boleta lo renueva.
+
 ## 11.20261007 — 07/10/2026
 
 - Certificado de 5ta: el impuesto a la renta se calcula con la escala progresiva sobre la renta imponible (antes copiaba la retención) y el saldo por regularizar muestra la diferencia real, también con retenciones de otros empleadores.

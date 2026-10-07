@@ -6,6 +6,7 @@
              S/ 12 672,65: la SBS la actualiza cada trimestre; revísela en
              sbs.gob.pe ▸ SPP ▸ Empleadores ▸ Comisiones y primas. -->
         <record model="hr.membership" id="membership_AFP_HABIAT">
+            <field name="l10n_pe_tregistro_code">25</field>
             <field name="name">AFP HABITAT</field>
             <field name="fixed_commision">1.47</field>
             <field name="mixed_commision">0</field>
@@ -15,6 +16,7 @@
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_INTEGRA">
+            <field name="l10n_pe_tregistro_code">21</field>
             <field name="name">AFP INTEGRA</field>
             <field name="fixed_commision">1.55</field>
             <field name="mixed_commision">0</field>
@@ -24,6 +26,7 @@
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_PRIMA">
+            <field name="l10n_pe_tregistro_code">24</field>
             <field name="name">AFP PRIMA</field>
             <field name="fixed_commision">1.6</field>
             <field name="mixed_commision">0</field>
@@ -33,6 +36,7 @@
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_AFP_PROFUTURO">
+            <field name="l10n_pe_tregistro_code">23</field>
             <field name="name">AFP PROFUTURO</field>
             <field name="fixed_commision">1.69</field>
             <field name="mixed_commision">0</field>
@@ -42,6 +46,7 @@
             <field name="is_afp" eval="True"/>
         </record>
         <record model="hr.membership" id="membership_ONP">
+            <field name="l10n_pe_tregistro_code">02</field>
             <field name="name">ONP</field>
             <field name="fixed_commision">0</field>
             <field name="mixed_commision">0</field>

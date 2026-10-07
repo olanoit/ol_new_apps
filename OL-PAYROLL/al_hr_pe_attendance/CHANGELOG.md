@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261007 — 07/10/2026
+
+- Un cierre de la compañía o un medio feriado ya no se tratan como feriado completo con sobretasa del 100 %: solo cuentan los feriados del calendario peruano.
+
 ## 7.20261007 — 07/10/2026
 
 - Las horas nocturnas del tareaje van por defecto a «Horas trabajo nocturno» y alimentan la sobretasa nocturna de la boleta (antes quedaban solo informativas).

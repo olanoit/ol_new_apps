@@ -160,11 +160,21 @@ class TestConstructionBenefits(TransactionCase):
 
     def test_gratification_switches_in_august(self):
         worker = self._worker()
+        worker.version_id.resource_calendar_id = \
+            self.env['resource.calendar'].create({
+                'name': 'Obra lunes a sábado',
+                'attendance_ids': [(5, 0, 0)] + [
+                    (0, 0, {'name': 'Día %s' % day, 'dayofweek': str(day),
+                            'hour_from': 8.0, 'hour_to': 16.0,
+                            'day_period': 'morning'})
+                    for day in range(6)],
+            })
         july = self._payslip(worker, date(2026, 7, 27), date(2026, 8, 2))
         august = self._payslip(worker, date(2026, 8, 3), date(2026, 8, 9))
-        # La ventana la fija el mes de la fecha de fin del periodo.
-        self.assertEqual(self._line(july, 'GRAT'), 166.69,
-                         'termina en agosto: ya devenga Navidad')
+        # La semana del 27/07 al 02/08 devenga 5 días en la ventana de
+        # Fiestas Patrias (÷210) y el sábado 1 en la de Navidad (÷150).
+        self.assertEqual(self._line(july, 'GRAT'), 127.0,
+                         '40 × 89.30 × 7 × (5/210 + 1/150) ÷ 6')
         self.assertEqual(self._line(august, 'GRAT'), 166.69)
 
     def test_benefits_for_every_category(self):

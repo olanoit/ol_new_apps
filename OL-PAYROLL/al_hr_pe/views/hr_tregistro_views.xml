@@ -187,6 +187,7 @@
                         <group string="Riesgo y discapacidad">
                             <field name="l10n_pe_disability"/>
                             <field name="l10n_pe_sctr_pension"/>
+                            <field name="l10n_pe_mas_vida"/>
                         </group>
                     </group>
             </xpath>

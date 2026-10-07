@@ -142,6 +142,11 @@ class HrVersion(models.Model):
         help='Trabajador en actividad de riesgo del Anexo 5 del '
              'D.S. 009-97-SA con cobertura de pensión por el SCTR.',
         groups='hr.group_hr_user')
+    l10n_pe_mas_vida = fields.Boolean(
+        string='Afiliado a +Vida (EsSalud)',
+        help='Seguro de accidentes +Vida de EsSalud: se declara en el .toc '
+             'del PLAME. No es el Seguro Vida Ley (D.Leg. 688).',
+        groups='hr.group_hr_user')
     l10n_pe_alternative_schedule = fields.Boolean(
         string='Sujeto a régimen alternativo',
         help='Jornada acumulativa, atípica o compensatoria '

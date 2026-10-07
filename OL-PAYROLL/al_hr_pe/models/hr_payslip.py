@@ -4,6 +4,8 @@ from types import SimpleNamespace
 
 from odoo import api, fields, models
 
+from odoo.addons.al_hr_pe.tools import round_half_up
+
 
 class HrPayslip(models.Model):
     """Extensión peruana de la boleta.
@@ -153,6 +155,9 @@ class HrPayslip(models.Model):
         v18, donde todas las líneas se generaban aunque fueran cero)."""
         localdict = super()._get_localdict()
         if self.struct_id.country_id.code == 'PE':
+            # Las fórmulas redondean con ``round(x, 2)``: en la boleta PE
+            # es el HALF_UP de SUNAT, no el redondeo al par de Python.
+            localdict['round'] = round_half_up
             localdict['inputs'] = defaultdict(
                 lambda: SimpleNamespace(amount=0.0, name=''),
                 localdict['inputs'])

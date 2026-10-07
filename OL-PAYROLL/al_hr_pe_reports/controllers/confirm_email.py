@@ -104,6 +104,13 @@ class BoletaConfirmController(http.Controller):
                 'El enlace de confirmación no es válido o ha caducado. '
                 'Comuníquese con Gestión Humana.',
                 status=404)
+        if not payslip_sudo.is_verified \
+                and payslip_sudo._is_voucher_link_expired():
+            return self._page(
+                'Enlace caducado',
+                'El enlace de confirmación ha caducado. Pida a Gestión '
+                'Humana que le reenvíe la boleta.',
+                status=410)
         if payslip_sudo.is_verified:
             return self._page(
                 '¡Usted ya confirmó su boleta!',

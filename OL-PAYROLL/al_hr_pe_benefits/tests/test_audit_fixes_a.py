@@ -6,6 +6,7 @@ Mismo caso de referencia que la Fase 3 (sueldo 3 000, régimen general,
 boletas Nov-2025 → Jun-2026 en lotes mensuales). Cada test fija una
 regla legal concreta que el cálculo anterior incumplía.
 """
+from calendar import monthrange
 from datetime import date
 
 from odoo.exceptions import UserError
@@ -266,24 +267,29 @@ class TestAuditFixesA(BenefitsCaseBase):
     # ------------------------------------------------------------------
     # Liquidación de cese
     # ------------------------------------------------------------------
-    def _cessation_in_july(self, day=10):
+    def _cessation_in_july(self, day=10, month=7):
         version = self.employee.version_id
         version.write({
-            'contract_date_end': date(2026, 7, day),
+            'contract_date_end': date(2026, month, day),
             'situation_id': self.env.ref('al_hr_pe.situation_0').id,
         })
         periodo = self.env['hr.period'].search([
-            ('code', '=', '202607'), ('company_id', '=', self.company.id)],
-            limit=1)
+            ('code', '=', '2026%02d' % month),
+            ('company_id', '=', self.company.id)], limit=1)
+        last = monthrange(2026, month)[1]
         run = self.env['hr.payslip.run'].create({
-            'name': 'Lote 2026-07', 'date_start': date(2026, 7, 1),
-            'date_end': date(2026, 7, 31), 'company_id': self.company.id,
+            'name': 'Lote 2026-%02d' % month,
+            'date_start': date(2026, month, 1),
+            'date_end': date(2026, month, last),
+            'company_id': self.company.id,
             'periodo_id': periodo.id,
         })
         slip = self.env['hr.payslip'].create({
-            'name': 'Boleta 2026-07', 'employee_id': self.employee.id,
+            'name': 'Boleta 2026-%02d' % month,
+            'employee_id': self.employee.id,
             'struct_id': self.structure.id,
-            'date_from': date(2026, 7, 1), 'date_to': date(2026, 7, 31),
+            'date_from': date(2026, month, 1),
+            'date_to': date(2026, month, last),
             'payslip_run_id': run.id,
         })
         slip.compute_sheet()
@@ -297,9 +303,42 @@ class TestAuditFixesA(BenefitsCaseBase):
         })
         return self.env['hr.liquidation'].create({
             'company_id': self.company.id, 'year': 2026,
-            'gratification_type': '12', 'cts_type': '11',
+            'gratification_type': '12' if month > 6 else '07',
+            'cts_type': '11',
             'payslip_run_id': run.id,
         })
+
+    def test_liquidation_may_pays_november_april_cts(self):
+        """Cese el 10-may (antes del depósito del 15): la CTS de
+        nov-abr se paga en la liquidación; antes no la pagaba nadie."""
+        liquidation = self._cessation_in_july(month=5)
+        liquidation.get_liquidation()
+        winter = liquidation.cts_line_ids.filtered(
+            lambda line: line.cessation_date == date(2026, 5, 10)
+            and line.compute_date <= date(2025, 11, 1))
+        self.assertEqual(len(winter), 1)
+
+    def test_liquidation_exports_vacation_indemnity(self):
+        """La indemnización vacacional va a la boleta por INDEM y suma
+        al neto de la línea sin pagar aportes."""
+        liquidation = self._cessation_in_july()
+        liquidation.get_liquidation()
+        line = liquidation.vacation_line_ids[:1]
+        if not line:
+            self.skipTest('el cese no generó línea de vacaciones')
+        total = line.total
+        line.with_context(line_form=True).compute_vacation_line()
+        self.assertAlmostEqual(line.total, total, places=2,
+                               msg='recalcular no cambia el importe')
+        line.vacation_indemnity = 1000.0
+        line.with_context(line_form=True).compute_vacation_line()
+        self.assertAlmostEqual(line.total, total + 1000.0, places=2)
+        liquidation.export_liquidation()
+        slip = liquidation.payslip_run_id.slip_ids.filtered(
+            lambda s: s.employee_id == self.employee)
+        indem = slip.input_line_ids.filtered(
+            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_INDEM'))
+        self.assertAlmostEqual(indem.amount, 1000.0, 2)
 
     def test_liquidation_july_pays_first_semester(self):
         """Cese el 10-jul (antes del pago del 15): ene-jun se paga

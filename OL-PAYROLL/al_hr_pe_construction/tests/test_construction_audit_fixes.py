@@ -180,6 +180,16 @@ class TestConstructionAuditFixes(TransactionCase):
                 + self._line(payslip, 'BUC')), 2),
             89.30, 'la sobretasa es remuneración afecta (entra en TREM)')
 
+    def test_worked_holiday_does_not_inflate_the_dso(self):
+        """El D.S.O. es un sexto de los días que generan descanso: el
+        feriado trabajado (FER) se paga aparte y no suma otro sexto."""
+        worker = self._worker(9)
+        wd_fer = self.env.ref('al_hr_pe.wd_FER')
+        self._holiday(date(2026, 3, 4))
+        payslip = self._payslip(
+            worker, {self.wd_dlab: 4, wd_fer: 1, self.wd_dom: 3})
+        self.assertEqual(self._line(payslip, 'DSO'), round(89.30 * 5 / 6, 2))
+
     def test_holiday_outside_the_period_is_ignored(self):
         worker = self._worker(3)
         self._holiday(date(2026, 3, 11))

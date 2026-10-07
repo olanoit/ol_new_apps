@@ -43,6 +43,7 @@
                             <field name="truncated_vacation" readonly="1"/>
                             <field name="advanced_vacation"/>
                             <field name="accrued_vacation"/>
+                            <field name="vacation_indemnity"/>
                             <field name="total_vacation" readonly="1"/>
                             <field name="onp" readonly="1"/>
                             <field name="afp_jub" readonly="1"/>
@@ -87,6 +88,7 @@
                 <field name="truncated_vacation" sum="Vac. truncas" optional="hide"/>
                 <field name="advanced_vacation" sum="Vac. adelantadas" optional="hide"/>
                 <field name="accrued_vacation" sum="Vac. devengadas" optional="hide"/>
+                <field name="vacation_indemnity" sum="Indemnización" optional="hide"/>
                 <field name="total_vacation" sum="Total vacaciones" optional="show" force_save="1"/>
                 <field name="onp" sum="ONP" optional="show" force_save="1"/>
                 <field name="afp_jub" sum="AFP jubilación" optional="show" force_save="1"/>

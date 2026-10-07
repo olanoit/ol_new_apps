@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261007 — 07/10/2026
+
+- El dominical (D.S.O.) ya no se infla en una semana con feriado trabajado: el feriado trabajado se paga aparte y no genera otro sexto.
+- Gratificación de la semana que cruza el 31 de julio o el 31 de diciembre: cada día devenga en su ventana (Fiestas Patrias ÷210, Navidad ÷150). Antes toda la semana tomaba la del mes de cierre.
+
 ## 14.20261007 — 07/10/2026
 
 - Códigos PLAME (tabla 22) de construcción corregidos: descanso 0115, BUC 0311, movilidad 0909, bonificaciones por altura/contacto con agua/cota 0303-0310, escolaridad 0211 y CONAFOVICER 0602.

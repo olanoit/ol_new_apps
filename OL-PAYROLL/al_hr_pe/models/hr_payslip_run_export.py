@@ -10,7 +10,7 @@ Método                     Archivo    Contenido
 ``export_plame``           ``.rem``   Remuneraciones por concepto (Tabla 22 SUNAT)
 ``export_plame_hours``     ``.jor``   Jornada laboral (horas ordinarias y extras)
 ``export_plame_suspencion``  ``.snl``   Suspensiones de labores (Tabla 21 SUNAT)
-``export_plame_other_conditions``  ``.toc``  Otras condiciones (SCTR / Vida Ley)
+``export_plame_other_conditions``  ``.toc``  Otras condiciones (+Vida, domiciliado)
 ``afp_net``                ``.xlsx``  Plantilla de importación AFPNet
 =========================  =========  =============================================
 
@@ -102,9 +102,12 @@ class HrPayslipRun(models.Model):
         v18: ``he.type_document_id.sunat_code`` (LEFT JOIN, podía imprimir
         ``None``). v19: extensión latam nativa. Se devuelve ``''`` cuando
         falta el dato en lugar del ``None`` literal que colaba el SQL.
+        La tabla 3 usa dos dígitos (``01`` DNI): el maestro guarda ``1`` y
+        el .rem/.jor/.toc salían con un dígito.
         """
-        return (employee.l10n_latam_identification_type_id
-                .l10n_pe_hr_sunat_code or '')
+        code = (employee.l10n_latam_identification_type_id
+                .l10n_pe_hr_sunat_code or '').strip()
+        return code.zfill(2) if code.isdigit() else code
 
     def _l10n_pe_get_dlabs(self, slip, param):
         """Días efectivamente laborados: los tipos configurados como
@@ -203,6 +206,12 @@ class HrPayslipRun(models.Model):
         output = io.StringIO()
         for (dni, code) in sorted(grouped):
             vals = grouped[(dni, code)]
+            # La devolución de 5ta del cese o de diciembre deja la
+            # retención del trabajador en negativo; el PLAME no admite
+            # importes negativos: se declara 0 y el exceso devuelto se
+            # compensa con las retenciones del mes de los demás.
+            if code == '0605' and vals['amount_paid'] < 0:
+                vals = dict(vals, amount_earn=0.0, amount_paid=0.0)
             # Los montos se emiten con 2 decimales: el SQL v18 devolvía
             # NUMERIC(x,2) que psycopg2 renderizaba como '1500.00'.
             output.write('%s|%s|%s|%.2f|%.2f|\r\n' % (
@@ -373,27 +382,24 @@ class HrPayslipRun(models.Model):
             filename, output.getvalue().encode('utf-8'))
 
     # ------------------------------------------------------------------
-    # PLAME .toc — Otras condiciones (Vida Ley)
+    # PLAME .toc — Otras condiciones (+Vida EsSalud, domiciliado)
     # ------------------------------------------------------------------
     def export_plame_other_conditions(self):
-        """Genera el ``.toc`` de PLAME (otras condiciones del trabajador).
+        """Genera el ``.toc`` de PLAME (estructura 26, otras condiciones).
 
-        Estructura de cada línea (idéntica a v18, incluido el campo
-        vacío entre el 4º y el 6º)::
+        Cada línea::
 
-            tipo_doc|nro_doc|0|1||condicion|\\r\\n
+            tipo_doc|nro_doc|0|mas_vida||domiciliado|\r\n
 
-        1. ``tipo_doc``: código SUNAT del tipo de documento.
-        2. ``nro_doc``: número de documento del trabajador.
-        3. Constante ``0`` (v18 hardcodeado).
-        4. Constante ``1`` (v18 hardcodeado — indicador Vida Ley).
-        5. Campo vacío (v18 emitía ``||``).
-        6. ``condicion``: ``2`` si el empleado es «no domiciliado»,
-           ``1`` en caso contrario.
+        3. Asegura tu Pensión: ``0`` (SUNAT lo recaudó hasta mayo 2017).
+        4. +Vida Seguro de Accidentes de EsSalud: ``1`` si la versión
+           está marcada. El v18 ponía aquí ``1`` a quien tenía Seguro Vida
+           Ley, que es otro seguro y no se declara en el PLAME.
+        5. FDSA / Ley 29903: solo para tipos de trabajador 56 y 98; vacío.
+        6. Domiciliado: ``1`` domiciliado, ``2`` no domiciliado.
 
-        Se emite una línea por trabajador con alguna línea de boleta de
-        regla ``SVLEY`` (Seguro Vida Ley) con total ≠ 0 en el mes
-        declarado (el SQL v18 seleccionaba el monto pero no lo volcaba).
+        Una línea por trabajador del mes declarado: así se declara también
+        al no domiciliado, que sin línea PLAME toma como domiciliado.
         """
         self._l10n_pe_check_single(self.env._(
             'Solo se puede procesar una planilla a la vez, '
@@ -404,21 +410,15 @@ class HrPayslipRun(models.Model):
         # el mismo trabajador tiene una boleta por semana).
         slips = self._l10n_pe_plame_slips()
         for employee in slips.employee_id:
-            svley = slips.filtered(
-                lambda s, e=employee: s.employee_id == e).line_ids.filtered(
-                lambda l: l.salary_rule_id.code == 'SVLEY' and l.total)
-            for line in svley[:1]:
-                # v18: CASE WHEN he.condition = 'not_domiciled'
-                #      THEN '2' ELSE '1' END
-                condition = '2' if employee.condition == 'not_domiciled' \
-                    else '1'
-                output.write('%s|%s|%s|%s||%s|\r\n' % (
-                    self._l10n_pe_doc_type(employee),
-                    employee.identification_id or '',
-                    '0',
-                    '1',
-                    condition,
-                ))
+            version = slips.filtered(
+                lambda s, e=employee: s.employee_id == e
+            ).sorted('date_to')[-1:].version_id
+            output.write('%s|%s|0|%s||%s|\r\n' % (
+                self._l10n_pe_doc_type(employee),
+                employee.identification_id or '',
+                '1' if version.l10n_pe_mas_vida else '0',
+                '2' if employee.condition == 'not_domiciled' else '1',
+            ))
 
         filename = self._l10n_pe_plame_filename('toc')
         return self._l10n_pe_download_attachment(
@@ -495,10 +495,9 @@ class HrPayslipRun(models.Model):
         =====  =========================================================
         Col    Contenido
         =====  =========================================================
-        A      Correlativo: índice de la boleta dentro del lote (v18
-               usaba el índice del ``enumerate`` sobre TODOS los slips,
-               con lo que los no-AFP dejan huecos en la numeración; se
-               conserva esa peculiaridad por fidelidad de formato).
+        A      Correlativo 1, 2, 3… sin huecos, como exige AFPnet (v18
+               numeraba desde 0 sobre TODOS los trabajadores, y cada
+               no-AFP dejaba un hueco que AFPnet rechaza).
         B      CUSPP del afiliado (``l10n_pe_cuspp``).
         C      Código AFP del tipo de documento
                (``l10n_pe_hr_afp_code``).
@@ -559,7 +558,7 @@ class HrPayslipRun(models.Model):
             by_employee.setdefault(slip.employee_id, self.env['hr.payslip'])
             by_employee[slip.employee_id] |= slip
         x = 0  # fila de salida (solo avanza con afiliados AFP, como v18)
-        for c, employee_slips in enumerate(by_employee.values()):
+        for employee_slips in by_employee.values():
             slip = employee_slips[-1]
             version = slip.version_id
             if not version.membership_id.is_afp:
@@ -605,7 +604,7 @@ class HrPayslipRun(models.Model):
                            <= self.date_end) else 'N'
 
             row = x + 1  # openpyxl es 1-indexado; v18 escribía desde 0
-            worksheet.cell(row=row, column=1, value=c)
+            worksheet.cell(row=row, column=1, value=row)
             worksheet.cell(row=row, column=2,
                            value=version.l10n_pe_cuspp or '')
             worksheet.cell(

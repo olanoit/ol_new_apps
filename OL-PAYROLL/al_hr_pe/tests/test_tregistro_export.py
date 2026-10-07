@@ -264,6 +264,25 @@ class TestTregistroExport(TransactionCase):
             self.employee._l10n_pe_tregistro_files('alta')
         self.assertIn('ocupación', str(error.exception))
 
+    def test_blocks_regime_without_code(self):
+        """Sin código T11 la E11 saldría sin régimen: se avisa antes."""
+        self.membership.l10n_pe_tregistro_code = False
+        with self.assertRaises(UserError) as error:
+            self.employee._l10n_pe_tregistro_files('alta')
+        self.assertIn('T11', str(error.exception))
+
+    def test_regime_codes_shipped(self):
+        """Los regímenes de los datos traen su código de T11 / T32."""
+        for xmlid, code in (('membership_AFP_HABIAT', '25'),
+                            ('membership_AFP_INTEGRA', '21'),
+                            ('membership_AFP_PRIMA', '24'),
+                            ('membership_AFP_PROFUTURO', '23'),
+                            ('insurance_EPS', '01')):
+            record = self.env.ref('al_hr_pe.%s' % xmlid)
+            if record in (self.membership, self.insurance):
+                continue    # el setUp le pone otro código
+            self.assertEqual(record.l10n_pe_tregistro_code, code, xmlid)
+
     def test_blocks_missing_ruc(self):
         self.company.vat = False
         with self.assertRaises(UserError):

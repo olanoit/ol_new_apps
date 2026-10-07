@@ -210,6 +210,13 @@ class HrPayslip(models.Model):
             days = (self._l10n_pe_construction_mobility_days()
                     if concept == 'movilidad'
                     else self._l10n_pe_construction_days())
+            if concept == 'dso':
+                # El feriado trabajado (FER) se paga además del feriado:
+                # no genera otro sexto de dominical. Con él, una semana de
+                # lunes a sábado sumaba 7 días y el D.S.O. salía inflado.
+                days -= sum(self.worked_days_line_ids.filtered(
+                    lambda wd: wd.work_entry_type_id.code == 'FER'
+                ).mapped('number_of_days'))
         if not days:
             return 0.0
         # El snapshot manda sobre la tabla: si el usuario ajustó el jornal
@@ -304,10 +311,24 @@ class HrPayslip(models.Model):
         self.ensure_one()
         if not self.l10n_pe_daily_wage or not self.date_to:
             return 0.0
-        accrual = 210.0 if self.date_to.month <= 7 else 150.0
+        # Una semana que cruza el 31/07 (o el 31/12) devenga en las dos
+        # ventanas: se reparte por los días laborables del horario en cada
+        # una (los naturales si no hay horario). Antes toda la semana
+        # tomaba el divisor del mes de cierre.
+        date_from = self.date_from or self.date_to
+        days = [date_from + timedelta(days=offset)
+                for offset in range((self.date_to - date_from).days + 1)]
+        weekdays = set(self.version_id.resource_calendar_id
+                       .attendance_ids.mapped('dayofweek'))
+        if weekdays:
+            days = [day for day in days if str(day.weekday()) in weekdays] \
+                or days
+        first_half = sum(1 for day in days if day.month <= 7)
+        share = (first_half / 210.0
+                 + (len(days) - first_half) / 150.0) / len(days)
         return custom_round(
             self.l10n_pe_daily_wage * 40.0
-            * self._l10n_pe_construction_accrual_days() / accrual)
+            * self._l10n_pe_construction_accrual_days() * share)
 
     def _l10n_pe_construction_extra_bonus(self):
         """Bonificación extraordinaria de la Ley 30334.

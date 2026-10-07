@@ -179,6 +179,13 @@ class HrLiquidation(models.Model):
             # la omite si ya se abonó en una gratificación regular.
             param.compute_benefits(self, '07', liquidation=self)
         param.compute_benefits(self, self.cts_type, liquidation=self)
+        if self.cts_type == '11' \
+                and self.payslip_run_id.date_start.month == 5:
+            # Cese en mayo antes del depósito (hasta el 15): la CTS de
+            # nov-abr no la toma el depósito regular '05' (solo incluye
+            # activos), así que se paga aquí. El motor la omite si ya se
+            # depositó.
+            param.compute_benefits(self, '05', liquidation=self)
         self.get_vacation_lines()
         self.get_extra_concepts_lines()
         for lines in (self.gratification_line_ids, self.cts_line_ids,
@@ -456,6 +463,10 @@ class HrLiquidation(models.Model):
             self._set_slip_input(
                 slip, param.truncated_vacation_input_id,
                 line.truncated_vacation)
+            if line.vacation_indemnity:
+                self._set_slip_input(
+                    slip, self.env.ref('al_hr_pe.input_type_INDEM'),
+                    line.vacation_indemnity)
             # Las vacaciones adelantadas se restaban solo en el total de la
             # línea: la boleta pagaba las truncas completas.
             if line.advanced_vacation:
@@ -501,7 +512,9 @@ class HrLiquidationVacationLine(models.Model):
         related='version_id.membership_id', string='Afiliación')
     distribution_id = fields.Char(string='Distribución analítica')
     months = fields.Integer(string='Meses')
-    days = fields.Integer(string='Días')
+    # Decimal: el cómputo usa días fraccionarios y, guardados como
+    # entero, «Recalcular» daba otro importe que el cálculo inicial.
+    days = fields.Float(string='Días', digits=(16, 2))
     lacks = fields.Float(string='Faltas', digits=(16, 2))
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
@@ -517,6 +530,11 @@ class HrLiquidationVacationLine(models.Model):
     truncated_vacation = fields.Float(string='Vac. truncas')
     advanced_vacation = fields.Float(string='(-) Vac. adelantadas')
     accrued_vacation = fields.Float(string='(+) Vac. devengadas')
+    vacation_indemnity = fields.Float(
+        string='(+) Indemnización vacacional',
+        help='D.Leg. 713, art. 23: una remuneración por cada período '
+             'devengado que no se gozó dentro del año siguiente. No paga '
+             'AFP/ONP ni EsSalud; va a la boleta por el input INDEM.')
     total_vacation = fields.Float(string='Total vacaciones')
     onp = fields.Float(string='(-) ONP')
     afp_jub = fields.Float(string='(-) AFP jubilación')
@@ -597,8 +615,10 @@ class HrLiquidationVacationLine(models.Model):
             deductions = self._get_pension_deductions(
                 month_slip, record.total_vacation)
             record.update(deductions)
+            # La indemnización no paga aportes: se suma después.
             record.total = custom_round(
-                record.total_vacation - sum(deductions.values()), 2)
+                record.total_vacation - sum(deductions.values())
+                + record.vacation_indemnity, 2)
             if record.total <= 0 and not self.env.context.get('line_form'):
                 record.unlink()
 

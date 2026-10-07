@@ -700,15 +700,29 @@ class HrTareajeManager(models.Model):
 
     def _get_public_holidays(self):
         """Feriados (D.Leg. 713 arts. 5-9): descansos globales de los
-        calendarios — ``{calendar_id o False: {fechas}}``."""
+        calendarios — ``{calendar_id o False: {fechas}}``.
+
+        Con los feriados PE instalados solo cuentan los descansos que
+        vienen de un feriado (``pe_public_holiday_id``): un cierre de la
+        compañía también es un descanso global y no da sobretasa del
+        100 %. El medio feriado (el del módulo dura de 00:00 a 13:00)
+        tampoco convierte el día entero en feriado: solo cuentan los
+        descansos de 20 h o más.
+        """
         self.ensure_one()
-        leaves = self.env['resource.calendar.leaves'].search([
+        Leaves = self.env['resource.calendar.leaves']
+        domain = [
             ('resource_id', '=', False),
             ('company_id', 'in', (False, self.company_id.id)),
             ('date_from', '<=', fields.Datetime.to_datetime(self.date_end)
              + timedelta(days=1)),
             ('date_to', '>=', fields.Datetime.to_datetime(self.date_start)),
-        ])
+        ]
+        if 'pe_public_holiday_id' in Leaves._fields:
+            domain.append(('pe_public_holiday_id', '!=', False))
+        leaves = Leaves.search(domain).filtered(
+            lambda leave: leave.date_to - leave.date_from
+            >= timedelta(hours=20))
         holidays = defaultdict(set)
         default_tz = self.company_id.resource_calendar_id.tz \
             or 'America/Lima'

@@ -371,3 +371,78 @@ class TestFase2Engine(TransactionCase):
         self.assertFalse(self._line(self._night_slip(0.0), 'NOCT').total)
         self.assertFalse(self._line(
             self._night_slip(176.0, regime='micro'), 'NOCT').total)
+
+    def test_plame_toc_declares_mas_vida_not_vida_ley(self):
+        """El .toc (estructura 26) declara +Vida de EsSalud y la condición
+        de domiciliado de cada trabajador del mes; el Seguro Vida Ley no
+        es +Vida."""
+        self._set_dni()
+        slip = self._compute_slip()
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote PE 2026-03 toc',
+            'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31),
+            'company_id': self.company.id,
+        })
+        slip.payslip_run_id = run
+        text = self._attachment_text(run.export_plame_other_conditions())
+        self.assertEqual(text, '01|44556677|0|0||1|\r\n')
+        self.employee.version_id.l10n_pe_mas_vida = True
+        self.employee.condition = 'not_domiciled'
+        text = self._attachment_text(run.export_plame_other_conditions())
+        self.assertEqual(text, '01|44556677|0|1||2|\r\n')
+
+    def test_rules_round_half_up(self):
+        """En las fórmulas PE ``round`` es el HALF_UP de SUNAT."""
+        slip = self._compute_slip()
+        localdict = slip._get_localdict()
+        self.assertEqual(localdict['round'](2.675, 2), 2.68)
+        self.assertEqual(localdict['round'](0.125, 2), 0.13)
+        self.assertEqual(localdict['round'](2.5), 3)
+
+    def test_afpnet_sequence_starts_at_one(self):
+        """AFPnet: correlativo 1, 2, 3… aunque haya trabajadores no AFP."""
+        import io
+        from openpyxl import load_workbook
+        self._set_dni()
+        onp = self.env['hr.membership'].search([('is_afp', '=', False)], limit=1)
+        other = self.env['hr.employee'].create({
+            'names': 'Luis', 'last_name': 'Huamán', 'm_last_name': 'Soto',
+            'company_id': self.company.id,
+            'date_version': date(2025, 1, 1),
+            'contract_date_start': date(2025, 1, 1),
+            'wage': 2000.0,
+            'structure_type_id': self.structure.type_id.id,
+        })
+        other.version_id.membership_id = onp
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote PE 2026-03 AFPnet',
+            'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31),
+            'company_id': self.company.id,
+        })
+        for employee in (other, self.employee):
+            self.env['hr.payslip'].create({
+                'name': 'Boleta', 'employee_id': employee.id,
+                'struct_id': self.structure.id, 'payslip_run_id': run.id,
+                'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31),
+            }).compute_sheet()
+        action = run.afp_net()
+        attachment_id = int(action['url'].split('/')[3].split('?')[0])
+        attachment = self.env['ir.attachment'].browse(attachment_id)
+        sheet = load_workbook(io.BytesIO(attachment.raw)).active
+        self.assertEqual(sheet.cell(row=1, column=1).value, 1)
+        self.assertIsNone(sheet.cell(row=2, column=1).value)
+
+    def test_indemnity_reaches_net(self):
+        """La indemnización (input INDEM) entra en el total de ingresos y
+        en el neto, sin tocar las bases de aportes."""
+        slip = self._compute_slip()
+        net = self._line(slip, 'NETO').total
+        aonp = self._line(slip, 'AAFP').total
+        slip.write({'input_line_ids': [(0, 0, {
+            'input_type_id': self.env.ref('al_hr_pe.input_type_INDEM').id,
+            'amount': 1000.0})]})
+        slip.compute_sheet()
+        self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 1000.0)
+        self.assertAlmostEqual(self._line(slip, 'AAFP').total, aonp)

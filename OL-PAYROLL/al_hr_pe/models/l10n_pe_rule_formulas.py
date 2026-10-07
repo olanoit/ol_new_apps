@@ -98,3 +98,9 @@ L10N_PE_AUDIT_RULES['salary_rule_BAS_M'] = (
     "result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH",
     "result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH",
 )
+# La indemnización (input INDEM: vacacional, despido…) salía en la boleta
+# pero no llegaba al neto: el total de ingresos no la sumaba.
+L10N_PE_AUDIT_RULES['salary_rule_TINGR'] = (
+    "result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL",
+    "result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM",
+)

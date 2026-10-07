@@ -34,7 +34,7 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '11.20261007',
+    'version': '12.20261007',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits'],
     'data': [
