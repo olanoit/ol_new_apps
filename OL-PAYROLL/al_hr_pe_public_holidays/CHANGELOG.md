@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_public_holidays.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261007 — 07/10/2026
+
+- Feriados por régimen laboral: el 25 de octubre, Día del Trabajador de Construcción Civil (2026-2035), solo se aplica a los calendarios de los trabajadores de construcción.
+
 ## 5.20261007 — 07/10/2026
 
 - La aplicación automática de feriados alcanza a todas las compañías, también a las creadas después (antes solo a las del usuario técnico).

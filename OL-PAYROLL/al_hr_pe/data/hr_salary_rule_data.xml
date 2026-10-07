@@ -149,6 +149,28 @@ result = worked_days['LSGH'].number_of_days * (version.wage/30)
             <field name="category_id" ref="DES_AFE"/>
             <field name="struct_id" ref="base_structure"/>
         </record>
+        <record model="hr.salary.rule" id="salary_rule_NOCT">
+            <field name="name">Sobretasa nocturna (RMV + 35 %)</field>
+            <field name="code">NOCT</field>
+            <field name="sunat_code">0121</field>
+            <field name="sequence">14</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+# D.S. 007-2002-TR, art. 8: el trabajo nocturno no se paga por debajo de la
+# RMV + 35 %. La microempresa con jornada habitualmente nocturna está exenta
+# (D.Leg. 1086 / TUO Ley MYPE); construcción civil tiene su propia estructura.
+night = worked_days['HTN'].number_of_hours
+total = worked_days['DLAB'].number_of_hours
+if night and total and version.wage_type != 'hourly' and version.l10n_pe_labor_regime not in ('micro', 'practicante', 'construccion'):
+    result = max(0.0, (payslip.rmv * 1.35 - version.wage) * min(night, total) / total)
+else:
+    result = 0
+            </field>
+            <field name="category_id" ref="ING"/>
+            <field name="struct_id" ref="base_structure"/>
+        </record>
         <record model="hr.salary.rule" id="salary_rule_BAS_M">
             <field name="name">Basico del mes</field>
             <field name="code">BAS_M</field>
@@ -157,7 +179,7 @@ result = worked_days['LSGH'].number_of_days * (version.wage/30)
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH
+result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH
             </field>
             <field name="category_id" ref="SUB"/>
             <field name="struct_id" ref="base_structure"/>

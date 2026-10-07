@@ -482,6 +482,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 11.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Certificado de 5ta: el impuesto a la renta se calcula con la escala progresiva sobre la renta imponible (antes copiaba la retención) y el saldo por regularizar muestra la diferencia real, también con retenciones de otros empleadores."
   - version: 10.20261007
     fecha: 07/10/2026
     cambios:

@@ -243,16 +243,16 @@ class TestConstructionBenefits(TransactionCase):
                          'a los 18 cumplidos se acaba')
 
     def test_school_allowance_extends_while_studying(self):
-        """En este régimen el tope estudiando es 21, no 24."""
+        """Estudios técnicos o superiores: hasta los 24 (convenio vigente)."""
         worker = self._worker()
-        child = self._child(worker, 20, is_studying=True)
+        child = self._child(worker, 23, is_studying=True)
         payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
         self.assertGreater(self._line(payslip, 'AESC'), 0.0)
 
-        child.birthday = date(2026, 3, 8) - relativedelta(years=22)
+        child.birthday = date(2026, 3, 8) - relativedelta(years=25)
         payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
         self.assertEqual(self._line(payslip, 'AESC'), 0.0,
-                         'pasados los 21 se acaba aunque siga estudiando')
+                         'pasados los 24 se acaba aunque siga estudiando')
 
     def test_company_can_move_the_age_limits(self):
         worker = self._worker()

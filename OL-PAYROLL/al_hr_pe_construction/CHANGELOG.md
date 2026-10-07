@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261007 — 07/10/2026
+
+- Códigos PLAME (tabla 22) de construcción corregidos: descanso 0115, BUC 0311, movilidad 0909, bonificaciones por altura/contacto con agua/cota 0303-0310, escolaridad 0211 y CONAFOVICER 0602.
+- Asignación escolar para hijos con estudios técnicos o superiores hasta los 24 años (convenio vigente; el módulo traía 21). Las compañías con el valor antiguo se actualizan solas.
+
 ## 13.20261007 — 07/10/2026
 
 - Corregido: las horas extra que vuelca el tareaje (25 % y 35 % del régimen general) no se pagaban en construcción; ahora se pagan al 60 % y al 100 % del convenio.

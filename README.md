@@ -152,14 +152,14 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 18.20261007 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 19.20261007 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
 [al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 5.20261007 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 6.20260816 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 7.20261007 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 8.20261007 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 13.20261007 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 14.20261007 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 5.20261007 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
-[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 5.20261007 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 10.20261007 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 6.20261007 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 11.20261007 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 

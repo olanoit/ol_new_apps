@@ -21,10 +21,10 @@ Portado de ``hr_fifth_category_certificate`` (v18). Cambios v19:
   (``send_quinta_by_email``) — reportlab permitía ``encrypt=``; QWeb
   no. TODO(fase7-revisar): decidir si se repone con pikepdf/qpdf.
 
-Paridad v18 conservada a propósito: el punto «3. Impuesto a la renta»
-del certificado muestra el mismo importe que «4. Total retención
-efectuada» (la suma retenida por la regla QUINTA en el año), por lo que
-el «Saldo por regularizar» siempre es 0.
+El punto «3. Impuesto a la renta» es el impuesto anual de la escala
+progresiva (art. 53 LIR) sobre la renta imponible; el v18 copiaba ahí la
+retención y el «Saldo por regularizar» salía siempre 0, ocultando la
+diferencia que el trabajador debe regularizar (o pedir en devolución).
 """
 from datetime import date
 
@@ -109,8 +109,11 @@ class HrFifthCertificateWizard(models.TransientModel):
         * ``other_emp_rem``: rentas de otros empleadores declaradas en
           las quintas mensuales del año.
         * ``deduccion``: 7 UIT del ejercicio.
+        * ``impuesto``: escala del art. 53 LIR sobre la renta imponible,
+          con los tramos de 5ta reescalados a la UIT del ejercicio.
         * ``retencion``: total retenido por la regla QUINTA en el año
-          (0 si negativo).
+          (0 si negativo) más lo retenido por otros empleadores.
+        * ``saldo``: impuesto − retención (negativo = retención en exceso).
         """
         self.ensure_one()
         company = self.company_id
@@ -150,14 +153,18 @@ class HrFifthCertificateWizard(models.TransientModel):
         retencion = Line._sum_payslip_rule_totals(
             employee, company, Line._get_quinta_rule(company),
             date_from, date_before)
-        retencion = max(retencion, 0.0)
+        retencion = max(retencion, 0.0) \
+            + sum(fifth_lines.mapped('other_emp_ret'))
+        renta_imponible = max(rem_total - seven_uit, 0.0)
+        impuesto = company.currency_id.round(Line.get_tax_proy(
+            renta_imponible, param.rate_limit_ids, uit=uit))
         return {
             'rem_bruta': rem_bruta,
             'other_emp_rem': other_emp_rem,
             'rem_total': rem_total,
             'seven_uit': seven_uit,
-            'renta_imponible': max(rem_total - seven_uit, 0.0),
-            'impuesto': retencion,
+            'renta_imponible': renta_imponible,
+            'impuesto': impuesto,
             'retencion': retencion,
-            'saldo': 0.0,
+            'saldo': impuesto - retencion,
         }

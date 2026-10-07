@@ -340,3 +340,34 @@ class TestFase2Engine(TransactionCase):
         expected = sum(slips.line_ids.filtered(
             lambda l: l.code == 'BAS').mapped('total'))
         self.assertIn('|%.2f|' % expected, bas[0])
+
+    def _night_slip(self, night_hours, wage=1130.0, regime='general'):
+        self.employee.version_id.write({
+            'wage': wage, 'l10n_pe_labor_regime': regime})
+        slip = self._compute_slip()
+        lines = slip.worked_days_line_ids
+        lines.filtered(lambda l: l.code == 'DLAB').write(
+            {'number_of_days': 22.0, 'number_of_hours': 176.0})
+        lines.filtered(lambda l: l.code == 'HTN').number_of_hours = night_hours
+        slip.compute_sheet()
+        return slip
+
+    def test_night_work_minimum(self):
+        """Trabajo nocturno: nunca por debajo de la RMV + 35 % (D.S.
+        007-2002-TR, art. 8), proporcional a las horas nocturnas, y la
+        sobretasa entra en el básico del mes (bases afectas)."""
+        slip = self._night_slip(176.0)
+        self.assertAlmostEqual(self._line(slip, 'NOCT').total, 1130.0 * 0.35)
+        bas_m = self._line(slip, 'BAS_M').total
+        self.assertAlmostEqual(
+            bas_m - self._line(slip, 'BAS').total, 1130.0 * 0.35, places=2)
+        half = self._night_slip(88.0)
+        self.assertAlmostEqual(self._line(half, 'NOCT').total, 1130.0 * 0.35 / 2)
+
+    def test_night_work_without_surcharge(self):
+        """Sin sobretasa si el sueldo ya cubre el mínimo, sin horas
+        nocturnas o en microempresa (régimen MYPE)."""
+        self.assertFalse(self._line(self._night_slip(176.0, wage=1600.0), 'NOCT').total)
+        self.assertFalse(self._line(self._night_slip(0.0), 'NOCT').total)
+        self.assertFalse(self._line(
+            self._night_slip(176.0, regime='micro'), 'NOCT').total)

@@ -92,3 +92,9 @@ L10N_PE_AUDIT_RULES['salary_rule_EPS225'] = (
     "if version.social_insurance_id.name == 'EPS':\n    # base mínima: la RMV (D.S. 009-97-SA, art. 6)\n"
     "    result = max(AESSALUD, payslip.rmv) * 0.0225\nelse:\n    result = 0",
 )
+# Sobretasa nocturna mínima (D.S. 007-2002-TR, art. 8): entra en el básico
+# del mes para que la tomen todas las bases afectas.
+L10N_PE_AUDIT_RULES['salary_rule_BAS_M'] = (
+    "result = BAS + FER - FAL - TAR + DMED + DPAT + LCGH - LSGH",
+    "result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH",
+)

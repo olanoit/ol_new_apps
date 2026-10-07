@@ -106,9 +106,10 @@ class HrMainParameter(models.Model):
         default=lambda self: self._default_tareaje_wet('DLAB'))
     tareaje_wet_noct_id = fields.Many2one(
         'hr.work.entry.type', string='W.E. jornada nocturna (tareaje)',
-        help='Tipo destino de los días/horas nocturnos (dlabn/htn). '
-             'Sin configurar, la nocturnidad queda informativa en el '
-             'tareaje y no se vuelca a la boleta.')
+        help='Tipo destino de las horas nocturnas (htn). Por defecto, '
+             'HTN de al_hr_pe: sustenta la sobretasa mínima NOCT '
+             '(RMV + 35 %).',
+        default=lambda self: self._default_tareaje_wet('HTN'))
     tareaje_wet_dom_id = fields.Many2one(
         'hr.work.entry.type', string='W.E. días de descanso (tareaje)',
         default=lambda self: self._default_tareaje_wet('DOM'))
@@ -141,17 +142,16 @@ class HrMainParameter(models.Model):
         """Mapa concepto del tareaje → ``hr.work.entry.type`` destino.
 
         Usa el M2O configurado y, en su defecto, el tipo PE por código.
-        ``noct`` no tiene default por código: al_hr_pe (Fase 2) no define
-        aún un tipo de jornada nocturna.
-        TODO(fase6-revisar): crear work entry type DLABN + regla de
-        sobretasa nocturna (35 % de la RMV proporcional, art. 8 del
-        D.S. 007-2002-TR) en al_hr_pe y fijarlo aquí como default.
+        ``noct`` va a HTN: solo horas (el día ya está en DLAB), que la
+        regla NOCT de al_hr_pe usa para la sobretasa mínima del art. 8
+        del D.S. 007-2002-TR.
         """
         self.ensure_one()
         return {
             'dlab': self.tareaje_wet_dlab_id
             or self._default_tareaje_wet('DLAB'),
-            'noct': self.tareaje_wet_noct_id,
+            'noct': self.tareaje_wet_noct_id
+            or self._default_tareaje_wet('HTN'),
             'dom': self.tareaje_wet_dom_id or self._default_tareaje_wet('DOM'),
             'fer': self.tareaje_wet_fer_id or self._default_tareaje_wet('FER'),
             'fal': self.tareaje_wet_fal_id or self._default_tareaje_wet('FAL'),
@@ -448,13 +448,19 @@ class HrTareajeManager(models.Model):
             sched_in, sout = marks_in, out
 
         delay = max(0.0, marks_in - sched_in)
+        after = max(0.0, out - sout)
+        # Quien llega tarde y se queda después de la salida primero
+        # completa su jornada: ese tiempo compensa la tardanza y no es
+        # sobretiempo (solo es HE lo que excede la jornada, art. 9-10).
+        compensated = min(delay, after) if delay > tolerance else 0.0
+        delay -= compensated
+        after -= compensated
         if delay > tolerance:
             result['tar'] = custom_round(
                 self._round_to_minutes(delay, round_minutes))
 
         if compute_overtime:
-            extra = self._round_to_minutes(
-                max(0.0, out - sout), round_minutes)
+            extra = self._round_to_minutes(after, round_minutes)
             result['he25'], result['he35'] = self._split_overtime_hours(
                 extra, he25_limit=he25_limit)
 

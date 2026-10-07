@@ -598,6 +598,11 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 14.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Códigos PLAME (tabla 22) de construcción corregidos: descanso 0115, BUC 0311, movilidad 0909, bonificaciones por altura/contacto con agua/cota 0303-0310, escolaridad 0211 y CONAFOVICER 0602."
+      - "Asignación escolar para hijos con estudios técnicos o superiores hasta los 24 años (convenio vigente; el módulo traía 21). Las compañías con el valor antiguo se actualizan solas."
   - version: 13.20261007
     fecha: 07/10/2026
     cambios:

@@ -42,6 +42,7 @@ class ResCompany(models.Model):
         help='Cuenta en la que se deposita la retención, hasta el día 15 '
              'del mes siguiente.')
     l10n_pe_construction_school_age_study = fields.Integer(
-        string='Edad tope cursando estudios superiores', default=21,
+        string='Edad tope cursando estudios superiores', default=24,
         help='Prolongación del derecho para el hijo que cursa estudios '
-             'superiores.')
+             'técnicos o superiores: hasta los 24 años según el convenio '
+             'colectivo vigente (antes 22, y el módulo traía 21).')

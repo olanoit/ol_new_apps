@@ -53,7 +53,7 @@ result = payslip._l10n_pe_construction_amount('jornal')
         <record id="rule_DSO" model="hr.salary.rule">
             <field name="name">Descanso semanal obligatorio</field>
             <field name="code">DSO</field>
-            <field name="sunat_code">0100</field>
+            <field name="sunat_code">0115</field>
             <field name="sequence">20</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -70,7 +70,7 @@ result = payslip._l10n_pe_construction_amount('dso')
         <record id="rule_BUC" model="hr.salary.rule">
             <field name="name">Bonificación unificada de construcción</field>
             <field name="code">BUC</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0311</field>
             <field name="sequence">30</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -85,7 +85,7 @@ result = payslip._l10n_pe_construction_amount('buc')
         <record id="rule_MOV" model="hr.salary.rule">
             <field name="name">Bonificación por movilidad</field>
             <field name="code">MOV</field>
-            <field name="sunat_code">0904</field>
+            <field name="sunat_code">0909</field>
             <field name="sequence">40</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -100,7 +100,7 @@ result = payslip._l10n_pe_construction_amount('movilidad')
         <record id="rule_BAE" model="hr.salary.rule">
             <field name="name">Bonificación por alta especialización</field>
             <field name="code">BAE</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0306</field>
             <field name="sequence">50</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -123,7 +123,7 @@ result = payslip._l10n_pe_construction_bonus('BAE')
         <record id="rule_BALTI" model="hr.salary.rule">
             <field name="name">Bonificación por altitud</field>
             <field name="code">BALTI</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0303</field>
             <field name="sequence">60</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -138,7 +138,7 @@ result = payslip._l10n_pe_construction_bonus('BALTI')
         <record id="rule_BAGUA" model="hr.salary.rule">
             <field name="name">Bonificación por contacto con agua</field>
             <field name="code">BAGUA</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0310</field>
             <field name="sequence">61</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -153,7 +153,7 @@ result = payslip._l10n_pe_construction_bonus('BAGUA')
         <record id="rule_BCOTA" model="hr.salary.rule">
             <field name="name">Bonificación por riesgo bajo la cota cero</field>
             <field name="code">BCOTA</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0303</field>
             <field name="sequence">62</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -168,7 +168,7 @@ result = payslip._l10n_pe_construction_bonus('BCOTA')
         <record id="rule_BALTU" model="hr.salary.rule">
             <field name="name">Bonificación por altura</field>
             <field name="code">BALTU</field>
-            <field name="sunat_code">0300</field>
+            <field name="sunat_code">0303</field>
             <field name="sequence">63</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -304,7 +304,7 @@ result = payslip._l10n_pe_construction_extra_bonus()
         <record id="rule_AESC" model="hr.salary.rule">
             <field name="name">Asignación escolar</field>
             <field name="code">AESC</field>
-            <field name="sunat_code">0201</field>
+            <field name="sunat_code">0211</field>
             <field name="sequence">140</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -323,7 +323,7 @@ result = payslip._l10n_pe_construction_school()
         <record id="rule_CONAF" model="hr.salary.rule">
             <field name="name">CONAFOVICER 2%</field>
             <field name="code">CONAF</field>
-            <field name="sunat_code">0703</field>
+            <field name="sunat_code">0602</field>
             <field name="sequence">150</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>

@@ -43,6 +43,8 @@
                             <field name="name"/>
                             <field name="date"/>
                             <field name="holiday_type"/>
+                            <field name="labor_regime"
+                                   required="holiday_type == 'regime'"/>
                         </group>
                         <group>
                             <field name="is_full_day"/>
@@ -68,6 +70,7 @@
                 <filter name="upcoming" string="Upcoming" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter name="national" string="National" domain="[('holiday_type', '=', 'national')]"/>
                 <filter name="religious" string="Religious" domain="[('holiday_type', '=', 'religious')]"/>
+                <filter name="regime" string="Régimen especial" domain="[('holiday_type', '=', 'regime')]"/>
                 <filter name="half_day" string="Half Day" domain="[('is_full_day', '=', False)]"/>
                 <group>
                     <filter name="group_year" string="Year" context="{'group_by': 'year'}"/>

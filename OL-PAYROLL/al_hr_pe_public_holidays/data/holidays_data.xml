@@ -162,5 +162,17 @@
         <record id="h_2035_12_08" model="pe.public.holiday"><field name="name">Inmaculada Concepción</field><field name="date">2035-12-08</field><field name="holiday_type">national</field></record>
         <record id="h_2035_12_09" model="pe.public.holiday"><field name="name">Batalla de Ayacucho</field><field name="date">2035-12-09</field><field name="holiday_type">national</field></record>
         <record id="h_2035_12_25" model="pe.public.holiday"><field name="name">Navidad del Señor</field><field name="date">2035-12-25</field><field name="holiday_type">religious</field></record>
+        <!-- Día del Trabajador de Construcción Civil: descanso remunerado del
+             régimen por convenio colectivo; solo calendarios de obra. -->
+        <record id="h_2026_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2026-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2027_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2027-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2028_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2028-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2029_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2029-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2030_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2030-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2031_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2031-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2032_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2032-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2033_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2033-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2034_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2034-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
+        <record id="h_2035_10_25_construccion" model="pe.public.holiday"><field name="name">Día del Trabajador de Construcción Civil</field><field name="date">2035-10-25</field><field name="holiday_type">regime</field><field name="labor_regime">construccion</field></record>
     </data>
 </odoo>

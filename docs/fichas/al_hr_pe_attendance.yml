@@ -541,6 +541,11 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 7.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Las horas nocturnas del tareaje van por defecto a «Horas trabajo nocturno» y alimentan la sobretasa nocturna de la boleta (antes quedaban solo informativas)."
+      - "Corregido: quien llegaba tarde y se quedaba después de hora cobraba esas horas como extras y además se le descontaba la tardanza. Ahora ese tiempo primero completa la jornada y solo el exceso es sobretiempo."
   - version: 6.20260816
     fecha: 27/09/2026
     cambios:

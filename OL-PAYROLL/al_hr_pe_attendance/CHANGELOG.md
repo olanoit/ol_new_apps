@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261007 — 07/10/2026
+
+- Las horas nocturnas del tareaje van por defecto a «Horas trabajo nocturno» y alimentan la sobretasa nocturna de la boleta (antes quedaban solo informativas).
+- Corregido: quien llegaba tarde y se quedaba después de hora cobraba esas horas como extras y además se le descontaba la tardanza. Ahora ese tiempo primero completa la jornada y solo el exceso es sobretiempo.
+
 ## 6.20260816 — 27/09/2026
 
 - El turno nocturno cuenta como día trabajado completo en la boleta; antes el básico salía casi en cero.

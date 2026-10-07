@@ -109,6 +109,19 @@ class TestTareajeClassification(TransactionCase):
             8.5, 17.0, sched_in=8.0, sched_out=17.0, tolerance=0.25)
         self.assertAlmostEqual(res['tar'], 0.5, places=2)
 
+    def test_late_arrival_compensated_before_overtime(self):
+        # Entra 1 h tarde y sale 2 h después: 1 h compensa la tardanza y
+        # solo la otra es sobretiempo.
+        res = self.Tareaje._classify_day(
+            9.0, 19.0, sched_in=8.0, sched_out=17.0, break_hours=1.0)
+        self.assertAlmostEqual(res['tar'], 0.0, places=2)
+        self.assertAlmostEqual(res['he25'], 1.0, places=2)
+        # Sale 30 min después: queda media hora de tardanza y ninguna HE.
+        res = self.Tareaje._classify_day(
+            9.0, 17.5, sched_in=8.0, sched_out=17.0, break_hours=1.0)
+        self.assertAlmostEqual(res['tar'], 0.5, places=2)
+        self.assertAlmostEqual(res['he25'], 0.0, places=2)
+
     def test_night_shift_cross_midnight(self):
         # Turno 22:00 → 06:00: día íntegramente nocturno.
         res = self.Tareaje._classify_day(
@@ -360,8 +373,7 @@ class TestTareajeMainParameter(TransactionCase):
         for bucket, code in (('dlab', 'DLAB'), ('dom', 'DOM'),
                              ('fer', 'FER'), ('fal', 'FAL'),
                              ('tar', 'TAR'), ('he25', 'HE25'),
-                             ('he35', 'HE35'), ('he100', 'HE100')):
+                             ('he35', 'HE35'), ('he100', 'HE100'),
+                             ('noct', 'HTN')):
             self.assertTrue(wet_map[bucket], 'Falta el tipo %s' % code)
             self.assertEqual(wet_map[bucket].code, code)
-        # Nocturnidad sin tipo por defecto (aún no existe en al_hr_pe).
-        self.assertFalse(wet_map['noct'])

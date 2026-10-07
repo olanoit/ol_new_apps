@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Certificado de 5ta: el impuesto a la renta se calcula con la escala progresiva sobre la renta imponible (antes copiaba la retención) y el saldo por regularizar muestra la diferencia real, también con retenciones de otros empleadores.
+
 ## 10.20261007 — 07/10/2026
 
 - TXT bancarios: Interbank en dólares ya no multiplica el total de cabecera; los haberes con cuenta de cargo en otra moneda se convierten a la fecha de pago; BBVA CTS usa el tipo de proceso configurado; el checksum de BCP CTS cuenta solo las cuentas del archivo; Scotiabank limpia los nombres antes de ajustarlos, usa el mismo tipo de documento en CTS y valida cuentas de 10 dígitos sin guiones.

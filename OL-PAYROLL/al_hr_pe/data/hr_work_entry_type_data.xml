@@ -88,6 +88,15 @@
             <field name="round_days">NO</field>
             <field name="country_id" ref="base.pe"/>
         </record>
+        <!-- Horas de la jornada en horario nocturno (22:00-06:00): no son
+             horas extra, solo sustentan la sobretasa mínima NOCT. -->
+        <record id="wd_HTN" model="hr.work.entry.type">
+            <field name="code">HTN</field>
+            <field name="name">HORAS TRABAJO NOCTURNO</field>
+            <field name="is_leave" eval="False"/>
+            <field name="sequence">24</field>
+            <field name="country_id" ref="base.pe"/>
+        </record>
         <record id="wd_HE25" model="hr.work.entry.type">
             <field name="code">HE25</field>
             <field name="name">HORAS EXTRAS 25%</field>

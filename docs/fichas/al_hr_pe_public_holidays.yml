@@ -322,6 +322,10 @@ faq:
       compañías del usuario OdooBot.
 
 novedades:
+  - version: 6.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Feriados por régimen laboral: el 25 de octubre, Día del Trabajador de Construcción Civil (2026-2035), solo se aplica a los calendarios de los trabajadores de construcción."
   - version: 5.20261007
     fecha: 07/10/2026
     cambios:

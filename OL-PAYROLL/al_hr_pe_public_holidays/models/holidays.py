@@ -35,11 +35,21 @@ class PeruPublicHoliday(models.Model):
             ("national", "National"),
             ("religious", "Religious"),
             ("memorial", "Memorial"),
+            ("regime", "Régimen especial"),
         ],
         string="Type",
         default="national",
         required=True,
     )
+    # Feriados que solo rigen para un régimen laboral (p. ej. el 25 de
+    # octubre, Día del Trabajador de Construcción Civil, por convenio).
+    labor_regime = fields.Selection(
+        [("construccion", "Construcción civil")],
+        string="Solo para el régimen",
+        help="Vacío: feriado para todos. Con régimen: solo se aplica a los "
+             "calendarios de los contratos vigentes de ese régimen (si el "
+             "calendario lo comparten otros trabajadores, también ellos lo "
+             "reciben: conviene un calendario propio de obra).")
     is_full_day = fields.Boolean(string="Full Day", default=True)
     # El descanso de medio día va de 00:00 hasta esta hora (ver
     # ``_holiday_datetime_range``): la etiqueta antigua, «Half Day Starts
@@ -106,17 +116,31 @@ class PeruPublicHoliday(models.Model):
 
         Antes se escribía en **todos** los calendarios de la base: en
         multicompañía eso metía feriados en compañías ajenas a la sesión.
+        Un feriado de régimen solo va a los calendarios de los contratos
+        vigentes de ese régimen.
         """
-        return self.env["resource.calendar"].search([
+        self.ensure_one()
+        calendars = self.env["resource.calendar"].search([
             ("company_id", "in", list(self.env.companies.ids) + [False]),
         ])
+        if not self.labor_regime \
+                or "l10n_pe_labor_regime" not in self.env["hr.version"]._fields:
+            return calendars
+        # Versión vigente de cada trabajador (no las históricas).
+        employees = self.env["hr.employee"].search([
+            ("company_id", "in", self.env.companies.ids),
+        ]).filtered(
+            lambda e: e.version_id.l10n_pe_labor_regime == self.labor_regime)
+        return calendars & employees.resource_calendar_id
 
     def action_apply_to_calendars(self):
         Leaves = self.env["resource.calendar.leaves"]
-        calendars = self._target_calendars()
+        calendars = self.env["resource.calendar"]
         created = updated = 0
         for holiday in self:
-            for cal in calendars:
+            holiday_calendars = holiday._target_calendars()
+            calendars |= holiday_calendars
+            for cal in holiday_calendars:
                 date_from, date_to = holiday._holiday_datetime_range(cal)
                 vals = {
                     "name": holiday.name,

@@ -65,7 +65,8 @@ class TestPeruPublicHolidays(TransactionCase):
     def test_ten_years_loaded(self):
         """Están cargados los 10 años del calendario (2026-2035)."""
         for year in range(2026, 2036):
-            count = self.Holiday.search_count([('year', '=', year)])
+            count = self.Holiday.search_count(
+                [('year', '=', year), ('labor_regime', '=', False)])
             self.assertEqual(
                 count, 16,
                 'el año %s debe tener 16 feriados nacionales, tiene %s'
@@ -279,7 +280,8 @@ class TestPeruPublicHolidays(TransactionCase):
         this_year = date.today().year
         self.Holiday.cron_apply_yearly_holidays()
         for year in (this_year, this_year + 1):
-            holidays = self.Holiday.search([('year', '=', year)])
+            holidays = self.Holiday.search(
+                [('year', '=', year), ('labor_regime', '=', False)])
             if not holidays:
                 continue
             applied = self.Leaves.search_count([
@@ -295,7 +297,9 @@ class TestPeruPublicHolidays(TransactionCase):
         other = self.env['res.company'].create({'name': 'Feriados otra SAC'})
         calendar = self.env['resource.calendar'].create({
             'name': 'Calendario otra', 'company_id': other.id})
-        holiday = self.Holiday.search([('year', '=', date.today().year)], limit=1)
+        holiday = self.Holiday.search([
+            ('year', '=', date.today().year), ('labor_regime', '=', False)],
+            limit=1)
         if not holiday:
             self.skipTest('sin feriados del año en curso')
         self.Holiday.with_context(allowed_company_ids=[self.env.company.id]) \
@@ -309,3 +313,31 @@ class TestPeruPublicHolidays(TransactionCase):
         action = holiday.action_view_leaves()
         self.assertEqual(action['res_model'], 'resource.calendar.leaves')
         self.assertIn(('pe_public_holiday_id', '=', holiday.id), action['domain'])
+
+    # ------------------------------------------------------------------
+    # Feriados de régimen
+    # ------------------------------------------------------------------
+    def test_construction_day_loaded_every_year(self):
+        """El 25 de octubre es feriado del régimen de construcción civil."""
+        for year in range(2026, 2036):
+            holiday = self.Holiday.search([('date', '=', date(year, 10, 25))])
+            self.assertEqual(len(holiday), 1, year)
+            self.assertEqual(holiday.labor_regime, 'construccion')
+
+    def test_regime_holiday_only_reaches_regime_calendars(self):
+        """Solo los calendarios de trabajadores del régimen lo reciben."""
+        if 'l10n_pe_labor_regime' not in self.env['hr.version']._fields:
+            self.skipTest('al_hr_pe no instalado: dependencia blanda')
+        obra, oficina = self._calendar(), self._calendar(tz='America/Bogota')
+        builder = self.env['hr.employee'].create({
+            'name': 'Operario obra', 'company_id': self.company.id,
+            'resource_calendar_id': obra.id})
+        builder.version_id.l10n_pe_labor_regime = 'construccion'
+        self.env['hr.employee'].create({
+            'name': 'Asistente oficina', 'company_id': self.company.id,
+            'resource_calendar_id': oficina.id})
+        holiday = self._holiday(day=date(2044, 10, 25),
+                                holiday_type='regime',
+                                labor_regime='construccion')
+        holiday.action_apply_to_calendars()
+        self.assertEqual(holiday.leave_ids.calendar_id & (obra | oficina), obra)
