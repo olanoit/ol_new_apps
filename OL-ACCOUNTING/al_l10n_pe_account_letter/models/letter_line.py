@@ -68,6 +68,7 @@ class L10nPeLetterLine(models.Model):
             ('protested', 'Protestada'),
         ],
         string='Tipo de letra',
+        default='portfolio',
     )
 
     account_id = fields.Many2one(
@@ -122,10 +123,16 @@ class L10nPeLetterLine(models.Model):
     # importe de la letra.
     @api.depends('imp_div', 'nro_letter',
                  'letter_id.account_id.line_ids.amount_residual_currency',
-                 'letter_id.account_id.line_ids.l10n_pe_letter_line_id')
+                 'letter_id.account_id.line_ids.l10n_pe_letter_line_id',
+                 'letter_id.canje_move_id.line_ids.amount_residual_currency',
+                 'letter_id.canje_move_ids.line_ids.amount_residual_currency')
     def compute_adeudado(self):
+        """Lo que falta cobrar o pagar de la letra: el saldo de sus apuntes en el
+        canje y, si se envió al banco, en el asiento de cobranza o descuento."""
         for line in self:
-            move_lines = line.letter_id.account_id.line_ids.filtered(
+            letter = line.letter_id
+            moves = letter.account_id | letter.canje_move_id | letter.canje_move_ids
+            move_lines = moves.filtered(lambda m: m.state == 'posted').line_ids.filtered(
                 lambda move_line: move_line.l10n_pe_letter_line_id == line)
             if move_lines:
                 line.adeudado = abs(sum(move_lines.mapped('amount_residual_currency')))
@@ -141,17 +148,16 @@ class L10nPeLetterLine(models.Model):
                 record.adeudado = 0.0
 
     # Método computado para el estado de pago
-    @api.depends('adeudado')
+    @api.depends('adeudado', 'imp_div')
     def _compute_payment_state(self):
         for record in self:
-            if record.adeudado == record.imp_div:
+            currency = record.currency_id or record.company_currency_id
+            if currency.is_zero(record.adeudado - record.imp_div) or currency.compare_amounts(record.adeudado, 0.0) < 0:
                 record.payment_state = 'pending'
-            elif record.adeudado == 0.0:
+            elif currency.is_zero(record.adeudado):
                 record.payment_state = 'paid'
-            elif record.adeudado > 0.0:
-                record.payment_state = 'partial'
             else:
-                record.payment_state = 'pending'
+                record.payment_state = 'partial'
 
     # Configuración de nombre
     @api.depends('nro_letter')

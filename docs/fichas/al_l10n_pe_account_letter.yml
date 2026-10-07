@@ -594,6 +594,13 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 8.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: el importe se repartía sin redondear y el céntimo sobrante iba a gasto por redondeo (1 000 en 3 letras = 999,99); ahora la última letra absorbe la diferencia y las letras suman exactamente la deuda."
+      - "Corregido: una letra enviada al banco (cobranza libre o descuento) aparecía «Pagado» aunque el cliente no hubiera pagado; ahora sigue pendiente hasta el cobro."
+      - "Las facturas se concilian con su apunte del canje por vínculo, no emparejando por orden."
+      - "Las letras nuevas quedan «En cartera» y las cuentas de letras del PCGE (1232, 1233, 1234 y 423) se configuran solas al instalar o actualizar, sin tocar las existentes."
   - version: 7.20260901
     fecha: 27/09/2026
     cambios:

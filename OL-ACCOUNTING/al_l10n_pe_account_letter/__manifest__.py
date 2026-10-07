@@ -36,7 +36,7 @@ se usaban en la lógica del módulo).
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '7.20260901',
+    'version': '8.20261007',
     'license': 'OPL-1',
     'depends': [
         'mail',
@@ -68,6 +68,7 @@ se usaban en la lógica del módulo).
         'data/document_type_letter.xml',
         'data/ir_sequence_data.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
 }

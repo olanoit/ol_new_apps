@@ -305,21 +305,37 @@ class L10nPeLetter(models.Model):
             raise UserError('Necesitas añadir el rango de días.')
         if self.number_letter > 0:
             letter_imp_div = self.calculate_letter_imp_div()
+            amounts = self._split_letter_amounts(letter_imp_div * self.number_letter)
             if letter_imp_div > 0:
                 # Calculo de la fecha de vencimiento de la primera letra
                 if self.letter_line_ids and self.range_date:
                     expiration_date = self.letter_line_ids[-1].expiration_date + timedelta(days=self.range_date)
                 elif self.letter_end_date and self.range_date:
                     expiration_date = self.letter_end_date
-                for i in range(self.number_letter):
+                for amount in amounts:
                     self.letter_line_ids = [(0, 0, {
                         'currency_id': self.currency_id.id,
                         'expiration_date': expiration_date,
-                        'imp_div': letter_imp_div,
-                        'adeudado': letter_imp_div,
+                        'imp_div': amount,
+                        'adeudado': amount,
                         'letter_id': self.id,
                     })]
                     expiration_date += timedelta(days=self.range_date)
+
+    def _split_letter_amounts(self, total):
+        """Importes de las letras redondeados a la moneda; la última absorbe la
+        diferencia para que sumen exactamente ``total``.
+
+        Antes cada letra era ``total / N`` sin redondear: 1 000 en 3 letras
+        daba 3 × 333,33 = 999,99 y el céntimo iba a gasto por redondeo en vez
+        de cobrarse al cliente.
+        """
+        self.ensure_one()
+        currency = self.currency_id or self.company_id.currency_id
+        total = currency.round(total)
+        count = self.number_letter
+        base = currency.round(total / count)
+        return [base] * (count - 1) + [currency.round(total - base * (count - 1))]
 
     # Método para calcular el importe de la letra
     def calculate_letter_imp_div(self):
@@ -505,6 +521,7 @@ class L10nPeLetter(models.Model):
                     invoice_line.currency_id.id,
                     date_maturity=invoice_line.move_line_id.date_maturity,
                     exchange_rate=self.exchange_rate,
+                    l10n_pe_letter_invoice_line_id=invoice_line.id,
                 ))
 
             # Apunte contable de las letras
@@ -660,13 +677,18 @@ class L10nPeLetter(models.Model):
 
         for letter_line in letter_line_ids:
             amount_currency = letter_line.imp_div * (1 if letter_line.move_invoice_type == 'out_invoice' else -1)
+            # El apunte en la cuenta de cobranza o descuento sigue siendo la
+            # letra: sin el vínculo, la letra quedaba «Pagado» al enviarla al
+            # banco aunque el cliente no hubiera pagado.
             account_move_lines.append(self._build_letter_move_line_vals(
                 letter_line.nro_letter,
                 account_id,
                 letter_line.partner_id.id,
                 amount_currency,
                 letter_line.currency_id.id,
+                date_maturity=letter_line.expiration_date,
                 exchange_rate=exchange_rate,
+                l10n_pe_letter_line_id=letter_line.id,
             ))
         name = self.name
         if letter_line_id:
@@ -692,13 +714,17 @@ class L10nPeLetter(models.Model):
         else:
             self.canje_move_id = account_move.id
 
-        for line in account_move.line_ids.filtered(lambda line: line.l10n_pe_letter_line_id):
-            letter_line_id_rec = line.l10n_pe_letter_line_id
+        for letter_line_rec in letter_line_ids:
             counter_line = self.account_id.line_ids.filtered(
-                lambda line: line.l10n_pe_letter_line_id == letter_line_id_rec)
+                lambda line: line.l10n_pe_letter_line_id == letter_line_rec)
             if not counter_line:
                 raise UserError('No se ha encontrado el apunte contable relacionado a conciliar.')
-            (line + counter_line).reconcile()
+            # El apunte que cierra la cartera tiene el signo contrario al de la
+            # letra en el canje; el de destino, el mismo.
+            closing_line = account_move.line_ids.filtered(
+                lambda line: line.l10n_pe_letter_line_id == letter_line_rec
+                and line.amount_currency * sum(counter_line.mapped('amount_currency')) < 0)
+            (closing_line + counter_line).reconcile()
 
     def _get_letters_to_send(self):
         """Letras que siguen en cartera: ni enviadas ya al banco (tienen
@@ -751,9 +777,18 @@ class L10nPeLetter(models.Model):
                         (original_line + closing_line).reconcile()
             return
         else:
-            for invoice_line in self.invoice_line_ids.move_line_id:
-                credit_lines.extend(invoice_line)
-            for debit_line, credit_line in zip(debit_lines, credit_lines):
+            # Cada apunte del canje está enlazado a su línea de factura: se
+            # concilia por ese vínculo y no emparejando por orden.
+            for invoice_line in self.invoice_line_ids:
+                canje_line = move_id.line_ids.filtered(
+                    lambda ml: ml.l10n_pe_letter_invoice_line_id == invoice_line
+                    and not ml.reconciled)
+                if canje_line and invoice_line.move_line_id and not invoice_line.move_line_id.reconciled:
+                    (canje_line + invoice_line.move_line_id).reconcile()
+            # Asientos anteriores a este cambio, sin vínculo: emparejar por orden.
+            unlinked = [line for line in debit_lines if not line.l10n_pe_letter_invoice_line_id]
+            pending = [line for line in self.invoice_line_ids.move_line_id if not line.reconciled]
+            for debit_line, credit_line in zip(unlinked, pending):
                 (debit_line + credit_line).reconcile()
 
     # Estado «Bancarizado»
