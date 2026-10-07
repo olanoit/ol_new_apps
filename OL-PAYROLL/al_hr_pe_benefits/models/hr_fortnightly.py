@@ -25,19 +25,19 @@ Cambios v19:
 * Las boletas quincenales llevan ``fortnightly_id``: todos los
   históricos de beneficios (5ta, utilidades, subsidios) las excluyen
   para no contar dos veces lo que la mensual ya declara.
-* TODO(fase4-revisar): la estructura ADE_QUINCENAL y sus reglas *_AQ
-  (BAS_AQ, TINGR_AQ, TAT_AQ, TDESN_AQ, NETO_AQ) aún no existen como
-  data en v19; las boletas quincenales se generan con la estructura
-  BASE. Al crear la data AQ: apuntar ``_get_quincena_structure`` a
-  ADE_QUINCENAL, sobreescribir ``_compute_basic_net`` para leer los
-  códigos *_AQ cuando ``fortnightly_id`` esté presente y portar el
-  onchange ``fortnightly_type`` (asistencia/porcentaje) que alternaba
-  ``use_worked_day_lines``.
+* Estructura propia «Adelanto quincenal» (ADE_QUINCENAL, reglas *_AQ):
+  adelanta un porcentaje del sueldo o los días trabajados, más la
+  asignación familiar si se pide; los aportes y la 5ta van en la boleta
+  mensual (solo se descuentan AFP/ONP a cuenta si la compañía lo pidió).
+  Antes las boletas quincenales usaban BASE y calculaban EsSalud, AFP y
+  5ta de medio mes que el mes volvía a calcular.
 * La planilla tabular y el wizard de novedades de empleados quedan
   para la Fase 7.
 """
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+
+from odoo.addons.al_hr_pe.tools import custom_round
 
 from .hr_benefits_engine import notify_success
 
@@ -108,9 +108,9 @@ class HrFortnightly(models.Model):
                 fields=', '.join(missing)))
 
     def _get_quincena_structure(self):
-        # TODO(fase4-revisar): usar la estructura ADE_QUINCENAL (reglas
-        # *_AQ) cuando exista su data; mientras tanto, BASE.
-        return self.env.ref('al_hr_pe.base_structure')
+        return self.env.ref('al_hr_pe_benefits.fortnightly_structure',
+                            raise_if_not_found=False) \
+            or self.env.ref('al_hr_pe.base_structure')
 
     # ------------------------------------------------------------------
     # Generación de boletas quincenales
@@ -197,9 +197,14 @@ class HrFortnightly(models.Model):
                 lambda slip: slip.employee_id == line.employee_id)[:1]
             if not monthly_slip:
                 continue
-            net_amount = sum(line.line_ids.filtered(
-                lambda rule_line: rule_line.salary_rule_id == net_rule
-            ).mapped('total'))
+            net_lines = line.line_ids.filtered(
+                lambda rule_line: rule_line.salary_rule_id == net_rule)
+            if not net_lines:
+                # La regla configurada es de otra estructura (p. ej. el NETO
+                # de BASE, de cuando la quincena se calculaba con BASE).
+                net_lines = line.line_ids.filtered(
+                    lambda rule_line: rule_line.code == 'NETO_AQ')
+            net_amount = sum(net_lines.mapped('total'))
             monthly_slip._set_pe_input_amount(input_quincena, net_amount)
 
             if quin_loan and quin_loan.input_id:
@@ -260,10 +265,65 @@ class HrPayslip(models.Model):
         'hr.fortnightly', string='Lote quincenal', readonly=True,
         copy=False, ondelete='cascade', index=True, check_company=True)
 
-    # TODO(fase4-revisar): al crear la data de la estructura
-    # ADE_QUINCENAL, sobreescribir _compute_basic_net para leer los
-    # códigos *_AQ (BAS_AQ, TINGR_AQ, TAT_AQ, TDESN_AQ, NETO_AQ) cuando
-    # la boleta tenga fortnightly_id (paridad hr_fortnightly v18).
+    # ------------------------------------------------------------------
+    # Reglas de la estructura «Adelanto quincenal» (*_AQ)
+    # ------------------------------------------------------------------
+    PAID_DAY_CODES = ('DLAB', 'DOM', 'FER', 'DVAC', 'DMED', 'DPAT', 'LCGH')
+
+    def _l10n_pe_fortnightly_param(self):
+        return self.env['hr.main.parameter'].search(
+            [('company_id', '=', self.company_id.id)], limit=1)
+
+    def _l10n_pe_fortnightly_share(self):
+        """Fracción del mes que se adelanta: la tasa configurada o los
+        días pagados de la quincena ÷ 30."""
+        self.ensure_one()
+        param = self._l10n_pe_fortnightly_param()
+        if param.fortnightly_type == 'days':
+            days = sum(self.worked_days_line_ids.filtered(
+                lambda wd: wd.code in self.PAID_DAY_CODES
+            ).mapped('number_of_days'))
+            return min(days, 15.0) / 30.0
+        return param.tasa if param else 0.5
+
+    def _l10n_pe_fortnightly_basic(self):
+        self.ensure_one()
+        return custom_round(
+            (self.version_id.wage or 0.0) * self._l10n_pe_fortnightly_share())
+
+    def _l10n_pe_fortnightly_family_allowance(self):
+        self.ensure_one()
+        param = self._l10n_pe_fortnightly_param()
+        if not param.compute_af or not self.l10n_pe_family_allowance_ok \
+                or self.version_id.l10n_pe_labor_regime == 'practicante':
+            return 0.0
+        return custom_round(
+            (self.family_allowance or 0.0) * self._l10n_pe_fortnightly_share())
+
+    def _l10n_pe_fortnightly_pension(self, base):
+        """AFP/ONP a cuenta, solo si la compañía lo pidió: reducen el
+        adelanto; el aporte que se declara es el de la boleta mensual."""
+        self.ensure_one()
+        param = self._l10n_pe_fortnightly_param()
+        membership = self.membership_id
+        if not param.compute_afiliacion or not membership or not base:
+            return 0.0
+        rate = self.l10n_pe_retirement_fund or 0.0
+        if membership.is_afp:
+            rate += (self.l10n_pe_commission or 0.0) \
+                + (0.0 if self.l10n_pe_is_older
+                   else self.l10n_pe_prima_insurance or 0.0)
+        return custom_round(base * rate / 100.0)
+
+    def _l10n_pe_fortnightly_discounts(self):
+        """Adelantos y préstamos de quincena importados a la boleta."""
+        self.ensure_one()
+        param = self._l10n_pe_fortnightly_param()
+        input_types = (param.quin_advance_id.input_id
+                       | param.quin_loan_id.input_id)
+        return sum(self.input_line_ids.filtered(
+            lambda line: line.input_type_id in input_types
+        ).mapped('amount'))
 
     def import_advance_quin(self):
         """Vuelca a la boleta quincenal los adelantos ``not payed`` de

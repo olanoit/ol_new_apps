@@ -17,7 +17,8 @@ cubría o que quedaron marcadas como `TODO(faseN-revisar)`.
 > asistencia D.S. 004-2006-TR (Asistencia ▸ Registro de asistencia).
 > (5) vacaciones y subsidios desde `hr.leave` (el tipo de ausencia lleva
 > su T21 y la ausencia aprobada crea sus suspensiones). (8) resumen de planilla en Excel y (9) cifrado de la boleta por correo.
-> Abiertos: (6) estructura de quincena y (10) cron de tasas SBS (no hay
+> (6) estructura propia del adelanto quincenal (ADE_QUINCENAL, reglas *_AQ).
+> Abierto: (10) cron de tasas SBS (no hay
 > asistente previo y la web de la SBS no se pudo leer de forma fiable).
 
 ## 1. Qué ya está cubierto

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Estructura del adelanto quincenal: el importe sale de Parámetros
+         principales ▸ Quincena (porcentaje del sueldo o días trabajados).
+         Los aportes y la 5ta se declaran en la boleta mensual; aquí solo
+         se descuentan AFP/ONP si la compañía lo pidió (a cuenta, reducen
+         el adelanto). La lógica vive en hr.payslip._l10n_pe_fortnightly_*:
+         los datos son noupdate. -->
+    <data noupdate="1">
+        <record id="fortnightly_structure" model="hr.payroll.structure">
+            <field name="name">Adelanto quincenal</field>
+            <field name="code">ADE_QUINCENAL</field>
+            <field name="type_id" ref="hr.structure_type_employee"/>
+            <field name="use_worked_day_lines" eval="True"/>
+            <field name="country_id" ref="base.pe"/>
+            <field name="rule_ids" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_BAS_AQ" model="hr.salary.rule">
+            <field name="name">Adelanto de remuneración</field>
+            <field name="code">BAS_AQ</field>
+            <field name="sequence">1</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_fortnightly_basic()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+        <record id="rule_AF_AQ" model="hr.salary.rule">
+            <field name="name">Adelanto de asignación familiar</field>
+            <field name="code">AF_AQ</field>
+            <field name="sequence">2</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_fortnightly_family_allowance()
+            </field>
+            <field name="category_id" ref="al_hr_pe.ING"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+        <record id="rule_TINGR_AQ" model="hr.salary.rule">
+            <field name="name">Total adelanto</field>
+            <field name="code">TINGR_AQ</field>
+            <field name="sequence">10</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = BAS_AQ + AF_AQ
+            </field>
+            <field name="category_id" ref="al_hr_pe.SUB"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+        <record id="rule_TAT_AQ" model="hr.salary.rule">
+            <field name="name">Aportes previsionales a cuenta</field>
+            <field name="code">TAT_AQ</field>
+            <field name="sequence">20</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_fortnightly_pension(TINGR_AQ)
+            </field>
+            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+        <record id="rule_TDESN_AQ" model="hr.salary.rule">
+            <field name="name">Adelantos y préstamos de quincena</field>
+            <field name="code">TDESN_AQ</field>
+            <field name="sequence">30</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_fortnightly_discounts()
+            </field>
+            <field name="category_id" ref="al_hr_pe.DES_NET"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+        <record id="rule_NETO_AQ" model="hr.salary.rule">
+            <field name="name">Neto quincenal</field>
+            <field name="code">NETO_AQ</field>
+            <field name="sequence">90</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = TINGR_AQ - TAT_AQ - TDESN_AQ
+            </field>
+            <field name="category_id" ref="al_hr_pe.SUB"/>
+            <field name="struct_id" ref="fortnightly_structure"/>
+        </record>
+    </data>
+    <!-- Neto quincenal e input del mensual por defecto (sin pisar lo que
+         la compañía haya configurado). -->
+    <function model="hr.main.parameter" name="_l10n_pe_set_fortnightly_defaults"/>
+</odoo>

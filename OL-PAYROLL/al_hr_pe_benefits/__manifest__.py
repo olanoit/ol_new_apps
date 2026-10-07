@@ -45,7 +45,7 @@ Fase 7.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '12.20261007',
+    'version': '13.20261007',
     'license': 'OPL-1',
     'depends': ['al_hr_pe', 'hr_holidays'],
     'data': [
@@ -64,6 +64,7 @@ Fase 7.
         'views/hr_utilities_views.xml',
         'views/hr_advances_loans_views.xml',
         'views/hr_fortnightly_views.xml',
+        'data/hr_fortnightly_structure_data.xml',
     ],
     'installable': True,
     'application': False,

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261007 — 07/10/2026
+
+- Adelanto quincenal con estructura propia («Adelanto quincenal»): adelanta el porcentaje configurado del sueldo o los días trabajados, más la asignación familiar si se pide, menos los adelantos y préstamos de quincena. Antes la quincena usaba la estructura general y calculaba EsSalud, AFP y 5ta de medio mes que la boleta mensual volvía a calcular. Los aportes van en el mes; solo se descuentan AFP/ONP a cuenta si la compañía lo activó.
+
 ## 12.20261007 — 07/10/2026
 
 - Corregido: «Vacaciones pagadas» no recibía su código T21 23 en las bases nuevas de Odoo 19 (el tipo cambió de identificador).

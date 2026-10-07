@@ -748,6 +748,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 13.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Adelanto quincenal con estructura propia («Adelanto quincenal»): adelanta el porcentaje configurado del sueldo o los días trabajados, más la asignación familiar si se pide, menos los adelantos y préstamos de quincena. Antes la quincena usaba la estructura general y calculaba EsSalud, AFP y 5ta de medio mes que la boleta mensual volvía a calcular. Los aportes van en el mes; solo se descuentan AFP/ONP a cuenta si la compañía lo activó."
   - version: 12.20261007
     fecha: 07/10/2026
     cambios:

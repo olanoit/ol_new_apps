@@ -182,9 +182,13 @@ class HrMainParameter(models.Model):
 
     # --- Adelanto quincenal ---
     fortnightly_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input quincena')
+        'hr.payslip.input.type', string='Input quincena',
+        default=lambda self: self.env.ref(
+            'al_hr_pe.input_type_ADE_QUIN', raise_if_not_found=False))
     net_fortnightly_sr_id = fields.Many2one(
-        'hr.salary.rule', string='R.S. neto quincenal')
+        'hr.salary.rule', string='R.S. neto quincenal',
+        default=lambda self: self.env.ref(
+            'al_hr_pe_benefits.rule_NETO_AQ', raise_if_not_found=False))
 
     # --- Criterio de cálculo de la quincena (reglas *_AQ) ---
     # Las reglas de quincena consultan estos campos: sin ellos, toda
@@ -217,6 +221,23 @@ class HrMainParameter(models.Model):
         help='Si está marcado, AFP/ONP se descuentan ya en la quincena; '
              'lo habitual es descontarlos íntegros en la boleta '
              'mensual.')
+
+    @api.model
+    def _l10n_pe_set_fortnightly_defaults(self):
+        """Neto quincenal (NETO_AQ) e input del mensual (ADE_QUIN) en los
+        parámetros que aún no los tienen."""
+        net_rule = self.env.ref('al_hr_pe_benefits.rule_NETO_AQ',
+                                raise_if_not_found=False)
+        input_type = self.env.ref('al_hr_pe.input_type_ADE_QUIN',
+                                  raise_if_not_found=False)
+        for param in self.search([]):
+            vals = {}
+            if net_rule and not param.net_fortnightly_sr_id:
+                vals['net_fortnightly_sr_id'] = net_rule.id
+            if input_type and not param.fortnightly_input_id:
+                vals['fortnightly_input_id'] = input_type.id
+            if vals:
+                param.write(vals)
 
     def check_gratification_values(self):
         self.ensure_one()
