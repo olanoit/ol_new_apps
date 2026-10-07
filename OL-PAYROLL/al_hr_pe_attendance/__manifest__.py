@@ -32,7 +32,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
-    'version': '9.20261007',
+    'version': '10.20261007',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',
@@ -55,6 +55,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
         'views/hr_attendance_monitor_views.xml',
         'views/hr_fotocheck_views.xml',
         'views/hr_tareaje_views.xml',
+        'views/hr_attendance_register_views.xml',
         'report/hr_employee_badge.xml',
     ],
     'installable': True,

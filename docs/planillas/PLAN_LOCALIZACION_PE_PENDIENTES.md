@@ -13,9 +13,11 @@ cubría o que quedaron marcadas como `TODO(faseN-revisar)`.
 > **Estado al 07/10/2026.** Hechos: (1) T-Registro, (2) derechohabientes,
 > (3) asignación familiar automática, (4) SCTR en BASE y construcción
 > (códigos PLAME por entidad: 0806/0810 salud, 0813/0814 pensión) y
-> (11) sobretasa nocturna (regla NOCT, tipo HTN). Abiertos: (5) vacaciones
-> y subsidios desde `hr.leave`, (6) estructura de quincena, (7) registro
-> de asistencia D.S. 004-2006-TR, (8) resumen Excel, (9) cifrado de la
+> (11) sobretasa nocturna (regla NOCT, tipo HTN) y (7) registro de
+> asistencia D.S. 004-2006-TR (Asistencia ▸ Registro de asistencia).
+> (5) vacaciones y subsidios desde `hr.leave` (el tipo de ausencia lleva
+> su T21 y la ausencia aprobada crea sus suspensiones). Abiertos: (6)
+> estructura de quincena, (8) resumen Excel, (9) cifrado de la
 > boleta y (10) cron de tasas SBS.
 
 ## 1. Qué ya está cubierto

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vacaciones pagadas → suspensión T21 «23» (solo si no tiene código:
+         respeta lo que el usuario haya configurado). -->
+    <function model="hr.leave.type" name="_l10n_pe_set_default_suspensions"/>
+</odoo>

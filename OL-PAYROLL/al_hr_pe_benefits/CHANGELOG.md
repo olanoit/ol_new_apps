@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261007 — 07/10/2026
+
+- Sin doble registro de ausencias: el tipo de ausencia lleva su código de suspensión PLAME (T21) y, al aprobarse, la ausencia crea sola sus suspensiones, una por mes. De ellas leen la liquidación vacacional, los subsidios y el .snl. Si se rechaza o cancela, desaparecen. Las vacaciones pagadas vienen configuradas con el código 23.
+
 ## 10.20261007 — 07/10/2026
 
 - La indemnización vacacional de la liquidación va a la boleta por su propio concepto (INDVAC, PLAME 0504) y tributa como renta de 5ta extraordinaria.

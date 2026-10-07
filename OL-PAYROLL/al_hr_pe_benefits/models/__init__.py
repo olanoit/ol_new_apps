@@ -3,6 +3,7 @@ from . import hr_benefits_engine
 from . import hr_cts
 from . import hr_gratification
 from . import hr_fifth_category
+from . import hr_leave
 from . import hr_vacation_rest
 from . import hr_vacation
 from . import hr_liquidation

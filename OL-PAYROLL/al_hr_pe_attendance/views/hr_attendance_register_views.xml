@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_attendance_register_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.attendance.register.wizard.form</field>
+        <field name="model">l10n_pe.hr.attendance.register.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <p class="text-muted">
+                    Registro permanente de control de asistencia que exige
+                    el D.S. 004-2006-TR: ingreso, salida y sobretiempo de
+                    cada trabajador, con los datos del empleador. Debe estar
+                    a disposición de la inspección y conservarse cinco años.
+                </p>
+                <group>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="employee_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_export" type="object" string="Descargar Excel"
+                            class="btn-primary"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_attendance_register_wizard_action" model="ir.actions.act_window">
+        <field name="name">Registro de asistencia (D.S. 004-2006-TR)</field>
+        <field name="res_model">l10n_pe.hr.attendance.register.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_hr_attendance_register"
+        name="Registro de asistencia"
+        parent="al_hr_pe_attendance.menu_hr_pe_attendance_root"
+        action="hr_attendance_register_wizard_action"
+        sequence="40"
+        groups="hr_payroll.group_hr_payroll_user"/>
+
+</odoo>

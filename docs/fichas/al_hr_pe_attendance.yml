@@ -541,6 +541,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 10.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Registro de control de asistencia (D.S. 004-2006-TR) en Excel: razón social y RUC del empleador, documento y nombre del trabajador, ingreso, salida e inicio y fin del sobretiempo de cada día, listo para una inspección de SUNAFIL. Usa el mismo cálculo que el tareaje, así que cuadra con la boleta."
   - version: 9.20261007
     fecha: 07/10/2026
     cambios:

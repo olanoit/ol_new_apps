@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261007 — 07/10/2026
+
+- Registro de control de asistencia (D.S. 004-2006-TR) en Excel: razón social y RUC del empleador, documento y nombre del trabajador, ingreso, salida e inicio y fin del sobretiempo de cada día, listo para una inspección de SUNAFIL. Usa el mismo cálculo que el tareaje, así que cuadra con la boleta.
+
 ## 9.20261007 — 07/10/2026
 
 - Turnos nocturnos con la convención estándar de Odoo (lunes 22-24 y martes 00-06): el turno se lee completo. Antes el lunes salía con 6 h extra falsas y el sábado como falta.

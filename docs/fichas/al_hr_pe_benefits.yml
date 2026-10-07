@@ -748,6 +748,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 11.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Sin doble registro de ausencias: el tipo de ausencia lleva su código de suspensión PLAME (T21) y, al aprobarse, la ausencia crea sola sus suspensiones, una por mes. De ellas leen la liquidación vacacional, los subsidios y el .snl. Si se rechaza o cancela, desaparecen. Las vacaciones pagadas vienen configuradas con el código 23."
   - version: 10.20261007
     fecha: 07/10/2026
     cambios:
