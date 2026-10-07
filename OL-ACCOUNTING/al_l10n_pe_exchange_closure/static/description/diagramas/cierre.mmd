@@ -1,8 +1,8 @@
 flowchart TD
-  A[Nuevo cierre: mes, año, moneda<br/>y T.C. del último o penúltimo día] --> B[Traer T.C.]
+  A[Nuevo cierre: mes, año, moneda<br/>y T.C. al cierre del último día] --> B[Traer T.C.]
   B --> C{¿Hay T.C. registrado<br/>en esa fecha?}
   C -- Sí --> F[Compra y venta en el cierre]
-  C -- No --> D[Intenta descargarlo de apis.net.pe]
+  C -- No --> D[Intenta descargarlo del BCRP<br/>y de apis.net.pe]
   D --> E{¿Hay ahora T.C. en esa fecha<br/>o en una anterior?}
   E -- No --> X[Error: registre el T.C. a mano]
   E -- "Sí, de esa fecha" --> F

@@ -146,21 +146,36 @@ class TestExchangeClosure(TransactionCase):
     # ------------------------------------------------------------------ #
     # Fechas y tipo de cambio                                             #
     # ------------------------------------------------------------------ #
-    def test_dates_last_and_previous_day(self):
+    def test_dates_close_last_and_previous_day(self):
         closure = self._closure('02', 2024, 3.70, 3.72)
         self.assertEqual(closure.date, date(2024, 2, 29), 'año bisiesto')
-        self.assertEqual(closure.rate_date, date(2024, 2, 29))
+        self.assertEqual(closure.rate_day, 'close')
+        self.assertEqual(closure.rate_date, date(2024, 3, 1),
+                         'el cierre SBS del 29/02 lo publica SUNAT el 01/03')
         self.assertEqual(closure.name, 'Febrero 2024')
+        closure.rate_day = 'last'
+        self.assertEqual(closure.rate_date, date(2024, 2, 29))
         closure.rate_day = 'previous'
         self.assertEqual(closure.rate_date, date(2024, 2, 28))
         self.assertEqual(closure.date, date(2024, 2, 29),
                          'la fecha del asiento sigue siendo el fin de mes')
 
+    def test_december_uses_the_closing_rate_published_in_january(self):
+        """Cierre 2014 de SUNAT: 2.981 / 2.989 = SBS 31/12, publicado el 01/01."""
+        Rate = self.env['res.currency.rate']
+        for day, purchase, sale in (('2014-12-31', 2.986, 2.990),
+                                    ('2015-01-01', 2.981, 2.989)):
+            Rate.create({'currency_id': self.usd.id, 'company_id': self.company.id,
+                         'name': day, 'rate_purchase': purchase, 'rate_sale': sale})
+        closure = self._closure('12', 2014, 0.0, 0.0)
+        closure.action_fetch_rate()
+        self.assertEqual((closure.rate_purchase, closure.rate_sale), (2.981, 2.989))
+
     def test_fetch_rate_from_registry(self):
         self.env['res.currency.rate'].create({
             'currency_id': self.usd.id,
             'company_id': self.company.id,
-            'name': '2024-03-31',
+            'name': '2024-04-01',
             'rate': 1 / 3.760,
             'rate_purchase': 3.738,
             'rate_sale': 3.760,
@@ -169,6 +184,25 @@ class TestExchangeClosure(TransactionCase):
         closure.action_fetch_rate()
         self.assertAlmostEqual(closure.rate_purchase, 3.738, places=3)
         self.assertAlmostEqual(closure.rate_sale, 3.760, places=3)
+
+    def test_fetch_rate_downloads_from_bcrp_first(self):
+        """Sin tasa registrada se descarga del BCRP (sin token) antes que de apis.net.pe."""
+        from unittest.mock import patch
+        Currency = type(self.env['res.currency'])
+        closure = self._closure('05', 2019, 0.0, 0.0)
+
+        def fake_bcrp(currency, date_from, date_to, keep_manual=False):
+            self.env['res.currency.rate'].create({
+                'currency_id': self.usd.id, 'company_id': self.company.id,
+                'name': date_from, 'rate_purchase': 3.371, 'rate_sale': 3.377})
+            return 1
+        with patch.object(Currency, 'l10n_pe_update_range_bcrp', autospec=True,
+                          side_effect=fake_bcrp) as bcrp, \
+                patch.object(Currency, 'l10n_pe_update_date_apis', autospec=True) as apis:
+            closure.action_fetch_rate()
+        self.assertEqual(bcrp.call_args.args[1:3], (date(2019, 6, 1), date(2019, 6, 1)))
+        apis.assert_not_called()
+        self.assertEqual((closure.rate_purchase, closure.rate_sale), (3.371, 3.377))
 
     # ------------------------------------------------------------------ #
     # Cálculo del ajuste                                                  #

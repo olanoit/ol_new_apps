@@ -22,7 +22,7 @@ Cómo funciona
 -------------
 1. Se marcan las cuentas de balance en el plan contable como *cierre de
    T.C. sin detalle* (consolidado por cuenta) o *con detalle* (por socio).
-2. Cada mes se crea un cierre, se trae el T.C. de la fecha de balance y se
+2. Cada mes se crea un cierre, se trae el T.C. al cierre de la fecha de balance y se
    calcula.
 3. El ajuste de cada grupo es::
 
@@ -64,7 +64,7 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '4.20260828',
+    'version': '5.20261007',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

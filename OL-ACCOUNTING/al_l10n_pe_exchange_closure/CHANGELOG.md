@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_exchange_closure.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261007 — 07/10/2026
+
+- Corregido: el cierre tomaba el T.C. que SUNAT muestra con fecha del último día del mes, que es el cierre del día hábil anterior. Ahora usa por defecto el cierre de operaciones del último día, como manda el art. 34 del Reglamento de la LIR (SUNAT lo muestra con fecha del día siguiente: el cierre 2014, 2.981 / 2.989, figura el 01/01/2015). Las opciones anteriores siguen disponibles.
+- Traer T.C. descarga primero del BCRP, sin token, y solo después intenta apis.net.pe.
+- Los cierres sin contabilizar pasan a la opción nueva y hay que volver a traer el T.C.; los contabilizados no cambian.
+
 ## 4.20260828 — 27/09/2026
 
 - Si se cambia el mes, la moneda, los tipos de cambio o la analítica de un cierre ya calculado, vuelve a borrador y hay que calcularlo de nuevo: ya no se puede contabilizar un cálculo desfasado.

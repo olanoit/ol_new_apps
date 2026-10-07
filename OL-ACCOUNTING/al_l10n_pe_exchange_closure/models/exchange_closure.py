@@ -80,13 +80,20 @@ class L10nPeExchangeClosure(models.Model):
     # ------------------------------------------------------------------ #
     rate_day = fields.Selection(
         selection=[
-            ('last', 'Último día del mes'),
-            ('previous', 'Penúltimo día del mes'),
+            ('close', 'Cierre del último día (SBS)'),
+            ('last', 'Publicado el último día del mes'),
+            ('previous', 'Publicado el penúltimo día del mes'),
         ],
-        string='T.C. del día', default='last', required=True,
-        help='Fecha cuyo tipo de cambio se usa. SUNAT publica el T.C. del '
-             'día siguiente al de la operación, por lo que algunas empresas '
-             'toman el penúltimo día del mes como cierre.')
+        string='T.C. del día', default='close', required=True,
+        help='Qué tipo de cambio se aplica.\n'
+             '· Cierre del último día (recomendado): el promedio ponderado '
+             'compra/venta al cierre de operaciones de la fecha del balance, '
+             'que exige el art. 34 del Reglamento de la LIR. SUNAT lo muestra '
+             'en su página como T.C. del día siguiente: el cierre 2014 '
+             '(2.981 / 2.989) figura el 01/01/2015.\n'
+             '· Publicado el último día: el T.C. que SUNAT muestra con fecha '
+             'del último día, que es el cierre del día hábil anterior.\n'
+             '· Publicado el penúltimo día: un día antes todavía.')
     rate_date = fields.Date(
         string='Fecha del T.C.', compute='_compute_dates', store=True)
     rate_purchase = fields.Float(
@@ -177,9 +184,10 @@ class L10nPeExchangeClosure(models.Model):
                 first = date(closure.year, int(closure.month), 1)
                 last = first + relativedelta(months=1, days=-1)
                 closure.date = last
-                closure.rate_date = (
-                    last if closure.rate_day == 'last'
-                    else last - relativedelta(days=1))
+                # Las tasas se guardan con la fecha en que SUNAT las publica:
+                # el cierre SBS del último día lleva la fecha del día siguiente.
+                closure.rate_date = last + relativedelta(days={
+                    'close': 1, 'last': 0, 'previous': -1}[closure.rate_day or 'close'])
             else:
                 closure.date = False
                 closure.rate_date = False
@@ -271,9 +279,11 @@ class L10nPeExchangeClosure(models.Model):
     def action_fetch_rate(self):
         """Trae el T.C. compra/venta de la fecha de cierre.
 
-        Si no hay registro para esa fecha se intenta descargarlo (apis.net.pe
-        vía ``al_l10n_pe_currency``) antes de tomar el último publicado.
+        Si no hay registro para esa fecha se descarga (BCRP, sin token; luego
+        apis.net.pe) vía ``al_l10n_pe_currency`` antes de tomar el último
+        publicado.
         """
+        usd = self.env.ref('base.USD', raise_if_not_found=False)
         for closure in self:
             closure._check_editable()
             if not closure.rate_date:
@@ -281,10 +291,10 @@ class L10nPeExchangeClosure(models.Model):
             rate = closure._find_rate_record()
             # la descarga de al_l10n_pe_currency solo trae el dólar: para
             # otra moneda se usa lo registrado
-            if ((not rate or rate.name != closure.rate_date)
-                    and closure.currency_id == self.env.ref(
-                        'base.USD', raise_if_not_found=False)):
-                closure.currency_id.l10n_pe_update_date_apis(closure.rate_date)
+            if (not rate or rate.name != closure.rate_date) and closure.currency_id == usd:
+                currency = closure.currency_id.with_company(closure.company_id)
+                if not currency.l10n_pe_update_range_bcrp(closure.rate_date, closure.rate_date):
+                    currency.l10n_pe_update_date_apis(closure.rate_date)
                 rate = closure._find_rate_record()
             if not rate:
                 raise UserError(_(

@@ -66,11 +66,20 @@ solo el delta, nunca se duplica.
 3. **Perú → Cierre de tipo de cambio** → nuevo → mes y año → **Traer T.C.**
    → **Calcular** → revisar el detalle y la vista previa → **Contabilizar**.
 
-El botón *Traer T.C.* busca el tipo de cambio de la fecha de balance en
-`res.currency.rate`; si no existe intenta descargarlo con
-`al_l10n_pe_currency` y, en última instancia, toma el último publicado
-dejando constancia en el chatter. El selector *T.C. del día* permite usar el
-penúltimo día del mes, por la regla de publicación diferida de SUNAT.
+El botón *Traer T.C.* busca en `res.currency.rate` el tipo de cambio **al
+cierre de operaciones de la fecha del balance** (art. 34 del Reglamento de la
+LIR). Las tasas se guardan con la fecha en que SUNAT las publica, que es el día
+siguiente al cierre SBS: el cierre de enero se busca con fecha 1 de febrero.
+Lo comprobé con el cierre 2014 que publica SUNAT (2.981 / 2.989), que es el
+cierre SBS del 31/12/2014 y figura en la página diaria con fecha 01/01/2015.
+
+Si la tasa no existe, intenta descargarla con `al_l10n_pe_currency` (primero
+del BCRP, sin token, y luego de apis.net.pe). En última instancia toma la
+última publicada y lo deja anotado en el chatter.
+
+El selector *T.C. del día* conserva las opciones anteriores («publicado el
+último día» y «el penúltimo»), que toman el cierre de uno o dos días hábiles
+antes.
 
 ## Distribución analítica
 

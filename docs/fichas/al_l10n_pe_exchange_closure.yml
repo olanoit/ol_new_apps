@@ -73,10 +73,10 @@ flujos:
       Cancelar.
     mermaid: |
       flowchart TD
-        A[Nuevo cierre: mes, año, moneda<br/>y T.C. del último o penúltimo día] --> B[Traer T.C.]
+        A[Nuevo cierre: mes, año, moneda<br/>y T.C. al cierre del último día] --> B[Traer T.C.]
         B --> C{¿Hay T.C. registrado<br/>en esa fecha?}
         C -- Sí --> F[Compra y venta en el cierre]
-        C -- No --> D[Intenta descargarlo de apis.net.pe]
+        C -- No --> D[Intenta descargarlo del BCRP<br/>y de apis.net.pe]
         D --> E{¿Hay ahora T.C. en esa fecha<br/>o en una anterior?}
         E -- No --> X[Error: registre el T.C. a mano]
         E -- "Sí, de esa fecha" --> F
@@ -170,7 +170,7 @@ pasos:
       cuenta o por cuenta y socio: saldo en M.E., tipo y valor del T.C., saldo
       contable, saldo revaluado y ajuste. Arriba, **Resultado del mes**.
     puntos:
-      - "**T.C. del día**: último o penúltimo día del mes."
+      - "**T.C. del día**: por defecto, el cierre de operaciones del último día del mes (art. 34 del Reglamento de la LIR), que SUNAT publica con fecha del día siguiente; las otras opciones toman el publicado el último o el penúltimo día."
       - "Sin tipo en esa fecha intenta descargarlo y, si no, usa el último anterior y lo anota en el historial (a la derecha)."
       - Compra y venta siguen editables mientras el cierre no esté contabilizado.
       - Los grupos totalmente saldados no aparecen.
@@ -263,7 +263,7 @@ campos:
       - [Mes / Año, Periodo del cierre., Mes y año actuales, "Título «Julio 2026»; un cierre vigente por mes, moneda y compañía"]
       - [Fecha de cierre, Último día del mes., Calculada, Fecha de corte de los saldos y del asiento]
       - [Moneda extranjera, Moneda de las partidas a revaluar., USD, Debe ser distinta del sol]
-      - [T.C. del día, Último día del mes o penúltimo día del mes., Último día del mes, Fecha del T.C.]
+      - [T.C. del día, "Cierre del último día (SBS), publicado el último día o publicado el penúltimo día.", Cierre del último día (SBS), "Fecha del T.C.: el día siguiente al fin de mes en la opción por defecto"]
       - [Fecha del T.C., Fecha cuyo tipo se busca., Calculada, "—"]
       - [T.C. compra, Tipo para las cuentas de activo., "Vacío; lo llena «Traer T.C.»", Editable hasta contabilizar]
       - [T.C. venta, Tipo para las cuentas de pasivo., "Vacío; lo llena «Traer T.C.»", Editable hasta contabilizar]
@@ -338,7 +338,7 @@ funcionalidades:
       - Filtro, columna opcional y menú con las cuentas incluidas en el cierre.
   - grupo: Cálculo
     items:
-      - Tipo de cambio del último o penúltimo día del mes, con respaldo en el último publicado.
+      - Tipo de cambio al cierre de operaciones del último día del mes, con respaldo en el último publicado.
       - Saldos acumulados hasta la fecha de cierre, auto-correctores entre meses.
       - Detalle con saldo en M.E., saldo contable, saldo revaluado y ajuste.
       - Acceso a los apuntes que forman cada saldo.
@@ -440,6 +440,12 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 5.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: el cierre tomaba el T.C. que SUNAT muestra con fecha del último día del mes, que es el cierre del día hábil anterior. Ahora usa por defecto el cierre de operaciones del último día, como manda el art. 34 del Reglamento de la LIR (SUNAT lo muestra con fecha del día siguiente: el cierre 2014, 2.981 / 2.989, figura el 01/01/2015). Las opciones anteriores siguen disponibles."
+      - "Traer T.C. descarga primero del BCRP, sin token, y solo después intenta apis.net.pe."
+      - "Los cierres sin contabilizar pasan a la opción nueva y hay que volver a traer el T.C.; los contabilizados no cambian."
   - version: 4.20260828
     fecha: 27/09/2026
     cambios:

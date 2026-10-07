@@ -65,12 +65,13 @@ log('T.C. por naturaleza',
     and acc_payable._l10n_pe_closing_rate_type() == 'sale',
     'activo→compra, pasivo→venta')
 
-# T.C. de fin de mes (SUNAT no publica sábados/domingos; se registran aquí
-# para que la comprobación sea reproducible sin salir a internet).
-for rate_date, purchase, sale in ((date(2026, 6, 30), 3.410, 3.418),
-                                  (date(2026, 7, 31), 3.395, 3.404)):
+# T.C. de cierre de fin de mes: el cierre SBS del último día se registra con
+# la fecha del día siguiente, como lo publica SUNAT. Se registran aquí para
+# que la comprobación sea reproducible sin salir a internet.
+for rate_date, purchase, sale in ((date(2026, 7, 1), 3.410, 3.418),
+                                  (date(2026, 8, 1), 3.395, 3.404)):
     usd._l10n_pe_upsert_rate(rate_date, purchase, sale, 'manual')
-log('T.C. de cierre registrados', True, '30/06 3.410-3.418 · 31/07 3.395-3.404')
+log('T.C. de cierre registrados', True, 'cierre 30/06 3.410-3.418 · cierre 31/07 3.395-3.404')
 
 partner_cli = get_or_create('res.partner', [('name', '=', 'DEMO TC Cliente')],
                             {'name': 'DEMO TC Cliente'})
