@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261007 — 07/10/2026
+
+- Corregido: los códigos PLAME del SCTR estaban invertidos (salud iba como 0805, que es pensión). Ahora usa los mismos de la estructura general, según la entidad contratada.
+
 ## 15.20261007 — 07/10/2026
 
 - El dominical (D.S.O.) ya no se infla en una semana con feriado trabajado: el feriado trabajado se paga aparte y no genera otro sexto.

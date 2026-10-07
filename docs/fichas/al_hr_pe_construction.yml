@@ -598,6 +598,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 16.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: los códigos PLAME del SCTR estaban invertidos (salud iba como 0805, que es pensión). Ahora usa los mismos de la estructura general, según la entidad contratada."
   - version: 15.20261007
     fecha: 07/10/2026
     cambios:

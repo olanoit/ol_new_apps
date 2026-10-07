@@ -38,6 +38,23 @@
                                 </group>
                             </group>
                         </page>
+                        <page string="SCTR" name="sctr">
+                            <group>
+                                <group string="Salud">
+                                    <field name="l10n_pe_sctr_health_entity"/>
+                                    <field name="l10n_pe_sctr_health_rate"/>
+                                </group>
+                                <group string="Pensión">
+                                    <field name="l10n_pe_sctr_pension_entity"/>
+                                    <field name="l10n_pe_sctr_pension_rate"/>
+                                </group>
+                            </group>
+                            <div class="text-muted">
+                                Solo aporta el trabajador con la cobertura
+                                marcada en su contrato (pestaña T-Registro).
+                                La tasa la fija la aseguradora en el contrato.
+                            </div>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

@@ -361,7 +361,7 @@ result = payslip._l10n_pe_construction_employer_rate(
         <record id="rule_SCTRS" model="hr.salary.rule">
             <field name="name">SCTR salud</field>
             <field name="code">SCTRS</field>
-            <field name="sunat_code">0805</field>
+            <field name="sunat_code">0806</field>
             <field name="sequence">196</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>
@@ -376,7 +376,7 @@ result = payslip._l10n_pe_construction_sctr('health', TREM)
         <record id="rule_SCTRP" model="hr.salary.rule">
             <field name="name">SCTR pensión</field>
             <field name="code">SCTRP</field>
-            <field name="sunat_code">0806</field>
+            <field name="sunat_code">0814</field>
             <field name="sequence">197</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="condition_select">none</field>

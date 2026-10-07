@@ -43,11 +43,7 @@ class HrVersion(models.Model):
              'se suman solas.',
         groups='hr.group_hr_user')
 
-    l10n_pe_sctr_health = fields.Boolean(
-        string='Cobertura SCTR salud',
-        help='El T-Registro solo pide la cobertura de pensión; la de '
-             'salud hace falta para calcular su aporte en planilla.',
-        groups='hr.group_hr_user')
+    # l10n_pe_sctr_health vive en al_hr_pe (el SCTR no es solo de obra).
     l10n_pe_daily_wage = fields.Monetary(
         string='Jornal básico', compute='_compute_l10n_pe_construction',
         currency_field='currency_id',

@@ -911,6 +911,38 @@ for aporte in version.contributions_ids:
             <field name="category_id" ref="APOR_EMP"/>
             <field name="struct_id" ref="base_structure"/>
         </record>
+        <!-- SCTR (D.S. 003-98-SA): solo para quien tiene la cobertura
+             marcada; base = remuneración asegurable. El código PLAME
+             final lo pone el exportador según la entidad contratada
+             (0806/0810 salud, 0813/0814 pensión). -->
+        <record model="hr.salary.rule" id="salary_rule_SCTRS">
+            <field name="name">SCTR salud</field>
+            <field name="code">SCTRS</field>
+            <field name="sunat_code">0806</field>
+            <field name="sequence">93</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_sctr('health', AESSALUD)
+            </field>
+            <field name="category_id" ref="APOR_EMP"/>
+            <field name="struct_id" ref="base_structure"/>
+        </record>
+        <record model="hr.salary.rule" id="salary_rule_SCTRP">
+            <field name="name">SCTR pensión</field>
+            <field name="code">SCTRP</field>
+            <field name="sunat_code">0814</field>
+            <field name="sequence">94</field>
+            <field name="appears_on_payslip" eval="True"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_sctr('pension', AESSALUD)
+            </field>
+            <field name="category_id" ref="APOR_EMP"/>
+            <field name="struct_id" ref="base_structure"/>
+        </record>
         <record model="hr.salary.rule" id="salary_rule_AEM">
             <field name="name">Total Aportes Empleador</field>
             <field name="code">AEM</field>

@@ -43,6 +43,10 @@ from math import modf
 from odoo import models
 from odoo.exceptions import UserError
 
+#: Códigos PLAME del SCTR (tabla 22) que se reasignan por entidad.
+SCTR_HEALTH_CODES = ('0806', '0810')
+SCTR_PENSION_CODES = ('0805', '0813', '0814')
+
 
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
@@ -192,6 +196,12 @@ class HrPayslipRun(models.Model):
                     # 0804/0607 fuera de rama 1 y sin rama 2 aplicable,
                     # o previsional sin afiliación (INNER JOIN v18).
                     continue
+                # SCTR: el código depende de la entidad contratada por la
+                # compañía (salud 0806/0810, pensión 0813/0814).
+                if code in SCTR_HEALTH_CODES:
+                    code = slip.company_id._l10n_pe_sctr_sunat_code('health')
+                elif code in SCTR_PENSION_CODES:
+                    code = slip.company_id._l10n_pe_sctr_sunat_code('pension')
                 key = (dni, code)
                 vals = grouped.setdefault(key, {
                     'doc_type': doc_type,

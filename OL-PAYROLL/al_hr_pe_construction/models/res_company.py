@@ -28,15 +28,7 @@ class ResCompany(models.Model):
     l10n_pe_construction_essalud_rate = fields.Float(
         string='EsSalud (%)', digits=(5, 2), default=9.0,
         help='Aporte del empleador sobre la remuneración computable.')
-    l10n_pe_sctr_health_rate = fields.Float(
-        string='SCTR salud (%)', digits=(5, 2),
-        help='Seguro Complementario de Trabajo de Riesgo, cobertura de '
-             'salud (D.S. 003-98-SA). La tasa la fija la entidad '
-             'aseguradora en el contrato, no la norma: hay que ponerla.')
-    l10n_pe_sctr_pension_rate = fields.Float(
-        string='SCTR pensión (%)', digits=(5, 2),
-        help='Cobertura de invalidez y sepelio del SCTR. La tasa la fija '
-             'la ONP o la compañía de seguros contratada.')
+    # Las tasas del SCTR viven en al_hr_pe: también las usa la BASE.
     l10n_pe_conafovicer_account = fields.Char(
         string='Cuenta CONAFOVICER (Banco de la Nación)',
         help='Cuenta en la que se deposita la retención, hasta el día 15 '

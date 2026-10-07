@@ -677,6 +677,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 22.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "SCTR (D.S. 003-98-SA) en la estructura general: reglas de salud y pensión para quien tiene la cobertura marcada, con tasas y entidad contratada en Parámetros principales ▸ SCTR. El PLAME declara el código de la entidad: salud 0806 (EsSalud) u 0810 (EPS), pensión 0813 (ONP) u 0814 (aseguradora)."
   - version: 21.20261007
     fecha: 07/10/2026
     cambios:

@@ -149,6 +149,20 @@ class HrPayslip(models.Model):
             else:
                 slip.l10n_pe_commission = membership.fixed_commision
 
+    def _l10n_pe_sctr(self, coverage, base):
+        """Aporte SCTR (D.S. 003-98-SA) de ``coverage`` ('health' o
+        'pension') sobre ``base``: solo para quien tiene esa cobertura
+        marcada; es un seguro por actividad de riesgo, no un aporte de
+        toda la planilla."""
+        self.ensure_one()
+        version = self.version_id
+        covered = (version.l10n_pe_sctr_pension if coverage == 'pension'
+                   else version.l10n_pe_sctr_health)
+        rate = self.company_id['l10n_pe_sctr_%s_rate' % coverage]
+        if not covered or not rate or not base:
+            return 0.0
+        return round_half_up(base * rate / 100.0, 2)
+
     def _get_localdict(self):
         """Las fórmulas PE leen ``inputs['CODIGO'].amount`` para conceptos
         opcionales (bonos, adelantos…): un input ausente vale 0 (semántica

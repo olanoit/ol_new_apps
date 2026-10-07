@@ -22,6 +22,16 @@ class HrMainParameter(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
+    # SCTR: se guardan en la compañía (también los usa construcción) y
+    # se editan desde aquí.
+    l10n_pe_sctr_health_rate = fields.Float(
+        related='company_id.l10n_pe_sctr_health_rate', readonly=False)
+    l10n_pe_sctr_pension_rate = fields.Float(
+        related='company_id.l10n_pe_sctr_pension_rate', readonly=False)
+    l10n_pe_sctr_health_entity = fields.Selection(
+        related='company_id.l10n_pe_sctr_health_entity', readonly=False)
+    l10n_pe_sctr_pension_entity = fields.Selection(
+        related='company_id.l10n_pe_sctr_pension_entity', readonly=False)
     rmv = fields.Float(
         string='R.M.V.', default=1230.0,
         help='Respaldo: la boleta toma la RMV de la tabla «RMV» vigente al '

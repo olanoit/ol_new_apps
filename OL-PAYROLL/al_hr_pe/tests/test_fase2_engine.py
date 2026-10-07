@@ -466,3 +466,33 @@ class TestFase2Engine(TransactionCase):
         self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 900.0)
         self.assertAlmostEqual(self._line(slip, 'REAQ').total, reaq + 900.0)
         self.assertAlmostEqual(self._line(slip, 'AAFP').total, aafp)
+
+    def test_sctr_in_base_structure(self):
+        """SCTR (D.S. 003-98-SA) también en la estructura general: solo
+        con la cobertura marcada, y el .rem lo declara con el código de
+        la entidad contratada (0806/0810 salud, 0813/0814 pensión)."""
+        self._set_dni()
+        self.company.write({
+            'l10n_pe_sctr_health_rate': 1.5, 'l10n_pe_sctr_pension_rate': 1.0,
+            'l10n_pe_sctr_health_entity': 'eps',
+            'l10n_pe_sctr_pension_entity': 'onp'})
+        slip = self._compute_slip()
+        self.assertFalse(self._line(slip, 'SCTRS').total, 'sin cobertura')
+        self.employee.version_id.write({
+            'l10n_pe_sctr_health': True, 'l10n_pe_sctr_pension': True})
+        slip.compute_sheet()
+        base = self._line(slip, 'AESSALUD').total
+        self.assertAlmostEqual(self._line(slip, 'SCTRS').total,
+                               round(base * 0.015, 2))
+        self.assertAlmostEqual(self._line(slip, 'SCTRP').total,
+                               round(base * 0.01, 2))
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote SCTR', 'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31), 'company_id': self.company.id})
+        slip.payslip_run_id = run
+        codes = {line.split('|')[2]
+                 for line in self._attachment_text(run.export_plame()).split('\r\n')
+                 if line}
+        self.assertIn('0810', codes)
+        self.assertIn('0813', codes)
+        self.assertNotIn('0806', codes)

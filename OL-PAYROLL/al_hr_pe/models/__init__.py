@@ -6,6 +6,7 @@ from . import l10n_pe_hr_address
 from . import hr_membership
 from . import hr_uit
 from . import hr_period
+from . import res_company
 from . import hr_main_parameter
 from . import hr_employee
 from . import hr_payslip

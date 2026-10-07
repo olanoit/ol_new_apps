@@ -422,19 +422,8 @@ class HrPayslip(models.Model):
         return round_percent(base, rate)
 
     def _l10n_pe_construction_sctr(self, coverage, base):
-        """SCTR: solo si el trabajador tiene esa cobertura marcada.
-
-        Es un seguro por actividad de riesgo, no un aporte general: se
-        paga por quien está expuesto, no por toda la planilla.
-        """
-        self.ensure_one()
-        version = self.version_id
-        covered = (version.l10n_pe_sctr_pension if coverage == 'pension'
-                   else version.l10n_pe_sctr_health)
-        if not covered:
-            return 0.0
-        return self._l10n_pe_construction_employer_rate(
-            'l10n_pe_sctr_%s_rate' % coverage, base)
+        """SCTR de obra: el mismo cálculo que la BASE (al_hr_pe)."""
+        return self._l10n_pe_sctr(coverage, base)
 
     def _l10n_pe_construction_bonus(self, code, days=None):
         """Importe de una bonificación del catálogo en el periodo.
