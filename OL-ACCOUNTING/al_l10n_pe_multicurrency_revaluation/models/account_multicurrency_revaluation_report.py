@@ -8,7 +8,9 @@ cuentas sin tipo de cambio peruano y otra por cada tipo (compra, venta)—,
 cada una restringida a sus cuentas con ``forced_domain`` y con sus propias
 tasas, y se suman los resultados por clave de agrupación.
 """
-from odoo import api, models
+from datetime import timedelta
+
+from odoo import api, fields, models
 from odoo.tools import float_is_zero
 
 RATE_COLUMN = 'rate_used'
@@ -47,6 +49,11 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
                 if not float_is_zero(
                     float(values['rate']) - db_rates[int(key)] / company_rate, 20)
             }
+        # Art. 34 del Reglamento de la LIR: compra y venta al cierre de
+        # operaciones de la fecha del informe. Las tasas llevan la fecha en que
+        # SUNAT las publica, el día siguiente al cierre SBS (el cierre 2014,
+        # 2.981 / 2.989, figura el 01/01/2015): se busca un día después.
+        closing_date = fields.Date.to_date(date_to) + timedelta(days=1)
         Account = self.env['account.account'].with_company(company)
         groups = []
         for rate_type in ('purchase', 'sale'):
@@ -56,7 +63,7 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
             ])
             if not accounts:
                 continue
-            values = currencies._l10n_pe_revaluation_rates(company, date_to, rate_type)
+            values = currencies._l10n_pe_revaluation_rates(company, closing_date, rate_type)
             values = {currency_id: value for currency_id, value in values.items()
                       if str(currency_id) not in custom}
             groups.append({

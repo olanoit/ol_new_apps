@@ -155,6 +155,10 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: 3.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: las cuentas con T.C. compra o venta se revaluaban con el que SUNAT muestra con fecha del informe, que es el cierre del día hábil anterior. Ahora usan el cierre de operaciones de la fecha del informe (art. 34 del Reglamento de la LIR), que SUNAT publica con fecha del día siguiente."
   - version: 2.20260916
     fecha: 27/09/2026
     cambios:

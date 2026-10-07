@@ -9,7 +9,7 @@ de moneda no realizadas)** para compañías peruanas. Migración a Odoo 19 de
 | Pieza | Comportamiento |
 |---|---|
 | Cuenta contable | Pestaña Contabilidad ▸ grupo **Ganancias/pérdidas no realizadas (PE)**: **Compra** o **Venta**. Solo aparece (y es obligatorio) en cuentas por cobrar/pagar y en cuentas con moneda extranjera de compañías peruanas. |
-| Informe | Cada cuenta se revalúa con el `rate_purchase` o el `rate_sale` (de `al_l10n_pe_currency`) vigente a la fecha del informe. Sin ese valor, usa el T.C. genérico. |
+| Informe | Cada cuenta se revalúa con el `rate_purchase` o el `rate_sale` (de `al_l10n_pe_currency`) al cierre de operaciones de la fecha del informe (art. 34 del Reglamento de la LIR): como SUNAT lo publica al día siguiente, se toma la tasa registrada con fecha del día siguiente o, si no la hay, la última anterior. Sin ese valor, usa el T.C. genérico. |
 | Columna **T.C.** | T.C. aplicado en soles por unidad (`S/ 3.720`); en blanco en los totales que mezclan tipos de cambio. |
 | Cabecera de moneda | `USD (1 USD = S/ 3.700)` en lugar de `USD (1 PEN = 0.27027 USD)`. |
 | Asiento de ajuste | Cada provisión cita el T.C. de su cuenta: `Provisión de USD (T.C. S/ 3.720)`. |

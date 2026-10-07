@@ -92,11 +92,11 @@ class TestMulticurrencyRevaluation(TransactionCase):
         move.action_post()
         return move
 
-    def _options(self, company=None):
+    def _options(self, company=None, date_to=DATE):
         report = self.report.with_company(company or self.company)
         return report.get_options({
             'selected_variant_id': self.report.id,
-            'date': {'date_from': DATE, 'date_to': DATE, 'mode': 'range', 'filter': 'custom'},
+            'date': {'date_from': date_to, 'date_to': date_to, 'mode': 'range', 'filter': 'custom'},
             'unfold_all': True,
         })
 
@@ -166,6 +166,17 @@ class TestMulticurrencyRevaluation(TransactionCase):
         self.assertEqual(self.usd._l10n_pe_revaluation_rates(self.company, DATE, 'purchase'),
                          {self.usd.id: 3.72})
         self.assertEqual(self.usd._l10n_pe_revaluation_rates(self.company, '2023-12-31', 'sale'), {})
+
+    def test_closing_rate_is_published_the_next_day(self):
+        """Al 31/12/2023 vale el cierre SBS de ese día, que SUNAT publica el 01/01."""
+        self.env['res.currency.rate'].create({
+            'name': '2023-12-31', 'currency_id': self.usd.id, 'company_id': self.company.id,
+            'rate_sale': 3.690, 'rate_purchase': 3.680})
+        self.payable.l10n_pe_revaluation_rate_type = 'purchase'
+        options = self._options(date_to='2023-12-31')
+        group = options['l10n_pe_revaluation_groups'][0]
+        self.assertEqual(group['rates'], {str(self.usd.id): 3.72},
+                         'no el publicado el 31/12, que es el cierre del 30/12')
 
     # ------------------------------------------------------------------
     # Informe

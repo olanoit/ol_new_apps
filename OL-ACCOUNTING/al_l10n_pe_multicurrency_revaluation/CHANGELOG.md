@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_multicurrency_revaluation.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261007 — 07/10/2026
+
+- Corregido: las cuentas con T.C. compra o venta se revaluaban con el que SUNAT muestra con fecha del informe, que es el cierre del día hábil anterior. Ahora usan el cierre de operaciones de la fecha del informe (art. 34 del Reglamento de la LIR), que SUNAT publica con fecha del día siguiente.
+
 ## 2.20260916 — 27/09/2026
 
 - Si se escribe a mano un tipo de cambio en el filtro del informe, ese valor se usa también en las cuentas marcadas con T.C. compra o venta.
