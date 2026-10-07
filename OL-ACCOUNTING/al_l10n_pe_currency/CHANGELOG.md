@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_currency.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261007 — 07/10/2026
+
+- Corregido: las tasas cargadas desde el BCRP quedaban un día hábil adelantadas (el cierre SBS del viernes es el T.C. SUNAT del sábado al lunes). Ahora cada fecha toma el cierre anterior, como publica SUNAT, y los fines de semana y feriados también quedan registrados. Al actualizar, las tasas del BCRP ya cargadas se recargan con la fecha correcta.
+- La actualización automática corre cada hora: antes, si la única corrida del día caía antes de que SUNAT publicara, el día entero se facturaba con la tasa anterior.
+- La actualización automática ya no pisa una tasa registrada a mano y no reescribe una tasa que no cambió.
+- La carga por mes funciona aunque el mes no se haya elegido en pantalla, y ninguna carga registra fechas futuras.
+- La consulta al BCRP se reintenta si el servicio devuelve una respuesta vacía.
+
 ## 7.20260901 — 27/09/2026
 
 - Cargar el tipo de cambio ya no falla en bases con sucursales: la tasa se guarda en la compañía principal, de la que la toman sus sucursales.

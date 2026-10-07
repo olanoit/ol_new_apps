@@ -17,6 +17,8 @@ from odoo.tests.common import TransactionCase
 from odoo.addons.al_l10n_pe_currency.services import decolecta_rate
 
 RATE_DAY = date(2026, 4, 6)
+# Día sin tasas en la base de pruebas: lo que se compara no depende de los datos.
+FREE_DAY = date(2031, 1, 7)
 
 
 @tagged('post_install', '-at_install')
@@ -115,6 +117,38 @@ class TestRateUpdateScope(TransactionCase):
             action = wizard.action_process()
         fetch.assert_not_called()
         self.assertEqual(action['params']['type'], 'warning')
+
+    def test_wizard_month_without_onchange(self):
+        """Por RPC el onchange no corre: el mes sale del mes y el año."""
+        wizard = self.env['l10n_pe.exchange.rate.wizard'].create({
+            'range': 'month', 'month': '2', 'year': '2026'})
+        days = wizard._iter_dates()
+        self.assertEqual((days[0], days[-1], len(days)), (date(2026, 2, 1), date(2026, 2, 28), 28))
+
+    # ------------------------------------------------------------------
+    # Cron horario
+    # ------------------------------------------------------------------
+    def test_cron_keeps_manual_rate(self):
+        rate = self.Rate.create({'name': FREE_DAY, 'currency_id': self.usd.id,
+                                 'company_id': self.root.id, 'rate_sale': 3.80,
+                                 'rate_purchase': 3.79})
+        self.assertEqual(rate.ref_origin, 'manual')
+        self.usd._l10n_pe_upsert_rate(FREE_DAY, 3.70, 3.75, 'sunat', keep_manual=True)
+        self.assertAlmostEqual(rate.rate_sale, 3.80, places=3, msg='el cron no pisa lo manual')
+        self.usd._l10n_pe_upsert_rate(FREE_DAY, 3.70, 3.75, 'sunat')
+        self.assertAlmostEqual(rate.rate_sale, 3.75, places=3, msg='el asistente sí')
+
+    def test_same_values_are_not_rewritten(self):
+        self.usd._l10n_pe_upsert_rate(FREE_DAY, 3.70, 3.75, 'sunat')
+        rate = self.Rate.search([('currency_id', '=', self.usd.id), ('company_id', '=', self.root.id),
+                                 ('name', '=', FREE_DAY)])
+        with patch.object(type(rate), 'write') as write:
+            self.usd._l10n_pe_upsert_rate(FREE_DAY, 3.70, 3.75, 'sunat')
+        write.assert_not_called()
+
+    def test_cron_is_hourly(self):
+        cron = self.env.ref('al_l10n_pe_currency.cron_update_sunat_rate')
+        self.assertEqual((cron.interval_number, cron.interval_type), (1, 'hours'))
 
     # ------------------------------------------------------------------
     # Alta desde el formulario

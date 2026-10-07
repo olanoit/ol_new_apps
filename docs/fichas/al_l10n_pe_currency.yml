@@ -1,10 +1,10 @@
 titulo: Tipo de cambio Perú
 subtitulo: >-
-  Tipo de cambio SUNAT de compra y venta para el dólar, actualizado a diario y
+  Tipo de cambio SUNAT de compra y venta para el dólar, actualizado cada hora y
   con históricos del BCRP, y la elección de compra o venta en cada factura y
   cada pago, que es la que fija el importe en soles.
 categoria: Localización Perú · Contabilidad
-etiquetas: [Compra y venta, SUNAT, BCRP, Actualización diaria, T.C. por factura, Diferencia de cambio]
+etiquetas: [Compra y venta, SUNAT, BCRP, Actualización automática, T.C. por factura, Diferencia de cambio]
 portada: screenshots/10-factura-compra.png
 
 destacados_intro: >-
@@ -17,15 +17,17 @@ destacados:
       Cada tipo de cambio guarda **Compra**, **Venta** y su **Origen**. La tasa
       nativa se mantiene como 1 / venta: tocar una recalcula la otra.
   - icono: "⟳"
-    titulo: Actualización diaria
+    titulo: Actualización automática
     texto: >-
-      Una acción planificada trae cada día el tipo de cambio publicado en el
-      TXT oficial de SUNAT, gratuito y sin token.
+      Una acción planificada consulta cada hora el TXT oficial de SUNAT,
+      gratuito y sin token, y carga la tasa del día en cuanto se publica; no
+      pisa las tasas registradas a mano.
   - icono: "📅"
     titulo: Históricos por día, rango o mes
     texto: >-
       El asistente carga fechas pasadas desde el BCRP (sin token, todo el rango
-      en una consulta), Decolecta o apis.net.pe.
+      en una consulta y con la fecha en que SUNAT publica cada cierre),
+      Decolecta o apis.net.pe.
   - icono: "S/"
     titulo: Compra o venta por factura
     texto: >-
@@ -72,9 +74,9 @@ flujos:
       con compra, venta y origen.
     mermaid: |
       flowchart TD
-        A{¿Cómo llega la tasa?} -- Acción planificada diaria<br/>o Actualizar hoy --> B[TXT oficial de SUNAT<br/>del día publicado]
+        A{¿Cómo llega la tasa?} -- Acción planificada cada hora<br/>o Actualizar hoy --> B[TXT oficial de SUNAT<br/>del día publicado]
         A -- Asistente por día, rango o mes --> C{¿Fuente?}
-        C -- BCRP --> D[Una consulta para todo el rango;<br/>días sin publicación no vienen]
+        C -- BCRP --> D[Una consulta para todo el rango;<br/>cada día toma el cierre SBS anterior]
         C -- "Decolecta / apis.net.pe" --> E[Una consulta por día<br/>con el token de la conexión RUC/DNI]
         A -- Registro manual --> F[Compra y venta escritas a mano;<br/>aviso si compra supera a venta]
         B --> G[Tasa del día en todas las compañías:<br/>se crea o se actualiza]
@@ -124,9 +126,11 @@ pasos:
   - titulo: La actualización diaria
     ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Tipo de cambio: actualizar desde SUNAT"
     texto: >-
-      La acción planificada corre una vez al día y registra compra y venta del
-      TXT oficial de SUNAT. Se instala activa.
+      La acción planificada corre cada hora y registra compra y venta del TXT
+      oficial de SUNAT. Se instala activa.
     puntos:
+      - "Cada hora, y no una vez al día: así la tasa del día entra en cuanto SUNAT la publica."
+      - "Si la tasa del día se registró a mano, no la cambia."
       - "En la base de demostración está desactivada: las tasas se cargaron desde el asistente y a mano."
     imagen: screenshots/02-cron.png
 
@@ -177,6 +181,8 @@ pasos:
       BCRP trae todo el rango en una sola consulta.
     puntos:
       - "Por mes: del día 1 al último día del mes, sin pasar de hoy."
+      - "El BCRP fecha cada valor con el día del cierre SBS y SUNAT lo publica como T.C. del día siguiente: cada fecha toma el cierre anterior, también sábados, domingos y feriados."
+      - "El asistente sí reemplaza las tasas manuales de las fechas que carga."
       - "Al terminar indica cuántas fechas cargó desde el BCRP, o cuántas no pudo obtener de Decolecta o apis.net.pe."
     imagen: screenshots/07-asistente-mes.png
 
@@ -321,8 +327,8 @@ funcionalidades:
       - Lista completa de tasas en la app Perú, con la moneda y el origen como etiqueta de color.
   - grupo: Fuentes
     items:
-      - "SUNAT: TXT oficial del día, sin token; es la fuente de la acción planificada diaria."
-      - "BCRP: series históricas del sistema bancario, sin token, un rango completo por consulta."
+      - "SUNAT: TXT oficial del día, sin token; es la fuente de la acción planificada."
+      - "BCRP: series históricas del sistema bancario, sin token, un rango completo por consulta; el cierre de un día es el T.C. SUNAT del día siguiente."
       - "Decolecta: por fecha, con el token de la conexión de consulta RUC/DNI."
       - "apis.net.pe: por fecha, con token."
       - Asistente por día, rango de fechas o mes, también desde la ficha del dólar.
@@ -403,6 +409,14 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 8.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: las tasas cargadas desde el BCRP quedaban un día hábil adelantadas (el cierre SBS del viernes es el T.C. SUNAT del sábado al lunes). Ahora cada fecha toma el cierre anterior, como publica SUNAT, y los fines de semana y feriados también quedan registrados. Al actualizar, las tasas del BCRP ya cargadas se recargan con la fecha correcta."
+      - "La actualización automática corre cada hora: antes, si la única corrida del día caía antes de que SUNAT publicara, el día entero se facturaba con la tasa anterior."
+      - "La actualización automática ya no pisa una tasa registrada a mano y no reescribe una tasa que no cambió."
+      - "La carga por mes funciona aunque el mes no se haya elegido en pantalla, y ninguna carga registra fechas futuras."
+      - "La consulta al BCRP se reintenta si el servicio devuelve una respuesta vacía."
   - version: 7.20260901
     fecha: 27/09/2026
     cambios:

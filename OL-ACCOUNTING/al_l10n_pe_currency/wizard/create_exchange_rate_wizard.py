@@ -76,24 +76,34 @@ class L10nPeExchangeRateWizard(models.TransientModel):
 
     @api.onchange('range', 'month', 'year')
     def _onchange_month_range(self):
-        if self.range == 'month' and self.year and self.month:
-            try:
-                y, m = int(self.year), int(self.month)
-            except ValueError:
-                return
-            last_day = calendar.monthrange(y, m)[1]
-            self.date_start = date(y, m, 1)
-            self.date_end = min(date(y, m, last_day), fields.Date.context_today(self))
+        if self.range == 'month':
+            start, end = self._month_bounds()
+            if start:
+                self.date_start = start
+                self.date_end = min(end, fields.Date.context_today(self))
+
+    def _month_bounds(self):
+        try:
+            y, m = int(self.year), int(self.month)
+            return date(y, m, 1), date(y, m, calendar.monthrange(y, m)[1])
+        except (TypeError, ValueError):
+            return None, None
 
     def _iter_dates(self):
+        """Días a cargar, nunca posteriores a hoy (hora de Lima)."""
         if self.range == 'date':
-            return [self.date]
-        if self.range in ('dates', 'month'):
-            if not (self.date_start and self.date_end):
-                return []
-            days = (self.date_end - self.date_start).days
-            return [self.date_start + timedelta(days=d) for d in range(days + 1)]
-        return []
+            start = end = self.date
+        elif self.range == 'month':
+            # Del mes y el año, no del onchange: por RPC no corre.
+            start, end = self._month_bounds()
+        elif self.range == 'dates':
+            start, end = self.date_start, self.date_end
+        else:
+            return []
+        if not (start and end):
+            return []
+        end = min(end, fields.Date.context_today(self.with_context(tz='America/Lima')))
+        return [start + timedelta(days=d) for d in range((end - start).days + 1)]
 
     def _notify(self, message, kind='warning'):
         params = {

@@ -12,10 +12,18 @@ tributarios; no las interbancarias, que son otra cosa:
 * ``PD04639PD`` — TC Sistema bancario SBS (S/ por US$) · Compra
 * ``PD04640PD`` — TC Sistema bancario SBS (S/ por US$) · Venta
 
+**Ojo con la fecha.** El BCRP fecha cada valor con el día del cierre SBS,
+mientras que SUNAT publica ese cierre como tipo de cambio del día siguiente
+(y lo mantiene los días sin publicación): el T.C. SUNAT del lunes es el cierre
+del viernes anterior. Verificado el 06/10/2026: SUNAT 06/10 = BCRP 05.Oct
+(3.423 / 3.435) y SUNAT 03, 04 y 05/10 = BCRP 02.Oct (3.437 / 3.442).
+``to_sunat_dates`` hace esa traslación.
+
 Lógica pura (sin ORM): testeable de forma aislada.
 """
 import logging
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 
 import requests
 
@@ -26,6 +34,8 @@ BCRP_URL = ('https://estadisticas.bcrp.gob.pe/estadisticas/series/api/'
 BCRP_SERIES_BUY = 'PD04639PD'
 BCRP_SERIES_SELL = 'PD04640PD'
 TIMEOUT = 20
+ATTEMPTS = 3
+RETRY_SECONDS = 2
 
 # El BCRP nombra los periodos como «02.Mar.26», con el mes abreviado en
 # castellano; la abreviatura no coincide siempre con la de ``strptime``.
@@ -81,6 +91,32 @@ def parse_response(payload):
     return rates
 
 
+def to_sunat_dates(rates, date_from, date_to):
+    """Traslada los cierres SBS del BCRP a las fechas de SUNAT.
+
+    Cada día del rango ``[date_from, date_to]`` toma el último cierre
+    **anterior** a ese día, como hace SUNAT al publicar. Los días sin cierre
+    previo en ``rates`` se omiten. ``rates`` debe venir ordenado por fecha.
+    """
+    result = []
+    index, current = 0, None
+    day = date_from
+    while day <= date_to:
+        while index < len(rates) and rates[index]['date'] < day:
+            current = rates[index]
+            index += 1
+        if current:
+            result.append({'date': day, 'compra': current['compra'],
+                           'venta': current['venta'], 'close_date': current['date']})
+        day += timedelta(days=1)
+    return result
+
+
+#: Días hacia atrás que se piden al BCRP para tener el cierre anterior al
+#: primer día del rango (fines de semana largos, feriados de Semana Santa…).
+LOOKBACK_DAYS = 10
+
+
 def fetch_bcrp(date_from, date_to):
     """Tipos de cambio SBS del rango, ordenados por fecha.
 
@@ -92,12 +128,18 @@ def fetch_bcrp(date_from, date_to):
         'date_from': date_from.strftime('%Y-%m-%d'),
         'date_to': date_to.strftime('%Y-%m-%d'),
     }
-    try:
-        response = requests.get(url, timeout=TIMEOUT,
-                                headers={'Accept': 'application/json'})
-        response.raise_for_status()
-        return sorted(parse_response(response.json()),
-                      key=lambda rate: rate['date'])
-    except (requests.RequestException, ValueError) as exc:
-        _logger.warning('BCRP falló para %s..%s: %s', date_from, date_to, exc)
-        return []
+    # El BCRP devuelve a veces una respuesta vacía o que no es JSON (visto el
+    # 07/10/2026 en dos consultas seguidas): se reintenta antes de rendirse.
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            response = requests.get(url, timeout=TIMEOUT,
+                                    headers={'Accept': 'application/json'})
+            response.raise_for_status()
+            return sorted(parse_response(response.json()),
+                          key=lambda rate: rate['date'])
+        except (requests.RequestException, ValueError) as exc:
+            _logger.warning('BCRP falló para %s..%s (intento %s de %s): %s',
+                            date_from, date_to, attempt, ATTEMPTS, exc)
+            if attempt < ATTEMPTS:
+                time.sleep(RETRY_SECONDS * attempt)
+    return []

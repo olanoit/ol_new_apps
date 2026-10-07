@@ -15,6 +15,7 @@ oficial para la conversión contable en Perú), y se conservan compra/venta en
 los campos ``rate_purchase`` / ``rate_sale``.
 """
 import logging
+from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
@@ -27,9 +28,15 @@ _logger = logging.getLogger(__name__)
 class ResCurrency(models.Model):
     _inherit = 'res.currency'
 
-    def _l10n_pe_upsert_rate(self, rate_date, compra, venta, origin='sunat'):
+    def _l10n_pe_upsert_rate(self, rate_date, compra, venta, origin='sunat',
+                             keep_manual=False):
         """Crea o actualiza el tipo de cambio del día para esta moneda,
         respetando la unicidad nativa (una tasa por día).
+
+        - Si la tasa ya tiene esos valores no se reescribe (el cron corre
+          cada hora).
+        - ``keep_manual``: no pisa una tasa registrada a mano (el cron);
+          el asistente, que lo pide el usuario, sí la reemplaza.
 
         Solo en las compañías **raíz** cuya moneda es el sol: el núcleo
         prohíbe tasas en las sucursales (``_check_company_id``, heredan las de
@@ -76,6 +83,11 @@ class ResCurrency(models.Model):
             }
             existing = existing_by_company.get(company)
             if existing:
+                if keep_manual and existing.ref_origin == 'manual':
+                    continue
+                if (existing.rate_sale, existing.rate_purchase) == (
+                        round(venta, 3), round(compra or venta, 3)):
+                    continue
                 existing.write(vals)
             else:
                 to_create.append(vals)
@@ -194,7 +206,7 @@ class ResCurrency(models.Model):
     def _l10n_pe_decolecta_token(self, company=None):
         return self._l10n_pe_connection_token('decolecta.com', company=company)
 
-    def l10n_pe_update_today_sunat(self):
+    def l10n_pe_update_today_sunat(self, keep_manual=False):
         """Tipo de cambio de hoy desde el TXT oficial de SUNAT (USD).
 
         Devuelve los datos cargados, o ``None`` si SUNAT no respondió."""
@@ -203,7 +215,8 @@ class ResCurrency(models.Model):
         data = sunat_rate.fetch_sunat_txt()
         if usd and data:
             usd._l10n_pe_upsert_rate(
-                data['date'], data['compra'], data['venta'], 'sunat')
+                data['date'], data['compra'], data['venta'], 'sunat',
+                keep_manual=keep_manual)
             _logger.info('TC SUNAT %s: compra=%s venta=%s',
                          data['date'], data['compra'], data['venta'])
         return data if usd else None
@@ -221,14 +234,18 @@ class ResCurrency(models.Model):
                 data['date'], data['compra'], data['venta'], 'apis_net')
         return bool(data)
 
-    def l10n_pe_update_range_bcrp(self, date_from, date_to):
+    def l10n_pe_update_range_bcrp(self, date_from, date_to, keep_manual=False):
         """Tipos de cambio de un rango desde el BCRP (USD).
 
         Es la vía recomendada para cargar históricos: el BCRP publica la serie
         del sistema bancario SBS —la que SUNAT toma para efectos
         tributarios— de forma gratuita y sin token, y en una sola llamada
-        devuelve todo el rango. Los días sin publicación (fines de semana y
-        feriados) simplemente no vienen en la respuesta.
+        devuelve todo el rango.
+
+        El cierre SBS de un día es el T.C. SUNAT del día siguiente (y de los
+        días sin publicación que siguen): se piden unos días antes del rango y
+        cada fecha toma el cierre anterior (``bcrp_rate.to_sunat_dates``).
+        Nunca se cargan fechas futuras.
 
         Devuelve el número de fechas cargadas.
         """
@@ -236,10 +253,18 @@ class ResCurrency(models.Model):
         usd = self._l10n_pe_get_usd()
         if not usd:
             return 0
-        rates = bcrp_rate.fetch_bcrp(date_from, date_to)
+        date_to = min(date_to, fields.Date.context_today(
+            self.with_context(tz='America/Lima')))
+        if date_to < date_from:
+            return 0
+        closes = bcrp_rate.fetch_bcrp(
+            date_from - timedelta(days=bcrp_rate.LOOKBACK_DAYS),
+            date_to - timedelta(days=1))
+        rates = bcrp_rate.to_sunat_dates(closes, date_from, date_to)
         for data in rates:
             usd._l10n_pe_upsert_rate(
-                data['date'], data['compra'], data['venta'], 'bcrp')
+                data['date'], data['compra'], data['venta'], 'bcrp',
+                keep_manual=keep_manual)
         _logger.info('TC BCRP %s..%s: %d fecha(s) cargadas',
                      date_from, date_to, len(rates))
         return len(rates)
@@ -262,8 +287,12 @@ class ResCurrency(models.Model):
 
     @api.model
     def _cron_update_sunat_rate(self):
-        """Cron diario: actualiza el TC de hoy desde SUNAT."""
-        self.l10n_pe_update_today_sunat()
+        """Cron horario: actualiza el TC de hoy desde SUNAT.
+
+        Cada hora y no una vez al día: si la única corrida caía antes de que
+        SUNAT publicara, el día entero se facturaba con la tasa anterior. Una
+        tasa registrada a mano no se pisa."""
+        self.l10n_pe_update_today_sunat(keep_manual=True)
 
     # ------------------------------------------------------------------ #
     # Acciones de UI                                                      #

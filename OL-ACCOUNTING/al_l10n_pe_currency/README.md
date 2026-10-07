@@ -1,7 +1,7 @@
 # Tipo de cambio Perú (SUNAT) — Odoo 19
 
 Gestiona el **tipo de cambio SUNAT (compra y venta)** para USD/PEN, con
-actualización diaria automática, y muestra el **tipo de cambio aplicado y su
+actualización automática cada hora, y muestra el **tipo de cambio aplicado y su
 fecha** en las facturas emitidas/recibidas en moneda extranjera.
 
 Odoo nativo solo maneja una tasa única por día; este módulo agrega el par
@@ -12,7 +12,7 @@ Odoo nativo solo maneja una tasa única por día; este módulo agrega el par
 - Campos `rate_purchase` (compra) y `rate_sale` (venta) en `res.currency.rate`,
   además de la tasa nativa `rate` (= `1 / venta`, la venta es la tasa oficial
   para la conversión contable en Perú).
-- **Actualización diaria** vía `ir.cron` desde el TXT oficial de SUNAT.
+- **Actualización cada hora** vía `ir.cron` desde el TXT oficial de SUNAT (no pisa tasas manuales ni reescribe las que no cambiaron).
 - **Asistente** para actualizar por día, rango de fechas o mes.
 - En las **facturas en moneda extranjera** (distinta a la de la compañía) se
   muestra el tipo de cambio aplicado (S/ por US$ 1) y la fecha del T.C.
@@ -22,6 +22,8 @@ Odoo nativo solo maneja una tasa única por día; este módulo agrega el par
 | Fuente | Uso | Token | Cobertura |
 |---|---|---|---|
 | **TXT oficial SUNAT** (`sunat.gob.pe/a/txt/tipoCambio.txt`) | Actualización de **hoy** (cron y botón) | No | Solo el día publicado; trae compra y venta |
+| **BCRP** (series `PD04639PD`/`PD04640PD`, SBS) | Fechas **históricas** (asistente) | No | Rango completo por consulta. **El cierre SBS del día D es el T.C. SUNAT de D+1** (y de los días sin publicación siguientes): `bcrp_rate.to_sunat_dates` hace la traslación |
+| **Decolecta** (`/v1/tipo-cambio/sunat`) | Fechas **históricas** (asistente) | Sí | Por fecha, con fecha SUNAT |
 | **apis.net.pe** (`/v1/tipo-cambio-sunat`) | Fechas **históricas** (asistente) | Recomendado | Por fecha; sin token puede dar límite (HTTP 429) |
 
 El servicio de red vive en `services/sunat_rate.py` (funciones puras, sin ORM).
@@ -37,7 +39,7 @@ volver a ingresarlo). Es una dependencia *suave*: el módulo funciona igual sin
 
 1. **Monedas** → abrir **USD** → botón **"Actualizar hoy (SUNAT)"** para traer
    el T.C. del día, o **"Actualizar por fecha/mes"** para el asistente.
-2. El cron *"Tipo de cambio: actualizar desde SUNAT"* corre a diario.
+2. El cron *"Tipo de cambio: actualizar desde SUNAT"* corre cada hora.
 3. Al crear una factura en USD (con la compañía en PEN), el formulario muestra
    **Tipo de cambio** y **Fecha del T.C.** en la cabecera.
 

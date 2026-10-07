@@ -5,7 +5,7 @@ El parseo se prueba sobre respuestas fijas: la lógica de ``services.bcrp_rate``
 es pura y no debe depender de que el servicio esté disponible.
 """
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -89,27 +89,30 @@ class TestBcrpRate(TransactionCase):
     # Integración con el ORM
     # ------------------------------------------------------------------
     def test_update_range_creates_rates(self):
+        """El cierre del 02/03 es el T.C. SUNAT del 03/03, y así."""
         if self.env.company.currency_id != self.env.ref('base.PEN') \
                 or self.env.company.parent_id:
             self.skipTest('el tipo de cambio SUNAT solo se carga en '
                           'compañías raíz en soles')
         usd = self.env.ref('base.USD')
         with patch.object(bcrp_rate, 'fetch_bcrp',
-                          return_value=bcrp_rate.parse_response(BCRP_PAYLOAD)):
+                          return_value=bcrp_rate.parse_response(BCRP_PAYLOAD)) as fetch:
             loaded = self.env['res.currency'].l10n_pe_update_range_bcrp(
-                date(2026, 3, 2), date(2026, 3, 3))
+                date(2026, 3, 3), date(2026, 3, 4))
         self.assertEqual(loaded, 2)
-        rate = self.env['res.currency.rate'].search([
-            ('currency_id', '=', usd.id),
-            ('company_id', '=', self.env.company.id),
-            ('name', '=', '2026-03-02'),
-        ], limit=1)
+        self.assertEqual(fetch.call_args.args, (date(2026, 2, 21), date(2026, 3, 3)),
+                         'se piden los cierres anteriores al rango')
+        Rate = self.env['res.currency.rate']
+        domain = [('currency_id', '=', usd.id), ('company_id', '=', self.env.company.id)]
+        rate = Rate.search(domain + [('name', '=', '2026-03-03')], limit=1)
         self.assertTrue(rate, 'debería haberse creado el tipo de cambio')
         self.assertEqual(rate.ref_origin, 'bcrp')
         self.assertAlmostEqual(rate.rate_sale, 3.368, places=3)
         self.assertAlmostEqual(rate.rate_purchase, 3.359, places=3)
         self.assertAlmostEqual(rate.rate, 1.0 / 3.368, places=6,
                                msg='la tasa contable es 1 / venta')
+        self.assertAlmostEqual(
+            Rate.search(domain + [('name', '=', '2026-03-04')]).rate_sale, 3.408, places=3)
 
     def test_update_range_is_idempotent(self):
         """Recargar el mismo rango actualiza, no duplica."""
@@ -120,15 +123,59 @@ class TestBcrpRate(TransactionCase):
         rates = bcrp_rate.parse_response(BCRP_PAYLOAD)
         with patch.object(bcrp_rate, 'fetch_bcrp', return_value=rates):
             self.env['res.currency'].l10n_pe_update_range_bcrp(
-                date(2026, 3, 2), date(2026, 3, 3))
+                date(2026, 3, 3), date(2026, 3, 4))
             self.env['res.currency'].l10n_pe_update_range_bcrp(
-                date(2026, 3, 2), date(2026, 3, 3))
+                date(2026, 3, 3), date(2026, 3, 4))
         found = self.env['res.currency.rate'].search_count([
             ('currency_id', '=', self.env.ref('base.USD').id),
             ('company_id', '=', self.env.company.id),
-            ('name', '=', '2026-03-02'),
+            ('name', '=', '2026-03-03'),
         ])
         self.assertEqual(found, 1)
+
+    # ------------------------------------------------------------------
+    # Fecha SUNAT de los cierres del BCRP (datos reales de octubre 2026)
+    # ------------------------------------------------------------------
+    def test_to_sunat_dates_real_october(self):
+        """SUNAT 03, 04 y 05/10 = cierre del viernes 02/10; SUNAT 06/10 = 05/10."""
+        closes = [
+            {'date': date(2026, 10, 1), 'compra': 3.447, 'venta': 3.454},
+            {'date': date(2026, 10, 2), 'compra': 3.437, 'venta': 3.442},
+            {'date': date(2026, 10, 5), 'compra': 3.423, 'venta': 3.435},
+        ]
+        result = {r['date']: (r['compra'], r['venta'])
+                  for r in bcrp_rate.to_sunat_dates(closes, date(2026, 10, 1), date(2026, 10, 6))}
+        self.assertNotIn(date(2026, 10, 1), result, 'sin cierre anterior no hay tasa')
+        self.assertEqual(result[date(2026, 10, 2)], (3.447, 3.454))
+        for day in (3, 4, 5):
+            self.assertEqual(result[date(2026, 10, day)], (3.437, 3.442))
+        self.assertEqual(result[date(2026, 10, 6)], (3.423, 3.435))
+
+    def test_update_range_never_loads_future_dates(self):
+        if self.env.company.currency_id != self.env.ref('base.PEN') \
+                or self.env.company.parent_id:
+            self.skipTest('solo compañías raíz en soles')
+        today = date.today()
+        closes = [{'date': date(2020, 1, 1), 'compra': 3.3, 'venta': 3.31}]
+        with patch.object(bcrp_rate, 'fetch_bcrp', return_value=closes), \
+                patch('odoo.fields.Date.context_today', return_value=today):
+            self.env['res.currency'].l10n_pe_update_range_bcrp(
+                today, today.replace(year=today.year + 1))
+        self.assertFalse(self.env['res.currency.rate'].search_count([
+            ('currency_id', '=', self.env.ref('base.USD').id),
+            ('company_id', '=', self.env.company.id),
+            ('name', '>', today)]))
+
+    def test_fetch_retries_a_non_json_answer(self):
+        """El BCRP a veces responde algo que no es JSON: se reintenta."""
+        bad, good = MagicMock(), MagicMock()
+        bad.json.side_effect = ValueError('Expecting value')
+        good.json.return_value = BCRP_PAYLOAD
+        with patch.object(bcrp_rate.requests, 'get', side_effect=[bad, good]) as get, \
+                patch.object(bcrp_rate.time, 'sleep'):
+            rates = bcrp_rate.fetch_bcrp(date(2026, 3, 1), date(2026, 3, 3))
+        self.assertEqual(get.call_count, 2)
+        self.assertEqual(len(rates), 2)
 
     def test_service_failure_returns_empty(self):
         """Si el BCRP no responde, no se interrumpe el proceso."""
