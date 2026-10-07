@@ -748,6 +748,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 12.20261007
+    fecha: 07/10/2026
+    cambios:
+      - "Corregido: «Vacaciones pagadas» no recibía su código T21 23 en las bases nuevas de Odoo 19 (el tipo cambió de identificador)."
   - version: 11.20261007
     fecha: 07/10/2026
     cambios:

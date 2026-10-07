@@ -51,8 +51,10 @@ class TestLeaveSuspension(BenefitsCaseBase):
         self.assertFalse(leave.l10n_pe_suspension_ids)
 
     def test_paid_time_off_defaults_to_vacation(self):
-        leave_type = self.env.ref('hr_holidays.holiday_status_cl',
-                                  raise_if_not_found=False)
+        leave_type = self.env.ref('hr_holidays.leave_type_paid_time_off',
+                                  raise_if_not_found=False) \
+            or self.env.ref('hr_holidays.holiday_status_cl',
+                            raise_if_not_found=False)
         if not leave_type:
             self.skipTest('sin el tipo de ausencia de demostración')
         self.assertEqual(leave_type.l10n_pe_suspension_type_id.code, '23')

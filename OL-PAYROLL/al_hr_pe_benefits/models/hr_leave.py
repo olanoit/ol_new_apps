@@ -30,8 +30,12 @@ class HrLeaveType(models.Model):
     @api.model
     def _l10n_pe_set_default_suspensions(self):
         """Vacaciones pagadas → T21 «23», si aún no tiene código."""
-        leave_type = self.env.ref('hr_holidays.holiday_status_cl',
-                                  raise_if_not_found=False)
+        # v19 lo llama leave_type_paid_time_off; las bases que vienen de
+        # versiones anteriores conservan holiday_status_cl.
+        leave_type = self.env.ref('hr_holidays.leave_type_paid_time_off',
+                                  raise_if_not_found=False) \
+            or self.env.ref('hr_holidays.holiday_status_cl',
+                            raise_if_not_found=False)
         suspension = self.env.ref('al_hr_pe.suspension_23',
                                   raise_if_not_found=False)
         if leave_type and suspension \
