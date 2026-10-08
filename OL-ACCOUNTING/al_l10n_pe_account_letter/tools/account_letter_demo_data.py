@@ -163,7 +163,7 @@ if not letter_cli.letter_line_ids:
     # 1180.00 (1000 + 18% IGV) / 3 letras = 393.33 c/u -> deja un residual de
     # redondeo natural (393.33*3 = 1179.99, diferencia 0.01).
     letter_cli.write({'number_letter': 3, 'letter_end_date': date(YEAR, MONTH + 1, 10), 'range_date': 30})
-    letter_cli.create_letters()
+    letter_cli.action_create_letters()
     for i, line in enumerate(letter_cli.letter_line_ids, start=1):
         line.nro_letter = 'LET-CLI-%03d' % i
 log('3 letras generadas (393.33 c/u)', len(letter_cli.letter_line_ids) == 3,
@@ -214,7 +214,7 @@ if letter_cli_2.state == 'draft':
     letter_cli_2.action_checked()
 if not letter_cli_2.letter_line_ids:
     letter_cli_2.write({'number_letter': 1, 'letter_end_date': date(YEAR, MONTH + 1, 10), 'range_date': 30})
-    letter_cli_2.create_letters()
+    letter_cli_2.action_create_letters()
     letter_cli_2.letter_line_ids.nro_letter = 'LET-CLI-004'
 if letter_cli_2.state == 'checked':
     letter_cli_2.action_redeemed()
@@ -243,7 +243,7 @@ if letter_cli_3.state == 'draft':
     letter_cli_3.action_checked()
 if not letter_cli_3.letter_line_ids:
     letter_cli_3.write({'number_letter': 1, 'letter_end_date': date(YEAR, MONTH + 1, 10), 'range_date': 30})
-    letter_cli_3.create_letters()
+    letter_cli_3.action_create_letters()
     letter_cli_3.letter_line_ids.nro_letter = 'LET-CLI-005'
 if letter_cli_3.state == 'checked':
     letter_cli_3.action_redeemed()
@@ -276,7 +276,7 @@ if letter_prov.state == 'draft':
     letter_prov.action_checked()
 if not letter_prov.letter_line_ids:
     letter_prov.write({'number_letter': 2, 'letter_end_date': date(YEAR, MONTH + 1, 10), 'range_date': 30})
-    letter_prov.create_letters()
+    letter_prov.action_create_letters()
     for i, line in enumerate(letter_prov.letter_line_ids, start=1):
         line.nro_letter = 'LET-PROV-%03d' % i
 if letter_prov.state == 'checked':

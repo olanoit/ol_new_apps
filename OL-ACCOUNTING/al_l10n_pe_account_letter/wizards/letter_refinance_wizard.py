@@ -17,7 +17,7 @@ class L10nPeLetterRefinanceWizard(models.TransientModel):
         required=True,
     )
 
-    def create_refinance(self):
+    def action_create_refinance(self):
         # El asistente toma el canje del ``active_id``: abierto desde otro
         # modelo (p. ej. el canje masivo) ese id sería el de otro canje.
         active_model = self.env.context.get('active_model')

@@ -608,6 +608,10 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 14.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Botones con la convención de Odoo: «Crear letras» llama a action_create_letters y el asistente de refinanciamiento a action_create_refinance."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

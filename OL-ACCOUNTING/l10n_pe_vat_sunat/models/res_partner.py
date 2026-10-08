@@ -187,7 +187,7 @@ class ResPartner(models.Model):
             super(ResPartner, partner).write(dict(vals, l10n_pe_padron_manual=manual))
         return True
 
-    def btn_update_document(self):
+    def action_update_document(self):
         """Botón "Actualizar RUC/DNI": si falla, muestra el motivo real."""
         for partner in self:
             partner._run_document_lookup(raise_on_fail=True)

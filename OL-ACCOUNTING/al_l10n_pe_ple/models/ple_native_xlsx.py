@@ -124,10 +124,10 @@ class L10nPeCashFlowXlsx(models.AbstractModel):
 class L10nPeStockPleWizardXlsx(models.TransientModel):
     _inherit = 'l10n_pe.stock.ple.wizard'
 
-    def get_ple_xlsx_12_1(self):
+    def action_export_xlsx_12_1(self):
         return self._get_ple_xlsx('1201', '120100')
 
-    def get_ple_xlsx_13_1(self):
+    def action_export_xlsx_13_1(self):
         return self._get_ple_xlsx('1301', '130100')
 
     def _get_ple_xlsx(self, report_number, book_code):

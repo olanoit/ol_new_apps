@@ -417,6 +417,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 13.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "El botón de consulta del documento del contacto llama a action_update_document (convención de Odoo)."
   - version: 12.20261008
     fecha: 08/10/2026
     cambios:

@@ -80,7 +80,7 @@ class TestLetterAuditFixes(TransactionCase):
         letter.action_checked()
         letter.write({'number_letter': letters, 'letter_end_date': date(2026, 9, 10),
                       'range_date': 30})
-        letter.create_letters()
+        letter.action_create_letters()
         for index, line in enumerate(letter.letter_line_ids, start=1):
             line.nro_letter = 'LAU-%d-%03d' % (letter.id, index)
         return letter
@@ -130,7 +130,7 @@ class TestLetterAuditFixes(TransactionCase):
         with self.assertRaises(UserError):
             massive.action_draft()
         with self.assertRaises(UserError):
-            massive.create_letters()
+            massive.action_create_letters()
 
     def test_massive_sends_letters_with_entry(self):
         """El canje masivo contabiliza el envío al banco de cada canje."""
@@ -211,7 +211,7 @@ class TestLetterAuditFixes(TransactionCase):
             active_model='l10n_pe.letter.massive', active_id=letter.id,
         ).create({'letter_id': letter.id, 'refinance_date': date(2026, 8, 30)})
         with self.assertRaises(UserError):
-            wizard.create_refinance()
+            wizard.action_create_refinance()
         self.assertFalse(letter.refinance_id)
 
     # ------------------------------------------------------------------
@@ -231,7 +231,7 @@ class TestLetterAuditFixes(TransactionCase):
         child.action_checked()
         child.write({'number_letter': letters, 'letter_end_date': date(2026, 11, 30),
                      'range_date': 30})
-        child.create_letters()
+        child.action_create_letters()
         for index, line in enumerate(child.letter_line_ids, start=1):
             line.nro_letter = 'LRF-%d-%03d' % (child.id, index)
         return child

@@ -295,7 +295,7 @@ class L10nPeLetter(models.Model):
             record.rest_amount_currency = diference / exchange_rate
 
     # Método para autogeneracion de letras
-    def create_letters(self):
+    def action_create_letters(self):
         if not self.number_letter:
             raise UserError('Necesitas añadir la cantidad de letras.')
         if not self.letter_end_date:

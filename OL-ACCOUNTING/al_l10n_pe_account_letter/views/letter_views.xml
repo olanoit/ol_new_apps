@@ -282,7 +282,7 @@
                                         <field name="rest_amount_currency" readonly="1"/>
                                     </group>
                                 </group>
-                                <button name="create_letters"
+                                <button name="action_create_letters"
                                         invisible="state in ('redeemed','banked')"
                                         string="Crear letras" type="object" class="oe_highlight"/>
                                 <field name="letter_line_ids"

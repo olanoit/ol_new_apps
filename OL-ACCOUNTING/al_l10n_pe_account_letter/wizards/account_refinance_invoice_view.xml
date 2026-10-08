@@ -13,7 +13,7 @@
                         </group>
                     </sheet>
                     <footer>
-                        <button name="create_refinance" string="Confirmar" type="object" class="oe_highlight"/>
+                        <button name="action_create_refinance" string="Confirmar" type="object" class="oe_highlight"/>
                         <button string="Cancelar" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>

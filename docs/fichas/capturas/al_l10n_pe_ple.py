@@ -176,7 +176,7 @@ if 5 in BLOQUES:
             "env = env(context=dict(env.context, allowed_company_ids=company.ids))\n"
             "w = env['l10n_pe.stock.ple.wizard'].with_company(company).create("
             "{'date_from': '2026-07-01', 'date_to': '2026-07-31'})\n"
-            "w.get_ple_xlsx_13_1()\n"
+            "w.action_export_xlsx_13_1()\n"
             "open(%r, 'wb').write(base64.b64decode(w.report_data))\n"
             "env.cr.rollback()\n" % str(xlsx))
         subprocess.run([str(ODOO / '.venv/bin/python'), 'odoo-bin', 'shell', '-c',

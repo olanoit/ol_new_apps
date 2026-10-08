@@ -192,7 +192,7 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
         wizard_class = type(wizard)
         with patch.object(wizard_class, '_get_ple_report_content', autospec=True,
                           return_value=txt([line]).decode()):
-            action = wizard.get_ple_xlsx_13_1()
+            action = wizard.action_export_xlsx_13_1()
         self.assertEqual(action['type'], 'ir.actions.act_url')
         self.assertEqual(wizard.report_filename, 'LE2051252845820260300130100001111.xlsx')
         content = base64.b64decode(wizard.report_data)
@@ -210,5 +210,5 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
 
         with patch.object(wizard_class, '_get_ple_report_content', autospec=True,
                           return_value=''):
-            wizard.get_ple_xlsx_12_1()
+            wizard.action_export_xlsx_12_1()
         self.assertEqual(wizard.report_filename, 'LE2051252845820260300120100001011.xlsx')

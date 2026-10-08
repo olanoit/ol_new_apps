@@ -81,7 +81,7 @@ class TestLetterBankFlow(TransactionCase):
         letter.action_checked()
         letter.write({'number_letter': letters, 'letter_end_date': date(2026, 9, 10),
                       'range_date': 30})
-        letter.create_letters()
+        letter.action_create_letters()
         for index, line in enumerate(letter.letter_line_ids, start=1):
             line.nro_letter = 'LTS-%d-%03d' % (letter.id, index)
         letter.action_redeemed()

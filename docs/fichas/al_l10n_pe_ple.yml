@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 16.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Botones XLSX 12.1/13.1 del asistente de inventario con la convención de Odoo (action_export_xlsx_12_1 / _13_1)."
   - version: 15.20261008
     fecha: 08/10/2026
     cambios:

@@ -11,7 +11,7 @@
             <sheet position="before">
                 <header>
                     <button string="Actualizar desde API"
-                            type="object" name="btn_update_document"
+                            type="object" name="action_update_document"
                             class="oe_highlight"
                             invisible="country_code != 'PE'"
                             />

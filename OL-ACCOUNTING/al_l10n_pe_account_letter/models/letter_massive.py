@@ -58,7 +58,7 @@ class L10nPeLetterMassive(models.Model):
     def action_redeemed(self):
         self._raise_not_for_massive()
 
-    def create_letters(self):
+    def action_create_letters(self):
         self._raise_not_for_massive()
 
     def action_cancel(self):
