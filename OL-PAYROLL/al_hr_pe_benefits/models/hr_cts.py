@@ -27,6 +27,7 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
     ensure_draft, ensure_line_draft, notify_success)
+from .hr_benefits_engine import compute_has_history, compute_locked
 
 
 class HrCts(models.Model):
@@ -193,6 +194,22 @@ class HrCtsLine(models.Model):
     _description = 'Línea de CTS'
     _order = 'employee_id'
     _check_company_auto = True
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+    l10n_pe_has_history = fields.Boolean(
+        string='Con histórico', compute='_compute_l10n_pe_has_history')
+
+    @api.depends('cts_id.state', 'liquidation_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'cts_id': ('draft',), 'liquidation_id': ('draft',)})
+
+    @api.depends('cts_id.deposit_date', 'cessation_date', 'liquidation_id.payslip_run_id.date_end', 'employee_id')
+    def _compute_l10n_pe_has_history(self):
+        compute_has_history(self, lambda line: (line.cts_id.deposit_date or line.cessation_date
+                                 or line.liquidation_id.payslip_run_id.date_end))
 
     cts_id = fields.Many2one(
         'hr.cts', string='Depósito CTS', ondelete='cascade', index=True,

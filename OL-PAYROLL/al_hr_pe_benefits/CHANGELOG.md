@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261008 — 08/10/2026
+
+- Campos editables según el estado: cabeceras y líneas solo en borrador (la quinta, también «En proceso»); el formulario de cada línea queda de solo lectura con su documento cerrado y oculta «Calcular».
+- Botones de las listas solo con datos: «Detalle histórico» si el trabajador tiene boletas en los 6 meses previos; conceptos adicionales en borrador o si ya hay conceptos.
+
 ## 20.20261008 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.

@@ -517,6 +517,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 20.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Pago masivo finalizado: nombre, cuenta de cargo y configuración del banco de solo lectura, como el diario, la fecha y la glosa."
   - version: 19.20261008
     fecha: 08/10/2026
     cambios:

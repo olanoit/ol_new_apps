@@ -10,3 +10,4 @@ from . import test_employee_privacy
 from . import test_sbs_rates
 from . import test_payroll_form_pages
 from . import test_main_parameter_settings
+from . import test_state_readonly

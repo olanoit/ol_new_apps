@@ -19,13 +19,13 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="PM-000000"/></h1>
+                        <h1><field name="name" placeholder="PM-000000" readonly="state == 'done'"/></h1>
                     </div>
                     <group>
                         <group>
                             <field name="format_bank" invisible="1"/>
                             <field name="journal_id" readonly="state == 'done'"/>
-                            <field name="charge_account_id"/>
+                            <field name="charge_account_id" readonly="state == 'done'"/>
                             <field name="payment_date" readonly="state == 'done'"/>
                             <field name="glosa" readonly="state == 'done'"/>
                         </group>
@@ -61,44 +61,44 @@
                             </div>
                             <group name="bbva" string="Datos BBVA" invisible="format_bank != 'bbva'">
                                 <group>
-                                    <field name="process_type"/>
-                                    <field name="owner_validation"/>
+                                    <field name="process_type" readonly="state == 'done'"/>
+                                    <field name="owner_validation" readonly="state == 'done'"/>
                                 </group>
                                 <group>
-                                    <field name="process_hour" invisible="process_type != 'H'"/>
-                                    <field name="alert_indicator"/>
+                                    <field name="process_hour" readonly="state == 'done'" invisible="process_type != 'H'"/>
+                                    <field name="alert_indicator" readonly="state == 'done'"/>
                                 </group>
                             </group>
                             <group name="bcp" string="Datos BCP" invisible="format_bank != 'bcp'">
                                 <group>
-                                    <field name="subtype"/>
+                                    <field name="subtype" readonly="state == 'done'"/>
                                 </group>
                                 <group>
-                                    <field name="idc_flag"/>
+                                    <field name="idc_flag" readonly="state == 'done'"/>
                                 </group>
                             </group>
                             <group name="interbank" string="Datos Interbank" invisible="format_bank != 'interbank'">
                                 <group>
-                                    <field name="company_code"/>
-                                    <field name="service_code"/>
+                                    <field name="company_code" readonly="state == 'done'"/>
+                                    <field name="service_code" readonly="state == 'done'"/>
                                 </group>
                                 <group>
-                                    <field name="process_type_interbank"/>
-                                    <field name="person_type"/>
+                                    <field name="process_type_interbank" readonly="state == 'done'"/>
+                                    <field name="person_type" readonly="state == 'done'"/>
                                 </group>
                             </group>
                             <group name="scotiabank" string="Datos Scotiabank" invisible="format_bank != 'scotiabank'">
                                 <group>
-                                    <field name="charge_way"/>
-                                    <field name="payment_way"/>
+                                    <field name="charge_way" readonly="state == 'done'"/>
+                                    <field name="payment_way" readonly="state == 'done'"/>
                                 </group>
                                 <group>
-                                    <field name="charge_type"/>
+                                    <field name="charge_type" readonly="state == 'done'"/>
                                 </group>
                             </group>
                             <group name="banbif" string="Datos BanBif" invisible="format_bank != 'banbif'">
                                 <group>
-                                    <field name="subtype_banbif"/>
+                                    <field name="subtype_banbif" readonly="state == 'done'"/>
                                 </group>
                             </group>
                         </page>

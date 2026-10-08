@@ -166,18 +166,20 @@
         <field name="arch" type="xml">
             <form string="Línea de liquidación vacacional">
                 <header>
-                    <button name="action_compute" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
+                    <button name="action_compute" invisible="l10n_pe_locked" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
                 </header>
                 <sheet>
+                    <field name="l10n_pe_has_history" invisible="1"/>
+                    <field name="l10n_pe_locked" invisible="1"/>
                     <div class="oe_title">
                         <h1><field name="employee_id" readonly="1"/></h1>
                         <div class="text-muted"><field name="identification_id" readonly="1"/></div>
                     </div>
                     <group>
                         <group string="Trabajador">
-                            <field name="preserve_record"/>
+                            <field name="preserve_record" readonly="l10n_pe_locked"/>
                             <field name="version_id" readonly="1"/>
-                            <field name="vacation_kind"/>
+                            <field name="vacation_kind" readonly="l10n_pe_locked"/>
                             <field name="membership_id"/>
                             <field name="admission_date" readonly="1"/>
                         </group>
@@ -185,9 +187,9 @@
                             <field name="compute_date" readonly="1"/>
                             <field name="compute_date_ini" readonly="1"/>
                             <field name="compute_date_fin" readonly="1"/>
-                            <field name="months"/>
-                            <field name="days"/>
-                            <field name="lacks"/>
+                            <field name="months" readonly="l10n_pe_locked"/>
+                            <field name="days" readonly="l10n_pe_locked"/>
+                            <field name="lacks" readonly="l10n_pe_locked"/>
                             <field name="record_days" readonly="1"/>
                             <field name="total_days" readonly="1"/>
                         </group>
@@ -200,9 +202,9 @@
                                     <field name="household_allowance" readonly="1"/>
                                 </group>
                                 <group>
-                                    <field name="commission"/>
-                                    <field name="bonus"/>
-                                    <field name="extra_hours"/>
+                                    <field name="commission" readonly="l10n_pe_locked"/>
+                                    <field name="bonus" readonly="l10n_pe_locked"/>
+                                    <field name="extra_hours" readonly="l10n_pe_locked"/>
                                     <field name="computable_remuneration" readonly="1"/>
                                 </group>
                             </group>
@@ -210,7 +212,7 @@
                         <page string="Aportes y neto" name="net">
                             <group>
                                 <group>
-                                    <field name="accrued_vacation"/>
+                                    <field name="accrued_vacation" readonly="l10n_pe_locked"/>
                                     <field name="total_vacation" readonly="1"/>
                                     <field name="onp" readonly="1"/>
                                     <field name="afp_jub" readonly="1"/>
@@ -220,7 +222,7 @@
                                     <field name="afp_mixed_com" readonly="1"/>
                                     <field name="afp_fixed_com" readonly="1"/>
                                     <field name="neto_total" readonly="1"/>
-                                    <field name="quinta"/>
+                                    <field name="quinta" readonly="l10n_pe_locked"/>
                                     <field name="total" readonly="1"/>
                                 </group>
                             </group>
@@ -236,6 +238,7 @@
         <field name="model">hr.vacation.line</field>
         <field name="arch" type="xml">
             <list create="0" delete="0">
+                <field name="l10n_pe_has_history" column_invisible="1"/>
                 <field name="preserve_record" string="No R." optional="show"/>
                 <field name="identification_id" string="Nro. doc." optional="show"/>
                 <field name="employee_id" optional="show"/>
@@ -265,7 +268,7 @@
                 <field name="neto_total" sum="Total neto" optional="show" force_save="1"/>
                 <field name="quinta" sum="Total quinta" optional="hide" force_save="1"/>
                 <field name="total" sum="Total a pagar" optional="show" force_save="1"/>
-                <button name="action_show_details" icon="fa-list" type="object" title="Ver detalle"/>
+                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Ver detalle"/>
             </list>
         </field>
     </record>

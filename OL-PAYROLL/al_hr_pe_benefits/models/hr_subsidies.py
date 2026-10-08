@@ -42,6 +42,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import compute_locked
 
 ILLNESS_SUSPENSION_CODE = '21'    # T21-21: enfermedad
 MATERNITY_SUSPENSION_CODE = '22'  # T21-22: maternidad
@@ -477,6 +478,15 @@ class HrSubsidiesLine(models.Model):
     _description = 'Línea de subsidio'
     _check_company_auto = True
     _order = 'periodo_id'
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+
+    @api.depends('subsidies_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'subsidies_id': ('draft',)})
 
     subsidies_id = fields.Many2one(
         'hr.subsidies', string='Subsidio', ondelete='cascade',

@@ -37,6 +37,7 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
     ensure_draft, ensure_line_draft, notify_success)
+from .hr_benefits_engine import compute_locked
 
 
 class HrLiquidation(models.Model):
@@ -490,6 +491,15 @@ class HrLiquidationVacationLine(models.Model):
     _order = 'employee_id'
     _check_company_auto = True
 
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+
+    @api.depends('liquidation_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'liquidation_id': ('draft',)})
+
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',
         required=True, index=True,
@@ -637,6 +647,15 @@ class HrLiquidationExtraConcepts(models.Model):
     _description = 'Conceptos adicionales de liquidación'
     _order = 'employee_id'
     _check_company_auto = True
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+
+    @api.depends('liquidation_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'liquidation_id': ('draft',)})
 
     liquidation_id = fields.Many2one(
         'hr.liquidation', string='Liquidación', ondelete='cascade',

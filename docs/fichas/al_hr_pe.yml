@@ -724,6 +724,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 32.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "El periodo de la boleta y del lote se bloquea con el estado, como la estructura y las fechas nativas (boleta validada, pagada o cancelada; lote fuera de «Listo»)."
   - version: 31.20261008
     fecha: 08/10/2026
     cambios:

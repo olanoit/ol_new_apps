@@ -37,6 +37,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import ensure_draft, ensure_line_draft
+from .hr_benefits_engine import compute_has_history, compute_locked
 
 LABOR_REGIMES_WITH_VACATION = ('general', 'small', 'micro')
 VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
@@ -509,6 +510,21 @@ class HrVacationLine(models.Model):
     _description = 'Línea de liquidación vacacional'
     _order = 'employee_id'
     _check_company_auto = True
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+    l10n_pe_has_history = fields.Boolean(
+        string='Con histórico', compute='_compute_l10n_pe_has_history')
+
+    @api.depends('vacation_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'vacation_id': ('draft',)})
+
+    @api.depends('vacation_id.payslip_run_id.date_end', 'employee_id')
+    def _compute_l10n_pe_has_history(self):
+        compute_has_history(self, lambda line: line.vacation_id.payslip_run_id.date_end)
 
     vacation_id = fields.Many2one(
         'hr.vacation', string='Liquidación', ondelete='cascade',

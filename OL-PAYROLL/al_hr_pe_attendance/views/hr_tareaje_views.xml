@@ -9,31 +9,33 @@
         <field name="model">hr.tareaje.manager.line.attendance</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="employee_id" optional="hide"/>
-                <field name="fecha" optional="show"/>
-                <field name="day_name" optional="show"/>
-                <field name="horario" optional="show"/>
-                <field name="mar_hora_ing" optional="show" widget="float_time"/>
-                <field name="mar_hora_sal" optional="show" widget="float_time"/>
-                <field name="worked_hours" optional="show" widget="float_time"/>
-                <field name="state" widget="badge"
+                <!-- Con el tareaje aplicado el detalle es de solo lectura -->
+                <field name="tareaje_state" column_invisible="1"/>
+                <field readonly="tareaje_state == 'done'" name="employee_id" optional="hide"/>
+                <field readonly="tareaje_state == 'done'" name="fecha" optional="show"/>
+                <field readonly="tareaje_state == 'done'" name="day_name" optional="show"/>
+                <field readonly="tareaje_state == 'done'" name="horario" optional="show"/>
+                <field readonly="tareaje_state == 'done'" name="mar_hora_ing" optional="show" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="mar_hora_sal" optional="show" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="worked_hours" optional="show" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="state" widget="badge"
                     decoration-success="state == 'ok'"
                     decoration-warning="state in ('descanso', 'feriado', 'descanso_trab', 'feriado_trab')"
                     decoration-danger="state in ('falta', 'incompleto')"
                     decoration-info="state == 'ausencia'"/>
-                <field name="incos" optional="hide" sum="Total"/>
-                <field name="dlab" optional="show" sum="Total"/>
-                <field name="dlabn" optional="hide" sum="Total"/>
-                <field name="htd" optional="hide" sum="Total" widget="float_time"/>
-                <field name="htn" optional="hide" sum="Total" widget="float_time"/>
-                <field name="dom" optional="show" sum="Total"/>
-                <field name="fer" optional="hide" sum="Total"/>
-                <field name="fal" optional="show" sum="Total"/>
-                <field name="tar" optional="show" sum="Total" widget="float_time"/>
-                <field name="he25" optional="show" sum="Total" widget="float_time"/>
-                <field name="he35" optional="show" sum="Total" widget="float_time"/>
-                <field name="he100" optional="hide" sum="Total" widget="float_time"/>
-                <field name="hours_compensate" optional="show" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="incos" optional="hide" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="dlab" optional="show" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="dlabn" optional="hide" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="htd" optional="hide" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="htn" optional="hide" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="dom" optional="show" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="fer" optional="hide" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="fal" optional="show" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="tar" optional="show" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="he25" optional="show" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="he35" optional="show" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="he100" optional="hide" sum="Total" widget="float_time"/>
+                <field readonly="tareaje_state == 'done'" name="hours_compensate" optional="show" sum="Total" widget="float_time"/>
                 <field name="company_id" column_invisible="1"/>
             </list>
         </field>
@@ -94,7 +96,9 @@
                                     <field name="he35" optional="show" sum="Total" widget="float_time"/>
                                     <field name="he100" optional="hide" sum="Total" widget="float_time"/>
                                     <field name="company_id" column_invisible="1"/>
-                                    <button name="action_show_details" icon="fa-list" title="Ver detalle diario" type="object"/>
+                                    <field name="attendance_line_ids" column_invisible="1"/>
+                                    <button name="action_show_details" icon="fa-list" title="Ver detalle diario" type="object"
+                                            invisible="not attendance_line_ids"/>
                                 </list>
                             </field>
                         </page>

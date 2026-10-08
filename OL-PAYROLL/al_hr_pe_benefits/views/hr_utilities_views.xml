@@ -79,26 +79,27 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_compute" string="Recalcular" type="object" context="{'line_form': True}"/>
+                    <button name="action_compute" invisible="l10n_pe_locked" string="Recalcular" type="object" context="{'line_form': True}"/>
                 </header>
                 <sheet>
+                    <field name="l10n_pe_locked" invisible="1"/>
                     <div class="oe_title">
                         <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
                         <div class="text-muted"><field name="employee_document" readonly="1"/></div>
                     </div>
                     <group>
                         <group string="Trabajador">
-                            <field name="preserve_record"/>
+                            <field name="preserve_record" readonly="l10n_pe_locked"/>
                             <field name="version_id" readonly="1"/>
                             <field name="admission_date" readonly="1"/>
                             <field name="distribution_id" readonly="1"/>
                         </group>
                         <group string="Cálculo">
-                            <field name="salary"/>
-                            <field name="number_of_days"/>
+                            <field name="salary" readonly="l10n_pe_locked"/>
+                            <field name="number_of_days" readonly="l10n_pe_locked"/>
                             <field name="for_salary" readonly="1" force_save="1"/>
                             <field name="for_number_of_days" readonly="1" force_save="1"/>
-                            <field name="monthly_remuneration"/>
+                            <field name="monthly_remuneration" readonly="l10n_pe_locked"/>
                             <field name="excess_utilities" readonly="1" force_save="1"/>
                             <field name="total_utilities" readonly="1" force_save="1"/>
                         </group>

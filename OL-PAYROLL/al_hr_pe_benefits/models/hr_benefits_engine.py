@@ -68,6 +68,34 @@ def ensure_line_draft(lines, *header_fields):
             ensure_draft(headers)
 
 
+
+def compute_locked(lines, rules):
+    """``l10n_pe_locked`` de las líneas: la cabecera ya no se edita.
+
+    ``rules`` es ``{campo_cabecera: estados_editables}``; con varias
+    cabeceras (lote o liquidación) basta una cerrada para bloquear.
+    """
+    for line in lines:
+        line.l10n_pe_locked = any(
+            line[field] and line[field].state not in editable
+            for field, editable in rules.items())
+
+
+def compute_has_history(lines, date_getter):
+    """``l10n_pe_has_history``: el botón «Detalle histórico» rehace el
+    detalle con las boletas BASE de los 6 meses previos; sin boletas no hay
+    nada que mostrar. Una consulta por (compañía, fecha de cálculo)."""
+    Param = lines.env['hr.main.parameter']
+    groups = {}
+    for line in lines:
+        key = (line.company_id, date_getter(line))
+        groups[key] = groups.get(key, lines.browse()) | line
+    for (company, date_calculate), group in groups.items():
+        employee_ids = Param._l10n_pe_history_employee_ids(
+            company, date_calculate, group.employee_id) if date_calculate else set()
+        for line in group:
+            line.l10n_pe_has_history = line.employee_id.id in employee_ids
+
 class HrMainParameter(models.Model):
     _inherit = 'hr.main.parameter'
 
@@ -393,6 +421,32 @@ class HrMainParameter(models.Model):
         return current, excess
 
     @api.model
+    def _l10n_pe_history_window(self, date_calculate):
+        """Ventana del histórico: los 6 meses completos previos al mes de
+        cálculo."""
+        start_ref = date_calculate - relativedelta(months=6)
+        end_ref = date_calculate - relativedelta(months=1)
+        return (date(start_ref.year, start_ref.month, 1),
+                date(end_ref.year, end_ref.month,
+                     calendar.monthrange(end_ref.year, end_ref.month)[1]))
+
+    @api.model
+    def _l10n_pe_history_employee_ids(self, company, date_calculate, employees):
+        """Ids de los empleados con boletas BASE en la ventana del
+        histórico (una sola consulta para todo el grupo)."""
+        if not employees:
+            return set()
+        date_from, date_to = self._l10n_pe_history_window(date_calculate)
+        groups = self.env['hr.payslip']._read_group([
+            ('employee_id', 'in', employees.ids),
+            ('company_id', '=', company.id),
+            ('struct_id', '=', self.env.ref('al_hr_pe.base_structure').id),
+            ('date_to', '>=', date_from),
+            ('date_to', '<=', date_to),
+        ], ['employee_id'])
+        return {employee.id for (employee,) in groups}
+
+    @api.model
     def get_salary_history(self, employee, company, date_calculate):
         """Histórico de nómina (estructura BASE) de los 6 meses previos.
 
@@ -403,11 +457,7 @@ class HrMainParameter(models.Model):
         """
         param = self.get_main_parameter(company)
         base_struct = self.env.ref('al_hr_pe.base_structure')
-        start_ref = date_calculate - relativedelta(months=6)
-        date_from = date(start_ref.year, start_ref.month, 1)
-        end_ref = date_calculate - relativedelta(months=1)
-        date_to = date(end_ref.year, end_ref.month,
-                       calendar.monthrange(end_ref.year, end_ref.month)[1])
+        date_from, date_to = self._l10n_pe_history_window(date_calculate)
         slips = self.env['hr.payslip'].search([
             ('employee_id', '=', employee.id),
             ('company_id', '=', company.id),

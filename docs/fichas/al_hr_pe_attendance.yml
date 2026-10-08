@@ -563,6 +563,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Tareaje aplicado: el detalle diario queda de solo lectura; el botón de detalle de cada línea solo aparece si la línea tiene días cargados."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

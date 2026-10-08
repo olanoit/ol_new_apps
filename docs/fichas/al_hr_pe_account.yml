@@ -589,6 +589,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 10.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Liquidación: el botón «Generar asiento» de cada cesado solo aparece mientras no tiene asiento, y su «No R.» se bloquea al generarlo."
   - version: 9.20261008
     fecha: 08/10/2026
     cambios:

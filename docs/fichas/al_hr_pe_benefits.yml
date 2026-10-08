@@ -792,6 +792,11 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 21.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Campos editables según el estado: cabeceras y líneas solo en borrador (la quinta, también «En proceso»); el formulario de cada línea queda de solo lectura con su documento cerrado y oculta «Calcular»."
+      - "Botones de las listas solo con datos: «Detalle histórico» si el trabajador tiene boletas en los 6 meses previos; conceptos adicionales en borrador o si ya hay conceptos."
   - version: 20.20261008
     fecha: 08/10/2026
     cambios:

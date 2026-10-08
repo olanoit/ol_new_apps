@@ -53,7 +53,7 @@
                             <field name="employee_count"/>
                             <field name="amount_base"/>
                             <field name="amount_total"/>
-                            <field name="payment_reference"/>
+                            <field name="payment_reference" readonly="state == 'paid'"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>

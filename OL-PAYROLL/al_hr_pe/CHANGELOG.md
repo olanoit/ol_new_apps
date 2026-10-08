@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 32.20261008 — 08/10/2026
+
+- El periodo de la boleta y del lote se bloquea con el estado, como la estructura y las fechas nativas (boleta validada, pagada o cancelada; lote fuera de «Listo»).
+
 ## 31.20261008 — 08/10/2026
 
 - Abrir Ajustes desde otras apps (p. ej. al crear un almacén) sin permisos de planillas ya no falla por la configuración principal.

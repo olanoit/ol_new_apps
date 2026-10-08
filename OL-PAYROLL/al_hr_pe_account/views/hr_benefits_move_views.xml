@@ -115,10 +115,12 @@
                             <field name="version_id" optional="hide"/>
                             <field name="admission_date" optional="show"/>
                             <field name="cessation_date" optional="show"/>
-                            <field name="preserve_record" string="No R." optional="show"/>
+                            <field name="preserve_record" string="No R." optional="show"
+                                   readonly="account_move_id"/>
                             <field name="account_move_id" optional="show"/>
                             <button name="action_open_move_wizard" type="object"
-                                    icon="fa-bars" title="Generar asiento"/>
+                                    icon="fa-bars" title="Generar asiento"
+                                    invisible="account_move_id"/>
                         </list>
                     </field>
                 </page>

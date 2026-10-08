@@ -32,6 +32,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import compute_locked
 
 
 class HrUtilities(models.Model):
@@ -283,6 +284,15 @@ class HrUtilitiesLine(models.Model):
     _description = 'Línea de utilidad'
     _order = 'employee_id'
     _check_company_auto = True
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+
+    @api.depends('main_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'main_id': ('draft',)})
 
     main_id = fields.Many2one(
         'hr.utilities', string='Utilidades', ondelete='cascade',

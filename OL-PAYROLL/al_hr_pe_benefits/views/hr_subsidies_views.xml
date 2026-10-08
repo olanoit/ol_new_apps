@@ -83,19 +83,19 @@
                             <field name="suspension_id" readonly="state == 'close'" options="{'no_create': True}"/>
                             <label for="date_start" string="Fechas de contingencia"/>
                             <div name="dates_contingencia">
-                                <field name="date_start" class="oe_inline"/> - <field name="date_end" class="oe_inline"/>
+                                <field name="date_start" readonly="state == 'close'" class="oe_inline"/> - <field name="date_end" readonly="state == 'close'" class="oe_inline"/>
                             </div>
                         </group>
                         <group>
                             <field name="type" readonly="state == 'close'" required="1"/>
                             <field name="is_compute_20_days" invisible="type == 'maternity'" readonly="state == 'close'"/>
-                            <field name="preserve_record"/>
+                            <field name="preserve_record" readonly="state == 'close'"/>
                             <field name="company_id" invisible="1"/>
                         </group>
                     </group>
                     <notebook invisible="state != 'close'">
                         <page string="Remuneraciones" name="remunerations">
-                    <field name="subsidies_line_ids">
+                    <field name="subsidies_line_ids" readonly="state == 'close'">
                         <list editable="top">
                             <field name="periodo_id" optional="show"/>
                             <field name="wage" sum="Básico" optional="show"/>
@@ -111,7 +111,7 @@
                         </page>
                         <page string="Cálculo" name="calculation">
                     <group string="Subsidio total">
-                        <field name="subsidies_total_ids" nolabel="1" colspan="2">
+                        <field name="subsidies_total_ids" readonly="state == 'close'" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="total_rem" optional="show"/>
                                 <field name="sub_dia" optional="show"/>
@@ -122,7 +122,7 @@
                         </field>
                     </group>
                     <group string="Subsidio por periodos">
-                        <field name="subsidies_periodo_ids" nolabel="1" colspan="2">
+                        <field name="subsidies_periodo_ids" readonly="state == 'close'" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="periodo_id" optional="show"/>
                                 <field name="days" sum="Días" optional="show"/>

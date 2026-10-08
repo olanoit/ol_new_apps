@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
         <field name="arch" type="xml">
             <field name="struct_id" position="after">
-                <field name="periodo_id"/>
+                <field name="periodo_id" readonly="state in ['cancel', 'validated', 'paid']"/>
             </field>
             <!-- «Planilla PE»: datos peruanos de la nómina en pestañas internas;
                  los demás módulos cuelgan las suyas de l10n_pe_payslip_notebook
@@ -45,7 +45,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
         <field name="arch" type="xml">
             <field name="date_end" position="after">
-                <field name="periodo_id"/>
+                <field name="periodo_id" readonly="state != '01_ready'"/>
             </field>
         </field>
     </record>

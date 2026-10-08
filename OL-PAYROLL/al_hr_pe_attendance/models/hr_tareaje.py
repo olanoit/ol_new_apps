@@ -919,6 +919,9 @@ class HrTareajeManagerLineAttendance(models.Model):
         check_company=True)
     company_id = fields.Many2one(
         related='tareaje_line_id.company_id', store=True, index=True)
+    # Estado del tareaje: con el tareaje aplicado el detalle no se edita.
+    tareaje_state = fields.Selection(
+        related='tareaje_line_id.tareaje_id.state', string='Estado del tareaje')
     employee_id = fields.Many2one(
         'hr.employee', string='Empleado', check_company=True)
     fecha = fields.Date(string='Fecha')

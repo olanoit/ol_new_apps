@@ -45,10 +45,11 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_compute" string="Calcular" type="object"
+                    <button name="action_compute" invisible="l10n_pe_locked" string="Calcular" type="object"
                             context="{'line_form': True}" class="oe_edit_only"/>
                 </header>
                 <sheet>
+                    <field name="l10n_pe_locked" invisible="1"/>
                     <div class="oe_title">
                         <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
                         <div class="text-muted"><field name="identification_id" readonly="1"/></div>
@@ -57,12 +58,12 @@
                         <group string="Proyección anual">
                             <field name="slip_id" readonly="1" invisible="1"/>
                             <field name="monthly_rem" readonly="1"/>
-                            <field name="edit_proy" widget="boolean_toggle"/>
-                            <field name="contrac_proy_rem" readonly="not edit_proy"/>
+                            <field name="edit_proy" readonly="l10n_pe_locked" widget="boolean_toggle"/>
+                            <field name="contrac_proy_rem" readonly="(not edit_proy) or l10n_pe_locked"/>
                             <field name="proy_rem" readonly="1"/>
-                            <field name="grat_july" readonly="not edit_proy"/>
-                            <field name="grat_december" readonly="not edit_proy"/>
-                            <field name="other_emp_proy_rem"/>
+                            <field name="grat_july" readonly="(not edit_proy) or l10n_pe_locked"/>
+                            <field name="grat_december" readonly="(not edit_proy) or l10n_pe_locked"/>
+                            <field name="other_emp_proy_rem" readonly="l10n_pe_locked"/>
                             <field name="past_rem" readonly="1"/>
                             <field name="total_proy" readonly="1"/>
                             <field name="seven_uit" readonly="1"/>
@@ -71,12 +72,12 @@
                             <field name="net_rent" readonly="1"/>
                             <field name="tax_proy" readonly="1"/>
                             <field name="past_months_ret" readonly="1"/>
-                            <field name="other_emp_ret"/>
+                            <field name="other_emp_ret" readonly="l10n_pe_locked"/>
                             <field name="annual_ret" readonly="1"/>
                             <field name="monthly_rent" readonly="1"/>
-                            <field name="ext_rem"/>
+                            <field name="ext_rem" readonly="l10n_pe_locked"/>
                             <field name="total_net_rent" readonly="1"/>
-                            <field name="ext_ret" readonly="not edit_proy"/>
+                            <field name="ext_ret" readonly="(not edit_proy) or l10n_pe_locked"/>
                             <field name="monthly_ret" readonly="1"/>
                             <field name="saldo_ret" readonly="1"/>
                             <field name="previous_line_id" invisible="not previous_line_id"/>
@@ -194,7 +195,7 @@
                     </div>
                     <group>
                         <group string="Actual">
-                            <field name="payslip_run_id" readonly="state == 'exported'"
+                            <field name="payslip_run_id" readonly="state != 'draft'"
                                    options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                             <field name="middle_month_number"/>
                             <field name="company_id" readonly="1"
@@ -211,7 +212,7 @@
                                              'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_view_form'}"/>
                         </page>
                         <page string="Excluidos de quinta" name="excluidos">
-                            <field name="line_excluidos_ids"
+                            <field name="line_excluidos_ids" readonly="state == 'exported'"
                                    context="{'list_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_list',
                                              'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_form'}"/>
                         </page>

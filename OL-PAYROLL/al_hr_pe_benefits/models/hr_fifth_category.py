@@ -36,6 +36,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import compute_locked
 
 
 class HrMainParameter(models.Model):
@@ -326,6 +327,15 @@ class HrFifthCategoryLine(models.Model):
     _description = 'Línea de renta de 5ta categoría'
     _order = 'employee_id'
     _check_company_auto = True
+
+    # La cabecera (lote o liquidación) ya no está en un estado editable: la
+    # vista deja la línea de solo lectura.
+    l10n_pe_locked = fields.Boolean(
+        string='Bloqueada', compute='_compute_l10n_pe_locked')
+
+    @api.depends('fifth_category_id.state')
+    def _compute_l10n_pe_locked(self):
+        compute_locked(self, {'fifth_category_id': ('draft', 'verify')})
 
     fifth_category_id = fields.Many2one(
         'hr.fifth.category', string='Quinta cat.', ondelete='cascade',

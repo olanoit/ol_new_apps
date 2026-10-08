@@ -607,6 +607,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 20.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "CONAFOVICER pagado: la constancia de pago no se edita. El botón «Trabajadores» de la obra solo aparece si tiene trabajadores."
   - version: 19.20261008
     fecha: 08/10/2026
     cambios:
