@@ -11,17 +11,17 @@
             <t t-set="documents" t-value="o._l10n_pe_edi_get_retention_breakdown()"/>
             <t t-set="supplier" t-value="o.partner_id.commercial_partner_id"/>
             <t t-set="supplier_id_type" t-value="supplier.l10n_latam_identification_type_id"/>
-            <div class="page cre-fs-13">
+            <div class="page pe-doc-fs-13">
                 <!-- Encabezado: logo, datos de la compañía y recuadro del comprobante -->
                 <table class="table table-sm table-borderless mb-2">
                     <tr>
                         <td style="width: 15%;" class="align-middle">
                             <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
-                                 class="cre-header-logo" alt="Logo"/>
+                                 class="pe-doc-logo" alt="Logo"/>
                         </td>
                         <td style="width: 50%;">
-                            <ul class="cre-company">
-                                <li class="cre-fs-20"><strong t-out="company.name"/></li>
+                            <ul class="pe-doc-company">
+                                <li class="pe-doc-fs-20"><strong t-out="company.name"/></li>
                                 <li t-if="company.street">
                                     <strong>Domicilio fiscal:</strong>
                                     <span t-out="', '.join(p for p in (company.street, company.city, company.state_id.name) if p)"/>
@@ -31,7 +31,7 @@
                             </ul>
                         </td>
                         <td style="width: 35%;">
-                            <ul class="cre-doc-box cre-fs-14">
+                            <ul class="pe-doc-box pe-doc-fs-14">
                                 <li>R.U.C. <span t-out="company.vat"/></li>
                                 <li><strong>COMPROBANTE DE RETENCIÓN ELECTRÓNICO</strong></li>
                                 <li><strong>N.º <span t-out="o.l10n_pe_edi_retention_number"/></strong></li>
@@ -41,36 +41,36 @@
                 </table>
 
                 <!-- Datos del proveedor y de la retención -->
-                <table class="cre-table mb-3">
+                <table class="pe-doc-table mb-3">
                     <tr>
-                        <td class="cre-label" style="width: 16%;">Proveedor</td>
-                        <td class="cre-value" style="width: 44%;"><span t-out="supplier.name"/></td>
-                        <td class="cre-label" style="width: 18%;">Fecha de emisión</td>
-                        <td class="cre-value" style="width: 22%;">
+                        <td class="pe-doc-label" style="width: 16%;">Proveedor</td>
+                        <td class="pe-doc-value" style="width: 44%;"><span t-out="supplier.name"/></td>
+                        <td class="pe-doc-label" style="width: 18%;">Fecha de emisión</td>
+                        <td class="pe-doc-value" style="width: 22%;">
                             <span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
                         </td>
                     </tr>
                     <tr>
-                        <td class="cre-label">
+                        <td class="pe-doc-label">
                             <t t-if="supplier_id_type.l10n_pe_vat_code == '6' or (supplier_id_type.l10n_pe_vat_code in (False, '0') and len(supplier.vat or '') == 11)">R.U.C.</t>
                             <t t-else="" t-out="supplier_id_type.name"/>
                         </td>
-                        <td class="cre-value"><span t-out="supplier.vat"/></td>
-                        <td class="cre-label">Régimen</td>
-                        <td class="cre-value">Retención del IGV (<span t-out="'%g' % company.l10n_pe_retention_rate"/> %)</td>
+                        <td class="pe-doc-value"><span t-out="supplier.vat"/></td>
+                        <td class="pe-doc-label">Régimen</td>
+                        <td class="pe-doc-value">Retención del IGV (<span t-out="'%g' % company.l10n_pe_retention_rate"/> %)</td>
                     </tr>
                     <tr>
-                        <td class="cre-label">Dirección</td>
-                        <td class="cre-value"><span t-out="supplier.contact_address_inline"/></td>
-                        <td class="cre-label">Moneda</td>
-                        <td class="cre-value">Soles (PEN)</td>
+                        <td class="pe-doc-label">Dirección</td>
+                        <td class="pe-doc-value"><span t-out="supplier.contact_address_inline"/></td>
+                        <td class="pe-doc-label">Moneda</td>
+                        <td class="pe-doc-value">Soles (PEN)</td>
                     </tr>
                 </table>
 
                 <!-- Comprobantes a los que se aplica la retención -->
-                <table class="cre-table mb-3">
+                <table class="pe-doc-table mb-3">
                     <thead>
-                        <tr class="cre-thead">
+                        <tr class="pe-doc-thead">
                             <td>Tipo</td>
                             <td>Comprobante</td>
                             <td>Fecha</td>
@@ -99,37 +99,23 @@
                                 t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="pe-doc-total">
+                            <td colspan="6" class="text-end">Totales</td>
+                            <td class="text-end"><span t-out="sum(d['bill_retention_pen'] for d in documents)"
+                                t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
+                            <td class="text-end"><span t-out="sum(d['net_total_paid_pen'] for d in documents)"
+                                t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
+                        </tr>
+                        <tr class="pe-doc-note">
+                            <td colspan="8" class="pe-doc-fs-11">
+                                Representación impresa del Comprobante de Retención Electrónico.
+                                <t t-if="o.l10n_pe_edi_status == 'sent'">Aceptado por SUNAT.</t>
+                                Consulte su validez en www.sunat.gob.pe.
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
-
-                <div class="row">
-                    <div class="col-7 cre-fs-11">
-                        <table class="cre-table">
-                            <tr><td class="cre-subheader">Representación impresa</td></tr>
-                            <tr>
-                                <td class="cre-value">
-                                    Representación impresa del Comprobante de Retención
-                                    Electrónico.
-                                    <t t-if="o.l10n_pe_edi_status == 'sent'">Aceptado por SUNAT.</t>
-                                    Consulte su validez en www.sunat.gob.pe.
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-5">
-                        <table class="cre-table">
-                            <tr>
-                                <td class="cre-label">Total retenido</td>
-                                <td class="cre-label text-end"><span t-out="sum(d['bill_retention_pen'] for d in documents)"
-                                    t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
-                            </tr>
-                            <tr>
-                                <td class="cre-value">Total pagado (neto)</td>
-                                <td class="cre-value text-end"><span t-out="sum(d['net_total_paid_pen'] for d in documents)"
-                                    t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
             </div>
         </t>
     </template>

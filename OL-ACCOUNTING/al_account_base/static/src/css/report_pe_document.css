@@ -1,0 +1,117 @@
+/* Comprobantes impresos de la localización peruana (factura, boleta, notas,
+   guía de remisión, comprobante de retención): un solo lenguaje visual en
+   blanco y negro. Encabezado con logo, datos de la compañía y recuadro del
+   documento; datos del adquirente en una tabla con borde redondeado; detalle
+   con cabecera gris oscuro y, al pie de la MISMA tabla, totales y leyenda. */
+
+.pe-doc-table {
+    border: 1px solid #000;
+    border-radius: 5px;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Bootstrap 5 (reboot) deja tr/td/th con border-style: solid y ancho 0 y
+   el WebKit de wkhtmltopdf dibuja con eso líneas fantasma: se neutraliza en
+   las tablas propias y cada fila especial redeclara su borde más abajo. */
+.pe-doc-table thead,
+.pe-doc-table tbody,
+.pe-doc-table tfoot,
+.pe-doc-table tr,
+.pe-doc-table td,
+.pe-doc-table th {
+    border: none;
+}
+
+.pe-doc-table td,
+.pe-doc-table th {
+    padding: 4px 8px;
+    vertical-align: top;
+}
+
+/* Tablas de maquetación (encabezado, QR) sin bordes */
+.pe-doc-plain {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pe-doc-plain tr,
+.pe-doc-plain td {
+    border: none;
+    vertical-align: top;
+}
+
+.pe-doc-label {
+    font-weight: bold;
+    color: #000;
+}
+
+.pe-doc-value {
+    font-weight: normal;
+    color: #000;
+}
+
+.pe-doc-logo {
+    max-height: 80px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+}
+
+.pe-doc-company {
+    list-style-type: none;
+    padding-left: 4px;
+    margin: 0;
+}
+
+.pe-doc-box {
+    border: 2px solid #000;
+    border-radius: 5px;
+    color: #000;
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Cabecera del detalle: gris oscuro suave, texto blanco (único acento) */
+.pe-doc-table .pe-doc-thead > td,
+.pe-doc-table .pe-doc-thead > th {
+    background-color: #595959;
+    color: #fff;
+    font-weight: bold;
+}
+
+.pe-doc-table .pe-doc-subheader > td {
+    border-bottom: 1px solid #000;
+    font-weight: bold;
+}
+
+/* Pie de la tabla del detalle: totales, importe en letras y leyenda */
+.pe-doc-table .pe-doc-total > td {
+    border-top: 1px solid #000;
+    font-weight: bold;
+}
+
+.pe-doc-table .pe-doc-subtotal > td {
+    border-top: 1px solid #bfbfbf;
+}
+
+.pe-doc-table .pe-doc-note > td {
+    border-top: 1px solid #000;
+}
+
+.pe-doc-fs-20 { font-size: 20px; }
+.pe-doc-fs-14 { font-size: 14px; }
+.pe-doc-fs-13 { font-size: 13px; }
+.pe-doc-fs-11 { font-size: 11px; }
+
+/* Filas del detalle separadas por una línea fina */
+.pe-doc-table > tbody > tr + tr > td {
+    border-top: 1px solid #d9d9d9;
+}
+
+.pe-doc-table > tfoot > .pe-doc-first > td {
+    border-top: 1px solid #000;
+}

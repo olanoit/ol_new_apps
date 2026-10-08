@@ -87,4 +87,6 @@ class TestInvoiceReport(AccountTestInvoicingCommon):
         # Sin XML firmado aún no hay QR: el bloque QR no debe renderizarse
         # y la información legal ocupa todo el ancho
         self.assertNotIn('CÓDIGO QR'.encode(), html_a4)
-        self.assertIn(b'cpe-footer-info-full', html_a4)
+        # Sin QR la información adicional sigue en el pie de la tabla
+        self.assertNotIn(b'alt="QR SUNAT"', html_a4)
+        self.assertIn('Información adicional'.encode(), html_a4)

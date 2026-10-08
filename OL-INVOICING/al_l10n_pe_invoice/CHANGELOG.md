@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261008 — 08/10/2026
+
+- Comprobante A4 con el estilo común de los comprobantes PE en blanco y negro: encabezado con recuadro R.U.C./tipo/número, datos del adquirente en tabla, y líneas, totales, importe en letras, detracción e información adicional con QR en una sola tabla; cuotas y cuentas bancarias con la misma cabecera gris.
+- Ticket 80 mm: recuadro del documento con R.U.C., cabecera gris oscuro del detalle y totales e importe en letras en la misma tabla.
+
 ## 16.20261008 — 08/10/2026
 
 - La pestaña «Documentos EDI» (estado del envío al OSE, errores y descarga del XML) pasa a «Facturación PE ▸ Envío electrónico» y la ve el equipo de facturación, no solo el modo desarrollador.

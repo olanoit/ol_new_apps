@@ -223,7 +223,7 @@ pasos:
       Cada CRE con los comprobantes pagados, el importe pagado y el retenido,
       el plazo de envío y su estado: en amarillo los fuera de plazo y en rojo
       los rechazados. El comprobante impreso lleva logo, datos de la compañía
-      y recuadro con R.U.C. y número.
+      y recuadro con R.U.C. y número, en blanco y negro.
     imagen: screenshots/15-efectuadas.png
   - titulo: Análisis de retenciones
     ruta: Perú ▸ Retenciones IGV ▸ Análisis de retenciones
@@ -403,6 +403,12 @@ faq:
       anterior.
 
 novedades:
+  - version: 16.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Usa la hoja común de comprobantes PE; la cabecera del detalle pasa de negro a gris oscuro suave."
+      - "Comprobante de retención impreso en blanco y negro: recuadro y bordes negros, cabecera del detalle negra con texto blanco, sin colores."
+      - "Líneas, totales (retenido y neto pagado) y la leyenda de representación impresa en una sola tabla, como la factura."
   - version: 15.20261008
     fecha: 08/10/2026
     cambios:

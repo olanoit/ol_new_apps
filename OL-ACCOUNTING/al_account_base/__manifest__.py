@@ -24,9 +24,17 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '7.20261008',
+    'version': '8.20261008',
     'license': 'OPL-1',
     'depends': ['account'],
+    'assets': {
+        'web.report_assets_common': [
+            'al_account_base/static/src/css/report_pe_document.css',
+        ],
+        'web.report_assets_pdf': [
+            'al_account_base/static/src/css/report_pe_document.css',
+        ],
+    },
     'data': [
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',

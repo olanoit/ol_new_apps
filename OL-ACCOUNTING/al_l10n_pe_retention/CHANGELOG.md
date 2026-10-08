@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261008 — 08/10/2026
+
+- Usa la hoja común de comprobantes PE; la cabecera del detalle pasa de negro a gris oscuro suave.
+- Comprobante de retención impreso en blanco y negro: recuadro y bordes negros, cabecera del detalle negra con texto blanco, sin colores.
+- Líneas, totales (retenido y neto pagado) y la leyenda de representación impresa en una sola tabla, como la factura.
+
 ## 15.20261008 — 08/10/2026
 
 - Comprobante de retención impreso rediseñado: logo y datos de la compañía, recuadro con R.U.C., tipo y número, datos del proveedor en tabla y detalle con cabecera de color; formato de papel propio sin margen sobrante y «R.U.C.» también para proveedores con tipo de documento genérico.

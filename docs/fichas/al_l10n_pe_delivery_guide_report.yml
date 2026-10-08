@@ -172,6 +172,10 @@ faq:
       y el vehículo.
 
 novedades:
+  - version: 10.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Guía de remisión con el estilo común de los comprobantes PE en blanco y negro: recuadro R.U.C./tipo/número, bloques de datos en tablas con borde redondeado y el detalle de bienes con la información adicional y el QR en una sola tabla."
   - version: 9.20261008
     fecha: 08/10/2026
     cambios:

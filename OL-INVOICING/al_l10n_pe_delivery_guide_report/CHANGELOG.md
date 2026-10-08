@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261008 — 08/10/2026
+
+- Guía de remisión con el estilo común de los comprobantes PE en blanco y negro: recuadro R.U.C./tipo/número, bloques de datos en tablas con borde redondeado y el detalle de bienes con la información adicional y el QR en una sola tabla.
+
 ## 9.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261008 — 08/10/2026
+
+- Hoja de estilos común de los comprobantes impresos PE (report_pe_document.css, prefijo pe-doc-): blanco y negro, encabezado con logo y recuadro R.U.C./tipo/número, tablas con borde redondeado y cabecera gris oscuro; la usan la factura A4, la guía de remisión y el comprobante de retención.
+
 ## 7.20261008 — 08/10/2026
 
 - Ícono propio de la app Perú en el menú principal (logo de la Marca Perú).

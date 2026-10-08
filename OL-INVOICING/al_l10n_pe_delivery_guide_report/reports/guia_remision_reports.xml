@@ -38,19 +38,18 @@
                  t-att-data-oe-id="o and o.id"
                  t-att-data-oe-lang="o and o.env.context.get('lang')">
 
-                <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento -->
-                <table class="gre-header">
+                <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento
+                     (estilo común de los comprobantes PE, al_account_base) -->
+                <table class="pe-doc-plain mb-2">
                     <tr>
-                        <td class="gre-header-logo">
-                            <img t-if="o.company_id.logo"
-                                 t-att-src="image_data_uri(o.company_id.logo)" alt="Logo"/>
+                        <td style="width: 15%;" class="align-middle">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                 class="pe-doc-logo" alt="Logo"/>
                         </td>
-                        <td class="gre-header-company">
-                            <div class="gre-company-name">
-                                <span t-field="o.company_id.name"/>
-                            </div>
-                            <div class="gre-company-info">
-                                <div t-if="o.company_id.street">
+                        <td style="width: 50%;">
+                            <ul class="pe-doc-company">
+                                <li class="pe-doc-fs-14"><strong t-field="o.company_id.name"/></li>
+                                <li t-if="o.company_id.street">
                                     <span t-field="o.company_id.street"/>
                                     <t t-if="o.company_id.partner_id.l10n_pe_district">
                                         - <span t-field="o.company_id.partner_id.l10n_pe_district.name"/>
@@ -58,282 +57,224 @@
                                     <t t-if="o.company_id.city">
                                         - <span t-field="o.company_id.city"/>
                                     </t>
-                                </div>
-                                <div>
+                                </li>
+                                <li t-if="o.company_id.phone or o.company_id.email">
                                     <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
                                     <span t-if="o.company_id.phone and o.company_id.email"> · </span>
                                     <span t-if="o.company_id.email" t-field="o.company_id.email"/>
-                                </div>
-                                <div t-if="o.company_id.website">
-                                    <span t-field="o.company_id.website"/>
-                                </div>
-                            </div>
+                                </li>
+                                <li t-if="o.company_id.website"><span t-field="o.company_id.website"/></li>
+                            </ul>
                         </td>
-                        <td class="gre-doc-box">
-                            <div class="gre-doc-box-inner">
-                                <div class="gre-doc-ruc">RUC: <span t-field="o.company_id.vat"/></div>
-                                <div class="gre-doc-type">
-                                    Guía de remisión electrónica remitente
-                                </div>
-                                <div class="gre-doc-number">
-                                    N° <span t-out="o.l10n_latam_document_number"/>
-                                </div>
-                            </div>
+                        <td style="width: 35%;">
+                            <ul class="pe-doc-box pe-doc-fs-13">
+                                <li>R.U.C. <span t-field="o.company_id.vat"/></li>
+                                <li><strong>GUÍA DE REMISIÓN ELECTRÓNICA REMITENTE</strong></li>
+                                <li><strong>N.º <span t-out="o.l10n_latam_document_number"/></strong></li>
+                            </ul>
                         </td>
                     </tr>
                 </table>
 
                 <!-- INFORMACIÓN DEL TRASLADO -->
-                <div class="gre-box">
-                    <div class="gre-section-title">Información del traslado</div>
-                    <table class="gre-info">
-                        <tr>
-                            <td class="gre-label">Fecha de emisión:</td>
-                            <td>
-                                <t t-set="issue_date" t-value="o._l10n_pe_report_issue_date()"/>
-                                <span t-if="issue_date" t-out="issue_date.strftime('%d/%m/%Y')"/>
-                                <span t-elif="o.date_done" t-field="o.date_done"
-                                      t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
-                                <span t-else="" t-field="o.scheduled_date"
-                                      t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
-                            </td>
-                            <td class="gre-label">Modalidad de traslado:</td>
-                            <td>
-                                <t t-if="o.l10n_pe_edi_transport_type == '01'">Transporte público</t>
-                                <t t-else="">Transporte privado</t>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="gre-label">
-                                <t t-if="o.l10n_pe_edi_transport_type == '01'">
-                                    Fecha de entrega al transportista:
-                                </t>
-                                <t t-else="">
-                                    Fecha de inicio de traslado:
-                                </t>
-                            </td>
-                            <td>
-                                <span t-field="o.l10n_pe_edi_departure_start_date"
-                                      t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                            </td>
-                            <td class="gre-label">Peso bruto total (<t t-out="o.weight_uom_name"/>):</td>
-                            <td><span t-field="o.weight"/></td>
-                        </tr>
-                        <tr>
-                            <td class="gre-label">Motivo de traslado:</td>
-                            <td><span t-field="o.l10n_pe_edi_reason_for_transfer"/></td>
-                            <td class="gre-label">Observaciones:</td>
-                            <td><span t-field="o.l10n_pe_edi_observation"/></td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="pe-doc-table mb-2">
+                    <tr class="pe-doc-subheader"><td colspan="4">Información del traslado</td></tr>
+                    <tr>
+                        <td class="pe-doc-label" style="width: 22%;">Fecha de emisión</td>
+                        <td style="width: 28%;">
+                            <t t-set="issue_date" t-value="o._l10n_pe_report_issue_date()"/>
+                            <span t-if="issue_date" t-out="issue_date.strftime('%d/%m/%Y')"/>
+                            <span t-elif="o.date_done" t-field="o.date_done"
+                                  t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
+                            <span t-else="" t-field="o.scheduled_date"
+                                  t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm:ss'}"/>
+                        </td>
+                        <td class="pe-doc-label" style="width: 22%;">Modalidad de traslado</td>
+                        <td style="width: 28%;">
+                            <t t-if="o.l10n_pe_edi_transport_type == '01'">Transporte público</t>
+                            <t t-else="">Transporte privado</t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">
+                            <t t-if="o.l10n_pe_edi_transport_type == '01'">Fecha de entrega al transportista</t>
+                            <t t-else="">Fecha de inicio de traslado</t>
+                        </td>
+                        <td>
+                            <span t-field="o.l10n_pe_edi_departure_start_date"
+                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                        </td>
+                        <td class="pe-doc-label">Peso bruto total (<t t-out="o.weight_uom_name"/>)</td>
+                        <td><span t-field="o.weight"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">Motivo de traslado</td>
+                        <td><span t-field="o.l10n_pe_edi_reason_for_transfer"/></td>
+                        <td class="pe-doc-label">Observaciones</td>
+                        <td><span t-field="o.l10n_pe_edi_observation"/></td>
+                    </tr>
+                </table>
 
-                <!-- REMITENTE Y DESTINATARIO -->
-                <div class="gre-box">
-                    <table class="gre-cols">
-                        <tr>
-                            <td class="gre-col">
-                                <!-- Remitente = la compañía, como declara el XML
-                                     (DespatchSupplierParty); la dirección del
-                                     almacén va en «Punto de partida». -->
-                                <div class="gre-section-title">Datos del remitente</div>
-                                <table class="gre-info">
-                                    <tr>
-                                        <td class="gre-label">Razón social:</td>
-                                        <td><span t-field="o.company_id.name"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">RUC:</td>
-                                        <td><span t-field="o.company_id.vat"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td class="gre-col">
-                                <div class="gre-section-title">Datos del destinatario</div>
-                                <table class="gre-info">
-                                    <tr>
-                                        <td class="gre-label">Razón social:</td>
-                                        <td><span t-field="o.partner_id.commercial_partner_id.name"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">
-                                            <span t-out="o.partner_id.commercial_partner_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
-                                        </td>
-                                        <td><span t-field="o.partner_id.commercial_partner_id.vat"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Dirección:</td>
-                                        <td>
-                                            <span t-field="o.partner_id.street"/>
-                                            <t t-if="o.partner_id.l10n_pe_district">
-                                                - <span t-field="o.partner_id.l10n_pe_district.name"/>
-                                                - <span t-field="o.partner_id.l10n_pe_district.city_id.state_id.name"/>
-                                                - <span t-field="o.partner_id.l10n_pe_district.city_id.country_id.name"/>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                <!-- REMITENTE Y DESTINATARIO: el remitente es la compañía, como
+                     declara el XML (DespatchSupplierParty); la dirección del
+                     almacén va en «Punto de partida». -->
+                <t t-set="receiver" t-value="o.partner_id.commercial_partner_id"/>
+                <table class="pe-doc-table mb-2">
+                    <tr class="pe-doc-subheader">
+                        <td colspan="2">Datos del remitente</td>
+                        <td colspan="2">Datos del destinatario</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label" style="width: 14%;">Razón social</td>
+                        <td style="width: 36%;"><span t-field="o.company_id.name"/></td>
+                        <td class="pe-doc-label" style="width: 14%;">Razón social</td>
+                        <td style="width: 36%;"><span t-field="receiver.name"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">R.U.C.</td>
+                        <td><span t-field="o.company_id.vat"/></td>
+                        <td class="pe-doc-label">
+                            <span t-out="receiver.l10n_latam_identification_type_id.name or 'Doc.'"/>
+                        </td>
+                        <td><span t-field="receiver.vat"/></td>
+                    </tr>
+                    <tr>
+                        <td/>
+                        <td/>
+                        <td class="pe-doc-label">Dirección</td>
+                        <td>
+                            <span t-field="o.partner_id.street"/>
+                            <t t-if="o.partner_id.l10n_pe_district">
+                                - <span t-field="o.partner_id.l10n_pe_district.name"/>
+                                - <span t-field="o.partner_id.l10n_pe_district.city_id.state_id.name"/>
+                                - <span t-field="o.partner_id.l10n_pe_district.city_id.country_id.name"/>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
 
                 <!-- PUNTOS DE PARTIDA Y LLEGADA, con ubigeo (como en el XML) -->
                 <t t-set="departure" t-value="o._l10n_pe_report_departure_partner()"/>
-                <div class="gre-box">
-                    <table class="gre-cols">
-                        <tr>
-                            <td class="gre-col">
-                                <div class="gre-section-title">Punto de partida</div>
-                                <table class="gre-info">
-                                    <tr>
-                                        <td class="gre-label">Dirección:</td>
-                                        <td><span t-out="o._l10n_pe_report_address_line(departure)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Ubigeo:</td>
-                                        <td><span t-out="departure.l10n_pe_district.code"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td class="gre-col">
-                                <div class="gre-section-title">Punto de llegada</div>
-                                <table class="gre-info">
-                                    <tr>
-                                        <td class="gre-label">Dirección:</td>
-                                        <td><span t-out="o._l10n_pe_report_address_line(o.partner_id)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Ubigeo:</td>
-                                        <td><span t-out="o.partner_id.l10n_pe_district.code"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="pe-doc-table mb-2">
+                    <tr class="pe-doc-subheader">
+                        <td colspan="2">Punto de partida</td>
+                        <td colspan="2">Punto de llegada</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label" style="width: 14%;">Dirección</td>
+                        <td style="width: 36%;"><span t-out="o._l10n_pe_report_address_line(departure)"/></td>
+                        <td class="pe-doc-label" style="width: 14%;">Dirección</td>
+                        <td style="width: 36%;"><span t-out="o._l10n_pe_report_address_line(o.partner_id)"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">Ubigeo</td>
+                        <td><span t-out="departure.l10n_pe_district.code"/></td>
+                        <td class="pe-doc-label">Ubigeo</td>
+                        <td><span t-out="o.partner_id.l10n_pe_district.code"/></td>
+                    </tr>
+                </table>
 
-                <!-- DETALLE DE LOS BIENES -->
+                <!-- DATOS DEL TRANSPORTE -->
+                <table class="pe-doc-table mb-2" t-if="o.l10n_pe_edi_transport_type == '01'">
+                    <tr class="pe-doc-subheader"><td colspan="4">Datos del transportista</td></tr>
+                    <tr>
+                        <td class="pe-doc-label" style="width: 14%;">Razón social</td>
+                        <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
+                        <td class="pe-doc-label" style="width: 14%;">R.U.C.</td>
+                        <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">N.º registro MTC</td>
+                        <td colspan="3">
+                            <span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_mtc_number"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="pe-doc-table mb-2" t-if="o.l10n_pe_edi_transport_type == '02'">
+                    <tr class="pe-doc-subheader">
+                        <td colspan="2">Datos del conductor</td>
+                        <td colspan="2">Datos del vehículo</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label" style="width: 14%;">Conductor</td>
+                        <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
+                        <td class="pe-doc-label" style="width: 18%;">Placa</td>
+                        <td style="width: 32%;"><span t-field="o.l10n_pe_edi_vehicle_id.license_plate"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">
+                            <span t-out="o.l10n_pe_edi_operator_id.l10n_latam_identification_type_id.name or 'Doc.'"/>
+                        </td>
+                        <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                        <td class="pe-doc-label">Marca/Modelo</td>
+                        <td><span t-field="o.l10n_pe_edi_vehicle_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-doc-label">Licencia</td>
+                        <td><span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_operator_license"/></td>
+                        <td class="pe-doc-label">Categoría M1 o L</td>
+                        <td>
+                            <t t-if="o.l10n_pe_edi_vehicle_id.is_m1l">Sí</t>
+                            <t t-else="">No</t>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- DETALLE DE LOS BIENES E INFORMACIÓN ADICIONAL: una sola tabla.
+                     El QR solo existe cuando el documento ya fue enviado a SUNAT. -->
                 <t t-set="grouped_lines" t-value="o._get_grouped_move_lines()"/>
-                <table class="gre-lines">
+                <t t-set="qr_url" t-value="o._l10n_pe_edi_get_qr()"/>
+                <t t-set="qr_url" t-value="qr_url and qr_url.strip()"/>
+                <table class="pe-doc-table mb-2">
                     <thead>
-                        <tr>
-                            <th style="width: 4%;">N°</th>
-                            <th style="width: 10%;">Código</th>
-                            <th style="width: 32%;">Descripción</th>
-                            <th style="width: 16%;">Series/Lotes</th>
-                            <th style="width: 10%;">Unidad</th>
-                            <th style="width: 10%;">Cantidad</th>
-                            <th style="width: 13%;">Bien normalizado</th>
+                        <tr class="pe-doc-thead">
+                            <td class="text-center" style="width: 5%;">N.º</td>
+                            <td style="width: 11%;">Código</td>
+                            <td style="width: 31%;">Descripción</td>
+                            <td style="width: 16%;">Series/Lotes</td>
+                            <td class="text-center" style="width: 10%;">Unidad</td>
+                            <td class="text-end" style="width: 10%;">Cantidad</td>
+                            <td class="text-center" style="width: 13%;">Bien normalizado</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr t-foreach="grouped_lines" t-as="line">
-                            <td><span t-out="line_index + 1"/></td>
+                            <td class="text-center"><span t-out="line_index + 1"/></td>
                             <td><span t-out="line['product'].barcode or line['product'].default_code"/></td>
-                            <td class="gre-desc"><span t-field="line['product'].name"/></td>
+                            <td><span t-field="line['product'].name"/></td>
                             <td>
                                 <t t-if="line['lots']">
-                                    <div class="gre-lot" t-foreach="line['lots']" t-as="lot_name"
-                                         t-out="lot_name"/>
+                                    <div t-foreach="line['lots']" t-as="lot_name" t-out="lot_name"/>
                                 </t>
                                 <t t-else="">-</t>
                             </td>
-                            <td><span t-field="line['uom'].name"/></td>
-                            <td><span t-out="o._l10n_pe_report_quantity(line['quantity'])"/></td>
-                            <td>No</td>
+                            <td class="text-center"><span t-field="line['uom'].name"/></td>
+                            <td class="text-end"><span t-out="o._l10n_pe_report_quantity(line['quantity'])"/></td>
+                            <td class="text-center">No</td>
                         </tr>
                     </tbody>
-                </table>
-
-                <!-- DATOS DEL TRANSPORTE -->
-                <div class="gre-box" t-if="o.l10n_pe_edi_transport_type == '01'">
-                    <div class="gre-section-title">Datos del transportista</div>
-                    <table class="gre-info">
-                        <tr>
-                            <td class="gre-label">Razón social:</td>
-                            <td><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
-                            <td class="gre-label">RUC:</td>
-                            <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
-                        </tr>
-                        <tr>
-                            <td class="gre-label">N° registro MTC:</td>
-                            <td colspan="3">
-                                <span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_mtc_number"/>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="gre-box" t-if="o.l10n_pe_edi_transport_type == '02'">
-                    <table class="gre-cols">
-                        <tr>
-                            <td class="gre-col">
-                                <div class="gre-section-title">Datos del conductor</div>
-                                <table class="gre-info">
+                    <tfoot>
+                        <tr class="pe-doc-note">
+                            <td colspan="7" class="pe-doc-fs-11">
+                                <table class="pe-doc-plain">
                                     <tr>
-                                        <td class="gre-label">Conductor:</td>
-                                        <td><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">
-                                            <span t-out="o.l10n_pe_edi_operator_id.l10n_latam_identification_type_id.name or 'Doc.'"/>:
-                                        </td>
-                                        <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Licencia:</td>
-                                        <td><span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_operator_license"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td class="gre-col">
-                                <div class="gre-section-title">Datos del vehículo</div>
-                                <table class="gre-info">
-                                    <tr>
-                                        <td class="gre-label">Placa:</td>
-                                        <td><span t-field="o.l10n_pe_edi_vehicle_id.license_plate"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Marca/Modelo:</td>
-                                        <td><span t-field="o.l10n_pe_edi_vehicle_id.name"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="gre-label">Categoría M1 o L:</td>
                                         <td>
-                                            <t t-if="o.l10n_pe_edi_vehicle_id.is_m1l">Sí</t>
-                                            <t t-else="">No</t>
+                                            <strong>Información adicional:</strong><br/>
+                                            • Representación impresa de la Guía de Remisión Electrónica Remitente.<br/>
+                                            • Este documento ha sido generado electrónicamente y tiene validez legal.<br/>
+                                            • Consulte el estado del documento en www.sunat.gob.pe.
+                                        </td>
+                                        <td t-if="qr_url" class="text-center" style="width: 120px;">
+                                            <img alt="QR SUNAT"
+                                                 t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=100&amp;height=100' % quote_plus(qr_url)"/>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
-                    </table>
-                </div>
-
-                <!-- INFORMACIÓN LEGAL + QR OFICIAL (el QR solo existe cuando
-                     el documento ya fue enviado a SUNAT; sin QR la información
-                     legal ocupa todo el ancho) -->
-                <t t-set="qr_url" t-value="o._l10n_pe_edi_get_qr()"/>
-                <t t-set="qr_url" t-value="qr_url and qr_url.strip()"/>
-                <div class="gre-box gre-footer-box">
-                    <table>
-                        <tr>
-                            <td t-attf-class="gre-footer-info{{ '' if qr_url else ' gre-footer-info-full' }}">
-                                <strong>Información adicional:</strong><br/>
-                                • Representación impresa de la Guía de Remisión Electrónica Remitente.<br/>
-                                • Este documento ha sido generado electrónicamente y tiene validez legal.<br/>
-                                • Consulte el estado del documento en www.sunat.gob.pe.
-                            </td>
-                            <td class="gre-footer-qr" t-if="qr_url">
-                                <div class="gre-qr-title">CÓDIGO QR</div>
-                                <img alt="QR SUNAT"
-                                     t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=110&amp;height=110' % quote_plus(qr_url)"/>
-                                <div class="gre-qr-caption">Escanee para verificar</div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                    </tfoot>
+                </table>
 
                 <!-- PIE DE CONTACTO -->
                 <div class="gre-contact-footer">
