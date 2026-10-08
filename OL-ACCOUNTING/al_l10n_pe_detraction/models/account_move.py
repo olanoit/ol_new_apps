@@ -32,7 +32,7 @@ class AccountMove(models.Model):
 
     l10n_pe_detraction_operation_type = fields.Selection(
         BN_OPERATION_TYPES,
-        string='Tipo de operación SPOT', default='01',
+        string='Tipo de operación de la detracción', default='01',
         help='Tipo de operación sujeta al sistema (tabla 5.5 del instructivo '
              'del Banco de la Nación). Se informa en el archivo de depósito '
              'masivo de detracciones.')
@@ -108,7 +108,7 @@ class AccountMove(models.Model):
                     percent = self._l10n_pe_product_detraction_percent(product)
                     if percent > best_percent:
                         best_percent = percent
-                        best_type = product.l10n_pe_detraction_type_id
+                        best_type = product.product_tmpl_id._l10n_pe_detraction_type()
             move.l10n_pe_detraction_type_id = best_type
 
     @api.depends('l10n_pe_detraction_type_id', 'invoice_line_ids.product_id',

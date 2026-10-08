@@ -7,6 +7,17 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261008 — 08/10/2026
+
+- Menú Perú ▸ Detracciones con facturas de venta y de proveedor, depósitos, depósito masivo, productos y análisis (tabla dinámica y gráfico).
+- Cada depósito registrado queda enlazado a su comprobante; los anteriores se enlazan al actualizar.
+
+## 19.20261008 — 08/10/2026
+
+- Las etiquetas de las vistas ya no muestran «SPOT»: Tipo de detracción, bloque Detracción, menú y Ajustes Detracciones, Tipo de operación de la detracción.
+- La detracción del producto (tipo, código del catálogo 54 y porcentaje) pasa a la pestaña Contabilidad, en un bloque propio; código y porcentaje quedan de solo lectura cuando hay tipo.
+- Un producto con solo el código del catálogo 54 (sin tipo) ya da a la factura su tipo de detracción; antes la factura calculaba el porcentaje pero quedaba sin tipo y el TXT sin código. La migración asigna el tipo a esos productos.
+
 ## 18.20261008 — 08/10/2026
 
 - Depósito masivo desde una sucursal: cabecera, titular (modo proveedor) y correlativo del lote son los del RUC, compartido por todas sus sucursales.

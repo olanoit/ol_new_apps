@@ -6,9 +6,19 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     l10n_pe_detraction_type_id = fields.Many2one(
-        'l10n_pe.detraction.type', string='Tipo de detracción (SPOT)',
-        help='Al elegirlo se completan automáticamente el código del '
-             'catálogo 54 y el porcentaje nativos que usa el XML UBL.')
+        'l10n_pe.detraction.type', string='Tipo de detracción',
+        help='Al elegirlo se completan el código del catálogo 54 y el '
+             'porcentaje que usa el XML del comprobante.')
+
+    def _l10n_pe_detraction_type(self):
+        """Tipo de detracción del producto: el elegido o, si solo tiene el
+        código del catálogo 54 de l10n_pe_edi (configurado antes de este
+        módulo o importado), el del catálogo con ese código."""
+        self.ensure_one()
+        if self.l10n_pe_detraction_type_id or not self.l10n_pe_withhold_code:
+            return self.l10n_pe_detraction_type_id
+        return self.env['l10n_pe.detraction.type'].search(
+            [('code', '=', self.l10n_pe_withhold_code)], limit=1)
 
     @api.onchange('l10n_pe_detraction_type_id')
     def _onchange_l10n_pe_detraction_type_id(self):

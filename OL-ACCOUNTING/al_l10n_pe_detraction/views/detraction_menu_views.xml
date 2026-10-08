@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perú ▸ Detracciones: facturas, depósitos, productos y análisis. -->
+
+    <!-- Comprobantes con detracción -->
+    <record id="view_move_list_detraction" model="ir.ui.view">
+        <field name="name">account.move.list.detraction.pe</field>
+        <field name="model">account.move</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Comprobantes con detracción" create="false" sample="1"
+                  decoration-muted="state == 'cancel'"
+                  decoration-warning="state == 'posted' and not l10n_pe_detraction_number">
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="name"/>
+                <field name="invoice_date"/>
+                <field name="partner_id"/>
+                <field name="move_type" optional="hide"/>
+                <field name="l10n_pe_detraction_type_id"/>
+                <field name="l10n_pe_detraction_percent" string="%" optional="show"/>
+                <field name="amount_total_signed" string="Total" sum="Total"/>
+                <field name="l10n_pe_detraction_amount" string="Detracción" sum="Detracción"/>
+                <field name="l10n_pe_detraction_number" string="Constancia"/>
+                <field name="l10n_pe_detraction_date" string="Fecha de depósito" optional="show"/>
+                <field name="state" widget="badge" optional="show"
+                       decoration-success="state == 'posted'" decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_detraction_out_invoices" model="ir.actions.act_window">
+        <field name="name">Facturas de venta con detracción</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_move_list_detraction')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('l10n_pe_detraction_applies', '=', True)]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin facturas de venta con detracción</p>
+            <p>Aparecen las facturas de venta de productos con tipo de detracción
+               que superan el monto mínimo.</p>
+        </field>
+    </record>
+
+    <record id="action_detraction_in_invoices" model="ir.actions.act_window">
+        <field name="name">Facturas de proveedor con detracción</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_move_list_detraction')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="domain">[('move_type', '=', 'in_invoice'), ('l10n_pe_detraction_applies', '=', True)]</field>
+        <field name="context">{'default_move_type': 'in_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin facturas de proveedor con detracción</p>
+            <p>En amarillo, las publicadas sin constancia de depósito.</p>
+        </field>
+    </record>
+
+    <!-- Depósitos: los pagos al Banco de la Nación con su comprobante -->
+    <record id="view_payment_list_detraction" model="ir.ui.view">
+        <field name="name">account.payment.list.detraction.pe</field>
+        <field name="model">account.payment</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Depósitos de detracción" create="false" sample="1">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="payment_type" string="Tipo"/>
+                <field name="partner_id"/>
+                <field name="l10n_pe_detraction_move_id"/>
+                <field name="memo" optional="show"/>
+                <field name="journal_id"/>
+                <field name="amount_signed" string="Importe" sum="Total"/>
+                <field name="state" widget="badge" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_detraction_deposits" model="ir.actions.act_window">
+        <field name="name">Depósitos de detracción</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_payment_list_detraction')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account.view_account_payment_form')})]"/>
+        <field name="domain">[('l10n_pe_detraction_move_id', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin depósitos de detracción</p>
+            <p>Se registran desde la factura, pestaña Facturación PE ▸ Detracción,
+               botón «Registrar depósito».</p>
+        </field>
+    </record>
+
+    <!-- Productos con tipo de detracción -->
+    <record id="view_product_list_detraction" model="ir.ui.view">
+        <field name="name">product.template.list.detraction.pe</field>
+        <field name="model">product.template</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Productos con detracción" sample="1">
+                <field name="default_code" optional="show"/>
+                <field name="name"/>
+                <field name="type" optional="show"/>
+                <field name="l10n_pe_detraction_type_id"/>
+                <field name="l10n_pe_withhold_percentage" string="%"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_detraction_products" model="ir.actions.act_window">
+        <field name="name">Productos con detracción</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_list_detraction')})]"/>
+        <field name="domain">[('l10n_pe_detraction_type_id', '!=', False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin productos con detracción</p>
+            <p>El tipo se asigna en el producto, pestaña Contabilidad ▸ Detracción.</p>
+        </field>
+    </record>
+
+    <!-- Análisis -->
+    <record id="view_move_pivot_detraction" model="ir.ui.view">
+        <field name="name">account.move.pivot.detraction.pe</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de detracciones" sample="1">
+                <field name="l10n_pe_detraction_type_id" type="row"/>
+                <field name="invoice_date" interval="month" type="col"/>
+                <field name="l10n_pe_detraction_amount" type="measure" string="Detracción"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_move_graph_detraction" model="ir.ui.view">
+        <field name="name">account.move.graph.detraction.pe</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de detracciones" type="bar" sample="1">
+                <field name="invoice_date" interval="month"/>
+                <field name="move_type"/>
+                <field name="l10n_pe_detraction_amount" type="measure" string="Detracción"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_detraction_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de detracciones</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_move_pivot_detraction')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_move_graph_detraction')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_move_list_detraction')})]"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="domain">[('move_type', 'in', ('out_invoice', 'in_invoice')),
+                              ('l10n_pe_detraction_applies', '=', True), ('state', '=', 'posted')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+</odoo>

@@ -148,7 +148,7 @@ pasos:
   - seccion: Configuración
     texto: Una sola vez, antes de la primera factura afecta.
   - titulo: Revisar el catálogo 54
-    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT)
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones
     texto: >-
       El catálogo llega cargado con 32 códigos: **Código**, **Descripción**,
       **Porcentaje (%)**, **Monto mínimo (S/)** y cuántos productos usan cada
@@ -159,7 +159,7 @@ pasos:
     imagen: screenshots/01-catalogo.png
 
   - titulo: Actualizar los productos cuando SUNAT cambia un porcentaje
-    ruta: Detracciones (SPOT) ▸ abrir un tipo
+    ruta: Detracciones ▸ abrir un tipo
     texto: >-
       Edite el porcentaje y pulse **Actualizar productos vinculados**: el
       código y el porcentaje se reescriben en todos los productos que usan ese
@@ -170,12 +170,17 @@ pasos:
     pie: "Código 037, «Demás servicios gravados con el IGV»: 12 %, mínimo S/ 700 y dos productos vinculados."
 
   - titulo: Asignar el tipo de detracción al producto
-    ruta: Contabilidad ▸ Clientes ▸ Productos
+    ruta: Contabilidad ▸ Clientes ▸ Productos ▸ pestaña Contabilidad
     texto: >-
-      Elija **Tipo de detracción (SPOT)** en la ficha del producto: el
-      **Código de detracción** y el **Porcentaje de detracción** nativos, los
-      que usa la factura electrónica, se completan solos y se mantienen
+      Toda la detracción del producto está en el bloque **Detracción**
+      de la pestaña **Contabilidad**. Elija **Tipo de detracción**: el
+      **Código (catálogo 54)** y el **Porcentaje** que lleva el comprobante
+      electrónico se completan solos, quedan de solo lectura y se mantienen
       alineados al guardar.
+
+      Un producto que solo tiene el código del catálogo 54 (configurado antes
+      de instalar el módulo o importado) también vale: la factura toma el tipo
+      del catálogo con ese código, y al actualizar el módulo se le asigna.
     imagen: screenshots/03-producto.png
 
   - titulo: Registrar la cuenta de detracciones del contacto
@@ -191,7 +196,7 @@ pasos:
     pie: "DEMO SPOT Contraparte SAC: RUC 20131312955 y cuenta 00012345678."
 
   - titulo: Activar el reparto contable (opcional)
-    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Detracciones (SPOT)
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Detracciones
     texto: >-
       Marque **Separar detracción en el asiento** y elija la **Cuenta
       detracciones por cobrar** (tipo por cobrar) y la **Cuenta detracciones
@@ -204,7 +209,7 @@ pasos:
   - seccion: Contraste con SUNAT
     texto: Comprobar el catálogo contra la página de SUNAT, sin aplicar nada solo.
   - titulo: Contrastar el catálogo con SUNAT
-    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT) ▸ botón Contrastar con SUNAT
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones ▸ botón Contrastar con SUNAT
     texto: >-
       Descarga la página de apéndices del SPOT de SUNAT y compara cada código
       con el catálogo. SUNAT no publica el porcentaje por código: el módulo
@@ -235,7 +240,7 @@ pasos:
     ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ pestaña Detracción
     texto: >-
       Si el total supera el mínimo del código, aparece la pestaña
-      **Detracción** con el tipo, el **Tipo de operación SPOT** (tabla 5.5 del
+      **Detracción** con el tipo, el **Tipo de operación de la detracción** (tabla 5.5 del
       Banco de la Nación), el porcentaje, el **Monto de detracción** y el
       **Neto tras detracción**. A la derecha, la **Constancia de depósito**.
     puntos:
@@ -331,6 +336,41 @@ pasos:
     imagen: screenshots/14-deposito-masivo.png
     pie: "Julio de 2026: tres facturas de proveedor en el archivo y una excluida por no tener cuenta del Banco de la Nación."
 
+  - seccion: El menú Perú ▸ Detracciones
+    texto: >-
+      Todo lo de la detracción a mano en la app Perú: facturas de venta y de
+      proveedor, depósitos, depósito masivo, productos y el análisis.
+  - titulo: Facturas y depósitos
+    ruta: Perú ▸ Detracciones
+    texto: >-
+      **Facturas de venta** y **Facturas de proveedor** listan solo los
+      comprobantes con detracción, con su tipo, porcentaje, importe,
+      constancia y fecha de depósito; en amarillo, los publicados sin
+      constancia. **Depósitos** reúne los pagos registrados con «Registrar
+      depósito», cada uno con su comprobante (los anteriores a esta versión se
+      enlazan solos al actualizar).
+    imagen: screenshots/18-menu-detracciones.png
+  - titulo: Facturas de proveedor con detracción
+    ruta: Perú ▸ Detracciones ▸ Facturas de proveedor
+    texto: >-
+      Totales de la operación y de la detracción al pie; los filtros de
+      factura (por ejemplo **Detracción sin constancia**) siguen disponibles.
+    imagen: screenshots/20-facturas-proveedor.png
+  - titulo: Depósitos de detracción
+    ruta: Perú ▸ Detracciones ▸ Depósitos
+    texto: >-
+      Cobros (ventas) y pagos (compras) de la detracción con el comprobante que
+      los originó, la glosa con la constancia, el diario y el estado.
+    imagen: screenshots/19-depositos.png
+  - titulo: Análisis de detracciones
+    ruta: Perú ▸ Detracciones ▸ Análisis de detracciones
+    texto: >-
+      Tabla dinámica de los comprobantes publicados: importe de la detracción
+      por tipo y mes, con gráfico y lista. Se puede agrupar por contacto, por
+      venta o compra y filtrar los pendientes de constancia.
+    imagen: screenshots/17-analisis.png
+    pie: "Los productos con detracción están en Perú ▸ Detracciones ▸ Productos."
+
   - seccion: Declaración
     texto: Lo que otros módulos toman de las detracciones.
   - titulo: Constancia en los registros de compras
@@ -348,7 +388,7 @@ campos_intro: >-
   Cada campo que añade el módulo, dónde está y qué efecto tiene.
 campos:
   - grupo: Tipo de detracción (catálogo 54)
-    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones (SPOT)
+    ruta: Perú ▸ Configuración ▸ Tributos SUNAT ▸ Detracciones
     campos:
       - [Código, "Código de 3 caracteres del catálogo 54; único.", Vacío, Se copia al producto y va en el archivo del banco]
       - [Descripción, Nombre del bien o servicio., Vacío, "Se muestra como «[código] descripción»"]
@@ -369,7 +409,7 @@ campos:
   - grupo: Producto
     ruta: Contabilidad ▸ Clientes ▸ Productos
     campos:
-      - [Tipo de detracción (SPOT), Código del catálogo 54 del producto., Vacío, Rellena el código y el porcentaje nativos]
+      - [Tipo de detracción, Código del catálogo 54 del producto., Vacío, Rellena el código y el porcentaje nativos]
       - [Código de detracción, Campo nativo de la factura electrónica., Vacío, Se sincroniza con el tipo]
       - [Porcentaje de detracción, Campo nativo de la factura electrónica., "0,00", Se sincroniza con el tipo]
   - grupo: Contacto
@@ -377,7 +417,7 @@ campos:
     campos:
       - [Cuenta de detracciones, "Cuenta del Banco de la Nación; hasta 11 dígitos, solo números.", Vacío, "Obligatoria para el depósito masivo"]
   - grupo: Ajustes de la compañía
-    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Detracciones (SPOT)
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Detracciones
     campos:
       - [Separar detracción en el asiento, Reparte la línea por cobrar o pagar al publicar., Desmarcado, Neto y detracción en líneas separadas]
       - [Cuenta detracciones por cobrar, Cuenta de tipo por cobrar para las ventas., Vacío, "Obligatoria con el reparto activo"]
@@ -386,7 +426,7 @@ campos:
     ruta: Factura ▸ pestaña Detracción
     campos:
       - [Tipo de detracción, Código dominante entre los productos., Calculado, Editable en borrador]
-      - [Tipo de operación SPOT, "Tabla 5.5 del Banco de la Nación (01 a 05).", "01 - Venta de bienes, prestación de servicios…", Va en el archivo de depósito masivo]
+      - [Tipo de operación de la detracción, "Tabla 5.5 del Banco de la Nación (01 a 05).", "01 - Venta de bienes, prestación de servicios…", Va en el archivo de depósito masivo]
       - ["% detracción", Porcentaje del tipo dominante., Calculado, Editable en borrador]
       - [Monto de detracción, "Total con IGV en soles (en moneda extranjera, al T.C. venta oficial de la fecha de emisión) × %, redondeado a soles.", Calculado, Importe del depósito y del reparto]
       - [Neto tras detracción, Total en soles menos la detracción., Calculado, Lo que se cobra o paga fuera del banco]
@@ -477,7 +517,7 @@ funcionalidades:
       - Detección del código dominante y verificación del mínimo sobre el total con IGV en soles.
       - Monto redondeado a soles enteros y neto tras detracción.
       - Tipo de operación EDI 1001 automático al publicar una venta afecta.
-      - "Tipo de operación SPOT de la tabla 5.5 del Banco de la Nación."
+      - "Tipo de operación de la detracción de la tabla 5.5 del Banco de la Nación."
       - "Filtros **Con detracción** y **Detracción sin constancia** en las listas de facturas."
   - grupo: Contabilidad
     items:
@@ -529,11 +569,11 @@ configuracion_intro: >-
   escenario «DEMO SPOT» y validan el flujo completo.
 configuracion:
   - Instale el módulo desde Aplicaciones; el catálogo 54 se carga solo.
-  - Asigne el **Tipo de detracción (SPOT)** a los productos y servicios afectos.
+  - Asigne el **Tipo de detracción** a los productos y servicios afectos.
   - "Ventas: registre la cuenta de detracciones del **Banco de la Nación** en las cuentas bancarias de la compañía; la usa el XML."
   - Cree un diario de banco que represente la cuenta de detracciones para registrar los cobros.
   - "Depósito masivo: complete la **Cuenta de detracciones** de cada proveedor en su ficha de contacto (y la de la empresa para la modalidad proveedor)."
-  - "Opcional: active el reparto en **Perú ▸ Configuración ▸ Ajustes ▸ Detracciones (SPOT)** con sus dos cuentas."
+  - "Opcional: active el reparto en **Perú ▸ Configuración ▸ Ajustes ▸ Detracciones** con sus dos cuentas."
 requisitos_nota: >-
   Requiere Odoo Enterprise: la constancia usa los campos de detracción de
   `l10n_pe_reports`, los mismos que alimentan el PLE 8.1.
@@ -582,6 +622,17 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 20.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Menú Perú ▸ Detracciones con facturas de venta y de proveedor, depósitos, depósito masivo, productos y análisis (tabla dinámica y gráfico)."
+      - "Cada depósito registrado queda enlazado a su comprobante; los anteriores se enlazan al actualizar."
+  - version: 19.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Las etiquetas de las vistas ya no muestran «SPOT»: Tipo de detracción, bloque Detracción, menú y Ajustes Detracciones, Tipo de operación de la detracción."
+      - "La detracción del producto (tipo, código del catálogo 54 y porcentaje) pasa a la pestaña Contabilidad, en un bloque propio; código y porcentaje quedan de solo lectura cuando hay tipo."
+      - "Un producto con solo el código del catálogo 54 (sin tipo) ya da a la factura su tipo de detracción; antes la factura calculaba el porcentaje pero quedaba sin tipo y el TXT sin código. La migración asigna el tipo a esos productos."
   - version: 18.20261008
     fecha: 08/10/2026
     cambios:

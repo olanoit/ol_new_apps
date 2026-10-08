@@ -2,6 +2,7 @@
 from datetime import date
 
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -121,6 +122,32 @@ class TestDetraction(TransactionCase):
                              products=[self.service_4, self.service])
         self.assertEqual(move.l10n_pe_detraction_type_id, self.dtype_12)
         self.assertEqual(move.l10n_pe_detraction_percent, 12.0)
+
+    def test_product_with_only_native_code(self):
+        """Un producto con solo el código del catálogo 54 de l10n_pe_edi
+        (configurado antes del módulo o importado) da a la factura el tipo
+        del catálogo con ese código: antes quedaba sin tipo y el TXT sin
+        código."""
+        native = self.env['product.product'].create({
+            'name': 'Solo código nativo', 'type': 'service',
+            'l10n_pe_withhold_code': '037', 'l10n_pe_withhold_percentage': 12.0})
+        self.assertFalse(native.l10n_pe_detraction_type_id)
+        move = self._invoice('out_invoice', 1000.0, products=[native])
+        self.assertEqual(move.l10n_pe_detraction_type_id, self.dtype_12)
+        self.assertEqual(move.l10n_pe_detraction_percent, 12.0)
+        self.assertTrue(move.l10n_pe_detraction_applies)
+
+    def test_product_form_detraction_in_accounting_tab(self):
+        """Tipo, código y porcentaje juntos en la pestaña Contabilidad."""
+        from lxml import etree
+        arch = etree.fromstring(self.env['product.template'].get_view(
+            self.env.ref('product.product_template_form_view').id, 'form')['arch'])
+        group = arch.xpath("//page[@name='invoicing']//group[@name='l10n_pe_detraction']")
+        self.assertEqual(len(group), 1)
+        for fname in ('l10n_pe_detraction_type_id', 'l10n_pe_withhold_code',
+                      'l10n_pe_withhold_percentage'):
+            self.assertEqual(len(arch.xpath("//field[@name='%s']" % fname)), 1, fname)
+            self.assertTrue(group[0].xpath(".//field[@name='%s']" % fname), fname)
 
     def test_post_sets_operation_type(self):
         move = self._invoice('out_invoice', 1000.0)
@@ -272,6 +299,30 @@ class TestDetraction(TransactionCase):
         self.assertTrue(payment)
         self.assertIn(payment.state, ('in_process', 'paid'))
         self.assertEqual(payment.payment_type, 'outbound')
+        # Queda enlazado a su comprobante: Perú ▸ Detracciones ▸ Depósitos
+        self.assertEqual(payment.l10n_pe_detraction_move_id, move)
+        deposits = self._action_records('al_l10n_pe_detraction.action_detraction_deposits')
+        self.assertIn(payment, deposits)
+
+    def _action_records(self, xmlid):
+        action = self.env.ref(xmlid)
+        return self.env[action.res_model].search(safe_eval(action.domain or '[]'))
+
+    def test_detraction_menu_actions(self):
+        """Perú ▸ Detracciones: cada lista muestra lo suyo."""
+        sale = self._invoice('out_invoice', 1000.0)
+        bill = self._invoice('in_invoice', 1000.0)
+        small = self._invoice('out_invoice', 100.0)
+        (sale | bill | small).action_post()
+        out = self._action_records('al_l10n_pe_detraction.action_detraction_out_invoices')
+        self.assertIn(sale, out)
+        self.assertNotIn(bill, out)
+        self.assertNotIn(small, out)
+        self.assertIn(bill, self._action_records('al_l10n_pe_detraction.action_detraction_in_invoices'))
+        analysis = self._action_records('al_l10n_pe_detraction.action_detraction_analysis')
+        self.assertTrue({sale, bill} <= set(analysis))
+        products = self._action_records('al_l10n_pe_detraction.action_detraction_products')
+        self.assertIn(self.service.product_tmpl_id, products)
 
     def test_deposit_wizard_with_split_pays_only_detraction(self):
         """Depositar la detracción no puede saldar la deuda con el tercero.

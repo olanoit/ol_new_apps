@@ -73,17 +73,18 @@ with Captura('al_l10n_pe_detraction') as c:
     # control: se recorta desde la barra para que salga «Productos».
     c.foto('02-tipo-detraccion', clip={'x': 0, 'y': 46, 'width': 1440, 'height': 330})
 
-    # 3. Producto con su tipo de detracción
+    # 3. Producto: la detracción está en la pestaña «Contabilidad»
     c.abrir_registro('product.template', PRODUCTO_SPOT, ms=2000)
+    c.clic(".o_notebook .nav-link[name='invoicing']")
     c.foto('03-producto', selector='.o_form_view .o_form_sheet_bg')
 
     # 4. Contacto con la cuenta de detracciones del Banco de la Nación
     c.abrir_registro('res.partner', CONTACTO, ms=2000)
     c.foto('04-contacto', selector='.o_form_view .o_form_sheet_bg')
 
-    # 5. Ajustes ▸ Perú ▸ Detracciones (SPOT)
+    # 5. Ajustes ▸ Perú ▸ Detracciones
     c.abrir('/odoo/settings#al_account_base', ms=2500)
-    foto_bloque(c, 'Detracciones (SPOT)', '05-ajustes')
+    foto_bloque(c, 'Detracciones', '05-ajustes')
 
     # ---- Ventas ----------------------------------------------------------
     # 6. Factura de venta: pestaña Detracción
@@ -165,3 +166,15 @@ with Captura('al_l10n_pe_detraction') as c:
     c.clic('.o_al_detraction_check_btn', ms=8000)
     c.foto('16-contraste-sunat', selector='.o_form_view .o_form_sheet_bg')
     c.page.set_viewport_size({'width': 1440, 'height': 900})
+
+    # ---- Menú Perú ▸ Detracciones -----------------------------------------
+    c.abrir_accion('al_l10n_pe_detraction.action_detraction_analysis', ms=3000)
+    c.foto('17-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
+    c.page.get_by_role('button', name='Detracciones').first.click()
+    c.esperar(800)
+    c.foto('18-menu-detracciones', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    c.abrir_accion('al_l10n_pe_detraction.action_detraction_deposits', ms=3000)
+    c.foto('19-depositos', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 330})
+    c.abrir_accion('al_l10n_pe_detraction.action_detraction_in_invoices', ms=3000)
+    c.foto('20-facturas-proveedor', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
+

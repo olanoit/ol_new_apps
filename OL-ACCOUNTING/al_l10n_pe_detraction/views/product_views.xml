@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Toda la detracción del producto en la pestaña «Contabilidad»: el
+         tipo del catálogo SPOT y, debajo, el código del catálogo 54 y el
+         porcentaje de l10n_pe_edi (los que lleva el XML), que se rellenan
+         solos desde el tipo y entonces quedan de solo lectura. -->
     <record id="product_template_form_detraction" model="ir.ui.view">
         <field name="name">product.template.form.detraction.pe</field>
         <field name="model">product.template</field>
         <field name="inherit_id"
                ref="l10n_pe_edi.product_template_form_inherit_l10n_pe_edi"/>
         <field name="arch" type="xml">
-            <field name="l10n_pe_withhold_code" position="before">
-                <field name="l10n_pe_detraction_type_id"
-                       invisible="'PE' not in fiscal_country_codes"
-                       options="{'no_create': True}"/>
+            <xpath expr="//page[@name='invoicing']/group[@name='properties']" position="after">
+                <group name="l10n_pe_detraction" string="Detracción"
+                       invisible="'PE' not in fiscal_country_codes">
+                    <group name="l10n_pe_detraction_left">
+                        <field name="l10n_pe_detraction_type_id"
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group name="l10n_pe_detraction_right">
+                        <div class="text-muted" colspan="2">
+                            El tipo decide el código y el porcentaje que lleva el
+                            comprobante; la factura toma el de mayor porcentaje
+                            entre sus productos.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+            <!-- «move» solo vale como hijo directo del nodo de herencia. -->
+            <xpath expr="//group[@name='l10n_pe_detraction_left']" position="inside">
+                <xpath expr="//field[@name='l10n_pe_withhold_code']" position="move"/>
+                <xpath expr="//field[@name='l10n_pe_withhold_percentage']" position="move"/>
+            </xpath>
+            <field name="l10n_pe_withhold_code" position="attributes">
+                <attribute name="string">Código (catálogo 54)</attribute>
+                <attribute name="invisible">0</attribute>
+                <attribute name="readonly">l10n_pe_detraction_type_id</attribute>
+                <attribute name="force_save">1</attribute>
+            </field>
+            <field name="l10n_pe_withhold_percentage" position="attributes">
+                <attribute name="string">Porcentaje</attribute>
+                <attribute name="invisible">not l10n_pe_withhold_code</attribute>
+                <attribute name="readonly">l10n_pe_detraction_type_id</attribute>
+                <attribute name="force_save">1</attribute>
             </field>
         </field>
     </record>

@@ -95,7 +95,8 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
                 'Detracción %(number)s - %(move)s',
                 number=self.constancy_number, move=move.name),
         })
-        register._create_payments()
+        payments = register._create_payments()
+        payments.l10n_pe_detraction_move_id = move
         move.write({
             'l10n_pe_detraction_number': self.constancy_number,
             'l10n_pe_detraction_date': self.payment_date,

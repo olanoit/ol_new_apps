@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_detraction_type" name="Detracciones (SPOT)"
+    <menuitem id="menu_detraction_type" name="Detracciones"
               parent="al_account_base.al_l10n_pe_config_tax"
               action="action_detraction_type"
               groups="account.group_account_manager"
@@ -19,9 +19,24 @@
               groups="account.group_account_user"
               sequence="30"/>
 
+    <menuitem id="menu_detraction_out_invoices" name="Facturas de venta"
+              parent="menu_detraction_root"
+              action="action_detraction_out_invoices" sequence="10"/>
+    <menuitem id="menu_detraction_in_invoices" name="Facturas de proveedor"
+              parent="menu_detraction_root"
+              action="action_detraction_in_invoices" sequence="20"/>
+    <menuitem id="menu_detraction_deposits" name="Depósitos"
+              parent="menu_detraction_root"
+              action="action_detraction_deposits" sequence="30"/>
     <menuitem id="menu_detraction_txt_wizard"
               name="Depósito masivo (Banco de la Nación)"
               parent="menu_detraction_root"
               action="action_l10n_pe_detraction_txt_wizard"
-              sequence="10"/>
+              sequence="40"/>
+    <menuitem id="menu_detraction_products" name="Productos"
+              parent="menu_detraction_root"
+              action="action_detraction_products" sequence="50"/>
+    <menuitem id="menu_detraction_analysis" name="Análisis de detracciones"
+              parent="menu_detraction_root"
+              action="action_detraction_analysis" sequence="60"/>
 </odoo>
