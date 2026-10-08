@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261008 — 08/10/2026
+
+- Horario nocturno, horas extra, tolerancia y redondeo del tareaje en Ajustes ▸ Nómina ▸ Perú.
+- El registro de asistencia valida que los trabajadores sean de su compañía.
+
 ## 14.20261008 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo (action_close, action_reopen, action_show_details); «Ver detalle» con el ícono genérico de Odoo (fa-list) en vez del ojo.

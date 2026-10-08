@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261008 — 08/10/2026
+
+- Cifrado de la boleta y diarios de pago masivo en Ajustes ▸ Nómina ▸ Perú.
+- Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
+
 ## 16.20261008 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo (action_print_certificate, action_print_letter, action_generate_multipayment, action_open_multipayments).

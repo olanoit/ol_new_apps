@@ -41,6 +41,7 @@ class HrFifthCertificateWizard(models.TransientModel):
     _name = 'hr.fifth.certificate.wizard'
     _inherit = ['l10n_pe.hr.doc.mixin']
     _description = 'Asistente de certificado de renta de 5ta categoría'
+    _check_company_auto = True
 
     year = fields.Integer(
         string='Ejercicio gravable', required=True,
@@ -59,7 +60,7 @@ class HrFifthCertificateWizard(models.TransientModel):
         default=lambda self: self.env.company)
     main_parameter_id = fields.Many2one(
         'hr.main.parameter', string='Parámetros',
-        compute='_compute_main_parameter_id')
+        compute='_compute_main_parameter_id', check_company=True)
 
     @api.depends('company_id')
     def _compute_main_parameter_id(self):

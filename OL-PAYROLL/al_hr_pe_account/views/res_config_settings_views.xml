@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.hr.pe.account</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_hr_pe.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='l10n_pe_payroll_settings']" position="after">
+                <block title="Perú: contabilidad de planillas" id="l10n_pe_payroll_account_settings"
+                       invisible="company_country_code != 'PE'">
+                    <setting id="l10n_pe_payroll_batch_move" company_dependent="1" string="Asiento del lote de planilla"
+                             help="Diario y contacto del asiento único del lote; con analítica, cada línea lleva la distribución de la regla o del contrato.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_move_journal_id" string="Diario" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_move_journal_id" options="{'no_create': True}"
+                                       domain="[('company_id', 'parent_of', company_id)]"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_move_partner_id" string="Contacto" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_move_partner_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="mt8">
+                                <field name="l10n_pe_payroll_detail_analytic"/>
+                                <label for="l10n_pe_payroll_detail_analytic" string="Con distribución analítica" class="o_light_label"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_provision_accounts" company_dependent="1" string="Provisión mensual"
+                             help="Gasto (debe) y provisión (haber) de cada beneficio en el asiento de provisión.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_cts_debe_account_id" string="Gasto CTS" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_cts_debe_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_cts_haber_account_id" string="Provisión CTS" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_cts_haber_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_grati_debe_account_id" string="Gasto gratificación" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_grati_debe_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_grati_haber_account_id" string="Provisión gratificación" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_grati_haber_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_boni_debe_account_id" string="Gasto bono extraordinario" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_boni_debe_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_boni_haber_account_id" string="Provisión bono extraordinario" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_boni_haber_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_vaca_debe_account_id" string="Gasto vacaciones" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_vaca_debe_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_vaca_haber_account_id" string="Provisión vacaciones" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_vaca_haber_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="mt8">
+                                <field name="l10n_pe_payroll_detail_provision"/>
+                                <label for="l10n_pe_payroll_detail_provision" string="Una línea por trabajador" class="o_light_label"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_payment_accounts" company_dependent="1" string="Pagos y liquidaciones"
+                             help="Cuentas por pagar de CTS, gratificación y liquidaciones, conceptos extra y ajuste por redondeo.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_cts_payable_account_id" string="CTS por pagar" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_cts_payable_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_grati_payable_account_id" string="Gratificación por pagar" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_grati_payable_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_liquidation_payable_account_id" string="Liquidaciones por pagar" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_liquidation_payable_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_liq_concept_in_account_id" string="Conceptos extra (ingreso)" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_liq_concept_in_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_liq_concept_out_account_id" string="Conceptos extra (descuento)" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_liq_concept_out_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_benefits_adjust_account_id" string="Ajuste por redondeo" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_benefits_adjust_account_id" options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

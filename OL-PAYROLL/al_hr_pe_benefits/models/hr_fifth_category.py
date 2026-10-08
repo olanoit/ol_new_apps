@@ -792,9 +792,11 @@ class HrEmployeeExcluidosWizard(models.TransientModel):
     la retención de un excluido, p. ej. por rentas de otro empleador)."""
     _name = 'hr.employee.excluidos.wizard'
     _description = 'Asistente de empleados excluidos de quinta'
+    _check_company_auto = True
 
     fifth_category_id = fields.Many2one(
-        'hr.fifth.category', string='Quinta cat.', required=True)
+        'hr.fifth.category', string='Quinta cat.', required=True,
+        check_company=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, readonly=True,
         default=lambda self: self.env.company)
@@ -802,7 +804,7 @@ class HrEmployeeExcluidosWizard(models.TransientModel):
         'hr.fifth.category.line.excluidos',
         'hr_fifth_category_employee_excluidos_rel', 'wizard_id',
         'excluido_id', string='Empleados excluidos', required=True,
-        domain="[('fifth_category_id', '=', fifth_category_id)]")
+        domain="[('fifth_category_id', '=', fifth_category_id)]", check_company=True)
 
     def action_add(self):
         """Crea una línea afecta por cada excluido seleccionado (el

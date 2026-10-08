@@ -39,6 +39,18 @@ class ResCompany(models.Model):
         help='Define el código PLAME del aporte: 0813 ONP, 0814 compañía '
              'de seguros.')
 
+    l10n_pe_main_parameter_id = fields.Many2one(
+        'hr.main.parameter', string='Configuración principal de planillas',
+        compute='_compute_l10n_pe_main_parameter_id',
+        help='Registro único de la compañía; Ajustes ▸ Nómina ▸ Perú lo '
+             'edita a través de este campo.')
+
+    def _compute_l10n_pe_main_parameter_id(self):
+        params = self.env['hr.main.parameter'].search([('company_id', 'in', self.ids)])
+        by_company = {param.company_id.id: param for param in params}
+        for company in self:
+            company.l10n_pe_main_parameter_id = by_company.get(company.id, False)
+
     def _l10n_pe_sctr_sunat_code(self, coverage):
         self.ensure_one()
         entity = self['l10n_pe_sctr_%s_entity' % coverage]

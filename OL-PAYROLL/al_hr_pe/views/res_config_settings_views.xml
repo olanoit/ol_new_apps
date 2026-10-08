@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ajustes ▸ Nómina ▸ Perú: la configuración principal de planillas de
+         la compañía (un registro por compañía). Los demás módulos de
+         planillas añaden sus bloques detrás de este. -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.hr.pe</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_payroll.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='hr_payroll']" position="inside">
+                <field name="company_country_code" invisible="1"/>
+                <block title="Perú" id="l10n_pe_payroll_settings" invisible="company_country_code != 'PE'">
+                    <setting id="l10n_pe_payroll_sctr" company_dependent="1" string="SCTR"
+                             help="Entidad y tasa del Seguro Complementario de Trabajo de Riesgo; la tasa la fija la aseguradora en el contrato.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_sctr_health_entity" string="Salud con" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_sctr_health_entity"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_sctr_health_rate" string="Tasa salud (%)" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_sctr_health_rate"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_sctr_pension_entity" string="Pensión con" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_sctr_pension_entity"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_sctr_pension_rate" string="Tasa pensión (%)" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_sctr_pension_rate"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_signatory" company_dependent="1" string="Representante y firma"
+                             help="Firman la boleta, los certificados y las cartas de la compañía.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_legal_representative_id" string="Representante" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_legal_representative_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_signature" string="Firma" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_signature" widget="image" class="w-auto" options="{'size': [0, 60]}"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_main_parameter" company_dependent="1" string="Configuración principal"
+                             help="Reglas, entradas y tipos de trabajo que usan la boleta, los beneficios sociales y los asientos.">
+                        <button name="action_l10n_pe_open_main_parameter" type="object"
+                                string="Abrir configuración principal" class="btn-link" icon="oi-arrow-right"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

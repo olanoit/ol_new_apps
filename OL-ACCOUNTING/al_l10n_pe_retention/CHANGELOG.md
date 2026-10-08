@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261008 — 08/10/2026
+
+- Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
+
 ## 13.20261008 — 08/10/2026
 
 - El agente de retención (agente, tasa, mínimo, impuesto y cuenta transitoria) es del RUC: las sucursales heredan la configuración de su raíz y la muestran de solo lectura; antes una factura de sucursal no retenía.

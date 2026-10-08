@@ -19,6 +19,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
     una línea por retención con proveedor, comprobante, pago y monto."""
     _name = 'l10n_pe.retention.summary.wizard'
     _description = 'Resumen de retenciones IGV (F. 626)'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', required=True, default=lambda self: self.env.company)

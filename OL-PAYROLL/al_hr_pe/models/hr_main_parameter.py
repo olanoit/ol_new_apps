@@ -99,14 +99,35 @@ class HrMainParameter(models.Model):
 
     @api.model
     def get_main_parameter(self, company=None):
+        """Configuración principal de la compañía (una por compañía).
+
+        Si aún no existe se crea con los valores por defecto: así ningún
+        flujo se corta con «no se han creado los parámetros» y Ajustes ▸
+        Nómina ▸ Perú siempre tiene dónde guardar.
+        """
         company = company or self.env.company
         param = self.search([('company_id', '=', company.id)], limit=1)
         if not param:
-            raise UserError(self.env._(
-                'No se han creado los Parámetros Principales para la '
-                'compañía %(company)s (Nómina → Configuración → Perú).',
-                company=company.display_name))
+            # sudo(): crear la configuración de la compañía es parte de
+            # leerla; el usuario de nómina que la necesita no siempre
+            # tiene permiso de creación sobre el modelo.
+            param_sudo = self.sudo().create({'company_id': company.id})
+            param = self.browse(param_sudo.id)
         return param
+
+    @api.model
+    def action_open_main_parameter(self):
+        """Abre la configuración principal de la compañía activa (sin lista:
+        hay una por compañía)."""
+        param = self.get_main_parameter(self.env.company)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Configuración principal'),
+            'res_model': self._name,
+            'res_id': param.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     def check_voucher_values(self):
         self.ensure_one()

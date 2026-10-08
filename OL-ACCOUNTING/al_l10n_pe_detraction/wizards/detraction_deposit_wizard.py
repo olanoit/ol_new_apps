@@ -16,6 +16,7 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
     los campos 32-33 del PLE 8.1 (``l10n_pe_reports``)."""
     _name = 'l10n_pe.detraction.deposit.wizard'
     _description = 'Depósito de detracción SPOT'
+    _check_company_auto = True
 
     move_id = fields.Many2one(
         'account.move', string='Comprobante', required=True, readonly=True)

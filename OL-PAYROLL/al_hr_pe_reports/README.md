@@ -67,9 +67,10 @@ aceptando, carácter por carácter.
 
 ## 5. Cómo se usa, paso a paso
 
-1. **Configurar los datos del documento** — *Parámetros principales*:
-   representante que firma, categorías de conceptos de la boleta y la
-   regla que da el neto a pagar.
+1. **Configurar los datos del documento** — *Ajustes → Nómina → Perú*:
+   representante que firma, firma, cifrado y diarios de pago. Las
+   categorías de conceptos de la boleta y la regla del neto a pagar están
+   en *Configuración principal*.
 2. **Preparar las plantillas de contrato** — *Planillas → Configuración →
    Plantillas de contrato*, una por tipo de contrato y compañía.
 3. **Imprimir o enviar la boleta** — sale la del régimen que corresponda;

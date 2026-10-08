@@ -582,6 +582,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 28.20261008 — 08/10/2026
+
+- Configuración principal de planillas: una por compañía, creada sola (ya no corta ningún flujo) y editable en Ajustes ▸ Nómina ▸ Perú (SCTR, representante y firma); el menú abre la de la compañía activa.
+- Asistentes con _check_company_auto y check_company.
+
 ## 27.20261008 — 08/10/2026
 
 - Botones con la convención de Odoo (action_<verbo>): exportadores PLAME/AFPNet/resumen como action_export_*. Migración que renombra los botones en las vistas guardadas para que la actualización no falle.

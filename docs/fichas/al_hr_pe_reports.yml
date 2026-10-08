@@ -134,7 +134,7 @@ pasos:
       ordinarias y de sobretiempo, los conceptos con su código SUNAT, el **neto
       a pagar en letras**, los aportes del empleador y las firmas.
     puntos:
-      - Los conceptos se agrupan según las categorías configuradas en los Parámetros principales.
+      - Los conceptos se agrupan según las categorías configuradas en la Configuración principal.
       - Las horas extras se desglosan por sobretasa (25 %, 35 % y 100 %).
       - "Un régimen con estructura propia, como construcción civil, imprime su variante con el mismo botón."
     imagen: screenshots/01-boleta.png
@@ -190,7 +190,7 @@ pasos:
     texto: >-
       El asistente propone el tratamiento, la ciudad y las fechas de ingreso y
       cese. **Imprimir certificado** genera el PDF firmado por el representante
-      legal de los Parámetros principales.
+      legal de la Configuración principal.
     imagen: screenshots/07-certificado-asistente.png
 
   - titulo: El certificado impreso
@@ -268,7 +268,7 @@ pasos:
       **Recargar líneas** las vuelve a traer del origen, **Generar TXT banco**
       descarga el archivo y **Finalizar** cierra el pago.
     puntos:
-      - El importe de haberes es el de la regla de neto a pagar de los Parámetros principales.
+      - El importe de haberes es el de la regla de neto a pagar de la Configuración principal.
     imagen: screenshots/15-pago-masivo.png
     pie: "PM-000007: planilla de abril de 2026 en formato BCP, 10 abonos por S/ 31.459,37."
 
@@ -291,7 +291,7 @@ pasos:
     imagen: screenshots/17-origen-gratificacion.png
 
   - titulo: Diarios de pago masivo
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Pagos bancarios
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Pagos bancarios
     texto: >-
       Los diarios bancarios desde los que se paga. Se crea un pago por cada
       diario cuyo banco tenga un formato presente en las cuentas de los
@@ -385,7 +385,7 @@ campos:
       - ["Modalidad de cobro, Tipo de abono, Forma de pago", Datos de Scotiabank., "Cargo en cuenta, Urgencia, Abono cuenta ahorro", TXT Scotiabank]
       - ["Subtipo de planilla (BanBif)", Cuarta o Quinta categoría., Quinta categoría, TXT BanBif]
   - grupo: Catálogos
-    ruta: "Parámetros principales, bancos, cuentas y tipos de identificación"
+    ruta: "Configuración principal, bancos, cuentas y tipos de identificación"
     campos:
       - [Diarios de pago masivo, Diarios bancarios habilitados (Parámetros ▸ Pagos bancarios)., Vacío, Un pago por diario]
       - [Formato de TXT, "Formato BBVA, BCP, Interbank, Scotiabank o BanBif (banco).", Vacío, Layout del archivo]
@@ -449,8 +449,8 @@ ejemplos:
       - [BanBif, "Sí", "Sí", "Subtipo de pago"]
 
 configuracion:
-  - "En **Parámetros principales**, elija el representante legal que firma, las categorías de conceptos de la boleta y la regla del neto a pagar."
-  - "En la pestaña **Pagos bancarios** de los Parámetros principales, indique los diarios de pago masivo; el banco de la cuenta del diario debe tener su formato TXT."
+  - "En **Configuración principal**, elija el representante legal que firma, las categorías de conceptos de la boleta y la regla del neto a pagar."
+  - "En la pestaña **Pagos bancarios** de la Configuración principal, indique los diarios de pago masivo; el banco de la cuenta del diario debe tener su formato TXT."
   - Registre las cuentas bancarias de haberes y de CTS de los trabajadores y su correo laboral para el envío de boletas.
   - "Revise o cree las plantillas en **Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato** y asígnelas en la ficha del trabajador."
 requisitos_nota: >-
@@ -472,7 +472,7 @@ faq:
       están validadas; las demás salen igualmente.
   - pregunta: El pago masivo sale con importes en cero.
     respuesta: >-
-      Revise la regla de neto a pagar de los Parámetros principales: el abono
+      Revise la regla de neto a pagar de la Configuración principal: el abono
       de haberes se toma de ella (y de la regla de neto quincenal para la
       quincena).
   - pregunta: ¿El certificado de 5ta calcula el impuesto anual?
@@ -482,6 +482,11 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Cifrado de la boleta y diarios de pago masivo en Ajustes ▸ Nómina ▸ Perú."
+      - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

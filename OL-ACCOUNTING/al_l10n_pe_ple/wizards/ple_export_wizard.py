@@ -21,6 +21,7 @@ class L10nPePleExportWizard(models.TransientModel):
     _name = 'l10n_pe.ple.export.wizard'
     _inherit = 'l10n_pe.ple.mixin'
     _description = 'Exportar Libros Electrónicos PLE'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,

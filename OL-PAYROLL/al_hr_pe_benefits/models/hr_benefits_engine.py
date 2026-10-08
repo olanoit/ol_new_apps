@@ -222,15 +222,24 @@ class HrMainParameter(models.Model):
              'lo habitual es descontarlos íntegros en la boleta '
              'mensual.')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        # La configuración se crea sola por compañía (get_main_parameter):
+        # recibe las mismas semillas que los datos del módulo.
+        params = super().create(vals_list)
+        params._l10n_pe_set_fortnightly_defaults()
+        return params
+
     @api.model
     def _l10n_pe_set_fortnightly_defaults(self):
         """Neto quincenal (NETO_AQ) e input del mensual (ADE_QUIN) en los
-        parámetros que aún no los tienen."""
+        parámetros que aún no los tienen: los recibidos o, llamado desde
+        los datos del módulo, todos."""
         net_rule = self.env.ref('al_hr_pe_benefits.rule_NETO_AQ',
                                 raise_if_not_found=False)
         input_type = self.env.ref('al_hr_pe.input_type_ADE_QUIN',
                                   raise_if_not_found=False)
-        for param in self.search([]):
+        for param in self or self.search([]):
             vals = {}
             if net_rule and not param.net_fortnightly_sr_id:
                 vals['net_fortnightly_sr_id'] = net_rule.id

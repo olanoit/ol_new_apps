@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 11.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
   - version: 10.20261008
     fecha: 08/10/2026
     cambios:

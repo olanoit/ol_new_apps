@@ -64,16 +64,19 @@
         </field>
     </record>
 
-    <record id="hr_main_parameter_action" model="ir.actions.act_window">
-        <field name="name">Parámetros principales</field>
-        <field name="res_model">hr.main.parameter</field>
-        <field name="view_mode">list,form</field>
+    <!-- Una configuración por compañía: el menú abre la de la compañía
+         activa, sin lista (como Ajustes ▸ Nómina ▸ Perú). -->
+    <record id="hr_main_parameter_open_action" model="ir.actions.server">
+        <field name="name">Configuración principal</field>
+        <field name="model_id" ref="model_hr_main_parameter"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_main_parameter()</field>
     </record>
 
     <!-- El menú «Perú» y sus grupos se declaran en views/menus.xml,
          que se carga antes que este archivo. -->
-    <menuitem id="menu_hr_pe_main_parameter" name="Parámetros principales"
-        parent="menu_hr_pe_cfg_parameters" action="hr_main_parameter_action" sequence="10"/>
+    <menuitem id="menu_hr_pe_main_parameter" name="Configuración principal"
+        parent="menu_hr_pe_cfg_parameters" action="hr_main_parameter_open_action" sequence="10"/>
     <menuitem id="menu_hr_pe_period" name="Periodos"
         parent="menu_hr_pe_cfg_periods" action="hr_period_action" sequence="10"/>
     <menuitem id="menu_hr_pe_period_generator" name="Generar periodos"

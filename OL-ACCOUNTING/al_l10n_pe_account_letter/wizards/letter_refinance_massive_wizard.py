@@ -7,9 +7,11 @@ from odoo.exceptions import UserError
 class L10nPeLetterRefinanceMassiveWizard(models.TransientModel):
     _name = 'l10n_pe.letter.refinance.massive.wizard'
     _description = 'Refinanciación masiva de canjes de letras'
+    _check_company_auto = True
 
     partner_id = fields.Many2one('res.partner', string='Cliente', readonly=True)
-    journal_id = fields.Many2one('account.journal', string='Diario', readonly=True)
+    journal_id = fields.Many2one('account.journal', string='Diario', readonly=True,
+        check_company=True)
     company_id = fields.Many2one('res.company', string='Compañía', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Moneda', readonly=True)
     refinance_date = fields.Date(string='Fecha de refinanciación', required=True)
@@ -25,7 +27,7 @@ class L10nPeLetterRefinanceMassiveWizard(models.TransientModel):
         'letter_id',
         string='Canjes seleccionados',
         readonly=True,
-    )
+        check_company=True)
 
     @api.depends('letter_ids')
     def _compute_total_amount(self):

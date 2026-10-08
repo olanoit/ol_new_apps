@@ -85,8 +85,10 @@ class TestFase1Masters(TransactionCase):
         # get_main_parameter por compañía
         self.assertEqual(
             Param.get_main_parameter(self.company_a), param)
-        with self.assertRaises(UserError):
-            Param.get_main_parameter(self.company_b)
+        # Sin configuración, la primera lectura la crea (ya no corta el flujo).
+        param_b = Param.get_main_parameter(self.company_b)
+        self.assertEqual(param_b.company_id, self.company_b)
+        self.assertEqual(Param.get_main_parameter(self.company_b), param_b)
 
     def test_months_days_difference(self):
         """Casos de la convención de mes comercial (base de CTS/grati)."""

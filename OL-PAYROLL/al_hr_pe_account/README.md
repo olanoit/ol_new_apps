@@ -35,9 +35,10 @@ redondeo si lo hay, y permite corregirlo antes de confirmar.
 
 ## 3. Cómo se usa, paso a paso
 
-1. **Configurar las cuentas** — *Parámetros principales → Contabilidad
-   PE*: cuentas de las reglas, de las afiliaciones AFP, de cada beneficio
-   social y la de ajuste por redondeo.
+1. **Configurar las cuentas** — *Ajustes → Nómina → Perú: contabilidad de
+   planillas*: diario, contacto, analítica, cuentas de cada beneficio
+   social y la de ajuste por redondeo. Las reglas de aportes AFP están en
+   *Configuración principal → Contabilidad*.
 2. **Decidir si se quiere analítica** — al activarla, las líneas llevan la
    distribución que corresponda: la de la regla salarial si la tiene, la
    del trabajador en otro caso.

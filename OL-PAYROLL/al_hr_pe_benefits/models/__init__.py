@@ -12,3 +12,4 @@ from . import hr_subsidies
 from . import hr_utilities
 from . import hr_advances_loans
 from . import hr_fortnightly
+from . import res_config_settings

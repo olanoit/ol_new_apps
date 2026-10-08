@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.hr.pe.benefits</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_hr_pe.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='l10n_pe_payroll_settings']" position="after">
+                <block title="Perú: quincena y beneficios sociales" id="l10n_pe_payroll_benefits_settings"
+                       invisible="company_country_code != 'PE'">
+                    <setting id="l10n_pe_payroll_fortnightly" company_dependent="1" string="Quincena"
+                             help="Cómo se calcula el adelanto quincenal y qué se adelanta en él.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_fortnightly_type" string="Modo" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_fortnightly_type"/>
+                            </div>
+                            <div class="row" invisible="l10n_pe_payroll_fortnightly_type != 'percentage'">
+                                <label for="l10n_pe_payroll_fortnightly_rate" string="Fracción del sueldo" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_fortnightly_rate" class="w-auto"/>
+                            </div>
+                            <div class="mt8">
+                                <field name="l10n_pe_payroll_fortnightly_family_allowance"/>
+                                <label for="l10n_pe_payroll_fortnightly_family_allowance" string="Adelantar la asignación familiar" class="o_light_label"/>
+                            </div>
+                            <div>
+                                <field name="l10n_pe_payroll_fortnightly_pension"/>
+                                <label for="l10n_pe_payroll_fortnightly_pension" string="Descontar AFP/ONP en la quincena" class="o_light_label"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_benefits" company_dependent="1" string="Vacaciones y liquidación"
+                             help="Remuneración computable de vacaciones y responsable de la liquidación semestral.">
+                        <div class="content-group">
+                            <div class="mt8">
+                                <field name="l10n_pe_payroll_vacation_family_allowance"/>
+                                <label for="l10n_pe_payroll_vacation_family_allowance" string="Asignación familiar en vacaciones" class="o_light_label"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_settlement_employee_id" string="Encargado" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_payroll_settlement_employee_id"
+                                       domain="[('company_id', '=', company_id)]" options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

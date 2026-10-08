@@ -60,7 +60,7 @@ contexto:
     Este módulo añade todo eso sobre `hr.version` —que en Odoo 19 absorbió al
     contrato— sin escribir códigos dentro de la lógica: qué work entry es un
     día laborado, qué categoría de regla es un ingreso o qué regla da el neto
-    se configura en los **Parámetros principales** de cada compañía. Los
+    se configura en los **Configuración principal** de cada compañía. Los
     catálogos llegan cargados (tablas T05, T06, T08, T09, T12, T15, T17, T19,
     T20, T21, T24, T27, T30, T33, T34 y T36) y se revisan, no se teclean.
   nota: >-
@@ -154,8 +154,8 @@ pasos:
     imagen: screenshots/01-menu-peru.png
     pie: Los catálogos del T-Registro se listan con su número de tabla.
 
-  - titulo: Parámetros principales de la compañía
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+  - titulo: Configuración principal de la compañía
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     texto: >-
       Un registro por compañía que consulta toda la suite. En **Generales**
       se fija la **R.M.V.** (S/ 1 130 por defecto); la **asignación familiar**
@@ -439,8 +439,8 @@ campos_intro: >-
   Cada campo que añade el módulo, con su etiqueta en pantalla, el valor por
   defecto y su efecto.
 campos:
-  - grupo: Parámetros principales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+  - grupo: Configuración principal
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     campos:
       - [Compañía, Compañía del registro (uno por compañía)., Compañía activa, Cada compañía lee el suyo]
       - [R.M.V., Remuneración Mínima Vital vigente., "1.130,00", "Snapshot de la boleta; base mínima de EsSalud"]
@@ -634,7 +634,7 @@ ejemplos:
 configuracion_intro: Puesta en marcha recomendada, en este orden.
 configuracion:
   - Instale el módulo (requiere Nómina de Odoo Enterprise y la localización peruana).
-  - "Cree los **Parámetros principales** de cada compañía: RMV, reglas de referencia y la pestaña **Boleta**."
+  - "Cree los **Configuración principal** de cada compañía: RMV, reglas de referencia y la pestaña **Boleta**."
   - Revise la **UIT** del año, las tasas de las **Afiliaciones (AFP/ONP)**, los **Seguros sociales** y los **Aportes**.
   - "Genere los **periodos** del ejercicio (con semanas si hay regímenes semanales)."
   - "Ponga el **código de establecimiento** en los lugares de trabajo y la **Entidad SUNAT (T36)** en los bancos."
@@ -677,6 +677,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 28.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Configuración principal de planillas: una por compañía, creada sola (ya no corta ningún flujo) y editable en Ajustes ▸ Nómina ▸ Perú (SCTR, representante y firma); el menú abre la de la compañía activa."
+      - "Asistentes con _check_company_auto y check_company."
   - version: 27.20261008
     fecha: 08/10/2026
     cambios:

@@ -28,6 +28,7 @@ PROTEST_DAYS = 15
 class L10nPeLetterBankWizard(models.TransientModel):
     _name = 'l10n_pe.letter.bank.wizard'
     _description = 'Operación del banco con letras'
+    _check_company_auto = True
 
     letter_id = fields.Many2one('l10n_pe.letter', string='Canje', required=True)
     operation = fields.Selection(
@@ -37,13 +38,16 @@ class L10nPeLetterBankWizard(models.TransientModel):
         string='Operación', required=True)
     letter_line_ids = fields.Many2many(
         'l10n_pe.letter.line', string='Letras', required=True,
-        domain="[('id', 'in', available_line_ids)]")
+        domain="[('id', 'in', available_line_ids)]",
+        check_company=True)
     available_line_ids = fields.Many2many(
-        'l10n_pe.letter.line', compute='_compute_available_line_ids')
+        'l10n_pe.letter.line', compute='_compute_available_line_ids',
+        check_company=True)
     date = fields.Date(string='Fecha', required=True, default=fields.Date.context_today)
     bank_journal_id = fields.Many2one(
         'account.journal', string='Banco',
-        domain="[('type', '=', 'bank'), ('company_id', '=', company_id)]")
+        domain="[('type', '=', 'bank'), ('company_id', '=', company_id)]",
+        check_company=True)
     company_id = fields.Many2one(related='letter_id.company_id')
     currency_id = fields.Many2one(related='letter_id.currency_id')
     nominal_amount = fields.Monetary(

@@ -138,6 +138,7 @@ def _run_import_thread(dbname, uid, wizard_model, wizard_id, progress_id,
 class ImportPayrollMixin(models.AbstractModel):
     _name = 'al.import.payroll.mixin'
     _description = 'Mixin común para asistentes de importación de planillas'
+    _check_company_auto = True
 
     # ----- Archivo --------------------------------------------------------- #
     file_data = fields.Binary(string='Archivo Excel', attachment=False)

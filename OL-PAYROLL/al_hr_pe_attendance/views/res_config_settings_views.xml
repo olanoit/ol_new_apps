@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.hr.pe.attendance</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_hr_pe.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='l10n_pe_payroll_settings']" position="after">
+                <block title="Perú: tareaje" id="l10n_pe_payroll_tareaje_settings"
+                       invisible="company_country_code != 'PE'">
+                    <setting id="l10n_pe_payroll_tareaje" company_dependent="1" string="Horario nocturno y horas extra"
+                             help="Cómo el tareaje convierte las marcaciones en días, recargo nocturno y horas extra.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_tareaje_night_from" string="Nocturno desde" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_night_from" widget="float_time" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_tareaje_night_to" string="Nocturno hasta" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_night_to" widget="float_time" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_tareaje_he25_hours" string="Primeras horas extra al 25 %" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_he25_hours" widget="float_time" class="w-auto"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="l10n_pe_payroll_tareaje_tolerance" company_dependent="1" string="Tardanzas y redondeo"
+                             help="Tolerancia antes de contar una tardanza y redondeo de los minutos marcados.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_tareaje_late_tolerance" string="Tolerancia" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_late_tolerance" widget="float_time" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_payroll_tareaje_round_minutes" string="Redondeo (minutos)" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_round_minutes" class="w-auto"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

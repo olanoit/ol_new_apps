@@ -19,6 +19,7 @@ class L10nPeSireActionWizard(models.TransientModel):
     """Acciones del SIRE que piden un dato o una confirmación explícita."""
     _name = 'l10n_pe.sire.action.wizard'
     _description = 'Acción SIRE'
+    _check_company_auto = True
 
     res_model = fields.Char(required=True, readonly=True)
     res_id = fields.Many2oneReference(model_field='res_model', required=True, readonly=True)

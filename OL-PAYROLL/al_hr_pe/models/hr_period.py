@@ -128,6 +128,7 @@ class HrPeriodGenerator(models.TransientModel):
     """Genera los 12 periodos mensuales de un año (código PLAME AAAAMM)."""
     _name = 'hr.period.generator'
     _description = 'Generador de Periodos'
+    _check_company_auto = True
 
     year = fields.Integer(
         string='Año', required=True, default=lambda self: date.today().year)

@@ -25,6 +25,7 @@ MONTH_SELECTION = [
 class L10nPeExchangeRateWizard(models.TransientModel):
     _name = 'l10n_pe.exchange.rate.wizard'
     _description = 'Actualizar tipo de cambio SUNAT'
+    _check_company_auto = True
 
     currency_id = fields.Many2one(
         'res.currency', string='Moneda', required=True,

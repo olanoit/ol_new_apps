@@ -73,7 +73,7 @@ flujos:
   - id: circuito
     titulo: El circuito común de CTS, gratificación y liquidación
     texto: >-
-      Los tres documentos llaman al mismo motor de los Parámetros principales
+      Los tres documentos llaman al mismo motor de la Configuración principal
       de la compañía y terminan escribiendo entradas en las boletas del lote.
     mermaid: |
       flowchart TD
@@ -221,7 +221,7 @@ pasos:
   - seccion: Configuración
     texto: Una vez por compañía, antes del primer beneficio.
   - titulo: Configurar el motor de beneficios
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ Beneficios sociales
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Beneficios sociales
     texto: >-
       Una pestaña por compañía indica qué **entradas** de la boleta reciben
       cada beneficio y qué **reglas salariales** y **tipos de días** usa el
@@ -234,7 +234,7 @@ pasos:
     imagen: screenshots/01-parametros.png
 
   - titulo: Generar los tramos de la renta de 5ta
-    ruta: Parámetros principales ▸ Quinta categoría
+    ruta: Configuración principal ▸ Quinta categoría
     texto: >-
       Elija las reglas de remuneración ordinaria, extraordinaria, proyección y
       gratificaciones, y las entradas de quinta y de retención extraordinaria.
@@ -461,7 +461,7 @@ pasos:
       **Exportar quincena** valida las boletas y escribe el neto quincenal como
       entrada de la boleta mensual.
     puntos:
-      - El modo de cálculo, la tasa y si se adelantan asignación familiar y aportes se fijan en la pestaña Beneficios sociales de los Parámetros principales.
+      - "El modo de cálculo, la tasa y si se adelantan asignación familiar y aportes se fijan en Ajustes ▸ Nómina ▸ Perú: quincena y beneficios sociales."
       - "**Reabrir quincena** vuelve a Confirmado para corregir y exportar de nuevo."
     imagen: screenshots/19-quincena.png
 
@@ -469,8 +469,8 @@ campos_intro: >-
   Cada pantalla propia del módulo, con las etiquetas de la interfaz. Los
   importes calculados son de solo lectura salvo que se indique.
 campos:
-  - grupo: Parámetros principales ▸ Beneficios sociales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+  - grupo: Configuración principal ▸ Beneficios sociales
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     campos:
       - [Input gratificación / Input bonificación 9 %, Entradas donde se exporta la gratificación y su bono., Vacío, Obligatorias para procesar gratificaciones]
       - [Input CTS, Entrada donde se exporta el depósito., Vacío, Obligatoria para procesar CTS]
@@ -487,7 +487,7 @@ campos:
       - [Tasa de la quincena, Fracción del sueldo que se adelanta., "0,5", Solo con porcentaje del sueldo]
       - [Pagar asignación familiar en la quincena, Adelanta la asignación proporcional., Desmarcado, Reglas de quincena]
       - [Descontar aportes previsionales en la quincena, AFP u ONP ya en la quincena., Desmarcado, Reglas de quincena]
-  - grupo: Parámetros principales ▸ Quinta categoría
+  - grupo: Configuración principal ▸ Quinta categoría
     campos:
       - [R.S. Rem. ordinaria afecta a quinta, Remuneración del mes., Vacío, Rem. mes y meses anteriores]
       - [R.S. Rem. extraordinaria afecta a quinta, "Gratificaciones reales, reintegros, utilidades.", Vacío, Rem. ext. y meses anteriores]
@@ -705,7 +705,7 @@ configuracion_intro: >-
   Los beneficios leen las boletas de los lotes mensuales, así que conviene
   tener la planilla calculada antes de procesarlos.
 configuracion:
-  - "Complete la pestaña **Beneficios sociales** de los Parámetros principales de cada compañía: entradas, reglas para promedios y tipos de días."
+  - "Complete la pestaña **Beneficios sociales** de la Configuración principal de cada compañía: entradas, reglas para promedios y tipos de días."
   - "Genere los tramos de la renta de 5ta desde la pestaña **Quinta categoría** después de registrar la UIT del año."
   - "Revise los tipos de préstamo y de adelanto en **Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos**."
   - Calcule los lotes de nómina mensuales con su periodo antes de procesar CTS, gratificación, provisiones o utilidades.
@@ -728,7 +728,7 @@ faq:
   - pregunta: Proceso la CTS y no aparece ningún trabajador, ¿qué reviso?
     respuesta: >-
       Que exista el lote del mes de cierre con su periodo y boletas, y que las
-      reglas y tipos de días de los Parámetros principales sean los de la
+      reglas y tipos de días de la Configuración principal sean los de la
       estructura que usa la planilla: el motor busca esas reglas concretas en
       las boletas.
   - pregunta: ¿Genera asientos contables?
@@ -748,6 +748,11 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 18.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Quincena, asignación familiar en vacaciones y encargado de la liquidación en Ajustes ▸ Nómina ▸ Perú."
+      - "Los asistentes de récord vacacional y de excluidos de quinta validan la compañía de lo que reciben."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

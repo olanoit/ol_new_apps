@@ -7,3 +7,4 @@ from . import hr_attendance_register
 # El monitor va al final: su vista SQL usa columnas que declaran los
 # archivos anteriores.
 from . import hr_attendance_monitor
+from . import res_config_settings

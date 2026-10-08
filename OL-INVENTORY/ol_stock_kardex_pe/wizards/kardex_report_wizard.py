@@ -107,7 +107,8 @@ class L10nPeKardexReportWizard(models.TransientModel):
     product_ids = fields.Many2many(
         'product.product', string='Productos',
         domain=[('is_storable', '=', True)],
-        help='Vacío = todos los productos almacenables.')
+        help='Vacío = todos los productos almacenables.',
+        check_company=True)
     categ_ids = fields.Many2many(
         'product.category', string='Categorías',
         help='Filtro alternativo cuando no se seleccionan productos.')

@@ -315,11 +315,11 @@ class HrVacationRestWizard(models.TransientModel):
     """
     _name = 'hr.vacation.rest.wizard'
     _description = 'Asistente de récord vacacional'
+    _check_company_auto = True
 
     employee_ids = fields.Many2many(
         'hr.employee', 'hr_vacation_rest_wizard_employee_rel',
-        'wizard_id', 'employee_id', string='Empleados',
-        domain="[('company_id', '=', company_id)]")
+        'wizard_id', 'employee_id', string='Empleados', check_company=True)
     show_all = fields.Boolean(
         string='Todos los empleados', default=True,
         help='Si está activo se recalculan e incluyen todos los '

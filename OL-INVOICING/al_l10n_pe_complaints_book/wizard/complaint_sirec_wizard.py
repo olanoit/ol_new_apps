@@ -15,6 +15,7 @@ class L10nPeComplaintSirecWizard(models.TransientModel):
     """
     _name = 'l10n_pe.complaint.sirec.wizard'
     _description = 'Exportación al SIREC'
+    _check_company_auto = True
 
     company_id = fields.Many2one('res.company', string='Compañía', required=True,
                                  default=lambda self: self.env.company)
@@ -26,7 +27,8 @@ class L10nPeComplaintSirecWizard(models.TransientModel):
                           - relativedelta(days=1))
     book_ids = fields.Many2many('l10n_pe.complaint.book', string='Libros',
                                 domain="[('company_id', '=', company_id)]",
-                                help='Vacío: todos los libros de la compañía.')
+                                help='Vacío: todos los libros de la compañía.',
+        check_company=True)
     only_pending = fields.Boolean(string='Solo las no reportadas', default=True)
     mark_reported = fields.Boolean(string='Marcar como reportadas', default=True)
     file = fields.Binary(string='Archivo', readonly=True)

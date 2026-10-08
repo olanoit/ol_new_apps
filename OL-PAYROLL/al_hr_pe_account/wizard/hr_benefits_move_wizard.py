@@ -22,6 +22,7 @@ from odoo.addons.al_hr_pe_benefits.models.hr_benefits_engine import \
 class HrBenefitsMoveWizard(models.TransientModel):
     _name = 'hr.benefits.move.wizard'
     _description = 'Generación de asiento contable de BBSS'
+    _check_company_auto = True
 
     debit = fields.Float(string='Total debe', readonly=True)
     credit = fields.Float(string='Total haber', readonly=True)

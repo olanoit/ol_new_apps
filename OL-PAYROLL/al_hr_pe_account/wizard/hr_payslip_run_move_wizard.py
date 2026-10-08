@@ -21,6 +21,7 @@ from odoo.addons.al_hr_pe.tools import custom_round
 class HrPayslipRunMoveWizard(models.TransientModel):
     _name = 'hr.payslip.run.move.wizard'
     _description = 'Asistente de asiento de planilla por lote'
+    _check_company_auto = True
 
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True)

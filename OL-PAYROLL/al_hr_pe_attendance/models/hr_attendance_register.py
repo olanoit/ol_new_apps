@@ -39,6 +39,7 @@ def _hhmm(hours):
 class HrAttendanceRegisterWizard(models.TransientModel):
     _name = 'l10n_pe.hr.attendance.register.wizard'
     _description = 'Registro de control de asistencia (D.S. 004-2006-TR)'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
@@ -49,8 +50,7 @@ class HrAttendanceRegisterWizard(models.TransientModel):
     date_to = fields.Date(
         string='Hasta', required=True, default=fields.Date.context_today)
     employee_ids = fields.Many2many(
-        'hr.employee', string='Trabajadores',
-        domain="[('company_id', '=', company_id)]",
+        'hr.employee', string='Trabajadores', check_company=True,
         help='Vacío: todos los trabajadores con marcaciones en el periodo.')
 
     @api.constrains('date_from', 'date_to')

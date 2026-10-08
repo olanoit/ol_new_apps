@@ -42,9 +42,10 @@ distintos sin tocar código.
 
 Todos los beneficios siguen el mismo circuito, y eso es deliberado:
 
-1. **Configurar el motor una vez** — *Planillas → Configuración →
-   Parámetros principales*. Qué conceptos son fijos, cuáles variables y
-   qué reglas entran en la remuneración computable de cada beneficio.
+1. **Configurar el motor una vez** — quincena y vacaciones en *Ajustes →
+   Nómina → Perú*; qué conceptos son fijos, cuáles variables y qué reglas
+   entran en la remuneración computable, en *Planillas → Configuración →
+   Perú → Configuración principal*.
 2. **Crear el documento del periodo** — *Planillas → Beneficios
    sociales*. Un registro por semestre de CTS, por gratificación, por
    reparto de utilidades, con su periodo y su compañía.

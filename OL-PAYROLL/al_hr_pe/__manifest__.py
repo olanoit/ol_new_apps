@@ -30,7 +30,7 @@ cero códigos hardcodeados (ver plan §5).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '27.20261008',
+    'version': '28.20261008',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
@@ -77,6 +77,7 @@ cero códigos hardcodeados (ver plan §5).
         'views/hr_tregistro_views.xml',
         'views/hr_period_views.xml',
         'views/hr_main_parameter_views.xml',
+        'views/res_config_settings_views.xml',
         'views/hr_payslip_views.xml',
     ],
     'assets': {

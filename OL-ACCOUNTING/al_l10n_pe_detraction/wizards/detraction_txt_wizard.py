@@ -27,6 +27,7 @@ BN_DEFAULT_INVOICE_TYPE = '01'
 class L10nPeDetractionTxtWizard(models.TransientModel):
     _name = 'l10n_pe.detraction.txt.wizard'
     _description = 'Depósito masivo de detracciones (Banco de la Nación)'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', required=True, default=lambda self: self.env.company)
@@ -51,7 +52,8 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
                " ('state', '=', 'posted'),"
                " ('l10n_pe_detraction_number', '=', False),"
                " ('move_type', '=', 'in_invoice' if mode == 'acquirer'"
-               " else 'out_invoice')]")
+               " else 'out_invoice')]",
+        check_company=True)
     file_name = fields.Char(readonly=True)
     file_data = fields.Binary(string='Archivo', readonly=True)
     excluded_html = fields.Html(string='Excluidos', readonly=True)

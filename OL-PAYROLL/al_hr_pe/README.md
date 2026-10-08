@@ -42,12 +42,16 @@ no debe contaminarla con la norma de hoy. La boleta guarda lo que usó.
 
 ## 3. Puesta en marcha, paso a paso
 
-### Paso 1 — Parámetros principales de la compañía
+### Paso 1 — Configuración principal de la compañía
 
-**Planillas → Configuración → Perú → Parámetros principales.** Es el
-registro que consulta el resto de la suite. Sin él, la boleta y los
-exportadores se niegan a funcionar y lo dicen con un mensaje claro, en vez
-de calcular mal en silencio.
+**Ajustes → Nómina → Perú.** Cada compañía tiene una configuración
+principal de planillas, que se crea sola la primera vez que se necesita. En
+Ajustes están el SCTR, el representante y la firma, la quincena, la
+contabilidad, el tareaje y el pago masivo, todo por compañía. El botón
+«Abrir configuración principal» (o *Planillas → Configuración → Perú →
+Configuración principal*) lleva al mapeo de reglas, entradas y tipos de
+trabajo. Si a la boleta o a los exportadores les falta algo, lo dicen con
+un mensaje claro en vez de calcular mal en silencio.
 
 ### Paso 2 — UIT y remuneración mínima del año
 

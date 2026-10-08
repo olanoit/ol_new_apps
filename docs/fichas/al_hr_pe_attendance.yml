@@ -260,7 +260,7 @@ pasos:
   - seccion: Tareaje
     texto: Las horas del periodo, clasificadas y llevadas a la boleta.
   - titulo: Parámetros del tareaje
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales ▸ pestaña Tareaje
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ pestaña Tareaje
     texto: >-
       Por compañía: franja nocturna, horas al 25 %, tolerancia de tardanza,
       redondeo de minutos y el tipo de entrada de trabajo que recibe cada
@@ -397,8 +397,8 @@ campos:
       - [Horas marcadas, Suma de las horas trabajadas del día., Calculado, "Descuenta el refrigerio con cuatro marcaciones"]
       - [Estado, "Asistió, Falta, Día de descanso, Día feriado, Vacaciones, Justificada, Descanso trabajado o Feriado trabajado.", Calculado, "Muestra Reg. ausencia o Ver ausencia"]
       - ["Columnas opcionales", "Establecimiento, Tipo doc., N° marcaciones, Turno planificado, Ciclo atípico, Tipo de entrada y Registro de ausencia.", Ocultas, "—"]
-  - grupo: Parámetros principales ▸ Tareaje
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Parámetros principales
+  - grupo: Configuración principal ▸ Tareaje
+    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     campos:
       - [Inicio de horario nocturno, Comienzo de la franja nocturna., "22:00", Separa horas diurnas y nocturnas]
       - [Fin de horario nocturno, Fin de la franja nocturna., "06:00", Separa horas diurnas y nocturnas]
@@ -504,7 +504,7 @@ ejemplos:
 
 configuracion:
   - Instale el módulo (requiere Planeación, Asistencias, Nómina y el calendario de feriados peruanos).
-  - "Revise **Parámetros principales ▸ Tareaje**: franja nocturna, horas al 25 %, tolerancia, redondeo y tipos de entrada de trabajo de destino."
+  - "Revise **Configuración principal ▸ Tareaje**: franja nocturna, horas al 25 %, tolerancia, redondeo y tipos de entrada de trabajo de destino."
   - "Marque **Sujeto a horas extras (PE)** en la versión de quienes tienen sobretiempo."
   - "Si hay jornadas atípicas, cree los **Ciclos atípicos** y sus **Asignaciones de ciclo**, genere los turnos y publíquelos."
   - "Marque **Es vacaciones (Perú)** en los tipos de ausencia de vacaciones."
@@ -541,6 +541,11 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 15.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Horario nocturno, horas extra, tolerancia y redondeo del tareaje en Ajustes ▸ Nómina ▸ Perú."
+      - "El registro de asistencia valida que los trabajadores sean de su compañía."
   - version: 14.20261008
     fecha: 08/10/2026
     cambios:

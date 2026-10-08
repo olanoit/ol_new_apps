@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261008 — 08/10/2026
+
+- Diario, contacto, analítica y cuentas de beneficios sociales en Ajustes ▸ Nómina ▸ Perú (por compañía).
+- Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
+
 ## 7.20261008 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo (action_load_provisions, action_open_move_wizard, action_generate_move, action_open_move); el asiento se abre con el ícono de Odoo (fa-bars).

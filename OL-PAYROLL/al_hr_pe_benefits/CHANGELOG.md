@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261008 — 08/10/2026
+
+- Quincena, asignación familiar en vacaciones y encargado de la liquidación en Ajustes ▸ Nómina ▸ Perú.
+- Los asistentes de récord vacacional y de excluidos de quinta validan la compañía de lo que reciben.
+
 ## 17.20261008 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo en todos los beneficios (action_process, action_recompute, action_export_to_payslips, action_draft, action_close, action_show_details, action_open_lines…). Íconos como en Odoo: detalle con fa-list (no el ojo), revertir pago con fa-undo, documentos con fa-file-text-o.

@@ -17,3 +17,4 @@ from . import hr_version
 from . import hr_work_suspension
 from . import l10n_pe_hr_tregistro_extra
 from . import l10n_pe_hr_tregistro_export
+from . import res_config_settings

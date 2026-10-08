@@ -26,7 +26,7 @@ SHARED_COMODELS = ('res.company', 'res.users', 'res.partner', 'res.currency')
 # recoge comprobantes de sus sucursales; check_company solo admite la misma
 # compañía o una superior, así que rechazaría los de las sucursales.
 EXEMPT_FIELDS = ('l10n_pe.sire.rce.line.move_id', 'l10n_pe.sire.rvie.line.move_id',
-                 'l10n_pe.sire.rce.nd.line.move_id')
+                 'l10n_pe.sire.rce.nd.line.move_id', 'l10n_pe.sire.action.wizard.move_ids')
 
 
 @tagged('post_install', '-at_install')
@@ -126,3 +126,29 @@ class TestMulticompany(TransactionCase):
                                  'parent_id': self.env.company.id})
         for fname in own:
             self.assertEqual(branch[fname], self.env.company[fname], fname)
+
+    def test_wizards_check_company(self):
+        """Los asistentes con compañía validan en el servidor que lo que
+        reciben (empleados, documentos, parámetros) sea de esa compañía:
+        el filtro de la vista solo actúa en pantalla."""
+        missing_auto, offenders = [], []
+        for name in self.env.registry:
+            model = self.env[name]
+            if not model._transient or model._original_module not in self.own \
+                    or 'company_id' not in model._fields:
+                continue
+            if not model._check_company_auto:
+                missing_auto.append(name)
+            # Si la compañía sale de un campo (related), ese campo la define.
+            source = (model._fields['company_id'].related or '').split('.')[0]
+            for fname, field in model._fields.items():
+                if (field.type in ('many2one', 'many2many') and fname not in ('company_id', source)
+                        and field._module in self.own and not field.related
+                        and field.comodel_name not in SHARED_COMODELS
+                        and field.comodel_name in self.env
+                        and 'company_id' in self.env[field.comodel_name]._fields
+                        and not field.check_company
+                        and '%s.%s' % (name, fname) not in EXEMPT_FIELDS):
+                    offenders.append('%s.%s' % (name, fname))
+        self.assertFalse(missing_auto, 'Asistentes sin _check_company_auto: %s' % missing_auto)
+        self.assertFalse(offenders, 'Asistentes sin check_company: %s' % offenders)

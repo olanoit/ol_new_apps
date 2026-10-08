@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261008 — 08/10/2026
+
+- Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
+
 ## 7.20261008 — 08/10/2026
 
 - Pruebas al día con los nuevos nombres de los métodos de beneficios.
