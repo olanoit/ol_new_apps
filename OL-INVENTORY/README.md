@@ -29,5 +29,6 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
+[al_stock_base](al_stock_base/) | 1.20261008 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
 [ol_stock_kardex_pe](ol_stock_kardex_pe/) | 11.20261008 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 [//]: # (end addons)

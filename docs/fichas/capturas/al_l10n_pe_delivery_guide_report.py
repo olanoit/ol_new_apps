@@ -20,8 +20,8 @@ with Captura('al_l10n_pe_delivery_guide_report') as c:
     c.abrir('/odoo/inventory/action-stock.action_picking_tree_all/%s' % ENTREGA, ms=2500)
     c.foto('01-entrega', selector='.o_form_view .o_form_sheet_bg')
 
-    # 2. Pestaña EDI PE: transporte, vehículo y conductor
-    c.texto('EDI PE', ms=800)
+    # 2. Pestaña Logística PE: guía de remisión, transporte, vehículo y conductor
+    c.clic(".o_notebook .nav-link[name='l10n_pe_stock']", ms=800)
     c.foto('02-datos-traslado', selector='.o_form_view .o_notebook', padding=14)
 
     # 3. Representación impresa
@@ -29,7 +29,15 @@ with Captura('al_l10n_pe_delivery_guide_report') as c:
     c.foto('03-guia-remision', selector='.gre-a4', padding=14)
 
     # 4. Vehículos desde la app Perú
-    c.abrir_accion('al_l10n_pe_detraction.action_detraction_type', ms=2000)  # entra en la app Perú
-    c.clic('.o_main_navbar button:has-text("Configuración")', ms=600)
-    c.clic('.o-dropdown--menu a:has-text("Vehículos (guías de remisión)")', ms=2000)
+    # Perú ▸ Guías de remisión ▸ Vehículos
+    c.abrir_accion('l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions', ms=2500)
     c.foto('04-vehiculos')
+
+    # ---- Menú Perú ▸ Guías de remisión -------------------------------------
+    c.abrir_accion('al_l10n_pe_delivery_guide_report.action_guides', ms=3000)
+    c.foto('05-guias', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
+    c.page.get_by_role('button', name='Guías de remisión').first.click()
+    c.esperar(800)
+    c.foto('06-menu-guias', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    c.abrir_accion('al_l10n_pe_delivery_guide_report.action_guides_analysis', ms=3000)
+    c.foto('07-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})

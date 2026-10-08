@@ -24,7 +24,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/purchase/static/description/icon.png',
-    'version': '7.20261008',
+    'version': '8.20261008',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [
@@ -34,6 +34,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
         # purchase_stock incluido
         'purchase_request',
         'base_tier_validation',
+        'al_stock_base',
     ],
     'data': [
         'security/construction_groups.xml',

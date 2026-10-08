@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 22.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Tipo de operación (tabla 12) y consignación de la transferencia en el grupo Libros electrónicos (PLE) de la página Logística PE."
   - version: 21.20261008
     fecha: 08/10/2026
     cambios:

@@ -24,15 +24,17 @@ propio de obtención del QR (``_l10n_pe_edi_get_qr``): el core v19
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/stock/static/description/icon.png',
-    'version': '10.20261008',
+    'version': '11.20261008',
     'license': 'OPL-1',
     'depends': [
         'stock',
         'l10n_pe_edi_stock',
         'al_account_base',
+        'al_stock_base',
     ],
     'data': [
         'views/stock_picking_views.xml',
+        'views/guide_menu_views.xml',
         'views/menu.xml',
         'reports/guia_remision_reports.xml',
     ],

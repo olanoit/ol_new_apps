@@ -7,4 +7,19 @@
               action="l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions"
               groups="stock.group_stock_manager"
               sequence="40"/>
+
+    <!-- Perú ▸ Guías de remisión -->
+    <menuitem id="menu_guides_root" name="Guías de remisión"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="stock.group_stock_user"
+              sequence="35"/>
+    <menuitem id="menu_guides" name="Guías de remisión"
+              parent="menu_guides_root" action="action_guides" sequence="10"/>
+    <menuitem id="menu_guides_to_send" name="Por enviar"
+              parent="menu_guides_root" action="action_guides_to_send" sequence="20"/>
+    <menuitem id="menu_guides_vehicles" name="Vehículos"
+              parent="menu_guides_root"
+              action="l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions" sequence="30"/>
+    <menuitem id="menu_guides_analysis" name="Análisis de guías"
+              parent="menu_guides_root" action="action_guides_analysis" sequence="40"/>
 </odoo>

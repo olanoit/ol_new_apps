@@ -218,3 +218,12 @@
     border-top: 1px dashed #000;
     font-size: 9px;
 }
+
+/* Datos de la compañía al final del ticket */
+.cpe-ticket-company {
+    text-align: center;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px solid #000;
+    font-size: 9px;
+}

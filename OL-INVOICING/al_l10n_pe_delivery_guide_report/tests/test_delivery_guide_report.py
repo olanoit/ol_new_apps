@@ -138,3 +138,26 @@ class TestDeliveryGuideReport(TransactionCase):
             'al_l10n_pe_delivery_guide_report.view_picking_form_delivery_guide_report')
         self.assertIn("l10n_pe_edi_status != 'sent'", view.arch_db)
         self.assertNotIn('l10n_pe_edi_ticket_number', view.arch_db)
+
+    def _action_records(self, xmlid):
+        from odoo.tools.safe_eval import safe_eval
+        action = self.env.ref(xmlid)
+        return self.env[action.res_model].search(safe_eval(action.domain or '[]'))
+
+    def test_guide_menu_actions(self):
+        """Perú ▸ Guías de remisión: la entrega hecha sin guía enviada sale en
+        «Guías de remisión», «Por enviar» y el análisis; al enviarla deja de
+        estar pendiente."""
+        picking = self._create_picking()
+        self.assertIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides'))
+        self.assertIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides_to_send'))
+        self.assertIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides_analysis'))
+        picking.l10n_pe_edi_status = 'sent'
+        self.assertNotIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides_to_send'))
+        menus = self.env.ref('al_l10n_pe_delivery_guide_report.menu_guides_root').child_id.sorted('sequence')
+        self.assertEqual([action.id for action in menus.mapped('action')], [
+            self.env.ref(xmlid).id for xmlid in (
+                'al_l10n_pe_delivery_guide_report.action_guides',
+                'al_l10n_pe_delivery_guide_report.action_guides_to_send',
+                'l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions',
+                'al_l10n_pe_delivery_guide_report.action_guides_analysis')])

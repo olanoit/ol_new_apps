@@ -17,4 +17,52 @@
             </xpath>
         </field>
     </record>
+
+    <!-- «Logística PE» (al_stock_base): la guía de remisión de l10n_pe_edi_stock
+         en dos grupos, y su página «EDI PE» oculta. Hereda la vista que crea
+         los campos para que existan al moverlos. -->
+    <record id="view_picking_form_pe_guide" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe.guide</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="l10n_pe_edi_stock.view_picking_edi_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='l10n_pe_stock_guide_groups']" position="inside">
+                <group string="Guía de remisión" name="l10n_pe_stock_guide"/>
+                <group string="Transporte" name="l10n_pe_stock_transport"/>
+            </xpath>
+            <!-- «move» solo vale como hijo directo del nodo de herencia. -->
+            <xpath expr="//group[@name='l10n_pe_stock_guide']" position="inside">
+                <xpath expr="//field[@name='l10n_pe_edi_status']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_latam_document_number']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_ticket_number']" position="move"/>
+                <xpath expr="//field[@name='l10n_pe_edi_transport_type']" position="move"/>
+                <xpath expr="//field[@name='l10n_pe_edi_reason_for_transfer']" position="move"/>
+                <xpath expr="//field[@name='l10n_pe_edi_departure_start_date']" position="move"/>
+            </xpath>
+            <xpath expr="//group[@name='l10n_pe_stock_transport']" position="inside">
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_vehicle_id']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_operator_id']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_related_document_type']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_document_number']" position="move"/>
+                <xpath expr="//page[@name='pe_edi']//field[@name='l10n_pe_edi_observation']" position="move"/>
+            </xpath>
+            <!-- Etiquetas con la convención de la suite (solo la primera
+                 mayúscula) -->
+            <field name="l10n_pe_edi_transport_type" position="attributes">
+                <attribute name="string">Modalidad de traslado</attribute>
+            </field>
+            <field name="l10n_pe_edi_reason_for_transfer" position="attributes">
+                <attribute name="string">Motivo de traslado</attribute>
+            </field>
+            <field name="l10n_pe_edi_related_document_type" position="attributes">
+                <attribute name="string">Tipo de documento relacionado</attribute>
+            </field>
+            <field name="l10n_pe_edi_document_number" position="attributes">
+                <attribute name="string">N.º de documento relacionado</attribute>
+            </field>
+            <xpath expr="//page[@name='pe_edi']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>

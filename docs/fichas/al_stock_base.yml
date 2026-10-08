@@ -1,0 +1,48 @@
+titulo: Base de Inventario Perú
+subtitulo: >-
+  La página **Logística PE** de las transferencias: guía de remisión, transporte,
+  libros electrónicos y requerimiento de obra en un solo lugar, agrupados por
+  tema.
+categoria: Localización Perú · Inventario
+etiquetas: [Logística PE, Guía de remisión, Transporte, PLE, Módulo base]
+portada: screenshots/02-logistica-pe.png
+
+destacados_intro: >-
+  Un módulo liviano, sin lógica de negocio propia, del que cuelgan los datos
+  peruanos de las transferencias.
+destacados:
+  - icono: "PE"
+    titulo: Una sola página
+    texto: >-
+      Todo lo peruano de la transferencia en **Logística PE**, como
+      «Facturación PE» en la factura.
+  - icono: "▤"
+    titulo: Por grupos
+    texto: >-
+      Guía de remisión y transporte arriba; libros electrónicos y obra debajo.
+      Cada grupo aparece solo si su módulo está instalado.
+
+pasos:
+  - titulo: La transferencia
+    ruta: Inventario ▸ Operaciones ▸ Transferencias ▸ abrir una
+    texto: >-
+      La cabecera queda limpia: los datos peruanos ya no se mezclan con
+      «Documento origen» ni «Propietario».
+    imagen: screenshots/01-formulario.png
+  - titulo: Logística PE
+    ruta: Inventario ▸ Operaciones ▸ Transferencias ▸ pestaña Logística PE
+    texto: >-
+      **Guía de remisión** (estado, número, ticket, modalidad, motivo y fecha
+      de inicio del traslado) y **Transporte** (vehículo, conductor, documento
+      relacionado y observaciones), y debajo **Libros electrónicos (PLE)**
+      (tipo de operación de la tabla 12 y consignación) y, si la transferencia
+      viene de un requerimiento, **Requerimiento de obra**.
+    imagen: screenshots/02-logistica-pe.png
+
+novedades:
+  - version: 1.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Página Logística PE en las transferencias, con grupos de guía de remisión, transporte, libros electrónicos y requerimiento de obra."
+
+relacionados: [al_l10n_pe_delivery_guide_report, al_l10n_pe_ple, al_construction_material_request, ol_stock_kardex_pe]

@@ -252,6 +252,15 @@
                     <div>Consulte en www.sunat.gob.pe</div>
                     <div>Gracias por su preferencia.</div>
                 </div>
+                <!-- Datos de la compañía al final (el ticket no tiene pie de página) -->
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-set="company_partner" t-value="company.partner_id"/>
+                <t t-set="company_district" t-value="'l10n_pe_district' in company_partner._fields and company_partner.l10n_pe_district.name"/>
+                <div class="cpe-ticket-company">
+                    <div><strong t-out="company.name"/><t t-if="company.vat"> · R.U.C. <span t-out="company.vat"/></t></div>
+                    <div t-out="', '.join(p for p in (company.street, company_district, company.city, company.state_id.name) if p)"/>
+                    <div><t t-if="company.phone"><span t-out="company.phone"/></t><t t-if="company.phone and company.email"> · </t><t t-if="company.email"><span t-out="company.email"/></t></div>
+                </div>
             </div>
         </template>
 

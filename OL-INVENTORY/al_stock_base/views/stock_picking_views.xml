@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- «Logística PE»: todos los datos peruanos de la transferencia en una
+         página. La guía de remisión va en l10n_pe_stock_guide_groups y cada
+         módulo restante añade su grupo dentro de l10n_pe_stock_groups
+         heredando ESTA vista (así la página ya existe cuando mueve sus
+         campos con position="move"). -->
+    <record id="view_picking_form_pe" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <!-- Antes que las demás herencias: la página existe cuando cada
+             módulo mueve sus campos. -->
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Logística PE" name="l10n_pe_stock" invisible="country_code != 'PE'">
+                    <field name="country_code" invisible="1"/>
+                    <!-- Primero la guía de remisión y su transporte; debajo, el
+                         resto (libros electrónicos, obra…). -->
+                    <group name="l10n_pe_stock_guide_groups"/>
+                    <group name="l10n_pe_stock_groups"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

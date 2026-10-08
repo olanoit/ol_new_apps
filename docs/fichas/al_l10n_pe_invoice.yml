@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 18.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ticket: datos de la compañía al final (nombre, R.U.C., domicilio fiscal, teléfono, correo y web)."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

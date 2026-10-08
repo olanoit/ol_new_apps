@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 8.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "El requerimiento de obra de la transferencia pasa a su grupo en la página Logística PE."
   - version: 7.20261008
     fecha: 08/10/2026
     cambios:

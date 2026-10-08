@@ -12,4 +12,21 @@
             </field>
         </field>
     </record>
+
+    <!-- «Logística PE» (al_stock_base): tipo de operación (tabla 12) y
+         consignación en su propio grupo. -->
+    <record id="view_picking_form_pe_ple" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe.ple</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="view_picking_form_ple_consignment"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='l10n_pe_stock_groups']" position="inside">
+                <group string="Libros electrónicos (PLE)" name="l10n_pe_stock_ple"/>
+            </xpath>
+            <xpath expr="//group[@name='l10n_pe_stock_ple']" position="inside">
+                <xpath expr="//field[@name='l10n_pe_operation_type']" position="move"/>
+                <xpath expr="//field[@name='l10n_pe_consignment']" position="move"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

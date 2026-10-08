@@ -12,4 +12,19 @@
         </field>
     </record>
 
+    <!-- «Logística PE» (al_stock_base): el requerimiento de obra en su grupo. -->
+    <record id="view_picking_form_pe_construction" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe.construction</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="view_picking_form_construction"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='l10n_pe_stock_groups']" position="inside">
+                <group string="Requerimiento de obra" name="l10n_pe_stock_construction"
+                       invisible="not construction_request_id"/>
+            </xpath>
+            <xpath expr="//group[@name='l10n_pe_stock_construction']" position="inside">
+                <xpath expr="//field[@name='construction_request_id']" position="move"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

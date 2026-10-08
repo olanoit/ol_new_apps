@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261008 — 08/10/2026
+
+- Menú Perú ▸ Guías de remisión: guías con su estado SUNAT (por enviar en amarillo, con error en rojo), pendientes de enviar, vehículos y análisis por motivo y mes.
+- Datos de la guía de remisión y del transporte en la página Logística PE de la transferencia (grupos Guía de remisión y Transporte); la página «EDI PE» de l10n_pe_edi_stock queda oculta y las etiquetas siguen la convención de la suite.
+
 ## 10.20261008 — 08/10/2026
 
 - Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.

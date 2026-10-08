@@ -79,13 +79,14 @@ pasos:
       - "El archivo se nombra `GUIA_REMISION - <cliente> - <referencia>`."
     imagen: screenshots/01-entrega.png
 
-  - titulo: Datos del traslado en la pestaña EDI PE
-    ruta: Entrega ▸ pestaña EDI PE
+  - titulo: Datos del traslado en la pestaña Logística PE
+    ruta: Entrega ▸ pestaña Logística PE
     texto: >-
-      La guía toma el **Tipo de transporte**, el **Motivo de Traslado** y la
-      **Fecha de inicio del traslado** de la entrega; el **Vehículo**, el
-      **Operador** y la **Observación** de la pestaña EDI PE; y el **Número de
-      documento** asignado a la guía.
+      Todo lo de la guía está en la pestaña **Logística PE** de la entrega:
+      el grupo **Guía de remisión** (estado, número, ticket, modalidad, motivo y
+      fecha de inicio del traslado) y el grupo **Transporte** (vehículo,
+      conductor, documento relacionado y observaciones). La guía impresa toma
+      sus datos de ahí.
     imagen: screenshots/02-datos-traslado.png
 
   - titulo: La guía de remisión impresa
@@ -101,12 +102,35 @@ pasos:
     pie: Guía T001-00000101 de la entrega de demostración, en transporte privado.
 
   - titulo: Registrar los vehículos
-    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Vehículos (guías de remisión)
+    ruta: Perú ▸ Guías de remisión ▸ Vehículos
     texto: >-
       Los vehículos de la guía, con placa y operador predeterminado, también
       están en la app Perú. Al elegir el vehículo en la entrega se propone su
       operador.
     imagen: screenshots/04-vehiculos.png
+
+  - seccion: El menú Perú ▸ Guías de remisión
+    texto: >-
+      Las guías de la compañía, las pendientes de enviar, los vehículos y el
+      análisis, todo en la app Perú (como Detracciones).
+  - titulo: Menú de guías
+    ruta: Perú ▸ Guías de remisión
+    imagen: screenshots/06-menu-guias.png
+  - titulo: Guías de remisión
+    ruta: Perú ▸ Guías de remisión ▸ Guías de remisión
+    texto: >-
+      Número de guía, transferencia, fecha, destinatario, motivo, modalidad,
+      vehículo, conductor y estado SUNAT. En amarillo las entregas hechas que
+      aún no se envían; en rojo, las que tienen error. Filtros «Por enviar»,
+      «Enviadas», «Con error» y por modalidad; agrupación por motivo,
+      destinatario, vehículo, estado o mes. **Por enviar** abre directamente
+      las pendientes.
+    imagen: screenshots/05-guias.png
+  - titulo: Análisis de guías
+    ruta: Perú ▸ Guías de remisión ▸ Análisis de guías
+    texto: >-
+      Número de guías por motivo y mes, en tabla dinámica, gráfico y lista.
+    imagen: screenshots/07-analisis.png
 
 funcionalidades:
   - grupo: Representación impresa
@@ -172,6 +196,11 @@ faq:
       y el vehículo.
 
 novedades:
+  - version: 11.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Menú Perú ▸ Guías de remisión: guías con su estado SUNAT (por enviar en amarillo, con error en rojo), pendientes de enviar, vehículos y análisis por motivo y mes."
+      - "Datos de la guía de remisión y del transporte en la página Logística PE de la transferencia (grupos Guía de remisión y Transporte); la página «EDI PE» de l10n_pe_edi_stock queda oculta y las etiquetas siguen la convención de la suite."
   - version: 10.20261008
     fecha: 08/10/2026
     cambios:

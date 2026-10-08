@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perú ▸ Guías de remisión: guías, pendientes de enviar, vehículos y
+         análisis (mismo patrón que Perú ▸ Detracciones). -->
+
+    <record id="view_picking_list_guide" model="ir.ui.view">
+        <field name="name">stock.picking.list.guide.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Guías de remisión" create="false" sample="1"
+                  decoration-danger="l10n_pe_edi_error"
+                  decoration-warning="state == 'done' and l10n_pe_edi_status != 'sent' and not l10n_pe_edi_error">
+                <field name="l10n_pe_edi_error" column_invisible="1"/>
+                <field name="state" column_invisible="1"/>
+                <field name="l10n_latam_document_number" string="N.º de guía"/>
+                <field name="name" string="Transferencia"/>
+                <field name="date_done" string="Fecha"/>
+                <field name="partner_id" string="Destinatario"/>
+                <field name="l10n_pe_edi_reason_for_transfer" string="Motivo"/>
+                <field name="l10n_pe_edi_transport_type" string="Modalidad" optional="show"/>
+                <field name="l10n_pe_edi_vehicle_id" string="Vehículo" optional="show"/>
+                <field name="l10n_pe_edi_operator_id" string="Conductor" optional="show"/>
+                <field name="origin" optional="hide"/>
+                <field name="l10n_pe_edi_status" string="Estado SUNAT" widget="badge"
+                       decoration-success="l10n_pe_edi_status == 'sent'"
+                       decoration-warning="l10n_pe_edi_status == 'to_send'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_picking_search_guide" model="ir.ui.view">
+        <field name="name">stock.picking.search.guide.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Guías de remisión">
+                <field name="l10n_latam_document_number" string="N.º de guía"/>
+                <field name="name" string="Transferencia"/>
+                <field name="partner_id" string="Destinatario"/>
+                <field name="l10n_pe_edi_vehicle_id" string="Vehículo"/>
+                <field name="l10n_pe_edi_operator_id" string="Conductor"/>
+                <filter name="to_send" string="Por enviar"
+                        domain="[('state', '=', 'done'), ('l10n_pe_edi_status', '!=', 'sent')]"/>
+                <filter name="sent" string="Enviadas" domain="[('l10n_pe_edi_status', '=', 'sent')]"/>
+                <filter name="with_error" string="Con error" domain="[('l10n_pe_edi_error', '!=', False)]"/>
+                <separator/>
+                <filter name="private" string="Transporte privado" domain="[('l10n_pe_edi_transport_type', '=', '02')]"/>
+                <filter name="public" string="Transporte público" domain="[('l10n_pe_edi_transport_type', '=', '01')]"/>
+                <separator/>
+                <filter name="date_done" string="Fecha" date="date_done"/>
+                <group>
+                    <filter name="group_reason" string="Motivo" context="{'group_by': 'l10n_pe_edi_reason_for_transfer'}"/>
+                    <filter name="group_partner" string="Destinatario" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_vehicle" string="Vehículo" context="{'group_by': 'l10n_pe_edi_vehicle_id'}"/>
+                    <filter name="group_status" string="Estado SUNAT" context="{'group_by': 'l10n_pe_edi_status'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date_done:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_guides" model="ir.actions.act_window">
+        <field name="name">Guías de remisión</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_picking_list_guide')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('stock.view_picking_form')})]"/>
+        <field name="search_view_id" ref="view_picking_search_guide"/>
+        <field name="domain">[('picking_type_code', '=', 'outgoing'), ('l10n_pe_edi_transport_type', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin guías de remisión</p>
+            <p>Aparecen las entregas con modalidad de traslado (pestaña Logística PE
+               de la transferencia). En amarillo, las hechas que aún no se envían a
+               SUNAT; en rojo, las que tienen error.</p>
+        </field>
+    </record>
+
+    <record id="action_guides_to_send" model="ir.actions.act_window">
+        <field name="name">Guías por enviar</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_picking_list_guide')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('stock.view_picking_form')})]"/>
+        <field name="search_view_id" ref="view_picking_search_guide"/>
+        <field name="domain">[('picking_type_code', '=', 'outgoing'), ('state', '=', 'done'),
+                              ('l10n_pe_edi_status', '!=', 'sent')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Todas las entregas tienen su guía enviada</p>
+            <p>Entregas hechas sin guía aceptada por SUNAT: ábrala y pulse
+               «Generar guía de remisión».</p>
+        </field>
+    </record>
+
+    <record id="view_picking_pivot_guide" model="ir.ui.view">
+        <field name="name">stock.picking.pivot.guide.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de guías" sample="1">
+                <field name="l10n_pe_edi_reason_for_transfer" type="row"/>
+                <field name="date_done" interval="month" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_picking_graph_guide" model="ir.ui.view">
+        <field name="name">stock.picking.graph.guide.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de guías" type="bar" sample="1">
+                <field name="date_done" interval="month"/>
+                <field name="l10n_pe_edi_status"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_guides_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de guías</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_picking_pivot_guide')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_picking_graph_guide')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_picking_list_guide')})]"/>
+        <field name="search_view_id" ref="view_picking_search_guide"/>
+        <field name="domain">[('picking_type_code', '=', 'outgoing'), ('l10n_pe_edi_transport_type', '!=', False),
+                              ('state', '=', 'done')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+</odoo>
