@@ -12,8 +12,10 @@ heredan del módulo base `al_account_base`.
 import logging
 
 from odoo import _, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_round
+
+from .account_account import PERCENTAGE_TOLERANCE
 
 _logger = logging.getLogger(__name__)
 
@@ -76,20 +78,18 @@ class AccountMove(models.Model):
     # Generación del asiento de destino                                   #
     # ------------------------------------------------------------------ #
 
-    def _l10n_pe_get_ga_journal(self):
-        """Diario 'Gastos Automáticos' (GA); se crea si no existe."""
+    def _l10n_pe_get_destination_journal(self):
+        """Diario de destinos configurado en Ajustes ▸ Perú (el de la compañía
+        o, en una sucursal, el de su raíz). No se busca ni se crea ningún
+        diario por su código interno: lo elige el usuario."""
         self.ensure_one()
-        # sudo: quien publica una factura (grupo Facturación) no tiene permiso
-        # de crear diarios; el diario GA es infraestructura de la dinámica de
-        # destinos y se crea una sola vez por compañía.
-        journal_sudo = self.env['account.journal'].sudo().search(
-            [('code', '=', 'GA'), ('company_id', '=', self.company_id.id)], limit=1)
-        if not journal_sudo:
-            journal_sudo = journal_sudo.create({
-                'name': 'Gastos Automáticos', 'type': 'general',
-                'code': 'GA', 'company_id': self.company_id.id,
-            })
-        return journal_sudo.sudo(False)
+        journal = self.company_id.l10n_pe_destination_journal_id \
+            or self.company_id.root_id.l10n_pe_destination_journal_id
+        if not journal:
+            raise UserError(_(
+                'Configure el diario de los asientos de destino de %s en '
+                'Ajustes ▸ Perú ▸ Asientos de destino.', self.company_id.name))
+        return journal
 
     def _l10n_pe_create_destiny_entry(self):
         """Crea (o regenera) el asiento de destino de este comprobante."""
@@ -111,7 +111,7 @@ class AccountMove(models.Model):
             'ref': _('Destino: %s', self.name),
             'date': self.date,
             'partner_id': self.partner_id.id,
-            'journal_id': self._l10n_pe_get_ga_journal().id,
+            'journal_id': self._l10n_pe_get_destination_journal().id,
             'l10n_pe_origin_move_id': self.id,
             'company_id': self.company_id.id,
             'l10n_pe_is_destiny_entry': True,
@@ -140,29 +140,81 @@ class AccountMove(models.Model):
         self.ensure_one()
         line_vals = []
         for line in self.line_ids:
-            # La dinámica (6→9 o 9→6) y el código de la cuenta dependen de la
-            # compañía: se evalúan en la del comprobante, no en la activa.
+            # La dinámica (6→9 o 9→6), el código de la cuenta y su reparto
+            # dependen de la compañía: se evalúan en la del comprobante (y,
+            # como el código, en su compañía raíz).
             account = line.account_id.with_company(self.company_id)
             if account.l10n_pe_work_destinies and not account.l10n_pe_no_destiny:
                 line_vals.extend(self._l10n_pe_build_destiny_lines(line))
         return line_vals
 
-    def _l10n_pe_build_destiny_lines(self, line):
-        """Genera las líneas de distribución (auto-balanceadas) para una línea
-        de origen: reparte su importe entre las cuentas destino según su
-        porcentaje y contabiliza la contrapartida en la cuenta de carga."""
+    def _l10n_pe_destination_portions(self, line):
+        """Reparto de una línea de origen: ``[(cuenta destino, fracción,
+        distribución analítica)]`` que suma 1.
+
+        1. La parte distribuida a cuentas analíticas con cuenta de destino
+           (centros de costo) va a esa cuenta, con su analítica.
+        2. El resto, al reparto por cuenta (porcentajes de la cuenta 6).
+        Sin ninguna de las dos configuraciones no hay destino (lista vacía).
+        """
         self.ensure_one()
         account = line.account_id.with_company(self.company_id)
-        dest_lines = account.l10n_pe_destiny_ids
-        if not dest_lines:
+        distribution = line.analytic_distribution or {}
+        analytic_ids = {int(aid) for key in distribution for aid in key.split(',') if aid}
+        analytics = self.env['account.analytic.account'].browse(analytic_ids).exists()
+        destination_of = {a.id: a.l10n_pe_destination_account_id
+                          for a in analytics if a.l10n_pe_destination_account_id}
+        portions, covered, rest_distribution = [], 0.0, {}
+        for key, pct in distribution.items():
+            targets = [destination_of[int(aid)] for aid in key.split(',')
+                       if aid and int(aid) in destination_of]
+            if targets:
+                portions.append((targets[0], pct / 100.0, {key: 100.0}))
+                covered += pct / 100.0
+            else:
+                rest_distribution[key] = pct
+        if covered > 1.0 + PERCENTAGE_TOLERANCE:
+            # Varios planes en claves separadas pueden sumar más del 100 %:
+            # el reparto de destino se normaliza sobre lo que sí tiene destino.
+            portions = [(dest, fraction / covered, analytic)
+                        for dest, fraction, analytic in portions]
+            covered = 1.0
+        rest = 1.0 - covered
+        if rest > PERCENTAGE_TOLERANCE:
+            dest_lines = account.l10n_pe_destiny_ids
+            if not dest_lines:
+                if portions:
+                    raise ValidationError(_(
+                        'El %(pct).2f%% del importe de la cuenta %(code)s no tiene '
+                        'destino: su distribución analítica no usa centros de '
+                        'costo con cuenta de destino y la cuenta no tiene un '
+                        'reparto propio.', pct=rest * 100, code=account.code))
+                return []
+            account.l10n_pe_check_destiny_percentage()
+            # La analítica que no decide el destino acompaña al resto.
+            total_rest = sum(rest_distribution.values())
+            analytic = ({key: pct * 100.0 / total_rest for key, pct in rest_distribution.items()}
+                        if total_rest else False)
+            for dest in dest_lines:
+                portions.append((dest.dest_account_id, rest * dest.percentage, analytic))
+        return portions
+
+    def _l10n_pe_build_destiny_lines(self, line):
+        """Genera las líneas de distribución (auto-balanceadas) para una línea
+        de origen: reparte su importe entre las cuentas destino y contabiliza
+        la contrapartida en la cuenta de carga."""
+        self.ensure_one()
+        account = line.account_id.with_company(self.company_id)
+        portions = self._l10n_pe_destination_portions(line)
+        if not portions:
+            return []
+        load_account = account.l10n_pe_load_account_id \
+            or self.company_id.root_id.l10n_pe_destination_load_account_id
+        if not load_account:
             raise ValidationError(_(
-                'La cuenta %s trabaja con destinos pero no tiene cuentas de '
-                'destino configuradas.\nConfigúrelas (o active "Desactivar '
-                'destinos" en la cuenta).', account.code))
-        if not account.l10n_pe_load_account_id:
-            raise ValidationError(_(
-                'No existe una cuenta de carga para la cuenta: %s', account.code))
-        account.l10n_pe_check_destiny_percentage()
+                'No hay cuenta de carga para la cuenta %s: indique la cuenta de '
+                'carga por defecto (791) en Ajustes ▸ Perú o una propia en la cuenta.',
+                account.code))
 
         # El asiento de destino se lleva en la moneda de la compañía: reparte
         # el importe en soles (debe/haber) de la línea de origen.
@@ -173,21 +225,19 @@ class AccountMove(models.Model):
 
         vals = []
         distributed = 0.0
-        last = len(dest_lines) - 1
-        for i, dest in enumerate(dest_lines):
+        last = len(portions) - 1
+        for i, (dest_account, fraction, analytic) in enumerate(portions):
             if i == last:
                 amount = base_abs - distributed  # remanente exacto → cuadre
             else:
-                amount = float_round(base_abs * dest.percentage,
+                amount = float_round(base_abs * fraction,
                                      precision_rounding=currency.rounding)
             distributed += amount
+            # la analítica (centro de costo) acompaña al destino, no a la carga 79
             vals.append(self._l10n_pe_prepare_line(
-                line, dest.dest_account_id, amount, is_debit,
-                # la analítica (centro de costo) acompaña al destino, no a la carga 79
-                analytic_distribution=line.analytic_distribution))
-        # Contrapartida: cuenta de carga con el signo opuesto por el total.
+                line, dest_account, amount, is_debit, analytic_distribution=analytic))
         vals.append(self._l10n_pe_prepare_line(
-            line, account.l10n_pe_load_account_id, base_abs, not is_debit))
+            line, load_account, base_abs, not is_debit))
         return [(0, 0, v) for v in vals]
 
     def _l10n_pe_prepare_line(self, line, account, amount, is_debit, analytic_distribution=None):

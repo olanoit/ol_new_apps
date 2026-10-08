@@ -8,8 +8,11 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='pg_pe_accounting']/group[@name='pe_accounting_group']"
                    position="inside">
-                <group name="gb_destinations" string="Destinos">
+                <!-- Del RUC: las sucursales usan la configuración de su raíz -->
+                <group name="gb_destinations" string="Destinos" invisible="parent_id">
                     <field name="l10n_pe_dest_type" widget="radio"/>
+                    <field name="l10n_pe_destination_load_account_id" options="{'no_create': True}"/>
+                    <field name="l10n_pe_destination_journal_id" options="{'no_create': True}"/>
                 </group>
             </xpath>
         </field>

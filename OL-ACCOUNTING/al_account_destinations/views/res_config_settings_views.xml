@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Sección "Destinos" dentro de la app Perú de Ajustes (del base) -->
+    <!-- Apartado «Asientos de destino» en la app Perú de Ajustes (del base) -->
     <record id="res_config_settings_view_form" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.al.destinations</field>
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']//block[@name='pe_accounting_block']"
-                   position="inside">
-                <setting string="Cuentas destino (dinámica 6↔9)" name="pe_destinations_setting"
-                         help="Sentido del asiento de destino automático: de gasto por naturaleza (6) a función (9), o viceversa.">
-                    <field name="l10n_pe_dest_type"/>
-                </setting>
+                   position="after">
+                <block title="Asientos de destino" name="pe_destinations_block">
+                    <setting string="Sentido" name="pe_destinations_type_setting"
+                             help="De gasto por naturaleza (6) a función (9), como indica el PCGE, o al revés para quien registra por función. Es del RUC: las sucursales usan el de su compañía raíz.">
+                        <field name="l10n_pe_dest_type" widget="radio"/>
+                    </setting>
+                    <setting string="Diario de destinos" name="pe_destinations_journal_setting"
+                             help="Diario (tipo Varios) donde se publican los asientos de destino. Sin él no se generan destinos.">
+                        <field name="l10n_pe_destination_journal_id"
+                               options="{'no_create': True}"
+                               domain="[('type', '=', 'general'), ('company_id', '=', company_id)]"/>
+                    </setting>
+                    <setting string="Cuenta de carga por defecto" name="pe_destinations_load_setting"
+                             help="Contrapartida del asiento de destino, normalmente 791 Cargas imputables a cuentas de costos y gastos. Una cuenta puede indicar otra (78, 72) en su configuración de destinos.">
+                        <field name="l10n_pe_destination_load_account_id"
+                               options="{'no_create': True}"/>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="destination_period_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.destination.period.wizard.form</field>
+        <field name="model">l10n_pe.destination.period.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Destinos del periodo">
+                <field name="currency_id" invisible="1"/>
+                <field name="dest_type" invisible="1"/>
+                <group>
+                    <group string="Periodo">
+                        <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="move_count"/>
+                    </group>
+                    <group string="Cuadre 79 vs Elemento 9" invisible="dest_type != '6a9'">
+                        <field name="balance_79"/>
+                        <field name="balance_9"/>
+                        <field name="difference"
+                               decoration-danger="difference != 0"
+                               decoration-success="difference == 0"/>
+                    </group>
+                </group>
+                <div class="alert alert-info" role="alert" invisible="dest_type != '6a9'">
+                    Según el PCGE, el saldo acreedor de la 79 debe ser igual a la
+                    suma de los saldos deudores del Elemento 9. Una diferencia
+                    indica gastos imputados a la clase 9 fuera de los destinos o
+                    destinos que faltan: regenerarlos los recalcula con la
+                    configuración actual (por cuenta y por centro de costo).
+                </div>
+                <footer>
+                    <button name="action_regenerate" type="object" string="Regenerar destinos"
+                            class="btn-primary"
+                            confirm="Se recalcularán los asientos de destino de los comprobantes del periodo. ¿Continuar?"/>
+                    <button special="cancel" string="Cerrar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="destination_period_wizard_action" model="ir.actions.act_window">
+        <field name="name">Destinos del periodo</field>
+        <field name="res_model">l10n_pe.destination.period.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

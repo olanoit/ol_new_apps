@@ -3,3 +3,4 @@ access_l10n_pe_account_destiny,l10n_pe.account.destiny user,model_l10n_pe_accoun
 access_l10n_pe_account_destiny_invoice,l10n_pe.account.destiny invoice,model_l10n_pe_account_destiny,account.group_account_invoice,1,0,0,0
 access_l10n_pe_account_destiny_readonly,l10n_pe.account.destiny readonly,model_l10n_pe_account_destiny,account.group_account_readonly,1,0,0,0
 access_l10n_pe_account_destiny_manager,l10n_pe.account.destiny manager,model_l10n_pe_account_destiny,account.group_account_manager,1,1,1,1
+access_l10n_pe_destination_period_wizard,l10n_pe.destination.period.wizard manager,model_l10n_pe_destination_period_wizard,account.group_account_manager,1,1,1,1

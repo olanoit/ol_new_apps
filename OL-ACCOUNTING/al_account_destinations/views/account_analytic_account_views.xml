@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Centro de costo → cuenta del Elemento 9 del asiento de destino -->
+    <record id="view_account_analytic_account_form_destination" model="ir.ui.view">
+        <field name="name">account.analytic.account.form.al.destinations</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <field name="plan_id" position="after">
+                <field name="l10n_pe_destination_account_id"
+                       options="{'no_create': True}"
+                       domain="['|', ('code', '=like', '9%'), ('code', '=like', '6%')]"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_analytic_account_list_destination" model="ir.ui.view">
+        <field name="name">account.analytic.account.list.al.destinations</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list"/>
+        <field name="arch" type="xml">
+            <field name="plan_id" position="after">
+                <field name="l10n_pe_destination_account_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

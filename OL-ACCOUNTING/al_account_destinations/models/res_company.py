@@ -13,6 +13,18 @@ class ResCompany(models.Model):
 
     l10n_pe_dest_type = fields.Selection(
         selection=L10N_PE_DEST_TYPE_SELECTION,
-        string='Tipo de destino', required=True, default='9a6',
+        string='Tipo de destino', required=True, default='6a9',
         help='Sentido del asiento de destino: de gasto por naturaleza (6) a '
-             'función (9), o viceversa.')
+             'función (9), que es lo que indica el PCGE, o viceversa para quien '
+             'registra por función.')
+    l10n_pe_destination_journal_id = fields.Many2one(
+        'account.journal', string='Diario de destinos', check_company=True,
+        domain="[('type', '=', 'general')]",
+        help='Diario de los asientos de destino (tipo Varios). Obligatorio para '
+             'generar destinos; se elige en Ajustes ▸ Perú.')
+    l10n_pe_destination_load_account_id = fields.Many2one(
+        'account.account', string='Cuenta de carga por defecto', check_company=True,
+        domain="['|', '|', ('code', '=like', '72%'), ('code', '=like', '78%'), ('code', '=like', '79%')]",
+        help='Contrapartida del asiento de destino (normalmente 791 Cargas '
+             'imputables a cuentas de costos y gastos). Una cuenta puede '
+             'indicar otra (78, 72) en su configuración de destinos.')

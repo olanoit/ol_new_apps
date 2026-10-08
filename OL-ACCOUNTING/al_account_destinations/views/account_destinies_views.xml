@@ -26,6 +26,7 @@
                        domain="[('id', 'in', allowed_dest_ids)]"
                        options="{'no_create': True}"/>
                 <field name="percentage" force_save="1" widget="percentage"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

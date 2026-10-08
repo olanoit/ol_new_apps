@@ -20,26 +20,62 @@ class AccountAccount(models.Model):
         help='Sentido de la dinámica de destinos según la compañía actual.')
     l10n_pe_work_destinies = fields.Boolean(
         string='Trabaja con destinos', compute='_compute_l10n_pe_work_destinies')
+    # Por compañía, con el mismo patrón que el código de la cuenta
+    # (``code`` / ``code_store``): el valor se guarda por compañía
+    # (company_dependent) y se lee y escribe en la compañía raíz, así las
+    # sucursales usan la configuración de su RUC.
+    l10n_pe_no_destiny_store = fields.Boolean(company_dependent=True)
+    l10n_pe_load_account_store = fields.Many2one('account.account', company_dependent=True)
     l10n_pe_no_destiny = fields.Boolean(
-        string='Desactivar destinos', default=False,
+        string='Desactivar destinos',
+        compute='_compute_l10n_pe_company_values', inverse='_inverse_l10n_pe_no_destiny',
         help='No se generará asiento de destino para esta cuenta aunque tenga '
              'o no configuradas sus cuentas destino.')
+    # Las cuentas v19 se comparten entre compañías: el reparto es de cada
+    # compañía raíz (como el código de la cuenta) y se ve el de la activa.
     l10n_pe_destiny_ids = fields.One2many(
-        'l10n_pe.account.destiny', 'parent_account_id', string='Cuenta(s) destino')
+        'l10n_pe.account.destiny', 'parent_account_id', string='Cuenta(s) destino',
+        domain=lambda self: [('company_id', '=', self.env.company.root_id.id)])
     l10n_pe_load_account_id = fields.Many2one(
         'account.account', string='Cuenta de carga',
-        domain="['|', ('code', '=like', '78%'), ('code', '=like', '79%')]",
-        help='Cuenta 78/79 usada como contrapartida del asiento de destino.')
+        compute='_compute_l10n_pe_company_values', inverse='_inverse_l10n_pe_load_account',
+        domain="['|', '|', ('code', '=like', '72%'), ('code', '=like', '78%'), ('code', '=like', '79%')]",
+        help='Excepción a la cuenta de carga de la compañía (Ajustes): p. ej. '
+             '78 para gastos cubiertos por provisiones o 72 para producción de '
+             'activo inmovilizado. Vacío: la de la compañía (791).')
     l10n_pe_has_destiny = fields.Boolean(
-        string='Incluye destino', compute='_compute_l10n_pe_has_destiny', store=True,
+        string='Incluye destino', compute='_compute_l10n_pe_has_destiny',
         help='La cuenta tiene al menos una cuenta destino configurada.')
     l10n_pe_allowed_dest_ids = fields.Many2many(
         'account.account', compute='_compute_l10n_pe_allowed_dest_ids',
         string='Cuentas destino permitidas')
 
     @api.depends_context('company')
+    @api.depends('l10n_pe_no_destiny_store', 'l10n_pe_load_account_store')
+    def _compute_l10n_pe_company_values(self):
+        # sudo: como en ``account.account._compute_code``, la compañía raíz
+        # puede no estar entre las permitidas de un usuario de la sucursal.
+        accounts_root_sudo = self.with_company(self.env.company.root_id).sudo()
+        for account, account_root_sudo in zip(self, accounts_root_sudo):
+            account.l10n_pe_no_destiny = account_root_sudo.l10n_pe_no_destiny_store
+            account.l10n_pe_load_account_id = account_root_sudo.l10n_pe_load_account_store.sudo(False)
+
+    def _inverse_l10n_pe_no_destiny(self):
+        # sudo: se escribe en la compañía raíz (ver el cálculo).
+        accounts_root_sudo = self.with_company(self.env.company.root_id).sudo()
+        for account, account_root_sudo in zip(self, accounts_root_sudo):
+            account_root_sudo.l10n_pe_no_destiny_store = account.l10n_pe_no_destiny
+
+    def _inverse_l10n_pe_load_account(self):
+        # sudo: se escribe en la compañía raíz (ver el cálculo).
+        accounts_root_sudo = self.with_company(self.env.company.root_id).sudo()
+        for account, account_root_sudo in zip(self, accounts_root_sudo):
+            account_root_sudo.l10n_pe_load_account_store = account.l10n_pe_load_account_id
+
+    @api.depends_context('company')
     def _compute_l10n_pe_dest_type(self):
-        dest_type = self.env.company.l10n_pe_dest_type
+        # Como el código de la cuenta: lo decide la compañía raíz (el RUC).
+        dest_type = self.env.company.root_id.l10n_pe_dest_type
         for account in self:
             account.l10n_pe_dest_type = dest_type
 
@@ -69,6 +105,7 @@ class AccountAccount(models.Model):
             account.l10n_pe_allowed_dest_ids = [
                 Command.set(allowed_by_prefix[target_prefix].ids)]
 
+    @api.depends_context('company')
     @api.depends('l10n_pe_destiny_ids')
     def _compute_l10n_pe_has_destiny(self):
         for account in self:
@@ -108,7 +145,8 @@ class AccountAccount(models.Model):
             for account, vals in zip(self, vals_list):
                 vals['l10n_pe_destiny_ids'] = [
                     Command.create({'dest_account_id': line.dest_account_id.id,
-                                    'percentage': line.percentage})
+                                    'percentage': line.percentage,
+                                    'company_id': line.company_id.id})
                     for line in account.l10n_pe_destiny_ids]
         return vals_list
 
@@ -118,13 +156,19 @@ class L10nPeAccountDestiny(models.Model):
     _description = 'Cuenta destino (dinámica PCGE)'
     _order = 'id asc'
     _rec_name = 'dest_account_id'
+    _check_company_auto = True
 
+    # Compañía raíz (el RUC): sus sucursales usan el mismo reparto, igual que
+    # comparten el código de la cuenta.
+    company_id = fields.Many2one(
+        'res.company', string='Compañía', required=True, index=True,
+        default=lambda self: self.env.company.root_id)
     parent_account_id = fields.Many2one(
         'account.account', string='Cuenta principal', required=True,
-        ondelete='cascade', index=True)
+        ondelete='cascade', index=True, check_company=True)
     dest_account_id = fields.Many2one(
         'account.account', string='Cuenta destino', required=True,
-        ondelete='cascade')
+        ondelete='cascade', check_company=True)
     percentage = fields.Float(
         string='Porcentaje %', required=True, default=1.0,
         digits=(16, PERCENTAGE_DIGITS),

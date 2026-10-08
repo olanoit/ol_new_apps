@@ -4,10 +4,14 @@ flowchart TD
   B -- No --> C[Recorre cada apunte]
   C --> D{¿Cuenta de la clase de origen<br/>sin Desactivar destinos?}
   D -- No --> E[El apunte no interviene:<br/>IGV, cuenta por pagar…]
-  D -- Sí --> F{¿Tiene destinos<br/>y cuenta de carga?}
-  F -- No --> G[Error: no deja publicar<br/>e indica la cuenta]
-  F -- Sí --> H{¿Porcentajes<br/>suman 100 %?}
-  H -- No --> G
-  H -- Sí --> I[Reparte el importe por porcentaje;<br/>la última línea recibe el remanente]
-  I --> J[Contrapartida por el total<br/>en la cuenta de carga]
-  J --> K[Asiento «Destino: número»<br/>publicado en el diario GA]
+  D -- Sí --> F[Parte con centro de costo<br/>con cuenta de destino:<br/>va a esa cuenta]
+  F --> F2{¿Queda importe<br/>sin centro de costo?}
+  F2 -- No --> I
+  F2 -- Sí --> H{¿La cuenta tiene<br/>reparto propio?}
+  H -- Sí --> H2[El resto se reparte<br/>por sus porcentajes]
+  H2 --> I
+  H -- No --> H3{¿Hubo parte con<br/>centro de costo?}
+  H3 -- No --> E2[Sin destino:<br/>la cuenta no está configurada]
+  H3 -- Sí --> G[Error: indica qué parte<br/>quedó sin destino]
+  I[La última línea recibe<br/>el remanente del redondeo] --> J["Contrapartida por el total en la carga<br/>de la cuenta o la de Ajustes (791)"]
+  J --> K[Asiento «Destino: número»<br/>en el diario de destinos de Ajustes]

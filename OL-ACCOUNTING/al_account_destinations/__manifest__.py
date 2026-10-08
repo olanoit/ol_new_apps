@@ -12,7 +12,8 @@ cuenta de carga (78/79) como contrapartida.
 
 * Configuración por cuenta: cuentas destino con porcentajes (suma 100 %) y
   cuenta de carga.
-* Asiento de destino generado automáticamente al postear, en el diario "GA".
+* Asiento de destino generado automáticamente al postear, en el diario de
+  destinos elegido en Ajustes ▸ Perú ▸ Asientos de destino.
 
 Alcance: solo la dinámica del asiento de destino. La glosa, el menú "Perú" y
 utilidades genéricas viven en el módulo base ``al_account_base``.
@@ -24,16 +25,19 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '7.20261008',
+    'version': '9.20261008',
     'license': 'OPL-1',
-    'depends': ['account', 'l10n_pe', 'al_account_base'],
+    'depends': ['account', 'analytic', 'l10n_pe', 'al_account_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/destination_security.xml',
         'views/res_config_settings_views.xml',
         'views/res_company_views.xml',
         'views/account_account_views.xml',
         'views/account_destinies_views.xml',
         'views/account_move_views.xml',
+        'views/account_analytic_account_views.xml',
+        'wizards/destination_period_wizard_views.xml',
         'views/menus.xml',
     ],
     'installable': True,

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Repartos por cuenta de cada compañía (multicompañía, guía de Odoo 19) -->
+    <record id="account_destiny_rule_company" model="ir.rule">
+        <field name="name">Destinos por cuenta multi-company</field>
+        <field name="model_id" ref="model_l10n_pe_account_destiny"/>
+        <field name="global" eval="True"/>
+        <!-- Como cuentas y diarios: la sucursal ve el reparto de su raíz -->
+        <field name="domain_force">[('company_id', 'parent_of', company_ids)]</field>
+    </record>
+</odoo>

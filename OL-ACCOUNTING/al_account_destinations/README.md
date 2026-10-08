@@ -7,18 +7,32 @@ se reflejan en cuentas por **función/destino (clase 9)** —o al revés— usan
 
 ## Objetivo y funcionamiento
 
-1. En la compañía se define el sentido (`Destinos`): **6→9** o **9→6**.
-2. En cada cuenta que "trabaja con destinos" se configuran:
-   - las **cuentas destino** con su **porcentaje** (la suma debe ser 100 %),
-   - la **cuenta de carga** (78/79).
+1. En la compañía (Ajustes ▸ Perú) se define el sentido (**6→9**, el del
+   PCGE, o **9→6**), la **cuenta de carga por defecto** (791) y el **diario de
+   destinos**.
+2. El reparto sale de dos fuentes, en este orden:
+   - **centro de costo**: cada cuenta analítica puede indicar su cuenta del
+     Elemento 9 (`l10n_pe_destination_account_id`); la distribución analítica
+     de la línea de gasto reparte el importe;
+   - **por cuenta**: cuentas destino con su porcentaje (suma 100 %) para la
+     parte sin centro de costo. Es de cada compañía.
+   Una cuenta sin ninguna de las dos no genera destino. Una cuenta puede
+   indicar su propia cuenta de carga (78, 72).
+3. **Destinos del periodo** (Perú ▸ Destinos, Contabilidad ▸ Cierre) muestra
+   el cuadre 79 vs Elemento 9 que exige el PCGE y regenera los destinos de un
+   rango de fechas.
 3. Al **postear** un comprobante con líneas de esas cuentas, se genera
    automáticamente un asiento en el diario **GA** ("Gastos Automáticos") que
    distribuye el importe entre las cuentas destino y lo contabiliza contra la
    cuenta de carga. El asiento queda **cuadrado por diseño** (el remanente del
    redondeo se asigna a la última línea).
 
-El asiento de destino se enlaza con el de origen (`expense_move_id` /
-`origin_expense_move_id`) y sigue su ciclo: al pasar a borrador o cancelar el
+El tramo 60 → 2/61 (compras → inventarios) no es de este módulo: lo hace la
+valoración de inventario de Odoo (`stock_account`, cuentas 20111/6111/69121 de
+la plantilla PE). Análisis y fuentes: `docs/destinos/ANALISIS_Y_PLAN.md`.
+
+El asiento de destino se enlaza con el de origen (`l10n_pe_destiny_move_id` /
+`l10n_pe_origin_move_id`) y sigue su ciclo: al pasar a borrador o cancelar el
 origen, el destino lo hace también.
 
 ## Modelo de datos
@@ -26,15 +40,23 @@ origen, el destino lo hace también.
 Todos los campos custom llevan prefijo `l10n_pe_` (convención de localización,
 evita colisiones), y el modelo de líneas es `l10n_pe.account.destiny`.
 
-- `account.account`: `l10n_pe_destiny_ids` (líneas destino),
-  `l10n_pe_load_account_id` (dominio 78/79), `l10n_pe_no_destiny`,
+- `account.account`: `l10n_pe_destiny_ids` (líneas destino de la compañía
+  raíz activa), `l10n_pe_load_account_id` y `l10n_pe_no_destiny` (calculados
+  sobre `l10n_pe_load_account_store` / `l10n_pe_no_destiny_store`,
+  company_dependent, leídos y escritos en `company.root_id`: el mismo patrón
+  que `code` / `code_store` de Odoo 19, para que las sucursales usen la
+  configuración de su RUC),
   `l10n_pe_work_destinies` (computado), `l10n_pe_has_destiny`,
   `l10n_pe_dest_type`, `l10n_pe_allowed_dest_ids` (destinos válidos).
-- `l10n_pe.account.destiny`: `parent_account_id`, `dest_account_id`,
+- `l10n_pe.account.destiny`: `company_id` (raíz; regla `parent_of` como
+  cuentas y diarios), `parent_account_id`, `dest_account_id`,
   `percentage` (validado > 0 y suma 100 %).
 - `account.move`: `l10n_pe_is_destiny_entry`, `l10n_pe_destiny_move_id`,
   `l10n_pe_origin_move_id`.
-- `res.company`: `l10n_pe_dest_type` (6a9 / 9a6).
+- `res.company`: `l10n_pe_dest_type` (6a9 / 9a6),
+  `l10n_pe_destination_load_account_id`, `l10n_pe_destination_journal_id`.
+- `account.analytic.account`: `l10n_pe_destination_account_id`.
+- `l10n_pe.destination.period.wizard`: cuadre 79 vs 9 y regeneración.
 
 > La **glosa** (`l10n_pe_gloss`) y el helper `l10n_pe_is_pe()` provienen del
 > módulo base **`al_account_base`**, del que este módulo depende.

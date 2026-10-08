@@ -28,6 +28,11 @@ class TestDestinations(TransactionCase):
             or acc('101900', 'Caja')
         cls.journal = cls.env['account.journal'].search(
             [('type', '=', 'general'), ('company_id', '=', cls.company.id)], limit=1)
+        # Diario de destinos de Ajustes ▸ Perú (ya no se busca ni crea el «GA»).
+        cls.destination_journal = cls.env['account.journal'].create({
+            'name': 'Asientos de destino (prueba)', 'code': 'DSTT', 'type': 'general',
+            'company_id': cls.company.id})
+        cls.company.l10n_pe_destination_journal_id = cls.destination_journal
 
     def _configure(self, p1=0.6, p2=0.4):
         self.exp.write({
@@ -209,7 +214,18 @@ class TestDestinations(TransactionCase):
         })
         move.action_post()
         self.assertTrue(move.l10n_pe_destiny_move_id)
-        self.assertEqual(move.l10n_pe_destiny_move_id.journal_id.code, 'GA')
+        self.assertEqual(move.l10n_pe_destiny_move_id.journal_id, self.destination_journal)
+
+    def test_destination_journal_is_required(self):
+        """Sin diario de destinos en Ajustes no se genera nada por código:
+        se pide configurarlo."""
+        self._configure()
+        self.company.l10n_pe_destination_journal_id = False
+        with self.assertRaisesRegex(UserError, 'Ajustes'):
+            self._post_entry(100.0)
+        self.assertFalse(self.env['account.journal'].search(
+            [('code', '=', 'GA'), ('company_id', '=', self.company.id),
+             ('create_date', '>=', self.destination_journal.create_date)]))
 
     def test_destiny_lines_created_one_by_one(self):
         """Desde la lista de destinos se crean líneas de una en una sin que
@@ -263,3 +279,166 @@ class TestDestinations(TransactionCase):
         move.action_post()
         self.assertFalse(move.l10n_pe_destiny_move_id)
         self.assertEqual(dest.state, 'cancel')
+
+    # ------------------------------------------------------------------
+    # Refactor 08/10/2026: reparto por analítica, carga por compañía,
+    # destinos por compañía y destinos del periodo
+    # ------------------------------------------------------------------
+    def _analytic(self, name, dest_account=None):
+        plan = self.env['account.analytic.plan'].search(
+            [('name', '=', 'Destino (prueba)')], limit=1) \
+            or self.env['account.analytic.plan'].create({'name': 'Destino (prueba)'})
+        return self.env['account.analytic.account'].create({
+            'name': name, 'plan_id': plan.id,
+            'l10n_pe_destination_account_id': dest_account.id if dest_account else False,
+        })
+
+    def _post_with_analytic(self, distribution, amount=1000.0):
+        move = self.env['account.move'].create({
+            'move_type': 'entry', 'journal_id': self.journal.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto',
+                                'debit': amount, 'credit': 0.0,
+                                'analytic_distribution': distribution}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco',
+                                'debit': 0.0, 'credit': amount}),
+            ],
+        })
+        move.action_post()
+        return move
+
+    def _amounts(self, dest):
+        result = {}
+        for line in dest.line_ids:
+            result[line.account_id] = result.get(line.account_id, 0.0) + line.debit - line.credit
+        return result
+
+    def test_analytic_cost_centers_decide_the_destination(self):
+        """Sin reparto por cuenta: 70 % Administración (94) y 30 % Ventas (95)
+        por la analítica, contra la carga por defecto de la compañía."""
+        self.exp.write({'l10n_pe_destiny_ids': [Command.clear()],
+                        'l10n_pe_load_account_id': False})
+        self.company.l10n_pe_destination_load_account_id = self.load
+        admin = self._analytic('Administración', self.d1)
+        sales = self._analytic('Ventas', self.d2)
+        move = self._post_with_analytic({str(admin.id): 70.0, str(sales.id): 30.0})
+        amounts = self._amounts(move.l10n_pe_destiny_move_id)
+        self.assertAlmostEqual(amounts[self.d1], 700.0, places=2)
+        self.assertAlmostEqual(amounts[self.d2], 300.0, places=2)
+        self.assertAlmostEqual(amounts[self.load], -1000.0, places=2)
+        admin_line = move.l10n_pe_destiny_move_id.line_ids.filtered(
+            lambda l: l.account_id == self.d1)
+        self.assertEqual(admin_line.analytic_distribution, {str(admin.id): 100.0})
+
+    def test_analytic_rest_uses_account_split(self):
+        """40 % con centro de costo; el 60 % restante, con el reparto de la
+        cuenta (60/40)."""
+        self._configure(0.6, 0.4)
+        admin = self._analytic('Administración', self.d1)
+        other = self._analytic('Proyecto sin destino')
+        move = self._post_with_analytic({str(admin.id): 40.0, str(other.id): 60.0})
+        amounts = self._amounts(move.l10n_pe_destiny_move_id)
+        self.assertAlmostEqual(amounts[self.d1], 400.0 + 360.0, places=2)
+        self.assertAlmostEqual(amounts[self.d2], 240.0, places=2)
+        self.assertAlmostEqual(amounts[self.load], -1000.0, places=2)
+
+    def test_partial_analytic_without_account_split_is_an_error(self):
+        from odoo.exceptions import ValidationError
+        self.exp.write({'l10n_pe_destiny_ids': [Command.clear()]})
+        self.company.l10n_pe_destination_load_account_id = self.load
+        admin = self._analytic('Administración', self.d1)
+        other = self._analytic('Proyecto sin destino')
+        with self.assertRaises(ValidationError):
+            self._post_with_analytic({str(admin.id): 40.0, str(other.id): 60.0})
+
+    def test_unconfigured_account_has_no_destination(self):
+        """Una cuenta 6 sin reparto ni centro de costo no genera destino ni
+        error (p. ej. la 60 o la 69, que no se destinan)."""
+        self.exp.write({'l10n_pe_destiny_ids': [Command.clear()]})
+        move = self._post_entry(500.0)
+        self.assertEqual(move.state, 'posted')
+        self.assertFalse(move.l10n_pe_destiny_move_id)
+
+    def test_account_split_is_per_company(self):
+        """El reparto de otra compañía sobre la misma cuenta no se usa."""
+        self._configure(0.6, 0.4)
+        other_company = self.env['res.company'].create({'name': 'Otra compañía destinos'})
+        for account in (self.exp, self.d2):
+            # v19: una cuenta compartida necesita su código en cada compañía.
+            account.with_company(other_company).code = account.code
+            account.company_ids |= other_company
+        self.env['l10n_pe.account.destiny'].create({
+            'company_id': other_company.id, 'parent_account_id': self.exp.id,
+            'dest_account_id': self.d2.id, 'percentage': 1.0})
+        self.assertEqual(len(self.exp.l10n_pe_destiny_ids), 2)
+        move = self._post_entry(1000.0)
+        amounts = self._amounts(move.l10n_pe_destiny_move_id)
+        self.assertAlmostEqual(amounts[self.d1], 600.0, places=2)
+        self.assertAlmostEqual(amounts[self.d2], 400.0, places=2)
+
+    def test_company_journal_is_used(self):
+        journal = self.env['account.journal'].create({
+            'name': 'Destinos (prueba)', 'code': 'DSTP', 'type': 'general',
+            'company_id': self.company.id})
+        self.company.l10n_pe_destination_journal_id = journal
+        self._configure()
+        move = self._post_entry(100.0)
+        self.assertEqual(move.l10n_pe_destiny_move_id.journal_id, journal)
+
+    def test_period_wizard_balance_and_regenerate(self):
+        """El cuadre 79 vs Elemento 9 sale de los destinos del periodo, y
+        regenerar aplica la configuración nueva a lo ya contabilizado."""
+        self._configure(0.6, 0.4)
+        move = self._post_entry(1000.0)
+        wizard = self.env['l10n_pe.destination.period.wizard'].create({
+            'date_from': move.date, 'date_to': move.date})
+        self.assertGreaterEqual(wizard.balance_79, 1000.0)
+        self.assertGreaterEqual(wizard.balance_9, 1000.0)
+        self.assertGreaterEqual(wizard.move_count, 1)
+        self.exp.write({'l10n_pe_destiny_ids': [
+            Command.clear(),
+            Command.create({'dest_account_id': self.d2.id, 'percentage': 1.0})]})
+        wizard.action_regenerate()
+        amounts = self._amounts(move.l10n_pe_destiny_move_id)
+        self.assertAlmostEqual(amounts.get(self.d2, 0.0), 1000.0, places=2)
+        self.assertFalse(amounts.get(self.d1))
+
+    # ------------------------------------------------------------------
+    # Patrón multicompañía de Odoo 19 (como el código de la cuenta)
+    # ------------------------------------------------------------------
+    def test_branch_uses_root_configuration(self):
+        """Una sucursal usa el sentido, el reparto y la carga de su raíz."""
+        self._configure(0.6, 0.4)
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal destinos', 'parent_id': self.company.id,
+            'country_id': self.company.country_id.id})
+        self.env.user.company_ids |= branch
+        journal = self.env['account.journal'].create({
+            'name': 'Varios sucursal', 'code': 'VSUC', 'type': 'general',
+            'company_id': branch.id})
+        move = self.env['account.move'].with_company(branch).create({
+            'move_type': 'entry', 'journal_id': journal.id, 'company_id': branch.id,
+            'line_ids': [
+                Command.create({'account_id': self.exp.id, 'name': 'Gasto',
+                                'debit': 100.0, 'credit': 0.0}),
+                Command.create({'account_id': self.bank.id, 'name': 'Banco',
+                                'debit': 0.0, 'credit': 100.0}),
+            ],
+        })
+        move.action_post()
+        amounts = self._amounts(move.l10n_pe_destiny_move_id)
+        self.assertAlmostEqual(amounts[self.d1], 60.0, places=2)
+        self.assertAlmostEqual(amounts[self.load], -100.0, places=2)
+        # Leída desde la sucursal, la cuenta muestra la configuración de la raíz.
+        exp_branch = self.exp.with_company(branch)
+        self.assertEqual(exp_branch.l10n_pe_load_account_id, self.load)
+        self.assertEqual(len(exp_branch.l10n_pe_destiny_ids), 2)
+
+    def test_load_account_is_company_dependent(self):
+        """La carga propia de la cuenta es de cada compañía raíz."""
+        other_company = self.env['res.company'].create({'name': 'Otra raíz destinos'})
+        self.exp.with_company(other_company).code = self.exp.code
+        self.exp.company_ids |= other_company
+        self.exp.l10n_pe_load_account_id = self.load
+        self.assertEqual(self.exp.l10n_pe_load_account_id, self.load)
+        self.assertFalse(self.exp.with_company(other_company).l10n_pe_load_account_id)
