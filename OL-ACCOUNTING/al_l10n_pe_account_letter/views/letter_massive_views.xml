@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="partner_id" string="Socio"/>
+                <field name="partner_id" string="Contacto"/>
                 <field name="glosa"/>
                 <field name="invoice_date"/>
                 <field name="payment_reference"/>
@@ -27,7 +27,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="partner_id" string="Socio"/>
+                <field name="partner_id" string="Contacto"/>
                 <field name="glosa"/>
                 <field name="invoice_date"/>
                 <field name="payment_reference"/>
@@ -74,9 +74,9 @@
                         </button>
                     </div>
                     <div class="oe_title">
-                        <span class="o_form_label">Nro.canje</span>
+                        <span class="o_form_label">N.º de canje</span>
                         <h1>
-                            <field name="name" placeholder="Draft"/>
+                            <field name="name" placeholder="Borrador"/>
                         </h1>
                     </div>
                     <group>
@@ -128,7 +128,7 @@
                                     <field name="imp_div" sum="Importe total"/>
                                     <field name="debit" sum="Débito total"/>
                                     <field name="credit" sum="Crédito total"/>
-                                    <field name="letter_id" string="Nro. canje" optional="hide" readonly="1"/>
+                                    <field name="letter_id" string="N.º de canje" optional="hide" readonly="1"/>
                                     <field name="company_currency_id" column_invisible="1"/>
                                 </list>
                             </field>
@@ -211,7 +211,7 @@
     </record>
     <!-- Acción de ventana Clientes -->
     <record model="ir.actions.act_window" id="account_massive_letter_action_clientes">
-        <field name="name">Canje de letras masivas</field>
+        <field name="name">Canje masivo</field>
         <field name="res_model">l10n_pe.letter.massive</field>
         <field name="view_id" ref="_account_massive_letter_tree_clientes"/>
         <field name="view_mode">list,form</field>
@@ -220,7 +220,7 @@
     </record>
     <!-- Acción de ventana Proveedores -->
     <record model="ir.actions.act_window" id="account_massive_letter_action_proveedores">
-        <field name="name">Canje de letras masivas</field>
+        <field name="name">Canje masivo</field>
         <field name="res_model">l10n_pe.letter.massive</field>
         <field name="view_id" ref="_account_massive_letter_tree_proveedores"/>
         <field name="view_mode">list,form</field>

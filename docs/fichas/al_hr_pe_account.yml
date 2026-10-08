@@ -589,6 +589,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 9.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
   - version: 8.20261008
     fecha: 08/10/2026
     cambios:

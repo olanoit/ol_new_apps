@@ -262,7 +262,9 @@ class AccountMove(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    l10n_pe_kardex_country_code = fields.Char(related='company_id.country_code')
+    l10n_pe_kardex_country_code = fields.Char(
+        string='Código de país', related='company_id.country_code',
+        help='País de la compañía (código ISO de dos letras).')
 
     def action_l10n_pe_kardex_document(self):
         self.ensure_one()

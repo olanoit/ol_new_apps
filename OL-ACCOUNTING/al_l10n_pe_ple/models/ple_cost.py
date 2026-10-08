@@ -16,7 +16,7 @@ class L10nPePleCostSales(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     initial_finished = fields.Monetary(
         string='Inventario inicial de productos terminados')
@@ -43,7 +43,7 @@ class L10nPePleCostElement(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     month = fields.Selection(MONTHS, string='Mes', required=True)
     direct_materials = fields.Monetary(
@@ -74,7 +74,7 @@ class L10nPePleCostProduction(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     process_code = fields.Char(
         string='Código del proceso', size=10, required=True)

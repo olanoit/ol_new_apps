@@ -1,0 +1,39 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__create_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__create_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__create_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__create_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_cts__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fortnightly__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_gratification__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_main_parameter__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_vacation__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__display_name model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_doc_mixin__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_cts__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fortnightly__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_gratification__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_main_parameter__id model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_vacation__id model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__id model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_doc_mixin__id
+msgid "ID"
+msgstr "ID"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__write_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__write_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_hr_pe_reports
+#: model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment__write_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_automate_multipayment_line__write_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_certificate_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_fifth_certificate_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_reports.field_hr_letter_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_reports.field_l10n_pe_hr_contract_template__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"

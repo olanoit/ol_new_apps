@@ -30,7 +30,8 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     _check_company_auto = True
 
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
+        'res.company', string='Compañía', required=True,
+        default=lambda self: self.env.company)
     mode = fields.Selection(
         [('acquirer', 'Como adquiriente — deposito a mis proveedores'),
          ('supplier', 'Como proveedor — deposito en mi propia cuenta')],
@@ -54,7 +55,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
                " ('move_type', '=', 'in_invoice' if mode == 'acquirer'"
                " else 'out_invoice')]",
         check_company=True)
-    file_name = fields.Char(readonly=True)
+    file_name = fields.Char(string='Nombre del archivo', readonly=True)
     file_data = fields.Binary(string='Archivo', readonly=True)
     excluded_html = fields.Html(string='Excluidos', readonly=True)
 

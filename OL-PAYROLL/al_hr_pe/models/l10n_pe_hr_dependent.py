@@ -85,7 +85,7 @@ class L10nPeHrDependent(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', string='Trabajador', required=True, index=True,
         ondelete='cascade', check_company=True)
-    company_id = fields.Many2one(
+    company_id = fields.Many2one(string='Compañía',
         related='employee_id.company_id', store=True, index=True)
     type_id = fields.Many2one(
         'l10n_pe.hr.dependent.type', string='Tipo de derechohabiente',
@@ -132,7 +132,7 @@ class L10nPeHrDependent(models.Model):
         'l10n_pe.hr.dependent.end.reason', string='Motivo de baja',
         ondelete='restrict',
         check_company=True)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     state = fields.Selection(
         selection=[('draft', 'Por declarar'), ('current', 'Vigente'),
                    ('ended', 'De baja')],

@@ -792,6 +792,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 20.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
   - version: 19.20261008
     fecha: 08/10/2026
     cambios:

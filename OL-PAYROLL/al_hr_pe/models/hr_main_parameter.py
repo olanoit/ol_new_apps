@@ -18,7 +18,7 @@ class HrMainParameter(models.Model):
     _description = 'Parámetros Principales de Nómina'
     _check_company_auto = True
 
-    name = fields.Char(default='Parámetros Principales')
+    name = fields.Char(string='Nombre', default='Parámetros Principales')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)

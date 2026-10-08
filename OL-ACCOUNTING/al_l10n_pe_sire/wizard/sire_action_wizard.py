@@ -21,12 +21,12 @@ class L10nPeSireActionWizard(models.TransientModel):
     _description = 'Acción SIRE'
     _check_company_auto = True
 
-    res_model = fields.Char(required=True, readonly=True)
+    res_model = fields.Char(string='Modelo', required=True, readonly=True)
     res_id = fields.Many2oneReference(model_field='res_model', required=True, readonly=True)
-    book_type = fields.Char(compute='_compute_book_type')
+    book_type = fields.Char(string='Registro', compute='_compute_book_type')
     action = fields.Selection(
         selection='_selection_action', string='Acción', required=True)
-    company_id = fields.Many2one('res.company', compute='_compute_company_id')
+    company_id = fields.Many2one('res.company', string='Compañía', compute='_compute_company_id')
     value = fields.Float(string='Importe o coeficiente', digits=(16, 4))
     move_ids = fields.Many2many(
         'account.move', string='Comprobantes a ajustar',

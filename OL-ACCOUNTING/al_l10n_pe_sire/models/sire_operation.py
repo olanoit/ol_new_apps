@@ -79,7 +79,7 @@ class L10nPeSireOperation(models.Model):
         help='Lo asigna SUNAT a cada carga de ajustes; se busca solo y, si no '
              'aparece, se indica aquí antes de enviar.')
     adjustment_sent = fields.Boolean(string='Ajustes enviados', readonly=True)
-    can_send_adjustment = fields.Boolean(compute='_compute_can_send_adjustment')
+    can_send_adjustment = fields.Boolean(string='Puede enviar ajustes', compute='_compute_can_send_adjustment')
 
     @api.depends('kind', 'ticket')
     def _compute_name(self):

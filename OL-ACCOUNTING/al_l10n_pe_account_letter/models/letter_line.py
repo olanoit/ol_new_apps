@@ -29,16 +29,16 @@ class L10nPeLetterLine(models.Model):
 
     partner_id = fields.Many2one(
         'res.partner',
-        string='Socio',
-        related='letter_id.partner_id',
+        string='Contacto',
+        related='letter_id.partner_id', store=True, index=True,
     )
     move_invoice_type = fields.Selection(
         string='Tipo',
-        related='letter_id.type',
+        related='letter_id.type', store=True,
     )
     state = fields.Selection(
         string='Estado',
-        related='letter_id.state',
+        related='letter_id.state', store=True,
     )
     letter_user_id = fields.Many2one(
         'res.users',
@@ -46,7 +46,7 @@ class L10nPeLetterLine(models.Model):
         default=lambda self: self.env.user
     )
     nro_letter = fields.Char(
-        string='Nro. de letra',
+        string='N.º de letra',
     )
     company_currency_id = fields.Many2one(
         'res.currency',
@@ -56,7 +56,7 @@ class L10nPeLetterLine(models.Model):
     currency_id = fields.Many2one(
         'res.currency',
         string='Moneda',
-        related='letter_id.currency_id',
+        related='letter_id.currency_id', store=True,
     )
     bank_id = fields.Many2one(
         'res.bank',

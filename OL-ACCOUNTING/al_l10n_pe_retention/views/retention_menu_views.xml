@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perú ▸ Retenciones IGV: comprobantes, pagos con retención, retenciones
+         sufridas, resumen 626 y análisis (mismo patrón que Detracciones). -->
+
+    <!-- Comprobantes de proveedor comprendidos en el régimen -->
+    <record id="view_move_list_retention" model="ir.ui.view">
+        <field name="name">account.move.list.retention.pe</field>
+        <field name="model">account.move</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Comprobantes sujetos a retención" create="false" sample="1"
+                  decoration-muted="state == 'cancel'">
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="name"/>
+                <field name="invoice_date"/>
+                <field name="partner_id"/>
+                <field name="ref" optional="show"/>
+                <field name="amount_total_signed" string="Total" sum="Total"/>
+                <field name="l10n_pe_retention_applies" string="Supera el mínimo" optional="show"/>
+                <field name="amount_residual_signed" string="Por pagar" sum="Por pagar" optional="show"/>
+                <field name="payment_state" widget="badge" optional="show"
+                       decoration-success="payment_state in ('paid', 'in_payment')"
+                       decoration-warning="payment_state == 'partial'"/>
+                <field name="state" widget="badge" optional="hide"
+                       decoration-success="state == 'posted'" decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_retention_bills" model="ir.actions.act_window">
+        <field name="name">Comprobantes sujetos a retención</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_move_list_retention')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="domain">[('move_type', '=', 'in_invoice'), ('l10n_pe_retention_eligible', '=', True)]</field>
+        <field name="context">{'default_move_type': 'in_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin comprobantes sujetos a retención</p>
+            <p>Aparecen las facturas de proveedor comprendidas en el régimen cuando
+               la compañía es agente de retención; se retiene al pagarlas si,
+               solas o junto con otras del mismo pago, superan S/ 700.</p>
+        </field>
+    </record>
+
+    <!-- Pagos con retención (comprobantes de retención emitidos) -->
+    <record id="view_payment_list_retention_menu" model="ir.ui.view">
+        <field name="name">account.payment.list.retention.menu.pe</field>
+        <field name="model">account.payment</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Retenciones efectuadas" create="false" sample="1"
+                  decoration-warning="l10n_pe_edi_overdue"
+                  decoration-danger="l10n_pe_edi_error_message">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="l10n_pe_edi_overdue" column_invisible="1"/>
+                <field name="l10n_pe_edi_error_message" column_invisible="1"/>
+                <field name="date"/>
+                <field name="l10n_pe_edi_retention_number" string="Comprobante de retención"/>
+                <field name="partner_id"/>
+                <field name="reconciled_bill_ids" string="Comprobantes pagados" widget="many2many_tags" optional="show"/>
+                <field name="amount" string="Pagado" sum="Pagado"/>
+                <field name="l10n_pe_retention_amount" sum="Retenido"/>
+                <field name="l10n_pe_edi_deadline" optional="show"/>
+                <field name="l10n_pe_edi_status" widget="badge"
+                       decoration-success="l10n_pe_edi_status == 'sent'"
+                       decoration-warning="l10n_pe_edi_status == 'to_send'"
+                       decoration-muted="l10n_pe_edi_status == 'cancelled'"/>
+                <field name="journal_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Análisis -->
+    <record id="view_payment_pivot_retention" model="ir.ui.view">
+        <field name="name">account.payment.pivot.retention.pe</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de retenciones" sample="1">
+                <field name="partner_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="l10n_pe_retention_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_payment_graph_retention" model="ir.ui.view">
+        <field name="name">account.payment.graph.retention.pe</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de retenciones" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="l10n_pe_retention_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_retention_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de retenciones</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_payment_pivot_retention')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_payment_graph_retention')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_payment_list_retention_menu')})]"/>
+        <field name="domain">[('l10n_pe_edi_retention_number', '!=', False), ('state', '!=', 'canceled')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+</odoo>

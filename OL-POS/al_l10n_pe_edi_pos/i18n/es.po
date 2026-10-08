@@ -1,0 +1,19 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_l10n_pe_edi_pos
+#: model:ir.model.fields,field_description:al_l10n_pe_edi_pos.field_edi_invoice_series__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_l10n_pe_edi_pos
+#: model:ir.model.fields,field_description:al_l10n_pe_edi_pos.field_edi_invoice_series__id
+msgid "ID"
+msgstr "ID"

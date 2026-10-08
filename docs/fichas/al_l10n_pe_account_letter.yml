@@ -375,6 +375,28 @@ pasos:
     imagen: screenshots/19-canje-proveedor.png
     pie: "CLP00094: factura F001-DEMOLETRA1 de S/ 2.360,00 en dos letras de S/ 1.180,00."
 
+  - seccion: El menú Perú ▸ Letras de cambio
+    texto: >-
+      Letras por cobrar y por pagar con su saldo, canjes, letras en el banco,
+      refinanciaciones y el análisis de vencimientos.
+  - titulo: Menú de letras
+    ruta: Perú ▸ Letras de cambio
+    imagen: screenshots/21-menu-letras.png
+  - titulo: Letras por cobrar
+    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Letras por cobrar
+    texto: >-
+      Número de letra, canje, cliente, vencimiento, tipo, banco, importe y
+      saldo con totales; en rojo las vencidas con saldo. Por defecto solo las
+      que tienen saldo; filtros de vencidas y que vencen en 30 días, y
+      agrupaciones por contacto, tipo, banco, moneda y mes.
+    imagen: screenshots/22-letras-por-cobrar.png
+  - titulo: Análisis de letras
+    ruta: Perú ▸ Letras de cambio ▸ Análisis de letras
+    texto: >-
+      Saldo e importe por venta o compra, tipo de letra, moneda y mes de
+      vencimiento, en tabla dinámica, gráfico y lista.
+    imagen: screenshots/20-analisis.png
+
 campos_intro: >-
   Cada pantalla propia del módulo y los campos que añade a las facturas.
 campos:
@@ -608,6 +630,12 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Menú Perú ▸ Letras de cambio reordenado: en Clientes, Letras por cobrar, Canje de letras, Canje masivo, Letras en el banco, Refinanciaciones e Historial de canje masivo; en Proveedores, lo mismo sin banco; y Análisis de letras (tabla dinámica y gráfico)."
+      - "Listas de letras con canje, contacto, vencimiento, tipo, importe y saldo con totales; vencidas en rojo; filtros Con saldo, Vencidas, Vencen en 30 días y por tipo; agrupar por contacto, tipo, banco, moneda y mes."
+      - "Etiquetas en español en todo el módulo: «Contacto» en lugar de «Socio», «N.º de …» en lugar de «Nro.», y campos que salían en inglés (N.º de documento, Diarios de letras permitidos, Letras disponibles, Resumen)."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

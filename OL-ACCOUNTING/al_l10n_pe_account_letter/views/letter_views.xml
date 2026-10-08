@@ -6,8 +6,8 @@
             <field name="model">l10n_pe.letter</field>
             <field name="arch" type="xml">
                 <search string="Buscar letras">
-                    <field name="name" string="Nro. canje"/>
-                    <field name="partner_id" string="Socio"/>
+                    <field name="name" string="N.º de canje"/>
+                    <field name="partner_id" string="Contacto"/>
                     <field name="journal_id" string="Diario"/>
                     <field name="invoice_date" string="Fecha canje"/>
                     <field name="letter_end_date" string="Fec. venc. letra"/>
@@ -36,7 +36,7 @@
 
                     <separator/>
 
-                    <filter name="group_by_socio" string="Socio" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_by_socio" string="Contacto" context="{'group_by': 'partner_id'}"/>
                     <filter name="group_by_estado" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_by_tipo" string="Tipo" context="{'group_by': 'type'}"/>
                     <filter name="group_by_fecha_canje" string="Fecha canje"
@@ -64,7 +64,7 @@
                                 help="Vincula los asientos contables por referencia para los canjes seleccionados."/>
                     </header>
                     <field name="name"/>
-                    <field name="partner_id" string="Socio"/>
+                    <field name="partner_id" string="Contacto"/>
                     <field name="glosa"/>
                     <field name="invoice_date"/>
                     <field name="payment_reference"/>
@@ -97,7 +97,7 @@
                                 help="Vincula los asientos contables por referencia para los canjes seleccionados."/>
                     </header>
                     <field name="name"/>
-                    <field name="partner_id" string="Socio"/>
+                    <field name="partner_id" string="Contacto"/>
                     <field name="glosa"/>
                     <field name="invoice_date"/>
                     <field name="payment_reference"/>
@@ -188,9 +188,9 @@
                             </button>
                         </div>
                         <div class="oe_title">
-                            <span class="o_form_label">Nro.canje</span>
+                            <span class="o_form_label">N.º de canje</span>
                             <h1>
-                                <field name="name" placeholder="Draft"/>
+                                <field name="name" placeholder="Borrador"/>
                             </h1>
                         </div>
                         <group>
@@ -258,7 +258,7 @@
                                         <field name="imp_div" sum="Importe total"/>
                                         <field name="debit" sum="Débito total"/>
                                         <field name="credit" sum="Crédito total"/>
-                                        <field name="letter_id" string="Nro. canje" optional="hide" readonly="1"/>
+                                        <field name="letter_id" string="N.º de canje" optional="hide" readonly="1"/>
                                         <field name="company_currency_id" column_invisible="1"/>
                                     </list>
                                 </field>
@@ -377,7 +377,7 @@
         </record>
         <!-- Acción de ventana Historial de canje Masivo Cliente-->
         <record model="ir.actions.act_window" id="account_letter_action_historial_clientes">
-            <field name="name">Historial de canje</field>
+            <field name="name">Historial de canje masivo</field>
             <field name="res_model">l10n_pe.letter</field>
             <field name="view_id" ref="_account_letter_tree_clientes"/>
             <field name="view_mode">list,form</field>
@@ -386,12 +386,37 @@
         </record>
         <!-- Acción de ventana Historial de canje Masivo Proveedor-->
         <record model="ir.actions.act_window" id="account_letter_action_massive_proveedores">
-            <field name="name">Historial de canje</field>
+            <field name="name">Historial de canje masivo</field>
             <field name="res_model">l10n_pe.letter</field>
             <field name="view_id" ref="_account_letter_tree_proveedores"/>
             <field name="view_mode">list</field>
             <field name="domain">[('type', '=', 'in_invoice'), ('is_massive_letter', '=', True)]</field>
             <field name="context">{'default_type': 'in_invoice'}</field>
+        </record>
+        <!-- Refinanciaciones: canjes nuevos que reemplazan letras pendientes -->
+        <record model="ir.actions.act_window" id="action_letter_refinance_clientes">
+            <field name="name">Refinanciaciones</field>
+            <field name="res_model">l10n_pe.letter</field>
+            <field name="view_id" ref="_account_letter_tree_clientes"/>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('type', '=', 'out_invoice'), ('is_refinance_children', '=', True)]</field>
+            <field name="context">{'default_type': 'out_invoice', 'create': False}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Sin refinanciaciones</p>
+                <p>Se crean desde un canje con letras pendientes, botón «Refinanciar».</p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_letter_refinance_proveedores">
+            <field name="name">Refinanciaciones</field>
+            <field name="res_model">l10n_pe.letter</field>
+            <field name="view_id" ref="_account_letter_tree_proveedores"/>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('type', '=', 'in_invoice'), ('is_refinance_children', '=', True)]</field>
+            <field name="context">{'default_type': 'in_invoice', 'create': False}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Sin refinanciaciones</p>
+                <p>Se crean desde un canje con letras pendientes, botón «Refinanciar».</p>
+            </field>
         </record>
 
         <record id="account_letter_rule_company" model="ir.rule">

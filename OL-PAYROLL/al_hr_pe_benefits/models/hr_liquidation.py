@@ -88,7 +88,7 @@ class HrLiquidation(models.Model):
     employee_ids = fields.Many2many(
         'hr.employee', 'hr_liquidation_employee_rel', 'liquidation_id',
         'employee_id', string='Empleados', check_company=True)
-    employee_count = fields.Integer(compute='_compute_employee_count')
+    employee_count = fields.Integer(string='Empleados', compute='_compute_employee_count')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
         string='Estado', default='draft')

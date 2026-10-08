@@ -66,7 +66,7 @@ class HrFortnightly(models.Model):
     date_end = fields.Date(
         string='Hasta', required=True,
         default=lambda self: fields.Date.context_today(self).replace(day=15))
-    payslip_count = fields.Integer(compute='_compute_payslip_count')
+    payslip_count = fields.Integer(string='Nóminas', compute='_compute_payslip_count')
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina mensual', required=True,
         check_company=True,

@@ -43,8 +43,8 @@ class L10nPeHrConstructionCategory(models.Model):
 
     name = fields.Char(string='Categoría', required=True, translate=True)
     code = fields.Char(string='Código', required=True)
-    sequence = fields.Integer(default=10)
-    active = fields.Boolean(default=True)
+    sequence = fields.Integer(string='Secuencia', default=10)
+    active = fields.Boolean(string='Activo', default=True)
     buc_percent = fields.Float(
         string='BUC %', digits=(5, 2), required=True,
         help='Bonificación Unificada de Construcción sobre el jornal '
@@ -95,7 +95,7 @@ class L10nPeHrConstructionWageTable(models.Model):
         string='Fuente',
         help='PDF del que se importó la tabla (dirección web o nombre del '
              'archivo subido).')
-    active = fields.Boolean(default=True, tracking=True)
+    active = fields.Boolean(string='Activo', default=True, tracking=True)
 
     @api.constrains('date_from', 'date_to')
     def _check_dates(self):
@@ -283,8 +283,8 @@ class L10nPeHrConstructionBonus(models.Model):
 
     name = fields.Char(string='Bonificación', required=True, translate=True)
     code = fields.Char(string='Código', required=True)
-    sequence = fields.Integer(default=10)
-    active = fields.Boolean(default=True)
+    sequence = fields.Integer(string='Secuencia', default=10)
+    active = fields.Boolean(string='Activo', default=True)
     bonus_type = fields.Selection(
         selection=[
             ('bae', 'Alta especialización (BAE)'),
@@ -392,7 +392,7 @@ class L10nPeHrConstructionSite(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
         default=lambda self: self.env.company)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     date_start = fields.Date(string='Inicio')
     date_end = fields.Date(string='Fin previsto')
     address = fields.Char(string='Dirección')

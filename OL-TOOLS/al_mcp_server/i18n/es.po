@@ -11,56 +11,32 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_needaction
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_needaction
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_needaction
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_needaction
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_needaction
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_needaction model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_needaction model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_needaction model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_needaction model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_needaction
 msgid "Action Needed"
 msgstr "Se requiere una acción"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_ids
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_ids
 msgid "Activities"
 msgstr "Actividades"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_exception_decoration
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_exception_decoration
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_exception_decoration
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_exception_decoration
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_exception_decoration model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_exception_decoration model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_exception_decoration model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_exception_decoration model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "Decoración de la actividad de excepción"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_state
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_state
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_state
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_state
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_state
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_state model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_state model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_state model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_state model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_state
 msgid "Activity State"
 msgstr "Estado de la actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_type_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_type_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_type_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_type_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_type_icon
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_type_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_type_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_type_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_type_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Icono del tipo de actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_attachment_count
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_attachment_count
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_attachment_count
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_attachment_count
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_attachment_count
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_attachment_count model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_attachment_count model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_attachment_count model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_attachment_count model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_attachment_count
 msgid "Attachment Count"
 msgstr "Número de archivos adjuntos"
 
@@ -70,49 +46,17 @@ msgid "Config Settings"
 msgstr "Ajustes de configuración"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__create_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__create_uid
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__create_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__create_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__create_date
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__create_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__create_date
 msgid "Created on"
 msgstr "Creado el"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_ir_model__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_ir_model_fields__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_tool_registry__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_res_config_settings__display_name
-#: model:ir.model.fields,field_description:al_mcp_server.field_res_users__display_name
+#: model:ir.model.fields,field_description:al_mcp_server.field_ir_model__display_name model:ir.model.fields,field_description:al_mcp_server.field_ir_model_fields__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__display_name model:ir.model.fields,field_description:al_mcp_server.field_mcp_tool_registry__display_name model:ir.model.fields,field_description:al_mcp_server.field_res_config_settings__display_name model:ir.model.fields,field_description:al_mcp_server.field_res_users__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -122,129 +66,67 @@ msgid "Fields"
 msgstr "Campos"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_follower_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_follower_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_follower_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_follower_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_follower_ids
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_follower_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_follower_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_follower_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_follower_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_follower_ids
 msgid "Followers"
 msgstr "Seguidores"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_partner_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_partner_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_partner_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_partner_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_partner_ids
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_partner_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_partner_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_partner_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_partner_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Seguidores (contactos)"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_type_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_type_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_type_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_type_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_type_icon
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_type_icon model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_type_icon model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_type_icon model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_type_icon model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__has_message
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__has_message
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__has_message
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__has_message
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__has_message
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__has_message model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__has_message model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__has_message model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__has_message model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__has_message
 msgid "Has Message"
 msgstr "Tiene un mensaje"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_exception_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_exception_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_exception_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_exception_icon
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_exception_icon
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_exception_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_exception_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_exception_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_exception_icon model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_exception_icon
 msgid "Icon"
 msgstr "Icono"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_exception_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_exception_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_exception_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_exception_icon
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_exception_icon
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_exception_icon model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_exception_icon model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_exception_icon model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_exception_icon model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "Icono que indica una actividad de excepción."
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_needaction
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_needaction
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_needaction
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_needaction
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_needaction
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_needaction model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_needaction model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_needaction model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_needaction model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Si está seleccionado, hay nuevos mensajes que requieren tu atención."
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_has_error
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_has_error
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_has_error
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_has_error
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_has_error
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_has_error model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_has_error model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_has_error model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_has_error model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_has_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_is_follower
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_is_follower
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_is_follower
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_is_follower
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_is_follower
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_is_follower model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_is_follower model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_is_follower model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_is_follower model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_is_follower
 msgid "Is Follower"
 msgstr "Es un seguidor"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__write_uid
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__write_uid
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__write_uid model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__write_date
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__write_date
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__write_date model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_has_error
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_has_error
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_has_error
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_has_error
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_has_error
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_has_error model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_has_error model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_has_error model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_has_error model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_has_error
 msgid "Message Delivery error"
 msgstr "Error al enviar el mensaje"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_ids
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_ids
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_ids model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_ids
 msgid "Messages"
 msgstr "Mensajes"
 
@@ -254,92 +136,52 @@ msgid "Models"
 msgstr "Modelos"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__my_activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__my_activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__my_activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__my_activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__my_activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__my_activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__my_activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__my_activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "Fecha límite de mi actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_date_deadline
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_date_deadline
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_date_deadline model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Siguiente fecha límite de la actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_summary
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_summary
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_summary
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_summary
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_summary
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_summary model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_summary model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_summary model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_summary model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_summary
 msgid "Next Activity Summary"
 msgstr "Resumen de la siguiente actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_type_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_type_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_type_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_type_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_type_id
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_type_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_type_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_type_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_type_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_type_id
 msgid "Next Activity Type"
 msgstr "Siguiente tipo de actividad"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_needaction_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_needaction_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_needaction_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_needaction_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_needaction_counter
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_needaction_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_needaction_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_needaction_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_needaction_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Número de acciones"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_has_error_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_has_error_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_has_error_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_has_error_counter
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_has_error_counter
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__message_has_error_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__message_has_error_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__message_has_error_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__message_has_error_counter model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__message_has_error_counter
 msgid "Number of errors"
 msgstr "Número de errores"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_needaction_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_needaction_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_needaction_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_needaction_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_needaction_counter
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_needaction_counter model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_needaction_counter model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_needaction_counter model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_needaction_counter model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Número de mensajes que requieren una acción"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_has_error_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_has_error_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_has_error_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_has_error_counter
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_has_error_counter
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__message_has_error_counter model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__message_has_error_counter model:ir.model.fields,help:al_mcp_server.field_mcp_job__message_has_error_counter model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__message_has_error_counter model:ir.model.fields,help:al_mcp_server.field_mcp_token__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Número de mensajes con error de envío"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_user_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_user_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_user_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_user_id
-#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_user_id
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__activity_user_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__activity_user_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__activity_user_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__activity_user_id model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario responsable"
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_state
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_state
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_state
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_state
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_state
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_state model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_state model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_state model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_state model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -352,11 +194,7 @@ msgstr ""
 "Planeada: futuras actividades."
 
 #. module: al_mcp_server
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_exception_decoration
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_exception_decoration
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_exception_decoration
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_exception_decoration
-#: model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_exception_decoration
+#: model:ir.model.fields,help:al_mcp_server.field_mcp_generated_module__activity_exception_decoration model:ir.model.fields,help:al_mcp_server.field_mcp_html_artifact__activity_exception_decoration model:ir.model.fields,help:al_mcp_server.field_mcp_job__activity_exception_decoration model:ir.model.fields,help:al_mcp_server.field_mcp_portal_page__activity_exception_decoration model:ir.model.fields,help:al_mcp_server.field_mcp_token__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Tipo de la actividad de excepción registrada."
 
@@ -366,46 +204,31 @@ msgid "User"
 msgstr "Usuario"
 
 #. module: al_mcp_server
-#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_exception_decoration__danger
-#: model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_exception_decoration__danger
-#: model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_exception_decoration__danger
-#: model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_exception_decoration__danger
-#: model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_exception_decoration__danger
+#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_exception_decoration__danger model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_exception_decoration__danger model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_exception_decoration__danger model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_exception_decoration__danger model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_exception_decoration__danger
 msgid "Error"
 msgstr "Error"
 
 #. module: al_mcp_server
-#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_exception_decoration__warning
-#: model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_exception_decoration__warning
-#: model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_exception_decoration__warning
-#: model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_exception_decoration__warning
-#: model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_exception_decoration__warning
+#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_exception_decoration__warning model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_exception_decoration__warning model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_exception_decoration__warning model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_exception_decoration__warning model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_exception_decoration__warning
 msgid "Alert"
 msgstr "Alerta"
 
 #. module: al_mcp_server
-#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__overdue
+#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__overdue model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__overdue model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__overdue model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__overdue model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__overdue
 msgid "Overdue"
 msgstr "Vencidas"
 
 #. module: al_mcp_server
-#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__planned
+#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__planned model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__planned model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__planned model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__planned model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__planned
 msgid "Planned"
 msgstr "Planeado"
 
 #. module: al_mcp_server
-#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__today
+#: model:ir.model.fields.selection,name:mail.selection__mcp_generated_module__activity_state__today model:ir.model.fields.selection,name:mail.selection__mcp_html_artifact__activity_state__today model:ir.model.fields.selection,name:mail.selection__mcp_job__activity_state__today model:ir.model.fields.selection,name:mail.selection__mcp_portal_page__activity_state__today model:ir.model.fields.selection,name:mail.selection__mcp_token__activity_state__today
 msgid "Today"
 msgstr "Hoy"
+
+#. module: al_mcp_server
+#: model:ir.model.fields,field_description:al_mcp_server.field_mcp_auth_code__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_generated_module__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_html_artifact__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_job__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_oauth_client__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_pat_wizard__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_portal_page__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_session__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_session_log__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_token__id model:ir.model.fields,field_description:al_mcp_server.field_mcp_tool_registry__id
+msgid "ID"
+msgstr "ID"

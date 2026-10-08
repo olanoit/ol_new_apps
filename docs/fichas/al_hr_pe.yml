@@ -724,6 +724,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 31.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Abrir Ajustes desde otras apps (p. ej. al crear un almacén) sin permisos de planillas ya no falla por la configuración principal."
+      - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
   - version: 30.20261008
     fecha: 08/10/2026
     cambios:

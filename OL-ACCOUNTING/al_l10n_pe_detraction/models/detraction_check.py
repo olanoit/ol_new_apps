@@ -246,7 +246,8 @@ class L10nPeDetractionCheckLine(models.Model):
     _order = 'code'
 
     check_id = fields.Many2one(
-        'l10n_pe.detraction.check', required=True, ondelete='cascade', index=True)
+        'l10n_pe.detraction.check', string='Contraste', required=True,
+        ondelete='cascade', index=True)
     code = fields.Char(string='Código', required=True)
     type_id = fields.Many2one('l10n_pe.detraction.type', string='Tipo en Odoo')
     sunat_name = fields.Char(string='Nombre en SUNAT')

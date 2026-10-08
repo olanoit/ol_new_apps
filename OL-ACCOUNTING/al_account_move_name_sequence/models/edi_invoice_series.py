@@ -34,7 +34,8 @@ class EdiInvoiceSeries(models.Model):
         'l10n_latam.document.type', string='Tipo de documento',
         domain=[('code', 'in', ('01', '03'))], required=True, copy=False)
     edi_type_code = fields.Char(
-        related='l10n_latam_document_type_id.code', string='Código')
+        related='l10n_latam_document_type_id.code', string='Código',
+        help='Código SUNAT del tipo de documento (01 factura, 03 boleta).')
     name = fields.Char('Serie', size=4, required=True, tracking=True)
     name_nc = fields.Char(
         'Serie nota de crédito', size=4, required=True,

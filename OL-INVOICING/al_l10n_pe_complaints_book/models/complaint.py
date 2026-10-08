@@ -148,8 +148,8 @@ class L10nPeComplaint(models.Model):
     days_left = fields.Integer(string='Días hábiles restantes', compute='_compute_days_left')
     is_overdue = fields.Boolean(string='Vencida', compute='_compute_is_overdue',
                                 search='_search_is_overdue')
-    alert_sent = fields.Boolean(readonly=True, copy=False)
-    overdue_alert_sent = fields.Boolean(readonly=True, copy=False)
+    alert_sent = fields.Boolean(string='Aviso enviado', readonly=True, copy=False)
+    overdue_alert_sent = fields.Boolean(string='Aviso de vencimiento enviado', readonly=True, copy=False)
 
     # ------------------------------------------------------------------
     # Solución acordada (art. 6-A)

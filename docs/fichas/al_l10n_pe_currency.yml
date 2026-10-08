@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 13.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
   - version: 12.20261008
     fecha: 08/10/2026
     cambios:

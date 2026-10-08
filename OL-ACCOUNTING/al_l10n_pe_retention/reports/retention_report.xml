@@ -4,43 +4,81 @@
          (tipo 20). Los importes por comprobante salen del mismo reparto que
          el XML (_l10n_pe_edi_get_retention_breakdown), para que digan lo mismo. -->
     <template id="report_retention_document">
-        <t t-call="web.external_layout">
+        <t t-call="web.basic_layout">
             <t t-set="o" t-value="o.with_context(lang=lang)"/>
-            <t t-set="company_currency" t-value="o.company_id.currency_id"/>
+            <t t-set="company" t-value="o.company_id"/>
+            <t t-set="company_currency" t-value="company.currency_id"/>
             <t t-set="documents" t-value="o._l10n_pe_edi_get_retention_breakdown()"/>
             <t t-set="supplier" t-value="o.partner_id.commercial_partner_id"/>
-            <div class="page">
-                <div class="row">
-                    <div class="col-7">
-                        <strong>Proveedor</strong><br/>
-                        <span t-out="supplier.name"/><br/>
-                        <span t-out="supplier.l10n_latam_identification_type_id.name or 'RUC'"/>:
-                        <span t-out="supplier.vat"/><br/>
-                        <span t-out="supplier.contact_address_inline"/>
-                    </div>
-                    <div class="col-5 text-center border border-dark py-2">
-                        <div>RUC <span t-out="o.company_id.vat"/></div>
-                        <div><strong>COMPROBANTE DE RETENCIÓN ELECTRÓNICO</strong></div>
-                        <div><strong t-out="o.l10n_pe_edi_retention_number"/></div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-4"><strong>Fecha de emisión:</strong>
-                        <span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></div>
-                    <div class="col-8"><strong>Régimen:</strong> retención del IGV
-                        (<span t-out="'%g' % o.company_id.l10n_pe_retention_rate"/> %)</div>
-                </div>
-                <table class="table table-sm mt-3">
+            <t t-set="supplier_id_type" t-value="supplier.l10n_latam_identification_type_id"/>
+            <div class="page cre-fs-13">
+                <!-- Encabezado: logo, datos de la compañía y recuadro del comprobante -->
+                <table class="table table-sm table-borderless mb-2">
+                    <tr>
+                        <td style="width: 15%;" class="align-middle">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                 class="cre-header-logo" alt="Logo"/>
+                        </td>
+                        <td style="width: 50%;">
+                            <ul class="cre-company">
+                                <li class="cre-fs-20"><strong t-out="company.name"/></li>
+                                <li t-if="company.street">
+                                    <strong>Domicilio fiscal:</strong>
+                                    <span t-out="', '.join(p for p in (company.street, company.city, company.state_id.name) if p)"/>
+                                </li>
+                                <li t-if="company.phone"><strong>Teléfono:</strong> <span t-out="company.phone"/></li>
+                                <li t-if="company.email"><strong>Correo:</strong> <span t-out="company.email"/></li>
+                            </ul>
+                        </td>
+                        <td style="width: 35%;">
+                            <ul class="cre-doc-box cre-fs-14">
+                                <li>R.U.C. <span t-out="company.vat"/></li>
+                                <li><strong>COMPROBANTE DE RETENCIÓN ELECTRÓNICO</strong></li>
+                                <li><strong>N.º <span t-out="o.l10n_pe_edi_retention_number"/></strong></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Datos del proveedor y de la retención -->
+                <table class="cre-table mb-3">
+                    <tr>
+                        <td class="cre-label" style="width: 16%;">Proveedor</td>
+                        <td class="cre-value" style="width: 44%;"><span t-out="supplier.name"/></td>
+                        <td class="cre-label" style="width: 18%;">Fecha de emisión</td>
+                        <td class="cre-value" style="width: 22%;">
+                            <span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cre-label">
+                            <t t-if="supplier_id_type.l10n_pe_vat_code == '6' or (supplier_id_type.l10n_pe_vat_code in (False, '0') and len(supplier.vat or '') == 11)">R.U.C.</t>
+                            <t t-else="" t-out="supplier_id_type.name"/>
+                        </td>
+                        <td class="cre-value"><span t-out="supplier.vat"/></td>
+                        <td class="cre-label">Régimen</td>
+                        <td class="cre-value">Retención del IGV (<span t-out="'%g' % company.l10n_pe_retention_rate"/> %)</td>
+                    </tr>
+                    <tr>
+                        <td class="cre-label">Dirección</td>
+                        <td class="cre-value"><span t-out="supplier.contact_address_inline"/></td>
+                        <td class="cre-label">Moneda</td>
+                        <td class="cre-value">Soles (PEN)</td>
+                    </tr>
+                </table>
+
+                <!-- Comprobantes a los que se aplica la retención -->
+                <table class="cre-table mb-3">
                     <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Comprobante</th>
-                            <th>Fecha</th>
-                            <th class="text-end">Importe total</th>
-                            <th class="text-end">Importe pagado</th>
-                            <th class="text-end">T.C.</th>
-                            <th class="text-end">Retención (S/)</th>
-                            <th class="text-end">Neto pagado (S/)</th>
+                        <tr class="cre-thead">
+                            <td>Tipo</td>
+                            <td>Comprobante</td>
+                            <td>Fecha</td>
+                            <td class="text-end">Importe total</td>
+                            <td class="text-end">Importe pagado</td>
+                            <td class="text-end">T.C.</td>
+                            <td class="text-end">Retención (S/)</td>
+                            <td class="text-end">Neto pagado (S/)</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -62,27 +100,36 @@
                         </tr>
                     </tbody>
                 </table>
+
                 <div class="row">
-                    <div class="col-5 offset-7">
-                        <table class="table table-sm">
+                    <div class="col-7 cre-fs-11">
+                        <table class="cre-table">
+                            <tr><td class="cre-subheader">Representación impresa</td></tr>
                             <tr>
-                                <td><strong>Total retenido</strong></td>
-                                <td class="text-end"><strong t-out="sum(d['bill_retention_pen'] for d in documents)"
+                                <td class="cre-value">
+                                    Representación impresa del Comprobante de Retención
+                                    Electrónico.
+                                    <t t-if="o.l10n_pe_edi_status == 'sent'">Aceptado por SUNAT.</t>
+                                    Consulte su validez en www.sunat.gob.pe.
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-5">
+                        <table class="cre-table">
+                            <tr>
+                                <td class="cre-label">Total retenido</td>
+                                <td class="cre-label text-end"><span t-out="sum(d['bill_retention_pen'] for d in documents)"
                                     t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
                             </tr>
                             <tr>
-                                <td>Total pagado (neto)</td>
-                                <td class="text-end"><span t-out="sum(d['net_total_paid_pen'] for d in documents)"
+                                <td class="cre-value">Total pagado (neto)</td>
+                                <td class="cre-value text-end"><span t-out="sum(d['net_total_paid_pen'] for d in documents)"
                                     t-options="{'widget': 'monetary', 'display_currency': company_currency}"/></td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <p class="small mt-3">
-                    Representación impresa del Comprobante de Retención Electrónico.
-                    <t t-if="o.l10n_pe_edi_status == 'sent'">Aceptado por SUNAT.</t>
-                    Consulte su validez en www.sunat.gob.pe.
-                </p>
             </div>
         </t>
     </template>
@@ -96,7 +143,22 @@
         </t>
     </template>
 
+    <!-- Sin encabezado de Odoo (el comprobante pinta el suyo): margen corto. -->
+    <record id="paperformat_retention" model="report.paperformat">
+        <field name="name">Comprobante de retención (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
     <record id="action_report_retention" model="ir.actions.report">
+        <field name="paperformat_id" ref="paperformat_retention"/>
         <field name="name">Comprobante de retención</field>
         <field name="model">account.payment</field>
         <field name="report_type">qweb-pdf</field>

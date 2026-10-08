@@ -46,10 +46,15 @@ class ResCompany(models.Model):
              'edita a través de este campo.')
 
     def _compute_l10n_pe_main_parameter_id(self):
-        params = self.env['hr.main.parameter'].search([('company_id', 'in', self.ids)])
-        by_company = {param.company_id.id: param for param in params}
+        # sudo(): solo se averigua qué registro es la configuración de cada
+        # compañía; leer res.company no debe exigir permisos de planillas
+        # (los ajustes de inventario, por ejemplo, la leen al crear almacenes).
+        params_sudo = self.env['hr.main.parameter'].sudo().search(
+            [('company_id', 'in', self.ids)])
+        by_company = {param.company_id.id: param.id for param in params_sudo}
+        Param = self.env['hr.main.parameter']
         for company in self:
-            company.l10n_pe_main_parameter_id = by_company.get(company.id, False)
+            company.l10n_pe_main_parameter_id = Param.browse(by_company.get(company.id))
 
     def _l10n_pe_sctr_sunat_code(self, coverage):
         self.ensure_one()

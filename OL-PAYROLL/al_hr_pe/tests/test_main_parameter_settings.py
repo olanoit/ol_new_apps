@@ -41,3 +41,14 @@ class TestMainParameterSettings(TransactionCase):
         action = self.Param.with_company(self.company_b).action_open_main_parameter()
         self.assertEqual(action['view_mode'], 'form')
         self.assertEqual(self.Param.browse(action['res_id']).company_id, self.company_b)
+
+    def test_settings_without_payroll_rights(self):
+        """Los ajustes se abren también desde otras apps (inventario los crea
+        al dar de alta un almacén): sin permisos de planillas no deben
+        fallar por la configuración principal."""
+        from odoo.tests import new_test_user
+        user = new_test_user(self.env, login='ajustes_sin_nomina',
+                             groups='base.group_system,base.group_user')
+        self.assertFalse(self.env['hr.main.parameter'].with_user(user).has_access('read'))
+        self.env['res.config.settings'].with_user(user).default_get([])
+        self.env.company.with_user(user).l10n_pe_main_parameter_id

@@ -33,17 +33,17 @@ class L10nPeKardexReport(models.Model):
 
     name = fields.Char(string='Referencia', compute='_compute_name', store=True)
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
-    date_from = fields.Date(required=True)
-    date_to = fields.Date(required=True)
+        'res.company', string='Compañía', required=True, default=lambda self: self.env.company)
+    date_from = fields.Date(string='Desde', required=True)
+    date_to = fields.Date(string='Hasta', required=True)
     report_type = fields.Selection(
         [('1301', 'Formato 13.1 — Valorizado'),
-         ('1201', 'Formato 12.1 — Físico')],
+         ('1201', 'Formato 12.1 — Físico')], string='Tipo de informe',
         required=True, default='1301')
     group_by_warehouse = fields.Boolean(string='Por almacén')
     include_no_movement = fields.Boolean(string='Incluir sin movimientos', default=True)
     file_format = fields.Selection(
-        [('xlsx', 'Excel'), ('pdf', 'PDF')], default='xlsx', required=True)
+        [('xlsx', 'Excel'), ('pdf', 'PDF')], string='Formato', default='xlsx', required=True)
     warehouse_ids = fields.Many2many('stock.warehouse', string='Almacenes', check_company=True)
     product_ids = fields.Many2many('product.product', string='Productos')
     categ_ids = fields.Many2many('product.category', string='Categorías')
@@ -54,8 +54,8 @@ class L10nPeKardexReport(models.Model):
         default='pending', required=True, string='Estado')
     output_file = fields.Binary(string='Archivo', readonly=True, attachment=True)
     output_filename = fields.Char(readonly=True)
-    error_message = fields.Text(readonly=True)
-    user_id = fields.Many2one('res.users', default=lambda self: self.env.user, readonly=True)
+    error_message = fields.Text(string='Mensaje de error', readonly=True)
+    user_id = fields.Many2one('res.users', string='Usuario', default=lambda self: self.env.user, readonly=True)
 
     # El cron genera como superusuario: el control es sobre quien lo pide.
     # No es un @api.constrains: el ORM ejecuta las restricciones en sudo y el

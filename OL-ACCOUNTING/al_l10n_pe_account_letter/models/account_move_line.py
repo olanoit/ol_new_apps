@@ -18,6 +18,6 @@ class AccountMoveLine(models.Model):
         string='Letra',
     )
     l10n_pe_partner_vat = fields.Char(
-        string='Vat',
+        string='N.º de documento',
         related='partner_id.vat',
     )

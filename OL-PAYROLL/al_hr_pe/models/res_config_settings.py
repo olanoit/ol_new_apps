@@ -26,7 +26,10 @@ class ResConfigSettings(models.TransientModel):
     def default_get(self, fields_list):
         # La configuración principal tiene que existir para que los campos
         # relacionados de arriba tengan dónde guardar.
-        if self.env.company.country_id.code == 'PE':
+        # Solo si el usuario ve la nómina: los ajustes también se abren al
+        # crear un almacén o desde otras apps, sin permisos de planillas.
+        if self.env.company.country_id.code == 'PE' \
+                and self.env['hr.main.parameter'].has_access('read'):
             self.env['hr.main.parameter'].get_main_parameter(self.env.company)
         return super().default_get(fields_list)
 

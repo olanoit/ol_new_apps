@@ -92,7 +92,7 @@ class L10nPeSireMixin(models.AbstractModel):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     state = fields.Selection(
         string='Estado',
         selection=[
@@ -114,9 +114,9 @@ class L10nPeSireMixin(models.AbstractModel):
     ticket_state = fields.Selection(
         selection=TICKET_STATES, string='Estado del ticket', copy=False, readonly=True)
     proposal_file = fields.Binary(string='TXT propuesta SIRE', copy=False)
-    proposal_filename = fields.Char(copy=False)
+    proposal_filename = fields.Char(string='Archivo de la propuesta', copy=False)
     export_file = fields.Binary(string='Archivo generado', copy=False)
-    export_filename = fields.Char(copy=False)
+    export_filename = fields.Char(string='Archivo exportado', copy=False)
 
     # --- Envío a SUNAT: se acepta la propuesta o se reemplaza; nunca las
     # dos cosas, y de ahí que compartan ticket y estado. ---

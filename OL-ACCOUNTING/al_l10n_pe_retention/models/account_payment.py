@@ -56,10 +56,22 @@ class AccountPayment(models.Model):
         search='_search_l10n_pe_edi_overdue')
     l10n_pe_edi_error_message = fields.Char(
         string='Error del CRE', compute='_compute_l10n_pe_edi_error_message')
+    # Guardado para los totales de la lista y el análisis de retenciones.
+    l10n_pe_retention_amount = fields.Monetary(
+        string='Importe retenido', currency_field='currency_id',
+        compute='_compute_l10n_pe_retention_amount', store=True,
+        help='Suma de las líneas de retención del IGV del pago.')
 
     def _l10n_pe_retention_lines(self):
         return self.withholding_line_ids.filtered(
             lambda l: l.tax_id == self.company_id.l10n_pe_retention_tax_id)
+
+    @api.depends('withholding_line_ids.amount', 'withholding_line_ids.tax_id',
+                 'company_id.l10n_pe_retention_tax_id')
+    def _compute_l10n_pe_retention_amount(self):
+        for payment in self:
+            payment.l10n_pe_retention_amount = sum(
+                payment._l10n_pe_retention_lines().mapped('amount'))
 
     @api.depends('withholding_line_ids.name')
     def _compute_l10n_pe_edi_retention_number(self):

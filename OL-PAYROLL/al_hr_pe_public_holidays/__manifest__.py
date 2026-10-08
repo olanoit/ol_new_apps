@@ -29,7 +29,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_holidays/static/description/icon.png',
-    'version': '9.20261008',
+    'version': '10.20261008',
     'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada
     # de trabajo con el que la nómina computa el feriado.

@@ -27,7 +27,7 @@ class HrFotocheckConfig(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
 
     # Logos de certificaciones (ISO, homologaciones, etc.) que se
     # imprimen en la franja superior del anverso.

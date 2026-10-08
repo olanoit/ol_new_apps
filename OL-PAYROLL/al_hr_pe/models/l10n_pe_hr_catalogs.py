@@ -17,7 +17,7 @@ class L10nPeHrCatalogMixin(models.AbstractModel):
     code = fields.Char(string='Código')
     description = fields.Char(string='Descripción')
     name = fields.Char(string='Abreviación', required=True)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío: registro global compartido entre compañías. Con '
@@ -171,7 +171,7 @@ class HrSocialInsurance(models.Model):
 
     name = fields.Char(string='Seguro', required=True)
     percent = fields.Float(string='%', digits=(12, 2))
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío: registro global. Con compañía: override (p. ej. '
@@ -192,7 +192,7 @@ class HrContributions(models.Model):
         default='percentage', string='Tipo')
     tasa = fields.Float(string='Tasa')
     amount = fields.Float(string='Monto')
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío: registro global compartido entre compañías.')

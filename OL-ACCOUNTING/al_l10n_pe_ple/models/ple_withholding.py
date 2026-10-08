@@ -17,14 +17,15 @@ class L10nPePleWithholding(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(
-        related='company_id.currency_id')
+        related='company_id.currency_id', string='Moneda')
     date = fields.Date(
         string='Fecha de pago / retención', required=True, index=True)
     partner_id = fields.Many2one(
         'res.partner', string='Prestador del servicio', required=True,
         help='Persona que percibe la renta (inciso e) o f) del Art. 34 LIR).')
     partner_vat = fields.Char(
-        related='partner_id.vat', string='Nº documento')
+        related='partner_id.vat', string='Nº documento',
+        help='Número del documento de identidad del prestador.')
     gross_amount = fields.Monetary(
         string='Monto bruto', required=True,
         help='Retribución pagada o puesta a disposición (campo 8 del 4.1).')

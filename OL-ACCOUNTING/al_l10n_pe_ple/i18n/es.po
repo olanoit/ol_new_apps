@@ -1,0 +1,154 @@
+# Traducción al español de al_l10n_pe_ple.
+# Los textos propios ya están en español; aquí se traducen los campos
+# heredados de los mixins. Generado con docs/validacion/generar_es_po.py.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_account_asset
+msgid "Asset/Revenue Recognition"
+msgstr "Reconocimiento de activos e ingresos"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_account_cash_flow_report_handler
+msgid "Cash Flow Report Custom Handler"
+msgstr "Gestor personalizado de los reportes de flujo de caja"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_center__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_element__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_production__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_sales__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_equity__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_export_wizard__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_investment__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_withholding__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_center__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_element__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_production__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_sales__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_equity__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_export_wizard__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_investment__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_withholding__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_account_asset__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_account_cash_flow_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_account_general_ledger_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_account_move__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_asset_book__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_asset_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_center__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_element__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_production__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_sales__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_equity__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_export_wizard__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_investment__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_mixin__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_withholding__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_rce_common__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_rce_extractor__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_stock_ple_wizard__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_tax_ple_14_1_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_tax_ple_8_1_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_tax_ple_8_2_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_tax_ple_report_handler__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_product_template__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_res_company__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_stock_picking__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_account_general_ledger_report_handler
+msgid "General Ledger Custom Handler"
+msgstr "Gestor personalizado del libro mayor"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_center__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_element__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_production__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_sales__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_equity__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_export_wizard__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_investment__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_withholding__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_center__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_element__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_production__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_cost_sales__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_equity__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_export_wizard__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_investment__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_ple.field_l10n_pe_ple_withholding__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_l10n_pe_tax_ple_report_handler
+msgid "PLE Generic Report"
+msgstr "Reporte genérico PLE"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_l10n_pe_tax_ple_8_1_report_handler
+msgid "PLE Purchase Report 8.1 (Now RCE 8.4)"
+msgstr "PLE Registro de Compras 8.1 (Ahora RCE 8.4)"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_l10n_pe_tax_ple_8_2_report_handler
+msgid "PLE Purchase Report 8.2 (Now RCE 8.5)"
+msgstr "PLE Registro de Compras de No Domiciliados 8.2 (Ahora RCE 8.5)"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_l10n_pe_tax_ple_14_1_report_handler
+msgid "PLE Sales Report 14.1 (Now RVIE 14.2)"
+msgstr "PLE Registro de Ventas 14.1 (Ahora RVIE 14.2)"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_product_template
+msgid "Product"
+msgstr "Producto"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_stock_picking
+msgid "Transfer"
+msgstr "Transferencia"
+
+#. module: al_l10n_pe_ple
+#: model:ir.model,name:al_l10n_pe_ple.model_l10n_pe_stock_ple_wizard
+msgid "Wizard to generate Stock Move PLE reports for PE"
+msgstr "Asistente para generar informes PLE de movimiento de stock para PE"

@@ -29,8 +29,9 @@ class L10nPeApiFieldMapping(models.Model):
     _order = 'sequence, id'
 
     connection_id = fields.Many2one(
-        'l10n_pe.api.connection', required=True, ondelete='cascade', index=True)
-    sequence = fields.Integer(default=10)
+        'l10n_pe.api.connection', string='Conexión', required=True,
+        ondelete='cascade', index=True)
+    sequence = fields.Integer(string='Secuencia', default=10)
     for_document = fields.Selection(
         FOR_DOCUMENT, string='Aplica a', default='both', required=True)
 

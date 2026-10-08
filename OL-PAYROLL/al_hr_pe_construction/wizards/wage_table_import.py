@@ -14,7 +14,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
     _description = 'Importar tabla salarial del convenio'
 
     state = fields.Selection(
-        [('upload', 'Origen'), ('confirm', 'Actualizar')],
+        [('upload', 'Origen'), ('confirm', 'Actualizar')], string='Estado',
         default='upload', required=True)
     source = fields.Selection(
         [('file', 'Archivo PDF'), ('url', 'Dirección web')],
@@ -39,7 +39,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
     # Segundo paso: la vigencia ya existe y se pide confirmar la
     # actualización. El PDF se guarda para no descargarlo dos veces.
     pdf_content = fields.Binary(attachment=False)
-    source_label = fields.Char()
+    source_label = fields.Char(string='Origen')
     existing_table_id = fields.Many2one(
         'l10n_pe.hr.construction.wage.table', string='Tabla existente',
         readonly=True)

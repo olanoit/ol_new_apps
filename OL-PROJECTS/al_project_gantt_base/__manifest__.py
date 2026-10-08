@@ -39,7 +39,7 @@ y PDF.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '15.20261008',
+    'version': '16.20261008',
     'license': 'OPL-1',
     'depends': [
         'project',

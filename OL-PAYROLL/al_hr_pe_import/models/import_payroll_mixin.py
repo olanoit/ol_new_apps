@@ -221,14 +221,14 @@ class ImportPayrollMixin(models.AbstractModel):
             ('upload', 'Cargar archivo'),
             ('configure', 'Configurar'),
             ('done', 'Resultado'),
-        ],
+        ], string='Estado',
         default='upload',
         required=True,
     )
-    created_count = fields.Integer(readonly=True)
-    updated_count = fields.Integer(readonly=True)
-    skipped_count = fields.Integer(readonly=True)
-    error_count = fields.Integer(readonly=True)
+    created_count = fields.Integer(string='Creados', readonly=True)
+    updated_count = fields.Integer(string='Actualizados', readonly=True)
+    skipped_count = fields.Integer(string='Omitidos', readonly=True)
+    error_count = fields.Integer(string='Errores', readonly=True)
     log = fields.Text(string='Registro de procesamiento', readonly=True)
 
     # ----- Reporte descargable -------------------------------------------- #
@@ -237,7 +237,7 @@ class ImportPayrollMixin(models.AbstractModel):
         readonly=True,
         attachment=True,
     )
-    report_filename = fields.Char(readonly=True)
+    report_filename = fields.Char(string='Nombre del informe', readonly=True)
 
     # ----- Plantilla descargable ------------------------------------------ #
     template_file = fields.Binary(

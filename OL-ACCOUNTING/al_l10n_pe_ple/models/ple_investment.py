@@ -15,7 +15,7 @@ class L10nPePleInvestment(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     date = fields.Date(
         string='Fecha del saldo (EEFF)', required=True, index=True,
         help='Fecha de los estados financieros a la que corresponde el '

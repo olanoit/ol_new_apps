@@ -213,3 +213,15 @@ with Captura('al_l10n_pe_account_letter') as c:
     canje(c, CANJE_PROVEEDOR, 'al_l10n_pe_account_letter.account_letter_action_proveedores')
     pestana(c, 'Apuntes contables')
     c.foto('19-canje-proveedor', selector='.o_form_view .o_form_sheet_bg')
+
+    # ---- Menú Perú ▸ Letras de cambio --------------------------------------
+    ventana(c, {'width': 1440, 'height': 900})
+    c.abrir_accion('al_l10n_pe_account_letter.action_letter_line_analysis', ms=3000)
+    c.foto('20-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
+    c.page.get_by_role('button', name='Letras de cambio').first.click()
+    c.esperar(600)
+    c.page.get_by_text('Clientes', exact=True).first.hover()
+    c.esperar(600)
+    c.foto('21-menu-letras', clip={'x': 0, 'y': 0, 'width': 900, 'height': 360})
+    c.abrir_accion('al_l10n_pe_account_letter.account_move_letter_action_clientes', ms=3000)
+    c.foto('22-letras-por-cobrar', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})

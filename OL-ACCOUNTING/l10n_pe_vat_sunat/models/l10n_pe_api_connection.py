@@ -41,7 +41,7 @@ _SKIP = object()
 
 AUTH_TYPES = [
     ('none', 'Sin autenticación'),
-    ('bearer', 'Bearer token'),
+    ('bearer', 'Token Bearer'),
     ('header', 'Cabecera personalizada'),
     ('query', 'Parámetro de URL'),
 ]
@@ -54,11 +54,11 @@ class L10nPeApiConnection(models.Model):
     _check_company_auto = True
 
     company_id = fields.Many2one(
-        'res.company', required=True, ondelete='cascade', index=True,
+        'res.company', string='Compañía', required=True, ondelete='cascade', index=True,
         default=lambda self: self.env.company)
-    name = fields.Char(required=True)
+    name = fields.Char(string='Nombre', required=True)
     sequence = fields.Integer(
-        default=10, help="Orden de prioridad: la consulta usa la primera "
+        string='Prioridad', default=10, help="Orden de prioridad: la consulta usa la primera "
                          "conexión activa que responda; si falla, pasa a la "
                          "siguiente.")
     enabled = fields.Boolean(
@@ -86,8 +86,8 @@ class L10nPeApiConnection(models.Model):
         string='Body DNI (POST)',
         help="Plantilla JSON del cuerpo para POST, con {doc}. "
              "Ej.: '{\"dni\": \"{doc}\"}'.")
-    timeout = fields.Integer(default=10, string='Timeout (s)')
-    auth_type = fields.Selection(AUTH_TYPES, default='bearer', required=True)
+    timeout = fields.Integer(default=10, string='Tiempo de espera (s)')
+    auth_type = fields.Selection(AUTH_TYPES, string='Autenticación', default='bearer', required=True)
     auth_key = fields.Char(
         string='Nombre de clave',
         help="Nombre de la cabecera o parámetro cuando la autenticación es "

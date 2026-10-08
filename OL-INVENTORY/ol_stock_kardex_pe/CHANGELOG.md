@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261008 — 08/10/2026
+
+- Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
+
 ## 10.20261008 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).

@@ -146,6 +146,34 @@ class TestRetentionApplies(TransactionCase):
         self.assertTrue(
             payments.l10n_pe_edi_retention_number.startswith('R001-'))
 
+    def _action_records(self, xmlid):
+        from odoo.tools.safe_eval import safe_eval
+        action = self.env.ref(xmlid)
+        return self.env[action.res_model].search(safe_eval(action.domain or '[]'))
+
+    def test_retention_menu_actions(self):
+        """Perú ▸ Retenciones IGV: cada lista muestra lo suyo y el pago guarda
+        el importe retenido para los totales y el análisis."""
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        small = self._bill(100.0)
+        (bill | small).action_post()
+        bills = self._action_records('al_l10n_pe_retention.action_retention_bills')
+        self.assertIn(bill, bills)
+        payment = self._register_payment(bill)._create_payments()
+        self.assertAlmostEqual(payment.l10n_pe_retention_amount, 35.40, 2)
+        self.assertIn(payment, self._action_records('al_l10n_pe_retention.action_retention_payments'))
+        self.assertIn(payment, self._action_records('al_l10n_pe_retention.action_retention_analysis'))
+        self.assertIn(bill, payment.reconciled_bill_ids)
+        menus = self.env.ref('al_l10n_pe_retention.menu_retention_root').child_id
+        self.assertEqual(menus.sorted('sequence').mapped('action'), [
+            self.env.ref(x) for x in (
+                'al_l10n_pe_retention.action_retention_bills',
+                'al_l10n_pe_retention.action_retention_payments',
+                'al_l10n_pe_retention.action_retention_received',
+                'al_l10n_pe_retention.action_retention_summary',
+                'al_l10n_pe_retention.action_retention_analysis')])
+
     def test_payment_partial_retention(self):
         self._setup_retention_tax()
         bill = self._bill(1000.0)

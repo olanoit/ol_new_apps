@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261008 — 08/10/2026
+
+- Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
+
 ## 15.20261008 — 08/10/2026
 
 - Horario nocturno, horas extra, tolerancia y redondeo del tareaje en Ajustes ▸ Nómina ▸ Perú.

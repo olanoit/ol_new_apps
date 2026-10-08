@@ -64,7 +64,7 @@ class HrGratification(models.Model):
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
         string='Estado', default='draft')
-    grati_count = fields.Integer(compute='_compute_grati_count')
+    grati_count = fields.Integer(string='Gratificaciones', compute='_compute_grati_count')
 
     _unique_semester = models.Constraint(
         'UNIQUE(company_id, year, type)',

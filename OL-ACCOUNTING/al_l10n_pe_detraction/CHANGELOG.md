@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261008 — 08/10/2026
+
+- Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
+
 ## 20.20261008 — 08/10/2026
 
 - Menú Perú ▸ Detracciones con facturas de venta y de proveedor, depósitos, depósito masivo, productos y análisis (tabla dinámica y gráfico).

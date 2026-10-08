@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261008 — 08/10/2026
+
+- Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
+
 ## 9.20261008 — 08/10/2026
 
 - Sentido y cuenta de carga como campos delegados a la raíz (patrón de Odoo): las sucursales los heredan de solo lectura.

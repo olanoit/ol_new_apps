@@ -120,7 +120,7 @@ class HrPayslipRunMoveWizardLine(models.TransientModel):
     name = fields.Char(string='Descripción')
     account_id = fields.Many2one(
         'account.account', string='Cuenta contable')
-    partner_id = fields.Many2one('res.partner', string='Partner')
+    partner_id = fields.Many2one('res.partner', string='Contacto')
     # analytic_distribution (Json) viene de analytic.mixin.
     debit = fields.Float(string='Debe', digits='Account')
     credit = fields.Float(string='Haber', digits='Account')

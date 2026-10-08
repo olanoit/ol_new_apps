@@ -76,3 +76,33 @@ msgstr "Batalla de Ayacucho"
 #. module: al_hr_pe_public_holidays
 msgid "Navidad del Señor"
 msgstr "Navidad del Señor"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__id
+msgid "ID"
+msgstr "ID"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_hr_pe_public_holidays
+#: model:ir.model.fields,field_description:al_hr_pe_public_holidays.field_pe_public_holiday__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"

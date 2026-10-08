@@ -397,7 +397,7 @@ class HrLiquidation(models.Model):
     liq_move_ids = fields.One2many(
         'hr.liquidation.move', 'liquidation_id',
         string='Asientos contables')
-    move_count = fields.Integer(compute='_compute_move_count')
+    move_count = fields.Integer(string='Asientos', compute='_compute_move_count')
 
     @api.depends('liq_move_ids.account_move_id')
     def _compute_move_count(self):

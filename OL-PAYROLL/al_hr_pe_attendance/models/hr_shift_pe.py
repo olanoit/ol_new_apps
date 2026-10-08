@@ -117,7 +117,7 @@ class L10nPeHrShiftCycle(models.Model):
         compute='_compute_cycle_stats', store=True,
         help='horas/día × días de trabajo × 7 ÷ días del ciclo; no '
              'puede exceder 48 h (D.S. 007-2002-TR art. 4).')
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío: ciclo global compartido entre compañías. Con '

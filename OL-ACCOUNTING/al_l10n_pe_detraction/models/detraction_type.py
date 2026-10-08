@@ -23,8 +23,8 @@ class L10nPeDetractionType(models.Model):
         help='Importe total (IGV incluido) a partir del cual aplica la '
              'detracción. 0 = aplica a cualquier monto.')
     comment = fields.Text(string='Notas')
-    active = fields.Boolean(default=True)
-    product_count = fields.Integer(compute='_compute_product_count')
+    active = fields.Boolean(string='Activo', default=True)
+    product_count = fields.Integer(string='Productos', compute='_compute_product_count')
 
     _code_uniq = models.Constraint(
         'unique (code)', 'El código del catálogo 54 debe ser único.')

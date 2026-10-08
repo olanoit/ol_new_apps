@@ -31,7 +31,8 @@ class L10nPeExchangeRateWizard(models.TransientModel):
         'res.currency', string='Moneda', required=True,
         default=lambda self: self.env.ref('base.USD', raise_if_not_found=False))
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
+        'res.company', string='Compañía', required=True,
+        default=lambda self: self.env.company)
     source = fields.Selection(
         [('bcrp', 'BCRP — series históricas, sin token'),
          ('decolecta', 'Decolecta — requiere token'),

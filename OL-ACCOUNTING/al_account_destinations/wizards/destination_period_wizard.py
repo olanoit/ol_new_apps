@@ -19,7 +19,7 @@ class L10nPeDestinationPeriodWizard(models.TransientModel):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, readonly=True,
         default=lambda self: self.env.company.root_id)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     dest_type = fields.Selection(related='company_id.l10n_pe_dest_type')
     date_from = fields.Date(
         string='Desde', required=True,

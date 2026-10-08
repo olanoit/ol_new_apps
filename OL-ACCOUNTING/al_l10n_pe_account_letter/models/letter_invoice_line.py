@@ -29,7 +29,7 @@ class L10nPeLetterInvoiceLine(models.Model):
     )
     partner_id = fields.Many2one(
         'res.partner',
-        string='Socio',
+        string='Contacto',
         related='letter_id.partner_id',
     )
 
@@ -141,7 +141,7 @@ class L10nPeLetterInvoiceLine(models.Model):
                 record.account_id = False
 
     invoice_name = fields.Char(
-        string='Nro comprobante',
+        string='N.º de comprobante',
         related='move_line_id.name',
     )
     # Moneda

@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 9.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
   - version: 8.20261008
     fecha: 08/10/2026
     cambios:

@@ -6,55 +6,77 @@
               groups="account.group_account_user"
               sequence="20"/>
 
-    <!-- Clientes -->
+    <!-- Clientes: letras, canjes, banco, refinanciaciones e historial -->
     <menuitem id="menu_account_letter_clientes" name="Clientes"
               parent="menu_account_letter_root"
+              sequence="10"/>
+    <menuitem id="menu_account_move_letter_clientes"
+              name="Letras por cobrar"
+              parent="menu_account_letter_clientes"
+              action="account_move_letter_action_clientes"
               sequence="10"/>
     <menuitem id="menu_account_letter_canje_clientes"
               name="Canje de letras"
               parent="menu_account_letter_clientes"
               action="account_letter_action_clientes"
-              sequence="10"/>
+              sequence="20"/>
     <menuitem id="menu_account_letter_canje_masivo_clientes"
-              name="Canje de letras masiva"
+              name="Canje masivo"
               parent="menu_account_letter_clientes"
               action="account_massive_letter_action_clientes"
-              sequence="20"/>
-    <menuitem id="menu_account_move_letter_clientes"
-              name="Letras"
-              parent="menu_account_letter_clientes"
-              action="account_move_letter_action_clientes"
               sequence="30"/>
+    <menuitem id="menu_letter_line_bank_clientes"
+              name="Letras en el banco"
+              parent="menu_account_letter_clientes"
+              action="action_letter_line_bank_clientes"
+              sequence="40"/>
+    <menuitem id="menu_letter_refinance_clientes"
+              name="Refinanciaciones"
+              parent="menu_account_letter_clientes"
+              action="action_letter_refinance_clientes"
+              sequence="50"/>
     <menuitem id="menu_account_massive_letter_history_clientes"
-              name="Historial de canje"
+              name="Historial de canje masivo"
               parent="menu_account_letter_clientes"
               action="account_letter_action_historial_clientes"
-              sequence="40"/>
+              sequence="60"/>
 
     <!-- Proveedores -->
     <menuitem id="menu_account_letter_proveedores" name="Proveedores"
               parent="menu_account_letter_root"
               sequence="20"/>
+    <menuitem id="menu_account_move_letter_proveedores"
+              name="Letras por pagar"
+              parent="menu_account_letter_proveedores"
+              action="account_move_letter_action_proveedores"
+              sequence="10"/>
     <menuitem id="menu_account_letter_canje_proveedores"
               name="Canje de letras"
               parent="menu_account_letter_proveedores"
               action="account_letter_action_proveedores"
-              sequence="10"/>
+              sequence="20"/>
     <menuitem id="menu_account_letter_canje_masivo_proveedores"
-              name="Canje de letras masiva"
+              name="Canje masivo"
               parent="menu_account_letter_proveedores"
               action="account_massive_letter_action_proveedores"
-              sequence="20"/>
-    <menuitem id="menu_account_move_letter_proveedores"
-              name="Letras"
-              parent="menu_account_letter_proveedores"
-              action="account_move_letter_action_proveedores"
               sequence="30"/>
+    <menuitem id="menu_letter_refinance_proveedores"
+              name="Refinanciaciones"
+              parent="menu_account_letter_proveedores"
+              action="action_letter_refinance_proveedores"
+              sequence="50"/>
     <menuitem id="menu_account_massive_letter_history_proveedores"
-              name="Historial de canje"
+              name="Historial de canje masivo"
               parent="menu_account_letter_proveedores"
               action="account_letter_action_massive_proveedores"
-              sequence="40"/>
+              sequence="60"/>
+
+    <!-- Análisis -->
+    <menuitem id="menu_letter_line_analysis"
+              name="Análisis de letras"
+              parent="menu_account_letter_root"
+              action="action_letter_line_analysis"
+              sequence="30"/>
 
     <!-- Configuración: Perú ▸ Configuración ▸ Cuentas de letras -->
     <menuitem id="menu_account_letter_configuracion"
@@ -80,17 +102,17 @@
               action="account_letter_action_clientes"
               sequence="20"/>
     <menuitem id="menu_dv_account_letter_canje_masivo_clientes"
-              name="Canje de letras masiva"
+              name="Canje masivo"
               parent="menu_dv_account_letter_clientes"
               action="account_massive_letter_action_clientes"
               sequence="21"/>
     <menuitem id="menu_dv_account_move_letter_clientes"
-              name="Letras"
+              name="Letras por cobrar"
               parent="menu_dv_account_letter_clientes"
               action="account_move_letter_action_clientes"
               sequence="22"/>
     <menuitem id="menu_dv_account_massive_letter_history_clientes"
-              name="Historial de canje"
+              name="Historial de canje masivo"
               parent="menu_dv_account_letter_clientes"
               action="account_letter_action_historial_clientes"
               sequence="23"/>
@@ -106,17 +128,17 @@
               action="account_letter_action_proveedores"
               sequence="20"/>
     <menuitem id="menu_dv_account_letter_canje_masivo_proveedores"
-              name="Canje de letras masiva"
+              name="Canje masivo"
               parent="menu_dv_account_letter_proveedores"
               action="account_massive_letter_action_proveedores"
               sequence="21"/>
     <menuitem id="menu_dv_account_move_letter_proveedores"
-              name="Letras"
+              name="Letras por pagar"
               parent="menu_dv_account_letter_proveedores"
               action="account_move_letter_action_proveedores"
               sequence="22"/>
     <menuitem id="menu_dv_account_massive_letter_history_proveedores"
-              name="Historial de canje"
+              name="Historial de canje masivo"
               parent="menu_dv_account_letter_proveedores"
               action="account_letter_action_massive_proveedores"
               sequence="23"/>

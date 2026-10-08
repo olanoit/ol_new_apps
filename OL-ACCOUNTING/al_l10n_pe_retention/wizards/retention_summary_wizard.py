@@ -22,7 +22,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
     _check_company_auto = True
 
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
+        'res.company', string='Compañía', required=True, default=lambda self: self.env.company)
     year = fields.Integer(
         required=True, string='Ejercicio',
         default=lambda self: _previous_month(
@@ -32,7 +32,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
         required=True, string='Mes',
         default=lambda self: '%02d' % _previous_month(
             fields.Date.context_today(self))[1])
-    file_name = fields.Char(readonly=True)
+    file_name = fields.Char(string='Nombre del archivo', readonly=True)
     file_data = fields.Binary(readonly=True, string='Archivo')
     retention_count = fields.Integer(string='Retenciones', readonly=True)
     retention_total = fields.Float(

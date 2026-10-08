@@ -14,6 +14,6 @@ class ImportPayrollSheet(models.TransientModel):
     _order = 'sequence, id'
 
     name = fields.Char(string='Nombre de hoja', required=True)
-    sequence = fields.Integer(default=10)
-    res_model = fields.Char(required=True, index=True)
+    sequence = fields.Integer(string='Secuencia', default=10)
+    res_model = fields.Char(string='Modelo', required=True, index=True)
     res_id = fields.Integer(required=True, index=True)

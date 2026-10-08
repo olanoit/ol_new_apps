@@ -1,0 +1,54 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__analytic_distribution
+msgid "Analytic Distribution"
+msgstr "Distribución analítica"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__analytic_precision
+msgid "Analytic Precision"
+msgstr "Precisión analítica"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_mixin__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_vacation_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_main_parameter__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_provisiones__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__distribution_analytic_account_ids
+msgid "Distribution Analytic Account"
+msgstr "Cuenta analítica de distribución"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_mixin__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_vacation_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_main_parameter__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_provisiones__id
+msgid "ID"
+msgstr "ID"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"

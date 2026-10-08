@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261008 — 08/10/2026
+
+- Menú Perú ▸ Letras de cambio reordenado: en Clientes, Letras por cobrar, Canje de letras, Canje masivo, Letras en el banco, Refinanciaciones e Historial de canje masivo; en Proveedores, lo mismo sin banco; y Análisis de letras (tabla dinámica y gráfico).
+- Listas de letras con canje, contacto, vencimiento, tipo, importe y saldo con totales; vencidas en rojo; filtros Con saldo, Vencidas, Vencen en 30 días y por tipo; agrupar por contacto, tipo, banco, moneda y mes.
+- Etiquetas en español en todo el módulo: «Contacto» en lugar de «Socio», «N.º de …» en lugar de «Nro.», y campos que salían en inglés (N.º de documento, Diarios de letras permitidos, Letras disponibles, Resumen).
+
 ## 16.20261008 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).

@@ -16,7 +16,8 @@ class AccountMove(models.Model):
     # (read_pos_data devuelve el account.move de la orden facturada).
     l10n_pe_pos_doc_code = fields.Char(
         related='l10n_latam_document_type_id.code',
-        string='Código de documento (PE)')
+        string='Código de documento (PE)',
+        help='Código SUNAT del tipo de comprobante (01 factura, 03 boleta…).')
     l10n_pe_pos_amount_text = fields.Char(
         string='Importe en letras (PE)',
         compute='_compute_l10n_pe_pos_amount_text')

@@ -57,7 +57,7 @@ class HrCts(models.Model):
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
         string='Estado', default='draft')
-    cts_count = fields.Integer(compute='_compute_cts_count')
+    cts_count = fields.Integer(string='CTS', compute='_compute_cts_count')
 
     _unique_semester = models.Constraint(
         'UNIQUE(company_id, year, type)',

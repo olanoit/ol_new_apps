@@ -1,0 +1,39 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__create_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__create_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_main_parameter__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_monitor__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__display_name model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_main_parameter__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_monitor__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__id model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__id
+msgid "ID"
+msgstr "ID"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__write_uid model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_hr_pe_attendance
+#: model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_fotocheck_config__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_hr_tareaje_manager_line_attendance__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_attendance_register_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle__write_date model:ir.model.fields,field_description:al_hr_pe_attendance.field_l10n_pe_hr_shift_cycle_assignment__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"

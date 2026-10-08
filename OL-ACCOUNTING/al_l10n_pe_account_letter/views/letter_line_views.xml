@@ -1,79 +1,177 @@
 <odoo>
-    <!-- Vista list de letras de clientes -->
+    <!-- Letras por cobrar: una fila por letra con su canje, vencimiento,
+         situación en el banco, importe y saldo (totales al pie). -->
     <record model="ir.ui.view" id="_account_move_letter_tree_clientes">
         <field name="name">l10n_pe.letter.line.view.list.clientes</field>
         <field name="model">l10n_pe.letter.line</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="nro_letter" string="Nro.canje"/>
-                <field name="partner_id" string="Socio"/>
-                <field name="currency_id"/>
-                <field name="bank_id"/>
-                <field name="code"/>
-                <field name="letter_type"/>
-                <field name="account_id"/>
+            <list string="Letras por cobrar" create="false" sample="1"
+                  decoration-danger="adeudado and expiration_date and expiration_date &lt; current_date"
+                  decoration-muted="state == 'cancel'">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="nro_letter"/>
+                <field name="letter_id" string="Canje"/>
+                <field name="partner_id" string="Cliente"/>
                 <field name="expiration_date"/>
+                <field name="letter_type" widget="badge"
+                       decoration-info="letter_type in ('billing', 'discount')"
+                       decoration-danger="letter_type == 'protested'"/>
+                <field name="bank_id" optional="show"/>
+                <field name="code" optional="hide"/>
+                <field name="account_id" optional="hide"/>
+                <field name="imp_div" string="Importe" sum="Total"/>
+                <field name="adeudado" string="Saldo" sum="Saldo"/>
                 <field name="payment_state" widget="badge"
                        decoration-danger="payment_state == 'pending'"
                        decoration-warning="payment_state == 'partial'"
                        decoration-success="payment_state == 'paid'"/>
-                <field name="letter_id" string="Código de canje"/>
-                <field name="adeudado" optional="hide"/>
-                <field name="imp_div" optional="hide"/>
+                <field name="state" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
             </list>
         </field>
     </record>
-    <!-- Vista list de letras de proveedor -->
+    <!-- Letras por pagar -->
     <record model="ir.ui.view" id="_account_move_letter_tree_proveedores">
         <field name="name">l10n_pe.letter.line.view.list.proveedores</field>
         <field name="model">l10n_pe.letter.line</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="nro_letter" string="Nro.canje"/>
-                <field name="partner_id" string="Socio"/>
-                <field name="currency_id"/>
-                <field name="bank_id"/>
-                <field name="code"/>
-                <field name="letter_type"/>
-                <field name="account_id"/>
+            <list string="Letras por pagar" create="false" sample="1"
+                  decoration-danger="adeudado and expiration_date and expiration_date &lt; current_date"
+                  decoration-muted="state == 'cancel'">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="nro_letter"/>
+                <field name="letter_id" string="Canje"/>
+                <field name="partner_id" string="Proveedor"/>
                 <field name="expiration_date"/>
+                <field name="code" optional="show"/>
+                <field name="account_id" optional="hide"/>
+                <field name="imp_div" string="Importe" sum="Total"/>
+                <field name="adeudado" string="Saldo" sum="Saldo"/>
                 <field name="payment_state" widget="badge"
                        decoration-danger="payment_state == 'pending'"
                        decoration-warning="payment_state == 'partial'"
                        decoration-success="payment_state == 'paid'"/>
-                <field name="letter_id" string="Código de canje"/>
-                <field name="adeudado" optional="hide"/>
-                <field name="imp_div" optional="hide"/>
+                <field name="state" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
             </list>
         </field>
     </record>
     <!-- Acción de ventana de letras de clientes -->
     <record model="ir.actions.act_window" id="account_move_letter_action_clientes">
-        <field name="name">Letras</field>
+        <field name="name">Letras por cobrar</field>
         <field name="res_model">l10n_pe.letter.line</field>
         <field name="view_id" ref="_account_move_letter_tree_clientes"/>
         <field name="view_mode">list</field>
         <field name="domain">[('move_invoice_type', '=', 'out_invoice')]</field>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin letras por cobrar</p>
+            <p>Las letras nacen al canjear facturas de clientes (Canje de letras).</p>
+        </field>
     </record>
     <!-- Acción de ventana de letras de proveedores -->
     <record model="ir.actions.act_window" id="account_move_letter_action_proveedores">
-        <field name="name">Letras</field>
+        <field name="name">Letras por pagar</field>
         <field name="res_model">l10n_pe.letter.line</field>
         <field name="view_id" ref="_account_move_letter_tree_proveedores"/>
         <field name="view_mode">list</field>
         <field name="domain">[('move_invoice_type', '=', 'in_invoice')]</field>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin letras por pagar</p>
+            <p>Las letras nacen al canjear facturas de proveedores (Canje de letras).</p>
+        </field>
+    </record>
+    <!-- Letras de clientes en el banco: cobranza libre, descuento y protestadas -->
+    <record model="ir.actions.act_window" id="action_letter_line_bank_clientes">
+        <field name="name">Letras en el banco</field>
+        <field name="res_model">l10n_pe.letter.line</field>
+        <field name="view_id" ref="_account_move_letter_tree_clientes"/>
+        <field name="view_mode">list</field>
+        <field name="domain">[('move_invoice_type', '=', 'out_invoice'),
+                              ('letter_type', 'in', ('billing', 'discount', 'protested'))]</field>
+        <field name="context">{'search_default_group_letter_type': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin letras en el banco</p>
+            <p>Se envían desde el canje con «Enviar al banco» (cobranza libre o descuento).</p>
+        </field>
     </record>
     <record model="ir.ui.view" id="account_move_letter_view_filter">
         <field name="name">l10n_pe.letter.line.view.filter</field>
         <field name="model">l10n_pe.letter.line</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name"/>
+                <field name="nro_letter"/>
                 <field name="letter_name"/>
                 <field name="partner_id"/>
                 <field name="journal_id"/>
                 <field name="related_invoice_names"/>
+                <field name="bank_id"/>
+                <filter name="filter_open" string="Con saldo" domain="[('adeudado', '!=', 0), ('state', '!=', 'cancel')]"/>
+                <filter name="filter_overdue" string="Vencidas"
+                        domain="[('adeudado', '!=', 0), ('state', '!=', 'cancel'),
+                                 ('expiration_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_due_30" string="Vencen en 30 días"
+                        domain="[('adeudado', '!=', 0), ('state', '!=', 'cancel'),
+                                 ('expiration_date', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                                 ('expiration_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="filter_portfolio" string="En cartera" domain="[('letter_type', '=', 'portfolio')]"/>
+                <filter name="filter_billing" string="Cobranza libre" domain="[('letter_type', '=', 'billing')]"/>
+                <filter name="filter_discount" string="Descuento" domain="[('letter_type', '=', 'discount')]"/>
+                <filter name="filter_protested" string="Protestadas" domain="[('letter_type', '=', 'protested')]"/>
+                <separator/>
+                <filter name="filter_expiration" string="Vencimiento" date="expiration_date"/>
+                <group>
+                    <filter name="group_partner" string="Contacto" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_letter_type" string="Tipo de letra" context="{'group_by': 'letter_type'}"/>
+                    <filter name="group_bank" string="Banco" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_currency" string="Moneda" context="{'group_by': 'currency_id'}"/>
+                    <filter name="group_expiration" string="Mes de vencimiento" context="{'group_by': 'expiration_date:month'}"/>
+                </group>
             </search>
+        </field>
+    </record>
+
+    <!-- Análisis de letras -->
+    <record model="ir.ui.view" id="view_letter_line_pivot">
+        <field name="name">l10n_pe.letter.line.view.pivot</field>
+        <field name="model">l10n_pe.letter.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de letras" sample="1">
+                <field name="move_invoice_type" type="row"/>
+                <field name="letter_type" type="row"/>
+                <field name="currency_id" type="col"/>
+                <field name="adeudado" type="measure" string="Saldo"/>
+                <field name="imp_div" type="measure" string="Importe"/>
+            </pivot>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_letter_line_graph">
+        <field name="name">l10n_pe.letter.line.view.graph</field>
+        <field name="model">l10n_pe.letter.line</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de letras" type="bar" stacked="1" sample="1">
+                <field name="expiration_date" interval="month"/>
+                <field name="move_invoice_type"/>
+                <field name="adeudado" type="measure" string="Saldo"/>
+            </graph>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_letter_line_analysis">
+        <field name="name">Análisis de letras</field>
+        <field name="res_model">l10n_pe.letter.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_letter_line_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_letter_line_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('_account_move_letter_tree_clientes')})]"/>
+        <field name="domain">[('state', '!=', 'cancel')]</field>
+        <field name="context">{'search_default_filter_open': 1, 'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin letras que analizar</p>
+            <p>Saldo e importe de las letras por cobrar y por pagar, por tipo, moneda,
+               banco y mes de vencimiento.</p>
         </field>
     </record>
 </odoo>

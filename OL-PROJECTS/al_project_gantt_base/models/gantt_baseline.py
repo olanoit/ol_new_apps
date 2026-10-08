@@ -38,7 +38,7 @@ class GanttBaseline(models.Model):
         'al.gantt.baseline.line', 'baseline_id', string='Líneas', readonly=True,
     )
     task_count = fields.Integer(string='Tareas', compute='_compute_task_count', store=True)
-    company_id = fields.Many2one(related='project_id.company_id', store=True, index=True)
+    company_id = fields.Many2one(string='Compañía', related='project_id.company_id', store=True, index=True)
 
     #: Lo único que se puede retocar de una línea base es su nombre.
     _MUTABLE_FIELDS = {'name'}

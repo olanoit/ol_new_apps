@@ -25,7 +25,7 @@ class ImportPayrollProgress(models.Model):
     _check_company_auto = True
     _order = 'create_date desc'
 
-    name = fields.Char(default='Importación')
+    name = fields.Char(string='Nombre', default='Importación')
 
     # Identifica el wizard origen para volver a abrirlo si hace falta.
     wizard_model = fields.Char(string='Modelo del wizard', required=True)
@@ -59,15 +59,15 @@ class ImportPayrollProgress(models.Model):
     error_detail = fields.Text(string='Detalle del error')
     log = fields.Text(string='Log de procesamiento')
 
-    date_start = fields.Datetime(readonly=True)
-    date_end = fields.Datetime(readonly=True)
+    date_start = fields.Datetime(string='Fecha de inicio', readonly=True)
+    date_end = fields.Datetime(string='Fecha de fin', readonly=True)
 
     report_file = fields.Binary(
         string='Reporte Excel',
         attachment=True,
         readonly=True,
     )
-    report_filename = fields.Char(readonly=True)
+    report_filename = fields.Char(string='Nombre del informe', readonly=True)
 
     # IDs de los registros creados/actualizados (target_model). Se llena
     # al final del hilo. Se guarda como CSV simple para evitar Many2many

@@ -20,8 +20,8 @@ class L10nPeRetentionReceived(models.Model):
         string='Fecha del comprobante', required=True,
         default=fields.Date.context_today)
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related='company_id.currency_id')
+        'res.company', string='Compañía', required=True, default=lambda self: self.env.company)
+    currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     partner_id = fields.Many2one(
         'res.partner', string='Cliente (agente de retención)', required=True,
         check_company=True)

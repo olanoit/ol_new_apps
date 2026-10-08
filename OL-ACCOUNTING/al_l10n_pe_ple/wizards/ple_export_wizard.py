@@ -87,7 +87,7 @@ class L10nPePleExportWizard(models.TransientModel):
         string='Incluir Excel', default=True,
         help='Además del TXT oficial, genera un XLSX con los mismos datos '
              'en el formato de revisión SUNAT (encabezados del Anexo 2).')
-    file_name = fields.Char(readonly=True)
+    file_name = fields.Char(string='Nombre del archivo', readonly=True)
     file_data = fields.Binary(string='Archivo', readonly=True)
 
     # ------------------------------------------------------------------

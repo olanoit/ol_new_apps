@@ -1,0 +1,532 @@
+# Traducción al español de al_hr_pe_benefits.
+# Los textos propios ya están en español; aquí se traducen los campos
+# heredados de los mixins. Generado con docs/validacion/generar_es_po.py.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_needaction
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_needaction
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_needaction
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_needaction
+msgid "Action Needed"
+msgstr "Se requiere una acción"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_ids
+msgid "Activities"
+msgstr "Actividades"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Decoración de la actividad de excepción"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_state
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_state
+msgid "Activity State"
+msgstr "Estado de la actividad"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_type_icon
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Icono del tipo de actividad"
+
+#. module: al_hr_pe_benefits
+#: model_terms:ir.ui.view,arch_db:al_hr_pe_benefits.hr_fifth_category_view_form
+msgid "Actual"
+msgstr "Real"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_attachment_count
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_attachment_count
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_attachment_count
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_attachment_count
+msgid "Attachment Count"
+msgstr "Número de archivos adjuntos"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model,name:al_hr_pe_benefits.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_accrual_vacation__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance_type__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line_detalle__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_employee_excluidos_wizard__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_extra_concept_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line_detalle__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_vacation_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_vacation_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_type__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_concepto__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_cts_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_grati_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_vaca_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_rate_limit__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_lot__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_periodo__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_total__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_accrual_vacation__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance_type__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line_detalle__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_employee_excluidos_wizard__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_extra_concept_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line_detalle__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_vacation_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_vacation_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_type__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_concepto__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_cts_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_grati_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_vaca_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_rate_limit__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_lot__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_periodo__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_total__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_accrual_vacation__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance_type__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line_detalle__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_employee_excluidos_wizard__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_extra_concept_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line_detalle__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_type__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_vacation_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_vacation_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_type__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_main_parameter__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_concepto__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_cts_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_grati_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_line_mixin__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_vaca_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_rate_limit__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_lot__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_periodo__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_total__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest_wizard__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_work_suspension__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_cts_line__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fifth_category_line__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_gratification_line__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_liquidation_vacation_line__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_provisiones_cts_line__nro_doc
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_provisiones_grati_line__nro_doc
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_provisiones_line_mixin__nro_doc
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_provisiones_vaca_line__nro_doc
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_vacation_line__identification_id
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_vacation_rest__identification_id
+msgid ""
+"Enter the employee's National Identification Number issued by the government"
+" (e.g., Aadhaar, SIN, NIN). This is used for official records and statutory "
+"compliance."
+msgstr ""
+"Ingresa el número de identificación nacional del empleado emitido por el "
+"gobierno (por ejemplo, Aadhaar, SIN, NIN). Este se usa para registros "
+"oficiales y cumplimiento legal."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_follower_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_follower_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_follower_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_partner_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_partner_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_partner_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (contactos)"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__activity_type_icon
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__has_message
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__has_message
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__has_message
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__has_message
+msgid "Has Message"
+msgstr "Tiene un mensaje"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_exception_icon
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_exception_icon
+msgid "Icon"
+msgstr "Icono"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__activity_exception_icon
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Icono que indica una actividad de excepción."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__message_needaction
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__message_needaction
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__message_needaction
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Si está seleccionado, hay nuevos mensajes que requieren tu atención."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__message_has_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__message_has_sms_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__message_has_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__message_has_sms_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__message_has_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__message_has_sms_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__message_has_error
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_is_follower
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_is_follower
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_is_follower
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_is_follower
+msgid "Is Follower"
+msgstr "Es un seguidor"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_accrual_vacation__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance_type__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line_detalle__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_employee_excluidos_wizard__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_extra_concept_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line_detalle__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_vacation_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_vacation_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_type__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_concepto__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_cts_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_grati_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_vaca_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_rate_limit__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_lot__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_periodo__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_total__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_accrual_vacation__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance_type__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_cts_line_detalle__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_employee_excluidos_wizard__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_extra_concept_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fifth_category_line_excluidos__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_gratification_line_detalle__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_leave_vacation_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_extra_concepts__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_liquidation_vacation_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan_type__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_concepto__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_cts_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_grati_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_provisiones_vaca_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_rate_limit__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_lot__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_periodo__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies_total__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_utilities_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_vacation_rest_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_has_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_has_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_has_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_has_error
+msgid "Message Delivery error"
+msgstr "Error al enviar el mensaje"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Fecha límite de mi actividad"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Siguiente evento en el calendario de actividades"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_date_deadline
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Siguiente fecha límite de la actividad"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_summary
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_summary
+msgid "Next Activity Summary"
+msgstr "Resumen de la siguiente actividad"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_type_id
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_type_id
+msgid "Next Activity Type"
+msgstr "Siguiente tipo de actividad"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_needaction_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_needaction_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_needaction_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de acciones"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_has_error_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_has_error_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_has_error_counter
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número de errores"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__message_needaction_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__message_needaction_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__message_needaction_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Número de mensajes que requieren una acción"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__message_has_error_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__message_has_error_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__message_has_error_counter
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Número de mensajes con error de envío"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model,name:al_hr_pe_benefits.model_hr_payslip_run
+msgid "Pay Run"
+msgstr "Periodo de nómina"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model,name:al_hr_pe_benefits.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Recibo de nómina"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__rating_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__rating_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__rating_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__rating_ids
+msgid "Ratings"
+msgstr "Calificaciones"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__activity_user_id
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__activity_user_id
+msgid "Responsible User"
+msgstr "Usuario responsable"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__message_has_sms_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__message_has_sms_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__message_has_sms_error
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error en el envío del SMS"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__activity_state
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Estado según las actividades\n"
+"Vencida: ya pasó la fecha límite\n"
+"Hoy: hoy es la fecha de la actividad\n"
+"Planeada: futuras actividades."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model,name:al_hr_pe_benefits.model_hr_leave
+msgid "Time Off"
+msgstr "Vacaciones"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model,name:al_hr_pe_benefits.model_hr_leave_type
+msgid "Time Off Type"
+msgstr "Tipo de permiso"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__activity_exception_decoration
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo de la actividad de excepción registrada."
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_advance__website_message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_fortnightly__website_message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_loan__website_message_ids
+#: model:ir.model.fields,field_description:al_hr_pe_benefits.field_hr_subsidies__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del sitio web"
+
+#. module: al_hr_pe_benefits
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_advance__website_message_ids
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_fortnightly__website_message_ids
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_loan__website_message_ids
+#: model:ir.model.fields,help:al_hr_pe_benefits.field_hr_subsidies__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicación del sitio web"

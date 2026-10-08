@@ -107,7 +107,7 @@ class L10nPeHrEmployeeEducation(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', string='Trabajador', required=True, index=True,
         ondelete='cascade', check_company=True)
-    company_id = fields.Many2one(
+    company_id = fields.Many2one(string='Compañía',
         related='employee_id.company_id', store=True, index=True)
     education_level_id = fields.Many2one(
         'l10n_pe.hr.education.level', string='Formación superior completa',

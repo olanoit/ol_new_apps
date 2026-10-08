@@ -204,6 +204,33 @@ pasos:
       la marca de retención en el campo 26 del Registro de Compras Simplificado.
       No requiere configuración.
 
+  - seccion: El menú Perú ▸ Retenciones IGV
+    texto: >-
+      Comprobantes sujetos a retención, CRE emitidos, retenciones sufridas,
+      resumen PDT 626 y análisis, todo en la app Perú.
+  - titulo: Menú de retenciones
+    ruta: Perú ▸ Retenciones IGV
+    imagen: screenshots/13-menu-retenciones.png
+  - titulo: Comprobantes de proveedor sujetos a retención
+    ruta: Perú ▸ Retenciones IGV ▸ Comprobantes de proveedor
+    texto: >-
+      Facturas de proveedor comprendidas en el régimen, con su total, si
+      superan el mínimo, lo pendiente de pago y el estado, con totales al pie.
+    imagen: screenshots/14-comprobantes.png
+  - titulo: Retenciones efectuadas
+    ruta: Perú ▸ Retenciones IGV ▸ Retenciones efectuadas
+    texto: >-
+      Cada CRE con los comprobantes pagados, el importe pagado y el retenido,
+      el plazo de envío y su estado: en amarillo los fuera de plazo y en rojo
+      los rechazados. El comprobante impreso lleva logo, datos de la compañía
+      y recuadro con R.U.C. y número.
+    imagen: screenshots/15-efectuadas.png
+  - titulo: Análisis de retenciones
+    ruta: Perú ▸ Retenciones IGV ▸ Análisis de retenciones
+    texto: >-
+      Importe retenido por proveedor y mes en tabla dinámica, gráfico y lista.
+    imagen: screenshots/12-analisis.png
+
 campos_intro: >-
   Cada campo que añade el módulo, dónde está y qué efecto tiene.
 campos:
@@ -376,6 +403,13 @@ faq:
       anterior.
 
 novedades:
+  - version: 15.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Comprobante de retención impreso rediseñado: logo y datos de la compañía, recuadro con R.U.C., tipo y número, datos del proveedor en tabla y detalle con cabecera de color; formato de papel propio sin margen sobrante y «R.U.C.» también para proveedores con tipo de documento genérico."
+      - "Menú Perú ▸ Retenciones IGV ordenado como Detracciones: comprobantes de proveedor sujetos a retención, retenciones efectuadas (CRE con importe retenido, comprobantes pagados, plazo y estado; en amarillo fuera de plazo, en rojo rechazados), retenciones sufridas, resumen PDT 626 y análisis (tabla dinámica y gráfico por proveedor y mes)."
+      - "El pago guarda el importe retenido, para totales y análisis."
+      - "Etiquetas en español también en los campos automáticos (Compañía, Moneda, Creado el…) de las retenciones sufridas y del resumen 626."
   - version: 14.20261008
     fecha: 08/10/2026
     cambios:

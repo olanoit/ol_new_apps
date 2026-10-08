@@ -20,9 +20,9 @@ class L10nPeDetractionDepositWizard(models.TransientModel):
 
     move_id = fields.Many2one(
         'account.move', string='Comprobante', required=True, readonly=True)
-    company_id = fields.Many2one(related='move_id.company_id')
+    company_id = fields.Many2one(related='move_id.company_id', string='Compañía')
     company_currency_id = fields.Many2one(
-        related='move_id.company_currency_id')
+        related='move_id.company_currency_id', string='Moneda de la compañía')
     amount = fields.Monetary(
         string='Monto del depósito', currency_field='company_currency_id',
         compute='_compute_amount', store=True, readonly=False)

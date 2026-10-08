@@ -26,7 +26,7 @@ class HrMembership(models.Model):
     _order = 'name'
 
     name = fields.Char(string='Entidad', tracking=True, required=True)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Activo', default=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True,
         help='Vacío: entidad global (tasas SBS compartidas). Con '

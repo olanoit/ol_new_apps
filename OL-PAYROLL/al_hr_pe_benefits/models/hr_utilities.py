@@ -40,7 +40,7 @@ class HrUtilities(models.Model):
     _order = 'year desc'
     _check_company_auto = True
 
-    name = fields.Char(compute='_compute_name', store=True)
+    name = fields.Char(string='Nombre', compute='_compute_name', store=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
@@ -69,7 +69,7 @@ class HrUtilities(models.Model):
         'hr.payslip.run', string='Lote de nómina', required=True,
         check_company=True,
         help='Lote mensual donde se pagan las utilidades.')
-    utili_count = fields.Integer(compute='_compute_utilities_count')
+    utili_count = fields.Integer(string='Repartos', compute='_compute_utilities_count')
 
     _unique_year = models.Constraint(
         'UNIQUE(company_id, year)',

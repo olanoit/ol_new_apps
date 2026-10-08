@@ -55,3 +55,14 @@ with Captura('al_l10n_pe_retention') as c:
     # 11. Lista de retenciones sufridas
     c.abrir_accion('al_l10n_pe_retention.action_retention_received', ms=2000)
     c.foto('11-sufridas')
+
+    # ---- Menú Perú ▸ Retenciones IGV ---------------------------------------
+    c.abrir_accion('al_l10n_pe_retention.action_retention_analysis', ms=3000)
+    c.foto('12-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
+    c.page.get_by_role('button', name='Retenciones IGV').first.click()
+    c.esperar(800)
+    c.foto('13-menu-retenciones', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    c.abrir_accion('al_l10n_pe_retention.action_retention_bills', ms=3000)
+    c.foto('14-comprobantes', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
+    c.abrir_accion('al_l10n_pe_retention.action_retention_payments', ms=3000)
+    c.foto('15-efectuadas', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})

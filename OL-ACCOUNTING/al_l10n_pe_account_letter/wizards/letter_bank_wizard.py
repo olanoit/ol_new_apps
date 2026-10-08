@@ -41,7 +41,7 @@ class L10nPeLetterBankWizard(models.TransientModel):
         domain="[('id', 'in', available_line_ids)]",
         check_company=True)
     available_line_ids = fields.Many2many(
-        'l10n_pe.letter.line', compute='_compute_available_line_ids',
+        'l10n_pe.letter.line', string='Letras disponibles', compute='_compute_available_line_ids',
         check_company=True)
     date = fields.Date(string='Fecha', required=True, default=fields.Date.context_today)
     bank_journal_id = fields.Many2one(

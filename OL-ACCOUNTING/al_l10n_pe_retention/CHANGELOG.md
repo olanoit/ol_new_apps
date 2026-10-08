@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261008 — 08/10/2026
+
+- Comprobante de retención impreso rediseñado: logo y datos de la compañía, recuadro con R.U.C., tipo y número, datos del proveedor en tabla y detalle con cabecera de color; formato de papel propio sin margen sobrante y «R.U.C.» también para proveedores con tipo de documento genérico.
+- Menú Perú ▸ Retenciones IGV ordenado como Detracciones: comprobantes de proveedor sujetos a retención, retenciones efectuadas (CRE con importe retenido, comprobantes pagados, plazo y estado; en amarillo fuera de plazo, en rojo rechazados), retenciones sufridas, resumen PDT 626 y análisis (tabla dinámica y gráfico por proveedor y mes).
+- El pago guarda el importe retenido, para totales y análisis.
+- Etiquetas en español también en los campos automáticos (Compañía, Moneda, Creado el…) de las retenciones sufridas y del resumen 626.
+
 ## 14.20261008 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).

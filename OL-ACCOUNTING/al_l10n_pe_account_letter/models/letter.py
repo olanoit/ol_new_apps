@@ -14,7 +14,7 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
     _description = 'Asistente de canje de letras'
 
     letter_id = fields.Many2one('l10n_pe.letter', 'Canje', required=True)
-    letter_line_ids = fields.One2many('l10n_pe.letter.line', compute='_compute_letter_line_ids')
+    letter_line_ids = fields.One2many('l10n_pe.letter.line', string='Letras', compute='_compute_letter_line_ids')
 
     @api.depends('letter_id', 'date_canje')
     def _compute_letter_line_ids(self):
@@ -42,7 +42,7 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
         default='all',
         required=True,
     )
-    show_canje_type = fields.Boolean(default=True)
+    show_canje_type = fields.Boolean(string='Mostrar tipo de canje', default=True)
     letter_line_id = fields.Many2one('l10n_pe.letter.line', 'Letra', required=False)
 
     bank_id = fields.Many2one(
@@ -91,12 +91,12 @@ class L10nPeLetter(models.Model):
         string='Tipo'
     )
     name = fields.Char(
-        string=u'Nro. canje',
+        string='N.º de canje',
         index=True, default=lambda self: ('Borrador'), readonly=True
     )
     partner_id = fields.Many2one(
         'res.partner',
-        string='Socio',
+        string='Contacto',
         tracking=True
     )
     journal_id = fields.Many2one(
@@ -109,7 +109,7 @@ class L10nPeLetter(models.Model):
 
     domain_letter_ids = fields.Many2many(
         'account.journal',
-        string='Domain letter journals',
+        string='Diarios de letras permitidos',
         compute='_compute_domain_letter_ids'
     )
 
@@ -722,7 +722,7 @@ class L10nPeLetter(models.Model):
         'account.move', 'l10n_pe_letter_bank_move_rel', 'letter_id', 'move_id',
         string='Operaciones con el banco', readonly=True, copy=False,
         help='Liquidación del descuento, cobro del banco y protesto.')
-    bank_move_count = fields.Integer(compute='_compute_bank_move_count')
+    bank_move_count = fields.Integer(string='Operaciones con el banco', compute='_compute_bank_move_count')
 
     @api.depends('bank_move_ids')
     def _compute_bank_move_count(self):
@@ -1819,7 +1819,7 @@ class L10nPeLetterLinkSummary(models.TransientModel):
     _name = 'l10n_pe.letter.link.summary'
     _description = 'Resumen de vinculación de asientos'
 
-    summary = fields.Text(readonly=True)
+    summary = fields.Text(string='Resumen', readonly=True)
 
     def action_close(self):
         if self.env.context.get('reload_on_close'):

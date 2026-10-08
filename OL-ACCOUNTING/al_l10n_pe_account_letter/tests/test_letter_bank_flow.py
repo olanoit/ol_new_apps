@@ -151,3 +151,39 @@ class TestLetterBankFlow(TransactionCase):
         arch = self.env['account.move'].get_view(
             self.env.ref('account.view_move_form').id, 'form')['arch']
         self.assertIn('invisible="not l10n_pe_letter_ids"', arch)
+
+    # ------------------------------------------------------------------
+    # Menú Perú ▸ Letras de cambio
+    # ------------------------------------------------------------------
+    def _action_records(self, xmlid):
+        from odoo.tools.safe_eval import safe_eval
+        action = self.env.ref(xmlid)
+        return self.env[action.res_model].search(safe_eval(action.domain or '[]'))
+
+    def test_letter_menu_lists(self):
+        """Cada lista del menú muestra lo suyo: letras por cobrar (no por
+        pagar), letras enviadas al banco y el análisis."""
+        letter = self._redeemed_letter(letters=2, amount=1000.0)
+        lines = letter.letter_line_ids
+        module = 'al_l10n_pe_account_letter.'
+        self.assertTrue(lines <= self._action_records(module + 'account_move_letter_action_clientes'))
+        self.assertFalse(lines & self._action_records(module + 'account_move_letter_action_proveedores'))
+        self.assertFalse(lines & self._action_records(module + 'action_letter_line_bank_clientes'))
+        self._send_to_bank(letter, date(2026, 8, 20))
+        self.assertTrue(lines <= self._action_records(module + 'action_letter_line_bank_clientes'))
+        self.assertTrue(lines <= self._action_records(module + 'action_letter_line_analysis'))
+        letter.is_refinance_children = True
+        self.assertIn(letter, self._action_records(module + 'action_letter_refinance_clientes'))
+        self.assertNotIn(letter, self._action_records(module + 'action_letter_refinance_proveedores'))
+
+    def test_letter_analysis_groups(self):
+        """El análisis agrupa por contacto, moneda, tipo y estado de la letra
+        (campos relacionados guardados)."""
+        letter = self._redeemed_letter(letters=2, amount=1000.0)
+        groups = self.env['l10n_pe.letter.line']._read_group(
+            [('id', 'in', letter.letter_line_ids.ids)],
+            ['partner_id', 'currency_id', 'move_invoice_type', 'state'], ['imp_div:sum'])
+        self.assertEqual(len(groups), 1)
+        partner, currency, move_type, state, total = groups[0]
+        self.assertEqual((partner, move_type, state), (self.partner, 'out_invoice', 'redeemed'))
+        self.assertAlmostEqual(total, 1000.0)

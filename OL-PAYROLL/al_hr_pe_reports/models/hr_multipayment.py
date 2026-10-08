@@ -1474,7 +1474,7 @@ class HrPayslipRun(models.Model):
     multipayment_ids = fields.One2many(
         'hr.automate.multipayment', 'payslip_run_id',
         string='Pagos masivos')
-    multipayment_count = fields.Integer(
+    multipayment_count = fields.Integer(string='Pagos masivos', 
         compute='_compute_multipayment_count')
 
     @api.depends('multipayment_ids')
@@ -1510,7 +1510,7 @@ class HrFortnightly(models.Model):
     multipayment_ids = fields.One2many(
         'hr.automate.multipayment', 'fortnightly_id',
         string='Pagos masivos')
-    multipayment_count = fields.Integer(
+    multipayment_count = fields.Integer(string='Pagos masivos', 
         compute='_compute_multipayment_count')
 
     @api.depends('multipayment_ids')
@@ -1538,7 +1538,7 @@ class HrCts(models.Model):
         string='TXT generado', default=False, copy=False)
     multipayment_ids = fields.One2many(
         'hr.automate.multipayment', 'cts_id', string='Pagos masivos')
-    multipayment_count = fields.Integer(
+    multipayment_count = fields.Integer(string='Pagos masivos', 
         compute='_compute_multipayment_count')
 
     @api.depends('multipayment_ids')
@@ -1570,7 +1570,7 @@ class HrGratification(models.Model):
     multipayment_ids = fields.One2many(
         'hr.automate.multipayment', 'gratification_id',
         string='Pagos masivos')
-    multipayment_count = fields.Integer(
+    multipayment_count = fields.Integer(string='Pagos masivos', 
         compute='_compute_multipayment_count')
 
     @api.depends('multipayment_ids')
@@ -1600,7 +1600,7 @@ class HrVacation(models.Model):
         string='TXT generado', default=False, copy=False)
     multipayment_ids = fields.One2many(
         'hr.automate.multipayment', 'vacation_id', string='Pagos masivos')
-    multipayment_count = fields.Integer(
+    multipayment_count = fields.Integer(string='Pagos masivos', 
         compute='_compute_multipayment_count')
 
     @api.depends('multipayment_ids')
