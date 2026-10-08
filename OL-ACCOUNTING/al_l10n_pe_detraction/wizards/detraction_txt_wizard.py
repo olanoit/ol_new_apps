@@ -65,7 +65,8 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     def _default_batch_number(self):
         """Propone AANNNN con el correlativo siguiente del año en curso."""
         year = fields.Date.context_today(self).strftime('%y')
-        last = self.env.company.l10n_pe_detraction_last_batch or ''
+        # El correlativo es del depositante (el RUC): se lleva en la raíz.
+        last = self.env.company.root_id.l10n_pe_detraction_last_batch or ''
         if re.fullmatch(r'\d{6}', last) and last[:2] == year \
                 and last[2:] != '9999':
             return '%s%04d' % (year, int(last[2:]) + 1)
@@ -125,7 +126,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         compra y la propia empresa cuando vende.
         """
         return (move.partner_id.commercial_partner_id if self.mode == 'acquirer'
-                else self.company_id.partner_id)
+                else self.company_id.root_id.partner_id)
 
     @api.model
     def _document_type(self, partner):
@@ -222,7 +223,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         total = sum(included.mapped('l10n_pe_detraction_amount'))
         # La cabecera siempre lleva a la empresa que presenta el lote: como
         # adquiriente o como proveedor (el indicador de maestra lo distingue).
-        depositor = self.company_id.partner_id
+        depositor = self.company_id.root_id.partner_id  # el RUC, también desde una sucursal
         header = bn_txt.build_header(
             master=(bn_txt.MASTER_ACQUIRER if self.mode == 'acquirer'
                     else bn_txt.MASTER_SUPPLIER),
@@ -248,7 +249,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
         # El correlativo del lote se guarda en la compañía para proponer
         # el siguiente. sudo(): los contables no pueden escribir en
         # res.company y aquí solo se anota el último lote generado.
-        company_sudo = self.company_id.sudo()
+        company_sudo = self.company_id.root_id.sudo()
         if self.batch_number > (company_sudo.l10n_pe_detraction_last_batch
                                 or ''):
             company_sudo.l10n_pe_detraction_last_batch = self.batch_number

@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 12.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "El token de Decolecta/apis.net se toma de la compañía o, en una sucursal, de su RUC."
   - version: 11.20261008
     fecha: 08/10/2026
     cambios:

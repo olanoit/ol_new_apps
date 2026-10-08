@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 19.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los libros son del RUC: desde una sucursal el nombre del archivo y la cabecera llevan el RUC de la raíz, y retenciones 4.1, consignaciones, costos, inversiones 3.8, activos 3.9/7.1 y patrimonio 3.19 recogen lo de toda la compañía (raíz y sucursales), como ya hacían el diario y los registros de compras y ventas."
   - version: 18.20261008
     fecha: 08/10/2026
     cambios:

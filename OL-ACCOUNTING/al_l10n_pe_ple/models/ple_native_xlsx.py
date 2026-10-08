@@ -141,7 +141,7 @@ class L10nPeStockPleWizardXlsx(models.TransientModel):
         self.write({
             'report_data': base64.b64encode(xlsx),
             'report_filename': 'LE%s%s%02d00%s00001%s11.xlsx' % (
-                self.env.company.vat, self.date_from.year, self.date_from.month,
+                self.env.company.root_id.vat, self.date_from.year, self.date_from.month,
                 report_number, has_data),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261008 — 08/10/2026
+
+- Depósito masivo desde una sucursal: cabecera, titular (modo proveedor) y correlativo del lote son los del RUC, compartido por todas sus sucursales.
+
 ## 17.20261008 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).

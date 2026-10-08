@@ -582,6 +582,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 18.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Depósito masivo desde una sucursal: cabecera, titular (modo proveedor) y correlativo del lote son los del RUC, compartido por todas sus sucursales."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

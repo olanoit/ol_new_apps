@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261008 — 08/10/2026
+
+- Una sucursal sin conexiones RUC/DNI propias consulta con las de su RUC (el token se contrata una vez); la regla de registro deja ver las de las compañías superiores y la siembra ya no crea conexiones en sucursales.
+
 ## 14.20261008 — 08/10/2026
 
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).

@@ -46,7 +46,7 @@ asientos por su complejidad y riesgo contable.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '17.20261008',
+    'version': '18.20261008',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

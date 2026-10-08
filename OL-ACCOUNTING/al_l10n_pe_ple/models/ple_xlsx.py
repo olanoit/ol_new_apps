@@ -442,6 +442,7 @@ class L10nPePleMixinXlsx(models.AbstractModel):
     def _ple_xlsx_books(self, books, company, year, month='00'):
         """Un XLSX con una hoja por formato: ``books`` es una lista de
         ``(código, líneas)``. Lo usa el Libro 3, que se exporta entero."""
+        company = company.root_id  # la cabecera es la del RUC
         output = BytesIO()
         workbook = xlsxwriter.Workbook(
             output, {'in_memory': True, 'strings_to_numbers': False})

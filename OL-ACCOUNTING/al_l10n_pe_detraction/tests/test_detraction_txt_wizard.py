@@ -286,3 +286,21 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
         wizard.action_generate()
         self.assertEqual(self.company.l10n_pe_detraction_last_batch,
                          '%s0009' % year)
+
+    def test_branch_deposits_with_the_ruc(self):
+        """Desde una sucursal (sin RUC propio) el lote sale a nombre del
+        RUC y el correlativo es el de la raíz, compartido por todo el RUC."""
+        from odoo import fields
+        year = fields.Date.context_today(self.env.user).strftime('%y')
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal SPOT', 'parent_id': self.company.id,
+            'country_id': self.company.country_id.id})
+        self.env.user.company_ids |= branch
+        self.company.l10n_pe_detraction_last_batch = '%s0011' % year
+        wizard = self.env['l10n_pe.detraction.txt.wizard'].with_company(branch).create({
+            'company_id': branch.id, 'mode': 'acquirer',
+            'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31)})
+        self.assertEqual(wizard.batch_number, '%s0012' % year)
+        wizard.mode = 'supplier'
+        self.assertEqual(wizard._account_holder(self.env['account.move']),
+                         self.company.partner_id)

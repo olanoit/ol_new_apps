@@ -46,7 +46,7 @@ class L10nPePleAssetBook(models.AbstractModel):
         agregan al padre)."""
         date_from, date_to = self._asset_year_range(year)
         domain = [
-            ('company_id', '=', company.id),
+            ('company_id', 'child_of', company.root_id.id),
             ('state', 'in', ASSET_BOOK_STATES),
             ('parent_id', '=', False),
             ('acquisition_date', '<=', date_to),

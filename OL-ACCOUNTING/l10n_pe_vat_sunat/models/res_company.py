@@ -47,7 +47,11 @@ class ResCompany(models.Model):
         con fallback activado devuelve todas para consulta en cascada.
         """
         self.ensure_one()
-        connections = self.l10n_pe_api_connection_ids.filtered(
+        # Una sucursal sin conexiones propias usa las de su compañía
+        # superior más cercana: el token se contrata una vez por RUC.
+        owner = next((company for company in reversed(self.sudo().parent_ids)
+                      if company.l10n_pe_api_connection_ids), self)
+        connections = self.env['res.company'].browse(owner.id).l10n_pe_api_connection_ids.filtered(
             lambda c: c.enabled and c.document_type in (doc_type, 'both')
             and c._is_usable()
         ).sorted(lambda c: (c.sequence, c.id))
@@ -75,7 +79,8 @@ class ResCompany(models.Model):
     def _l10n_pe_seed_default_connections(self):
         """Crea las conexiones por defecto en compañías PE que no tengan."""
         for company in self:
-            if company.l10n_pe_api_connection_ids or (
+            # Las sucursales usan las conexiones de su RUC (la raíz).
+            if company.parent_id or company.l10n_pe_api_connection_ids or (
                     company.country_id and company.country_id.code != 'PE'):
                 continue
             for spec in DEFAULT_CONNECTIONS:
@@ -88,7 +93,8 @@ class ResCompany(models.Model):
         if not spec:
             return
         for company in self:
-            if company.country_id and company.country_id.code != 'PE':
+            if company.parent_id or (
+                    company.country_id and company.country_id.code != 'PE'):
                 continue
             existing = company.l10n_pe_api_connection_ids.filtered(
                 lambda c: c.name == name)

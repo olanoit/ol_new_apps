@@ -417,6 +417,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 15.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Una sucursal sin conexiones RUC/DNI propias consulta con las de su RUC (el token se contrata una vez); la regla de registro deja ver las de las compañías superiores y la siembra ya no crea conexiones en sucursales."
   - version: 14.20261008
     fecha: 08/10/2026
     cambios:

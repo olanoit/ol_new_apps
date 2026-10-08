@@ -139,3 +139,20 @@ class TestConnection(TransactionCase):
         self.assertEqual(partner.name, 'EMPRESA X')
         self.assertEqual(partner.company_type, 'company')
         self.assertFalse(partner.alert_warning_vat)
+
+    def test_branch_uses_root_connections(self):
+        """Una sucursal sin conexiones propias consulta con las de su RUC
+        (el token se contrata una vez); si tiene propias, mandan las suyas."""
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal RUC/DNI', 'parent_id': self.company.id,
+            'country_id': self.env.ref('base.pe').id})
+        self.assertFalse(branch.l10n_pe_api_connection_ids)
+        self.company.l10n_pe_api_use_fallback = True
+        branch.l10n_pe_api_use_fallback = True
+        root_connections = self.company._get_pe_api_connections('ruc')
+        self.assertTrue(root_connections)
+        self.assertEqual(branch._get_pe_api_connections('ruc'), root_connections)
+        own = self.env['l10n_pe.api.connection'].create({
+            'name': 'Propia de la sucursal', 'engine': 'sunat_oficial',
+            'document_type': 'ruc', 'company_id': branch.id})
+        self.assertEqual(branch._get_pe_api_connections('ruc'), own)

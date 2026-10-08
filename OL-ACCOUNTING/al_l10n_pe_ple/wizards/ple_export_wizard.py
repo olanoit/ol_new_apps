@@ -291,7 +291,7 @@ class L10nPePleExportWizard(models.TransientModel):
     def _export_41(self):
         date_from, date_to = self._month_range()
         records = self.env['l10n_pe.ple.withholding'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('date', '>=', date_from), ('date', '<=', date_to),
         ], order='date, id')
         lines = []
@@ -334,7 +334,7 @@ class L10nPePleExportWizard(models.TransientModel):
 
     def _consignment_moves(self, kinds, date_from, date_to):
         return self.env['stock.move'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('state', '=', 'done'),
             ('picking_id.l10n_pe_consignment', 'in', kinds),
             ('date', '>=', self._utc_bound(date_from)),
@@ -393,7 +393,7 @@ class L10nPePleExportWizard(models.TransientModel):
         # − ventas anteriores al periodo
         prior = {}
         prior_moves = self.env['stock.move'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('state', '=', 'done'),
             ('picking_id.l10n_pe_consignment', 'in', kinds),
             ('date', '<', self._utc_bound(date_from)),
@@ -729,7 +729,7 @@ class L10nPePleExportWizard(models.TransientModel):
     # ------------------------------------------------------------------
     def _cost_records(self, model):
         return self.env[model].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('year', '=', self.year),
         ])
 
@@ -797,7 +797,7 @@ class L10nPePleExportWizard(models.TransientModel):
     # ------------------------------------------------------------------
     def _export_38(self):
         records = self.env['l10n_pe.ple.investment'].search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('date', '=', self.balance_date),
         ], order='id')
         lines = []
@@ -832,7 +832,7 @@ class L10nPePleExportWizard(models.TransientModel):
     def _export_39(self):
         assets = self.env['account.asset'].with_context(
             active_test=False).search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('state', 'in', ('open', 'paused', 'close')),
             ('parent_id', '=', False),
             ('account_asset_id.code', '=like',
@@ -869,7 +869,7 @@ class L10nPePleExportWizard(models.TransientModel):
     def _export_319(self):
         Equity = self.env['l10n_pe.ple.equity']
         records = Equity.search([
-            ('company_id', '=', self.company_id.id),
+            ('company_id', 'child_of', self.company_id.root_id.id),
             ('date', '=', self.balance_date),
         ], order='id')
         lines = []

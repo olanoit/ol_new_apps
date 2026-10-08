@@ -125,6 +125,6 @@ class L10nPePleReportHandler(models.AbstractModel):
                 partner.country_id.l10n_pe_agreement_code or '',
             'usage_type_code': move.l10n_pe_usage_type_id.code or '',
             'service_modality': move.l10n_pe_service_modality,
-            'company_vat': (move.company_id.vat or '').strip(),
-            'company_name': move.company_id.name,
+            'company_vat': (move.company_id.root_id.vat or '').strip(),
+            'company_name': move.company_id.root_id.name,
         }

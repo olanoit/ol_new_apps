@@ -66,6 +66,8 @@ class L10nPePleMixin(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _ple_ruc(self, company):
+        # Los libros son del RUC: una sucursal declara con el de su raíz.
+        company = company.root_id
         ruc = (company.vat or '').strip()
         if len(ruc) != 11 or not ruc.isdigit():
             raise UserError(_(

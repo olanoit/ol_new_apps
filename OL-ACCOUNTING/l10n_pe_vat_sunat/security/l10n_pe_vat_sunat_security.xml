@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Multicompañía: cada compañía solo ve sus conexiones RUC/DNI (y sus
-         tokens) y los mapeos de esas conexiones. -->
+    <!-- Multicompañía: cada compañía ve sus conexiones RUC/DNI y las de sus
+         compañías superiores (una sucursal usa las de su RUC si no tiene
+         propias), como los diarios y las cuentas en Odoo. -->
     <record id="l10n_pe_api_connection_company_rule" model="ir.rule">
         <field name="name">Conexión RUC/DNI: multicompañía</field>
         <field name="model_id" ref="model_l10n_pe_api_connection"/>
-        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="domain_force">[('company_id', 'parent_of', company_ids)]</field>
     </record>
 
     <record id="l10n_pe_api_field_mapping_company_rule" model="ir.rule">
         <field name="name">Mapeo de campos RUC/DNI: multicompañía</field>
         <field name="model_id" ref="model_l10n_pe_api_field_mapping"/>
-        <field name="domain_force">[('connection_id.company_id', 'in', company_ids)]</field>
+        <field name="domain_force">[('connection_id.company_id', 'parent_of', company_ids)]</field>
     </record>
 </odoo>

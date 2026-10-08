@@ -192,10 +192,14 @@ class ResCurrency(models.Model):
         # sudo: el token es una credencial reservada al administrador
         # (``groups`` en el campo); aquí se lee en el servidor solo para
         # llamar al proveedor y nunca se devuelve al cliente.
-        connection_sudo = self.env['l10n_pe.api.connection'].sudo().search([
+        connections_sudo = self.env['l10n_pe.api.connection'].sudo().search([
             '|', ('base_url', 'ilike', host), ('name', 'ilike', host),
-            ('company_id', '=', company.id),
-        ], limit=1)
+            ('company_id', 'parent_of', company.id),
+        ])
+        # La de la propia compañía o, en una sucursal, la de la superior
+        # más cercana (el token se contrata una vez por RUC).
+        connection_sudo = connections_sudo.sorted(
+            lambda c: len(c.company_id.parent_path or ''), reverse=True)[:1]
         return connection_sudo.token or ''
 
     @api.model

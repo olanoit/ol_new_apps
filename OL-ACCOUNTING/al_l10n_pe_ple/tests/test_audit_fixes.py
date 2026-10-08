@@ -221,3 +221,25 @@ class TestPleWizardFixes(TransactionCase):
             'gross_amount': 100.0, 'company_id': other.id})
         visible = Withholding.with_user(user).search([('id', 'in', (own | foreign).ids)])
         self.assertEqual(visible, own)
+
+    def test_branch_books_use_the_ruc(self):
+        """Los libros son del RUC: desde una sucursal sin RUC propio el
+        archivo lleva el de la raíz y recoge lo de toda la compañía."""
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal PLE', 'parent_id': self.company.id,
+            'country_id': self.company.country_id.id})
+        self.env.user.company_ids |= branch
+        Withholding = self.env['l10n_pe.ple.withholding']
+        root_record = Withholding.create({
+            'date': date(2025, 3, 5), 'partner_id': self.partner.id,
+            'gross_amount': 100.0, 'company_id': self.company.id})
+        branch_record = Withholding.create({
+            'date': date(2025, 3, 6), 'partner_id': self.partner.id,
+            'gross_amount': 200.0, 'company_id': branch.id})
+        for company in (self.company, branch):
+            wizard = self._wizard(company_id=company.id)
+            [(file_name, content)] = wizard._export_41()
+            self.assertTrue(file_name.startswith('LE%s' % self.company.vat), file_name)
+            text = content.decode() if isinstance(content, bytes) else content
+            cuos = {line.split('|')[1] for line in text.split('\r\n') if line}
+            self.assertLessEqual({str(root_record.id), str(branch_record.id)}, cuos)
