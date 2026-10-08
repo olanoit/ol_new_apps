@@ -372,6 +372,17 @@ class TestFase2Engine(TransactionCase):
         self.assertFalse(self._line(
             self._night_slip(176.0, regime='micro'), 'NOCT').total)
 
+    def test_slip_without_a_newer_concept_computes(self):
+        """Una boleta generada antes de existir un concepto (aquí HTN, que
+        se añadió después) no tiene su línea de días; «Calcular» no las
+        regenera, así que el concepto ausente debe valer cero y no romper
+        la regla (KeyError('HTN') en NOCT)."""
+        slip = self._compute_slip()
+        slip.worked_days_line_ids.filtered(lambda l: l.code == 'HTN').unlink()
+        slip.compute_sheet()
+        self.assertFalse(self._line(slip, 'NOCT').total)
+        self.assertTrue(self._line(slip, 'NETO'))
+
     def test_plame_toc_declares_mas_vida_not_vida_ley(self):
         """El .toc (estructura 26) declara +Vida de EsSalud y la condición
         de domiciliado de cada trabajador del mes; el Seguro Vida Ley no

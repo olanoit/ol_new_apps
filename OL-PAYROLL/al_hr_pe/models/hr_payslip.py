@@ -175,6 +175,13 @@ class HrPayslip(models.Model):
             localdict['inputs'] = defaultdict(
                 lambda: SimpleNamespace(amount=0.0, name=''),
                 localdict['inputs'])
+            # Igual con los días: una boleta generada antes de que existiera
+            # un concepto (p. ej. HTN) no tiene su línea y «Calcular» no
+            # regenera los días; el concepto ausente vale cero.
+            localdict['worked_days'] = defaultdict(
+                lambda: SimpleNamespace(number_of_days=0.0, number_of_hours=0.0,
+                                        amount=0.0, name=''),
+                localdict['worked_days'])
         return localdict
 
     def _get_worked_day_lines(self, domain=None, check_out_of_version=True):
