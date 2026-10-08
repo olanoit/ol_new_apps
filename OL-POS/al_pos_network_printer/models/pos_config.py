@@ -291,7 +291,7 @@ class PosConfig(models.Model):
             raise ValidationError("Configure primero la IP de la impresora ESC/POS de red.")
         port = int(self.escpos_printer_port or 9100)
         lines = [
-            self.env.company.name,
+            self.company_id.name,
             self.name,
             fields.Datetime.to_string(fields.Datetime.now()),
             f"{self.escpos_printer_ip}:{port}",
