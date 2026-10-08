@@ -9,6 +9,9 @@ Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 
 ## 17.20261008 — 08/10/2026
 
+- Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
+- Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
+- Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y».
 - Comprobante A4 con el estilo común de los comprobantes PE en blanco y negro: encabezado con recuadro R.U.C./tipo/número, datos del adquirente en tabla, y líneas, totales, importe en letras, detracción e información adicional con QR en una sola tabla; cuotas y cuentas bancarias con la misma cabecera gris.
 - Ticket 80 mm: recuadro del documento con R.U.C., cabecera gris oscuro del detalle y totales e importe en letras en la misma tabla.
 

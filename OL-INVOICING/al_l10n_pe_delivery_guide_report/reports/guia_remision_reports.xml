@@ -7,7 +7,7 @@
             <field name="format">A4</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">10</field>
-            <field name="margin_bottom">10</field>
+            <field name="margin_bottom">22</field>
             <field name="margin_left">10</field>
             <field name="margin_right">10</field>
             <field name="header_line" eval="False"/>
@@ -40,41 +40,11 @@
 
                 <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento
                      (estilo común de los comprobantes PE, al_account_base) -->
-                <table class="pe-doc-plain mb-2">
-                    <tr>
-                        <td style="width: 15%;" class="align-middle">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
-                                 class="pe-doc-logo" alt="Logo"/>
-                        </td>
-                        <td style="width: 50%;">
-                            <ul class="pe-doc-company">
-                                <li class="pe-doc-fs-14"><strong t-field="o.company_id.name"/></li>
-                                <li t-if="o.company_id.street">
-                                    <span t-field="o.company_id.street"/>
-                                    <t t-if="o.company_id.partner_id.l10n_pe_district">
-                                        - <span t-field="o.company_id.partner_id.l10n_pe_district.name"/>
-                                    </t>
-                                    <t t-if="o.company_id.city">
-                                        - <span t-field="o.company_id.city"/>
-                                    </t>
-                                </li>
-                                <li t-if="o.company_id.phone or o.company_id.email">
-                                    <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
-                                    <span t-if="o.company_id.phone and o.company_id.email"> · </span>
-                                    <span t-if="o.company_id.email" t-field="o.company_id.email"/>
-                                </li>
-                                <li t-if="o.company_id.website"><span t-field="o.company_id.website"/></li>
-                            </ul>
-                        </td>
-                        <td style="width: 35%;">
-                            <ul class="pe-doc-box pe-doc-fs-13">
-                                <li>R.U.C. <span t-field="o.company_id.vat"/></li>
-                                <li><strong>GUÍA DE REMISIÓN ELECTRÓNICA REMITENTE</strong></li>
-                                <li><strong>N.º <span t-out="o.l10n_latam_document_number"/></strong></li>
-                            </ul>
-                        </td>
-                    </tr>
-                </table>
+                <t t-call="al_account_base.report_pe_document_header">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Guía de remisión electrónica remitente'"/>
+                    <t t-set="doc_number" t-value="o.l10n_latam_document_number"/>
+                </t>
 
                 <!-- INFORMACIÓN DEL TRASLADO -->
                 <table class="pe-doc-table mb-2">
@@ -226,7 +196,7 @@
                 <t t-set="grouped_lines" t-value="o._get_grouped_move_lines()"/>
                 <t t-set="qr_url" t-value="o._l10n_pe_edi_get_qr()"/>
                 <t t-set="qr_url" t-value="qr_url and qr_url.strip()"/>
-                <table class="pe-doc-table mb-2">
+                <table class="pe-doc-table pe-doc-lines mb-2">
                     <thead>
                         <tr class="pe-doc-thead">
                             <td class="text-center" style="width: 5%;">N.º</td>
@@ -275,13 +245,10 @@
                         </tr>
                     </tfoot>
                 </table>
-
-                <!-- PIE DE CONTACTO -->
-                <div class="gre-contact-footer">
-                    Emitido el:
-                    <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
-                </div>
             </div>
+            <t t-call="al_account_base.report_pe_document_footer">
+                <t t-set="company" t-value="o.company_id"/>
+            </t>
         </template>
 
         <record id="action_report_guia_remision" model="ir.actions.report">

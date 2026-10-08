@@ -9,6 +9,9 @@ Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 
 ## 8.20261008 — 08/10/2026
 
+- Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
+- Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
+- Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y».
 - Hoja de estilos común de los comprobantes impresos PE (report_pe_document.css, prefijo pe-doc-): blanco y negro, encabezado con logo y recuadro R.U.C./tipo/número, tablas con borde redondeado y cabecera gris oscuro; la usan la factura A4, la guía de remisión y el comprobante de retención.
 
 ## 7.20261008 — 08/10/2026

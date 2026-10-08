@@ -9,6 +9,9 @@ Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `nov
 
 ## 10.20261008 — 08/10/2026
 
+- Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
+- Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
+- Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y».
 - Guía de remisión con el estilo común de los comprobantes PE en blanco y negro: recuadro R.U.C./tipo/número, bloques de datos en tablas con borde redondeado y el detalle de bienes con la información adicional y el QR en una sola tabla.
 
 ## 9.20261008 — 08/10/2026

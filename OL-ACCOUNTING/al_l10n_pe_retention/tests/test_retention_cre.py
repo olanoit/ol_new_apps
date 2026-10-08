@@ -187,7 +187,8 @@ class TestRetentionCre(TestRetentionApplies):
         payment = self._paid()
         html = self.env['ir.actions.report']._render_qweb_html(
             'al_l10n_pe_retention.report_retention', payment.ids)[0].decode()
-        self.assertIn('COMPROBANTE DE RETENCIÓN ELECTRÓNICO', html)
+        # el encabezado común lo pasa a mayúsculas por CSS
+        self.assertIn('comprobante de retención electrónico', html.lower())
         self.assertIn(payment.l10n_pe_edi_retention_number, html)
         self.assertIn('F00R-00000001', html)
         self.assertIn('35.40', html.replace(',', '.'))

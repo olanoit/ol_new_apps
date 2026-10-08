@@ -9,6 +9,9 @@ Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 
 ## 16.20261008 — 08/10/2026
 
+- Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
+- Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
+- Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y».
 - Usa la hoja común de comprobantes PE; la cabecera del detalle pasa de negro a gris oscuro suave.
 - Comprobante de retención impreso en blanco y negro: recuadro y bordes negros, cabecera del detalle negra con texto blanco, sin colores.
 - Líneas, totales (retenido y neto pagado) y la leyenda de representación impresa en una sola tabla, como la factura.

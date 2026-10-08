@@ -36,6 +36,9 @@
     border-collapse: collapse;
 }
 
+.pe-doc-plain,
+.pe-doc-plain thead,
+.pe-doc-plain tbody,
 .pe-doc-plain tr,
 .pe-doc-plain td {
     border: none;
@@ -84,7 +87,6 @@
 }
 
 .pe-doc-table .pe-doc-subheader > td {
-    border-bottom: 1px solid #000;
     font-weight: bold;
 }
 
@@ -107,11 +109,36 @@
 .pe-doc-fs-13 { font-size: 13px; }
 .pe-doc-fs-11 { font-size: 11px; }
 
-/* Filas del detalle separadas por una línea fina */
-.pe-doc-table > tbody > tr + tr > td {
+/* Solo las tablas de detalle (pe-doc-lines) separan sus filas con una línea
+   fina; las de datos (adquirente, traslado…) solo llevan el borde exterior. */
+.pe-doc-lines > tbody > tr + tr > td {
     border-top: 1px solid #d9d9d9;
 }
 
-.pe-doc-table > tfoot > .pe-doc-first > td {
+.pe-doc-lines > tfoot > .pe-doc-first > td {
     border-top: 1px solid #000;
+}
+
+/* Aire entre el encabezado y la primera sección de datos */
+.pe-doc-plain.pe-doc-header {
+    margin-bottom: 22px;
+}
+
+/* Pie común: datos de la compañía y numeración de páginas */
+.pe-doc-footer {
+    border-top: 1px solid #000;
+    color: #000;
+    font-size: 9px;
+    padding-top: 4px;
+    text-align: center;
+}
+
+.pe-doc-footer-meta {
+    color: #595959;
+    margin-top: 2px;
+    overflow: hidden;
+}
+
+.pe-doc-footer-page {
+    float: right;
 }

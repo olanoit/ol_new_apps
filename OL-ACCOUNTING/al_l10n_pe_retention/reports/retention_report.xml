@@ -4,41 +4,22 @@
          (tipo 20). Los importes por comprobante salen del mismo reparto que
          el XML (_l10n_pe_edi_get_retention_breakdown), para que digan lo mismo. -->
     <template id="report_retention_document">
-        <t t-call="web.basic_layout">
+        <t>
             <t t-set="o" t-value="o.with_context(lang=lang)"/>
             <t t-set="company" t-value="o.company_id"/>
             <t t-set="company_currency" t-value="company.currency_id"/>
             <t t-set="documents" t-value="o._l10n_pe_edi_get_retention_breakdown()"/>
             <t t-set="supplier" t-value="o.partner_id.commercial_partner_id"/>
             <t t-set="supplier_id_type" t-value="supplier.l10n_latam_identification_type_id"/>
+            <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
             <div class="page pe-doc-fs-13">
                 <!-- Encabezado: logo, datos de la compañía y recuadro del comprobante -->
-                <table class="table table-sm table-borderless mb-2">
-                    <tr>
-                        <td style="width: 15%;" class="align-middle">
-                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
-                                 class="pe-doc-logo" alt="Logo"/>
-                        </td>
-                        <td style="width: 50%;">
-                            <ul class="pe-doc-company">
-                                <li class="pe-doc-fs-20"><strong t-out="company.name"/></li>
-                                <li t-if="company.street">
-                                    <strong>Domicilio fiscal:</strong>
-                                    <span t-out="', '.join(p for p in (company.street, company.city, company.state_id.name) if p)"/>
-                                </li>
-                                <li t-if="company.phone"><strong>Teléfono:</strong> <span t-out="company.phone"/></li>
-                                <li t-if="company.email"><strong>Correo:</strong> <span t-out="company.email"/></li>
-                            </ul>
-                        </td>
-                        <td style="width: 35%;">
-                            <ul class="pe-doc-box pe-doc-fs-14">
-                                <li>R.U.C. <span t-out="company.vat"/></li>
-                                <li><strong>COMPROBANTE DE RETENCIÓN ELECTRÓNICO</strong></li>
-                                <li><strong>N.º <span t-out="o.l10n_pe_edi_retention_number"/></strong></li>
-                            </ul>
-                        </td>
-                    </tr>
-                </table>
+                <t t-call="al_account_base.report_pe_document_header">
+                    <t t-set="company" t-value="company"/>
+                    <t t-set="doc_title" t-value="'Comprobante de retención electrónico'"/>
+                    <t t-set="doc_number" t-value="o.l10n_pe_edi_retention_number"/>
+                </t>
 
                 <!-- Datos del proveedor y de la retención -->
                 <table class="pe-doc-table mb-3">
@@ -68,7 +49,7 @@
                 </table>
 
                 <!-- Comprobantes a los que se aplica la retención -->
-                <table class="pe-doc-table mb-3">
+                <table class="pe-doc-table pe-doc-lines mb-3">
                     <thead>
                         <tr class="pe-doc-thead">
                             <td>Tipo</td>
@@ -117,6 +98,10 @@
                     </tfoot>
                 </table>
             </div>
+            </div>
+            <t t-call="al_account_base.report_pe_document_footer">
+                <t t-set="company" t-value="company"/>
+            </t>
         </t>
     </template>
 
@@ -135,7 +120,7 @@
         <field name="format">A4</field>
         <field name="orientation">Portrait</field>
         <field name="margin_top">10</field>
-        <field name="margin_bottom">15</field>
+        <field name="margin_bottom">22</field>
         <field name="margin_left">7</field>
         <field name="margin_right">7</field>
         <field name="header_line" eval="False"/>

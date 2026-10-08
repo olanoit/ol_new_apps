@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Encabezado común de los comprobantes impresos PE (factura, boleta,
+         notas, guía de remisión, comprobante de retención): logo | compañía
+         con domicilio fiscal, teléfono y correo | recuadro R.U.C., tipo y
+         número. Parámetros: company, doc_title, doc_number y, opcional,
+         doc_address (si no, se arma con la dirección de la compañía). El
+         cuerpo del t-call añade líneas bajo los datos de la compañía. -->
+    <template id="report_pe_document_header">
+        <t t-set="partner" t-value="company.partner_id"/>
+        <t t-set="district" t-value="'l10n_pe_district' in partner._fields and partner.l10n_pe_district.name"/>
+        <t t-set="company_address" t-value="doc_address or ', '.join(p for p in (company.street, district, company.city, company.state_id.name) if p)"/>
+        <table class="table table-sm table-borderless pe-doc-plain pe-doc-header">
+            <tr>
+                <td style="width: 15%;" class="align-middle">
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                         class="pe-doc-logo" alt="Logo"/>
+                </td>
+                <td style="width: 50%;">
+                    <ul class="pe-doc-company">
+                        <li class="pe-doc-fs-20"><strong t-out="company.name"/></li>
+                        <li t-if="company_address"><strong>Domicilio fiscal:</strong> <span t-out="company_address"/></li>
+                        <li t-if="company.phone"><strong>Teléfono:</strong> <span t-out="company.phone"/></li>
+                        <li t-if="company.email"><strong>Correo:</strong> <span t-out="company.email"/></li>
+                        <li t-if="company.website"><strong>Web:</strong> <span t-out="company.website"/></li>
+                        <t t-out="0"/>
+                    </ul>
+                </td>
+                <td style="width: 35%;">
+                    <ul class="pe-doc-box pe-doc-fs-14">
+                        <li>R.U.C. <span t-out="company.vat"/></li>
+                        <li style="text-transform: uppercase;"><strong t-out="doc_title"/></li>
+                        <li><strong>N.º <span t-out="doc_number"/></strong></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+    <!-- Pie común (se repite en cada página): datos de la compañía, fecha de
+         emisión de la impresión y «Página X de Y». Va como hermano del
+         div.article del documento (Odoo empareja cada .footer con su
+         .article). Parámetro: company. -->
+    <template id="report_pe_document_footer">
+        <t t-set="partner" t-value="company.partner_id"/>
+        <t t-set="district" t-value="'l10n_pe_district' in partner._fields and partner.l10n_pe_district.name"/>
+        <t t-set="company_address" t-value="', '.join(p for p in (company.street, district, company.city, company.state_id.name) if p)"/>
+        <div class="footer pe-doc-footer">
+            <div class="pe-doc-footer-company">
+                <strong t-out="company.name"/>
+                <t t-if="company.vat"> · R.U.C. <span t-out="company.vat"/></t>
+                <t t-if="company_address"> · <span t-out="company_address"/></t>
+            </div>
+            <div class="pe-doc-footer-contact">
+                <t t-if="company.phone"><span t-out="company.phone"/></t>
+                <t t-if="company.email"> · <span t-out="company.email"/></t>
+                <t t-if="company.website"> · <span t-out="company.website"/></t>
+            </div>
+            <div class="pe-doc-footer-meta">
+                <span>Impreso el <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/></span>
+                <span class="pe-doc-footer-page">Página <span class="page"/> de <span class="topage"/></span>
+            </div>
+        </div>
+    </template>
+</odoo>

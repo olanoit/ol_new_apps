@@ -41,6 +41,7 @@ campos sin uso.
         'views/account_move_views.xml',
         'views/pe_base_views.xml',
         'views/menu_pe.xml',
+        'reports/report_pe_document.xml',
     ],
     'installable': True,
     'application': False,

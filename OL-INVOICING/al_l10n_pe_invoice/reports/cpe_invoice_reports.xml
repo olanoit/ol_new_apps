@@ -27,39 +27,15 @@
 
                 <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento
                      (estilo común de los comprobantes PE, al_account_base) -->
-                <table class="pe-doc-plain mb-2">
-                    <tr>
-                        <td style="width: 15%;" class="align-middle">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
-                                 class="pe-doc-logo" alt="Logo"/>
-                        </td>
-                        <td style="width: 50%;">
-                            <ul class="pe-doc-company">
-                                <li class="pe-doc-fs-14"><strong t-field="o.company_id.name"/></li>
-                                <li t-if="o.company_id.street"><span t-out="o._l10n_pe_report_company_address()"/></li>
-                                <li t-if="o.company_id.phone or o.company_id.email">
-                                    <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
-                                    <span t-if="o.company_id.phone and o.company_id.email"> · </span>
-                                    <span t-if="o.company_id.email" t-field="o.company_id.email"/>
-                                </li>
-                                <li t-if="o.company_id.website"><span t-field="o.company_id.website"/></li>
-                                <li t-if="o.company_id.active_fep_signatures and o.company_id.company_eslogan_pdf">
-                                    <em><span t-field="o.company_id.company_eslogan_pdf"/></em>
-                                </li>
-                            </ul>
-                        </td>
-                        <td style="width: 35%;">
-                            <ul class="pe-doc-box pe-doc-fs-13">
-                                <li>R.U.C. <span t-field="o.company_id.vat"/></li>
-                                <li style="text-transform: uppercase;"><strong t-out="o.l10n_latam_document_type_id.report_name"/></li>
-                                <!-- l10n_latam_document_number = serie-correlativo sin el
-                                     prefijo del tipo ("B001-203"); name lo antepone
-                                     ("B B001-203") y quitarle el espacio duplicaba la letra -->
-                                <li><strong>N.º <span t-out="o.l10n_latam_document_number or o.name"/></strong></li>
-                            </ul>
-                        </td>
-                    </tr>
-                </table>
+                <t t-call="al_account_base.report_pe_document_header">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="o.l10n_latam_document_type_id.report_name"/>
+                    <t t-set="doc_number" t-value="o.l10n_latam_document_number or o.name"/>
+                    <t t-set="doc_address" t-value="o._l10n_pe_report_company_address()"/>
+                    <li t-if="o.company_id.active_fep_signatures and o.company_id.company_eslogan_pdf">
+                        <em><span t-field="o.company_id.company_eslogan_pdf"/></em>
+                    </li>
+                </t>
 
                 <!-- CLIENTE Y FECHAS: el adquirente es la entidad comercial, como
                      en el XML y el QR (no el contacto de la empresa) -->
@@ -149,7 +125,7 @@
                 <!-- Descuento en base imponible: % por línea + líneas negativas -->
                 <t t-set="discount_amount" t-value="o.get_amount_discount()"/>
                 <t t-set="qr_str" t-value="extra_edi_vals.get('qr_str')"/>
-                <table class="pe-doc-table mb-2">
+                <table class="pe-doc-table pe-doc-lines mb-2">
                     <thead>
                         <tr class="pe-doc-thead">
                             <td class="text-center" style="width: 5%;">Ítem</td>
@@ -264,7 +240,7 @@
                 </table>
 
                 <!-- CRÉDITO / CUOTAS -->
-                <table class="pe-doc-table mb-2" style="width: 60%;" t-if="payment_means == 'CRÉDITO'">
+                <table class="pe-doc-table pe-doc-lines mb-2" style="width: 60%;" t-if="payment_means == 'CRÉDITO'">
                     <thead>
                         <tr class="pe-doc-thead">
                             <td colspan="3">
@@ -320,7 +296,7 @@
                 </table>
 
                 <!-- CUENTAS BANCARIAS -->
-                <table class="pe-doc-table mb-2" t-if="o.company_id.partner_id.bank_ids">
+                <table class="pe-doc-table pe-doc-lines mb-2" t-if="o.company_id.partner_id.bank_ids">
                     <thead>
                         <tr class="pe-doc-thead">
                             <td class="text-center" style="width: 6%;">Ítem</td>
@@ -338,16 +314,10 @@
                         </tr>
                     </tbody>
                 </table>
-
-                <!-- PIE DE CONTACTO -->
-                <div class="cpe-contact-footer">
-                    <span t-field="o.company_id.phone"/> ·
-                    <span t-field="o.company_id.email"/> ·
-                    <span t-field="o.company_id.website"/><br/>
-                    Emitido el:
-                    <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
-                </div>
             </div>
+            <t t-call="al_account_base.report_pe_document_footer">
+                <t t-set="company" t-value="o.company_id"/>
+            </t>
         </template>
 
         <record id="report_cpe_invoice_a4" model="ir.actions.report">
