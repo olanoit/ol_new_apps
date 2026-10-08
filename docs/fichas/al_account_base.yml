@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 7.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ícono propio de la app Perú en el menú principal (logo de la Marca Perú)."
   - version: 6.20261008
     fecha: 08/10/2026
     cambios:
