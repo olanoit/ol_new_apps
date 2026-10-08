@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -549,3 +549,46 @@ class TestRetentionApplies(TransactionCase):
         self.assertIn('company_ids', rule.domain_force)
         self.assertTrue(self.env['l10n_pe.retention.received']
                         ._check_company_auto)
+
+    def _branch(self):
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal retención', 'parent_id': self.company.id,
+            'country_id': self.company.country_id.id})
+        self.env.user.company_ids |= branch
+        return branch
+
+    def test_branch_uses_root_agent(self):
+        """El agente es del RUC: la sucursal hereda la configuración y su
+        factura retiene sin configurar nada en ella."""
+        branch = self._branch()
+        self.assertTrue(branch.l10n_pe_retention_agent)
+        self.assertEqual(branch.l10n_pe_retention_min_amount, 700.0)
+        journal = self.env['account.journal'].create({
+            'name': 'RET Compras sucursal', 'code': 'RETS', 'type': 'purchase',
+            'company_id': branch.id, 'l10n_latam_use_documents': False})
+        # La sucursal de prueba no trae los valores por defecto del plan.
+        self.partner.with_company(branch).property_account_payable_id = \
+            self.partner.with_company(self.company).property_account_payable_id
+        bill =self.env['account.move'].with_company(branch).create({
+            'move_type': 'in_invoice', 'partner_id': self.partner.id,
+            'journal_id': journal.id,
+            'invoice_date': date(2025, 6, 10), 'date': date(2025, 6, 10),
+            'ref': 'F00S-00000001',
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Servicio', 'quantity': 1.0, 'price_unit': 1000.0,
+                'account_id': self.account_exp.id,
+                'tax_ids': [(6, 0, self.tax_purchase.ids)]})],
+        })
+        self.assertEqual(bill.company_id, branch)
+        self.assertTrue(bill.l10n_pe_retention_applies)
+        self.assertAlmostEqual(bill.l10n_pe_retention_amount, 35.40, 2)
+
+    def test_branch_follows_root_changes(self):
+        """Un cambio en la raíz llega a la sucursal, y la sucursal no puede
+        tener un valor distinto."""
+        branch = self._branch()
+        self.company.l10n_pe_retention_min_amount = 800.0
+        self.assertEqual(branch.l10n_pe_retention_min_amount, 800.0)
+        with self.assertRaises(ValidationError):
+            branch.l10n_pe_retention_agent = False
+        self.company.l10n_pe_retention_min_amount = 700.0

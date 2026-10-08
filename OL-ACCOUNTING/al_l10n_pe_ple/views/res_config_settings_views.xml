@@ -9,9 +9,10 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Libros electrónicos PLE" name="pe_ple_block">
-                    <setting string="Libros PLE simplificados"
+                    <setting company_dependent="1" string="Libros PLE simplificados"
                              help="Genera los formatos simplificados 5.2/5.4, 8.3 y 14.2 (excluyentes con 5.1/5.3, 8.1 y 14.1).">
-                        <field name="l10n_pe_ple_simplified"/>
+                        <field name="l10n_pe_ple_simplified" readonly="not is_root_company"/>
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
                     </setting>
                 </block>
             </xpath>

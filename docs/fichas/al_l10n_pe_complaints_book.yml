@@ -158,6 +158,11 @@ faq:
       art. 12.
 
 novedades:
+  - version: 3.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "«Obligada al SIREC» es del RUC: las sucursales usan el valor de su raíz."
+      - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
   - version: 2.20261008
     fecha: 08/10/2026
     cambios:

@@ -9,20 +9,22 @@
             <xpath expr="//app[@name='al_account_base']//block[@name='pe_accounting_block']"
                    position="after">
                 <block title="Asientos de destino" name="pe_destinations_block">
-                    <setting string="Sentido" name="pe_destinations_type_setting"
-                             help="De gasto por naturaleza (6) a función (9), como indica el PCGE, o al revés para quien registra por función. Es del RUC: las sucursales usan el de su compañía raíz.">
-                        <field name="l10n_pe_dest_type" widget="radio"/>
+                    <setting company_dependent="1" string="Sentido" name="pe_destinations_type_setting"
+                             help="De gasto por naturaleza (6) a función (9), como indica el PCGE, o al revés para quien registra por función.">
+                        <field name="l10n_pe_dest_type" readonly="not is_root_company" widget="radio"/>
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
                     </setting>
-                    <setting string="Diario de destinos" name="pe_destinations_journal_setting"
+                    <setting company_dependent="1" string="Diario de destinos" name="pe_destinations_journal_setting"
                              help="Diario (tipo Varios) donde se publican los asientos de destino. Sin él no se generan destinos.">
                         <field name="l10n_pe_destination_journal_id"
                                options="{'no_create': True}"
                                domain="[('type', '=', 'general'), ('company_id', '=', company_id)]"/>
                     </setting>
-                    <setting string="Cuenta de carga por defecto" name="pe_destinations_load_setting"
+                    <setting company_dependent="1" string="Cuenta de carga por defecto" name="pe_destinations_load_setting"
                              help="Contrapartida del asiento de destino, normalmente 791 Cargas imputables a cuentas de costos y gastos. Una cuenta puede indicar otra (78, 72) en su configuración de destinos.">
-                        <field name="l10n_pe_destination_load_account_id"
+                        <field name="l10n_pe_destination_load_account_id" readonly="not is_root_company"
                                options="{'no_create': True}"/>
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
                     </setting>
                 </block>
             </xpath>

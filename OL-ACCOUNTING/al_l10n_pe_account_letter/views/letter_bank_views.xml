@@ -73,7 +73,7 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Letras de cambio" name="pe_letter_block">
-                    <setting string="Descuento y gastos bancarios"
+                    <setting company_dependent="1" string="Descuento y gastos bancarios"
                              help="Préstamo del banco en el descuento (4511), intereses (6734) y comisiones y gastos de protesto (6391).">
                         <div class="content-group">
                             <div class="row">
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </setting>
-                    <setting string="Redondeo del canje"
+                    <setting company_dependent="1" string="Redondeo del canje"
                              help="Diferencia entre lo facturado y lo canjeado. Sin cuenta, se usa la llamada «Redondeo».">
                         <div class="content-group">
                             <div class="row">

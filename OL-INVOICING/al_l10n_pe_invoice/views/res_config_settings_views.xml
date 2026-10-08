@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Comprobantes electrónicos" name="pe_invoice_report_block">
-                    <setting string="Firma y eslogan en el reporte"
+                    <setting company_dependent="1" string="Firma y eslogan en el reporte"
                              help="Bloque de firma / recibido conforme y eslogan de la compañía en el reporte A4 de comprobantes.">
                         <field name="active_fep_signatures"/>
                         <div class="content-group mt16">

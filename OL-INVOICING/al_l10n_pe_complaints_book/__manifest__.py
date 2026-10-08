@@ -37,7 +37,7 @@ las leyes 31435 y 32495, D.S. 011-2011-PCM y modificatorias hasta el D.S.
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/helpdesk/static/description/icon.png',
-    'version': '2.20261008',
+    'version': '3.20261008',
     'license': 'OPL-1',
     'depends': ['mail', 'portal', 'website', 'resource'],
     'data': [

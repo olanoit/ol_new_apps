@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 7.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
   - version: 6.20261008
     fecha: 08/10/2026
     cambios:

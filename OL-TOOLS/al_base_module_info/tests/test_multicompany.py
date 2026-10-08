@@ -96,3 +96,33 @@ class TestMulticompany(TransactionCase):
                 if not hidden and node.get('readonly') not in ('1', 'True'):
                     offenders.append(xmlid)
         self.assertFalse(sorted(set(offenders)), 'Compañía editable en: %s' % sorted(set(offenders)))
+
+    def test_company_settings_marked(self):
+        """Cada ajuste propio guardado en la compañía lleva el ícono de Odoo
+        «valores por compañía» (``<setting company_dependent="1">``)."""
+        Settings = self.env['res.config.settings']
+        company_fields = {
+            fname for fname, field in Settings._fields.items()
+            if field._module in self.own
+            and (field.related or '').startswith('company_id.')
+        }
+        arch = etree.fromstring(Settings.get_view(view_type='form')['arch'])
+        offenders = sorted({
+            node.get('name') for setting in arch.iter('setting')
+            if setting.get('company_dependent') != '1'
+            for node in setting.iter('field') if node.get('name') in company_fields
+        })
+        self.assertTrue(company_fields)
+        self.assertFalse(offenders, 'Ajustes por compañía sin company_dependent: %s' % offenders)
+
+    def test_root_delegated_fields_reach_branches(self):
+        """Lo que es del RUC (agente de retención, PLE simplificado, SIREC,
+        sentido de destinos…) llega a las sucursales, como el ejercicio
+        fiscal en Odoo."""
+        Company = self.env['res.company']
+        own = [fname for fname in Company._get_company_root_delegated_field_names()
+               if Company._fields[fname]._module in self.own]
+        branch = Company.create({'name': 'Sucursal de control',
+                                 'parent_id': self.env.company.id})
+        for fname in own:
+            self.assertEqual(branch[fname], self.env.company[fname], fname)

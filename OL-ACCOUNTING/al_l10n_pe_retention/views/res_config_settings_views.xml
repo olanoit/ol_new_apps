@@ -9,34 +9,35 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Retenciones del IGV" name="pe_retention_block">
-                    <setting string="Agente de retención del IGV"
+                    <setting company_dependent="1" string="Agente de retención del IGV"
                              help="Retiene el 3% en los pagos a proveedores por operaciones gravadas mayores a S/ 700 (R.S. 037-2002/SUNAT).">
-                        <field name="l10n_pe_retention_agent"/>
+                        <field name="l10n_pe_retention_agent" readonly="not is_root_company"/>
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
                         <div class="content-group mt16"
                              invisible="not l10n_pe_retention_agent">
                             <div class="row">
                                 <label for="l10n_pe_retention_rate"
                                        class="col-lg-5 o_light_label"/>
-                                <field name="l10n_pe_retention_rate"/>
+                                <field name="l10n_pe_retention_rate" readonly="not is_root_company"/>
                             </div>
                             <div class="row">
                                 <label for="l10n_pe_retention_min_amount"
                                        class="col-lg-5 o_light_label"/>
-                                <field name="l10n_pe_retention_min_amount"/>
+                                <field name="l10n_pe_retention_min_amount" readonly="not is_root_company"/>
                             </div>
                             <div class="row">
                                 <label for="l10n_pe_retention_tax_id"
                                        class="col-lg-5 o_light_label"/>
-                                <field name="l10n_pe_retention_tax_id"/>
+                                <field name="l10n_pe_retention_tax_id" readonly="not is_root_company"/>
                             </div>
                             <div class="row">
                                 <label for="l10n_pe_retention_outstanding_account_id"
                                        class="col-lg-5 o_light_label"/>
-                                <field name="l10n_pe_retention_outstanding_account_id"/>
+                                <field name="l10n_pe_retention_outstanding_account_id" readonly="not is_root_company"/>
                             </div>
                         </div>
                     </setting>
-                    <setting string="Retenciones sufridas (clientes agentes)"
+                    <setting company_dependent="1" string="Retenciones sufridas (clientes agentes)"
                              help="Cuenta 40114 y diario del asiento de las retenciones que nos efectúan los clientes agentes de retención.">
                         <div class="content-group">
                             <div class="row">

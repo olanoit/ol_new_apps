@@ -8,6 +8,7 @@
   aplica a varias raíces, se duplica.
 - Cada raíz queda con su diario «GA» y la cuenta de carga que más usaban sus
   cuentas (o la 791 del plan).
+- Las sucursales toman el sentido y la carga de su raíz (campos delegados).
 """
 from collections import Counter
 
@@ -33,6 +34,16 @@ def _move_old_values(env):
     for column in ('l10n_pe_load_account_id_v8', 'l10n_pe_no_destiny_v8'):
         cr.execute(SQL("ALTER TABLE account_account DROP COLUMN IF EXISTS %s",
                        SQL.identifier(column)))
+
+
+def _sync_branches(env, fnames):
+    """Copia a cada sucursal los campos del RUC, padres antes que hijas."""
+    Company = env['res.company']
+    for branch in Company.search([('parent_id', '!=', False)], order='parent_path'):
+        branch.write({
+            fname: Company._fields[fname].convert_to_write(branch.parent_id[fname], branch)
+            for fname in fnames
+        })
 
 
 def migrate(cr, version):
@@ -77,3 +88,4 @@ def migrate(cr, version):
                     vals['l10n_pe_destination_load_account_id'] = load.id
         if vals:
             root.write(vals)
+    _sync_branches(env, ['l10n_pe_dest_type', 'l10n_pe_destination_load_account_id'])

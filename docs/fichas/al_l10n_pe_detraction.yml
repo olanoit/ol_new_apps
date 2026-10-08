@@ -582,6 +582,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 16.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
   - version: 15.20261008
     fecha: 08/10/2026
     cambios:

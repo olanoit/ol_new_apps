@@ -10,7 +10,7 @@
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Cierre de tipo de cambio"
                        name="pe_exchange_closure_block">
-                    <setting string="Diario del cierre"
+                    <setting company_dependent="1" string="Diario del cierre"
                              help="Diario general donde se registran los asientos mensuales de ajuste por diferencia de cambio. Conviene uno dedicado (p. ej. CTC) para aislarlos en los reportes. Las cuentas de resultado son las de diferencia de cambio de la compañía (676 / 776).">
                         <field name="l10n_pe_exchange_closing_journal_id"/>
                     </setting>

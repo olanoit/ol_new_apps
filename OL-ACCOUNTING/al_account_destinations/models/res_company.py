@@ -28,3 +28,12 @@ class ResCompany(models.Model):
         help='Contrapartida del asiento de destino (normalmente 791 Cargas '
              'imputables a cuentas de costos y gastos). Una cuenta puede '
              'indicar otra (78, 72) en su configuración de destinos.')
+
+    def _get_company_root_delegated_field_names(self):
+        # El sentido y la carga son del RUC, como el plan de cuentas: Odoo los
+        # copia a las sucursales y los muestra de solo lectura. El diario sí
+        # puede ser propio de cada sucursal.
+        return super()._get_company_root_delegated_field_names() + [
+            'l10n_pe_dest_type',
+            'l10n_pe_destination_load_account_id',
+        ]

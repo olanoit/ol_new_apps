@@ -608,6 +608,10 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 15.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
   - version: 14.20261008
     fecha: 08/10/2026
     cambios:

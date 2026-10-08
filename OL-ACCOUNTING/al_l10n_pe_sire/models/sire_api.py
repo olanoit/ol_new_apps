@@ -89,8 +89,9 @@ class L10nPeSireApi(models.AbstractModel):
         guarda en la compañía con su caducidad y se renueva solo.
         """
         # sudo: las credenciales y el token son de base.group_system; el
-        # contable que lanza el flujo los usa sin poder leerlos.
-        company_sudo = company.sudo()
+        # contable que lanza el flujo los usa sin poder leerlos. Son del RUC:
+        # una sucursal usa las de su compañía raíz, como el RUC del periodo.
+        company_sudo = company.sudo().root_id
         now = fields.Datetime.now()
         if company_sudo.l10n_pe_sire_token and company_sudo.l10n_pe_sire_token_expiry \
                 and company_sudo.l10n_pe_sire_token_expiry > now:

@@ -13,6 +13,12 @@ class ResCompany(models.Model):
              'completos (5.1/5.3, 8.1, 14.1): solo aplican a contribuyentes '
              'autorizados a llevar contabilidad simplificada.')
 
+    def _get_company_root_delegated_field_names(self):
+        # El régimen contable es del RUC: las sucursales usan el de su raíz.
+        return super()._get_company_root_delegated_field_names() + [
+            'l10n_pe_ple_simplified',
+        ]
+
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'

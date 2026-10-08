@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Detracciones (SPOT)" name="pe_detraction_block">
-                    <setting string="Separar detracción en el asiento"
+                    <setting company_dependent="1" string="Separar detracción en el asiento"
                              help="Reparte la línea por cobrar/pagar de la factura dentro del mismo asiento: neto en la cuenta del tercero y detracción en las cuentas configuradas (no se crea un segundo asiento).">
                         <field name="l10n_pe_detraction_split"/>
                         <div class="content-group mt16"

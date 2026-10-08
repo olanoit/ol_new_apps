@@ -209,7 +209,7 @@ class AccountMove(models.Model):
         if not portions:
             return []
         load_account = account.l10n_pe_load_account_id \
-            or self.company_id.root_id.l10n_pe_destination_load_account_id
+            or self.company_id.l10n_pe_destination_load_account_id
         if not load_account:
             raise ValidationError(_(
                 'No hay cuenta de carga para la cuenta %s: indique la cuenta de '

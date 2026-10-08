@@ -577,6 +577,13 @@ class ResCompany(models.Model):
         string='Obligada al SIREC',
         help='Ingresos anuales de 3 000 UIT o más (Reglamento, art. 16).')
 
+    def _get_company_root_delegated_field_names(self):
+        # La obligación se mide por los ingresos del RUC: las sucursales usan
+        # la de su raíz.
+        return super()._get_company_root_delegated_field_names() + [
+            'l10n_pe_complaint_sirec',
+        ]
+
     def _l10n_pe_complaint_calendar(self):
         self.ensure_one()
         return self.l10n_pe_complaint_calendar_id or self.resource_calendar_id

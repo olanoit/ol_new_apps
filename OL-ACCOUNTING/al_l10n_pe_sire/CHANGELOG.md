@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261008 — 08/10/2026
+
+- Las credenciales de la API SIRE son del RUC: se configuran en la compañía raíz y las sucursales usan las suyas.
+- Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
+
 ## 13.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests de la dinámica de cuentas destino (asiento de destino 6→9)."""
 from odoo import Command
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -442,3 +442,16 @@ class TestDestinations(TransactionCase):
         self.exp.l10n_pe_load_account_id = self.load
         self.assertEqual(self.exp.l10n_pe_load_account_id, self.load)
         self.assertFalse(self.exp.with_company(other_company).l10n_pe_load_account_id)
+
+    def test_branch_cannot_change_root_fields(self):
+        """Sentido y carga son campos delegados a la raíz (como el ejercicio
+        fiscal en Odoo): la sucursal los recibe y no puede cambiarlos."""
+        branch = self.env['res.company'].create({
+            'name': 'Sucursal delegados', 'parent_id': self.company.id,
+            'country_id': self.company.country_id.id})
+        self.assertEqual(branch.l10n_pe_dest_type, self.company.l10n_pe_dest_type)
+        self.assertEqual(branch.l10n_pe_destination_load_account_id,
+                         self.company.l10n_pe_destination_load_account_id)
+        other = '9a6' if self.company.l10n_pe_dest_type == '6a9' else '6a9'
+        with self.assertRaises(ValidationError):
+            branch.l10n_pe_dest_type = other

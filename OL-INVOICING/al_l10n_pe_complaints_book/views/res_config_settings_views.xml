@@ -11,19 +11,20 @@
                      name="al_l10n_pe_complaints_book"
                      groups="al_l10n_pe_complaints_book.group_complaint_manager">
                     <block title="Plazos" name="complaint_deadlines">
-                        <setting string="Calendario de feriados"
+                        <setting company_dependent="1" string="Calendario de feriados"
                                  help="Los 15 días hábiles se cuentan de lunes a viernes, sin los feriados (ausencias globales) de este calendario.">
                             <field name="l10n_pe_complaint_calendar_id"/>
                         </setting>
-                        <setting string="Aviso de vencimiento"
+                        <setting company_dependent="1" string="Aviso de vencimiento"
                                  help="Crea una actividad para el responsable cuando quedan estos días hábiles.">
                             <field name="l10n_pe_complaint_alert_days"/>
                         </setting>
                     </block>
                     <block title="INDECOPI" name="complaint_indecopi">
-                        <setting string="Obligada al SIREC"
+                        <setting company_dependent="1" string="Obligada al SIREC"
                                  help="Ingresos anuales de 3 000 UIT o más: cada reclamo y su respuesta se reportan al SIREC en 30 días calendario.">
-                            <field name="l10n_pe_complaint_sirec"/>
+                            <field name="l10n_pe_complaint_sirec" readonly="not is_root_company"/>
+                            <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
                         </setting>
                         <setting string="Libros" help="Un libro por establecimiento o canal, con su código y su numeración.">
                             <button name="%(al_l10n_pe_complaints_book.action_complaint_book)d" type="action"

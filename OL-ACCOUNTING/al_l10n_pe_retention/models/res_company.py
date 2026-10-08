@@ -44,6 +44,17 @@ class ResCompany(models.Model):
              'registrar pagos con retención cuando el método de pago no '
              'tiene cuenta propia (el campo es obligatorio en el pago).')
 
+    def _get_company_root_delegated_field_names(self):
+        # SUNAT designa agente de retención al RUC: las sucursales llevan la
+        # configuración de su raíz (Odoo la copia y la muestra de solo lectura).
+        return super()._get_company_root_delegated_field_names() + [
+            'l10n_pe_retention_agent',
+            'l10n_pe_retention_rate',
+            'l10n_pe_retention_min_amount',
+            'l10n_pe_retention_tax_id',
+            'l10n_pe_retention_outstanding_account_id',
+        ]
+
     @api.constrains('l10n_pe_retention_rate', 'l10n_pe_retention_tax_id')
     def _check_l10n_pe_retention_rate(self):
         """La tasa estimada en la factura y la del impuesto que retiene en

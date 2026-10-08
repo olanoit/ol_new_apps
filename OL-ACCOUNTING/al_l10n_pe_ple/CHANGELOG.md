@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261008 — 08/10/2026
+
+- Libros simplificados del RUC: las sucursales usan el valor de su raíz.
+- Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
+
 ## 16.20261008 — 08/10/2026
 
 - Botones XLSX 12.1/13.1 del asistente de inventario con la convención de Odoo (action_export_xlsx_12_1 / _13_1).

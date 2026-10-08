@@ -417,6 +417,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 14.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

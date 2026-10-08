@@ -12,11 +12,11 @@
             <app name="account" position="inside">
                 <block title="Tipo de cambio (Perú)"
                        name="l10n_pe_exchange_rate_block">
-                    <setting string="T.C. en ventas"
+                    <setting company_dependent="1" string="T.C. en ventas"
                              help="Tipo de cambio que se aplica por defecto a las facturas y notas emitidas en moneda extranjera. Para el IGV la norma manda usar el de venta; puede cambiarse comprobante a comprobante.">
                         <field name="l10n_pe_exchange_rate_type_out"/>
                     </setting>
-                    <setting string="T.C. en compras"
+                    <setting company_dependent="1" string="T.C. en compras"
                              help="Tipo de cambio que se aplica por defecto a las facturas y notas de proveedor en moneda extranjera.">
                         <field name="l10n_pe_exchange_rate_type_in"/>
                     </setting>

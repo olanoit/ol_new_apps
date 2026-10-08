@@ -14,19 +14,19 @@
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="Validación RUC/DNI (PE)"
                        id="l10n_pe_vat_validation_block">
-                    <setting id="enable_ruc" string="Validar RUC"
+                    <setting company_dependent="1" id="enable_ruc" string="Validar RUC"
                              help="Consultar la API al ingresar/modificar un RUC.">
                         <field name="l10n_pe_ruc_validation"/>
                     </setting>
-                    <setting id="enable_dni" string="Validar DNI"
+                    <setting company_dependent="1" id="enable_dni" string="Validar DNI"
                              help="Consultar la API al ingresar/modificar un DNI.">
                         <field name="l10n_pe_dni_validation"/>
                     </setting>
-                    <setting id="api_fallback" string="Fallback en cascada"
+                    <setting company_dependent="1" id="api_fallback" string="Fallback en cascada"
                              help="Desactivado: usa solo la conexión activa de mayor prioridad. Activado: si falla, prueba la siguiente.">
                         <field name="l10n_pe_api_use_fallback"/>
                     </setting>
-                    <setting id="api_connections" string="Conexiones de API"
+                    <setting company_dependent="1" id="api_connections" string="Conexiones de API"
                              help="Configura las APIs de consulta, su prioridad y el mapeo de campos.">
                         <button name="action_open_pe_api_connections"
                                 type="object" class="btn-link"

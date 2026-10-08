@@ -9,6 +9,8 @@ Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) 
 
 ## 9.20261008 — 08/10/2026
 
+- Sentido y cuenta de carga como campos delegados a la raíz (patrón de Odoo): las sucursales los heredan de solo lectura.
+- Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
 - Reparto por centro de costo: cada cuenta analítica indica su cuenta de destino (Elemento 9) y la distribución analítica del gasto decide el reparto; la parte sin centro de costo usa el reparto por cuenta.
 - Una cuenta 6 sin reparto ni centro de costo ya no impide publicar (p. ej. la 60 o la 69, que no se destinan): simplemente no genera destino.
 - Nuevo apartado «Asientos de destino» en Ajustes ▸ Perú: sentido, diario de destinos y cuenta de carga por defecto (791); la cuenta puede indicar otra carga (78, 72). El módulo ya no busca ni crea un diario «GA» por su código: sin diario configurado, al publicar se pide elegirlo. La migración deja a cada compañía con el GA y la carga que ya usaba.

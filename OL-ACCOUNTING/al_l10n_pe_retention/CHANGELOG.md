@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261008 — 08/10/2026
+
+- El agente de retención (agente, tasa, mínimo, impuesto y cuenta transitoria) es del RUC: las sucursales heredan la configuración de su raíz y la muestran de solo lectura; antes una factura de sucursal no retenía.
+- Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
+
 ## 12.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
