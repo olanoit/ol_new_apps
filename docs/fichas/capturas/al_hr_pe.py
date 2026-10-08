@@ -66,7 +66,7 @@ def buscar(c, texto):
 # 01. Menú Configuración ▸ Perú (pantalla ancha para que no se pliegue)
 if DESDE <= 1:
     with Captura(MODULE, viewport={'width': 1920, 'height': 1700}) as c:
-        c.abrir_accion('al_hr_pe.hr_main_parameter_action', ms=1500)
+        c.abrir_accion('al_hr_pe.hr_period_action', ms=1500)
         c.clic('[data-menu-xmlid="hr_work_entry_enterprise.menu_hr_payroll_configuration"]', ms=900)
         c.page.mouse.move(600, 1500)
         c.page.wait_for_timeout(300)
@@ -80,7 +80,7 @@ if DESDE <= 1:
 
 if DESDE <= 2:
     with Captura(MODULE, viewport={'width': 1600, 'height': 900}) as c:
-        # 02. Parámetros principales de la compañía
+        # 02. Configuración principal de la compañía (una por compañía)
         c.abrir_registro('hr.main.parameter', 90, ms=2000)
         c.foto('02-parametros', selector='.o_form_view .o_form_sheet_bg')
 
@@ -125,20 +125,18 @@ if DESDE <= 2:
         c.abrir_accion('al_hr_pe.action_l10n_pe_occupation', ms=1800)
         c.foto('11-ocupaciones')
 
-# 12-13. Ficha del trabajador: identificación PLAME, domicilio y T-Registro
+# 12-13. Ficha del trabajador: página «Planilla PE» (Identificación y T-Registro)
 if DESDE <= 12:
     with Captura(MODULE, viewport={'width': 1440, 'height': 3400}) as c:
         c.abrir_registro('hr.employee', LUCIA, ms=2500)
-        c.texto('Personal', ms=900)
+        c.clic('.o_notebook .nav-link:text-is("Planilla PE")', ms=1200)
         recorte(c, '12-ficha-plame',
-                c.page.get_by_text('Perú — Identificación (PLAME)', exact=True),
-                c.page.locator('.o_form_sheet_bg label:has-text("Nacionalidad (T04)")'),
-                right='.o_form_sheet')
-        c.texto('Nómina', ms=900)
+                c.page.locator('.o_notebook .nav-link:text-is("Trabajo")'),
+                '.o_form_sheet', right='.o_form_sheet')
+        c.clic('.o_notebook .nav-link:text-is("T-Registro")', ms=1200)
         recorte(c, '13-ficha-tregistro',
-                c.page.get_by_text('T-Registro (SUNAT)', exact=True),
-                c.page.locator('.o_form_sheet_bg label:has-text("RUC del trabajador")'),
-                right='.o_form_sheet')
+                c.page.locator('.o_notebook .nav-link:text-is("Identificación")'),
+                '.o_form_sheet', right='.o_form_sheet')
 
 if DESDE <= 14:
     with Captura(MODULE, viewport={'width': 1440, 'height': 900}) as c:
@@ -186,9 +184,9 @@ if DESDE <= 17:
         c.abrir_accion('al_hr_pe.action_l10n_pe_dependent_type', ms=1500)
         franja(c, '20-tipos-derechohabiente', 330)
 
-        # 21. Boleta: pestaña Perú con el snapshot del cálculo
+        # 21. Boleta: página «Planilla PE ▸ Cálculo» con el snapshot
         c.abrir_registro('hr.payslip', BOLETA_LUCIA, ms=2000)
-        c.texto('Perú', ms=900)
+        c.clic('.o_notebook .nav-link:text-is("Planilla PE")', ms=1200)
         c.foto('21-boleta-peru', selector='.o_form_view .o_form_sheet_bg')
 
         # 22. Estructura BASE con sus reglas
@@ -224,3 +222,13 @@ if DESDE <= 17:
         # 25. Validación previa: lo que el PVS rechazaría, antes de generar
         c.clic('.o-dropdown--menu .dropdown-item:has-text("T-Registro: generar alta")', ms=1500)
         c.foto('25-tregistro-validacion', selector='.modal-content')
+
+# 26. Ajustes ▸ Nómina ▸ Perú (solo se mira: no se guarda nada)
+if DESDE <= 26:
+    with Captura(MODULE, viewport={'width': 1440, 'height': 1600}) as c:
+        c.abrir('/odoo/settings#hr_payroll', ms=4000)
+        block = c.page.locator('.o_settings_container:has-text("Representante y firma")').first
+        title = block.locator('xpath=preceding-sibling::*[1]')
+        title.scroll_into_view_if_needed()
+        c.esperar(600)
+        recorte(c, '26-ajustes-nomina-peru', title, block, left=title, margin=0)

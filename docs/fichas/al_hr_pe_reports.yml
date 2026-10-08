@@ -44,6 +44,12 @@ destacados:
       Archivos de haberes y CTS en los formatos de BCP, BBVA, Interbank,
       Scotiabank y BanBif, desde lotes, quincena, CTS, gratificación y
       vacaciones.
+  - icono: "🏢"
+    titulo: Configurado por compañía
+    texto: >-
+      Representante, firma, cifrado de la boleta y diarios de pago se ajustan
+      en Ajustes ▸ Nómina ▸ Perú para cada compañía, y los asistentes solo
+      aceptan trabajadores de su compañía.
 
 contexto:
   titulo: El problema que resuelve
@@ -123,6 +129,20 @@ pasos_intro: >-
   (trabajadores ficticios) y la trabajadora «DEMO FICHA HR2». No se envían
   correos ni se generan archivos.
 pasos:
+  - seccion: Configuración
+    texto: Una vez por compañía, desde Ajustes.
+  - titulo: Firma, cifrado y diarios de pago
+    ruta: "Ajustes ▸ Nómina ▸ Perú"
+    texto: >-
+      En **Representante y firma**, quien firma la boleta, los certificados y
+      las cartas, con su firma escaneada. En **Boletas y pagos**, si el PDF
+      enviado por correo se cifra con el número de documento del trabajador y
+      los **diarios de pago** masivo de sueldos y CTS. Cada ajuste lleva el
+      ícono de compañía: los valores son propios de cada una. **Abrir
+      configuración principal** lleva a lo técnico: categorías de conceptos de
+      la boleta y regla del neto a pagar.
+    imagen: screenshots/20-ajustes-boletas.png
+
   - seccion: Boleta de pago
     texto: Impresión, envío y confirmación.
   - titulo: Imprimir la boleta de pago
@@ -190,7 +210,8 @@ pasos:
     texto: >-
       El asistente propone el tratamiento, la ciudad y las fechas de ingreso y
       cese. **Imprimir certificado** genera el PDF firmado por el representante
-      legal de la Configuración principal.
+      legal de Ajustes ▸ Nómina ▸ Perú. El asistente solo acepta trabajadores
+      de su compañía (la compañía se muestra de solo lectura).
     imagen: screenshots/07-certificado-asistente.png
 
   - titulo: El certificado impreso
@@ -243,17 +264,18 @@ pasos:
     imagen: screenshots/12-plantilla-contrato.png
 
   - titulo: Plantilla y periodo de prueba del trabajador
-    ruta: Empleados ▸ ficha del empleado ▸ Nómina ▸ Perú — Contrato de trabajo
+    ruta: Empleados ▸ ficha del empleado ▸ Planilla PE ▸ Contrato de trabajo
     texto: >-
       Se elige la plantilla y el régimen de periodo de prueba (3, 6 o 12
       meses, art. 10 de la LPCL), que calcula el fin del periodo de prueba.
       **Imprimir contrato** comprueba antes los datos mínimos y lista los que
-      faltan.
+      faltan. Es una pestaña interna de **Planilla PE**, la página que reúne
+      todo lo peruano del trabajador.
     imagen: screenshots/13-empleado-contrato.png
     pie: "Trabajadora DEMO con ingreso el 01/03/2025: prueba de 3 meses hasta el 01/06/2025."
 
   - titulo: El contrato impreso
-    ruta: Perú — Contrato de trabajo ▸ Imprimir contrato
+    ruta: Planilla PE ▸ Contrato de trabajo ▸ Imprimir contrato
     imagen: screenshots/14-contrato.png
     pie: "Contrato de la trabajadora DEMO: S/ 2.800,00 al mes, del 01/03/2025 al 31/08/2026, con 3 meses de prueba."
 
@@ -291,9 +313,10 @@ pasos:
     imagen: screenshots/17-origen-gratificacion.png
 
   - titulo: Diarios de pago masivo
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Pagos bancarios
+    ruta: Ajustes ▸ Nómina ▸ Perú ▸ Boletas y pagos (también en Configuración principal ▸ Pagos bancarios)
     texto: >-
-      Los diarios bancarios desde los que se paga. Se crea un pago por cada
+      Los diarios bancarios desde los que se paga; se eligen en Ajustes y se
+      ven también en la Configuración principal. Se crea un pago por cada
       diario cuyo banco tenga un formato presente en las cuentas de los
       trabajadores.
     imagen: screenshots/18-parametros-pagos.png
@@ -344,8 +367,8 @@ campos:
       - [Secuencia, Orden en la lista., "10", "—"]
       - [Compañía, "Vacía: global; con compañía: propia.", Vacío, Quién la puede usar]
       - [Cuerpo del contrato, Texto con marcadores entre llaves dobles., Vacío, Se rellena al imprimir]
-  - grupo: Empleado ▸ Perú — Contrato de trabajo
-    ruta: Empleados ▸ ficha ▸ Nómina
+  - grupo: Empleado ▸ Planilla PE ▸ Contrato de trabajo
+    ruta: Empleados ▸ ficha ▸ Planilla PE
     campos:
       - [Plantilla de contrato, Plantilla global o de la compañía., Vacío, Obligatoria para imprimir]
       - [Régimen de período de prueba (PE), "3 meses (régimen general), 6 (confianza) o 12 (dirección).", 3 meses (régimen general), Calcula el fin del periodo de prueba]
@@ -384,10 +407,17 @@ campos:
       - [Tipo de persona, Persona natural o Comercial o jurídica., Persona natural, Nombre en el TXT Interbank]
       - ["Modalidad de cobro, Tipo de abono, Forma de pago", Datos de Scotiabank., "Cargo en cuenta, Urgencia, Abono cuenta ahorro", TXT Scotiabank]
       - ["Subtipo de planilla (BanBif)", Cuarta o Quinta categoría., Quinta categoría, TXT BanBif]
+  - grupo: Ajustes ▸ Nómina ▸ Perú
+    ruta: Ajustes ▸ Nómina ▸ Perú
+    texto: Valores por compañía (ícono de compañía en cada ajuste).
+    campos:
+      - [Representante, "Quien firma la boleta, los certificados y las cartas.", Vacío, Nombre y documento en los PDF]
+      - [Firma, Firma escaneada del empleador., Vacía, Imagen en la boleta y los certificados]
+      - [Cifrar la boleta con el n.º de documento, El PDF enviado por correo se abre con el documento del trabajador., Desmarcado, "Solo el adjunto del correo; la impresión no cambia"]
+      - [Diarios de pago, Diarios bancarios del pago masivo., Vacío, Un pago por diario]
   - grupo: Catálogos
     ruta: "Configuración principal, bancos, cuentas y tipos de identificación"
     campos:
-      - [Diarios de pago masivo, Diarios bancarios habilitados (Parámetros ▸ Pagos bancarios)., Vacío, Un pago por diario]
       - [Formato de TXT, "Formato BBVA, BCP, Interbank, Scotiabank o BanBif (banco).", Vacío, Layout del archivo]
       - [Tipo de cuenta, "Corriente, Ahorros, Detracciones, CCI u Otros (cuenta bancaria).", Vacío, "Obligatorio para el TXT; controla dígitos"]
       - [Sucursal BBVA, Oficina intercalada en la cuenta de cargo., Vacío, Cabecera BBVA]
@@ -415,6 +445,11 @@ funcionalidades:
       - "Orígenes: lote de nómina, adelanto quincenal, CTS, gratificación y liquidación vacacional."
       - CTS en soles o en dólares.
       - Diarios de pago masivo y códigos de tipo de documento por banco configurables.
+  - grupo: Multicompañía
+    items:
+      - Representante, firma, cifrado y diarios de pago por compañía en Ajustes ▸ Nómina ▸ Perú.
+      - Asistentes de certificados y cartas con la compañía de solo lectura, que rechazan trabajadores de otra compañía.
+      - Botones con la convención de Odoo y nombres legibles en los registros.
       - Archivo guardado como adjunto del pago masivo.
 
 ejemplos:
@@ -449,8 +484,8 @@ ejemplos:
       - [BanBif, "Sí", "Sí", "Subtipo de pago"]
 
 configuracion:
-  - "En **Configuración principal**, elija el representante legal que firma, las categorías de conceptos de la boleta y la regla del neto a pagar."
-  - "En la pestaña **Pagos bancarios** de la Configuración principal, indique los diarios de pago masivo; el banco de la cuenta del diario debe tener su formato TXT."
+  - "En **Ajustes ▸ Nómina ▸ Perú** elija el representante que firma, su firma, si la boleta enviada se cifra y los diarios de pago masivo (el banco de la cuenta del diario debe tener su formato TXT). Con varias compañías, hágalo con cada una activa."
+  - "En **Configuración principal** (botón «Abrir configuración principal» de Ajustes) indique las categorías de conceptos de la boleta y la regla del neto a pagar."
   - Registre las cuentas bancarias de haberes y de CTS de los trabajadores y su correo laboral para el envío de boletas.
   - "Revise o cree las plantillas en **Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato** y asígnelas en la ficha del trabajador."
 requisitos_nota: >-
@@ -482,6 +517,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 18.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

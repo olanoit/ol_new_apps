@@ -70,7 +70,7 @@ class L10nPeExchangeClosure(models.Model):
         default=lambda self: '%02d' % fields.Date.context_today(self).month)
     year = fields.Integer(
         string='Año', required=True,
-        default=lambda self: fields.Date.context_today(self).year)
+        default=lambda self: fields.Date.context_today(self).year, aggregator=False)
     date = fields.Date(
         string='Fecha de cierre', compute='_compute_dates', store=True,
         help='Último día del mes: fecha del balance y del asiento de ajuste.')

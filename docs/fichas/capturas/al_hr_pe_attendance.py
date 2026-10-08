@@ -36,7 +36,7 @@ CICLO = 1               # DEMO FICHA HR1 Atípico 14×7 — 10 horas
 ASIGNACION = 2          # ciclo 14×7 de Huamán Torres Jorge Luis (octubre 2026)
 TURNO_REEMPLAZO = 81    # Huamán cubre la falta de Salazar el 10/09/2026 (borrador)
 TAREAJE = 149           # DEMO FICHA HR1 Tareaje septiembre 2026 (avance al 14), aplicado
-PARAMETROS = 90         # Parámetros principales de Comercial Demo Perú S.A.C.
+PARAMETROS = 90         # Configuración principal de Comercial Demo Perú S.A.C.
 BOLETA_RIVAS = 3527     # Boleta 1–14 septiembre 2026 (tareaje) — Rivas
 TIPO_AUSENCIA = 1       # Tiempo personal pagado (solo se mira, no se guarda)
 FOTOCHECK = 1           # DEMO FICHA HR1 Fotocheck Comercial Demo
@@ -176,7 +176,7 @@ def paso_11(c):
 
 
 def paso_12(c):
-    # 12. Parámetros principales ▸ Tareaje
+    # 12. Configuración principal ▸ Tareaje (tipos de entrada de trabajo)
     c.abrir_registro('hr.main.parameter', PARAMETROS, ms=2000)
     c.page.locator('.o_notebook .nav-link:has-text("Tareaje")').first.click()
     c.esperar(900)
@@ -212,7 +212,7 @@ def paso_15(c):
 def paso_16(c):
     # 16. Detalle diario de una trabajadora
     c.abrir_registro('hr.tareaje.manager', TAREAJE, ms=2000)
-    c.page.locator('.o_data_row:has-text("Rivas") button[name=view_detail]').first.click()
+    c.page.locator('.o_data_row:has-text("Rivas") button[name=action_show_details]').first.click()
     c.esperar(1800)
     columnas(c, ('Feriado/descanso laborado', 'HE 100 %'))
     c.foto('16-detalle')
@@ -245,6 +245,23 @@ def paso_19(c):
             ms=2500)
     c.foto('20-fotocheck', full_page=True)
 
+
+
+def paso_21(c):
+    # 21. Ajustes ▸ Nómina ▸ Perú: tareaje (franja nocturna, HE 25 %,
+    #     tolerancia y redondeo, por compañía). Solo se mira: no se guarda.
+    c.abrir('/odoo/settings#hr_payroll', ms=2500)
+    titulo = c.page.get_by_text('Perú: tareaje', exact=True).first
+    titulo.scroll_into_view_if_needed()
+    c.esperar(600)
+    ultimo = c.page.get_by_text('Tardanzas y redondeo', exact=True).first
+    caja = ultimo.locator('xpath=ancestor::div[contains(@class,"o_setting_box")][1]')
+    t = titulo.bounding_box()
+    b = caja.first.bounding_box()
+    x = max(t['x'] - 24, 0)
+    c.foto('21-ajustes-tareaje', clip={
+        'x': x, 'y': max(t['y'] - 16, 0), 'width': c.viewport['width'] - x - 8,
+        'height': b['y'] + b['height'] - t['y'] + 40}, recortar=False)
 
 
 VIEWPORTS = {

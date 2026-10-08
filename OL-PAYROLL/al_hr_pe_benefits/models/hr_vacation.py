@@ -55,7 +55,7 @@ class HrVacation(models.Model):
     # v18: fiscal_year_id (account.fiscal.year, eliminado en v19).
     year = fields.Integer(
         string='Año', required=True,
-        default=lambda self: fields.Date.context_today(self).year)
+        default=lambda self: fields.Date.context_today(self).year, aggregator=False)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
         check_company=True)
@@ -64,6 +64,15 @@ class HrVacation(models.Model):
     state = fields.Selection(
         [('draft', 'Borrador'), ('exported', 'Exportado')],
         string='Estado', default='draft')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Mismo nombre que propone el formulario, también fuera de él.
+        for vals in vals_list:
+            if not vals.get('name') and vals.get('payslip_run_id'):
+                run = self.env['hr.payslip.run'].browse(vals['payslip_run_id'])
+                vals['name'] = 'Vacaciones %s' % run.name
+        return super().create(vals_list)
 
     @api.onchange('year', 'payslip_run_id')
     def _onchange_name(self):

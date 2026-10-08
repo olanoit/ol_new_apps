@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261008 — 08/10/2026
+
+- La pestaña «Documentos EDI» (estado del envío al OSE, errores y descarga del XML) pasa a «Facturación PE ▸ Envío electrónico» y la ve el equipo de facturación, no solo el modo desarrollador.
+
 ## 15.20261008 — 08/10/2026
 
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).

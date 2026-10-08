@@ -47,7 +47,7 @@ class HrFifthCertificateWizard(models.TransientModel):
         string='Ejercicio gravable', required=True,
         default=lambda self: fields.Date.context_today(self).year - 1,
         help='Año fiscal certificado (el certificado se entrega antes '
-             'del 1 de marzo del año siguiente).')
+             'del 1 de marzo del año siguiente).', aggregator=False)
     date = fields.Date(
         string='Fecha de emisión', required=True,
         default=fields.Date.context_today)

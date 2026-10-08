@@ -104,7 +104,7 @@ flujos:
         A[Tarea programada<br/>cada 12 meses desde el 2 de enero] --> B[Busca los feriados del año<br/>en curso y del siguiente]
         B --> C{¿Hay feriados?}
         C -- No --> D[No hace nada]
-        C -- Sí --> E[Aplicar a los calendarios<br/>de todas las compañías de OdooBot]
+        C -- Sí --> E[Para cada compañía, con ella como activa:<br/>aplicar a sus calendarios]
 
 pasos_intro: >-
   Recorrido con los feriados de 2026 aplicados al horario de demostración
@@ -113,7 +113,7 @@ pasos:
   - seccion: Calendario de feriados
     texto: Los feriados vienen cargados; se revisan y, si hace falta, se ajustan.
   - titulo: Revisar los feriados del año
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados
     texto: >-
       La lista se abre agrupada por año. Cada feriado muestra su fecha, nombre,
       tipo, si es de día completo, el tipo de entrada de trabajo y en cuántos
@@ -124,15 +124,15 @@ pasos:
     imagen: screenshots/01-feriados.png
 
   - titulo: Filtrar y agrupar
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ búsqueda
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados ▸ búsqueda
     texto: >-
-      Filtros **Upcoming** (desde hoy), **National**, **Religious** y **Half
-      Day**; agrupación por **Year** o **Type**. También se busca por nombre o
+      Filtros **Próximos** (desde hoy), **Nacionales**, **Religiosos**,
+      **Régimen especial** y **Medio día**; agrupación por **Año** o **Tipo**. También se busca por nombre o
       por año.
     imagen: screenshots/02-filtros.png
 
   - titulo: Ficha del feriado
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ feriado
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados ▸ feriado
     texto: >-
       Nombre, fecha, tipo, día completo, año (calculado) y **Tipo de entrada de
       trabajo**. El botón **Calendarios** indica en cuántos horarios está
@@ -140,9 +140,9 @@ pasos:
     imagen: screenshots/03-feriado.png
 
   - titulo: Feriado de medio día
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ Nuevo
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados ▸ Nuevo
     texto: >-
-      Al desmarcar **Full Day** aparece **Half Day Rest Until** (13:00 por
+      Al desmarcar **Día completo** aparece **Medio día: descanso hasta** (13:00 por
       defecto): el descanso irá desde las 00:00 hasta esa hora. Ninguno de los
       feriados cargados es de medio día.
     imagen: screenshots/04-medio-dia.png
@@ -151,10 +151,10 @@ pasos:
   - seccion: Aplicación a los horarios
     texto: Convierte los feriados en descansos de los horarios de trabajo.
   - titulo: Aplicarlos a los horarios de trabajo
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays ▸ seleccionar ▸ Aplicar a los calendarios
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados ▸ seleccionar ▸ Aplicar a los calendarios
     texto: >-
       Seleccione los feriados y pulse **Aplicar a los calendarios** (en la
-      ficha del feriado, **Apply to Calendars**). Un aviso indica cuántos
+      ficha del feriado, **Aplicar a los calendarios**). Un aviso indica cuántos
       descansos se crearon y cuántos se actualizaron, y en cuántos horarios.
     puntos:
       - Solo se escriben los horarios de las compañías activas en el selector de compañías y los que no tienen compañía.
@@ -215,7 +215,7 @@ pasos:
 
   - seccion: Renovación anual
   - titulo: Tarea programada
-    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Peru Holidays: Yearly Auto Apply"
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Feriados de Perú: aplicación anual"
     texto: >-
       La tarea se ejecuta cada 12 meses a partir del 2 de enero a las 02:00
       UTC (1 de enero, 21:00 en Lima) y aplica los feriados del año en curso y
@@ -228,13 +228,13 @@ campos_intro: >-
   código; se citan tal como aparecen.
 campos:
   - grupo: Feriado
-    ruta: Vacaciones ▸ Peru Holidays ▸ Holidays
+    ruta: Vacaciones ▸ Feriados de Perú ▸ Feriados
     campos:
-      - [Holiday Name, Nombre del feriado (traducible)., Vacío (obligatorio), Motivo del descanso en el horario y descripción en la boleta]
+      - [Feriado, Nombre del feriado (traducible)., Vacío (obligatorio), Motivo del descanso en el horario y descripción en la boleta]
       - [Date, Día del feriado., Vacío (obligatorio), Día del descanso]
       - [Type, "National, Religious o Memorial.", National, Filtros y color de la lista (religiosos en azul)]
-      - [Full Day, Descanso de todo el día., Marcado, "Rango 00:00–23:59 en la zona del horario"]
-      - [Half Day Rest Until, "Visible solo sin Full Day: hora en que termina el descanso.", "13:00", "Rango 00:00 hasta esa hora"]
+      - [Día completo, Descanso de todo el día., Marcado, "Rango 00:00–23:59 en la zona del horario"]
+      - ["Medio día: descanso hasta", "Visible solo sin Día completo: hora en que termina el descanso.", "13:00", "Rango 00:00 hasta esa hora"]
       - [Year, Año de la fecha., Calculado, Agrupación de la lista y selección de la tarea anual]
       - [Tipo de entrada de trabajo, Concepto con que la nómina computa el día; no permite crear uno nuevo desde aquí., "DIAS DE DESCANSO (si está al_hr_pe)", Lo hereda el descanso y de ahí la entrada de trabajo]
       - [Description, Texto libre., Vacío, Informativo]
@@ -244,12 +244,12 @@ campos:
     campos:
       - ["Feriado (PE)", Feriado peruano que generó el descanso. No figura en las vistas., Vacío, "Clave para no duplicar; se borra el descanso al borrar el feriado"]
   - grupo: Tarea programada
-    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Peru Holidays: Yearly Auto Apply"
+    ruta: "Ajustes ▸ Técnico ▸ Acciones planificadas ▸ Feriados de Perú: aplicación anual"
     campos:
       - [Ejecutar cada, Intervalo de la tarea., 12 Meses, Una vez al año]
       - [Activo, Enciende o apaga la tarea., Activo, "Apagada, los feriados se aplican solo a mano"]
       - [Siguiente fecha de ejecución, Próxima ejecución., "2 de enero, 02:00 UTC, del año siguiente a la instalación", Aplica el año en curso y el siguiente]
-      - [Usuario encargado de la planificación, Usuario con que corre., OdooBot, Aplica en los horarios de todas las compañías de ese usuario]
+      - [Usuario encargado de la planificación, Usuario con que corre., OdooBot, "Recorre todas las compañías, también las creadas después"]
 
 funcionalidades:
   - Feriados nacionales del Perú de 2026 a 2035 (16 por año).
@@ -293,7 +293,7 @@ configuracion:
   - Instale el módulo (requiere Vacaciones y Entradas de trabajo).
   - "Revise que cada **horario de trabajo** tenga la zona horaria correcta (America/Lima)."
   - "Elija en el selector las compañías cuyos horarios quiere afectar."
-  - "En **Vacaciones ▸ Peru Holidays ▸ Holidays** seleccione los feriados y pulse **Aplicar a los calendarios**."
+  - "En **Vacaciones ▸ Feriados de Perú ▸ Feriados** seleccione los feriados y pulse **Aplicar a los calendarios**."
   - Si usa la planilla peruana, compruebe que el tipo de entrada de trabajo sea el de días de descanso.
 requisitos_nota: >-
   Funciona sin la planilla peruana; con `al_hr_pe` instalado, los feriados
@@ -318,10 +318,16 @@ faq:
     respuesta: >-
       No. La tarea programada lo hace cada 2 de enero, para el año en curso y el
       siguiente. También se puede ejecutar a mano desde la acción planificada.
-      Como corre sin selector de compañías, aplica en los horarios de todas las
-      compañías del usuario OdooBot.
+      Recorre todas las compañías una por una, cada una con su propio
+      contexto, así que también reciben los feriados las compañías creadas
+      después de instalar el módulo.
 
 novedades:
+  - version: 9.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
+      - "Interfaz en español (antes «Apply to Calendars», «Full Day», «Half Day Rest Until»…) y agrupación por año sin separador de miles (2026, no 2.026)."
   - version: 8.20261008
     fecha: 08/10/2026
     cambios:

@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-PARAMETROS = 90           # Parámetros principales de la compañía de pruebas
+PARAMETROS = 90           # Configuración principal de la compañía de pruebas
 REGLA_BASICO = 1255       # Regla BAS de la estructura BASE MG
 AFILIACION = 2            # AFP INTEGRA
 CTS = 50                  # CTS noviembre 2025 – abril 2026 (asiento CTS202604)
@@ -35,20 +35,41 @@ def con_botones(c, nombre):
                                 'height': hoja['y'] + hoja['height'] - arriba})
 
 
+def ajustes(c, texto, nombre):
+    """Bloque de Ajustes ▸ Nómina ▸ Perú que contiene el ajuste ``texto``,
+    con su título (sin guardar nada)."""
+    c.abrir('/odoo/settings#hr_payroll', ms=3500)
+    ajuste = c.page.get_by_text(texto, exact=True).first
+    ajuste.scroll_into_view_if_needed()
+    c.esperar(900)
+    caja = ajuste.locator('xpath=ancestor::div[contains(@class, "o_settings_container")][1]')
+    titulo = caja.locator('xpath=preceding-sibling::*[1]')
+    # El bloque entero dentro de la ventana: el título arriba del todo.
+    titulo.evaluate("e => e.scrollIntoView({block: 'start'})")
+    c.esperar(700)
+    arriba = titulo.bounding_box() or caja.bounding_box()
+    abajo = caja.bounding_box()
+    c.foto(nombre, clip={'x': abajo['x'], 'y': arriba['y'], 'width': abajo['width'],
+                         'height': abajo['y'] + abajo['height'] - arriba['y']})
+
+
 def tamano(c, alto):
     c.viewport = {'width': 1440, 'height': alto}
     c.page.set_viewport_size(c.viewport)
 
 
 with Captura('al_hr_pe_account') as c:
-    # 1. Parámetros principales: pestaña Contabilidad (asiento de lote)
+    # 0. Ajustes ▸ Nómina ▸ Perú: contabilidad de planillas (por compañía)
+    tamano(c, 1400)
+    ajustes(c, 'Asiento del lote de planilla', '18-ajustes-contabilidad')
+    tamano(c, 900)
+
+    # 1. Configuración principal: pestaña Contabilidad (reglas AFP)
     c.abrir_registro('hr.main.parameter', PARAMETROS, ms=2500)
     c.clic('.o_notebook_headers a[name=account]', ms=900)
     c.foto('01-parametros-lote', selector='.o_notebook .tab-content')
 
-    # 2. Parámetros principales: pestaña Contabilidad BBSS
-    c.clic('.o_notebook_headers a[name=benefits_accounts]', ms=900)
-    c.foto('02-parametros-bbss', selector='.o_notebook .tab-content')
+    # (Las cuentas de beneficios sociales se muestran desde Ajustes: 18.)
 
     # 3. Regla salarial: cuentas de debe y haber y detalle por empleado
     c.abrir_registro('hr.salary.rule', REGLA_BASICO, ms=2500)
@@ -120,7 +141,7 @@ with Captura('al_hr_pe_account') as c:
     # 13. Asistente de la provisión mensual (sin generar)
     tamano(c, 900)
     c.abrir_registro('hr.provisiones', PROVISION_REAL, ms=2000)
-    c.clic('.o_form_statusbar button[name=get_move_wizard]', ms=2000)
+    c.clic('.o_form_statusbar button[name=action_open_move_wizard]', ms=2000)
     c.foto('13-asistente-provision', selector='.modal-content')
     c.clic('.modal-footer button:has-text("Cancelar")', ms=800)
 

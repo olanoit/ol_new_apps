@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 30.20261008 — 08/10/2026
+
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+
+## 29.20261008 — 08/10/2026
+
+- Una boleta generada antes de existir un concepto de días (p. ej. horas nocturnas HTN) ya no falla al calcular: el concepto ausente vale cero (antes KeyError('HTN') en la regla NOCT).
+
 ## 28.20261008 — 08/10/2026
 
 - Configuración principal de planillas: una por compañía, creada sola (ya no corta ningún flujo) y editable en Ajustes ▸ Nómina ▸ Perú (SCTR, representante y firma); el menú abre la de la compañía activa.

@@ -12,7 +12,7 @@
                 <field name="date_end"/>
                 <field name="period_type"/>
                 <field name="parent_id" optional="show"/>
-                <field name="year" optional="hide" options="{'format': false}"/>
+                <field name="year" optional="hide" options="{'enable_formatting': false}"/>
                 <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
@@ -67,7 +67,7 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="year" options="{'format': false}"/>
+                    <field name="year" options="{'enable_formatting': false}"/>
                     <field name="generate_weekly"/>
                     <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 </group>

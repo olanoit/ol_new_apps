@@ -17,7 +17,7 @@ class L10nPePleCostSales(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
-    year = fields.Integer(string='Ejercicio', required=True, index=True)
+    year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     initial_finished = fields.Monetary(
         string='Inventario inicial de productos terminados')
     production_cost = fields.Monetary(
@@ -44,7 +44,7 @@ class L10nPePleCostElement(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
-    year = fields.Integer(string='Ejercicio', required=True, index=True)
+    year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     month = fields.Selection(MONTHS, string='Mes', required=True)
     direct_materials = fields.Monetary(
         string='Materiales y suministros directos')
@@ -75,7 +75,7 @@ class L10nPePleCostProduction(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
-    year = fields.Integer(string='Ejercicio', required=True, index=True)
+    year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     process_code = fields.Char(
         string='Código del proceso', size=10, required=True)
     process_name = fields.Char(
@@ -114,7 +114,7 @@ class L10nPePleCostCenter(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    year = fields.Integer(string='Ejercicio', required=True, index=True)
+    year = fields.Integer(string='Ejercicio', required=True, index=True, aggregator=False)
     analytic_account_id = fields.Many2one(
         'account.analytic.account', string='Cuenta analítica',
         check_company=True,

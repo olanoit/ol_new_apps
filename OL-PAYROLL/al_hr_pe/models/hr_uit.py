@@ -16,7 +16,7 @@ class L10nPeHrUit(models.Model):
     _order = 'year desc'
     _rec_name = 'year'
 
-    year = fields.Integer(string='Año', required=True)
+    year = fields.Integer(string='Año', required=True, aggregator=False)
     amount = fields.Float(string='Valor UIT', required=True)
 
     _year_uniq = models.Constraint(

@@ -28,7 +28,7 @@ class HrPeriod(models.Model):
     code = fields.Char(string='Código', required=True, tracking=True)
     name = fields.Char(string='Nombre', tracking=True)
     year = fields.Integer(
-        string='Año', compute='_compute_year', store=True, index=True)
+        string='Año', compute='_compute_year', store=True, index=True, aggregator=False)
     date_start = fields.Date(string='Fecha de inicio', tracking=True, required=True)
     date_end = fields.Date(string='Fecha de fin', tracking=True, required=True)
     company_id = fields.Many2one(
@@ -131,7 +131,7 @@ class HrPeriodGenerator(models.TransientModel):
     _check_company_auto = True
 
     year = fields.Integer(
-        string='Año', required=True, default=lambda self: date.today().year)
+        string='Año', required=True, default=lambda self: date.today().year, aggregator=False)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True,
         default=lambda self: self.env.company)

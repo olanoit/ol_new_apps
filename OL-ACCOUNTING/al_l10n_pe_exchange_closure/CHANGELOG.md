@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_exchange_closure.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261008 — 08/10/2026
+
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+
 ## 7.20261008 — 08/10/2026
 
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).

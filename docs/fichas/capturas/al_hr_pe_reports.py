@@ -19,7 +19,7 @@ VERSION = 2553           # su versión, con plantilla de contrato
 BOLETA = 759             # Planilla 2026-06, trabajador de pruebas
 PAGO_LOTE = 11           # PM-000007, lote de abril 2026 (BCP)
 GRATIFICACION = 20
-PARAMETROS = 90
+PARAMETROS = 90          # Configuración principal de la compañía de pruebas
 TRABAJADOR_CTS = 160     # trabajador de pruebas con cuenta CTS
 CUENTA = 28              # cuenta corriente de la compañía
 PLANTILLA_CORREO = 40
@@ -61,7 +61,31 @@ def menu_accion(c, texto):
     c.esperar(2000)
 
 
+def ajustes(c, texto, nombre):
+    """Bloque de Ajustes ▸ Nómina ▸ Perú que contiene el ajuste ``texto``,
+    con su título (sin guardar nada)."""
+    c.abrir('/odoo/settings#hr_payroll', ms=3500)
+    ajuste = c.page.get_by_text(texto, exact=True).first
+    ajuste.scroll_into_view_if_needed()
+    c.esperar(900)
+    caja = ajuste.locator('xpath=ancestor::div[contains(@class, "o_settings_container")][1]')
+    titulo = caja.locator('xpath=preceding-sibling::*[1]')
+    # El bloque entero dentro de la ventana: el título arriba del todo.
+    titulo.evaluate("e => e.scrollIntoView({block: 'start'})")
+    c.esperar(700)
+    arriba = titulo.bounding_box() or caja.bounding_box()
+    abajo = caja.bounding_box()
+    c.foto(nombre, clip={'x': abajo['x'], 'y': arriba['y'], 'width': abajo['width'],
+                         'height': abajo['y'] + abajo['height'] - arriba['y']})
+
+
 with Captura('al_hr_pe_reports') as c:
+    # Ajustes ▸ Nómina ▸ Perú: representante y firma, cifrado y diarios de pago
+    if quiere('20'):
+        vista(c, 1440, 1400)
+        ajustes(c, 'Boletas y pagos', '20-ajustes-boletas')
+        vista(c)
+
     # ---------------- Boleta de pago ----------------
     if quiere('01'):
         vista(c, 1440, 1300)
@@ -179,16 +203,17 @@ with Captura('al_hr_pe_reports') as c:
         c.foto('12-plantilla-contrato', selector='.o_form_view .o_form_sheet_bg')
 
     if quiere('13'):
-        vista(c, 1440, 2200)
+        # «Planilla PE» ▸ «Contrato de trabajo» (páginas de al_hr_pe)
+        vista(c, 1440, 1400)
         c.abrir_registro('hr.employee', EMPLEADA, ms=2500)
-        c.clic('.o_notebook_headers a[name=payroll_information]', ms=1200)
-        sep = c.page.locator('.tab-pane.active .o_horizontal_separator:has-text("Contrato de trabajo")').first
-        sbox = sep.bounding_box()
+        c.clic('.o_notebook_headers a[name=l10n_pe_payroll]', ms=1200)
+        c.clic('.o_notebook_headers a[name=l10n_pe_contract_page]', ms=1200)
+        cabecera = c.page.locator('.o_notebook_headers:has(a[name=l10n_pe_payroll])').first.bounding_box()
+        interna = c.page.locator('.tab-pane.active .tab-pane.active').first.bounding_box()
         sheet = c.page.locator('.o_form_sheet').first.bounding_box()
-        nxt = c.page.locator('.tab-pane.active .o_horizontal_separator:has-text("T-Registro")').first.bounding_box()
         c.foto('13-empleado-contrato', recortar=False, clip={
-            'x': sheet['x'], 'y': sbox['y'] - 12, 'width': sheet['width'],
-            'height': nxt['y'] - sbox['y'] - 4})
+            'x': sheet['x'], 'y': cabecera['y'] - 8, 'width': sheet['width'],
+            'height': interna['y'] + interna['height'] - cabecera['y'] + 16})
 
     if quiere('14'):
         vista(c, 1440, 1300)

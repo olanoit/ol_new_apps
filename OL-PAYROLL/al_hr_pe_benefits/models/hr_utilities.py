@@ -48,7 +48,7 @@ class HrUtilities(models.Model):
     year = fields.Integer(
         string='Ejercicio', required=True,
         default=lambda self: fields.Date.context_today(self).year - 1,
-        help='Ejercicio gravable cuya renta se reparte.')
+        help='Ejercicio gravable cuya renta se reparte.', aggregator=False)
     annual_rent = fields.Float(
         string='Renta anual antes de impuestos', digits=(64, 2))
     percentage = fields.Float(string='Porcentaje', digits=(12, 2))

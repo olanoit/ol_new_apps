@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261008 — 08/10/2026
+
+- Gratificaciones, CTS y vacaciones creadas fuera del formulario (código, importación) reciben el nombre que propone el formulario; antes quedaban sin título.
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+
 ## 18.20261008 — 08/10/2026
 
 - Quincena, asignación familiar en vacaciones y encargado de la liquidación en Ajustes ▸ Nómina ▸ Perú.

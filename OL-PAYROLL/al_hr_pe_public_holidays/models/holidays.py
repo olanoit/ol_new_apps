@@ -24,20 +24,21 @@ from odoo import _, api, fields, models
 
 class PeruPublicHoliday(models.Model):
     _name = "pe.public.holiday"
-    _description = "Peru Public Holiday"
+    _description = "Feriado de Perú"
     _order = "date"
 
-    name = fields.Char(string="Holiday Name", required=True, translate=True)
-    date = fields.Date(string="Date", required=True, index=True)
-    year = fields.Integer(string="Year", compute="_compute_year", store=True, index=True)
+    name = fields.Char(string="Feriado", required=True, translate=True)
+    date = fields.Date(string="Fecha", required=True, index=True)
+    year = fields.Integer(string="Año", compute="_compute_year", store=True, index=True,
+                          aggregator=False)
     holiday_type = fields.Selection(
         [
-            ("national", "National"),
-            ("religious", "Religious"),
-            ("memorial", "Memorial"),
+            ("national", "Nacional"),
+            ("religious", "Religioso"),
+            ("memorial", "Conmemorativo"),
             ("regime", "Régimen especial"),
         ],
-        string="Type",
+        string="Tipo",
         default="national",
         required=True,
     )
@@ -50,15 +51,15 @@ class PeruPublicHoliday(models.Model):
              "calendarios de los contratos vigentes de ese régimen (si el "
              "calendario lo comparten otros trabajadores, también ellos lo "
              "reciben: conviene un calendario propio de obra).")
-    is_full_day = fields.Boolean(string="Full Day", default=True)
+    is_full_day = fields.Boolean(string="Día completo", default=True)
     # El descanso de medio día va de 00:00 hasta esta hora (ver
     # ``_holiday_datetime_range``): la etiqueta antigua, «Half Day Starts
     # At», decía justo lo contrario.
     half_day_starts_at = fields.Float(
-        string="Half Day Rest Until", default=13.0,
+        string="Medio día: descanso hasta", default=13.0,
         help="Hora hasta la que dura el descanso de medio día; el descanso "
              "empieza a las 00:00.")
-    description = fields.Text(string="Description", translate=True)
+    description = fields.Text(string="Descripción", translate=True)
     work_entry_type_id = fields.Many2one(
         "hr.work.entry.type",
         string="Tipo de entrada de trabajo",
@@ -177,7 +178,7 @@ class PeruPublicHoliday(models.Model):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("Holidays Applied"),
+                "title": _("Feriados aplicados"),
                 "message": _(
                     "%(created)d descansos creados y %(updated)d actualizados "
                     "en %(calendars)d calendario(s).",

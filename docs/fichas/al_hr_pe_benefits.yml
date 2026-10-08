@@ -10,7 +10,8 @@ portada: screenshots/03-cts.png
 destacados_intro: >-
   Todos los beneficios siguen el mismo circuito: se crea el documento del
   periodo, se procesa trabajador por trabajador, se revisa y se exporta a las
-  boletas del lote.
+  boletas del lote. Cada documento es de una compañía y el año se elige de una
+  lista, sin escribirlo.
 destacados:
   - icono: "CTS"
     titulo: CTS semestral
@@ -233,6 +234,21 @@ pasos:
       - Los motores comparan la regla concreta configurada con las líneas de la boleta; si apunta a otra estructura, no encuentra importes.
     imagen: screenshots/01-parametros.png
 
+  - titulo: Quincena y vacaciones en Ajustes
+    ruta: "Ajustes ▸ Nómina ▸ Perú: quincena y beneficios sociales"
+    texto: >-
+      Lo que cambia de una empresa a otra se fija en **Ajustes**, con el ícono
+      de compañía que avisa que vale solo para la compañía activa: cómo se
+      calcula la **Quincena** (porcentaje del sueldo o días trabajados, la
+      fracción que se adelanta y si se adelantan la asignación familiar y la
+      AFP u ONP) y, en **Vacaciones y liquidación**, si la asignación familiar
+      entra en la remuneración vacacional y quién es el **Encargado** de la
+      liquidación semestral.
+    puntos:
+      - "Ajustes guarda en la Configuración principal de la compañía: es una por compañía y se crea sola."
+      - "El mapeo de entradas, reglas y tipos de días sigue en Configuración principal ▸ Beneficios sociales."
+    imagen: screenshots/21-ajustes-quincena.png
+
   - titulo: Generar los tramos de la renta de 5ta
     ruta: Configuración principal ▸ Quinta categoría
     texto: >-
@@ -248,26 +264,29 @@ pasos:
   - titulo: Procesar la CTS del semestre
     ruta: Nómina ▸ Beneficios sociales ▸ CTS
     texto: >-
-      Indique año, tipo (**CTS Noviembre - Abril** o **CTS Mayo - Octubre**),
-      tipo de cambio, lote de nómina y fecha de depósito, y pulse
-      **Procesar**. Se crea una línea por trabajador con meses, días, sueldo,
-      asignación familiar, 1/6 de gratificación, remuneración computable y
-      total.
+      Elija el **Año** de la lista (del próximo año hacia atrás), el tipo
+      (**CTS Noviembre - Abril** o **CTS Mayo - Octubre**), el lote de nómina,
+      la fecha de depósito y el tipo de cambio, y pulse **Procesar**. Se crea
+      una línea por trabajador con meses, días, sueldo, asignación familiar,
+      1/6 de gratificación, remuneración computable y total; el ícono de lista
+      al final de cada fila abre su detalle.
     puntos:
       - "**Recalcular** vuelve a calcular las líneas; marcando **No recalcular** en una línea se conservan sus cambios manuales."
       - "**Exportar CTS** vuelca los importes como entrada de las boletas del lote y cierra el documento; **Volver a borrador** lo reabre."
       - Al trabajador con menos de un mes no se le deposita en ese semestre; su importe se suma al depósito siguiente.
+      - "El nombre del documento lo propone el sistema (tipo y año) y la compañía es la activa: no se editan a mano."
     imagen: screenshots/03-cts.png
     pie: "CTS noviembre 2025 – abril 2026: nueve trabajadores y S/ 17.848,77 de CTS."
 
   - titulo: Revisar el detalle de un trabajador
     ruta: CTS ▸ línea del trabajador
     texto: >-
-      Cada línea muestra de dónde sale el importe: fecha de ingreso, cuenta
-      CTS y banco, meses, días, faltas y exceso de descanso médico, y en la
-      otra columna la remuneración computable, los montos por mes y por día,
-      lo que se descuenta por faltas, intereses, otros descuentos y el total en
-      soles y dólares. **Calcular** recalcula solo esa línea y **Detalle
+      La ficha lleva al trabajador como título y su periodo computable (meses,
+      días, faltas y exceso de descanso médico) junto a sus datos; las
+      pestañas **Remuneración computable**, **Cálculo** y **Depósito** muestran
+      sueldo, asignación familiar, 1/6 de gratificación y promedios, los montos
+      por mes y por día con lo descontado por faltas, intereses y otros
+      descuentos, y el total en soles y dólares con la cuenta CTS y el banco. **Calcular** recalcula solo esa línea y **Detalle
       histórico** abre los importes mes a mes de las boletas de los seis meses
       previos con la estructura BASE del núcleo.
     puntos:
@@ -483,10 +502,16 @@ campos:
       - [Utilidades (D.L. 892), "R.S. rem. afecta, W.D. días trabajados y faltas, Input utilidades.", Vacío, Reparto y exportación]
       - [Adelantos y préstamos especiales, "Tipos de gratificación, CTS, liquidación, vacaciones y quincena.", Vacío, No se importan en la planilla normal]
       - ["Input quincena / R.S. neto quincenal", Entrada de la boleta mensual y regla del neto de la quincena., Vacío, Obligatorias para exportar la quincena]
-      - [Modo de cálculo de la quincena, Porcentaje del sueldo o Días efectivamente trabajados., Porcentaje del sueldo, Lo usan las reglas de quincena]
-      - [Tasa de la quincena, Fracción del sueldo que se adelanta., "0,5", Solo con porcentaje del sueldo]
-      - [Pagar asignación familiar en la quincena, Adelanta la asignación proporcional., Desmarcado, Reglas de quincena]
-      - [Descontar aportes previsionales en la quincena, AFP u ONP ya en la quincena., Desmarcado, Reglas de quincena]
+  - grupo: "Ajustes ▸ Nómina ▸ Perú: quincena y beneficios sociales"
+    ruta: Ajustes ▸ Nómina ▸ Perú
+    texto: Valores de la compañía activa; se guardan en su Configuración principal.
+    campos:
+      - [Modo (quincena), Porcentaje del sueldo o Días efectivamente trabajados., Porcentaje del sueldo, Lo usan las reglas de quincena]
+      - [Fracción del sueldo, Parte del sueldo que se adelanta., "0,5", Solo con porcentaje del sueldo]
+      - [Adelantar la asignación familiar, Adelanta la asignación proporcional., Desmarcado, Reglas de quincena]
+      - [Descontar AFP/ONP en la quincena, Aportes previsionales ya en la quincena., Desmarcado, Reglas de quincena]
+      - [Asignación familiar en vacaciones, La incluye en la remuneración computable vacacional., Marcado, Liquidación vacacional]
+      - [Encargado, Responsable de la liquidación semestral., Vacío, Informativo]
   - grupo: Configuración principal ▸ Quinta categoría
     campos:
       - [R.S. Rem. ordinaria afecta a quinta, Remuneración del mes., Vacío, Rem. mes y meses anteriores]
@@ -498,7 +523,7 @@ campos:
   - grupo: CTS
     ruta: Nómina ▸ Beneficios sociales ▸ CTS
     campos:
-      - [Año, Año del depósito., Año en curso, Semestre calculado]
+      - [Año, "Año del depósito, elegido de una lista del próximo año hacia atrás.", Año en curso, Semestre calculado]
       - [Tipo CTS, CTS Mayo - Octubre o CTS Noviembre - Abril., Vacío, "Ventana de boletas y gratificación del 1/6"]
       - [Tipo de cambio, Divisor para el importe en dólares., "1,00", CTS a pagar dólares]
       - [Lote de nómina, Lote donde se exporta; se propone el del mes de depósito., Propuesto, Destino de la entrada CTS]
@@ -595,6 +620,12 @@ funcionalidades:
       - Bono extraordinario de la Ley 29351 con el porcentaje del seguro social.
       - Líneas protegidas contra el recálculo y detalle histórico mes a mes.
       - Exportación de los importes a las boletas del lote.
+  - grupo: Configuración y multicompañía
+    items:
+      - Una Configuración principal por compañía, creada sola; quincena y vacaciones en Ajustes ▸ Nómina ▸ Perú.
+      - Cada documento es de una compañía, que se toma de la activa y no se edita.
+      - Los asistentes (récord vacacional, excluidos de quinta) rechazan trabajadores o líneas de otra compañía.
+      - Año como lista desplegable y nombres legibles en documentos y líneas.
   - grupo: Renta de 5ta y liquidación de cese
     items:
       - Proyección anual con gratificaciones proyectadas o ya liquidadas y remuneraciones de meses anteriores.
@@ -705,6 +736,7 @@ configuracion_intro: >-
   Los beneficios leen las boletas de los lotes mensuales, así que conviene
   tener la planilla calculada antes de procesarlos.
 configuracion:
+  - "En **Ajustes ▸ Nómina ▸ Perú** fije la quincena, la asignación familiar en vacaciones y el encargado de la liquidación de cada compañía."
   - "Complete la pestaña **Beneficios sociales** de la Configuración principal de cada compañía: entradas, reglas para promedios y tipos de días."
   - "Genere los tramos de la renta de 5ta desde la pestaña **Quinta categoría** después de registrar la UIT del año."
   - "Revise los tipos de préstamo y de adelanto en **Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos**."
@@ -741,6 +773,18 @@ faq:
       Porque se liquida, no se provisiona: la provisión omite a quien tiene
       situación de baja con fin de contrato dentro del lote, y también a los
       empleadores marcados con menos de cuatro trabajadores.
+  - pregunta: ¿Por qué no puedo cambiar la compañía de un documento?
+    respuesta: >-
+      Porque cada beneficio se calcula con las boletas, la configuración y los
+      trabajadores de una sola compañía: se toma de la compañía activa al
+      crearlo. Para trabajar con otra, cámbiela en el selector de compañías
+      antes de crear el documento.
+  - pregunta: ¿Dónde se configuraba antes la quincena?
+    respuesta: >-
+      En la pestaña Beneficios sociales de los Parámetros principales, que
+      ahora se llaman Configuración principal. El modo, la fracción y lo que
+      se adelanta pasaron a Ajustes ▸ Nómina ▸ Perú; las entradas y la regla
+      del neto quincenal siguen en la Configuración principal.
   - pregunta: ¿Se contempla la pequeña empresa?
     respuesta: >-
       Sí. Para el régimen laboral de pequeña empresa la CTS y la gratificación
@@ -748,6 +792,11 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 19.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Gratificaciones, CTS y vacaciones creadas fuera del formulario (código, importación) reciben el nombre que propone el formulario; antes quedaban sin título."
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
   - version: 18.20261008
     fecha: 08/10/2026
     cambios:

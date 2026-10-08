@@ -331,7 +331,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="year" optional="show" options="{'format': false}"/>
+                <field name="year" optional="show" options="{'enable_formatting': false}"/>
                 <field name="payslip_run_id"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"

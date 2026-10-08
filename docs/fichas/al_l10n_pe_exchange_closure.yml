@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 8.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
   - version: 7.20261008
     fecha: 08/10/2026
     cambios:

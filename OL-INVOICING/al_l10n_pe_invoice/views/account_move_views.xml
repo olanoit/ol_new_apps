@@ -27,6 +27,16 @@
             <xpath expr="//group[@name='l10n_pe_edi_document_left']" position="inside">
                 <xpath expr="//group[@name='l10n_pe_edi_electronic_info']" position="move"/>
             </xpath>
+            <!-- «Documentos EDI» de account_edi (estado del envío al OSE, errores
+                 y descarga del XML): pestaña interna de «Facturación PE» y visible
+                 para facturación, no solo en modo desarrollador. -->
+            <xpath expr="//page[@name='l10n_pe_edi_document']" position="after">
+                <xpath expr="//page[@name='page_edi_documents']" position="move"/>
+            </xpath>
+            <xpath expr="//page[@name='page_edi_documents']" position="attributes">
+                <attribute name="string">Envío electrónico</attribute>
+                <attribute name="groups">account.group_account_invoice</attribute>
+            </xpath>
             <!-- La detracción (al_l10n_pe_detraction) después del comprobante. -->
             <xpath expr="//page[@name='l10n_pe_edi_document']" position="after">
                 <xpath expr="//page[@name='l10n_pe_detraction']" position="move"/>

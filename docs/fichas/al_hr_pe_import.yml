@@ -359,7 +359,7 @@ campos:
       - [Hoja a importar, "Hoja del libro que se leerá.", "La que contiene la palabra clave del importador (input, vac, adelanto, version) o la primera", Obligatoria]
       - [Fila de cabecera técnica, Fila de los nombres de columna; es solo referencia., "1", "No cambia el orden de columnas, que es fijo"]
       - [Primera fila de datos, Fila desde la que se leen registros., "2", "Las filas totalmente vacías se saltan"]
-      - [Compañía, "Compañía en la que se buscan trabajadores y tipos.", Compañía activa, "Visible con multicompañía; se guarda en el historial"]
+      - [Compañía, "Compañía en la que se buscan trabajadores y tipos.", Compañía activa, "Solo lectura; se guarda en el historial y Odoo rechaza lo que sea de otra compañía"]
       - [Actualizar existentes, "Qué hacer si el registro ya existe (por su clave).", Marcado, "Desmarcado: la fila se omite"]
       - [Procesar por lotes, Confirma lo importado al cerrar cada lote., Marcado, "Desmarcado: confirma fila a fila"]
       - [Tamaño de lote, Filas por lote., "100", Solo con «Procesar por lotes»]
@@ -490,6 +490,13 @@ requisitos_nota: >-
   asistencia, contabilidad y reportes de planillas Perú.
 
 faq:
+  - pregunta: ¿Puedo importar para otra compañía?
+    respuesta: >-
+      Sí, cambiando de compañía activa antes de abrir el asistente: la
+      compañía del asistente es la activa y no se edita. Los trabajadores,
+      tipos de adelanto, AFP y reglas se buscan solo en esa compañía o entre
+      los registros globales, y el servidor rechaza un lote, una boleta o un
+      empleado de otra compañía aunque llegue por otra vía.
   - pregunta: ¿Qué pasa si vuelvo a subir el mismo archivo?
     respuesta: >-
       Con **Actualizar existentes** marcado, las filas ya importadas se

@@ -127,7 +127,7 @@ class L10nPeHrEmployeeEducation(models.Model):
         'l10n_pe.hr.education.career', string='Carrera',
         domain="[('institution_id', '=?', institution_id)]",
         check_company=True)
-    graduation_year = fields.Integer(string='Año de egreso')
+    graduation_year = fields.Integer(string='Año de egreso', aggregator=False)
 
     @api.constrains('education_level_id')
     def _check_education_level(self):

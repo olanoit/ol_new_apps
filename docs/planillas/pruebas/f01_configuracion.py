@@ -186,7 +186,7 @@ for compania in (principal, secundaria):
         'detail_analytic': False,
         'detallar_provision': True,
         # Tareaje
-        'tareaje_late_tolerance': 10.0,
+        'tareaje_late_tolerance': 10 / 60,  # 10 minutos: el campo va en horas
         'tareaje_round_minutes': 5,
         'tareaje_night_from': 22.0,
         'tareaje_night_to': 6.0,

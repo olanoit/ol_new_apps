@@ -53,7 +53,7 @@ class HrLiquidation(models.Model):
         string='Año', required=True,
         default=lambda self: fields.Date.context_today(self).year,
         help='Año del cese (sustituye al año fiscal contable v18); lo '
-             'usa el motor para delimitar los semestres truncos.')
+             'usa el motor para delimitar los semestres truncos.', aggregator=False)
     with_bonus = fields.Boolean(
         string='Bono extraordinario', default=True,
         help='Añade el Bono Extraordinario Ley 29351 sobre la '

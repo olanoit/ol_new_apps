@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261008 — 08/10/2026
+
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+
 ## 19.20261008 — 08/10/2026
 
 - Los libros son del RUC: desde una sucursal el nombre del archivo y la cabecera llevan el RUC de la raíz, y retenciones 4.1, consignaciones, costos, inversiones 3.8, activos 3.9/7.1 y patrimonio 3.19 recogen lo de toda la compañía (raíz y sucursales), como ya hacían el diario y los registros de compras y ventas.

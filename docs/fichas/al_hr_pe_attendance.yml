@@ -259,12 +259,22 @@ pasos:
 
   - seccion: Tareaje
     texto: Las horas del periodo, clasificadas y llevadas a la boleta.
-  - titulo: Parámetros del tareaje
+  - titulo: Horario nocturno, horas extra y tolerancia
+    ruta: Ajustes ▸ Nómina ▸ Perú ▸ Perú — tareaje
+    texto: >-
+      Por compañía (el ícono del edificio lo indica): franja nocturna, horas
+      diarias pagadas al 25 %, tolerancia de tardanza y redondeo de minutos.
+      Se guardan en la configuración principal de la compañía activa, que se
+      crea sola la primera vez.
+    imagen: screenshots/21-ajustes-tareaje.png
+
+  - titulo: Tipos de entrada de trabajo del tareaje
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ pestaña Tareaje
     texto: >-
-      Por compañía: franja nocturna, horas al 25 %, tolerancia de tardanza,
-      redondeo de minutos y el tipo de entrada de trabajo que recibe cada
-      concepto del tareaje.
+      La configuración principal de la compañía (una por compañía; el menú
+      abre directamente la de la compañía activa) indica qué tipo de entrada
+      de trabajo recibe cada concepto del tareaje. También repite los valores
+      de Ajustes.
     puntos:
       - Los tipos de destino se proponen por su código peruano (DLAB, DOM, FER, FAL, TAR, HE25, HE35, HE100).
       - "**W.E. jornada nocturna** no tiene valor por defecto: sin configurarlo, la nocturnidad queda informativa y no llega a la boleta."
@@ -299,7 +309,7 @@ pasos:
     imagen: screenshots/15-tareaje.png
 
   - titulo: Revisar el detalle diario
-    ruta: Tareaje ▸ línea ▸ icono de ojo
+    ruta: Tareaje ▸ línea ▸ botón Ver detalle diario (ícono de lista)
     texto: >-
       Cada día con su horario, marcaciones, horas, estado y la clasificación
       en conceptos. La columna **Horas a compensar** registra el sobretiempo
@@ -397,14 +407,18 @@ campos:
       - [Horas marcadas, Suma de las horas trabajadas del día., Calculado, "Descuenta el refrigerio con cuatro marcaciones"]
       - [Estado, "Asistió, Falta, Día de descanso, Día feriado, Vacaciones, Justificada, Descanso trabajado o Feriado trabajado.", Calculado, "Muestra Reg. ausencia o Ver ausencia"]
       - ["Columnas opcionales", "Establecimiento, Tipo doc., N° marcaciones, Turno planificado, Ciclo atípico, Tipo de entrada y Registro de ausencia.", Ocultas, "—"]
+  - grupo: Ajustes ▸ Nómina ▸ Perú — tareaje
+    ruta: Ajustes ▸ Nómina ▸ Perú
+    texto: Valores por compañía (ícono del edificio); se guardan en la configuración principal.
+    campos:
+      - [Nocturno desde, Comienzo de la franja nocturna., "22:00", Separa horas diurnas y nocturnas]
+      - [Nocturno hasta, Fin de la franja nocturna., "06:00", Separa horas diurnas y nocturnas]
+      - ["Primeras horas extra al 25 %", Horas diarias pagadas al 25 %., "02:00", "El exceso va al 35 %"]
+      - [Tolerancia, "Retraso que no se computa (horas:minutos).", "00:00", Valor por defecto de cada tareaje nuevo]
+      - ["Redondeo (minutos)", Múltiplo al que se redondean tardanzas y sobretiempo., "0 (sin redondeo)", "—"]
   - grupo: Configuración principal ▸ Tareaje
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     campos:
-      - [Inicio de horario nocturno, Comienzo de la franja nocturna., "22:00", Separa horas diurnas y nocturnas]
-      - [Fin de horario nocturno, Fin de la franja nocturna., "06:00", Separa horas diurnas y nocturnas]
-      - ["Horas extra al 25 %", Horas diarias pagadas al 25 %., "02:00", "El exceso va al 35 %"]
-      - ["Tolerancia de tardanza (horas)", Retraso que no se computa., "00:00", Valor por defecto de cada tareaje nuevo]
-      - [Redondeo de minutos, Múltiplo al que se redondean tardanzas y sobretiempo., "0 (sin redondeo)", "—"]
       - ["W.E. días laborados (tareaje)", Tipo de entrada de trabajo de los días laborados., DLAB, Línea de la boleta]
       - ["W.E. jornada nocturna (tareaje)", Tipo de los días y horas nocturnas., Vacío, "Sin él, la nocturnidad no llega a la boleta"]
       - ["W.E. días de descanso / feriado/descanso laborado / faltas / tardanzas (tareaje)", Tipos de cada concepto., "DOM / FER / FAL / TAR", Línea de la boleta]
@@ -504,7 +518,8 @@ ejemplos:
 
 configuracion:
   - Instale el módulo (requiere Planeación, Asistencias, Nómina y el calendario de feriados peruanos).
-  - "Revise **Configuración principal ▸ Tareaje**: franja nocturna, horas al 25 %, tolerancia, redondeo y tipos de entrada de trabajo de destino."
+  - "En **Ajustes ▸ Nómina ▸ Perú** revise la franja nocturna, las horas al 25 %, la tolerancia y el redondeo de cada compañía."
+  - "Revise en **Configuración principal ▸ Tareaje** los tipos de entrada de trabajo de destino."
   - "Marque **Sujeto a horas extras (PE)** en la versión de quienes tienen sobretiempo."
   - "Si hay jornadas atípicas, cree los **Ciclos atípicos** y sus **Asignaciones de ciclo**, genere los turnos y publíquelos."
   - "Marque **Es vacaciones (Perú)** en los tipos de ausencia de vacaciones."
@@ -512,6 +527,13 @@ configuracion:
 requisitos_nota: Requiere Odoo 19 Enterprise (Planeación y Nómina).
 
 faq:
+  - pregunta: ¿Cómo funciona con varias compañías?
+    respuesta: >-
+      Cada compañía tiene su franja nocturna, tolerancia y tipos de entrada
+      en su configuración principal. Ciclos, asignaciones, tareajes y
+      fotochecks llevan la compañía activa, de solo lectura, y Odoo impide
+      mezclar trabajadores de otra compañía (también en el registro de
+      control de asistencia). Los ciclos sin compañía son comunes a todas.
   - pregunta: ¿Por qué un trabajador no aparece en el tareaje?
     respuesta: >-
       El tareaje solo incluye a quienes tienen al menos una marcación en el

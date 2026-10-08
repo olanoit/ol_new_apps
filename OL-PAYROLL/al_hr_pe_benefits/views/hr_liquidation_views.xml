@@ -240,7 +240,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name" optional="show"/>
-                <field name="year" optional="show" options="{'format': false}"/>
+                <field name="year" optional="show" options="{'enable_formatting': false}"/>
                 <field name="payslip_run_id" optional="show"/>
                 <field name="gratification_type" optional="show"/>
                 <field name="cts_type" optional="show"/>

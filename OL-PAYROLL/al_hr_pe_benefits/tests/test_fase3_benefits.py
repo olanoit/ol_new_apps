@@ -194,3 +194,16 @@ class TestFase3Benefits(BenefitsCaseBase):
             self.employee, False)
         self.assertTrue(foreign.exists(),
                         'El recálculo borró saldos de otra compañía')
+
+    def test_documents_created_by_code_get_a_name(self):
+        """Fuera del formulario (código, importación) el documento recibe el
+        nombre que propondría el formulario: antes quedaba sin título."""
+        grati = self.env['hr.gratification'].create({
+            'company_id': self.company.id, 'year': 2026, 'type': '07',
+            'payslip_run_id': self.batch_jun.id, 'deposit_date': date(2026, 7, 15)})
+        self.assertEqual(grati.name, 'Gratificación Fiestas Patrias 2026')
+        named = self.env['hr.gratification'].create({
+            'name': 'Mi nombre', 'company_id': self.company.id, 'year': 2026,
+            'type': '12', 'payslip_run_id': self.batch_jun.id,
+            'deposit_date': date(2026, 12, 15)})
+        self.assertEqual(named.name, 'Mi nombre')

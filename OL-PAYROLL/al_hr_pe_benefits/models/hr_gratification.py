@@ -41,7 +41,7 @@ class HrGratification(models.Model):
     year = fields.Integer(
         string='Año', required=True,
         default=lambda self: fields.Date.context_today(self).year,
-        help='Año del pago (sustituye al año fiscal contable v18).')
+        help='Año del pago (sustituye al año fiscal contable v18).', aggregator=False)
     with_bonus = fields.Boolean(
         string='Bono extraordinario', default=True,
         help='Añade el Bono Extraordinario Ley 29351 (% del seguro '
@@ -74,6 +74,23 @@ class HrGratification(models.Model):
     def _compute_grati_count(self):
         for grati in self:
             grati.grati_count = len(grati.line_ids)
+
+    @api.model
+    def _l10n_pe_default_name(self, vals):
+        """El nombre que propone el formulario («%(tipo)s %(año)s»)."""
+        if vals.get('type') and vals.get('year'):
+            label = dict(self._fields['type'].selection).get(vals['type'])
+            return '%s %d' % (label, vals['year'])
+        return False
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # El nombre se propone en el formulario (onchange); lo creado por
+        # código o importación lo recibe aquí para no quedar sin título.
+        for vals in vals_list:
+            if not vals.get('name'):
+                vals['name'] = self._l10n_pe_default_name(vals)
+        return super().create(vals_list)
 
     @api.onchange('year', 'type')
     def _get_period(self):

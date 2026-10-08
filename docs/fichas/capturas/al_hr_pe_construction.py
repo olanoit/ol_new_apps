@@ -66,20 +66,12 @@ with Captura('al_hr_pe_construction') as c:
     c.foto('07-compania', selector='.o_notebook .tab-content')
 
     # --- Trabajador --------------------------------------------------------
-    # 8. Trabajador: categoría, obra, BAE y jornal calculado
+    # 8. Trabajador: «Planilla PE ▸ Construcción civil» (categoría, obra,
+    #    BAE y jornal calculado)
     c.abrir_registro('hr.employee', 2444, ms=2500)
-    c.clic('.o_notebook_headers a[name=payroll_information]', ms=1000)
-    sep = c.page.locator('.tab-pane.active .o_horizontal_separator:text-is("Construcción civil")').first
-    sep.evaluate("e => e.scrollIntoView({block: 'start'})")
-    c.esperar(600)
-    c.page.mouse.move(1438, 898)
-    box = sep.bounding_box()
-    group = sep.locator('xpath=following-sibling::div[contains(@class, "o_inner_group") or contains(@class, "o_group")][1]')
-    gbox = group.bounding_box()
-    sheet = c.page.locator('.o_form_sheet').first.bounding_box()
-    c.foto('08-trabajador', clip={
-        'x': sheet['x'], 'y': box['y'] - 16, 'width': sheet['width'],
-        'height': gbox['y'] + gbox['height'] - box['y'] + 32})
+    c.clic('.o_notebook_headers a[name=l10n_pe_payroll]', ms=1000)
+    c.clic('.o_notebook_headers a[name=l10n_pe_construction]', ms=1000)
+    c.foto('08-trabajador', selector='.o_notebook .tab-pane.active .o_notebook')
 
     # --- Planilla semanal ---------------------------------------------------
     # 9. Boletas semanales DEMO de agosto 2026

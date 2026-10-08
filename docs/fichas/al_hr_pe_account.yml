@@ -42,6 +42,12 @@ destacados:
     texto: >-
       Interruptor por compañía: las líneas llevan la distribución analítica de
       la regla salarial o, si no tiene, la de la ficha del trabajador.
+  - icono: "🏢"
+    titulo: En Ajustes, por compañía
+    texto: >-
+      Diario, contacto, analítica y cuentas de beneficios sociales se
+      configuran en Ajustes ▸ Nómina ▸ Perú, con valores propios de cada
+      compañía; cada asiento usa las cuentas de la compañía de su documento.
 
 contexto:
   titulo: El problema que resuelve
@@ -154,26 +160,32 @@ pasos_intro: >-
 pasos:
   - seccion: Configuración
     texto: Una vez por compañía, antes del primer asiento.
-  - titulo: Configurar el asiento de planilla
+  - titulo: Contabilidad de planillas en Ajustes
+    ruta: "Ajustes ▸ Nómina ▸ Perú: contabilidad de planillas"
+    texto: >-
+      Todo lo contable de la planilla está en un bloque de Ajustes, con el
+      ícono de compañía: cada compañía guarda sus propios valores. En
+      **Asiento del lote de planilla**, el diario, el contacto de las líneas
+      sin trabajador y si el asiento lleva distribución analítica. En
+      **Provisión mensual**, la cuenta de gasto (debe) y de provisión (haber)
+      de CTS, gratificación, bono extraordinario y vacaciones, y si el haber
+      va en una línea por trabajador. En **Pagos y liquidaciones**, las
+      cuentas por pagar, las de conceptos extra y la de ajuste por redondeo.
+    puntos:
+      - El diario y el contacto también los usan los asientos de beneficios sociales.
+      - Sin diario o sin contacto, el asistente se detiene con un aviso.
+      - Las cuentas se guardan por compañía; un asiento de otra compañía usa siempre las de la suya, aunque la activa sea otra.
+    imagen: screenshots/18-ajustes-contabilidad.png
+
+  - titulo: Reglas de aportes AFP
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Contabilidad
     texto: >-
-      Elija el **diario del asiento de planilla**, el **partner para
-      planillas** que se usa en las líneas sin trabajador y si el asiento lleva
-      **analítica**. En **R.S. aportes AFP** indique las reglas cuyo abono va a
-      la cuenta de la afiliación del trabajador.
-    puntos:
-      - El diario y el partner también los usan los asientos de beneficios sociales.
-      - Sin diario o sin partner, el asistente se detiene con un aviso.
+      La Configuración principal de la compañía (una por compañía; el menú abre
+      directamente la de la compañía activa) guarda lo técnico. En **R.S.
+      aportes AFP** indique las reglas cuyo abono va a la cuenta de la
+      afiliación del trabajador. El diario, el contacto y la analítica de
+      Ajustes se ven también aquí.
     imagen: screenshots/01-parametros-lote.png
-
-  - titulo: Configurar las cuentas de beneficios sociales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Contabilidad BBSS
-    texto: >-
-      Por concepto, la cuenta de gasto (debe), la de provisión (haber) y la de
-      beneficio por pagar: CTS, gratificación, bono extraordinario,
-      vacaciones y liquidación de cese con sus conceptos extra. Al final, si la
-      provisión se detalla por trabajador y la cuenta de ajuste por redondeo.
-    imagen: screenshots/02-parametros-bbss.png
 
   - titulo: Cuentas de cada regla salarial
     ruta: Nómina ▸ Configuración ▸ Salario ▸ Reglas
@@ -310,16 +322,19 @@ pasos:
 campos_intro: >-
   Cada campo y botón que añade el módulo, dónde está y qué efecto tiene.
 campos:
-  - grupo: Configuración principal ▸ Contabilidad
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
+  - grupo: Ajustes ▸ Asiento del lote de planilla
+    ruta: "Ajustes ▸ Nómina ▸ Perú: contabilidad de planillas (y Configuración principal ▸ Contabilidad)"
+    texto: Valores por compañía. Las reglas de aportes AFP solo están en la Configuración principal.
     campos:
       - [Diario del asiento de planilla, Diario del asiento de lote y de los asientos de beneficios sociales., Vacío, Obligatorio para generar cualquier asiento]
       - [Partner para planillas, Contacto de las líneas sin trabajador., Vacío, Obligatorio para generar cualquier asiento]
       - [Asiento de lote con analítica, Lleva la distribución analítica de la regla o de la ficha del trabajador., Desmarcado, "Valor inicial de «Con distribución analítica» y analítica de los gastos de BBSS"]
       - ["R.S. aportes AFP (cuenta por afiliación)", Reglas cuyo abono va a la cuenta de la afiliación del trabajador., Vacío, Una línea al haber por AFP]
-  - grupo: Configuración principal ▸ Contabilidad BBSS
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
-    texto: Las cuentas dependen de la compañía activa.
+  - grupo: Ajustes ▸ Provisión mensual, Pagos y liquidaciones
+    ruta: "Ajustes ▸ Nómina ▸ Perú: contabilidad de planillas (y Configuración principal ▸ Contabilidad BBSS)"
+    texto: >-
+      Cuentas por compañía: cada asiento usa las de la compañía de su
+      documento, no las de la compañía activa.
     campos:
       - ["Gasto CTS (debe)", Gasto de la CTS., Vacío, "Provisión, depósito y CTS trunca"]
       - ["Provisión CTS (haber)", Pasivo de la provisión de CTS., Vacío, Se abona al provisionar y se carga al revertir]
@@ -505,7 +520,9 @@ funcionalidades:
   - grupo: Analítica y configuración
     items:
       - Distribución analítica nativa por compañía, de la regla salarial o de la ficha del trabajador.
-      - Cuentas de beneficios sociales por compañía en la Configuración principal.
+      - Diario, contacto, analítica y cuentas de beneficios sociales por compañía en Ajustes ▸ Nómina ▸ Perú.
+      - "Multicompañía: compañía de solo lectura, asistentes que validan la compañía de lo que reciben y cuentas leídas con la compañía del documento."
+      - Botones con la convención de Odoo e íconos genéricos (asiento, revertir, detalle).
       - Validación de cuentas faltantes con la lista de las que hay que configurar.
 
 ejemplos:
@@ -529,7 +546,7 @@ configuracion:
   - "Asigne las cuentas de debe y haber a las reglas salariales, y el detalle por empleado a las que lo necesiten."
   - "En **Ajustes ▸ Nómina ▸ Perú: contabilidad de planillas** configure diario, contacto, analítica y cuentas; las reglas de aportes AFP, en **Configuración principal ▸ Contabilidad**."
   - Asigne a cada afiliación su cuenta contable en la compañía.
-  - "Las cuentas de CTS, gratificación, bono, vacaciones, liquidación y ajuste están en **Ajustes ▸ Nómina ▸ Perú** (y también en Configuración principal ▸ Contabilidad BBSS)."
+  - "Con varias compañías, configure cada una desde Ajustes con ella activa: el ícono de compañía indica que el valor es propio de cada una."
   - Si usa el asiento de lote, deje sin diario la estructura salarial para que la validación de boletas no genere asientos propios.
 requisitos_nota: >-
   Requiere Nómina de Odoo Enterprise con su contabilización y el módulo de
@@ -559,6 +576,12 @@ faq:
       El asistente se detiene y lista los trabajadores con aportes AFP cuya
       afiliación no tiene cuenta en esa compañía; asígnela y vuelva a elegir el
       lote.
+  - pregunta: Tengo varias compañías, ¿qué cuentas usa cada asiento?
+    respuesta: >-
+      Las de la compañía del documento (lote, CTS, gratificación, provisión o
+      liquidación), aunque al generarlo esté activa otra. Cada compañía
+      configura las suyas en Ajustes ▸ Nómina ▸ Perú con ella activa, y los
+      asistentes rechazan documentos de otra compañía.
   - pregunta: ¿Por qué la liquidación tiene un asiento por trabajador?
     respuesta: >-
       Cada cese tiene su fecha, sus importes y su contacto. Al generarlo, la

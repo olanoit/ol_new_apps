@@ -51,6 +51,16 @@ class TestInvoiceFormPePages(TransactionCase):
         for field in ('l10n_pe_edi_cancel_reason', 'l10n_pe_edi_legend'):
             self.assertTrue(group.xpath(".//field[@name='%s']" % field), field)
 
+    def test_edi_documents_inside_invoicing(self):
+        """La pestaña «Documentos EDI» de account_edi (envío al OSE) es una
+        pestaña interna de «Facturación PE» y la ve facturación, no solo el
+        modo desarrollador (como admin, groups ya resuelto en get_view)."""
+        page = self._one("//page[@name='page_edi_documents']")
+        self.assertEqual(page.getparent().get('name'), 'l10n_pe_invoicing_notebook')
+        self.assertEqual(page.get('string'), 'Envío electrónico')
+        self.assertNotIn(page.get('invisible'), ('1', 'True'))
+        self.assertTrue(page.xpath(".//field[@name='edi_document_ids']"))
+
     def test_detraction_only_once(self):
         """La constancia de l10n_pe_reports queda oculta: está en la pestaña
         «Detracción»."""

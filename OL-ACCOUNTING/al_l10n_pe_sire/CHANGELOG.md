@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261008 — 08/10/2026
+
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+
 ## 15.20261008 — 08/10/2026
 
 - El asistente de acciones SIRE valida la compañía (sus comprobantes pueden ser de sucursales del RUC).

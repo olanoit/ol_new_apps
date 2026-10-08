@@ -60,7 +60,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name" optional="show"/>
-                <field name="year" optional="show" options="{'format': false}"/>
+                <field name="year" optional="show" options="{'enable_formatting': false}"/>
                 <field name="annual_rent" optional="show"/>
                 <field name="percentage" optional="show"/>
                 <field name="distribution" optional="show"/>

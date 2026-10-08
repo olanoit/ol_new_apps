@@ -129,12 +129,12 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 16.20261008 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
 [al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 12.20261008 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
 [al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 18.20261008 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
-[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 7.20261008 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
+[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 8.20261008 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
 [al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 2.20261008 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
 [al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 4.20261008 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
-[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 19.20261008 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
+[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 20.20261008 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
 [al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 14.20261008 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
-[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 15.20261008 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
+[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 16.20261008 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 1.20261006 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
 [l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 15.20261008 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
@@ -146,20 +146,20 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 4.20261008 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
 [al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 9.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
-[al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 15.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
+[al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 16.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 
 ### OL-PAYROLL
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 28.20261008 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 30.20261008 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
 [al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 8.20261008 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
 [al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 15.20261008 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
-[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 18.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
+[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 19.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
 [al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 18.20261008 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 8.20261008 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
-[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 8.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 17.20261008 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 9.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 18.20261008 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 

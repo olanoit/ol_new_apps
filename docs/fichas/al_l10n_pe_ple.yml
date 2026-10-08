@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 20.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
   - version: 19.20261008
     fecha: 08/10/2026
     cambios:

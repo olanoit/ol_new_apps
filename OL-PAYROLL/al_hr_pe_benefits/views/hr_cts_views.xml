@@ -195,7 +195,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name" optional="show"/>
-                <field name="year" optional="show" options="{'format': false}"/>
+                <field name="year" optional="show" options="{'enable_formatting': false}"/>
                 <field name="type" optional="show"/>
                 <field name="exchange_type" optional="show"/>
                 <field name="deposit_date" optional="show"/>

@@ -84,7 +84,7 @@ class L10nPeSireMixin(models.AbstractModel):
     name = fields.Char(string='Nombre', compute='_compute_name', store=True)
     year = fields.Integer(
         string='Año', required=True, tracking=True, copy=False,
-        default=lambda self: fields.Date.context_today(self).year)
+        default=lambda self: fields.Date.context_today(self).year, aggregator=False)
     month = fields.Selection(
         selection=MONTH_SELECTION, string='Mes', required=True,
         tracking=True, copy=False,

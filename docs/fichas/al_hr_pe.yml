@@ -5,7 +5,7 @@ subtitulo: >-
   con asignación familiar por edad, reglas salariales con su código SUNAT y
   los archivos PLAME, AFPNet y T-Registro listos para subir.
 categoria: Localización Perú · Planillas
-etiquetas: [PLAME, T-Registro, AFP / ONP, EsSalud, Asignación familiar, Derechohabientes, Multicompañía]
+etiquetas: [PLAME, T-Registro, AFP / ONP, EsSalud, Asignación familiar, Planilla PE, Multicompañía]
 portada: screenshots/21-boleta-peru.png
 
 destacados_intro: >-
@@ -43,6 +43,12 @@ destacados:
       Desde el lote de nóminas: archivos .rem, .jor, .snl y .toc con el nombre
       oficial 0601AAAAMM<RUC> y la plantilla XLSX de AFPNet, guardados como
       adjuntos del lote.
+  - icono: "PE"
+    titulo: Todo en «Planilla PE»
+    texto: >-
+      El empleado y la boleta reúnen lo peruano en una sola página con
+      pestañas (Identificación, T-Registro, Domicilio; Cálculo en la boleta);
+      la configuración de la compañía está en Ajustes ▸ Nómina ▸ Perú.
   - icono: "✓"
     titulo: Carga masiva validada
     texto: >-
@@ -60,13 +66,15 @@ contexto:
     Este módulo añade todo eso sobre `hr.version` —que en Odoo 19 absorbió al
     contrato— sin escribir códigos dentro de la lógica: qué work entry es un
     día laborado, qué categoría de regla es un ingreso o qué regla da el neto
-    se configura en los **Configuración principal** de cada compañía. Los
+    se configura en la **Configuración principal** de cada compañía. Los
     catálogos llegan cargados (tablas T05, T06, T08, T09, T12, T15, T17, T19,
     T20, T21, T24, T27, T30, T33, T34 y T36) y se revisan, no se teclean.
   nota: >-
-    **Multicompañía por diseño.** Parámetros, periodos y catálogos propios
-    por compañía, reglas de registro y `check_company` en todo el módulo: dos
-    empresas con criterios distintos conviven en la misma base.
+    **Multicompañía por diseño.** Una configuración principal por compañía
+    (se crea sola), periodos y catálogos propios por compañía, reglas de
+    registro y `check_company` en todo el módulo, también en los asistentes;
+    la compañía de cada registro es de solo lectura. Dos empresas con
+    criterios distintos conviven en la misma base.
 
 flujos_intro: >-
   Los cuatro procesos del núcleo, tal como los recorre el código.
@@ -154,19 +162,34 @@ pasos:
     imagen: screenshots/01-menu-peru.png
     pie: Los catálogos del T-Registro se listan con su número de tabla.
 
+  - titulo: Ajustes ▸ Nómina ▸ Perú
+    ruta: Ajustes ▸ Nómina ▸ Perú
+    texto: >-
+      Lo que se decide por compañía, con el ícono de Odoo de «valores por
+      compañía»: el **SCTR** (entidad y tasa de salud y de pensión, que fijan
+      el código PLAME 0806/0810 y 0813/0814), el **representante y la firma**
+      que salen en la boleta, los certificados y las cartas, y el botón
+      **Abrir configuración principal**. Los demás módulos de planillas
+      añaden aquí sus bloques (quincena y beneficios, contabilidad, tareaje,
+      boletas y pagos).
+    puntos:
+      - Cada compañía ve y guarda sus propios valores; cambie de compañía arriba a la derecha para configurar otra.
+    imagen: screenshots/26-ajustes-nomina-peru.png
+
   - titulo: Configuración principal de la compañía
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     texto: >-
-      Un registro por compañía que consulta toda la suite. En **Generales**
-      se fija la **R.M.V.** (S/ 1 130 por defecto); la **asignación familiar**
-      se calcula sola como el 10 % de la RMV. En **Reglas de referencia** se
-      eligen la regla del neto y la de ingresos afectos a AFP. La pestaña
-      **Boleta** clasifica los tipos de work entry (días laborados, no
-      laborados, subsidiados, sobretiempo y ausencias) y las categorías de
-      reglas de ingresos, descuentos y aportes.
+      Un registro por compañía que consulta toda la suite; el menú abre
+      directamente el de la compañía activa, sin lista. En **Generales** está
+      la **R.M.V.** de respaldo (la boleta toma la de la tabla RMV vigente) y
+      la **asignación familiar**, el 10 % de la RMV. En **Reglas de
+      referencia** se eligen la regla del neto y la de ingresos afectos a AFP.
+      La pestaña **Boleta** clasifica los tipos de work entry (días
+      laborados, no laborados, subsidiados, sobretiempo y ausencias) y las
+      categorías de reglas de ingresos, descuentos y aportes.
     puntos:
-      - Si falta el registro de una compañía, los exportadores se niegan a trabajar con un mensaje claro en lugar de calcular mal.
-      - Solo puede haber un registro por compañía.
+      - "Se crea sola la primera vez que se necesita (al abrir Ajustes o al calcular): ningún flujo se corta por no haberla creado."
+      - Solo puede haber una por compañía.
       - Las demás pestañas (beneficios sociales, quinta categoría, contabilidad, tareaje, pagos bancarios) las añaden los otros módulos de la suite.
     imagen: screenshots/02-parametros.png
 
@@ -238,6 +261,7 @@ pasos:
       **Tipos de suspensión (T21)**.
     puntos:
       - Los días tienen que ser positivos.
+      - "Cada suspensión se muestra con un nombre legible (trabajador · tipo · fechas) en búsquedas y vínculos; lo mismo los periodos, la UIT, la RMV, los dependientes y los estudios."
     imagen: screenshots/09-suspensiones.png
     pie: "DEMO: la falta no justificada del 10/09/2026 de Salazar, un día con el código 07."
 
@@ -267,17 +291,19 @@ pasos:
     imagen: screenshots/11-ocupaciones.png
 
   - seccion: Ficha del trabajador
-    texto: Los datos que piden la PLAME y el T-Registro, en el empleado y su versión.
-  - titulo: Identificación PLAME y domicilio
-    ruta: Empleados ▸ ficha del empleado ▸ pestaña Personal
+    texto: Los datos que piden la PLAME y el T-Registro, juntos en la página «Planilla PE» del empleado.
+  - titulo: "Página «Planilla PE»: identificación y domicilio"
+    ruta: Empleados ▸ ficha del empleado ▸ Planilla PE ▸ Identificación / Domicilio
     texto: >-
-      **Perú — Identificación (PLAME)** descompone el nombre en apellido
+      Todo lo peruano del trabajador está en una página con pestañas
+      internas: **Identificación**, **T-Registro** y **Domicilio** (y
+      **Contrato de trabajo** o **Construcción civil** si están instalados
+      sus módulos). **Identificación** descompone el nombre en apellido
       paterno, materno y nombres (el nombre del empleado se recompone solo),
       con condición de domicilio, tipo y número de documento y cuenta CTS.
-      **Domicilio (T-Registro)** guarda dos direcciones estructuradas —vía,
-      número, zona y distrito (ubigeo)— e indica cuál usa EsSalud para el
-      centro asistencial. **Documento (extranjeros)** pide el país emisor
-      (T26) y la nacionalidad (T04).
+      **Domicilio** guarda dos direcciones estructuradas —vía, número, zona y
+      distrito (ubigeo)—, indica cuál usa EsSalud para el centro asistencial
+      y pide el país emisor (T26) y la nacionalidad (T04) de los extranjeros.
     puntos:
       - El tipo y número de documento no se pueden repetir dentro de la compañía.
       - "Ambos bloques solo los ve el personal de Recursos Humanos: son datos privados que no forman parte del perfil público del empleado."
@@ -285,7 +311,7 @@ pasos:
     imagen: screenshots/12-ficha-plame.png
 
   - titulo: Datos laborales del T-Registro
-    ruta: Empleados ▸ ficha del empleado ▸ pestaña Nómina ▸ T-Registro (SUNAT)
+    ruta: Empleados ▸ ficha del empleado ▸ Planilla PE ▸ T-Registro
     texto: >-
       **Establecimientos (E17)** toma el lugar de trabajo y admite otros;
       **Cuenta de abono (E30)** muestra la cuenta bancaria principal;
@@ -373,8 +399,8 @@ pasos:
 
   - seccion: Cálculo de la boleta
     texto: Estructura peruana y valores fotografiados en cada boleta.
-  - titulo: Pestaña Perú de la boleta
-    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ pestaña Perú
+  - titulo: Página «Planilla PE» de la boleta
+    ruta: Nómina ▸ Recibos de nómina ▸ boleta ▸ Planilla PE ▸ Cálculo
     texto: >-
       **Snapshot del cálculo** muestra la RMV, la asignación familiar, la
       afiliación y los porcentajes de fondo, comisión (flujo o mixta según la
@@ -394,7 +420,7 @@ pasos:
       categoría, descuentos al neto, EsSalud, Vida Ley y totales. Las
       principales se detallan en la tabla de reglas más abajo.
     puntos:
-      - Un input que la boleta no tiene vale cero, así las fórmulas no fallan por un concepto ausente.
+      - Un input o un concepto de días que la boleta no tiene vale cero, así las fórmulas no fallan por un concepto ausente (por ejemplo, una boleta generada antes de existir las horas nocturnas HTN).
       - Todos los tipos de work entry peruanos tienen línea en la boleta aunque valgan cero, y los días de descanso (DOM) completan los días calendario del periodo.
     imagen: screenshots/22-estructura-base.png
 
@@ -409,7 +435,7 @@ pasos:
       adjunto y se descarga al momento.
     puntos:
       - "El nombre se arma con la fecha de fin del lote y el RUC: 0601AAAAMM<RUC>."
-      - "El .snl lee las suspensiones registradas en el **Periodo** del lote; el .jor exige la pestaña Boleta de los parámetros completa; AFPNet usa la regla de ingresos afectos AFP."
+      - "El .snl lee las suspensiones registradas en el **Periodo** del lote; el .jor exige la pestaña Boleta de la configuración principal completa; AFPNet usa la regla de ingresos afectos AFP."
       - Se exporta un lote a la vez.
       - Las demás opciones del menú (subsidios, adelantos, asiento, pagos bancarios) las añaden otros módulos de la suite.
     imagen: screenshots/23-lote-plame.png
@@ -442,11 +468,11 @@ campos:
   - grupo: Configuración principal
     ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
     campos:
-      - [Compañía, Compañía del registro (uno por compañía)., Compañía activa, Cada compañía lee el suyo]
-      - [R.M.V., Remuneración Mínima Vital vigente., "1.130,00", "Snapshot de la boleta; base mínima de EsSalud"]
+      - [Compañía, Compañía del registro (uno por compañía; solo lectura)., Compañía activa, Cada compañía lee el suyo]
+      - [R.M.V., "Respaldo si la tabla RMV no cubre la fecha.", "1.230,00", "Snapshot de la boleta; base mínima de EsSalud"]
       - [Asignación familiar, "10 % de la R.M.V. (Ley 25129).", "113,00 (calculado)", Importe de la regla AF]
-      - [Representante legal, Contacto que firma por el empleador., Vacío, Firma de la boleta y los certificados impresos]
-      - [Firma del empleador, Imagen de la firma., Vacío, Se imprime en la boleta y los certificados]
+      - [Representante legal, "Contacto que firma por el empleador (también en Ajustes ▸ Nómina ▸ Perú).", Vacío, Firma de la boleta y los certificados impresos]
+      - [Firma del empleador, "Imagen de la firma (también en Ajustes).", Vacío, Se imprime en la boleta y los certificados]
       - [R.S. Neto a pagar, Regla que da el neto., Vacío, Neto de la boleta impresa y de los pagos masivos]
       - [R.S. Ingresos afectos AFP, Regla de la remuneración asegurable., Vacío, Columna L de AFPNet]
       - ["W.D. días laborados / no laborados / subsidiados / sobretiempo / ausencias", Clasifican los tipos de work entry., Vacío, "Horas del .jor (obligatorios para exportarlo) y días de la boleta impresa"]
@@ -479,8 +505,15 @@ campos:
       - ["Trabajador / Versión/contrato", Trabajador suspendido., "—", "Documento del .snl"]
       - [Tipo de suspensión (T21), Código de la tabla 21., "—", Columna 3 del .snl]
       - ["Desde / Hasta / Días", Duración; días positivos., "—", "Días sumados por tipo en el .snl"]
+  - grupo: Ajustes ▸ Nómina ▸ Perú
+    ruta: Ajustes ▸ Nómina ▸ Perú
+    campos:
+      - ["Salud con / Tasa salud (%)", "Entidad del SCTR de salud (EsSalud o EPS) y su tasa.", "EsSalud / 0,00", "Código PLAME 0806 u 0810"]
+      - ["Pensión con / Tasa pensión (%)", "Entidad del SCTR de pensión (ONP o aseguradora) y su tasa.", "Aseguradora / 0,00", "Código PLAME 0813 u 0814"]
+      - ["Representante / Firma", Los de la configuración principal., Vacío, "Boleta, certificados y cartas"]
+      - [Abrir configuración principal, Botón al formulario de la compañía activa., "—", Mapeo de reglas y work entries]
   - grupo: Ficha del empleado — identificación y domicilio
-    ruta: Empleados ▸ ficha ▸ pestaña Personal
+    ruta: Empleados ▸ ficha ▸ Planilla PE ▸ Identificación / Domicilio
     campos:
       - ["Apellido paterno / Apellido materno / Nombres", Nombre descompuesto., Vacío, "Recomponen el nombre del empleado; E04"]
       - [Condición, Domiciliado o No domiciliado., Domiciliado, "Condición del .toc"]
@@ -493,7 +526,7 @@ campos:
       - [País emisor del documento (T26), Solo carné de extranjería o pasaporte., Vacío, "Para documentos peruanos se pone 604"]
       - [Nacionalidad (T04), Código de nacionalidad para extranjeros., Vacío, Campo 9 de la E04]
   - grupo: Versión del empleado — T-Registro
-    ruta: Empleados ▸ ficha ▸ pestaña Nómina ▸ T-Registro (SUNAT)
+    ruta: Empleados ▸ ficha ▸ Planilla PE ▸ T-Registro
     campos:
       - [Otros establecimientos, Locales adicionales además del lugar de trabajo., Vacío, "Filas de la E17 (solo con código)"]
       - [Estudios concluidos (E29), "Formación superior completa, en el Perú, institución, carrera y año de egreso.", Vacío, "Archivo .edu; obligatorio con T09 11 o 13"]
@@ -634,7 +667,8 @@ ejemplos:
 configuracion_intro: Puesta en marcha recomendada, en este orden.
 configuracion:
   - Instale el módulo (requiere Nómina de Odoo Enterprise y la localización peruana).
-  - "Cree los **Configuración principal** de cada compañía: RMV, reglas de referencia y la pestaña **Boleta**."
+  - "En **Ajustes ▸ Nómina ▸ Perú**, por compañía: SCTR, representante y firma."
+  - "Complete la **Configuración principal** (se crea sola): reglas de referencia y la pestaña **Boleta**."
   - Revise la **UIT** del año, las tasas de las **Afiliaciones (AFP/ONP)**, los **Seguros sociales** y los **Aportes**.
   - "Genere los **periodos** del ejercicio (con semanas si hay regímenes semanales)."
   - "Ponga el **código de establecimiento** en los lugares de trabajo y la **Entidad SUNAT (T36)** en los bancos."
@@ -654,8 +688,8 @@ faq:
       versiones» del módulo de importadores Excel.
   - pregunta: Cambió la tasa de una AFP, ¿se recalculan las boletas anteriores?
     respuesta: >-
-      No. Cada boleta guarda en la pestaña Perú las tasas con las que se
-      calculó. Las boletas nuevas toman la tasa vigente de la afiliación.
+      No. Cada boleta guarda en Planilla PE ▸ Cálculo las tasas con las que
+      se calculó. Las boletas nuevas toman la tasa vigente de la afiliación.
   - pregunta: ¿Por qué el T-Registro no genera el archivo?
     respuesta: >-
       Porque faltan datos que SUNAT rechazaría. El aviso lista, por trabajador,
@@ -671,12 +705,33 @@ faq:
       Sí. Genere los periodos con semanas: cada semana cuelga de su mes, la
       boleta semanal toma la semana como periodo y el lote semanal muestra el
       mes como Periodo PLAME.
+  - pregunta: Tengo dos compañías, ¿dónde configuro cada una?
+    respuesta: >-
+      Cambie a la compañía en el selector de arriba a la derecha y abra
+      Ajustes ▸ Nómina ▸ Perú o Configuración principal: cada compañía tiene
+      la suya, se crea sola la primera vez y los ajustes llevan el ícono de
+      «valores por compañía». La compañía de cada registro no se puede
+      cambiar a mano.
+  - pregunta: Una boleta antigua daba «KeyError» al calcular, ¿qué pasaba?
+    respuesta: >-
+      Se generó antes de que existiera un concepto de días (por ejemplo, las
+      horas nocturnas HTN) y «Calcular» no regenera las líneas de días. Desde
+      la versión 29 un concepto ausente vale cero y la boleta se calcula
+      normalmente.
   - pregunta: ¿Dar de baja a un derechohabiente lo borra?
     respuesta: >-
       No. Pone la fecha de fin del vínculo y pide el motivo; el registro se
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 30.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
+  - version: 29.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Una boleta generada antes de existir un concepto de días (p. ej. horas nocturnas HTN) ya no falla al calcular: el concepto ausente vale cero (antes KeyError('HTN') en la regla NOCT)."
   - version: 28.20261008
     fecha: 08/10/2026
     cambios:

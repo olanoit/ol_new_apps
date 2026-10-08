@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 16.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "La pestaña «Documentos EDI» (estado del envío al OSE, errores y descarga del XML) pasa a «Facturación PE ▸ Envío electrónico» y la ve el equipo de facturación, no solo el modo desarrollador."
   - version: 15.20261008
     fecha: 08/10/2026
     cambios:

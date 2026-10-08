@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_public_holidays.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261008 — 08/10/2026
+
+- Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
+- Interfaz en español (antes «Apply to Calendars», «Full Day», «Half Day Rest Until»…) y agrupación por año sin separador de miles (2026, no 2.026).
+
 ## 8.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

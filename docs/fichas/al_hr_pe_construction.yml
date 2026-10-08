@@ -237,9 +237,11 @@ pasos:
   - seccion: Trabajador
     texto: El régimen laboral Construcción civil activa el bloque.
   - titulo: Categoría, obra y especialidad
-    ruta: Empleados ▸ ficha del trabajador ▸ Nómina
+    ruta: Empleados ▸ ficha del trabajador ▸ Planilla PE ▸ Construcción civil
     texto: >-
-      El bloque **Construcción civil** muestra la categoría, la obra, la
+      La pestaña **Construcción civil**, dentro de la página **Planilla PE**
+      del trabajador (junto a Identificación, Contrato de trabajo, T-Registro
+      y Domicilio), muestra la categoría, la obra, la
       especialidad BAE (solo operarios; otra categoría no la admite) y las
       bonificaciones propias del puesto. El **jornal básico** aparece calculado
       desde la tabla vigente.
@@ -384,7 +386,7 @@ campos:
       - [Edad tope de la asignación escolar, Edad máxima del hijo., "18", Regla AESC]
       - [Edad tope cursando estudios superiores, Prolongación por estudios., "21", Regla AESC]
   - grupo: Trabajador ▸ Construcción civil
-    ruta: Empleados ▸ ficha ▸ Nómina
+    ruta: Empleados ▸ ficha ▸ Planilla PE ▸ Construcción civil
     campos:
       - ["Categoría (construcción)", "Operario, oficial o peón.", Vacío, Jornal y BUC]
       - [Obra, Obra de la versión., Vacío, Bonificaciones de la obra]
@@ -548,6 +550,13 @@ requisitos_nota: >-
   (beneficios sociales y documentos).
 
 faq:
+  - pregunta: ¿Cómo funciona con varias compañías?
+    respuesta: >-
+      Las tablas salariales, categorías y bonificaciones sin compañía son
+      globales (el convenio es nacional) y cada compañía puede tener las
+      suyas. Las obras y los resúmenes CONAFOVICER son de una compañía, que
+      se toma de la compañía activa y queda de solo lectura; Odoo impide
+      asignar a un trabajador una obra de otra compañía.
   - pregunta: ¿Qué pasa con las boletas antiguas cuando entra un convenio nuevo?
     respuesta: >-
       Nada. Cada boleta congela el jornal de la tabla vigente en su fecha al

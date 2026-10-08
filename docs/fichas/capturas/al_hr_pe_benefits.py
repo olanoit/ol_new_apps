@@ -28,7 +28,7 @@ def alto(c, h):
 
 
 with Captura('al_hr_pe_benefits') as c:
-    # 01. Parámetros principales ▸ Beneficios sociales (cuatro primeros grupos)
+    # 01. Configuración principal ▸ Beneficios sociales (cuatro primeros grupos)
     if quiero('01-parametros'):
         alto(c, 2000)
         c.abrir_registro('hr.main.parameter', 90, ms=2500)
@@ -41,7 +41,7 @@ with Captura('al_hr_pe_benefits') as c:
             'x': pane['x'], 'y': pane['y'] + 8, 'width': pane['width'],
             'height': stop['y'] - pane['y'] - 16})
 
-    # 02. Parámetros principales ▸ Quinta categoría con los tramos
+    # 02. Configuración principal ▸ Quinta categoría con los tramos
     if quiero('02-quinta-tramos'):
         alto(c, 1200)
         c.abrir_registro('hr.main.parameter', 90, ms=2500)
@@ -150,3 +150,18 @@ with Captura('al_hr_pe_benefits') as c:
         h = max(cb['y'] + cb['height'], mb['y'] + mb['height']) - y + 12
         c.foto('20-lote-importar', clip={'x': max(x, 0), 'y': max(y, 0), 'width': w, 'height': h},
                recortar=False)
+
+    # 21. Ajustes ▸ Nómina ▸ Perú: quincena y beneficios sociales (solo se
+    #     mira: se sale sin guardar)
+    if quiero('21-ajustes-quincena'):
+        alto(c, 1400)
+        c.abrir('/odoo/settings#hr_payroll', ms=3000)
+        titulo = c.page.locator('h2:has-text("Perú: quincena y beneficios sociales")').first
+        titulo.scroll_into_view_if_needed()
+        c.esperar(600)
+        bloque = titulo.locator('xpath=following-sibling::div[1]')
+        t = titulo.bounding_box()
+        b = bloque.bounding_box()
+        c.foto('21-ajustes-quincena', clip={
+            'x': b['x'], 'y': t['y'] - 8, 'width': b['width'],
+            'height': b['y'] + b['height'] - t['y'] + 16}, recortar=False)

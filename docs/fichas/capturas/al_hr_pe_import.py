@@ -18,7 +18,8 @@ registros DEMO:
 El historial de importaciones NO se borra: no hay forma de distinguir las
 importaciones DEMO de las reales. Cada ejecución completa añade seis líneas.
 
-Uso: ``python al_hr_pe_import.py [seccion ...]`` (sin argumentos, todas).
+Uso: ``python al_hr_pe_import.py [seccion ...]`` (sin argumentos, todas;
+``boleta`` solo rehace la foto de la boleta, sin importar).
 """
 import sys
 import tempfile
@@ -224,6 +225,12 @@ if quiero('menu'):
             'height': menu['y'] + menu['height'] + 16})
         print('captura', path.name)
 
+def foto_boleta(c):
+    c.abrir_registro('hr.payslip', BOLETA_LUCIA, ms=2000)
+    c.texto('Entradas salariales', ms=900)
+    c.foto('05-boleta', selector='.o_form_view .o_form_sheet_bg')
+
+
 with Captura(MODULE) as c:
     if quiero('inputs'):
         limpiar_inputs(c)
@@ -234,9 +241,10 @@ with Captura(MODULE) as c:
             foto_archivo='02-archivo', foto_config='03-configurar',
             foto_progreso='04-progreso')
         c.clic('.modal-content button:has-text("Listo")', ms=800)
-        c.abrir_registro('hr.payslip', BOLETA_LUCIA, ms=2000)
-        c.texto('Entradas salariales', ms=900)
-        c.foto('05-boleta', selector='.o_form_view .o_form_sheet_bg')
+        foto_boleta(c)
+    if SECCIONES and 'boleta' in SECCIONES:
+        # Solo la foto de la boleta con las entradas ya importadas.
+        foto_boleta(c)
 
     if quiero('versiones'):
         importar(
