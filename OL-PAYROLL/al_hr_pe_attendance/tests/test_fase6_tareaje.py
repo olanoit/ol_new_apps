@@ -283,14 +283,14 @@ class TestTareajeFlow(TransactionCase):
 
     def test_close_and_reopen(self):
         tareaje = self._create_tareaje('Tareaje Cierre')
-        tareaje.set_close()
+        tareaje.action_close()
         self.assertEqual(tareaje.state, 'done')
-        tareaje.set_reopen()
+        tareaje.action_reopen()
         self.assertEqual(tareaje.state, 'draft')
 
     def test_unlink_done_raises(self):
         tareaje = self._create_tareaje('Tareaje Bloqueo')
-        tareaje.set_close()
+        tareaje.action_close()
         with self.assertRaises(UserError):
             tareaje.unlink()
 
@@ -355,7 +355,7 @@ class TestTareajePayslipTotals(TransactionCase):
                                      'la boleta.')
 
     def test_totals_with_compensation(self):
-        self.tareaje.set_close()
+        self.tareaje.action_close()
         totals = self.env['hr.tareaje.manager']._get_payslip_totals(
             self.employee, date(2026, 3, 1), date(2026, 3, 31))
         self.assertAlmostEqual(totals['dlab'], 2.0, places=2)
@@ -366,14 +366,14 @@ class TestTareajePayslipTotals(TransactionCase):
         self.assertAlmostEqual(totals['he35'], 1.5, places=2)
 
     def test_totals_filter_by_period(self):
-        self.tareaje.set_close()
+        self.tareaje.action_close()
         totals = self.env['hr.tareaje.manager']._get_payslip_totals(
             self.employee, date(2026, 3, 1), date(2026, 3, 2))
         self.assertAlmostEqual(totals['dlab'], 1.0, places=2)
         self.assertAlmostEqual(totals['he35'], 1.0, places=2)
 
     def test_totals_other_employee_empty(self):
-        self.tareaje.set_close()
+        self.tareaje.action_close()
         other = self.env['hr.employee'].create({'name': 'Otro Empleado'})
         totals = self.env['hr.tareaje.manager']._get_payslip_totals(
             other, date(2026, 3, 1), date(2026, 3, 31))

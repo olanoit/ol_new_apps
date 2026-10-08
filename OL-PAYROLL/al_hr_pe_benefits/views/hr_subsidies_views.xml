@@ -8,14 +8,14 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="get_subsidies" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="turn_done" string="Cerrar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'done'"/>
+                    <button name="action_process" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_close" string="Cerrar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'done'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_subsidies" class="oe_stat_button" icon="fa-book" type="object" help="Subsidios" invisible="subsidies_count == 0">
+                        <button name="action_open_subsidies" class="oe_stat_button" icon="fa-list" type="object" help="Subsidios" invisible="subsidies_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="subsidies_count"/></span>
                                 <span class="o_stat_text">Subsidios</span>
@@ -67,9 +67,9 @@
         <field name="arch" type="xml">
             <form string="Subsidios">
                 <header>
-                    <button name="get_information" type="object" string="Traer información" invisible="state != 'draft'" class="oe_highlight"/>
-                    <button name="get_calculation" type="object" string="Calcular subsidio" invisible="state != 'close'" class="oe_highlight"/>
-                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'close'"
+                    <button name="action_load_information" type="object" string="Traer información" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_compute" type="object" string="Calcular subsidio" invisible="state != 'close'" class="oe_highlight"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'close'"
                             confirm="Se eliminarán todas las líneas calculadas. ¿Está seguro de que desea hacer esto?"/>
                     <field name="state" widget="statusbar" readonly="1"/>
                 </header>
@@ -129,7 +129,7 @@
                                 <field name="sub_dia" optional="show"/>
                                 <field name="total_sub" sum="Total subsidio" optional="show"/>
                                 <field name="validation" readonly="1" optional="show"/>
-                                <button name="set_not_payed" type="object" icon="fa-rotate-left"
+                                <button name="action_set_unpaid" type="object" icon="fa-undo"
                                         invisible="validation != 'paid out'" string="Cambiar a no pagado"
                                         help="Cambiar a no pagado"
                                         confirm="¿Está seguro de que desea cambiar el estado de este subsidio a no pagado?"/>
@@ -201,7 +201,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
-                <button name="import_subsidies_by_lot" type="object"
+                <button name="action_import_subsidies" type="object"
                         class="btn btn-secondary" string="Importar subsidios"
                         invisible="state != '01_ready'"
                         groups="hr_payroll.group_hr_payroll_user"/>

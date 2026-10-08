@@ -40,15 +40,15 @@
         <field name="arch" type="xml">
             <form string="Adelanto quincenal">
                 <header>
-                    <button name="generate_payslips" string="Generar quincena" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="recompute_payslips" string="Recalcular" type="object" invisible="state != 'verify'"/>
-                    <button name="import_advances_ade_quin" string="Importar adelantos" type="object" invisible="state != 'verify'"/>
-                    <button name="import_loans_ade_quin" string="Importar préstamos" type="object" invisible="state != 'verify'"/>
-                    <button name="export_quincena" string="Exportar quincena" type="object" class="oe_highlight" invisible="state != 'verify'"
+                    <button name="action_generate_payslips" string="Generar quincena" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_recompute" string="Recalcular" type="object" invisible="state != 'verify'"/>
+                    <button name="action_import_advances" string="Importar adelantos" type="object" invisible="state != 'verify'"/>
+                    <button name="action_import_loans" string="Importar préstamos" type="object" invisible="state != 'verify'"/>
+                    <button name="action_export_to_payslips" string="Exportar quincena" type="object" class="oe_highlight" invisible="state != 'verify'"
                             confirm="¿Está seguro de que desea exportar el neto quincenal a su respectivo lote de nóminas?"/>
-                    <button name="set_draft" string="Volver a borrador" type="object" invisible="state != 'verify'"
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'verify'"
                             confirm="Volver a borrador este adelanto de quincena eliminará todas las nóminas que existen actualmente. ¿Está seguro de que desea hacer esto?"/>
-                    <button name="reopen_payroll" string="Reabrir quincena" type="object" invisible="state != 'exported'"
+                    <button name="action_reopen" string="Reabrir quincena" type="object" invisible="state != 'exported'"
                             groups="hr_payroll.group_hr_payroll_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>

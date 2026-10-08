@@ -7,16 +7,16 @@
         <field name="arch" type="xml">
             <form string="Utilidades">
                 <header>
-                    <button name="calculate" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="compute_utilities_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
-                    <button name="export_utilities" string="Exportar utilidades" type="object" class="oe_highlight" invisible="state != 'draft'"
+                    <button name="action_process" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_recompute" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="action_export_to_payslips" string="Exportar utilidades" type="object" class="oe_highlight" invisible="state != 'draft'"
                             confirm="¿Está seguro de que desea exportar los montos de utilidades a su respectivo lote de nóminas?"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_utili" class="oe_stat_button" icon="fa-book" type="object" help="Liquidaciones de utilidades" invisible="utili_count == 0">
+                        <button name="action_open_lines" class="oe_stat_button" icon="fa-file-text-o" type="object" help="Liquidaciones de utilidades" invisible="utili_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="utili_count"/></span>
                                 <span class="o_stat_text">Liquidaciones</span>
@@ -79,7 +79,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="compute_utilitie_line" string="Recalcular" type="object" context="{'line_form': True}"/>
+                    <button name="action_compute" string="Recalcular" type="object" context="{'line_form': True}"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

@@ -92,8 +92,8 @@ class TestAccountFixes(AccountCaseBase):
             'company_id': self.company.id,
             'payslip_run_id': self.batch.id,
         })
-        prov.actualizar()
-        action = prov.get_move_wizard()
+        prov.action_process()
+        action = prov.action_open_move_wizard()
         ctx = action['context']
         self.assertNotIn('move_lines', ctx,
                          'las líneas no deben viajar por el cliente')
@@ -110,7 +110,7 @@ class TestAccountFixes(AccountCaseBase):
         with patch.object(type(prov), '_get_move_lines',
                           return_value=unbalanced), \
                 self.assertRaises(UserError):
-            wizard.generate_move()
+            wizard.action_generate_move()
         self.assertFalse(prov.account_move_id)
 
     def test_benefits_wizard_recomputes_lines(self):
@@ -119,13 +119,13 @@ class TestAccountFixes(AccountCaseBase):
             'company_id': self.company.id,
             'payslip_run_id': self.batch.id,
         })
-        prov.actualizar()
-        ctx = prov.get_move_wizard()['context']
+        prov.action_process()
+        ctx = prov.action_open_move_wizard()['context']
         wizard = self.env['hr.benefits.move.wizard'].with_context(
             **ctx).create({})
         self.assertEqual(wizard.company_id, self.company)
         expected = sum(line['debit'] for line in prov._get_move_lines())
-        wizard.generate_move()
+        wizard.action_generate_move()
         self.assertAlmostEqual(
             sum(prov.account_move_id.line_ids.mapped('debit')),
             expected, places=2)

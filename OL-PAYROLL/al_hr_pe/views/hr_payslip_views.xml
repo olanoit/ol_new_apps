@@ -58,22 +58,22 @@
         <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
-                <button name="export_plame" type="object"
+                <button name="action_export_plame_rem" type="object"
                         class="btn btn-secondary" string="PLAME (.rem)"
                         groups="hr_payroll.group_hr_payroll_user"/>
-                <button name="export_plame_hours" type="object"
+                <button name="action_export_plame_jor" type="object"
                         class="btn btn-secondary" string="PLAME horas (.jor)"
                         groups="hr_payroll.group_hr_payroll_user"/>
-                <button name="export_plame_suspencion" type="object"
+                <button name="action_export_plame_snl" type="object"
                         class="btn btn-secondary" string="PLAME suspensiones (.snl)"
                         groups="hr_payroll.group_hr_payroll_user"/>
-                <button name="export_plame_other_conditions" type="object"
+                <button name="action_export_plame_toc" type="object"
                         class="btn btn-secondary" string="PLAME condiciones (.toc)"
                         groups="hr_payroll.group_hr_payroll_user"/>
-                <button name="afp_net" type="object"
+                <button name="action_export_afpnet" type="object"
                         class="btn btn-secondary" string="AFPNet (.xlsx)"
                         groups="hr_payroll.group_hr_payroll_user"/>
-                <button name="export_payroll_summary" type="object"
+                <button name="action_export_payroll_summary" type="object"
                         class="btn btn-secondary" string="Resumen de planilla (.xlsx)"
                         groups="hr_payroll.group_hr_payroll_user"/>
             </xpath>

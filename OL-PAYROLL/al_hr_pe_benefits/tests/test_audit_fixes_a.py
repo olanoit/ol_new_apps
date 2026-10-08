@@ -65,7 +65,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         })
 
     def _cts_line(self, cts):
-        cts.get_cts()
+        cts.action_process()
         line = cts.line_ids.filtered(
             lambda line: line.employee_id == self.employee)
         self.assertEqual(len(line), 1)
@@ -91,7 +91,7 @@ class TestAuditFixesA(BenefitsCaseBase):
             'with_bonus': False, 'payslip_run_id': self.batch_jun.id,
             'deposit_date': date(2026, 7, 15),
         })
-        grati.get_gratification()
+        grati.action_process()
         line = grati.line_ids.filtered(
             lambda line: line.employee_id == self.employee)
         self.assertEqual(line.months, 6)
@@ -139,7 +139,7 @@ class TestAuditFixesA(BenefitsCaseBase):
             'with_bonus': False, 'payslip_run_id': self.batch_jun.id,
             'deposit_date': date(2026, 7, 15),
         })
-        grati.get_gratification()
+        grati.action_process()
         line = grati.line_ids.filtered(
             lambda line: line.employee_id == self.employee)
         self.assertEqual(line.months, 6)
@@ -161,7 +161,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         line = self._cts_line(self._new_cts())
         self.assertAlmostEqual(line.remaining_wage, 100.0)
         engine_total = line.total_cts
-        line.compute_cts_line()
+        line.action_compute()
         self.assertAlmostEqual(line.total_cts, engine_total, delta=0.05)
 
     # ------------------------------------------------------------------
@@ -185,16 +185,16 @@ class TestAuditFixesA(BenefitsCaseBase):
     # ------------------------------------------------------------------
     def test_exported_cts_cannot_be_recomputed(self):
         cts = self._new_cts()
-        cts.get_cts()
+        cts.action_process()
         cts.state = 'exported'
         with self.assertRaises(UserError):
-            cts.get_cts()
+            cts.action_process()
         with self.assertRaises(UserError):
-            cts.export_cts()
+            cts.action_export_to_payslips()
         with self.assertRaises(UserError):
-            cts.line_ids.compute_cts_line()
-        cts.turn_draft()
-        cts.get_cts()
+            cts.line_ids.action_compute()
+        cts.action_draft()
+        cts.action_process()
 
     def test_bonus_default_on(self):
         grati = self.env['hr.gratification'].create({
@@ -260,7 +260,7 @@ class TestAuditFixesA(BenefitsCaseBase):
             'wage': self.wage,
             'accrued_vacation': 15,
         })
-        line.with_context(line_form=True).compute_vacation_line()
+        line.with_context(line_form=True).action_compute()
         self.assertAlmostEqual(line.total_vacation, self.wage / 2,
                                delta=0.01)
 
@@ -312,7 +312,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         """Cese el 10-may (antes del depósito del 15): la CTS de
         nov-abr se paga en la liquidación; antes no la pagaba nadie."""
         liquidation = self._cessation_in_july(month=5)
-        liquidation.get_liquidation()
+        liquidation.action_process()
         winter = liquidation.cts_line_ids.filtered(
             lambda line: line.cessation_date == date(2026, 5, 10)
             and line.compute_date <= date(2025, 11, 1))
@@ -322,18 +322,18 @@ class TestAuditFixesA(BenefitsCaseBase):
         """La indemnización vacacional va a la boleta por INDVAC y suma
         al neto de la línea sin pagar aportes."""
         liquidation = self._cessation_in_july()
-        liquidation.get_liquidation()
+        liquidation.action_process()
         line = liquidation.vacation_line_ids[:1]
         if not line:
             self.skipTest('el cese no generó línea de vacaciones')
         total = line.total
-        line.with_context(line_form=True).compute_vacation_line()
+        line.with_context(line_form=True).action_compute()
         self.assertAlmostEqual(line.total, total, places=2,
                                msg='recalcular no cambia el importe')
         line.vacation_indemnity = 1000.0
-        line.with_context(line_form=True).compute_vacation_line()
+        line.with_context(line_form=True).action_compute()
         self.assertAlmostEqual(line.total, total + 1000.0, places=2)
-        liquidation.export_liquidation()
+        liquidation.action_export_to_payslips()
         slip = liquidation.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         indem = slip.input_line_ids.filtered(
@@ -344,7 +344,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         """Cese el 10-jul (antes del pago del 15): ene-jun se paga
         como gratificación trunca."""
         liquidation = self._cessation_in_july()
-        liquidation.get_liquidation()
+        liquidation.action_process()
         first_semester = liquidation.gratification_line_ids.filtered(
             lambda line: line.compute_date == date(2026, 1, 1))
         self.assertEqual(len(first_semester), 1)
@@ -356,12 +356,12 @@ class TestAuditFixesA(BenefitsCaseBase):
         """Las vacaciones adelantadas van a la boleta como descuento
         (ADE_VAC), no solo restadas en el total de la línea (07/10/2026)."""
         liquidation = self._cessation_in_july()
-        liquidation.get_liquidation()
+        liquidation.action_process()
         line = liquidation.vacation_line_ids[:1]
         if not line:
             self.skipTest('el cese no generó línea de vacaciones')
         line.advanced_vacation = 300.0
-        liquidation.export_liquidation()
+        liquidation.action_export_to_payslips()
         slip = liquidation.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         ade = slip.input_line_ids.filtered(
@@ -375,12 +375,12 @@ class TestAuditFixesA(BenefitsCaseBase):
             'employee_id': self.employee.id,
             'cessation_date': date(2026, 7, 10),
         })
-        self.assertEqual(cts_line.view_detail_cts()['type'],
+        self.assertEqual(cts_line.action_show_details()['type'],
                          'ir.actions.act_window')
         grati_line = self.env['hr.gratification.line'].create({
             'liquidation_id': liquidation.id,
             'employee_id': self.employee.id,
             'cessation_date': date(2026, 7, 10),
         })
-        self.assertEqual(grati_line.view_detail_grat()['type'],
+        self.assertEqual(grati_line.action_show_details()['type'],
                          'ir.actions.act_window')

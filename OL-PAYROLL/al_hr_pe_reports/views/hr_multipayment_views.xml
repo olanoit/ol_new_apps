@@ -178,8 +178,8 @@
         <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
-                <button name="generate_multipayments" type="object" class="btn btn-secondary" string="Generar TXT banco" groups="hr_payroll.group_hr_payroll_manager"/>
-                <button name="get_multipayments_view" type="object" class="btn btn-secondary" string="Pagos bancarios"/>
+                <button name="action_generate_multipayment" type="object" class="btn btn-secondary" string="Generar TXT banco" groups="hr_payroll.group_hr_payroll_manager"/>
+                <button name="action_open_multipayments" type="object" class="btn btn-secondary" string="Pagos bancarios"/>
             </xpath>
         </field>
     </record>
@@ -195,8 +195,8 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
-                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+                <button name="action_generate_multipayment" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
+                <button name="action_open_multipayments" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
     </record>
@@ -212,8 +212,8 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
-                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+                <button name="action_generate_multipayment" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
+                <button name="action_open_multipayments" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
     </record>
@@ -229,8 +229,8 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated or state == 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
-                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+                <button name="action_generate_multipayment" string="Generar TXT banco" type="object" invisible="txt_generated or state == 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
+                <button name="action_open_multipayments" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
     </record>
@@ -246,8 +246,8 @@
             <xpath expr="//header" position="inside">
                 <field name="multipayment_count" invisible="1"/>
                 <field name="txt_generated" invisible="1"/>
-                <button name="generate_multipayments" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
-                <button name="get_multipayments_view" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
+                <button name="action_generate_multipayment" string="Generar TXT banco" type="object" invisible="txt_generated" groups="hr_payroll.group_hr_payroll_manager"/>
+                <button name="action_open_multipayments" string="Pagos bancarios" type="object" invisible="multipayment_count == 0"/>
             </xpath>
         </field>
     </record>

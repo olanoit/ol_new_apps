@@ -28,7 +28,7 @@ class TestFase4Benefits(BenefitsCaseBase):
     def test_generate_tramos_uit(self):
         """Tramos IR 5ta: [8, 14, 17, 20, 30] % sobre
         [5, 20, 35, 45, ∞] × UIT (∞ = 0)."""
-        self.param.generate_tramos()
+        self.param.action_generate_brackets()
         tramos = self.param.rate_limit_ids.sorted('range')
         self.assertEqual(len(tramos), 5)
         self.assertEqual(tramos.mapped('rate'), [8, 14, 17, 20, 30])
@@ -42,7 +42,7 @@ class TestFase4Benefits(BenefitsCaseBase):
     def test_tax_proy_tabla_escalonada(self):
         """Impuesto proyectado: 8 % hasta 5 UIT y 14 % por el exceso
         (renta neta dentro del 2º tramo)."""
-        self.param.generate_tramos()
+        self.param.action_generate_brackets()
         uit = self.uit.amount
         net_rent = 8 * uit  # entre 5 y 20 UIT
         tax = self.env['hr.fifth.category.line'].get_tax_proy(
@@ -67,7 +67,7 @@ class TestFase4Benefits(BenefitsCaseBase):
             'amount': 1200.0,
             'fees_number': 4,
         })
-        loan.get_fees()
+        loan.action_generate_fees()
         lines = loan.line_ids.sorted('fee')
         self.assertEqual(len(lines), 4)
         self.assertEqual(lines.mapped('amount'), [300.0] * 4)
@@ -84,7 +84,7 @@ class TestFase4Benefits(BenefitsCaseBase):
             'company_id': self.company.id,
             'payslip_run_id': self.batch.id,
         })
-        prov.actualizar()
+        prov.action_process()
         cts = prov.cts_lines.filtered(
             lambda l: l.employee_id == self.employee)
         vaca = prov.vaca_lines.filtered(
@@ -121,7 +121,7 @@ class TestFase4Benefits(BenefitsCaseBase):
             'percentage': 10.0,
             'payslip_run_id': self.batch_jun.id,
         })
-        util.calculate()
+        util.action_process()
         line = util.utilities_line_ids.filtered(
             lambda l: l.employee_id == self.employee)
         self.assertTrue(line, 'Utilidades sin línea del empleado')

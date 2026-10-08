@@ -63,7 +63,7 @@ class HrMainParameter(models.Model):
     rate_limit_ids = fields.One2many(
         'hr.rate.limit', 'main_parameter_id', string='Tramos de 5ta')
 
-    def generate_tramos(self, year=None):
+    def action_generate_brackets(self, year=None):
         """Regenera los tramos del IR 5ta: tasas [8, 14, 17, 20, 30] %
         sobre límites [5, 20, 35, 45, ∞] × UIT (∞ se guarda como 0,
         semántica v18 de ``get_tax_proy``). La UIT sale del catálogo
@@ -236,7 +236,7 @@ class HrFifthCategory(models.Model):
             record.previous_fifth_category_id = previous
 
     # Botones, en el mismo orden que en la vista
-    def generate_fifth(self):
+    def action_generate(self):
         """Crea una línea por boleta del lote y calcula la quinta."""
         self.ensure_one()
         Line = self.env['hr.fifth.category.line']
@@ -245,12 +245,12 @@ class HrFifthCategory(models.Model):
                 'fifth_category_id': self.id,
                 'slip_id': slip.id,
             })
-        self.line_ids.compute_fifth_line()
+        self.line_ids.action_compute()
         self.state = 'verify'
         return notify_success(self.env._('Se generó la quinta '
                                          'correctamente.'))
 
-    def get_employees_excluidos(self):
+    def action_add_excluded_employees(self):
         """Wizard para reincorporar empleados excluidos como afectos."""
         self.ensure_one()
         wizard = self.env['hr.employee.excluidos.wizard'].create({
@@ -268,10 +268,10 @@ class HrFifthCategory(models.Model):
             'type': 'ir.actions.act_window',
         }
 
-    def recompute_fifth(self):
-        self.line_ids.compute_fifth_line()
+    def action_recompute(self):
+        self.line_ids.action_compute()
 
-    def export_fifth(self):
+    def action_export_to_payslips(self):
         """Vuelca la retención IR 5ta al payslip de cada empleado.
 
         Por cada línea afecta escribe en su boleta:
@@ -304,13 +304,13 @@ class HrFifthCategory(models.Model):
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         """Vuelve a borrador eliminando líneas afectas y excluidas."""
         self.line_ids.unlink()
         self.line_excluidos_ids.unlink()
         self.write({'state': 'draft'})
 
-    def turn_verify(self):
+    def action_reopen(self):
         """Reabre a «en proceso» para revisar antes de exportar."""
         self.write({'state': 'verify'})
 
@@ -586,7 +586,7 @@ class HrFifthCategoryLine(models.Model):
         return ((self.tax_proy or 0.0) - (self.past_months_ret or 0.0)
                 - (self.other_emp_ret or 0.0))
 
-    def compute_fifth_line(self):
+    def action_compute(self):
         """Calcula la línea completa (proyección → tramos → retención).
 
         Paridad de fórmulas v18 exacta; cambios v19: versión en lugar de
@@ -804,7 +804,7 @@ class HrEmployeeExcluidosWizard(models.TransientModel):
         'excluido_id', string='Empleados excluidos', required=True,
         domain="[('fifth_category_id', '=', fifth_category_id)]")
 
-    def insert(self):
+    def action_add(self):
         """Crea una línea afecta por cada excluido seleccionado (el
         usuario recalcula después con «Recalcular quinta»)."""
         self.ensure_one()

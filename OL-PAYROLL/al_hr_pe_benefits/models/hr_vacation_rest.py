@@ -243,7 +243,7 @@ class HrVacationRest(models.Model):
             if sorted_records:
                 sorted_records[-1].is_saldo_final = True
 
-    def view_detail(self):
+    def action_show_details(self):
         """Movimientos del récord vacacional del empleado."""
         self.ensure_one()
         return {
@@ -328,7 +328,7 @@ class HrVacationRestWizard(models.TransientModel):
         'res.company', string='Compañía', required=True, readonly=True,
         default=lambda self: self.env.company)
 
-    def generate_vacation_report(self):
+    def action_compute_balances(self):
         self.ensure_one()
         if not self.show_all and not self.employee_ids:
             raise UserError(self.env._(

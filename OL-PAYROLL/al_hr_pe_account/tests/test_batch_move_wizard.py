@@ -99,7 +99,7 @@ class TestBatchMoveWizard(AccountCaseBase):
         """Generar desde el asistente publica el asiento y lo abre."""
         wizard = self._wizard(account_id=self.acc_ajuste.id)
         wizard._pe_refresh_lines()
-        action = wizard.generate_move()
+        action = wizard.action_generate_move()
         self.assertTrue(self.batch.move_id)
         self.assertEqual(self.batch.move_id.state, 'posted')
         self.assertEqual(action['res_model'], 'account.move')

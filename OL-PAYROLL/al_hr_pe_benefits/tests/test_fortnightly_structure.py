@@ -27,7 +27,7 @@ class TestFortnightlyStructure(BenefitsCaseBase):
         self.param.write({'fortnightly_type': 'percentage', 'tasa': 0.5,
                           'compute_afiliacion': False})
         fortnightly = self._fortnightly()
-        fortnightly.generate_payslips()
+        fortnightly.action_generate_payslips()
         slip = fortnightly.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         self.assertEqual(
@@ -44,7 +44,7 @@ class TestFortnightlyStructure(BenefitsCaseBase):
         self.param.write({'fortnightly_type': 'percentage', 'tasa': 0.5,
                           'compute_afiliacion': True})
         fortnightly = self._fortnightly()
-        fortnightly.generate_payslips()
+        fortnightly.action_generate_payslips()
         slip = fortnightly.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         self.assertGreater(self._line(slip, 'TAT_AQ'), 0.0)
@@ -59,7 +59,7 @@ class TestFortnightlyStructure(BenefitsCaseBase):
                           'net_fortnightly_sr_id': self.env.ref(
                               'al_hr_pe.salary_rule_NETO').id})
         fortnightly = self._fortnightly()
-        fortnightly.generate_payslips()
+        fortnightly.action_generate_payslips()
         lot = fortnightly.payslip_run_id
         if not lot.slip_ids.filtered(lambda s: s.employee_id == self.employee):
             self.env['hr.payslip'].create({

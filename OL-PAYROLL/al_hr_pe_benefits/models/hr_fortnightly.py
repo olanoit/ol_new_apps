@@ -116,7 +116,7 @@ class HrFortnightly(models.Model):
     # ------------------------------------------------------------------
     # Generación de boletas quincenales
     # ------------------------------------------------------------------
-    def generate_payslips(self):
+    def action_generate_payslips(self):
         """Genera las boletas quincenales del lote (sustituye al wizard
         ``hr.payslip.employees.fortnightly`` v18): una por empleado con
         versión de contrato vigente en la quincena, omitiendo los que
@@ -150,7 +150,7 @@ class HrFortnightly(models.Model):
         return notify_success(self.env._('Se generaron %(count)d boletas '
                                          'quincenales.', count=len(slips)))
 
-    def recompute_payslips(self):
+    def action_recompute(self):
         """Recalcula todas las boletas del lote."""
         self.slip_ids.compute_sheet()
         return notify_success(self.env._('Se recalculó exitosamente.'))
@@ -158,13 +158,13 @@ class HrFortnightly(models.Model):
     # ------------------------------------------------------------------
     # Adelantos/préstamos de quincena
     # ------------------------------------------------------------------
-    def import_advances_ade_quin(self):
+    def action_import_advances(self):
         return self.slip_ids.import_advance_quin()
 
-    def import_loans_ade_quin(self):
+    def action_import_loans(self):
         return self.slip_ids.import_loan_quin()
 
-    def export_quincena(self):
+    def action_export_to_payslips(self):
         """Cierra el lote quincenal volcando los montos al mensual; las
         boletas quincenales pasan a validadas."""
         self.ensure_one()
@@ -177,13 +177,13 @@ class HrFortnightly(models.Model):
             lambda slip: slip.state == 'draft').action_payslip_done()
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def set_draft(self):
+    def action_draft(self):
         """Vuelve el lote a borrador eliminando sus boletas."""
         self.slip_ids.action_payslip_cancel()
         self.slip_ids.unlink()
         self.write({'state': 'draft'})
 
-    def reopen_payroll(self):
+    def action_reopen(self):
         """Reabre el lote exportado para corregir y re-exportar."""
         self.write({'state': 'verify'})
         self.slip_ids.filtered(

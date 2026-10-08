@@ -96,7 +96,7 @@ class HrUtilities(models.Model):
     # ------------------------------------------------------------------
     # Cálculo y exportación
     # ------------------------------------------------------------------
-    def calculate(self):
+    def action_process(self):
         """Genera las líneas del ejercicio (una por trabajador con la
         regla de remuneración afecta) y ejecuta el reparto."""
         self.ensure_one()
@@ -162,12 +162,12 @@ class HrUtilities(models.Model):
         self._distribute()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
-    def compute_utilities_line_all(self):
+    def action_recompute(self):
         """Recalcula el reparto completo tras ajustes manuales."""
         self._distribute()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
-    def export_utilities(self):
+    def action_export_to_payslips(self):
         """Vuelca el total de cada línea al input de utilidades de la
         boleta del trabajador en el lote de pago."""
         self.ensure_one()
@@ -185,10 +185,10 @@ class HrUtilities(models.Model):
         return notify_success(self.env._(
             'Se envió al lote de nóminas exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         self.write({'state': 'draft'})
 
-    def action_open_utili(self):
+    def action_open_lines(self):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -330,7 +330,7 @@ class HrUtilitiesLine(models.Model):
         for line in self:
             line.display_name = line.employee or ''
 
-    def compute_utilitie_line(self):
+    def action_compute(self):
         """Recalcula el reparto completo del registro padre; elimina la
         línea si queda sin participación (paridad v18)."""
         for record in self:

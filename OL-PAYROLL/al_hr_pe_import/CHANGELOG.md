@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261008 — 08/10/2026
+
+- Pruebas al día con los nuevos nombres de los métodos de beneficios.
+
 ## 6.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

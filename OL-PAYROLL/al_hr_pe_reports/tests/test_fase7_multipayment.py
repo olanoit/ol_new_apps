@@ -589,7 +589,7 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         """Con el lote aún abierto no se generan los pagos bancarios."""
         self.assertEqual(self.lote.state, '01_ready')
         with self.assertRaises(UserError):
-            self.lote.generate_multipayments()
+            self.lote.action_generate_multipayment()
 
     def test_moneda_distinta_a_la_de_cargo(self):
         """En haberes, una cuenta destino en otra moneda queda fuera."""

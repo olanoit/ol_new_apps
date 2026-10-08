@@ -1482,7 +1482,7 @@ class HrPayslipRun(models.Model):
         for record in self:
             record.multipayment_count = len(record.multipayment_ids)
 
-    def generate_multipayments(self):
+    def action_generate_multipayment(self):
         """Crea los pagos masivos del lote (uno por diario/banco)."""
         self.ensure_one()
         if self.state == '01_ready':
@@ -1496,7 +1496,7 @@ class HrPayslipRun(models.Model):
         return self.env['hr.automate.multipayment']._generate_for_origin(
             self, 'payslip_run_id', glosa)
 
-    def get_multipayments_view(self):
+    def action_open_multipayments(self):
         self.ensure_one()
         return self.env['hr.automate.multipayment']._origin_action_view(
             self, self.env._('Pagos de haberes'))
@@ -1518,14 +1518,14 @@ class HrFortnightly(models.Model):
         for record in self:
             record.multipayment_count = len(record.multipayment_ids)
 
-    def generate_multipayments(self):
+    def action_generate_multipayment(self):
         """Crea los pagos masivos de la quincena."""
         self.ensure_one()
         glosa = self.date_start.strftime('%m%Y') if self.date_start else ''
         return self.env['hr.automate.multipayment']._generate_for_origin(
             self, 'fortnightly_id', glosa)
 
-    def get_multipayments_view(self):
+    def action_open_multipayments(self):
         self.ensure_one()
         return self.env['hr.automate.multipayment']._origin_action_view(
             self, self.env._('Pagos de quincena'))
@@ -1546,7 +1546,7 @@ class HrCts(models.Model):
         for record in self:
             record.multipayment_count = len(record.multipayment_ids)
 
-    def generate_multipayments(self):
+    def action_generate_multipayment(self):
         """Crea los pagos masivos del depósito CTS (la cuenta destino es
         ``cts_bank_account_id``, normalmente en otro banco)."""
         self.ensure_one()
@@ -1556,7 +1556,7 @@ class HrCts(models.Model):
         return self.env['hr.automate.multipayment']._generate_for_origin(
             self, 'cts_id', glosa)
 
-    def get_multipayments_view(self):
+    def action_open_multipayments(self):
         self.ensure_one()
         return self.env['hr.automate.multipayment']._origin_action_view(
             self, self.env._('Pagos de CTS'))
@@ -1578,7 +1578,7 @@ class HrGratification(models.Model):
         for record in self:
             record.multipayment_count = len(record.multipayment_ids)
 
-    def generate_multipayments(self):
+    def action_generate_multipayment(self):
         """Crea los pagos masivos de la gratificación."""
         self.ensure_one()
         periodo = self.payslip_run_id.periodo_id
@@ -1587,7 +1587,7 @@ class HrGratification(models.Model):
         return self.env['hr.automate.multipayment']._generate_for_origin(
             self, 'gratification_id', glosa)
 
-    def get_multipayments_view(self):
+    def action_open_multipayments(self):
         self.ensure_one()
         return self.env['hr.automate.multipayment']._origin_action_view(
             self, self.env._('Pagos de gratificación'))
@@ -1608,7 +1608,7 @@ class HrVacation(models.Model):
         for record in self:
             record.multipayment_count = len(record.multipayment_ids)
 
-    def generate_multipayments(self):
+    def action_generate_multipayment(self):
         """Crea los pagos masivos de la liquidación vacacional."""
         self.ensure_one()
         date_start = self.payslip_run_id.date_start
@@ -1616,7 +1616,7 @@ class HrVacation(models.Model):
         return self.env['hr.automate.multipayment']._generate_for_origin(
             self, 'vacation_id', glosa)
 
-    def get_multipayments_view(self):
+    def action_open_multipayments(self):
         self.ensure_one()
         return self.env['hr.automate.multipayment']._origin_action_view(
             self, self.env._('Pagos de vacaciones'))

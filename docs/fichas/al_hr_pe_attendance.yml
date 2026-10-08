@@ -541,6 +541,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 14.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Métodos de botón con la convención de Odoo (action_close, action_reopen, action_show_details); «Ver detalle» con el ícono genérico de Odoo (fa-list) en vez del ojo."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

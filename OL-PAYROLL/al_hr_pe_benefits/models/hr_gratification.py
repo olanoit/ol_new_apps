@@ -99,7 +99,7 @@ class HrGratification(models.Model):
                 record.payslip_run_id = run.id
 
     # Botones, en el mismo orden que en la vista
-    def get_gratification(self):
+    def action_process(self):
         """Genera/recalcula las líneas del semestre.
 
         Borra las líneas no preservadas, delega el cálculo al motor de
@@ -117,13 +117,13 @@ class HrGratification(models.Model):
             and line.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
-    def compute_grati_line_all(self):
+    def action_recompute(self):
         """Recalcula todas las líneas del lote en una pasada."""
         ensure_draft(self)
-        self.line_ids.compute_grati_line()
+        self.line_ids.action_compute()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
-    def export_gratification(self):
+    def action_export_to_payslips(self):
         """Exporta los montos al lote de nómina y cierra el registro."""
         self.ensure_one()
         ensure_draft(self)
@@ -134,11 +134,11 @@ class HrGratification(models.Model):
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         """Reabre el lote a borrador para permitir recálculo."""
         self.write({'state': 'draft'})
 
-    def action_open_grati(self):
+    def action_open_lines(self):
         """Abre las líneas de gratificación del lote."""
         self.ensure_one()
         return {
@@ -241,7 +241,7 @@ class HrGratificationLine(models.Model):
         'hr.gratification.line.detalle', 'gratification_line_id',
         string='Detalle histórico')
 
-    def compute_grati_line(self):
+    def action_compute(self):
         """Recalcula la línea a partir de sus componentes editables."""
         ensure_line_draft(self, 'gratification_id', 'liquidation_id')
         for record in self:
@@ -270,7 +270,7 @@ class HrGratificationLine(models.Model):
             record.total = custom_round(
                 record.total_grat + record.bonus_essalud, 2)
 
-    def view_detail_grat(self):
+    def action_show_details(self):
         """Detalle histórico de planillas de los 6 meses computados."""
         self.ensure_one()
         self.gratification_line_ids.unlink()

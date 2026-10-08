@@ -23,8 +23,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="compute_grati_line" string="Calcular" type="object" context="{'line_form': True}"/>
-                    <button name="view_detail_grat" string="Detalle histórico" type="object"/>
+                    <button name="action_compute" string="Calcular" type="object" context="{'line_form': True}"/>
+                    <button name="action_show_details" string="Detalle histórico" type="object"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -116,7 +116,7 @@
                 <field name="total_grat" sum="Total gratificación" optional="show"/>
                 <field name="bonus_essalud" sum="Bono extraordinario" optional="show"/>
                 <field name="total" sum="Total a pagar" optional="show"/>
-                <button name="view_detail_grat" icon="fa-eye" type="object" title="Detalle histórico"/>
+                <button name="action_show_details" icon="fa-list" type="object" title="Detalle histórico"/>
             </list>
         </field>
     </record>
@@ -127,15 +127,15 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="get_gratification" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="compute_grati_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
-                    <button name="export_gratification" string="Exportar gratificación" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de gratificación a su respectivo lote de nóminas?"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <button name="action_process" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_recompute" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="action_export_to_payslips" string="Exportar gratificación" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de gratificación a su respectivo lote de nóminas?"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_grati" class="oe_stat_button" icon="fa-book" type="object" help="Boletas de gratificación" invisible="grati_count == 0">
+                        <button name="action_open_lines" class="oe_stat_button" icon="fa-file-text-o" type="object" help="Boletas de gratificación" invisible="grati_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="grati_count"/></span>
                                 <span class="o_stat_text">Boletas</span>

@@ -75,7 +75,7 @@ class HrVacation(models.Model):
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
-    def get_vacation(self):
+    def action_process(self):
         self.ensure_one()
         ensure_draft(self)
         company = self.company_id
@@ -288,16 +288,16 @@ class HrVacation(models.Model):
             and line.employee_id in preserved_employees).unlink()
         return self._notify(self.env._('Se calculó exitosamente.'))
 
-    def compute_vaca_line_all(self):
-        self.line_ids.compute_vacation_line()
+    def action_recompute(self):
+        self.line_ids.action_compute()
         return self._notify(self.env._('Se recalculó exitosamente.'))
 
-    def compute_fifth(self):
+    def action_import_fifth(self):
         """Retención de 5ta proporcional a los días liquidados."""
         self.ensure_one()
         return self.line_ids.compute_quinta_line(self.payslip_run_id)
 
-    def export_vacation(self):
+    def action_export_to_payslips(self):
         self.ensure_one()
         ensure_draft(self)
         self.set_amounts(self.line_ids, self.payslip_run_id)
@@ -307,7 +307,7 @@ class HrVacation(models.Model):
     # ------------------------------------------------------------------
     # Excel
     # ------------------------------------------------------------------
-    def get_excel_vacation(self):
+    def action_export_xlsx(self):
         """Excel de la liquidación. v18 escribía en ``dir_create_file``
         (eliminado); aquí se publica como adjunto y se descarga.
         # TODO(fase3-revisar): unificar formatos con el report.base
@@ -371,7 +371,7 @@ class HrVacation(models.Model):
             'target': 'self',
         }
 
-    def turn_draft(self):
+    def action_draft(self):
         self.write({'state': 'draft'})
 
     # ------------------------------------------------------------------
@@ -581,7 +581,7 @@ class HrVacationLine(models.Model):
         return self.env['hr.vacation']._notify(
             self.env._('Se importó la retención de quinta.'))
 
-    def compute_vacation_line(self):
+    def action_compute(self):
         """Recalcula la línea a partir de sus componentes editables
         (port EXACTO del v18: aquí sí se ajusta por régimen laboral y la
         prima AFP se topa a la remuneración máxima asegurable)."""
@@ -645,7 +645,7 @@ class HrVacationLine(models.Model):
             if record.total <= 0 and not self.env.context.get('line_form'):
                 record.unlink()
 
-    def view_detail_vac(self):
+    def action_show_details(self):
         """Histórico de 6 meses por periodo (sueldo, asignación,
         comisiones, horas extras y bonificaciones). v18 lo armaba con SQL
         ``.format()``; aquí con ORM sobre las boletas BASE."""

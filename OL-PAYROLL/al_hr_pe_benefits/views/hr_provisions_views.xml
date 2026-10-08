@@ -78,10 +78,10 @@
         <field name="arch" type="xml">
             <form string="Provisiones">
                 <header>
-                    <button name="actualizar" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="compute_acumulado" string="Obtener acumulado" type="object" invisible="state != 'draft'"/>
-                    <button name="close_provisiones" string="Cerrar" type="object" invisible="state != 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'done'" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <button name="action_process" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_compute_accumulated" string="Obtener acumulado" type="object" invisible="state != 'draft'"/>
+                    <button name="action_close" string="Cerrar" type="object" invisible="state != 'draft'" groups="hr_payroll.group_hr_payroll_manager"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'done'" groups="hr_payroll.group_hr_payroll_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

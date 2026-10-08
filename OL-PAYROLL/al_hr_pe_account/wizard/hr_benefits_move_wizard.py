@@ -62,7 +62,7 @@ class HrBenefitsMoveWizard(models.TransientModel):
             return None
         return self.env[model].browse(res_id).exists()
 
-    def generate_move(self):
+    def action_generate_move(self):
         """Crea y contabiliza el ``account.move`` con las líneas
         precalculadas por ``_get_move_lines`` (más el ajuste por
         redondeo si hay diferencia), y lo cuelga del registro origen.

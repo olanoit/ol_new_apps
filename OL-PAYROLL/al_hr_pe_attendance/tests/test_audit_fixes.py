@@ -159,12 +159,12 @@ class TestTareajeAuditFixes(TransactionCase):
                 'employee_id': self.employee.id,
                 'dlab': 10.0,
             })
-        first.set_close()
+        first.action_close()
         with self.assertRaises(UserError):
-            second.set_close()
+            second.action_close()
         # Con el primero reabierto, el segundo sí se puede aplicar.
-        first.set_reopen()
-        second.set_close()
+        first.action_reopen()
+        second.action_close()
         self.assertEqual(second.state, 'done')
 
     def test_non_overlapping_tareajes_can_be_applied(self):
@@ -177,7 +177,7 @@ class TestTareajeAuditFixes(TransactionCase):
                 'tareaje_id': tareaje.id,
                 'employee_id': self.employee.id,
             })
-        (first | second).set_close()
+        (first | second).action_close()
         self.assertEqual(set((first | second).mapped('state')), {'done'})
 
     # ------------------------------------------------------------------

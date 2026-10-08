@@ -482,6 +482,10 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 16.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Métodos de botón con la convención de Odoo (action_print_certificate, action_print_letter, action_generate_multipayment, action_open_multipayments)."
   - version: 15.20261008
     fecha: 08/10/2026
     cambios:

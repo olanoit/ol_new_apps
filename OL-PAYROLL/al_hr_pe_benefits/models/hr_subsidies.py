@@ -92,7 +92,7 @@ class HrSubsidiesLot(models.Model):
             lot.subsidies_count = len(lot.line_ids)
 
     # Botones, en el mismo orden que en la vista
-    def get_subsidies(self):
+    def action_process(self):
         """Genera los subsidios del periodo desde las suspensiones.
 
         Crea un `hr.subsidies` por cada `hr.work.suspension` de tipo
@@ -133,12 +133,12 @@ class HrSubsidiesLot(models.Model):
             and sub.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
-    def turn_done(self):
+    def action_close(self):
         """Cierra el lote: no se permite recalcular hasta reabrirlo."""
         self.write({'state': 'done'})
         return notify_success(self.env._('Se cerró exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         """Reabre el lote a borrador para permitir recalcular."""
         self.write({'state': 'draft'})
 
@@ -210,7 +210,7 @@ class HrSubsidies(models.Model):
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
-    def get_information(self):
+    def action_load_information(self):
         """Trae el histórico de remuneraciones de los 12 meses previos.
 
         Enfermedad: si el acumulado de días subsidiados del año (DMED
@@ -257,7 +257,7 @@ class HrSubsidies(models.Model):
         self.state = 'close'
         return notify_success(self.env._('Generación exitosa.'))
 
-    def get_calculation(self):
+    def action_compute(self):
         """Calcula el subsidio total y su reparto por periodos.
 
         * Base diaria = total de remuneraciones ÷ (30 × meses con
@@ -354,7 +354,7 @@ class HrSubsidies(models.Model):
             current = current + relativedelta(months=1)
         return notify_success(self.env._('Se calculó correctamente.'))
 
-    def set_draft(self):
+    def action_draft(self):
         """Reabre el subsidio eliminando todas las líneas calculadas."""
         self.subsidies_line_ids.unlink()
         self.subsidies_total_ids.unlink()
@@ -561,7 +561,7 @@ class HrSubsidiesPeriodo(models.Model):
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})
 
-    def set_not_payed(self):
+    def action_set_unpaid(self):
         self.write({'validation': 'not payed'})
 
     @api.depends('subsidies_id', 'periodo_id')
@@ -630,5 +630,5 @@ class HrPayslip(models.Model):
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
 
-    def import_subsidies_by_lot(self):
+    def action_import_subsidies(self):
         return self.slip_ids.import_subsidies()

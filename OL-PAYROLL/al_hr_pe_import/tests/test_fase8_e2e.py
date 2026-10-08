@@ -329,7 +329,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                 'payslip_run_id': datos['batch'].id,
                 'deposit_date': date(2026, 5, 15),
             })
-            cts.get_cts()
+            cts.action_process()
             # El motor selecciona vía el lote del periodo de cierre:
             # ni un empleado de más (otra compañía) ni de menos.
             self.assertEqual(

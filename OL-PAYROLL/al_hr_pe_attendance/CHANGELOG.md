@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261008 — 08/10/2026
+
+- Métodos de botón con la convención de Odoo (action_close, action_reopen, action_show_details); «Ver detalle» con el ícono genérico de Odoo (fa-list) en vez del ojo.
+
 ## 13.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

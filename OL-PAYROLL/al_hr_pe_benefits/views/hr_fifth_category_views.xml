@@ -23,7 +23,7 @@
                                    options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         </group>
                     </group>
-                    <button name="generate_tramos" type="object" class="btn-primary"
+                    <button name="action_generate_brackets" type="object" class="btn-primary"
                             string="Generar tramos"
                             confirm="Se reemplazarán los tramos actuales con la UIT del año en curso. ¿Continuar?"/>
                     <field name="rate_limit_ids" nolabel="1">
@@ -45,7 +45,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="compute_fifth_line" string="Calcular" type="object"
+                    <button name="action_compute" string="Calcular" type="object"
                             context="{'line_form': True}" class="oe_edit_only"/>
                 </header>
                 <sheet>
@@ -172,19 +172,19 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="generate_fifth" string="Generar quinta" type="object"
+                    <button name="action_generate" string="Generar quinta" type="object"
                             class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="get_employees_excluidos" string="Agregar empleados" type="object"
+                    <button name="action_add_excluded_employees" string="Agregar empleados" type="object"
                             class="oe_highlight" invisible="state != 'verify'"/>
-                    <button name="recompute_fifth" string="Recalcular quinta" type="object"
+                    <button name="action_recompute" string="Recalcular quinta" type="object"
                             class="oe_highlight" invisible="state != 'verify'"/>
-                    <button name="export_fifth" string="Exportar quinta" type="object"
+                    <button name="action_export_to_payslips" string="Exportar quinta" type="object"
                             class="oe_highlight" invisible="state != 'verify'"
                             confirm="¿Está seguro de que desea exportar los montos de quinta categoría a su respectivo lote de nóminas?"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object"
+                    <button name="action_draft" string="Volver a borrador" type="object"
                             invisible="state != 'verify'"
                             confirm="¿Está seguro de que desea eliminar todas las líneas existentes para generar la quinta nuevamente?"/>
-                    <button name="turn_verify" string="Volver a proceso" type="object"
+                    <button name="action_reopen" string="Volver a proceso" type="object"
                             invisible="state != 'exported'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -250,7 +250,7 @@
                     <field name="employees" widget="many2many_tags"/>
                 </group>
                 <footer>
-                    <button name="insert" string="Agregar" type="object" class="btn-primary"/>
+                    <button name="action_add" string="Agregar" type="object" class="btn-primary"/>
                     <button string="Cancelar" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>

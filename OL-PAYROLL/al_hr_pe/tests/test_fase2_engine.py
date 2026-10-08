@@ -163,7 +163,7 @@ class TestFase2Engine(TransactionCase):
             'company_id': self.company.id,
         })
         slip.payslip_run_id = run
-        action = run.export_plame()
+        action = run.action_export_plame_rem()
         self.assertEqual(action['type'], 'ir.actions.act_url')
         attachment = self.env['ir.attachment'].search([
             ('res_model', '=', 'hr.payslip.run'), ('res_id', '=', run.id),
@@ -293,7 +293,7 @@ class TestFase2Engine(TransactionCase):
             'company_id': self.company.id,
         })
         slip.payslip_run_id = run
-        content = self._attachment_text(run.export_plame())
+        content = self._attachment_text(run.action_export_plame_rem())
         self.assertNotIn('|0601|', content)
         self.assertIn('|0121|', content)
 
@@ -334,7 +334,7 @@ class TestFase2Engine(TransactionCase):
             runs |= run
         self.assertEqual(runs[0].l10n_pe_plame_period_id, month)
         self.assertEqual(runs[0]._l10n_pe_plame_slips(), slips)
-        content = self._attachment_text(runs[0].export_plame())
+        content = self._attachment_text(runs[0].action_export_plame_rem())
         bas = [line for line in content.split('\r\n') if '|0121|' in line]
         self.assertEqual(len(bas), 1, 'una sola línea por concepto')
         expected = sum(slips.line_ids.filtered(
@@ -385,11 +385,11 @@ class TestFase2Engine(TransactionCase):
             'company_id': self.company.id,
         })
         slip.payslip_run_id = run
-        text = self._attachment_text(run.export_plame_other_conditions())
+        text = self._attachment_text(run.action_export_plame_toc())
         self.assertEqual(text, '01|44556677|0|0||1|\r\n')
         self.employee.version_id.l10n_pe_mas_vida = True
         self.employee.condition = 'not_domiciled'
-        text = self._attachment_text(run.export_plame_other_conditions())
+        text = self._attachment_text(run.action_export_plame_toc())
         self.assertEqual(text, '01|44556677|0|1||2|\r\n')
 
     def test_rules_round_half_up(self):
@@ -427,7 +427,7 @@ class TestFase2Engine(TransactionCase):
                 'struct_id': self.structure.id, 'payslip_run_id': run.id,
                 'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31),
             }).compute_sheet()
-        action = run.afp_net()
+        action = run.action_export_afpnet()
         attachment_id = int(action['url'].split('/')[3].split('?')[0])
         attachment = self.env['ir.attachment'].browse(attachment_id)
         sheet = load_workbook(io.BytesIO(attachment.raw)).active
@@ -491,7 +491,7 @@ class TestFase2Engine(TransactionCase):
             'date_end': date(2026, 3, 31), 'company_id': self.company.id})
         slip.payslip_run_id = run
         codes = {line.split('|')[2]
-                 for line in self._attachment_text(run.export_plame()).split('\r\n')
+                 for line in self._attachment_text(run.action_export_plame_rem()).split('\r\n')
                  if line}
         self.assertIn('0810', codes)
         self.assertIn('0813', codes)
@@ -508,7 +508,7 @@ class TestFase2Engine(TransactionCase):
             'name': 'Lote resumen', 'date_start': date(2026, 3, 1),
             'date_end': date(2026, 3, 31), 'company_id': self.company.id})
         slip.payslip_run_id = run
-        action = run.export_payroll_summary()
+        action = run.action_export_payroll_summary()
         attachment = self.env['ir.attachment'].browse(
             int(action['url'].split('/')[3].split('?')[0]))
         workbook = load_workbook(io.BytesIO(attachment.raw))

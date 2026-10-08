@@ -515,6 +515,10 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
+  - version: 7.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Pruebas al día con los nuevos nombres de los métodos de beneficios."
   - version: 6.20261008
     fecha: 08/10/2026
     cambios:

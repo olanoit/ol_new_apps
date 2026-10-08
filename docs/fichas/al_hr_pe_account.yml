@@ -566,6 +566,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 7.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Métodos de botón con la convención de Odoo (action_load_provisions, action_open_move_wizard, action_generate_move, action_open_move); el asiento se abre con el ícono de Odoo (fa-bars)."
   - version: 6.20261008
     fecha: 08/10/2026
     cambios:

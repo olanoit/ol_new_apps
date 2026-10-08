@@ -28,7 +28,7 @@
                 </group>
                 <footer>
                     <button string="Imprimir certificado"
-                            name="export_certificate" type="object"
+                            name="action_print_certificate" type="object"
                             class="btn-primary"/>
                     <button string="Cancelar" class="btn-secondary"
                             special="cancel"/>
@@ -68,7 +68,7 @@
                     </group>
                 </group>
                 <footer>
-                    <button string="Imprimir carta" name="export_letter"
+                    <button string="Imprimir carta" name="action_print_letter"
                             type="object" class="btn-primary"/>
                     <button string="Cancelar" class="btn-secondary"
                             special="cancel"/>

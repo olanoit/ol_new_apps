@@ -748,6 +748,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 17.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Métodos de botón con la convención de Odoo en todos los beneficios (action_process, action_recompute, action_export_to_payslips, action_draft, action_close, action_show_details, action_open_lines…). Íconos como en Odoo: detalle con fa-list (no el ojo), revertir pago con fa-undo, documentos con fa-file-text-o."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

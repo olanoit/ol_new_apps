@@ -115,7 +115,7 @@ if not cts:
         'payslip_run_id': lote_abril.id,
         'deposit_date': date(2026, 5, 15),
     })
-cts.get_cts()
+cts.action_process()
 check(len(cts.line_ids) >= 9, 'CTS calculada para la plantilla',
       '%d trabajadores' % len(cts.line_ids))
 
@@ -163,7 +163,7 @@ if not grati:
         'with_bonus': True,                 # Bono extraordinario Ley 30334
     })
 grati.with_bonus = True          # Bono extraordinario Ley 30334
-grati.get_gratification()
+grati.action_process()
 check(len(grati.line_ids) >= 9, 'Gratificación calculada',
       '%d trabajadores' % len(grati.line_ids))
 
@@ -211,7 +211,7 @@ prov = Prov.search([('payslip_run_id', '=', lote_junio.id)], limit=1)
 if not prov:
     prov = Prov.create({'company_id': principal.id,
                         'payslip_run_id': lote_junio.id})
-prov.actualizar()
+prov.action_process()
 linea_cts_prov = prov.cts_lines.filtered(
     lambda l: l.employee_id == empleado('Quispe'))
 linea_grat_prov = prov.grati_lines.filtered(
@@ -240,10 +240,10 @@ if not quinta:
 # generate_fifth crea una línea por boleta sin comprobar si ya existen:
 # relanzar la fase exige limpiar antes.
 if quinta.state != 'draft':
-    quinta.turn_draft()
+    quinta.action_draft()
 quinta.line_ids.unlink()
 quinta.line_excluidos_ids.unlink()
-quinta.generate_fifth()
+quinta.action_generate()
 uit = env['l10n_pe.hr.uit'].get_uit(2026)
 lineas_quinta = quinta.line_ids
 check(lineas_quinta, 'Renta de 5ta generada',
@@ -282,7 +282,7 @@ if not util:
         'percentage': 10.0,
         'payslip_run_id': lote_junio.id,
     })
-util.calculate()
+util.action_process()
 check(abs(util.distribution - 50000.0) < 0.01,
       'Monto a distribuir = 10 % de la renta anual',
       'S/ %.2f' % util.distribution)
@@ -317,7 +317,7 @@ if not liq:
         'cts_type': '11',                   # semestre may-oct en curso
         'gratification_type': '07',
     })
-liq.get_liquidation()
+liq.action_process()
 cts_cese = liq.cts_line_ids.filtered(lambda l: l.employee_id == cesada)
 grat_cese = liq.gratification_line_ids.filtered(
     lambda l: l.employee_id == cesada)

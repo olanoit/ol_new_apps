@@ -243,7 +243,7 @@ for compania in (principal, secundaria):
 
     # Tramos de renta de 5ta categoría (8/14/17/20/30 % sobre UIT).
     if not param.rate_limit_ids:
-        param.generate_tramos()
+        param.action_generate_brackets()
 
 principal_param = parametros[principal.id]
 check(principal_param.basic_sr_id and principal_param.net_to_pay_sr_id,

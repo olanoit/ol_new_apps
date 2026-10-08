@@ -135,7 +135,7 @@ class HrCertificateWizard(models.TransientModel):
         if self.employee_id.company_id:
             self.company_id = self.employee_id.company_id
 
-    def export_certificate(self):
+    def action_print_certificate(self):
         """Valida los datos y lanza el reporte QWeb-PDF.
 
         :raises ValidationError: si falta algún dato del certificado.
@@ -210,7 +210,7 @@ class HrLetterWizard(models.TransientModel):
         if self.employee_id.company_id:
             self.company_id = self.employee_id.company_id
 
-    def export_letter(self):
+    def action_print_letter(self):
         """Valida los datos y lanza el reporte QWeb-PDF.
 
         :raises ValidationError: si falta algún dato o el empleado no

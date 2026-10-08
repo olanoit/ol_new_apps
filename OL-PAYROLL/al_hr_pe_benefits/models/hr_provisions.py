@@ -80,7 +80,7 @@ class HrProvisiones(models.Model):
                 'Primero debes volverla a borrador.'))
 
     # Botones, en el mismo orden que en la vista
-    def actualizar(self):
+    def action_process(self):
         """Genera las líneas de provisión del lote.
 
         Por cada trabajador con boleta y básico en el lote (regímenes
@@ -162,7 +162,7 @@ class HrProvisiones(models.Model):
                 ))
         return notify_success(self.env._('Se actualizó exitosamente.'))
 
-    def compute_acumulado(self):
+    def action_compute_accumulated(self):
         """Acumulado provisionado por empleado (ORM, sin SQL).
 
         * CTS: desde el inicio del semestre CTS en curso (may-oct /
@@ -231,11 +231,11 @@ class HrProvisiones(models.Model):
         return notify_success(self.env._(
             'Se obtuvo el acumulado de provisiones exitosamente.'))
 
-    def close_provisiones(self):
+    def action_close(self):
         """Cierra la provisión y bloquea el recálculo."""
         self.write({'state': 'done'})
 
-    def turn_draft(self):
+    def action_draft(self):
         """Reabre la provisión a borrador para permitir recálculo."""
         self.write({'state': 'draft'})
 

@@ -23,7 +23,7 @@
                     </group>
                 </group>
                 <footer>
-                    <button string="Generar" name="generate_move"
+                    <button string="Generar" name="action_generate_move"
                             type="object" class="oe_highlight"/>
                     <button string="Cancelar" class="oe_link"
                             special="cancel"/>

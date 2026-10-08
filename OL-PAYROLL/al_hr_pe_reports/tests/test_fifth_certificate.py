@@ -19,7 +19,7 @@ class TestFifthCertificate(TransactionCase):
         })
         cls.param = cls.env['hr.main.parameter'].create(
             {'company_id': cls.company.id})
-        cls.param.generate_tramos(2026)
+        cls.param.action_generate_brackets(2026)
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Trabajador quinta', 'company_id': cls.company.id})
         cls.wizard = cls.env['hr.fifth.certificate.wizard'].create({

@@ -95,7 +95,7 @@ class HrCts(models.Model):
                 record.payslip_run_id = run.id
 
     # Botones, en el mismo orden que en la vista
-    def get_cts(self):
+    def action_process(self):
         """Genera/recalcula las líneas del semestre.
 
         Borra las líneas no preservadas, delega el cálculo al motor de
@@ -113,13 +113,13 @@ class HrCts(models.Model):
             and line.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
-    def compute_cts_line_all(self):
+    def action_recompute(self):
         """Recalcula todas las líneas del lote en una pasada."""
         ensure_draft(self)
-        self.line_ids.compute_cts_line()
+        self.line_ids.action_compute()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
-    def export_cts(self):
+    def action_export_to_payslips(self):
         """Exporta los montos al lote de nómina y cierra el registro."""
         self.ensure_one()
         ensure_draft(self)
@@ -130,11 +130,11 @@ class HrCts(models.Model):
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         """Reabre el lote a borrador para permitir recálculo."""
         self.write({'state': 'draft'})
 
-    def action_open_cts(self):
+    def action_open_lines(self):
         """Abre las líneas del lote que califican al depósito."""
         self.ensure_one()
         return {
@@ -246,7 +246,7 @@ class HrCtsLine(models.Model):
     cts_line_ids = fields.One2many(
         'hr.cts.line.detalle', 'cts_line_id', string='Detalle histórico')
 
-    def compute_cts_line(self):
+    def action_compute(self):
         """Recalcula la línea a partir de sus componentes editables."""
         ensure_line_draft(self, 'cts_id', 'liquidation_id')
         for record in self:
@@ -276,7 +276,7 @@ class HrCtsLine(models.Model):
             record.cts_dollars = custom_round(
                 record.total_cts / exchange, 2)
 
-    def view_detail_cts(self):
+    def action_show_details(self):
         """Detalle histórico de planillas de los 6 meses computados."""
         self.ensure_one()
         self.cts_line_ids.unlink()

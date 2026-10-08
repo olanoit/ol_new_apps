@@ -39,7 +39,7 @@
                     </list>
                 </field>
                 <footer>
-                    <button string="Generar asiento" name="generate_move"
+                    <button string="Generar asiento" name="action_generate_move"
                             type="object" class="btn-primary"
                             invisible="not payslip_run_id"/>
                     <button string="Cancelar" class="btn-secondary"

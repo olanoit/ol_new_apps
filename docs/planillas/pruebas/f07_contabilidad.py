@@ -215,13 +215,13 @@ for registro, etiqueta in ((cts, 'CTS'), (grati, 'Gratificación')):
     # get_move_wizard precalcula las líneas y las pasa por contexto:
     # se usa su acción tal cual, como haría la pantalla.
     if not registro.account_move_id:
-        accion = registro.get_move_wizard()
+        accion = registro.action_open_move_wizard()
         Wizard = env['hr.benefits.move.wizard'].with_context(
             **accion['context'])
         valores = Wizard.default_get(['account_id', 'debit', 'credit'])
         valores.update(debit=accion['context']['default_debit'],
                        credit=accion['context']['default_credit'])
-        Wizard.create(valores).generate_move()
+        Wizard.create(valores).action_generate_move()
     asiento_bbss = registro.account_move_id
     if asiento_bbss:
         total_debe = sum(asiento_bbss.line_ids.mapped('debit'))

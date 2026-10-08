@@ -142,7 +142,7 @@ tareaje = Tareaje.search([
     ('company_id', '=', principal.id),
     ('date_start', '=', DESDE)], limit=1)
 if tareaje and tareaje.state == 'done':
-    tareaje.set_reopen()
+    tareaje.action_reopen()
 if not tareaje:
     tareaje = Tareaje.create({
         'name': 'Tareaje abril 2026',
@@ -206,7 +206,7 @@ check(htn > 0, 'Horas nocturnas del vigilante',
 # --------------------------------------------------------------------- #
 # 4. Aplicar el tareaje al periodo                                      #
 # --------------------------------------------------------------------- #
-tareaje.set_close()
+tareaje.action_close()
 check(tareaje.state == 'done', 'Tareaje aplicado al periodo',
       tareaje.state)
 

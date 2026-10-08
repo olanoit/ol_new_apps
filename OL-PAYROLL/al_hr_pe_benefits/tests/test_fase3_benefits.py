@@ -127,7 +127,7 @@ class TestFase3Benefits(BenefitsCaseBase):
             'payslip_run_id': self.batch.id,
             'deposit_date': date(2026, 5, 15),
         })
-        cts.get_cts()
+        cts.action_process()
         line = cts.line_ids.filtered(
             lambda l: l.employee_id == self.employee)
         self.assertTrue(line, 'CTS sin línea del empleado')
@@ -153,7 +153,7 @@ class TestFase3Benefits(BenefitsCaseBase):
             'payslip_run_id': self.batch_jun.id,
             'deposit_date': date(2026, 7, 15),
         })
-        grati.get_gratification()
+        grati.action_process()
         line = grati.line_ids.filtered(
             lambda l: l.employee_id == self.employee)
         self.assertTrue(line, 'Gratificación sin línea del empleado')

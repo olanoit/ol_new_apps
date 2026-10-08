@@ -101,7 +101,7 @@ class HrAdvance(models.Model):
         """Marca el adelanto como aplicado en la planilla."""
         self.write({'state': 'paid out'})
 
-    def set_not_payed(self):
+    def action_set_unpaid(self):
         """Revierte a ``not payed`` (cancela la aplicación)."""
         self.write({'state': 'not payed'})
 
@@ -187,7 +187,7 @@ class HrLoan(models.Model):
             raise UserError(self.env._(
                 'No puede eliminar un préstamo que ya fue aplicado.'))
 
-    def get_fees(self):
+    def action_generate_fees(self):
         """Genera el cronograma: monto ÷ nº de cuotas (redondeo
         ``custom_round``), cada cuota vence el último día del mes y el
         saldo ``debt`` decrece cuota a cuota. La última cuota absorbe el
@@ -222,7 +222,7 @@ class HrLoan(models.Model):
             })
         return notify_success(self.env._('Se calculó correctamente.'))
 
-    def refresh_fees(self):
+    def action_recompute_fees(self):
         """Recalcula el saldo decreciente tras editar cuotas a mano y
         sincroniza ``fees_number`` con las líneas existentes."""
         self.ensure_one()
@@ -262,7 +262,7 @@ class HrLoanLine(models.Model):
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})
 
-    def set_not_payed(self):
+    def action_set_unpaid(self):
         self.write({'validation': 'not payed'})
 
     @api.depends('loan_id', 'fee')
@@ -396,8 +396,8 @@ class HrPayslip(models.Model):
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
 
-    def import_advances_by_lot(self):
+    def action_import_advances(self):
         return self.slip_ids.import_advances()
 
-    def import_loans_by_lot(self):
+    def action_import_loans(self):
         return self.slip_ids.import_loans()

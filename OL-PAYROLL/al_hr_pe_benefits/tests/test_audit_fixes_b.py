@@ -56,7 +56,7 @@ class TestAuditFixesB(BenefitsCaseBase):
             'proy_afect_sr_id': rule['BAS'].id,
             'fifth_category_input_id': quinta_input.id,
         })
-        self.param.generate_tramos(year=2026)
+        self.param.action_generate_brackets(year=2026)
         return quinta_input
 
     # ------------------------------------------------------------------
@@ -129,7 +129,7 @@ class TestAuditFixesB(BenefitsCaseBase):
     def test_tramos_reescalados_a_la_uit_de_la_boleta(self):
         """Tramos generados con la UIT 2025 calculan igual que los de
         2026 cuando la boleta es de 2026."""
-        self.param.generate_tramos(year=2025)
+        self.param.action_generate_brackets(year=2025)
         uit = self.uit_2026
         net_rent = 8 * uit
         tax = self.Line.get_tax_proy(
@@ -148,7 +148,7 @@ class TestAuditFixesB(BenefitsCaseBase):
             'payslip_run_id': self.batch_jun.id,
             'company_id': self.company.id,
         })
-        fifth.generate_fifth()
+        fifth.action_generate()
         line = fifth.line_ids.filtered(
             lambda l: l.employee_id == self.employee)
         self.assertTrue(line, 'El trabajador debe quedar afecto')
@@ -168,7 +168,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.assertAlmostEqual(line.ext_ret, round(tax_ext - tax, 2),
                                places=2)
         self.assertGreater(line.ext_ret, 0.0)
-        fifth.export_fifth()
+        fifth.action_export_to_payslips()
         exported = june.input_line_ids.filtered(
             lambda inp: inp.input_type_id == quinta_input)
         self.assertAlmostEqual(
@@ -178,7 +178,7 @@ class TestAuditFixesB(BenefitsCaseBase):
     def _fifth_line_june(self):
         fifth = self.env['hr.fifth.category'].create({
             'payslip_run_id': self.batch_jun.id, 'company_id': self.company.id})
-        fifth.generate_fifth()
+        fifth.action_generate()
         return fifth, fifth.line_ids.filtered(lambda l: l.employee_id == self.employee)
 
     def test_quinta_mes_del_cese_no_proyecta(self):
@@ -244,7 +244,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         """D.L. 892 art. 2: la participación no supera 18
         remuneraciones; el exceso queda aparte (FONDOEMPLEO)."""
         util = self._utilities(1000000.0)
-        util.calculate()
+        util.action_process()
         line = util.utilities_line_ids
         self.assertEqual(len(line), 1)
         cap = 18 * self.wage
@@ -265,7 +265,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         })
         draft.compute_sheet()
         util = self._utilities(100000.0)
-        util.calculate()
+        util.action_process()
         # Ene-Jun 2026 cerradas: 6 × 3 000 (el borrador de julio no).
         self.assertAlmostEqual(util.utilities_line_ids.salary,
                                self.wage * 6, places=2)
@@ -274,9 +274,9 @@ class TestAuditFixesB(BenefitsCaseBase):
         """Recalcular con «No recalcular» no crea otra línea del mismo
         trabajador ni reparte a medias."""
         util = self._utilities(100000.0)
-        util.calculate()
+        util.action_process()
         util.utilities_line_ids.preserve_record = True
-        util.calculate()
+        util.action_process()
         line = util.utilities_line_ids
         self.assertEqual(len(line), 1)
         self.assertAlmostEqual(line.total_utilities, util.distribution,
@@ -303,7 +303,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.env['hr.subsidies.line'].create({
             'subsidies_id': subsidy.id, 'periodo_id': periodo.id,
             'wage': 3000.0})
-        subsidy.get_calculation()
+        subsidy.action_compute()
         self.assertEqual(subsidy.subsidies_periodo_ids.mapped('days'), [22])
         self.assertAlmostEqual(
             sum(subsidy.subsidies_periodo_ids.mapped('total_sub')),
@@ -322,10 +322,10 @@ class TestAuditFixesB(BenefitsCaseBase):
                 'company_id': self.company.id,
                 'payslip_run_id': self.runs[key].id,
             })
-            prov.actualizar()
+            prov.action_process()
             provisions[key] = prov
         april = provisions[(2026, 4)]
-        april.compute_acumulado()
+        april.action_compute_accumulated()
         vaca = april.vaca_lines.filtered(
             lambda l: l.employee_id == self.employee)
         self.assertAlmostEqual(vaca.prov_acumulado,
@@ -348,7 +348,7 @@ class TestAuditFixesB(BenefitsCaseBase):
             'amount': 100.0,
             'fees_number': 3,
         })
-        loan.get_fees()
+        loan.action_generate_fees()
         lines = loan.line_ids.sorted('fee')
         self.assertEqual(lines.mapped('amount'), [33.33, 33.33, 33.34])
         self.assertAlmostEqual(lines[-1].debt, 0.0, places=2)

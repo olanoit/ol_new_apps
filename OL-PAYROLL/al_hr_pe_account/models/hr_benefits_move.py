@@ -77,7 +77,7 @@ class HrBenefitsMoveMixin(models.AbstractModel):
         'account.move', string='Asiento contable', readonly=True,
         copy=False)
 
-    def action_open_asiento(self):
+    def action_open_move(self):
         """Abre el ``account.move`` generado para este registro."""
         self.ensure_one()
         return {
@@ -108,7 +108,7 @@ class HrBenefitsMoveMixin(models.AbstractModel):
             return run.periodo_id.code.replace('-', '')
         return (run.name or '').replace('-', '')
 
-    def get_move_wizard(self):
+    def action_open_move_wizard(self):
         """Abre el wizard de generación del asiento con los totales
         precalculados (mismo flujo que los 4 wizards v18)."""
         if len(self.ids) > 1:
@@ -214,7 +214,7 @@ class HrCts(models.Model):
             return date(self.year, 5, 1), date(self.year, 10, 31)
         return date(self.year - 1, 11, 1), date(self.year, 4, 30)
 
-    def compute_provision_cts(self):
+    def action_load_provisions(self):
         """Trae a ``prov_acumulado`` lo provisionado en el semestre
         desde ``hr.provisiones`` (ORM; v18 lo hacía con SQL)."""
         self.ensure_one()
@@ -308,7 +308,7 @@ class HrGratification(models.Model):
             return date(self.year, 1, 1), date(self.year, 6, 30)
         return date(self.year, 7, 1), date(self.year, 12, 31)
 
-    def compute_provision_grati(self):
+    def action_load_provisions(self):
         """``prov_acumulado`` = provisión + bono provisionados en el
         semestre (ORM sobre ``hr.provisiones.grati.line``)."""
         self.ensure_one()
@@ -406,7 +406,7 @@ class HrLiquidation(models.Model):
             record.move_count = len(
                 record.liq_move_ids.account_move_id)
 
-    def action_open_asiento(self):
+    def action_open_move(self):
         """Abre la lista de asientos generados por los cesados."""
         self.ensure_one()
         return {
@@ -441,10 +441,10 @@ class HrLiquidation(models.Model):
                 'cessation_date': version.contract_date_end,
             })
 
-    def get_liquidation(self):
+    def action_process(self):
         """Override: tras recalcular los truncos, regenera las filas de
         asiento respetando ``preserve_record`` (v18)."""
-        res = super().get_liquidation()
+        res = super().action_process()
         self.liq_move_ids.filtered(
             lambda move: not move.preserve_record).unlink()
         self.get_liq_move_lines()
@@ -455,7 +455,7 @@ class HrLiquidation(models.Model):
             and move.employee_id in preserved_employees).unlink()
         return res
 
-    def compute_provision_liqui(self):
+    def action_load_provisions(self):
         """Acumulado provisionado por cesado y concepto (ORM).
 
         Rango v18: desde ``compute_date`` hasta ``cessation_date`` de
@@ -642,9 +642,9 @@ class HrLiquidationMove(models.Model):
                     credit=concept.amount, partner_id=partner_id))
         return move_lines
 
-    def get_liquidation_move_wizard(self):
+    def action_open_move_wizard(self):
         """Alias v18 del botón por fila (delegado al mixin)."""
-        return self.get_move_wizard()
+        return self.action_open_move_wizard()
 
     def _benefits_move_date_ref(self):
         self.ensure_one()

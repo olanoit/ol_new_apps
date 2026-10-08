@@ -50,10 +50,10 @@
                 <header>
                     <button name="action_generate" string="Procesar" type="object"
                         class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="set_close" string="Aplicar al periodo" type="object"
+                    <button name="action_close" string="Aplicar al periodo" type="object"
                         class="oe_highlight" invisible="state != 'draft'"
                         confirm="Al aplicar, las boletas del periodo leerán este tareaje al refrescar sus días trabajados. ¿Continuar?"/>
-                    <button name="set_reopen" string="Reabrir" type="object"
+                    <button name="action_reopen" string="Reabrir" type="object"
                         invisible="state != 'done'"/>
                     <field name="state" widget="statusbar" readonly="1"/>
                 </header>
@@ -94,7 +94,7 @@
                                     <field name="he35" optional="show" sum="Total" widget="float_time"/>
                                     <field name="he100" optional="hide" sum="Total" widget="float_time"/>
                                     <field name="company_id" column_invisible="1"/>
-                                    <button name="view_detail" icon="fa-eye" title="Ver detalle diario" type="object"/>
+                                    <button name="action_show_details" icon="fa-list" title="Ver detalle diario" type="object"/>
                                 </list>
                             </field>
                         </page>

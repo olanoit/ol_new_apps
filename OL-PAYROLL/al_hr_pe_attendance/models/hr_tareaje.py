@@ -240,7 +240,7 @@ class HrTareajeManager(models.Model):
     # ------------------------------------------------------------------
     # Flujo
     # ------------------------------------------------------------------
-    def set_close(self):
+    def action_close(self):
         """Aplica el tareaje al periodo (las boletas lo leen al
         refrescar los días trabajados).
 
@@ -268,7 +268,7 @@ class HrTareajeManager(models.Model):
                     other=overlapping.name, name=record.name))
         self.write({'state': 'done'})
 
-    def set_reopen(self):
+    def action_reopen(self):
         """Vuelve a borrador si ninguna boleta cerrada lo consumió."""
         for record in self.filtered(lambda t: t.state == 'done'):
             employees = record.tareaje_line_ids.employee_id
@@ -892,7 +892,7 @@ class HrTareajeManagerLine(models.Model):
         'hr.tareaje.manager.line.attendance', 'tareaje_line_id',
         string='Detalle diario')
 
-    def view_detail(self):
+    def action_show_details(self):
         self.ensure_one()
         return {
             'name': self.env._('Detalle diario del tareaje'),

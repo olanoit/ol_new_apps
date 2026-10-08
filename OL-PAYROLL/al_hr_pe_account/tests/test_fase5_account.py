@@ -138,7 +138,7 @@ class TestFase5Account(AccountCaseBase):
             'payslip_run_id': self.batch.id,
             'deposit_date': date(2026, 5, 15),
         })
-        cts.get_cts()
+        cts.action_process()
         lines = cts._get_move_lines()
         self.assertTrue(lines)
         total_debit = sum(l['debit'] for l in lines)
@@ -147,14 +147,14 @@ class TestFase5Account(AccountCaseBase):
         expected = sum(cts.line_ids.mapped('cts_soles'))
         self.assertAlmostEqual(total_credit, expected, places=2)
         # Flujo completo por el wizard
-        action = cts.get_move_wizard()
+        action = cts.action_open_move_wizard()
         ctx = action['context']
         wizard = self.env['hr.benefits.move.wizard'].with_context(
             **ctx).create({
                 'debit': ctx['default_debit'],
                 'credit': ctx['default_credit'],
             })
-        wizard.generate_move()
+        wizard.action_generate_move()
         self.assertTrue(cts.account_move_id)
         self.assertEqual(cts.account_move_id.state, 'posted')
         payable = sum(cts.account_move_id.line_ids.filtered(
@@ -169,7 +169,7 @@ class TestFase5Account(AccountCaseBase):
             'company_id': self.company.id,
             'payslip_run_id': self.batch.id,
         })
-        prov.actualizar()
+        prov.action_process()
         lines = prov._get_move_lines()
         self.assertTrue(lines)
         total_debit = sum(l['debit'] for l in lines)

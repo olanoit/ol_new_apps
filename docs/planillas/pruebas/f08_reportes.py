@@ -114,7 +114,7 @@ previos = env['hr.automate.multipayment'].search([
     ('payslip_run_id', '=', lote.id)])
 previos.filtered(lambda p: p.state == 'done').action_draft()
 previos.unlink()
-lote.generate_multipayments()
+lote.action_generate_multipayment()
 pagos = env['hr.automate.multipayment'].search([
     ('payslip_run_id', '=', lote.id)])
 check(pagos, 'Pago masivo generado desde el lote',

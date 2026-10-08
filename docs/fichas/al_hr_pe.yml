@@ -677,6 +677,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 27.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Botones con la convención de Odoo (action_<verbo>): exportadores PLAME/AFPNet/resumen como action_export_*. Migración que renombra los botones en las vistas guardadas para que la actualización no falle."
   - version: 26.20261008
     fecha: 08/10/2026
     cambios:

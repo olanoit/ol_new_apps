@@ -136,7 +136,7 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # PLAME .rem — Remuneraciones por concepto
     # ------------------------------------------------------------------
-    def export_plame(self):
+    def action_export_plame_rem(self):
         """Genera el ``.rem`` de PLAME (ingresos/descuentos por concepto).
 
         Estructura de cada línea (idéntica a v18)::
@@ -239,7 +239,7 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # PLAME .jor — Jornada laboral
     # ------------------------------------------------------------------
-    def export_plame_hours(self):
+    def action_export_plame_jor(self):
         """Genera el ``.jor`` de PLAME (jornada por trabajador).
 
         Estructura de cada línea (idéntica a v18)::
@@ -318,7 +318,7 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # PLAME .snl — Suspensiones de labores
     # ------------------------------------------------------------------
-    def export_plame_suspencion(self):
+    def action_export_plame_snl(self):
         """Genera el ``.snl`` de PLAME (suspensiones — Tabla 21 SUNAT).
 
         Estructura de cada línea (idéntica a v18)::
@@ -394,7 +394,7 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # PLAME .toc — Otras condiciones (+Vida EsSalud, domiciliado)
     # ------------------------------------------------------------------
-    def export_plame_other_conditions(self):
+    def action_export_plame_toc(self):
         """Genera el ``.toc`` de PLAME (estructura 26, otras condiciones).
 
         Cada línea::
@@ -495,7 +495,7 @@ class HrPayslipRun(models.Model):
             return Version
         return contracts[0] if contracts else Version
 
-    def afp_net(self):
+    def action_export_afpnet(self):
         """Genera la plantilla XLSX de importación de AFPNet.
 
         Una fila por boleta cuyo trabajador esté afiliado a una AFP
@@ -654,7 +654,7 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # Resumen de planilla (Excel para contabilidad)
     # ------------------------------------------------------------------
-    def export_payroll_summary(self):
+    def action_export_payroll_summary(self):
         """Resumen de la planilla del lote en Excel.
 
         * «Planilla»: una fila por boleta y una columna por concepto con

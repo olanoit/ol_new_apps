@@ -74,7 +74,7 @@
                 <field name="date_aplication" optional="hide"/>
                 <field name="internal_motive" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
-                <button name="view_detail" icon="fa-eye" string="Ver detalle" type="object"/>
+                <button name="action_show_details" icon="fa-list" string="Ver detalle" type="object"/>
             </list>
         </field>
     </record>
@@ -119,7 +119,7 @@
                     <field name="employee_ids" widget="many2many_tags" invisible="show_all"/>
                 </group>
                 <footer>
-                    <button name="generate_vacation_report" string="Calcular saldos" type="object" class="btn-primary"/>
+                    <button name="action_compute_balances" string="Calcular saldos" type="object" class="btn-primary"/>
                     <button string="Cancelar" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>
@@ -166,7 +166,7 @@
         <field name="arch" type="xml">
             <form string="Línea de liquidación vacacional">
                 <header>
-                    <button name="compute_vacation_line" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
+                    <button name="action_compute" string="Calcular" context="{'line_form': True}" type="object" class="oe_edit_only"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -265,7 +265,7 @@
                 <field name="neto_total" sum="Total neto" optional="show" force_save="1"/>
                 <field name="quinta" sum="Total quinta" optional="hide" force_save="1"/>
                 <field name="total" sum="Total a pagar" optional="show" force_save="1"/>
-                <button name="view_detail_vac" icon="fa-eye" type="object" title="Ver detalle"/>
+                <button name="action_show_details" icon="fa-list" type="object" title="Ver detalle"/>
             </list>
         </field>
     </record>
@@ -292,12 +292,12 @@
         <field name="arch" type="xml">
             <form string="Liquidación vacacional">
                 <header>
-                    <button name="get_vacation" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="compute_vaca_line_all" string="Recalcular" type="object" invisible="state != 'draft'"/>
-                    <button name="compute_fifth" string="Importar quinta" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="export_vacation" string="Exportar vacaciones" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de vacaciones a su lote de nóminas?"/>
-                    <button name="get_excel_vacation" string="Descargar Excel" type="object" class="oe_highlight"/>
-                    <button name="turn_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
+                    <button name="action_process" string="Procesar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_recompute" string="Recalcular" type="object" invisible="state != 'draft'"/>
+                    <button name="action_import_fifth" string="Importar quinta" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_export_to_payslips" string="Exportar vacaciones" type="object" class="oe_highlight" invisible="state != 'draft'" confirm="¿Está seguro de que desea exportar los montos de vacaciones a su lote de nóminas?"/>
+                    <button name="action_export_xlsx" string="Descargar Excel" type="object" class="oe_highlight"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'exported'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

@@ -88,7 +88,7 @@ class HrPayslipRunMoveWizard(models.TransientModel):
             'credit': line['credit'],
         }) for line in lines]
 
-    def generate_move(self):
+    def action_generate_move(self):
         """Genera y publica el asiento del lote y lo abre en pantalla.
 
         Las líneas se recalculan en el momento de generar (no se

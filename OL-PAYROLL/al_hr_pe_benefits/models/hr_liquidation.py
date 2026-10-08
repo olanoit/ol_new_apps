@@ -141,7 +141,7 @@ class HrLiquidation(models.Model):
     # ------------------------------------------------------------------
     # Cálculo
     # ------------------------------------------------------------------
-    def get_liquidation(self):
+    def action_process(self):
         """Genera/recalcula los 4 bloques de la liquidación.
 
         Borra las líneas no preservadas, delega CTS y gratificación
@@ -184,18 +184,18 @@ class HrLiquidation(models.Model):
                 and line.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
 
-    def compute_liquidation_all(self):
+    def action_recompute(self):
         """Recalcula los 3 conceptos truncos en una pasada (botón
         «Recalcular»: útil si cambió el sueldo del cesado o se editaron
         los promedios de las líneas)."""
         self.ensure_one()
         ensure_draft(self)
-        self.gratification_line_ids.compute_grati_line()
-        self.cts_line_ids.compute_cts_line()
-        self.vacation_line_ids.compute_vacation_line()
+        self.gratification_line_ids.action_compute()
+        self.cts_line_ids.action_compute()
+        self.vacation_line_ids.action_compute()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
-    def export_liquidation(self):
+    def action_export_to_payslips(self):
         """Cierra la liquidación y vuelca los conceptos al payslip.
 
         Escribe en el payslip de cada cesado los inputs truncos
@@ -256,11 +256,11 @@ class HrLiquidation(models.Model):
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
-    def turn_draft(self):
+    def action_draft(self):
         """Reabre la liquidación a borrador para permitir recálculo."""
         self.write({'state': 'draft'})
 
-    def get_liquidation_employees(self):
+    def action_add_employees(self):
         """Abre la lista de empleados incluidos en la liquidación."""
         self.ensure_one()
         return {
@@ -587,7 +587,7 @@ class HrLiquidationVacationLine(models.Model):
             'afp_fixed_com': afp_fixed_com,
         }
 
-    def compute_vacation_line(self):
+    def action_compute(self):
         """Recalcula la línea a partir de sus componentes editables
         (incluye adelantadas/devengadas capturadas a mano)."""
         ensure_line_draft(self, 'liquidation_id')
@@ -673,7 +673,7 @@ class HrLiquidationExtraConcepts(models.Model):
             record.expenses = sum(lines.filtered(
                 lambda line: line.type == 'out').mapped('amount'))
 
-    def get_concepts_view(self):
+    def action_add_concepts(self):
         """Popup para capturar los conceptos extra del cesado."""
         self.ensure_one()
         view = self.env.ref('al_hr_pe_benefits.hr_extra_concept_view_form')
