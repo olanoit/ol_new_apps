@@ -230,6 +230,10 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: 14.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Ícono propio en el menú principal (barras escalonadas de un diagrama de Gantt), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Proyecto; en Aplicaciones sigue el ícono nativo."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

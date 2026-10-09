@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_complaints_book.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261009 — 09/10/2026
+
+- Ícono propio en el menú principal (libro abierto con un signo de admiración), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Soporte; en Aplicaciones sigue el ícono nativo.
+
 ## 6.20261009 — 09/10/2026
 
 - Etiquetas más cortas en el reclamo: «Fecha de respuesta», «Tipo según el consumidor», «Confirmado por el consumidor», «N.º de hoja de respaldo»; en el libro, «Domicilio». El detalle pasa a la ayuda (?).

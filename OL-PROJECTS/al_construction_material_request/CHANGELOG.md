@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261009 — 09/10/2026
+
+- Ícono propio en el menú principal (casco de obra sobre una lista de verificación), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Compras; en Aplicaciones sigue el ícono nativo.
+
 ## 8.20261008 — 08/10/2026
 
 - El requerimiento de obra de la transferencia pasa a su grupo en la página Logística PE.

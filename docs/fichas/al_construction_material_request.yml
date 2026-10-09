@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 9.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Ícono propio en el menú principal (casco de obra sobre una lista de verificación), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Compras; en Aplicaciones sigue el ícono nativo."
   - version: 8.20261008
     fecha: 08/10/2026
     cambios:

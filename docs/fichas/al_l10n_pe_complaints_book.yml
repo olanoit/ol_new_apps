@@ -158,6 +158,10 @@ faq:
       art. 12.
 
 novedades:
+  - version: 7.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Ícono propio en el menú principal (libro abierto con un signo de admiración), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Soporte; en Aplicaciones sigue el ícono nativo."
   - version: 6.20261009
     fecha: 09/10/2026
     cambios:

@@ -27,7 +27,7 @@ ruta crítica, líneas base y exportación a Excel y PDF.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '13.20261008',
+    'version': '14.20261009',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',

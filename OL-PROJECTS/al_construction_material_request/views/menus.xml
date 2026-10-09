@@ -2,7 +2,7 @@
 <odoo>
 
     <menuitem id="menu_construction_root" name="Requerimientos de obra"
-              web_icon="purchase,static/description/icon.png"
+              web_icon="al_construction_material_request,static/description/icon.png"
               groups="group_construction_requester" sequence="46"/>
 
     <menuitem id="menu_construction_requests" name="Requerimientos"

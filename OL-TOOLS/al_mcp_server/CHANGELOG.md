@@ -6,6 +6,18 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano y debe coincidir con el
 de `static/description/index.html`.
 
+## 8.20261009 — 09/10/2026
+
+- Ícono propio en el menú principal (nodo central conectado a tres extremos), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de IA; en Aplicaciones y Ajustes sigue el ícono nativo.
+
+## 7.20261008 — 08/10/2026
+
+- Traducciones al español de las etiquetas heredadas regeneradas (`i18n/es.po`).
+
+## 6.20261008 — 08/10/2026
+
+- Ícono nativo de la app de IA de Odoo en Aplicaciones, Ajustes y el menú principal.
+
 ## 5.20261005 — 05/10/2026
 
 - Interfaz, comentarios, README y ficha completamente en español.

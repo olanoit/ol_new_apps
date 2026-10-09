@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261009 — 09/10/2026
+
+- Ícono propio en el menú principal (barras escalonadas de un diagrama de Gantt), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Proyecto; en Aplicaciones sigue el ícono nativo.
+
 ## 13.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
