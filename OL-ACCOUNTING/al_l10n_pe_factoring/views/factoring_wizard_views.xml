@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_factoring_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.wizard.form</field>
+        <field name="model">l10n_pe.factoring.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Operación con el factor">
+                <field name="factoring_id" invisible="1"/>
+                <field name="operation" invisible="1"/>
+                <field name="modality" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="available_line_ids" invisible="1"/>
+                <div class="alert alert-info" role="alert" invisible="operation != 'disburse'">
+                    El factor abona el adelanto menos intereses, comisión y gastos.
+                    <span invisible="modality != 'with_recourse'">Con recurso, el adelanto queda como
+                        obligación con el factor y los intereses se devengan durante el plazo.</span>
+                </div>
+                <div class="alert alert-info" role="alert" invisible="operation != 'settle'">
+                    El cliente pagó al factor: se cancela la factura cedida y el factor abona el retenido.
+                </div>
+                <div class="alert alert-warning" role="alert" invisible="operation != 'repurchase'">
+                    El cliente no pagó: se devuelve el adelanto al factor y la factura vuelve a quedar
+                    pendiente de cobro.
+                </div>
+                <group>
+                    <group>
+                        <field name="date"/>
+                        <field name="bank_journal_id" invisible="operation == 'accrue'"
+                               required="operation != 'accrue'" options="{'no_create': True}"/>
+                        <field name="amount" invisible="operation != 'accrue'"/>
+                    </group>
+                    <group invisible="operation == 'accrue'">
+                        <field name="advance_amount" invisible="operation != 'disburse'"/>
+                        <field name="interest_amount"/>
+                        <field name="fee_amount"/>
+                        <field name="expense_amount"/>
+                        <field name="net_amount"/>
+                    </group>
+                </group>
+                <field name="line_ids" invisible="operation not in ('settle', 'repurchase')"
+                       options="{'no_create': True}">
+                    <list>
+                        <field name="currency_id" column_invisible="1"/>
+                        <field name="move_id"/>
+                        <field name="partner_id"/>
+                        <field name="due_date"/>
+                        <field name="nominal_amount" sum="Nominal"/>
+                        <field name="advance_amount" sum="Adelanto"/>
+                        <field name="retained_amount" sum="Retenido"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_apply" type="object" string="Registrar" class="btn-primary"/>
+                    <button special="cancel" string="Descartar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

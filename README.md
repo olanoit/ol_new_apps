@@ -130,6 +130,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 13.20261008 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
 [al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 21.20261008 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
 [al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 9.20261008 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
+[al_l10n_pe_factoring](OL-ACCOUNTING/al_l10n_pe_factoring/) | 1.20261010 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
 [al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 2.20261008 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
 [al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 5.20261009 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
 [al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 23.20261009 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
@@ -153,11 +154,11 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 33.20261009 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
-[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 10.20261008 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 18.20261009 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 34.20261010 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 11.20261010 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
+[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 19.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 22.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 21.20261009 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 22.20261010 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 9.20261008 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
 [al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 10.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
 [al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 21.20261009 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.

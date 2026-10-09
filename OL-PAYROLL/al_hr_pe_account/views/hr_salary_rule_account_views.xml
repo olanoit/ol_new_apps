@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Regla salarial ▸ Contabilidad: cuentas por condición -->
+    <record id="hr_salary_rule_view_form_l10n_pe_accounts" model="ir.ui.view">
+        <field name="name">hr.salary.rule.form.l10n.pe.accounts</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="hr_payroll_account.hr_salary_rule_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='accounting']" position="inside">
+                <separator string="Cuentas por condición"/>
+                <div class="text-muted mb-2">
+                    Otra cuenta de cargo o de abono según el tipo de trabajador, el
+                    departamento o el centro de costo. Gana la fila con más condiciones
+                    cumplidas; lo que la fila deja vacío usa la cuenta de la regla. Se aplica
+                    en el asiento de planilla por lote.
+                </div>
+                <field name="l10n_pe_account_ids" nolabel="1"
+                       context="{'default_company_id': current_company_id}">
+                    <list editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="worker_type_id" options="{'no_create': True}"/>
+                        <field name="department_id" options="{'no_create': True}"/>
+                        <field name="analytic_account_id" options="{'no_create': True}"
+                               groups="analytic.group_analytic_accounting"/>
+                        <field name="account_debit_id" options="{'no_create': True}"/>
+                        <field name="account_credit_id" options="{'no_create': True}"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Nómina ▸ Contabilidad ▸ Cuentas por condición (todas las reglas) -->
+    <record id="l10n_pe_hr_salary_rule_account_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.salary.rule.account.list</field>
+        <field name="model">l10n_pe.hr.salary.rule.account</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas por condición" editable="bottom">
+                <field name="salary_rule_id" options="{'no_create': True}"/>
+                <field name="worker_type_id" options="{'no_create': True}"/>
+                <field name="department_id" options="{'no_create': True}"/>
+                <field name="analytic_account_id" options="{'no_create': True}"
+                       groups="analytic.group_analytic_accounting"/>
+                <field name="account_debit_id" options="{'no_create': True}"/>
+                <field name="account_credit_id" options="{'no_create': True}"/>
+                <field name="sequence" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_hr_salary_rule_account_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.salary.rule.account.search</field>
+        <field name="model">l10n_pe.hr.salary.rule.account</field>
+        <field name="arch" type="xml">
+            <search string="Cuentas por condición">
+                <field name="salary_rule_id"/>
+                <field name="worker_type_id"/>
+                <field name="department_id"/>
+                <field name="analytic_account_id"/>
+                <field name="account_debit_id"/>
+                <field name="account_credit_id"/>
+                <group>
+                    <filter name="group_rule" string="Regla salarial" context="{'group_by': 'salary_rule_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_pe_hr_salary_rule_account_action" model="ir.actions.act_window">
+        <field name="name">Cuentas por condición</field>
+        <field name="res_model">l10n_pe.hr.salary.rule.account</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_rule': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin cuentas por condición</p>
+            <p>Asigne otra cuenta contable a una regla salarial según el tipo de
+               trabajador, el departamento o el centro de costo. Sin filas, el asiento
+               usa la cuenta de cada regla.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_l10n_pe_hr_salary_rule_account"
+              action="l10n_pe_hr_salary_rule_account_action"
+              parent="menu_hr_pe_account_root"
+              sequence="40"
+              groups="hr_payroll.group_hr_payroll_manager"/>
+</odoo>

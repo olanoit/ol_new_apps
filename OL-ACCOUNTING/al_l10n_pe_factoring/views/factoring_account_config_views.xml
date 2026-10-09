@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_factoring_account_config_list" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.account.config.list</field>
+        <field name="model">l10n_pe.factoring.account.config</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas del factoring" editable="bottom">
+                <field name="modality"/>
+                <field name="currency_id" options="{'no_create': True}"/>
+                <field name="assigned_account_id" options="{'no_create': True}"/>
+                <field name="obligation_account_id" options="{'no_create': True}"
+                       readonly="modality != 'with_recourse'"/>
+                <field name="interest_account_id" options="{'no_create': True}"/>
+                <field name="deferred_interest_account_id" options="{'no_create': True}"
+                       readonly="modality != 'with_recourse'"/>
+                <field name="fee_account_id" options="{'no_create': True}"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_factoring_account_config" model="ir.actions.act_window">
+        <field name="name">Cuentas del factoring</field>
+        <field name="res_model">l10n_pe.factoring.account.config</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin cuentas de factoring</p>
+            <p>Se crean solas con el PCGE (1214, 4512, 6734, 3731, 6391) en la primera
+               operación; aquí se ajustan por modalidad y moneda.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Operaciones de factoring -->
+    <record id="view_factoring_list" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.list</field>
+        <field name="model">l10n_pe.factoring</field>
+        <field name="arch" type="xml">
+            <list string="Operaciones de factoring" sample="1"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'assigned'">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="factor_id"/>
+                <field name="modality"/>
+                <field name="contract_ref" optional="hide"/>
+                <field name="line_count" string="Facturas" optional="show"/>
+                <field name="nominal_amount" sum="Nominal"/>
+                <field name="advance_amount" sum="Adelanto" optional="show"/>
+                <field name="net_amount" sum="Neto" optional="show"/>
+                <field name="interest_amount" sum="Intereses" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('done', 'disbursed')"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('assigned', 'repurchased')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_factoring_form" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.form</field>
+        <field name="model">l10n_pe.factoring</field>
+        <field name="arch" type="xml">
+            <form string="Operación de factoring">
+                <header>
+                    <button name="action_assign" type="object" string="Ceder facturas" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Las facturas salen de la cuenta del cliente y pasan a facturas cedidas. ¿Continuar?"/>
+                    <button name="action_disburse" type="object" string="Registrar desembolso" class="btn-primary"
+                            invisible="state != 'assigned'"/>
+                    <button name="action_settle" type="object" string="Cobro del factor" class="btn-primary"
+                            invisible="state != 'disbursed'"/>
+                    <button name="action_accrue" type="object" string="Devengar intereses"
+                            invisible="state != 'disbursed' or modality != 'with_recourse' or not interest_pending_amount"/>
+                    <button name="action_repurchase" type="object" string="Recompra"
+                            invisible="state != 'disbursed' or modality != 'with_recourse'"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state not in ('draft', 'assigned')"
+                            confirm="Se anula la cesión y las facturas vuelven a la cuenta del cliente. ¿Continuar?"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,assigned,disbursed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not line_count">
+                            <field name="line_count" widget="statinfo" string="Facturas"/>
+                        </button>
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
+                                invisible="not move_count">
+                            <field name="move_count" widget="statinfo" string="Asientos"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Operación">
+                            <field name="factor_id" readonly="state != 'draft'" required="state == 'draft'"
+                                   options="{'no_quick_create': True}"/>
+                            <field name="modality" readonly="state != 'draft'" widget="radio"/>
+                            <field name="contract_ref"/>
+                        </group>
+                        <group string="Cesión">
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'" options="{'no_create': True}"
+                                   groups="base.group_multi_currency"/>
+                            <field name="journal_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="default_advance_percent" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Facturas" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'"
+                                   context="{'default_advance_percent': default_advance_percent}">
+                                <list editable="bottom"
+                                      decoration-muted="state in ('cancelled', 'repurchased')"
+                                      decoration-success="state == 'collected'">
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                    <field name="move_id" options="{'no_create': True}"/>
+                                    <field name="partner_id"/>
+                                    <field name="invoice_date" optional="hide"/>
+                                    <field name="due_date"/>
+                                    <field name="cavali_number" optional="show"/>
+                                    <field name="nominal_amount" sum="Nominal"/>
+                                    <field name="advance_percent"/>
+                                    <field name="advance_amount" sum="Adelanto"/>
+                                    <field name="retained_amount" sum="Retenido" optional="show"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'collected'"
+                                           decoration-warning="state in ('assigned', 'repurchased')"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="nominal_amount"/>
+                                <field name="advance_amount"/>
+                                <field name="retained_amount"/>
+                            </group>
+                        </page>
+                        <page string="Liquidación" name="settlement" invisible="state in ('draft', 'assigned', 'cancelled')">
+                            <group>
+                                <group string="Desembolso">
+                                    <field name="disbursement_date"/>
+                                    <field name="bank_journal_id"/>
+                                    <field name="advance_amount"/>
+                                    <field name="interest_amount"/>
+                                    <field name="fee_amount"/>
+                                    <field name="expense_amount"/>
+                                    <field name="net_amount"/>
+                                </group>
+                                <group string="Intereses" invisible="modality != 'with_recourse'">
+                                    <field name="interest_deferred_amount"/>
+                                    <field name="interest_accrued_amount"/>
+                                    <field name="interest_pending_amount"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note" placeholder="Condiciones del contrato, contacto del factor…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_factoring_search" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.search</field>
+        <field name="model">l10n_pe.factoring</field>
+        <field name="arch" type="xml">
+            <search string="Buscar operaciones de factoring">
+                <field name="name"/>
+                <field name="factor_id"/>
+                <field name="contract_ref"/>
+                <field name="line_ids" string="Factura" filter_domain="[('line_ids.move_id', 'ilike', self)]"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="open" string="En curso" domain="[('state', 'in', ('assigned', 'disbursed'))]"/>
+                <filter name="done" string="Liquidadas" domain="[('state', 'in', ('done', 'repurchased'))]"/>
+                <separator/>
+                <filter name="without_recourse" string="Sin recurso" domain="[('modality', '=', 'without_recourse')]"/>
+                <filter name="with_recourse" string="Con recurso" domain="[('modality', '=', 'with_recourse')]"/>
+                <group>
+                    <filter name="group_factor" string="Factor" context="{'group_by': 'factor_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_factoring" model="ir.actions.act_window">
+        <field name="name">Operaciones de factoring</field>
+        <field name="res_model">l10n_pe.factoring</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_factoring_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una operación de factoring</p>
+            <p>Elija las facturas en Contabilidad ▸ Clientes ▸ Facturas y use
+               «Ceder a factoring», o cree aquí la operación y agréguelas.</p>
+        </field>
+    </record>
+
+    <!-- Facturas cedidas: líneas de las operaciones -->
+    <record id="view_factoring_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.line.list</field>
+        <field name="model">l10n_pe.factoring.line</field>
+        <field name="arch" type="xml">
+            <list string="Facturas cedidas" create="false" sample="1"
+                  decoration-muted="state in ('cancelled', 'repurchased')"
+                  decoration-success="state == 'collected'"
+                  decoration-danger="state == 'assigned' and due_date and due_date &lt; current_date">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="factoring_id"/>
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <field name="factor_id"/>
+                <field name="modality" optional="show"/>
+                <field name="due_date"/>
+                <field name="cavali_number" optional="hide"/>
+                <field name="nominal_amount" sum="Nominal"/>
+                <field name="advance_amount" sum="Adelanto" optional="show"/>
+                <field name="retained_amount" sum="Retenido" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'collected'"
+                       decoration-warning="state in ('assigned', 'repurchased')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_factoring_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.line.search</field>
+        <field name="model">l10n_pe.factoring.line</field>
+        <field name="arch" type="xml">
+            <search string="Buscar facturas cedidas">
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <field name="factor_id"/>
+                <field name="factoring_id"/>
+                <filter name="assigned" string="Cedidas pendientes" domain="[('state', '=', 'assigned')]"/>
+                <filter name="overdue" string="Vencidas" domain="[('state', '=', 'assigned'), ('due_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="collected" string="Cobradas" domain="[('state', '=', 'collected')]"/>
+                <filter name="repurchased" string="Recompradas" domain="[('state', '=', 'repurchased')]"/>
+                <separator/>
+                <filter name="active_lines" string="Sin canceladas" domain="[('state', '!=', 'cancelled')]"/>
+                <group>
+                    <filter name="group_factor" string="Factor" context="{'group_by': 'factor_id'}"/>
+                    <filter name="group_partner" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_due" string="Vencimiento" context="{'group_by': 'due_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_factoring_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.line.pivot</field>
+        <field name="model">l10n_pe.factoring.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de factoring" sample="1">
+                <field name="factor_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="nominal_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_factoring_line_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.line.graph</field>
+        <field name="model">l10n_pe.factoring.line</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de factoring" type="bar" sample="1">
+                <field name="factor_id"/>
+                <field name="state"/>
+                <field name="nominal_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_factoring_lines" model="ir.actions.act_window">
+        <field name="name">Facturas cedidas</field>
+        <field name="res_model">l10n_pe.factoring.line</field>
+        <field name="view_mode">list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_factoring_line_list')})]"/>
+        <field name="search_view_id" ref="view_factoring_line_search"/>
+        <field name="context">{'search_default_active_lines': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin facturas cedidas</p>
+            <p>En rojo, las cedidas ya vencidas que el factor aún no cobra.</p>
+        </field>
+    </record>
+
+    <record id="action_factoring_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de factoring</field>
+        <field name="res_model">l10n_pe.factoring.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_factoring_line_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_factoring_line_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_factoring_line_list')})]"/>
+        <field name="search_view_id" ref="view_factoring_line_search"/>
+        <field name="context">{'search_default_active_lines': 1}</field>
+    </record>
+</odoo>

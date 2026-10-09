@@ -200,11 +200,11 @@ class HrMainParameter(models.Model):
                 'Parámetros Principales (pestaña Contabilidad).'))
         return journal, partner
 
-    # TODO(fase5-revisar): la variante analítica v18 permitía además una
-    # CUENTA de gasto distinta por cuenta analítica (hr_salary_rule_line:
-    # cuenta contable por centro de costo); eso no es representable con
-    # una cuenta + analytic_distribution JSON y no se porta: v19 usa una
-    # sola cuenta de gasto por concepto y prorratea solo la analítica.
+    # La cuenta por centro de costo de v18 (hr_salary_rule_line) vuelve en
+    # el asiento de planilla por lote como «Cuentas por condición» de la
+    # regla (l10n_pe.hr.salary.rule.account: tipo de trabajador,
+    # departamento o centro de costo). Los beneficios sociales siguen con
+    # una cuenta de gasto por concepto y prorratean solo la analítica.
     def _benefits_analytic_distribution(self, version):
         """Distribución analítica JSON para las líneas de gasto.
 

@@ -75,6 +75,13 @@ class HrMainParameter(models.Model):
     """Parámetros del tareaje (v18 los hardcodeaba en el SQL)."""
     _inherit = 'hr.main.parameter'
 
+    tareaje_cost_basis = fields.Selection(
+        selection=[('days', 'Por días'), ('hours', 'Por horas')],
+        string='Reparto del costo por obra', default='days', required=True,
+        help='Cómo se reparte el costo de la boleta entre los centros de costo '
+             'del tareaje: por días laborados en cada uno o por horas '
+             '(incluidas las horas extra). Se aplica en el asiento de '
+             'planilla por lote con «Asiento de lote con analítica».')
     tareaje_night_from = fields.Float(
         string='Inicio de horario nocturno', default=22.0,
         help='Hora de inicio de la jornada nocturna (22:00 según el '
@@ -510,6 +517,7 @@ class HrTareajeManager(models.Model):
             param = self.env['hr.main.parameter'].get_main_parameter(
                 record.company_id)
             marks_by_emp_day = record._get_marks_by_employee_day()
+            cost_by_emp_day = record._get_cost_vals_by_employee_day()
             holidays = record._get_public_holidays()
             employees = self.env['hr.employee'].browse(
                 [emp.id for emp in marks_by_emp_day])
@@ -561,6 +569,8 @@ class HrTareajeManager(models.Model):
                     day_vals.append(record._prepare_day_vals(
                         employee, day, marks, schedule, state, values))
                     day = day + timedelta(days=1)
+                for vals in day_vals:
+                    vals.update(cost_by_emp_day.get((employee.id, vals['fecha']), {}))
                 totals = defaultdict(float)
                 for vals in day_vals:
                     for key in TAREAJE_KEYS:
@@ -609,6 +619,32 @@ class HrTareajeManager(models.Model):
         if day_kind == 'descanso':
             return 'descanso_trab'
         return 'ok'
+
+    def _get_cost_vals_by_employee_day(self):
+        """Centro de costo (y lo que añadan otros módulos) de las
+        marcaciones del periodo: ``{(empleado, día local): valores}``. Si
+        un día tiene varias marcaciones, manda la primera que lo indique."""
+        self.ensure_one()
+        Attendance = self.env['hr.attendance']
+        names = Attendance._l10n_pe_day_cost_fields()
+        start_dt = fields.Datetime.to_datetime(self.date_start) - timedelta(hours=14)
+        end_dt = fields.Datetime.to_datetime(self.date_end) + timedelta(days=1, hours=14)
+        domain = [
+            ('employee_id.company_id', '=', self.company_id.id),
+            ('check_in', '>=', start_dt), ('check_in', '<=', end_dt),
+        ]
+        domain += ['|'] * (len(names) - 1) + [(name, '!=', False) for name in names]
+        result = {}
+        for att in Attendance.search(domain, order='check_in'):
+            tz = pytz.timezone(att.employee_id.tz or 'America/Lima')
+            day = pytz.utc.localize(att.check_in).astimezone(tz).date()
+            if not (self.date_start <= day <= self.date_end):
+                continue
+            values = result.setdefault((att.employee_id.id, day), {})
+            for name in names:
+                if att[name] and not values.get(name):
+                    values[name] = att[name].id
+        return result
 
     def _get_marks_by_employee_day(self):
         """Consolida las marcaciones del periodo por empleado y día
@@ -928,6 +964,11 @@ class HrTareajeManagerLineAttendance(models.Model):
     fecha = fields.Date(string='Fecha')
     day_name = fields.Char(string='Día')
     horario = fields.Char(string='Horario')
+    l10n_pe_analytic_account_id = fields.Many2one(
+        'account.analytic.account', string='Centro de costo', check_company=True,
+        index='btree_not_null', ondelete='restrict',
+        help='Obra o centro de costo del día (viene de la marcación). Vacío: '
+             'el de la ficha del trabajador.')
     state = fields.Selection(
         selection=[
             ('ok', 'Asistió'),
@@ -1016,6 +1057,64 @@ class HrPayslip(models.Model):
                     'number_of_hours': hours,
                 })
         return res
+
+    def _l10n_pe_tareaje_distribution(self):
+        """Distribución analítica según dónde trabajó cada día.
+
+        Pesa cada día del tareaje aplicado por días laborados o por horas
+        (``tareaje_cost_basis`` de la Configuración principal): los días con
+        centro de costo van a ese centro; los demás, a la distribución de la
+        ficha del trabajador. Sin ningún día con centro de costo devuelve
+        ``False`` (la contabilidad usa la regla o la ficha, como antes).
+        """
+        self.ensure_one()
+        if not self.employee_id or not self.date_from or not self.date_to:
+            return False
+        day_lines = self.env['hr.tareaje.manager.line.attendance'].search([
+            ('tareaje_line_id.tareaje_id.state', '=', 'done'),
+            ('tareaje_line_id.employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('fecha', '>=', self.date_from),
+            ('fecha', '<=', self.date_to),
+        ])
+        if not day_lines.l10n_pe_analytic_account_id:
+            return False
+        param = self.env['hr.main.parameter'].search(
+            [('company_id', '=', self.company_id.id)], limit=1)
+        by_hours = param.tareaje_cost_basis == 'hours'
+        weights, default_weight = defaultdict(float), 0.0
+        for day in day_lines:
+            weight = (day.htd + day.htn + day.he25 + day.he35 + day.he100) if by_hours \
+                else (day.dlab + day.dlabn)
+            if weight <= 0:
+                continue
+            if day.l10n_pe_analytic_account_id:
+                weights[str(day.l10n_pe_analytic_account_id.id)] += weight
+            else:
+                default_weight += weight
+        total = sum(weights.values()) + default_weight
+        if not weights or not total:
+            return False
+        distribution = defaultdict(float)
+        for key, weight in weights.items():
+            distribution[key] += weight / total * 100.0
+        if default_weight:
+            for key, percent in (self._l10n_pe_default_cost_distribution() or {}).items():
+                distribution[key] += default_weight / total * percent
+        # Dos decimales, como el widget; la diferencia de redondeo va a la
+        # parte mayor para que la suma no cambie.
+        rounded = {key: round(value, 2) for key, value in distribution.items()}
+        target = round(sum(distribution.values()), 2)
+        if rounded:
+            biggest = max(rounded, key=rounded.get)
+            rounded[biggest] = round(rounded[biggest] + target - sum(rounded.values()), 2)
+        return dict(rounded)
+
+    def _l10n_pe_default_cost_distribution(self):
+        """Distribución de los días sin centro de costo: la de la ficha
+        del trabajador (los módulos de obra la completan con su obra)."""
+        self.ensure_one()
+        return self.version_id.analytic_distribution or {}
 
     @api.model
     def _l10n_pe_tareaje_assignments(self, totals):

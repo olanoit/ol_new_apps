@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261010 — 10/10/2026
+
+- Centro de costo de la obra y obra del día en la marcación y en el detalle del tareaje: fija el centro de costo con el que la planilla reparte el costo del obrero entre sus obras; los días sin obra van a la obra de la ficha.
+
 ## 21.20261009 — 09/10/2026
 
 - El asistente de importación de la tabla salarial distingue «Origen» (archivo o dirección) de «Origen leído» (nombre del archivo o URL).

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Obra del día en la marcación y en el detalle del tareaje: fija el
+         centro de costo con el que la planilla reparte el costo. -->
+    <record id="hr_attendance_view_form_l10n_pe_site" model="ir.ui.view">
+        <field name="name">hr.attendance.form.l10n.pe.site</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="al_hr_pe_attendance.hr_attendance_view_form_l10n_pe_cost"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_pe_analytic_account_id']" position="before">
+                <field name="l10n_pe_construction_site_id" options="{'no_create': True}"
+                       domain="[('company_id', 'in', allowed_company_ids)]"
+                       readonly="not is_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_attendance_view_list_l10n_pe_site" model="ir.ui.view">
+        <field name="name">hr.attendance.list.l10n.pe.site</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="al_hr_pe_attendance.hr_attendance_view_list_l10n_pe_cost"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_pe_analytic_account_id']" position="before">
+                <field name="l10n_pe_construction_site_id" optional="show" options="{'no_create': True}"
+                       domain="[('company_id', 'in', allowed_company_ids)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_tareaje_manager_line_attendance_view_list_l10n_pe_site" model="ir.ui.view">
+        <field name="name">hr.tareaje.manager.line.attendance.list.l10n.pe.site</field>
+        <field name="model">hr.tareaje.manager.line.attendance</field>
+        <field name="inherit_id" ref="al_hr_pe_attendance.hr_tareaje_manager_line_attendance_view_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_pe_analytic_account_id']" position="before">
+                <field readonly="tareaje_state == 'done'" name="l10n_pe_construction_site_id"
+                       optional="show" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

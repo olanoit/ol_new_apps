@@ -1,4 +1,6 @@
-#
+# Traducción al español de al_hr_pe_account.
+# Los textos propios ya están en español; aquí se traducen los campos
+# heredados de los mixins. Generado con docs/validacion/generar_es_po.py.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
@@ -6,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_hr_pe_account
 #: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__analytic_distribution
@@ -19,17 +21,46 @@ msgid "Analytic Precision"
 msgstr "Precisión analítica"
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_uid
+#: model:ir.model,name:al_hr_pe_account.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: al_hr_pe_account
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_l10n_pe_hr_salary_rule_account__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__create_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_l10n_pe_hr_salary_rule_account__create_date
 msgid "Created on"
 msgstr "Creado el"
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_mixin__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_vacation_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_main_parameter__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__display_name model:ir.model.fields,field_description:al_hr_pe_account.field_hr_provisiones__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_mixin__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_vacation_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_main_parameter__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_provisiones__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_salary_rule__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_l10n_pe_hr_salary_rule_account__display_name
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -39,16 +70,40 @@ msgid "Distribution Analytic Account"
 msgstr "Cuenta analítica de distribución"
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_mixin__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_cts_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_gratification_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_vacation_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_main_parameter__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__id model:ir.model.fields,field_description:al_hr_pe_account.field_hr_provisiones__id
-msgid "ID"
-msgstr "ID"
+#: model:ir.model.fields,help:al_hr_pe_account.field_hr_liquidation_move__identification_id
+msgid ""
+"Enter the employee's National Identification Number issued by the government"
+" (e.g., Aadhaar, SIN, NIN). This is used for official records and statutory "
+"compliance."
+msgstr ""
+"Ingresa el número de identificación nacional del empleado emitido por el "
+"gobierno (por ejemplo, Aadhaar, SIN, NIN). Este se usa para registros "
+"oficiales y cumplimiento legal."
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_uid model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_uid
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_l10n_pe_hr_salary_rule_account__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_hr_pe_account
-#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_date model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_benefits_move_wizard__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_liquidation_move__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_hr_payslip_run_move_wizard_line__write_date
+#: model:ir.model.fields,field_description:al_hr_pe_account.field_l10n_pe_hr_salary_rule_account__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
+
+#. module: al_hr_pe_account
+#: model:ir.model,name:al_hr_pe_account.model_hr_payslip_run
+msgid "Pay Run"
+msgstr "Periodo de nómina"
+
+#. module: al_hr_pe_account
+#: model:ir.model,name:al_hr_pe_account.model_hr_salary_rule
+msgid "Salary Rule"
+msgstr "Regla salarial"

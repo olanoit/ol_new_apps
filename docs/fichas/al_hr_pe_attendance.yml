@@ -563,6 +563,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 19.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Centro de costo del día en la marcación y en el detalle del tareaje (se copia de la marcación al generar). La boleta reparte su costo entre los centros de costo por días o por horas (Ajustes ▸ Perú: tareaje ▸ Reparto del costo por obra); los días sin centro de costo van a la ficha del trabajador."
   - version: 18.20261009
     fecha: 09/10/2026
     cambios:

@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_factoring_invoice,l10n_pe.factoring facturación,model_l10n_pe_factoring,account.group_account_invoice,1,1,1,1
+access_factoring_line_invoice,l10n_pe.factoring.line facturación,model_l10n_pe_factoring_line,account.group_account_invoice,1,1,1,1
+access_factoring_readonly,l10n_pe.factoring auditor,model_l10n_pe_factoring,account.group_account_readonly,1,0,0,0
+access_factoring_line_readonly,l10n_pe.factoring.line auditor,model_l10n_pe_factoring_line,account.group_account_readonly,1,0,0,0
+access_factoring_config_invoice,l10n_pe.factoring.account.config facturación,model_l10n_pe_factoring_account_config,account.group_account_invoice,1,0,0,0
+access_factoring_config_manager,l10n_pe.factoring.account.config administrador,model_l10n_pe_factoring_account_config,account.group_account_manager,1,1,1,1
+access_factoring_wizard_invoice,l10n_pe.factoring.wizard facturación,model_l10n_pe_factoring_wizard,account.group_account_invoice,1,1,1,1

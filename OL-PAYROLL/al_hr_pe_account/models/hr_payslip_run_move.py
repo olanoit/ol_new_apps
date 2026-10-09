@@ -124,6 +124,11 @@ class HrPayslipRun(models.Model):
 
         for slip in self._pe_get_batch_slips():
             version = slip.version_id
+            # Reparto por obra según el tareaje del periodo (hook de
+            # al_hr_pe; lo implementa al_hr_pe_attendance). Sin tareaje con
+            # centro de costo devuelve False y se usa la ficha.
+            tareaje_distribution = (slip._l10n_pe_tareaje_distribution()
+                                    if with_analytic else False)
             for line in slip.line_ids:
                 # Igual que el flujo nativo, solo cuentan las líneas con
                 # categoría (resultados de reglas reales).
@@ -133,100 +138,29 @@ class HrPayslipRun(models.Model):
                 # company_dependent en v19 (la regla ya no tiene
                 # company_id).
                 rule = line.salary_rule_id.with_company(company)
-                total = line.total
                 distribution = False
                 if with_analytic:
-                    # Misma precedencia que el nativo
-                    # (_prepare_line_values): regla > hr.version.
+                    # Precedencia: regla > tareaje (obra del día) >
+                    # hr.version (la del nativo _prepare_line_values con el
+                    # tareaje intercalado).
                     # TODO(fase5-revisar): v18 solo desdoblaba cuentas
                     # con check_moorage (account.account); en v19 la
                     # aplicabilidad analítica por cuenta la gobiernan
                     # los planes analíticos nativos.
                     distribution = (rule.analytic_distribution
+                                    or tareaje_distribution
                                     or version.analytic_distribution
                                     or False)
-                dist_key = (json.dumps(distribution, sort_keys=True)
-                            if distribution else False)
-
-                # Bloque 1: cargo por cuenta de débito de la regla
-                # (v18: sin exclusión de códigos AFP).
-                if rule.account_debit:
-                    accumulate(
-                        ('debit', rule.id, rule.account_debit.id, dist_key),
-                        total,
-                        sequence=rule.sequence,
-                        salary_rule_id=rule.id,
-                        name=rule.name,
-                        account_id=rule.account_debit.id,
-                        partner_id=False,
-                        analytic_distribution=distribution,
-                        side='debit',
-                    )
-
-                # Bloque 3: abono AFP a la cuenta de la afiliación (la
-                # cuenta de crédito de la regla se ignora, como en v18).
-                if rule in afp_rules:
-                    membership = version.membership_id
-                    account = (membership.with_company(company).account_id
-                               if membership else False)
-                    if not account:
-                        # TODO(fase5-revisar): v18 descartaba en
-                        # silencio estas líneas (el descuadre acababa en
-                        # la línea de ajuste); aquí se detiene el
-                        # proceso para no perder importes.
-                        missing_afp_account.append(self.env._(
-                            '%(employee)s (afiliación: %(membership)s)',
-                            employee=slip.employee_id.display_name,
-                            membership=membership.name or self.env._(
-                                'sin afiliación')))
-                        continue
-                    accumulate(
-                        ('afp', membership.id, account.id),
-                        total,
-                        sequence=AFP_MOVE_SEQUENCE,
-                        salary_rule_id=False,
-                        name=membership.name,
-                        account_id=account.id,
-                        partner_id=False,
-                        # v18: el bloque AFP nunca llevaba analítica
-                        # (cuenta de pasivo).
-                        analytic_distribution=False,
-                        side='credit',
-                    )
-                # Bloque 2b: detalle por trabajador (v18 is_detail_cta →
-                # flag nativo employee_move_line).
-                elif rule.account_credit and rule.employee_move_line:
-                    # TODO(fase5-revisar): v18 usaba he.user_partner_id;
-                    # el nativo v19 usa work_contact_id — se sigue al
-                    # nativo.
-                    partner = slip.employee_id.work_contact_id
-                    accumulate(
-                        ('detail', rule.id, rule.account_credit.id,
-                         partner.id),
-                        total,
-                        sequence=rule.sequence,
-                        salary_rule_id=rule.id,
-                        name=rule.name,
-                        account_id=rule.account_credit.id,
-                        partner_id=partner.id,
-                        # v18: las líneas detalladas iban sin analítica.
-                        analytic_distribution=False,
-                        side='credit',
-                    )
-                # Bloque 2: abono agregado por cuenta de crédito.
-                elif rule.account_credit:
-                    accumulate(
-                        ('credit', rule.id, rule.account_credit.id,
-                         dist_key),
-                        total,
-                        sequence=rule.sequence,
-                        salary_rule_id=rule.id,
-                        name=rule.name,
-                        account_id=rule.account_credit.id,
-                        partner_id=False,
-                        analytic_distribution=distribution,
-                        side='credit',
-                    )
+                for part_total, part_distribution, analytic_ids in \
+                        self._pe_split_by_cost_center(rule, line.total, distribution):
+                    account_debit, account_credit = rule._l10n_pe_get_accounts(
+                        company, version, analytic_ids)
+                    dist_key = (json.dumps(part_distribution, sort_keys=True)
+                                if part_distribution else False)
+                    self._pe_accumulate_rule_line(
+                        accumulate, missing_afp_account, slip, version, rule,
+                        part_total, part_distribution, dist_key,
+                        account_debit, account_credit, afp_rules)
 
         if missing_afp_account:
             raise UserError(self.env._(
@@ -257,6 +191,110 @@ class HrPayslipRun(models.Model):
             lines.append(vals)
         lines.sort(key=lambda vals: (vals['sequence'], vals['name'] or ''))
         return lines
+
+    def _pe_split_by_cost_center(self, rule, total, distribution):
+        """Partes ``(importe, distribución, ids analíticos)`` de una línea.
+
+        Si la regla tiene cuentas por centro de costo, el importe se reparte
+        por cada clave de la distribución analítica (la última absorbe el
+        redondeo) para elegir la cuenta de cada parte; si no, va entero.
+        """
+        if not distribution or not rule._l10n_pe_uses_analytic_accounts(self.company_id):
+            analytic_ids = {int(account_id) for key in (distribution or {})
+                            for account_id in str(key).split(',')}
+            return [(total, distribution, analytic_ids)]
+        parts, assigned = [], 0.0
+        items = list(distribution.items())
+        for index, (key, percent) in enumerate(items):
+            amount = (total - assigned if index == len(items) - 1
+                      else custom_round(total * percent / 100.0))
+            assigned += amount
+            parts.append((amount, {key: 100.0},
+                          {int(account_id) for account_id in str(key).split(',')}))
+        return parts
+
+    def _pe_accumulate_rule_line(self, accumulate, missing_afp_account, slip,
+                                 version, rule, total, distribution, dist_key,
+                                 account_debit, account_credit, afp_rules):
+        """Acumula una parte de ``hr.payslip.line`` en los tres bloques."""
+        company = self.company_id
+        # Bloque 1: cargo por cuenta de débito de la regla
+        # (v18: sin exclusión de códigos AFP).
+        if account_debit:
+            accumulate(
+                ('debit', rule.id, account_debit.id, dist_key),
+                total,
+                sequence=rule.sequence,
+                salary_rule_id=rule.id,
+                name=rule.name,
+                account_id=account_debit.id,
+                partner_id=False,
+                analytic_distribution=distribution,
+                side='debit',
+            )
+
+        # Bloque 3: abono AFP a la cuenta de la afiliación (la
+        # cuenta de crédito de la regla se ignora, como en v18).
+        if rule in afp_rules:
+            membership = version.membership_id
+            account = (membership.with_company(company).account_id
+                       if membership else False)
+            if not account:
+                # TODO(fase5-revisar): v18 descartaba en
+                # silencio estas líneas (el descuadre acababa en
+                # la línea de ajuste); aquí se detiene el
+                # proceso para no perder importes.
+                missing_afp_account.append(self.env._(
+                    '%(employee)s (afiliación: %(membership)s)',
+                    employee=slip.employee_id.display_name,
+                    membership=membership.name or self.env._(
+                        'sin afiliación')))
+                return
+            accumulate(
+                ('afp', membership.id, account.id),
+                total,
+                sequence=AFP_MOVE_SEQUENCE,
+                salary_rule_id=False,
+                name=membership.name,
+                account_id=account.id,
+                partner_id=False,
+                # v18: el bloque AFP nunca llevaba analítica
+                # (cuenta de pasivo).
+                analytic_distribution=False,
+                side='credit',
+            )
+        # Bloque 2b: detalle por trabajador (v18 is_detail_cta →
+        # flag nativo employee_move_line).
+        elif account_credit and rule.employee_move_line:
+            # TODO(fase5-revisar): v18 usaba he.user_partner_id;
+            # el nativo v19 usa work_contact_id — se sigue al
+            # nativo.
+            partner = slip.employee_id.work_contact_id
+            accumulate(
+                ('detail', rule.id, account_credit.id, partner.id),
+                total,
+                sequence=rule.sequence,
+                salary_rule_id=rule.id,
+                name=rule.name,
+                account_id=account_credit.id,
+                partner_id=partner.id,
+                # v18: las líneas detalladas iban sin analítica.
+                analytic_distribution=False,
+                side='credit',
+            )
+        # Bloque 2: abono agregado por cuenta de crédito.
+        elif account_credit:
+            accumulate(
+                ('credit', rule.id, account_credit.id, dist_key),
+                total,
+                sequence=rule.sequence,
+                salary_rule_id=rule.id,
+                name=rule.name,
+                account_id=account_credit.id,
+                partner_id=False,
+                analytic_distribution=distribution,
+                side='credit',
+            )
 
     # ------------------------------------------------------------------
     # Generación del asiento

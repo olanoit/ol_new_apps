@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cuentas por defecto (PCGE) en las compañías peruanas; las que se creen
+         después las reciben en su primera operación. -->
+    <function model="l10n_pe.factoring.account.config" name="_l10n_pe_create_default_configs"/>
+
+    <!-- «Ceder a factoring» desde la lista de facturas de cliente. -->
+    <record id="action_server_factoring_create" model="ir.actions.server">
+        <field name="name">Ceder a factoring</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_factoring_create()</field>
+    </record>
+</odoo>

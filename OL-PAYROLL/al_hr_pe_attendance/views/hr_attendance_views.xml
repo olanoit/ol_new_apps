@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Centro de costo del día en la marcación: el tareaje lo copia al
+         detalle diario y la planilla reparte el costo entre las obras. -->
+    <record id="hr_attendance_view_form_l10n_pe_cost" model="ir.ui.view">
+        <field name="name">hr.attendance.form.l10n.pe.cost</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="l10n_pe_analytic_account_id" options="{'no_create': True}"
+                       domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]"
+                       readonly="not is_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_attendance_view_list_l10n_pe_cost" model="ir.ui.view">
+        <field name="name">hr.attendance.list.l10n.pe.cost</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="l10n_pe_analytic_account_id" optional="show" options="{'no_create': True}"
+                       domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

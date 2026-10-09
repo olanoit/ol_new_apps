@@ -329,3 +329,19 @@ class HrPayslipRun(models.Model):
             ('company_id', '=', self.company_id.id),
             ('state', 'in', ('validated', 'paid')),
         ])
+
+
+class HrPayslipCostDistribution(models.Model):
+    _inherit = 'hr.payslip'
+
+    def _l10n_pe_tareaje_distribution(self):
+        """Distribución analítica de la boleta según dónde trabajó cada día.
+
+        Punto de extensión: aquí no hay tareaje y devuelve ``False`` (la
+        contabilidad usa la distribución de la regla o de la ficha).
+        ``al_hr_pe_attendance`` la calcula con los días u horas del tareaje
+        por centro de costo, y ``al_hr_pe_account`` la escribe en el
+        asiento del lote.
+        """
+        self.ensure_one()
+        return False

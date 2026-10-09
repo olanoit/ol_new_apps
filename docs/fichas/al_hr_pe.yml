@@ -724,6 +724,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 34.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Punto de extensión `_l10n_pe_tareaje_distribution` en la boleta: el reparto del costo por centro de costo según el tareaje (lo calcula Asistencia y lo usa el asiento de planilla por lote)."
   - version: 33.20261009
     fecha: 09/10/2026
     cambios:

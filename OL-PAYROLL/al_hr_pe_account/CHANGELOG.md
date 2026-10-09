@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261010 — 10/10/2026
+
+- Cuentas por condición en las reglas salariales (pestaña Contabilidad de la regla y Nómina ▸ Contabilidad ▸ Cuentas por condición): otra cuenta de cargo o de abono según el tipo de trabajador (T08), el departamento o el centro de costo; gana la fila más específica y lo vacío conserva la cuenta de la regla. Recupera la cuenta por centro de costo de v18.
+- Asiento de planilla por lote con el reparto del tareaje: con «Asiento de lote con analítica», la distribución de cada boleta sale de los días u horas por centro de costo (regla > tareaje > ficha); con cuentas por centro de costo, el importe se parte por centro de costo antes de elegir la cuenta.
+
 ## 10.20261008 — 08/10/2026
 
 - Liquidación: el botón «Generar asiento» de cada cesado solo aparece mientras no tiene asiento, y su «No R.» se bloquea al generarlo.

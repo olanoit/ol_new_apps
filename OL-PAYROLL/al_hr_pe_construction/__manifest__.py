@@ -97,12 +97,14 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '21.20261009',
+    'version': '22.20261010',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden
     # de carga es casual y los overrides de la boleta pueden perderse.
-    'depends': ['al_hr_pe_benefits', 'al_hr_pe_reports'],
+    # al_hr_pe_attendance: la obra del día en la marcación y en el tareaje
+    # fija el centro de costo con el que la planilla reparte el costo.
+    'depends': ['al_hr_pe_benefits', 'al_hr_pe_reports', 'al_hr_pe_attendance'],
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
@@ -115,6 +117,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'views/hr_construction_wage_table_views.xml',
         'views/hr_construction_bonus_views.xml',
         'views/hr_construction_site_views.xml',
+        'views/hr_construction_cost_views.xml',
         'views/hr_version_views.xml',
         'views/res_company_views.xml',
         'views/menu.xml',

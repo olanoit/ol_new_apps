@@ -11,6 +11,7 @@
                 <field name="altitude" optional="show"/>
                 <field name="date_start" optional="show"/>
                 <field name="date_end" optional="show"/>
+                <field name="analytic_account_id" optional="show"/>
                 <field name="employee_count" string="Trabajadores"/>
                 <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
@@ -45,6 +46,7 @@
                             <field name="district_id" options="{'no_create': True}"/>
                             <field name="altitude"/>
                             <field name="work_location_id" options="{'no_create': True}"/>
+                            <field name="analytic_account_id" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <group string="Bonificaciones que activa la obra">

@@ -40,11 +40,19 @@ redondeo si lo hay, y permite corregirlo antes de confirmar.
    social y la de ajuste por redondeo. Las reglas de aportes AFP están en
    *Configuración principal → Contabilidad*.
 2. **Decidir si se quiere analítica** — al activarla, las líneas llevan la
-   distribución que corresponda: la de la regla salarial si la tiene, la
-   del trabajador en otro caso.
-3. **Generar el asiento del lote** — se previsualiza, se ajusta el
+   distribución que corresponda, en este orden: la de la regla salarial; la
+   del **tareaje** (días u horas por centro de costo del periodo, si el
+   tareaje aplicado tiene centros de costo); la del trabajador.
+3. **Cuentas por condición (opcional)** — en la regla salarial, pestaña
+   *Contabilidad*, o en *Nómina → Contabilidad → Cuentas por condición*:
+   otra cuenta de cargo o de abono según el tipo de trabajador (T08), el
+   departamento o el centro de costo. Gana la fila con más condiciones
+   cumplidas (a igualdad, la de menor secuencia); lo que la fila deja vacío
+   conserva la cuenta de la regla. Si alguna fila depende del centro de
+   costo, el importe se parte por centro de costo antes de elegir la cuenta.
+4. **Generar el asiento del lote** — se previsualiza, se ajusta el
    redondeo si hace falta y se confirma. Queda enlazado al lote.
-4. **Generar los asientos de beneficios** — mismo circuito para CTS,
+5. **Generar los asientos de beneficios** — mismo circuito para CTS,
    gratificaciones, liquidaciones y provisiones.
 
 ## 4. Qué se hizo distinto

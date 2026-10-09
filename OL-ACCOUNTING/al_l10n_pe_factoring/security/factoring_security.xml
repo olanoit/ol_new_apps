@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Multicompañía: cada operación (y sus facturas y cuentas) solo se ve
+             desde su compañía. -->
+        <record id="factoring_company_rule" model="ir.rule">
+            <field name="name">Factoring: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_factoring"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="factoring_line_company_rule" model="ir.rule">
+            <field name="name">Factoring, facturas cedidas: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_factoring_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="factoring_account_config_company_rule" model="ir.rule">
+            <field name="name">Factoring, cuentas: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_factoring_account_config"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

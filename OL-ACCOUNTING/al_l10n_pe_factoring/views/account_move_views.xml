@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Factura: pestaña «Factoring» dentro de «Facturación PE». -->
+    <record id="view_move_form_factoring" model="ir.ui.view">
+        <field name="name">account.move.form.factoring.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="al_account_base.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Factoring" name="l10n_pe_factoring"
+                      invisible="move_type != 'out_invoice' or not l10n_pe_factoring_line_ids">
+                    <group>
+                        <group string="Operación vigente">
+                            <field name="l10n_pe_factoring_id" readonly="1"/>
+                            <field name="l10n_pe_factoring_state" readonly="1"/>
+                            <field name="l10n_pe_factor_id"/>
+                            <field name="l10n_pe_factoring_modality"/>
+                        </group>
+                    </group>
+                    <field name="l10n_pe_factoring_line_ids" readonly="1">
+                        <list>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="factoring_id"/>
+                            <field name="factor_id"/>
+                            <field name="modality"/>
+                            <field name="cavali_number" optional="show"/>
+                            <field name="nominal_amount"/>
+                            <field name="advance_amount"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_out_invoice_list_factoring" model="ir.ui.view">
+        <field name="name">account.move.list.factoring.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='status_in_payment']" position="after">
+                <field name="l10n_pe_factoring_state" optional="hide" widget="badge"
+                       decoration-warning="l10n_pe_factoring_state == 'assigned'"
+                       decoration-success="l10n_pe_factoring_state == 'collected'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter_factoring" model="ir.ui.view">
+        <field name="name">account.move.search.factoring.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="after">
+                <filter name="l10n_pe_factoring" string="Cedidas a factoring"
+                        domain="[('l10n_pe_factoring_state', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

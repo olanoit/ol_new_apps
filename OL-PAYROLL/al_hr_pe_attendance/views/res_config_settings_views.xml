@@ -38,6 +38,16 @@
                             </div>
                         </div>
                     </setting>
+                    <setting id="l10n_pe_payroll_tareaje_cost_basis" company_dependent="1" string="Reparto del costo por obra"
+                             help="Con centro de costo en las marcaciones, el asiento de planilla por lote reparte el costo de cada trabajador entre sus obras.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_payroll_tareaje_cost_basis" string="Reparto" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_payroll_tareaje_cost_basis" class="w-auto"/>
+                            </div>
+                            <div class="text-muted">Los días sin centro de costo van al de la ficha del trabajador.</div>
+                        </div>
+                    </setting>
                 </block>
             </xpath>
         </field>

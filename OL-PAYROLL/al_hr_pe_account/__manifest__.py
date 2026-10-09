@@ -30,7 +30,7 @@ Fase 5 (actual):
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '10.20261008',
+    'version': '11.20261010',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],
     'data': [
@@ -41,6 +41,7 @@ Fase 5 (actual):
         'views/hr_payslip_run_move_views.xml',
         'views/hr_benefits_move_views.xml',
         'views/res_config_settings_views.xml',
+        'views/hr_salary_rule_account_views.xml',
     ],
     'installable': True,
     'application': False,

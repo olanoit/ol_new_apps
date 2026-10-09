@@ -1,0 +1,141 @@
+titulo: Factoring de facturas
+subtitulo: >-
+  Ceda facturas a un banco o empresa de factoring, con o sin recurso, y lleve
+  la cesión, el desembolso, los intereses y el cobro del factor con sus asientos
+  del PCGE.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Factoring, Factura negociable, CAVALI, Con recurso, Sin recurso, NIIF 9, PCGE]
+
+destacados_intro: >-
+  La operación se arma sobre las facturas de Odoo: no se duplica la factura ni
+  el cobro, y cada paso deja su asiento.
+destacados:
+  - icono: "⇄"
+    titulo: Con y sin recurso
+    texto: >-
+      Sin recurso la factura se da de baja y la deuda pasa al factor; con
+      recurso el adelanto es una obligación financiera.
+  - icono: "%"
+    titulo: Adelanto y retenido
+    texto: >-
+      Porcentaje de adelanto por factura; el retenido se cobra cuando el
+      cliente paga al factor.
+  - icono: "S/"
+    titulo: Intereses y comisiones
+    texto: >-
+      Intereses a 6734 (o diferidos en 3731 y devengados) y comisiones a 6391,
+      configurables por modalidad y moneda.
+  - icono: "↩"
+    titulo: Recompra
+    texto: >-
+      Con recurso, si el cliente no paga se devuelve el adelanto y la factura
+      vuelve a quedar pendiente de cobro.
+  - icono: "✓"
+    titulo: Sin dobles cesiones
+    texto: >-
+      Una factura no se cede dos veces; la pestaña Factoring de la factura
+      muestra su operación y estado.
+  - icono: "▤"
+    titulo: Cartera y análisis
+    texto: >-
+      Facturas cedidas por factor y vencimiento, con las vencidas en rojo, y
+      análisis en tabla dinámica y gráfico.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Las empresas que venden sus facturas a un factor necesitan reflejar en la
+    contabilidad la cesión, el dinero recibido, el costo financiero y, si la
+    operación es con recurso, la obligación hasta que el cliente pague. Según
+    NIIF 9, sin recurso la cuenta por cobrar se da de baja (gasto financiero en
+    la 67); con recurso se mantiene y el adelanto es una obligación (45). La
+    cesión del crédito no está gravada con IGV ni genera comprobante.
+  nota: >-
+    **Factura negociable:** se guarda el número de anotación en CAVALI. La
+    integración con la API de CAVALI no está incluida.
+
+flujos:
+  - id: factoring
+    titulo: Operación de factoring
+    texto: >-
+      La cesión retira la factura de la cuenta del cliente; el desembolso
+      registra el adelanto neto; al final, el cobro del factor o (con recurso)
+      la recompra cierran la operación.
+    mermaid: |
+      flowchart TD
+        A[Operación en borrador<br/>factor, modalidad, facturas] --> B[Ceder facturas<br/>1212 → 1214]
+        B --> C[Registrar desembolso<br/>banco + intereses + comisión]
+        C --> D{¿Modalidad?}
+        D -- Sin recurso --> E[Cobro del factor<br/>retenido al banco]
+        D -- Con recurso --> F[Devengo de intereses<br/>3731 → 6734]
+        F --> G{¿El cliente pagó?}
+        G -- Sí --> H[Cobro del factor<br/>cancela la obligación 4512]
+        G -- No --> I[Recompra<br/>devuelve el adelanto,<br/>la factura vuelve a pendiente]
+        E --> J[Liquidada]
+        H --> J
+        I --> K[Recomprada]
+
+pasos_intro: >-
+  Ejemplo: factura de S/ 1 000 cedida con un adelanto del 90 %, intereses de
+  S/ 20, comisión de S/ 10 y gastos de S/ 5.
+pasos:
+  - seccion: Ceder las facturas
+  - titulo: Elegir las facturas
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ Acciones ▸ Ceder a factoring
+    texto: >-
+      Seleccione las facturas (misma compañía y moneda) y cree la operación en
+      borrador, o hágalo desde Perú ▸ Factoring ▸ Operaciones.
+  - titulo: Completar la operación
+    ruta: Perú ▸ Factoring ▸ Operaciones
+    texto: >-
+      Indique el factor, la modalidad, el contrato y el % de adelanto. En cada
+      factura puede ajustar el nominal, el vencimiento y la anotación CAVALI.
+  - titulo: Ceder
+    ruta: Operación ▸ Ceder facturas
+    texto: >-
+      Sin recurso la factura queda pagada y la deuda pasa al factor (1214); con
+      recurso se reclasifica a 1214 a nombre del cliente.
+
+  - seccion: Desembolso y cierre
+  - titulo: Registrar el desembolso
+    ruta: Operación ▸ Registrar desembolso
+    texto: >-
+      Banco, fecha, intereses, comisión y gastos. Entra al banco el neto
+      (S/ 865 en el ejemplo); con recurso el adelanto queda como obligación
+      con el factor (4512).
+  - titulo: Devengar intereses
+    ruta: Operación ▸ Devengar intereses
+    texto: >-
+      Solo con recurso y con la cuenta de intereses diferidos: pasa a gasto la
+      parte del periodo. Al cerrar la operación se devenga lo que falte.
+  - titulo: Cobro del factor o recompra
+    ruta: Operación ▸ Cobro del factor / Recompra
+    texto: >-
+      Cuando el cliente paga al factor se cancelan las facturas cedidas y entra
+      el retenido. Con recurso, si el cliente no paga, la recompra devuelve el
+      adelanto y la factura vuelve a quedar pendiente.
+
+campos:
+  - grupo: Operación
+    ruta: Perú ▸ Factoring ▸ Operaciones
+    campos:
+      - [Factor, Banco o empresa de factoring, —, Tercero de la obligación y (sin recurso) de la deuda cedida]
+      - [Modalidad, Con o sin recurso, Sin recurso, Decide los asientos]
+      - ["% de adelanto", Parte del nominal que adelanta el factor, 100, Se propone en cada factura; el resto queda retenido]
+      - [Diario, Diario de la cesión y del devengo, Primer diario varios, —]
+  - grupo: Cuentas del factoring
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Factoring
+    campos:
+      - [Facturas cedidas, Cuenta de las facturas cedidas, 1214, Conciliable]
+      - [Obligación con el factor, Adelanto con recurso, 4512, Solo con recurso]
+      - [Intereses, Gasto financiero, 6734, —]
+      - [Intereses diferidos, Intereses por devengar, 3731, Solo con recurso; vacía va directo a gasto]
+      - [Comisiones y gastos, Comisión del factor y gastos, 6391, —]
+
+novedades:
+  - version: 1.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Primera versión: operaciones de factoring con y sin recurso sobre las facturas de cliente (cesión, desembolso, devengo de intereses, cobro del factor y recompra), cuentas del PCGE por modalidad y moneda, «Ceder a factoring» desde la lista de facturas, pestaña Factoring en la factura y menú Perú ▸ Factoring con análisis."
+
+relacionados: [al_l10n_pe_account_letter, al_account_base, al_l10n_pe_currency]

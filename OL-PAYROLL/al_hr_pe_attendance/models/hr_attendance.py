@@ -35,6 +35,18 @@ class HrAttendance(models.Model):
         help='Turno publicado del planning contra el que el monitor de '
              'asistencia compara esta marcación. Se asigna solo al '
              'turno más cercano al check-in; puede corregirse a mano.')
+    l10n_pe_analytic_account_id = fields.Many2one(
+        'account.analytic.account', string='Centro de costo',
+        index='btree_not_null', ondelete='restrict',
+        help='Obra o centro de costo donde trabajó ese día. El tareaje lo '
+             'copia al detalle diario y la planilla reparte el costo del '
+             'trabajador entre sus obras. Vacío: el de la ficha del trabajador.')
+
+    @api.model
+    def _l10n_pe_day_cost_fields(self):
+        """Campos de la marcación que el tareaje copia al día tareado
+        (los módulos de obra añaden la obra)."""
+        return ['l10n_pe_analytic_account_id']
 
     @api.model_create_multi
     def create(self, vals_list):

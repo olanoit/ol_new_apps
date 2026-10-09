@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 34.20261010 — 10/10/2026
+
+- Punto de extensión `_l10n_pe_tareaje_distribution` en la boleta: el reparto del costo por centro de costo según el tareaje (lo calcula Asistencia y lo usa el asiento de planilla por lote).
+
 ## 33.20261009 — 09/10/2026
 
 - Chatter en la configuración principal de planillas y en los derechohabientes: historial de cambios del RMV, representante legal, regla del neto, vigencia, baja y acreditación del vínculo.
