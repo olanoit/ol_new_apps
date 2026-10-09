@@ -36,7 +36,7 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '20.20261008',
+    'version': '21.20261009',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits'],
     'data': [

@@ -16,7 +16,7 @@ class AccountAccount(models.Model):
             ('purchase', 'Compra'),
             ('sale', 'Venta'),
         ],
-        string='T.C. en ganancias/pérdidas no realizadas',
+        string='T.C. de revaluación',
         help='Tipo de cambio SUNAT con el que el informe de ganancias/pérdidas '
              'de moneda no realizadas revalúa esta cuenta. Si no hay tipo de '
              'cambio de compra o venta para la fecha, se usa el genérico del '

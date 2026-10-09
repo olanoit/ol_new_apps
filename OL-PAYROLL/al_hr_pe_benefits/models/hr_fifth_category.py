@@ -152,6 +152,7 @@ class HrRateLimit(models.Model):
 class HrFifthCategory(models.Model):
     _name = 'hr.fifth.category'
     _description = 'Renta de 5ta categoría'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'id desc'
     _check_company_auto = True
 
@@ -159,22 +160,22 @@ class HrFifthCategory(models.Model):
         string='Nombre', compute='_compute_name', store=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
+        check_company=True, tracking=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     line_ids = fields.One2many(
         'hr.fifth.category.line', 'fifth_category_id',
-        string='Afectos a quinta')
+        string='Trabajadores con retención')
     line_excluidos_ids = fields.One2many(
         'hr.fifth.category.line.excluidos', 'fifth_category_id',
-        string='Excluidos de quinta')
+        string='Trabajadores sin retención')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('verify', 'En proceso'),
                    ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
     middle_month_number = fields.Integer(
-        string='Mes', compute='_compute_middle_month_number', store=True,
+        string='Mes del cálculo', compute='_compute_middle_month_number', store=True,
         help='Mes (1-12) que representa el lote: mes intermedio entre '
              'las fechas de inicio y fin del lote (o el de la fecha '
              'disponible). Determina los meses restantes de proyección '
@@ -324,6 +325,7 @@ class HrFifthCategoryLine(models.Model):
     Emp = empleador(es).
     """
     _name = 'hr.fifth.category.line'
+    _inherit = 'hr.benefits.line.mixin'
     _description = 'Línea de renta de 5ta categoría'
     _order = 'employee_id'
     _check_company_auto = True
@@ -338,7 +340,7 @@ class HrFifthCategoryLine(models.Model):
         compute_locked(self, {'fifth_category_id': ('draft', 'verify')})
 
     fifth_category_id = fields.Many2one(
-        'hr.fifth.category', string='Quinta cat.', ondelete='cascade',
+        'hr.fifth.category', string='Renta de quinta', ondelete='cascade',
         index=True,
         check_company=True)
     company_id = fields.Many2one(
@@ -347,74 +349,92 @@ class HrFifthCategoryLine(models.Model):
     slip_id = fields.Many2one(
         'hr.payslip', string='Boleta', required=True, check_company=True)
     employee_id = fields.Many2one(
-        related='slip_id.employee_id', string='Empleado', store=True,
+        related='slip_id.employee_id', string='Trabajador', store=True,
         index=True)
     identification_id = fields.Char(
         related='slip_id.employee_id.identification_id',
-        string='Nro. documento')
+        string='N.º de documento')
     monthly_rem = fields.Float(
-        string='Rem. mes', help='Remuneración ordinaria del mes.')
+        string='Rem. del mes',
+        help='Remuneración ordinaria del mes afecta a quinta (regla salarial '
+             'configurada en la quinta de los parámetros principales).')
     edit_proy = fields.Boolean(
-        string='Editar proy.', default=False,
-        help='Permite editar manualmente los valores proyectados.')
+        string='Ajuste manual', default=False,
+        help='Permite corregir a mano la remuneración a proyectar, las '
+             'gratificaciones y la retención por extraordinarios.', tracking=True)
     contrac_proy_rem = fields.Float(
-        string='Rem. base proy.',
-        help='Remuneración base para la proyección.')
+        string='Rem. mensual',
+        help='Remuneración mensual que se repite en los meses que faltan '
+             'del año.', tracking=True)
     proy_rem = fields.Float(
-        string='(+) Total rem. proy.',
-        help='Remuneración proyectada anual (base × meses restantes + '
-             'mes actual).')
+        string='Rem. proyectada',
+        help='Remuneración a proyectar × meses que faltan del año + '
+             'remuneración del mes.')
     grat_july = fields.Float(
-        string='(+) Grat. julio',
-        help='Gratificación de julio (real o proyectada).')
+        string='Grat. julio',
+        help='Gratificación de julio con su bonificación extraordinaria: '
+             'real si ya se liquidó, si no proyectada.', tracking=True)
     grat_december = fields.Float(
-        string='(+) Grat. diciembre',
-        help='Gratificación de diciembre (real o proyectada).')
+        string='Grat. diciembre',
+        help='Gratificación de diciembre con su bonificación extraordinaria: '
+             'real si ya se liquidó, si no proyectada.', tracking=True)
     other_emp_proy_rem = fields.Float(
-        string='Rem. otros emp.',
-        help='Remuneración proyectada de otros empleadores.')
+        string='Rem. otros empleadores',
+        help='Remuneración de otros empleadores del año, declarada por el '
+             'trabajador.', tracking=True)
     past_rem = fields.Float(
-        string='Rem. meses ant.',
-        help='Remuneración acumulada de meses anteriores del año.')
+        string='Rem. meses previos',
+        help='Remuneración afecta ya pagada en los meses anteriores del año.')
     total_proy = fields.Float(
-        string='Rem. bruta anual',
-        help='Total de remuneración bruta proyectada.')
+        string='Renta bruta anual',
+        help='Remuneración proyectada + gratificaciones + meses anteriores + '
+             'otros empleadores.')
     seven_uit = fields.Float(
-        string='(-) Deducción (7 UIT)', help='Monto deducible de 7 UIT.')
+        string='Deducción 7 UIT',
+        help='Deducción anual de 7 UIT de la renta de trabajo (art. 46 de la '
+             'Ley del Impuesto a la Renta), con la UIT del año.')
     net_rent = fields.Float(
-        string='Rem. neta anual',
-        help='Remuneración neta después de la deducción.')
+        string='Renta neta anual',
+        help='Renta bruta anual − deducción de 7 UIT.')
     tax_proy = fields.Float(
-        string='Imp. anual proy.',
-        help='Impuesto anual proyectado (tabla de tramos).')
+        string='Impuesto anual',
+        help='Escala progresiva acumulativa del art. 53 de la Ley del '
+             'Impuesto a la Renta (8 %, 14 %, 17 %, 20 % y 30 % por tramos de '
+             'UIT) sobre la renta neta anual.')
     past_months_ret = fields.Float(
-        string='Ret. meses ant.',
-        help='Retenciones de meses anteriores (ventanas del Art. 40).')
+        string='Retenido meses previos',
+        help='Retenciones ya efectuadas en el año que el art. 40 del '
+             'Reglamento manda descontar en este mes.')
     other_emp_ret = fields.Float(
-        string='Ret. otros emp.',
-        help='Retenciones efectuadas por otros empleadores.')
+        string='Retenido otros empleadores',
+        help='Retenciones del año efectuadas por otros empleadores.', tracking=True)
     annual_ret = fields.Float(
-        string='Renta anual',
+        string='Impuesto por retener',
         help='Retención anual pendiente (impuesto proyectado menos '
              'retenciones previas; con reproyección si hay quinta '
              'anterior).')
     monthly_rent = fields.Float(
-        string='Renta mensual',
-        help='Proporción mensual de la retención anual.')
+        string='Retención ordinaria',
+        help='Impuesto por retener ÷ divisor del mes (art. 40 del Reglamento '
+             'de la Ley del Impuesto a la Renta: enero a marzo 12, abril 9, '
+             'mayo a julio 8, agosto 5, setiembre a noviembre 4, diciembre 1).')
     ext_rem = fields.Float(
-        string='Rem. ext.', help='Remuneraciones extraordinarias del mes.')
+        string='Rem. extraordinaria',
+        help='Pagos extraordinarios del mes afectos a quinta (bonos, '
+             'participaciones…), según la regla salarial configurada.', tracking=True)
     total_net_rent = fields.Float(
-        string='Rem. neta + ext.',
-        help='Remuneración neta anual + extraordinaria.')
+        string='Renta neta total',
+        help='Renta neta anual + remuneración extraordinaria del mes.')
     ext_ret = fields.Float(
-        string='Ret. ext.',
+        string='Retención extraordinaria',
         help='Retención por las remuneraciones extraordinarias del mes '
              '(Art. 40 inc. c del Reglamento LIR): impuesto con ellas '
-             'menos impuesto sin ellas. Se retiene completa en el mes.')
+             'menos impuesto sin ellas. Se retiene completa en el mes.', tracking=True)
     monthly_ret = fields.Float(
-        string='Ret. mensual', help='Monto a retener en el mes.')
+        string='Retención del mes',
+        help='Monto que se retiene en la boleta del mes.')
     saldo_ret = fields.Float(
-        string='Saldo ret.', compute='_compute_saldo_ret', store=True,
+        string='Saldo por retener', compute='_compute_saldo_ret', store=True,
         help='Saldo anual pendiente de retener.')
     previous_line_id = fields.Many2one(
         'hr.fifth.category.line', string='Línea anterior',
@@ -763,12 +783,13 @@ class HrFifthCategoryLineExcluidos(models.Model):
     """Empleado excluido de la retención (retención proyectada ≤ 0)."""
     _name = 'hr.fifth.category.line.excluidos'
     _description = 'Línea de renta de 5ta categoría - Excluidos'
+    _inherit = 'hr.benefits.line.mixin'
     _rec_name = 'employee_id'
     _order = 'employee_id'
     _check_company_auto = True
 
     fifth_category_id = fields.Many2one(
-        'hr.fifth.category', string='Quinta cat.', ondelete='cascade',
+        'hr.fifth.category', string='Renta de quinta', ondelete='cascade',
         required=True, index=True,
         check_company=True)
     company_id = fields.Many2one(
@@ -777,19 +798,22 @@ class HrFifthCategoryLineExcluidos(models.Model):
     slip_id = fields.Many2one(
         'hr.payslip', string='Boleta', required=True, check_company=True)
     employee_id = fields.Many2one(
-        related='slip_id.employee_id', string='Empleado', store=True,
+        related='slip_id.employee_id', string='Trabajador', store=True,
         index=True)
     identification_id = fields.Char(
         related='slip_id.employee_id.identification_id',
-        string='Nro. documento')
-    monthly_rem = fields.Float(string='Rem. mes')
-    contrac_proy_rem = fields.Float(string='Rem. base proy.')
-    proy_rem = fields.Float(string='(+) Total rem. proy.')
-    grat_july = fields.Float(string='(+) Grat. julio')
-    grat_december = fields.Float(string='(+) Grat. diciembre')
-    total_proy = fields.Float(string='Rem. bruta anual')
-    seven_uit = fields.Float(string='(-) Deducción (7 UIT)')
-    net_rent = fields.Float(string='Rem. neta anual')
+        string='N.º de documento')
+    monthly_rem = fields.Float(string='Rem. del mes')
+    contrac_proy_rem = fields.Float(
+        string='Rem. mensual',
+        help='Remuneración mensual que se repite en los meses que faltan '
+             'del año.')
+    proy_rem = fields.Float(string='Rem. proyectada')
+    grat_july = fields.Float(string='Grat. julio')
+    grat_december = fields.Float(string='Grat. diciembre')
+    total_proy = fields.Float(string='Renta bruta anual')
+    seven_uit = fields.Float(string='Deducción 7 UIT')
+    net_rent = fields.Float(string='Renta neta anual')
 
     @api.depends('fifth_category_id', 'employee_id')
     def _compute_display_name(self):
@@ -805,7 +829,7 @@ class HrEmployeeExcluidosWizard(models.TransientModel):
     _check_company_auto = True
 
     fifth_category_id = fields.Many2one(
-        'hr.fifth.category', string='Quinta cat.', required=True,
+        'hr.fifth.category', string='Renta de quinta', required=True,
         check_company=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, readonly=True,

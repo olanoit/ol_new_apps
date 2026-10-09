@@ -56,7 +56,7 @@ class L10nPeComplaint(models.Model):
                    ('backup', 'Libro de respaldo'), ('phone', 'Teléfono u otro medio a distancia')],
         string='Canal', required=True, default='physical', tracking=True)
     backup_sheet_number = fields.Char(
-        string='Número de la hoja de respaldo',
+        string='N.º de hoja de respaldo',
         help='Número impreso en la hoja del libro de respaldo (art. 4-A).')
     state = fields.Selection(
         selection=[('submitted', 'Registrada'), ('in_progress', 'En atención'),
@@ -109,7 +109,8 @@ class L10nPeComplaint(models.Model):
              'a la atención al público.')
     original_claim_type = fields.Selection(
         selection=[('claim', 'Reclamo'), ('complaint', 'Queja')],
-        string='Tipo marcado por el consumidor', readonly=True, copy=False)
+        string='Tipo según el consumidor', readonly=True, copy=False,
+        help='Tipo (reclamo o queja) que marcó el consumidor.')
     detail = fields.Text(string='Detalle', required=True)
     consumer_request = fields.Text(string='Pedido del consumidor')
     preferred_response_channel = fields.Selection(
@@ -117,7 +118,7 @@ class L10nPeComplaint(models.Model):
         string='Respuesta por', required=True, default='email',
         help='Medio por el que el consumidor pidió la respuesta (arts. 6 y 6-B).')
     consumer_confirmed = fields.Boolean(
-        string='Envío confirmado por el consumidor', readonly=True, copy=False,
+        string='Confirmado por el consumidor', readonly=True, copy=False,
         help='Confirmación de voluntad en el libro virtual, en lugar de la firma.')
     attachment_ids = fields.Many2many(
         'ir.attachment', string='Adjuntos del consumidor', copy=False)
@@ -130,8 +131,9 @@ class L10nPeComplaint(models.Model):
     provider_observations = fields.Text(
         string='Observaciones y acciones adoptadas',
         help='Respuesta al consumidor. Si se rechaza el pedido, fundamente la posición.')
-    response_date = fields.Date(string='Fecha de comunicación de la respuesta',
-                                readonly=True, copy=False, tracking=True)
+    response_date = fields.Date(string='Fecha de respuesta',
+                                readonly=True, copy=False, tracking=True,
+        help='Fecha de comunicación de la respuesta al consumidor.')
     response_user_id = fields.Many2one('res.users', string='Respondida por',
                                        readonly=True, copy=False)
 

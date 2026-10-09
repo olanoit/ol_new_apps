@@ -96,6 +96,25 @@ def compute_has_history(lines, date_getter):
         for line in group:
             line.l10n_pe_has_history = line.employee_id.id in employee_ids
 
+class HrBenefitsLineMixin(models.AbstractModel):
+    """Chatter de las líneas de beneficios.
+
+    Las líneas se crean en bloque al calcular el lote (una por trabajador):
+    sin nota «creado» ni seguidores para no llenar el historial; el chatter
+    registra solo los cambios a mano de los campos con ``tracking``.
+    """
+    _name = 'hr.benefits.line.mixin'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _description = 'Chatter de las líneas de beneficios'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super(HrBenefitsLineMixin, self.with_context(
+            mail_create_nolog=True, mail_create_nosubscribe=True,
+        )).create(vals_list)
+        return lines.with_env(self.env)
+
+
 class HrMainParameter(models.Model):
     _inherit = 'hr.main.parameter'
 

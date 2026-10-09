@@ -20,7 +20,8 @@ class L10nPeKardexDocumentWizard(models.TransientModel):
     doc_type = fields.Selection(DOC_TYPES, string='Tipo de documento', required=True, default='01')
     document = fields.Char(string='Serie y número', required=True,
                            help='Por ejemplo F001-00000123 o T001-456.')
-    overwrite_manual = fields.Boolean(string='Reemplazar también los corregidos a mano')
+    overwrite_manual = fields.Boolean(string='Reemplazar corregidos a mano',
+        help='Reemplazar también los datos corregidos a mano.')
 
     def action_apply(self):
         self.ensure_one()

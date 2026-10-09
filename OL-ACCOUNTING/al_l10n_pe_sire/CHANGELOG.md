@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261009 — 09/10/2026
+
+- Operaciones SIRE con chatter: historial del estado, del ticket y de los ajustes posteriores.
+- Etiquetas más cortas en no domiciliados: «Clase de bien o servicio», «Aplica art. 76 LIR», «Doc. del crédito fiscal», «País del beneficiario», «Comprobantes (ND)»…; el texto completo pasa a la ayuda (?).
+
 ## 17.20261008 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.

@@ -155,6 +155,10 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: 5.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiqueta más corta en la cuenta: «T.C. de revaluación» (el detalle pasa a la ayuda)."
   - version: 4.20261008
     fecha: 08/10/2026
     cambios:

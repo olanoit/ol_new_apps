@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261008 — 08/10/2026
+
+- Formularios de cada beneficio ordenados como en Odoo: recuadro con la base legal (LIR, D.Leg. 650, Ley 27735/30334, D.Leg. 713, Ley 26790, D.Leg. 892), grupos con título en el orden del cálculo y pestañas por tema.
+- Etiquetas claras y ayuda (?) con la fórmula en los importes: «Promedio de comisiones», «Importe por mes completo», «Descuento por faltas», «Renta bruta anual», «Retención del mes», «Utilidades a pagar»…; se quitan abreviaturas y signos (+)/(−).
+- Listas con el trabajador primero, columnas en el orden del cálculo, totales en los importes y columnas secundarias opcionales.
+- Línea de renta de quinta con chatter (historial de los datos ingresados a mano: ajuste manual, gratificaciones, otros empleadores, renta extraordinaria) y etiquetas cortas: «Rem. proyectada», «Grat. julio», «Deducción 7 UIT», «Impuesto por retener»…
+- Chatter en todos los lotes y sus líneas (CTS, gratificación, quinta, liquidación, vacaciones, provisiones, subsidios, utilidades, saldos de vacaciones): historial del estado, el periodo y los datos editados a mano; las líneas calculadas en bloque no generan nota de creación.
+- Etiquetas más cortas: «Grat. por meses completos», «Vac. por meses completos», «AFP: comisión por flujo», «Por remuneraciones», «Exceso del tope», «Últimos 12 meses»…; el detalle va en la ayuda (?).
+
 ## 21.20261008 — 08/10/2026
 
 - Campos editables según el estado: cabeceras y líneas solo en borrador (la quinta, también «En proceso»); el formulario de cada línea queda de solo lectura con su documento cerrado y oculta «Calcular».

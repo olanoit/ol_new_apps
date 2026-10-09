@@ -9,37 +9,45 @@ class L10nPeRetentionReceived(models.Model):
     asiento (IGV retenido 40114 contra el cliente) y lo concilia con la
     factura, dejando el crédito listo para aplicar contra el IGV."""
     _name = 'l10n_pe.retention.received'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'PE - Retención de IGV sufrida (cliente agente)'
     _order = 'date desc, id desc'
     _check_company_auto = True
 
     name = fields.Char(
-        string='Nº comprobante de retención', required=True, size=24,
-        help='Número del comprobante emitido por el cliente (R###-…).')
+        string='N.º de comprobante', required=True, size=24,
+        help='Número del comprobante emitido por el cliente (R###-…).',
+        tracking=True)
     date = fields.Date(
         string='Fecha del comprobante', required=True,
-        default=fields.Date.context_today)
+        default=fields.Date.context_today,
+        tracking=True)
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     partner_id = fields.Many2one(
-        'res.partner', string='Cliente (agente de retención)', required=True,
-        check_company=True)
+        'res.partner', string='Cliente', required=True,
+        check_company=True,
+        tracking=True,
+        help='Cliente agente de retención que emitió el comprobante.')
     move_id = fields.Many2one(
         'account.move', string='Factura de venta', required=True,
         check_company=True,
         domain="[('move_type', '=', 'out_invoice'),"
                " ('state', '=', 'posted'),"
-               " ('commercial_partner_id', '=', partner_id)]")
+               " ('commercial_partner_id', '=', partner_id)]",
+        tracking=True)
     amount = fields.Monetary(
         string='Monto retenido', required=True,
-        help='3% del pago según el comprobante del cliente.')
+        help='3% del pago según el comprobante del cliente.',
+        tracking=True)
     entry_id = fields.Many2one(
         'account.move', string='Asiento', readonly=True, copy=False,
         check_company=True)
     state = fields.Selection(
         [('draft', 'Borrador'), ('posted', 'Registrado')],
-        default='draft', string='Estado', copy=False)
+        default='draft', string='Estado', copy=False,
+        tracking=True)
 
     # Registrar dos veces el mismo comprobante duplicaría el crédito.
     _name_partner_uniq = models.Constraint(

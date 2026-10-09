@@ -17,7 +17,7 @@ class AccountJournal(models.Model):
              'periodo.')
 
     l10n_pe_exclude_from_books = fields.Boolean(
-        string='Excluir de los libros electrónicos',
+        string='Excluir del PLE',
         help='Los asientos de este diario no se incluyen en los libros '
              'electrónicos. Se usa para diarios auxiliares o de conciliación '
              'que no representan operaciones declarables.')

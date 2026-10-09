@@ -123,7 +123,7 @@ class AccountMove(models.Model):
             ('4', '4 - Gastos de educación, recreación, salud, culturales y otros'),
             ('5', '5 - Otros gastos no incluidos en 4'),
         ],
-        string='Clasificación de bienes y servicios',
+        string='Clase de bien o servicio',
         help='Tabla 30 SUNAT — columna "Clasif de Bss y Sss" del RCE. Obligatoria '
              'para contribuyentes con ingresos mayores a 1500 UIT.')
 
@@ -135,22 +135,25 @@ class AccountMove(models.Model):
         store=True, readonly=False,
         help='Va al registro de compras de no domiciliados del SIRE (8.5) y no al RCE.')
     l10n_pe_sire_nd_credit_move_id = fields.Many2one(
-        'account.move', string='Documento que sustenta el crédito fiscal',
+        'account.move', string='Doc. del crédito fiscal',
         check_company=True,
         domain="[('move_type', 'in', ('in_invoice', 'in_refund')), ('state', '=', 'posted'),"
                " ('company_id', '=', company_id)]",
         help='DUA, liquidación de compra o formulario de pago del IGV (tipos 00, 46, 50-53).')
     l10n_pe_sire_nd_igv_withholding = fields.Monetary(
         string='Retención del IGV', currency_field='company_currency_id')
-    l10n_pe_sire_nd_beneficiary_vat = fields.Char(string='Id. fiscal del beneficiario efectivo')
+    l10n_pe_sire_nd_beneficiary_vat = fields.Char(string='Id. fiscal del beneficiario',
+        help='Número de identificación fiscal del beneficiario efectivo.')
     l10n_pe_sire_nd_beneficiary_name = fields.Char(string='Beneficiario efectivo')
     l10n_pe_sire_nd_beneficiary_country_id = fields.Many2one(
-        'res.country', string='País del beneficiario efectivo')
+        'res.country', string='País del beneficiario',
+        help='País de residencia del beneficiario efectivo.')
     l10n_pe_sire_nd_link = fields.Selection(ND_LINK_SELECTION, string='Vinculación económica')
     l10n_pe_sire_nd_gross_income = fields.Monetary(
         string='Renta bruta', currency_field='company_currency_id')
     l10n_pe_sire_nd_deduction = fields.Monetary(
-        string='Deducción o costo de enajenación', currency_field='company_currency_id')
+        string='Deducción o costo', currency_field='company_currency_id',
+        help='Deducción o costo de enajenación.')
     l10n_pe_sire_nd_net_income = fields.Monetary(
         string='Renta neta', currency_field='company_currency_id',
         compute='_compute_l10n_pe_sire_nd_net_income', store=True, readonly=False)
@@ -165,7 +168,8 @@ class AccountMove(models.Model):
     l10n_pe_sire_nd_service_modality = fields.Selection(
         ND_MODALITY_SELECTION, string='Modalidad del servicio')
     l10n_pe_sire_nd_art76 = fields.Boolean(
-        string='Aplica el penúltimo párrafo del art. 76 de la LIR')
+        string='Aplica art. 76 LIR',
+        help='Aplica el penúltimo párrafo del art. 76 de la LIR.')
 
     @api.depends('partner_id.commercial_partner_id.country_id', 'l10n_latam_document_type_id',
                  'move_type')

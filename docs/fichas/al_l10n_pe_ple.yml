@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 23.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiqueta más corta en el activo: «Doc. de autorización» del cambio de método de depreciación."
   - version: 22.20261008
     fecha: 08/10/2026
     cambios:

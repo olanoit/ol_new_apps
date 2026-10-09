@@ -49,6 +49,7 @@ AUTH_TYPES = [
 
 class L10nPeApiConnection(models.Model):
     _name = 'l10n_pe.api.connection'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Conexión de consulta RUC/DNI'
     _order = 'sequence, id'
     _check_company_auto = True
@@ -56,21 +57,24 @@ class L10nPeApiConnection(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, ondelete='cascade', index=True,
         default=lambda self: self.env.company)
-    name = fields.Char(string='Nombre', required=True)
+    name = fields.Char(string='Nombre', required=True, tracking=True)
     sequence = fields.Integer(
         string='Prioridad', default=10, help="Orden de prioridad: la consulta usa la primera "
                          "conexión activa que responda; si falla, pasa a la "
-                         "siguiente.")
+                         "siguiente.",
+        tracking=True)
     enabled = fields.Boolean(
         string='Habilitada', default=True,
         help="Desactívala para dejar de consultar esta conexión sin borrarla "
-             "ni archivarla — sigue visible en la lista para reactivarla.")
-    engine = fields.Selection(ENGINES, required=True, default='rest_json')
+             "ni archivarla — sigue visible en la lista para reactivarla.",
+        tracking=True)
+    engine = fields.Selection(ENGINES, required=True, default='rest_json', tracking=True)
     document_type = fields.Selection(
-        DOCUMENT_TYPES, required=True, default='ruc', string='Tipo de documento')
+        DOCUMENT_TYPES, required=True, default='ruc', string='Tipo de documento',
+        tracking=True)
 
     # --- Conexión REST (engine = rest_json) ---
-    base_url = fields.Char(string='URL base')
+    base_url = fields.Char(string='URL base', tracking=True)
     endpoint_ruc = fields.Char(
         string='Endpoint RUC',
         help="Ruta relativa; usa {doc} como marcador del número. "
@@ -114,7 +118,7 @@ class L10nPeApiConnection(models.Model):
 
     # --- Scrapers SUNAT ---
     import_legal_reps = fields.Boolean(
-        string='Importar representantes legales',
+        string='Importar representantes',
         help="Solo scraper SUNAT oficial.")
     import_annexed_locals = fields.Boolean(
         string='Importar locales anexos', help="Solo scraper SUNAT oficial.")

@@ -40,6 +40,7 @@ from .hr_benefits_engine import compute_locked
 class HrProvisiones(models.Model):
     _name = 'hr.provisiones'
     _description = 'Provisión mensual de beneficios sociales'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'payslip_run_id'
     _order = 'id desc'
     _check_company_auto = True
@@ -49,22 +50,22 @@ class HrProvisiones(models.Model):
         default=lambda self: self.env.company)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
+        check_company=True, tracking=True)
     gratificacion_id = fields.Many2one(
         'hr.gratification', string='Gratificación', check_company=True,
-        help='Gratificación semestral de la que se toma el 1/6 para la '
-             'remuneración computable de la CTS.')
+        help='Gratificación semestral de la que se toma el sexto para la '
+             'remuneración computable de la CTS.', tracking=True)
     cts_lines = fields.One2many(
-        'hr.provisiones.cts.line', 'provision_id', string='Líneas CTS')
+        'hr.provisiones.cts.line', 'provision_id', string='Provisión de CTS')
     grati_lines = fields.One2many(
         'hr.provisiones.grati.line', 'provision_id',
-        string='Líneas gratificación')
+        string='Provisión de gratificación')
     vaca_lines = fields.One2many(
         'hr.provisiones.vaca.line', 'provision_id',
-        string='Líneas vacaciones')
+        string='Provisión de vacaciones')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('done', 'Hecho')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
 
     _unique_run = models.Constraint(
         'UNIQUE(company_id, payslip_run_id)',
@@ -317,19 +318,22 @@ class HrProvisionesLineMixin(models.AbstractModel):
         related='provision_id.company_id', string='Compañía', store=True,
         index=True)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
+        'hr.employee', string='Trabajador', check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Contrato (versión)', check_company=True)
     nro_doc = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     fecha_ingreso = fields.Date(string='Fecha de ingreso')
     distribution_id = fields.Char(string='Distribución analítica')
-    basico = fields.Float(string='Rem. básica')
+    basico = fields.Float(string='Sueldo')
     asignacion = fields.Float(string='Asignación familiar')
-    commission = fields.Float(string='Prom. comisión')
-    bonus = fields.Float(string='Prom. bonificación')
-    extra_hours = fields.Float(string='Prom. horas extras')
-    prov_acumulado = fields.Float(string='Acumulado')
+    commission = fields.Float(string='Promedio de comisiones')
+    bonus = fields.Float(string='Promedio de bonificaciones')
+    extra_hours = fields.Float(string='Promedio de horas extras')
+    prov_acumulado = fields.Float(
+        string='Acumulado provisionado',
+        help='Lo provisionado en el semestre (CTS y gratificación) o en el año '
+             '(vacaciones) hasta este lote; se obtiene con «Obtener acumulado».')
 
     def _prorate_by_admission(self, amount):
         """Prorratea el mes de ingreso: días laborados / mes de 30."""
@@ -368,14 +372,17 @@ class HrProvisionesCtsLine(models.Model):
     _inherit = 'hr.provisiones.line.mixin'
     _description = 'Línea de provisión CTS'
 
-    un_sexto_grati = fields.Float(string='1/6 gratificación')
+    un_sexto_grati = fields.Float(string='Sexto de la gratificación')
     concepto_ids = fields.One2many(
         'hr.provisiones.concepto', 'cts_line_id', string='Otros conceptos')
     total_cts = fields.Float(
         string='Otros adicionales', compute='_compute_total_cts',
         store=True)
     provisiones_cts = fields.Float(
-        string='Provisión CTS', compute='_compute_provisiones_cts',
+        string='Provisión CTS del mes',
+        help='(Sueldo + asignación familiar + promedios + sexto de la '
+             'gratificación + otros adicionales) ÷ 12; la mitad en la pequeña '
+             'empresa. Se prorratea por días en el mes de ingreso.', compute='_compute_provisiones_cts',
         store=True)
 
     @api.depends('concepto_ids.monto')
@@ -404,9 +411,9 @@ class HrProvisionesGratiLine(models.Model):
     _description = 'Línea de provisión gratificación'
 
     tasa = fields.Float(
-        string='Tasa %',
-        help='Porcentaje del seguro social (EsSalud/EPS) para el Bono '
-             'Extraordinario Ley 29351.')
+        string='Tasa del seguro social (%)',
+        help='Porcentaje del seguro social (EsSalud o EPS) con el que se '
+             'calcula la bonificación extraordinaria de la Ley 30334.')
     concepto_ids = fields.One2many(
         'hr.provisiones.concepto', 'grati_line_id',
         string='Otros conceptos')
@@ -414,11 +421,17 @@ class HrProvisionesGratiLine(models.Model):
         string='Otros adicionales', compute='_compute_total_grati',
         store=True)
     provisiones_grati = fields.Float(
-        string='Provisión gratificación',
+        string='Provisión de gratificación',
+        help='(Sueldo + asignación familiar + promedios + otros adicionales) '
+             '÷ 6; la mitad en la pequeña empresa.',
         compute='_compute_provisiones_grati', store=True)
     boni_grati = fields.Float(
-        string='Provisión bono', compute='_compute_boni_grati', store=True)
-    total = fields.Float(string='Total', compute='_compute_total')
+        string='Provisión de bonificación',
+        help='Provisión de gratificación × tasa del seguro social.',
+        compute='_compute_boni_grati', store=True)
+    total = fields.Float(
+        string='Total del mes', compute='_compute_total',
+        help='Provisión de gratificación + bonificación extraordinaria.')
 
     @api.depends('concepto_ids.monto')
     def _compute_total_grati(self):
@@ -460,7 +473,10 @@ class HrProvisionesVacaLine(models.Model):
         string='Otros adicionales', compute='_compute_total_vaca',
         store=True)
     provisiones_vaca = fields.Float(
-        string='Provisión vacaciones', compute='_compute_provisiones_vaca',
+        string='Provisión de vacaciones del mes',
+        help='(Sueldo + asignación familiar + promedios + otros adicionales) '
+             '÷ 12; la mitad en la pequeña y la microempresa.',
+        compute='_compute_provisiones_vaca',
         store=True)
 
     @api.depends('concepto_ids.monto')
@@ -510,7 +526,7 @@ class HrProvisionesConcepto(models.Model):
         'res.company', string='Compañía', store=True, index=True,
         compute='_compute_company_id')
     concepto = fields.Many2one('hr.salary.rule', string='Concepto')
-    monto = fields.Float(string='Monto')
+    monto = fields.Float(string='Importe')
 
     @api.depends('cts_line_id.company_id', 'grati_line_id.company_id',
                  'vaca_line_id.company_id')

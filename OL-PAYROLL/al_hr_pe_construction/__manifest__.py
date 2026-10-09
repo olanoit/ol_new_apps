@@ -97,7 +97,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '20.20261008',
+    'version': '21.20261009',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden

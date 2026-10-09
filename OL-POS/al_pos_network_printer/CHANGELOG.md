@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_network_printer.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261009 — 09/10/2026
+
+- Etiquetas más cortas en la impresora del TPV: «IP ESC/POS» y «Puerto ESC/POS».
+
 ## 3.20261008 — 08/10/2026
 
 - El ticket de prueba imprime la compañía del punto de venta, no la compañía activa del usuario.

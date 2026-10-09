@@ -22,7 +22,7 @@ tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '1.20261006',
+    'version': '2.20261009',
     'license': 'OPL-1',
     'depends': ['payment'],
     'data': [

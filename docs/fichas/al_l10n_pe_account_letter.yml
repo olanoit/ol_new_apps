@@ -630,6 +630,11 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 18.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Canje masivo con chatter en el formulario (seguimiento y actividades, como el canje normal)."
+      - "Contador de operaciones con el banco con etiqueta propia («N.º de operaciones bancarias»): ya no repite la de la lista de asientos."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

@@ -6,7 +6,7 @@ class ProductTag(models.Model):
     _inherit = "product.tag"
 
     show_in_pos_filter = fields.Boolean(
-        string="Mostrar en la barra de filtros del TPV",
+        string='Filtro del TPV',
         default=True,
         help=(
             "Mostrar esta etiqueta como chip en la barra de filtros del TPV. "

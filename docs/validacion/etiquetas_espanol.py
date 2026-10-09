@@ -72,7 +72,7 @@ ALLOW = {
     'Token Decolecta', 'Decolecta — requiere token', 'Token SIRE', 'Token / clave',
     'Token Bearer', 'X-Api-Key', 'success', 'pk_test_…', 'sk_test_…',
     # Español que coincide con palabras inglesas
-    'Error', 'Token', 'Token MCP', 'Revocar token', 'Domicilio fiscal:', '3 — CAN',
+    'Ajuste manual', 'Error', 'Token', 'Token MCP', 'Revocar token', 'Domicilio fiscal:', '3 — CAN',
     # Nombres de columna o expresiones que el usuario escribe tal cual
     'check_in', 'check_out', 'contract', 'payslip.wage', 'version.wage',
     'Authorization: Bearer <token>',

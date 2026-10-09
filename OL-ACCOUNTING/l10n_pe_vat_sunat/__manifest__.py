@@ -31,7 +31,7 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
     'countries': ['pe'],
-    'version': '16.20261008',
+    'version': '17.20261009',
     'license': 'OPL-1',
     'depends': [
         'base',

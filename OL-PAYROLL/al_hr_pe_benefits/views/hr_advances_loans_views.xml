@@ -17,14 +17,20 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Nombre"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Adelanto de remuneración: se descuenta una sola vez, en la boleta cuyo
+                        periodo incluye la fecha de descuento («Importar adelantos» en el lote de
+                        nóminas). Los adelantos de gratificación, CTS, vacaciones, liquidación y
+                        quincena se descuentan en su propio beneficio.
+                    </div>
                     <group>
-                        <group>
+                        <group string="Adelanto">
                             <field name="employee_id" required="1" readonly="state == 'paid out'"/>
-                            <field name="amount" required="1" readonly="state == 'paid out'"/>
+                            <field name="advance_type_id" required="1" readonly="state == 'paid out'"/>
+                            <field name="amount" required="1" readonly="state == 'paid out'" class="fw-bold"/>
                             <field name="active" invisible="1"/>
                         </group>
-                        <group>
-                            <field name="advance_type_id" required="1" readonly="state == 'paid out'"/>
+                        <group string="Fechas">
                             <field name="date" required="1" readonly="state == 'paid out'"/>
                             <field name="discount_date" required="1" readonly="state == 'paid out'"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
@@ -46,9 +52,9 @@
             <list>
                 <field name="employee_id"/>
                 <field name="advance_type_id" optional="show"/>
-                <field name="amount" sum="Total" optional="show"/>
                 <field name="date" optional="show"/>
                 <field name="discount_date" optional="show"/>
+                <field name="amount" sum="Total"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
@@ -72,7 +78,7 @@
                 <separator/>
                 <filter string="Archivados" name="filter_inactive" domain="[('active', '=', False)]"/>
                 <separator/>
-                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Trabajador" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
                 <filter string="Tipo de adelanto" name="group_by_advance_type_id" context="{'group_by': 'advance_type_id'}"/>
                 <filter string="Fecha de descuento" name="group_by_discount_date" context="{'group_by': 'discount_date'}"/>
             </search>
@@ -146,17 +152,22 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Nombre"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Préstamo al trabajador: «Generar cuotas» arma el cronograma de cuotas
+                        mensuales iguales. Cada cuota se descuenta en la boleta del mes en que vence
+                        («Importar préstamos» en el lote de nóminas) y pasa a pagada.
+                    </div>
                     <group>
-                        <group>
+                        <group string="Préstamo">
                             <field name="employee_id" required="1"/>
+                            <field name="loan_type_id" required="1"/>
                             <field name="date" required="1"/>
                             <field name="amount" required="1"/>
-                            <field name="saldo_final"/>
                             <field name="active" invisible="1"/>
                         </group>
-                        <group>
-                            <field name="loan_type_id" required="1"/>
+                        <group string="Cronograma">
                             <field name="fees_number" required="1"/>
+                            <field name="saldo_final" class="fw-bold"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -165,11 +176,13 @@
                     <field name="line_ids">
                         <list editable="bottom">
                             <field name="fee"/>
-                            <field name="amount" sum="Total" readonly="validation == 'paid out'"/>
                             <field name="date" readonly="validation == 'paid out'"/>
+                            <field name="loan_type_id" readonly="validation == 'paid out'" optional="hide"/>
+                            <field name="amount" sum="Total" readonly="validation == 'paid out'"/>
                             <field name="debt" readonly="validation == 'paid out'"/>
-                            <field name="loan_type_id" readonly="validation == 'paid out'"/>
-                            <field name="validation" readonly="1"/>
+                            <field name="validation" readonly="1" widget="badge"
+                                   decoration-success="validation == 'paid out'"
+                                   decoration-info="validation == 'not payed'"/>
                             <button name="action_set_unpaid" type="object" invisible="validation != 'paid out'"
                                     icon="fa-undo" string="Cambiar a no pagado" help="Cambiar a no pagado"
                                     confirm="¿Está seguro de que desea cambiar el estado de esta cuota a no pagada?"/>
@@ -192,11 +205,11 @@
         <field name="arch" type="xml">
             <list decoration-danger="amount == saldo_final">
                 <field name="employee_id"/>
-                <field name="amount" optional="show"/>
-                <field name="saldo_final" optional="show"/>
+                <field name="loan_type_id" optional="show"/>
                 <field name="date" optional="show"/>
                 <field name="fees_number" optional="show"/>
-                <field name="loan_type_id" optional="show"/>
+                <field name="amount" sum="Total"/>
+                <field name="saldo_final"/>
                 <field name="company_id" readonly="1" optional="hide" groups="base.group_multi_company"/>
             </list>
         </field>
@@ -214,7 +227,7 @@
                 <separator/>
                 <filter string="Archivados" name="filter_inactive" domain="[('active', '=', False)]"/>
                 <separator/>
-                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Trabajador" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
                 <filter string="Tipo de préstamo" name="group_by_loan_type_id" context="{'group_by': 'loan_type_id'}"/>
             </search>
         </field>

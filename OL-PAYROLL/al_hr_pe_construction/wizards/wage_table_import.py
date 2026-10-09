@@ -39,7 +39,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
     # Segundo paso: la vigencia ya existe y se pide confirmar la
     # actualización. El PDF se guarda para no descargarlo dos veces.
     pdf_content = fields.Binary(attachment=False)
-    source_label = fields.Char(string='Origen')
+    source_label = fields.Char(string='Origen leído')
     existing_table_id = fields.Many2one(
         'l10n_pe.hr.construction.wage.table', string='Tabla existente',
         readonly=True)

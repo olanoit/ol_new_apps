@@ -33,6 +33,7 @@ from .hr_benefits_engine import compute_has_history, compute_locked
 class HrCts(models.Model):
     _name = 'hr.cts'
     _description = 'CTS (depósito semestral)'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'deposit_date desc'
     _check_company_auto = True
 
@@ -43,21 +44,24 @@ class HrCts(models.Model):
     year = fields.Integer(
         string='Año', required=True,
         default=lambda self: fields.Date.context_today(self).year,
-        help='Año del depósito (sustituye al año fiscal contable v18).', aggregator=False)
-    exchange_type = fields.Float(string='Tipo de cambio', default=1.0)
+        help='Año del depósito (sustituye al año fiscal contable v18).', aggregator=False, tracking=True)
+    exchange_type = fields.Float(
+        string='Tipo de cambio', default=1.0,
+        help='Para convertir a dólares el importe de las cuentas CTS en esa '
+             'moneda.', tracking=True)
     type = fields.Selection(
         selection=[('11', 'CTS Mayo - Octubre'),
                    ('05', 'CTS Noviembre - Abril')],
-        string='Tipo CTS', required=True)
+        string='Semestre', required=True, tracking=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
-    deposit_date = fields.Date(string='Fecha de depósito', required=True)
+        check_company=True, tracking=True)
+    deposit_date = fields.Date(string='Fecha de depósito', required=True, tracking=True)
     line_ids = fields.One2many(
-        'hr.cts.line', 'cts_id', string='Cálculo de CTS')
+        'hr.cts.line', 'cts_id', string='Trabajadores')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
     cts_count = fields.Integer(string='CTS', compute='_compute_cts_count')
 
     _unique_semester = models.Constraint(
@@ -192,6 +196,7 @@ class HrCts(models.Model):
 class HrCtsLine(models.Model):
     _name = 'hr.cts.line'
     _description = 'Línea de CTS'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id'
     _check_company_auto = True
 
@@ -228,13 +233,13 @@ class HrCtsLine(models.Model):
             line.company_id = (line.cts_id.company_id
                                or line.liquidation_id.company_id)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
+        'hr.employee', string='Trabajador', check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Contrato (versión)', check_company=True)
     less_than_one_month = fields.Boolean(
         string='Menos de un mes', default=False)
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     last_name = fields.Char(
         related='employee_id.last_name', string='Apellido paterno')
     m_last_name = fields.Char(
@@ -249,34 +254,61 @@ class HrCtsLine(models.Model):
         related='cts_account.bank_id', string='Banco')
     exchange_type = fields.Float(string='Tipo de cambio')
     distribution_id = fields.Char(string='Distribución analítica')
-    months = fields.Integer(string='Meses')
-    days = fields.Integer(string='Días')
+    months = fields.Integer(string='Meses completos')
+    days = fields.Integer(string='Días adicionales')
     # Float: las faltas y el descanso médico admiten medios días.
-    lacks = fields.Float(string='Faltas', digits=(16, 2))
+    lacks = fields.Float(string='Faltas (días)', digits=(16, 2))
     excess_medical_rest = fields.Float(
-        string='Exceso descanso médico', digits=(16, 2))
+        string='Exceso de descanso médico', digits=(16, 2),
+        help='Días de descanso médico que superan los 60 del año CTS '
+             '(D.S. 001-97-TR art. 8): no computan para la CTS.')
     remaining_wage = fields.Float(
-        string='(+) Saldo semestre anterior',
+        string='Saldo del semestre anterior',
         help='CTS reservada del semestre anterior (trabajador con menos '
              'de un mes), que se abona en este depósito.')
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
-    sixth_of_gratification = fields.Float(string='1/6 gratificación')
-    commission = fields.Float(string='Prom. comisión')
-    bonus = fields.Float(string='Prom. bonificación')
-    extra_hours = fields.Float(string='Prom. horas extras')
-    computable_remuneration = fields.Float(string='Remuneración computable')
-    amount_per_month = fields.Float(string='Monto por mes')
-    amount_per_day = fields.Float(string='Monto por día')
-    amount_per_lack = fields.Float(string='(-) Monto por faltas')
-    cts_per_month = fields.Float(string='CTS por meses')
-    cts_per_day = fields.Float(string='CTS por días')
-    cts_interest = fields.Float(string='(+) Interés CTS')
-    other_discounts = fields.Float(string='(-) Otros descuentos')
-    total_cts = fields.Float(string='Total CTS')
-    cts_soles = fields.Float(string='CTS a pagar soles')
-    cts_dollars = fields.Float(string='CTS a pagar dólares')
-    preserve_record = fields.Boolean(string='No recalcular')
+    sixth_of_gratification = fields.Float(
+        string='Sexto de la gratificación',
+        help='Un sexto de la gratificación del semestre: forma parte de la '
+             'remuneración computable de la CTS.')
+    commission = fields.Float(
+        string='Promedio de comisiones',
+        help='Promedio de las comisiones del semestre (remuneración regular).')
+    bonus = fields.Float(
+        string='Promedio de bonificaciones',
+        help='Promedio de las bonificaciones regulares del semestre.')
+    extra_hours = fields.Float(
+        string='Promedio de horas extras',
+        help='Promedio de las horas extras del semestre (remuneración regular).')
+    computable_remuneration = fields.Float(
+        string='Remuneración computable',
+        help='Sueldo + asignación familiar + sexto de la gratificación + '
+             'promedios de comisiones, bonificaciones y horas extras.')
+    amount_per_month = fields.Float(
+        string='Importe por mes completo',
+        help='Remuneración computable ÷ 12 (÷ 24 fuera del régimen general).')
+    amount_per_day = fields.Float(
+        string='Importe por día', help='Importe por mes ÷ 30.')
+    amount_per_lack = fields.Float(
+        string='Descuento por faltas',
+        help='Importe por día × (faltas + exceso de descanso médico).')
+    cts_per_month = fields.Float(
+        string='CTS por meses completos', help='Importe por mes × meses.')
+    cts_per_day = fields.Float(
+        string='CTS por días', help='Importe por día × días.')
+    cts_interest = fields.Float(string='Intereses')
+    other_discounts = fields.Float(string='Otros descuentos', tracking=True)
+    total_cts = fields.Float(
+        string='Total CTS',
+        help='CTS por meses + por días − descuento por faltas + saldo del '
+             'semestre anterior + intereses − otros descuentos.')
+    cts_soles = fields.Float(string='CTS a depositar (S/)')
+    cts_dollars = fields.Float(string='CTS a depositar (US$)')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.', tracking=True)
     cts_line_ids = fields.One2many(
         'hr.cts.line.detalle', 'cts_line_id', string='Detalle histórico')
 

@@ -22,8 +22,8 @@ destacados:
   - icono: "½"
     titulo: Gratificaciones
     texto: >-
-      Fiestas Patrias y Navidad (Ley 27735): 1/6 por mes, con el bono
-      extraordinario de la Ley 29351 según el seguro del trabajador.
+      Fiestas Patrias y Navidad (Ley 27735): 1/6 por mes, con la bonificación
+      extraordinaria de la Ley 30334 según el seguro del trabajador.
   - icono: "5ta"
     titulo: Renta de 5ta categoría
     texto: >-
@@ -104,9 +104,9 @@ flujos:
       flowchart TD
         A[Remuneración computable] --> B[+ 1/6 de la gratificación<br/>del semestre: julio o diciembre]
         B --> C{Régimen laboral}
-        C -- General --> D[Monto por mes = ÷ 12]
-        C -- Pequeña empresa --> E[Monto por mes = ÷ 24]
-        D --> F[Monto por día = mes ÷ 30]
+        C -- General --> D[Importe por mes = ÷ 12]
+        C -- Pequeña empresa --> E[Importe por mes = ÷ 24]
+        D --> F[Importe por día = mes ÷ 30]
         E --> F
         F --> G[Descanso médico hasta 60 días<br/>suma días; el exceso se descuenta]
         G --> H[Total = meses + días − faltas<br/>+ saldo reservado del semestre anterior]
@@ -119,18 +119,18 @@ flujos:
     mermaid: |
       flowchart TD
         A[Remuneración computable] --> B{Régimen laboral}
-        B -- General --> C[Monto por mes = ÷ 6]
-        B -- Pequeña empresa --> D[Monto por mes = ÷ 12]
+        B -- General --> C[Importe por mes = ÷ 6]
+        B -- Pequeña empresa --> D[Importe por mes = ÷ 12]
         C --> E[Meses completos del semestre]
         D --> E
-        E --> F{¿Calcular días grati.?}
-        F -- Sí --> G[+ días sueltos × monto por día]
+        E --> F{¿Incluir días sueltos?}
+        F -- Sí --> G[+ días sueltos × importe por día]
         F -- No --> H[Solo meses]
-        G --> I[− faltas × monto por día]
+        G --> I[− faltas × importe por día]
         H --> I
-        I --> J{¿Bono extraordinario?}
-        J -- Sí --> K[+ % del seguro social<br/>del trabajador: Ley 29351]
-        J -- No --> L[Sin bono]
+        I --> J{¿Con bonificación extraordinaria?}
+        J -- Sí --> K[+ % del seguro social<br/>del trabajador: Ley 30334]
+        J -- No --> L[Sin bonificación]
         K --> M[Exportar: entradas de gratificación<br/>y bonificación 9 %]
         L --> M
   - id: quinta
@@ -149,8 +149,8 @@ flujos:
         H --> J
         I --> J
         J --> K{¿Retención mayor que 0?}
-        K -- No --> L[Excluidos de quinta]
-        K -- Sí --> M[Afectos a quinta]
+        K -- No --> L[Sin retención]
+        K -- Sí --> M[Con retención]
         L -- Agregar empleados --> M
         M --> N[Exportar quinta: entradas QUINTA<br/>y retención extraordinaria]
   - id: liquidacion
@@ -268,7 +268,7 @@ pasos:
       (**CTS Noviembre - Abril** o **CTS Mayo - Octubre**), el lote de nómina,
       la fecha de depósito y el tipo de cambio, y pulse **Procesar**. Se crea
       una línea por trabajador con meses, días, sueldo, asignación familiar,
-      1/6 de gratificación, remuneración computable y total; el ícono de lista
+      sexto de la gratificación, remuneración computable y total; el ícono de lista
       al final de cada fila abre su detalle.
     puntos:
       - "**Recalcular** vuelve a calcular las líneas; marcando **No recalcular** en una línea se conservan sus cambios manuales."
@@ -284,7 +284,7 @@ pasos:
       La ficha lleva al trabajador como título y su periodo computable (meses,
       días, faltas y exceso de descanso médico) junto a sus datos; las
       pestañas **Remuneración computable**, **Cálculo** y **Depósito** muestran
-      sueldo, asignación familiar, 1/6 de gratificación y promedios, los montos
+      sueldo, asignación familiar, sexto de la gratificación y promedios, los importes
       por mes y por día con lo descontado por faltas, intereses y otros
       descuentos, y el total en soles y dólares con la cuenta CTS y el banco. **Calcular** recalcula solo esa línea y **Detalle
       histórico** abre los importes mes a mes de las boletas de los seis meses
@@ -297,11 +297,12 @@ pasos:
   - titulo: Liquidar la gratificación
     ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
     texto: >-
-      Mismo circuito que la CTS con el tipo **Gratificación Fiestas Patrias**
-      o **Navidad**. Con **Bono extraordinario** se añade la bonificación de la
-      Ley 29351 con el porcentaje del seguro social del trabajador; con
-      **Calcular días grati.** también cuentan los días sueltos además de los
-      meses completos.
+      Mismo circuito que la CTS con la **Gratificación Fiestas Patrias** o
+      **Navidad**. Con **Con bonificación extraordinaria** se añade la de la
+      Ley 30334 con el porcentaje del seguro social del trabajador; con
+      **Incluir días sueltos** también cuentan los días además de los meses
+      completos. La línea agrupa el cálculo en **Gratificación del semestre**
+      y **Total a pagar**.
     imagen: screenshots/06-gratificacion.png
     pie: "Fiestas Patrias 2026: S/ 30.479,12 de gratificación y S/ 2.524,13 de bono, exportados al lote."
 
@@ -311,33 +312,37 @@ pasos:
     ruta: Nómina ▸ Beneficios sociales ▸ Renta de 5ta categoría
     texto: >-
       Elija el lote del mes y pulse **Generar quinta**: se crea una línea por
-      boleta y el documento pasa a **En proceso**. La pestaña **Afectos a
-      quinta** muestra renta bruta anual, deducción de 7 UIT, renta neta,
+      boleta y el documento pasa a **En proceso**. La pestaña **Trabajadores
+      con retención** muestra renta bruta anual, deducción de 7 UIT, renta neta,
       impuesto anual proyectado y retención mensual. **Exportar quinta** lleva
       la retención a las boletas.
     puntos:
-      - "El **Mes** es el del medio del lote y fija los meses restantes de proyección y el divisor de la retención."
-      - "Si existe la quinta del lote anterior aparece en el bloque **Anterior** y la retención parte de su saldo."
+      - "Un recuadro resume la base legal (LIR arts. 46, 53 y 75; art. 40 del Reglamento)."
+      - "El **Mes del cálculo** es el del medio del lote y fija los meses restantes de proyección y el divisor de la retención."
+      - "Si existe la quinta del lote anterior aparece en el bloque **Mes anterior** y la retención parte de su saldo."
       - "**Volver a borrador** borra las líneas para generar de nuevo."
     imagen: screenshots/07-renta-5ta.png
 
-  - titulo: Excluidos de quinta
-    ruta: Renta de 5ta categoría ▸ Excluidos de quinta
+  - titulo: Trabajadores sin retención
+    ruta: Renta de 5ta categoría ▸ Trabajadores sin retención
     texto: >-
       Quien no llega a retener (renta neta anual negativa o retención en
-      cero) pasa a esta pestaña con su proyección. **Agregar empleados** abre
-      un asistente para devolver excluidos a afectos —p. ej. por ingresos de
+      cero) pasa a esta pestaña con su proyección. **Pasar trabajadores a
+      retención** abre un asistente para devolverlos a la retención —p. ej. por ingresos de
       otro empleador— y **Recalcular quinta** los calcula.
     imagen: screenshots/08-renta-5ta-excluidos.png
-    pie: "Junio 2026: cinco excluidos cuya renta bruta anual no supera las 7 UIT (S/ 37.450,00)."
+    pie: "Junio 2026: cinco trabajadores sin retención cuya renta bruta anual no supera las 7 UIT (S/ 37.450,00)."
 
   - titulo: La línea de un afecto
-    ruta: Afectos a quinta ▸ línea del trabajador
+    ruta: Trabajadores con retención ▸ línea del trabajador
     texto: >-
-      Todo el cálculo en una ficha. Con **Editar proy.** se pueden corregir a
-      mano la remuneración base y las gratificaciones proyectadas; siempre se
-      pueden declarar **Rem. otros emp.**, **Ret. otros emp.** y **Rem. ext.**
-      y pulsar **Calcular**.
+      Todo el cálculo en una ficha, en el orden de la ley: **Renta bruta
+      anual**, **Renta neta e impuesto anual** y **Retención del mes**. Con
+      **Ajustar la proyección a mano** se corrigen la remuneración a proyectar
+      y las gratificaciones; siempre se pueden declarar la **Remuneración de
+      otros empleadores**, sus **Retenciones** y la **Remuneración
+      extraordinaria del mes**, y pulsar **Calcular**. Cada importe explica su
+      fórmula en la ayuda (?).
     imagen: screenshots/09-renta-5ta-linea.png
     pie: "Retención de junio: S/ 4.951,20 ÷ 7 = S/ 707,31; quedan S/ 4.243,89 por retener."
 
@@ -348,23 +353,23 @@ pasos:
     texto: >-
       Elija el lote del mes de cese: año, tipo de gratificación y tipo de CTS
       se deducen de su fecha. **Procesar** genera las pestañas
-      **Gratificación**, **CTS** y **Vacaciones** con los importes truncos y
-      una fila de **Conceptos extra** por cesado. **Exportar liquidación**
+      **Gratificación trunca**, **CTS trunca** y **Vacaciones truncas** y una
+      fila de **Otros conceptos** por cesado. **Exportar liquidación**
       escribe las entradas truncas en su boleta.
     puntos:
       - Entran los trabajadores del lote con situación de baja y fin de contrato dentro del periodo de su boleta.
-      - "En **Conceptos extra**, **Agregar conceptos** registra ingresos y descuentos con su entrada de nómina."
+      - "En **Otros conceptos**, **Agregar conceptos** registra ingresos y descuentos con su entrada de nómina."
       - "Con el módulo de contabilización aparecen **Obtener provisiones** y la pestaña **Asientos contables**."
     imagen: screenshots/10-liquidacion.png
     pie: "Trabajadora DEMO cesada el 31/08/2026: gratificación trunca S/ 933,33 y bono S/ 84,00."
 
   - titulo: Vacaciones truncas con su aporte previsional
-    ruta: Liquidación de cese ▸ Vacaciones
+    ruta: Liquidación de cese ▸ Vacaciones truncas
     texto: >-
       Meses y días desde el último aniversario de ingreso sobre la
       remuneración computable, menos el aporte ONP o AFP con las tasas de la
-      boleta del mes. **(+) Vac. devengadas** y **(-) Vac. adelantadas** se
-      capturan en la línea.
+      boleta del mes. Las **Vacaciones devengadas** (suman) y las
+      **Vacaciones adelantadas** (restan) se capturan en la línea.
     imagen: screenshots/11-liquidacion-vacaciones.png
     pie: "Vacaciones truncas S/ 466,67 − ONP S/ 60,67 = neto S/ 406,00."
 
@@ -394,7 +399,7 @@ pasos:
       los 12 meses previos y **Calcular subsidio** reparte el importe por
       periodos, que se importan a la boleta desde el lote de nómina.
     puntos:
-      - "En enfermedad, los primeros 20 días del año son del empleador; **Computar 20 días** indica que ya se cubrieron en otro descanso."
+      - "En enfermedad, los primeros 20 días del año son del empleador; **Primeros 20 días ya cubiertos** indica que ya se cubrieron en otro descanso."
       - "Un periodo ya importado se devuelve con **Cambiar a no pagado** antes de recalcular."
     imagen: screenshots/13-subsidio.png
     pie: Formulario de un subsidio nuevo; la base de pruebas no tiene suspensiones de subsidio.
@@ -524,89 +529,89 @@ campos:
     ruta: Nómina ▸ Beneficios sociales ▸ CTS
     campos:
       - [Año, "Año del depósito, elegido de una lista del próximo año hacia atrás.", Año en curso, Semestre calculado]
-      - [Tipo CTS, CTS Mayo - Octubre o CTS Noviembre - Abril., Vacío, "Ventana de boletas y gratificación del 1/6"]
-      - [Tipo de cambio, Divisor para el importe en dólares., "1,00", CTS a pagar dólares]
+      - [Semestre, CTS Mayo - Octubre o CTS Noviembre - Abril., Vacío, "Ventana de boletas y gratificación del 1/6"]
+      - [Tipo de cambio, Divisor para el importe en dólares., "1,00", CTS a depositar (US$)]
       - [Lote de nómina, Lote donde se exporta; se propone el del mes de depósito., Propuesto, Destino de la entrada CTS]
       - [Fecha de depósito, Fecha del depósito., Vacío, Fecha del asiento de CTS]
       - [No recalcular, Protege la línea al procesar de nuevo., Desmarcado, Conserva los cambios manuales]
-      - ["Meses, Días, Faltas", Tiempo computable del semestre; editables., Calculado, Total de la línea]
-      - ["Prom. comisión, Prom. bonificación, Prom. horas extras", Promedios de variables; editables., Calculado, Remuneración computable]
-      - ["(+) Interés CTS, (-) Otros descuentos", Ajustes manuales de la línea., "0,00", "Suman o restan al pulsar Calcular"]
-      - ["Total CTS, CTS a pagar soles, CTS a pagar dólares", Resultado., Calculado, Entrada CTS y pago bancario]
+      - ["Meses completos, Días adicionales, Faltas (días)", Tiempo computable del semestre; editables., Calculado, Total de la línea]
+      - ["Promedio de comisiones, de bonificaciones y de horas extras", Promedios de variables; editables., Calculado, Remuneración computable]
+      - ["Intereses, Otros descuentos", Ajustes manuales de la línea., "0,00", "Suman o restan al pulsar Calcular"]
+      - ["Total CTS, CTS a depositar (S/), CTS a depositar (US$)", Resultado., Calculado, Entrada CTS y pago bancario]
   - grupo: Gratificación
     ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
     campos:
-      - [Tipo gratificación, Fiestas Patrias o Navidad., Vacío, "Ventana ene–jun o jul–dic"]
-      - [Bono extraordinario, Ley 29351 con el % del seguro del trabajador., Desmarcado, (+) Bono extraordinario]
-      - [Calcular días grati., Cuenta también los días sueltos., Desmarcado, Grat. por días]
+      - [Gratificación, Fiestas Patrias o Navidad., Vacío, "Ventana ene–jun o jul–dic"]
+      - [Con bonificación extraordinaria, Ley 30334 con el % del seguro del trabajador., Marcado, Bonificación extraordinaria]
+      - [Incluir días sueltos, Cuenta también los días sueltos., Desmarcado, Gratificación por días]
       - [Fecha de pago, Fecha del pago., Vacío, Fecha del asiento]
-      - ["Total gratificación, (+) Bono extraordinario, Total a pagar", Resultado por trabajador., Calculado, Entradas de la boleta]
+      - ["Total gratificación, Bonificación extraordinaria, Total a pagar", Resultado por trabajador., Calculado, Entradas de la boleta]
   - grupo: Renta de 5ta categoría
     ruta: Nómina ▸ Beneficios sociales ▸ Renta de 5ta categoría
     campos:
       - [Lote de nómina, Lote del mes., Vacío, Una quinta por lote]
-      - [Mes, Mes intermedio del lote., Calculado, Meses restantes y divisor]
+      - [Mes del cálculo, Mes intermedio del lote., Calculado, Meses restantes y divisor]
       - [Quinta anterior, Quinta del lote anterior., Calculado, Reproyección por saldo]
-      - [Editar proy., Habilita editar la proyección., Desmarcado, "Rem. base proy. y gratificaciones editables"]
-      - ["Rem. otros emp., Ret. otros emp.", Ingresos y retenciones de otros empleadores., "0,00", Suman a la renta y restan a la retención]
-      - [Ret. ext., Retención extraordinaria manual., "0,00", Se descuenta de la retención mensual]
-      - ["Ret. mensual, Saldo ret.", Retención del mes y saldo anual., Calculado, "Entrada QUINTA; ≤ 0 pasa a excluidos"]
+      - [Ajustar la proyección a mano, Habilita editar la proyección., Desmarcado, "Remuneración mensual a proyectar y gratificaciones editables"]
+      - ["Remuneración de otros empleadores, Retenciones de otros empleadores", Ingresos y retenciones de otros empleadores., "0,00", Suman a la renta y restan a la retención]
+      - [Retención por extraordinarios, Retención sobre la remuneración extraordinaria del mes., Calculado, Se suma a la retención del mes]
+      - ["Retención del mes, Saldo por retener", Retención del mes y saldo anual., Calculado, "Entrada QUINTA; ≤ 0 pasa a «Trabajadores sin retención»"]
   - grupo: Liquidación de cese
     ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese
     campos:
       - [Lote de nómina, Lote del mes de cese., Vacío, "Deduce año, tipo de gratificación y de CTS"]
-      - ["Año, Tipo gratificación, Tipo CTS", Semestres truncos., Deducidos del lote, Ventanas del motor]
-      - ["Bono extraordinario, Calcular días grati.", Igual que en la gratificación., Desmarcado, Gratificación trunca]
-      - [Tipo de cambio, Para la CTS trunca en dólares., "1,00", CTS a pagar dólares]
-      - ["(+) Vac. devengadas, (-) Vac. adelantadas", Días ya ganados o adelantados; editables., "0,00", Total vacaciones]
-      - [Conceptos extra, "Descripción (entrada), Monto y Tipo Ingreso o Descuento.", Tipo Ingreso, Entradas propias en la boleta]
+      - ["Año, Semestre de la gratificación, Semestre de la CTS", Semestres truncos., Deducidos del lote, Ventanas del motor]
+      - ["Con bonificación extraordinaria, Incluir días sueltos", Igual que en la gratificación., Igual que en la gratificación, Gratificación trunca]
+      - [Tipo de cambio, Para la CTS trunca en dólares., "1,00", CTS a depositar (US$)]
+      - ["Vacaciones devengadas, Vacaciones adelantadas", Importes ya ganados o adelantados; editables., "0,00", Total vacaciones]
+      - [Otros conceptos, "Concepto (entrada), Importe y Tipo Ingreso o Descuento.", Tipo Ingreso, Entradas propias en la boleta]
   - grupo: Provisiones
     ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
     campos:
       - [Lote de nómina, Lote del mes., Vacío, Una provisión por lote]
-      - [Gratificación, Gratificación de la que se toma el 1/6., Vacío, 1/6 gratificación de la CTS]
+      - [Gratificación, Gratificación de la que se toma el sexto., Vacío, Sexto de la gratificación en la CTS]
       - [Conceptos adicionales, Reglas y montos que suman a la base de la línea., Vacío, "Otros adicionales ÷ 12 o ÷ 6"]
-      - ["Provisión CTS, Provisión gratificación, Provisión bono, Provisión vacaciones", Devengo del mes., Calculado, Asiento de provisión]
-      - [Acumulado, "Suma del semestre (CTS, gratificación) o desde el aniversario (vacaciones).", Obtener acumulado, Reversión en CTS y gratificación]
+      - ["Provisión CTS del mes, Provisión de gratificación, Provisión de bonificación extraordinaria, Provisión de vacaciones del mes", Devengo del mes., Calculado, Asiento de provisión]
+      - [Acumulado provisionado, "Suma del semestre (CTS, gratificación) o desde el aniversario (vacaciones).", Obtener acumulado, Reversión en CTS y gratificación]
   - grupo: Subsidio
     ruta: Nómina ▸ Beneficios sociales ▸ Subsidios
     campos:
       - [Periodo (lote), Mes cuyas suspensiones se procesan., Vacío, Un subsidio por suspensión]
-      - [Empleado / Suspensión (T21), Trabajador y suspensión de origen., Vacío, "Datos de la contingencia"]
-      - [Fechas de contingencia, Inicio y fin del descanso., Vacío, Días subsidiados]
+      - [Trabajador / Suspensión (T-Registro), Trabajador y suspensión de origen., Vacío, "Datos de la contingencia"]
+      - [Fechas de la contingencia, Inicio y fin del descanso., Vacío, Días subsidiados]
       - [Tipo de subsidio, Maternidad o enfermedad., Subsidio por maternidad, "Enfermedad descuenta 20 días"]
-      - [Computar 20 días, Los 20 días del empleador ya se cubrieron., Desmarcado, Subsidia desde el primer día]
+      - [Primeros 20 días ya cubiertos, Los 20 días del empleador ya se cubrieron., Desmarcado, Subsidia desde el primer día]
       - [No recalcular, Protege el subsidio al procesar el lote., Desmarcado, Se conserva]
   - grupo: Utilidades
     ruta: Nómina ▸ Beneficios sociales ▸ Utilidades
     campos:
       - [Ejercicio, Año cuyas boletas se suman., Año anterior, Una por compañía y ejercicio]
-      - ["Renta anual antes de impuestos, Porcentaje", Base y porcentaje del giro., Vacío, Distribución = renta × %]
+      - ["Renta anual antes de impuestos, Porcentaje de participación", "Base y porcentaje del giro (10 %, 8 % o 5 %).", Vacío, Monto a repartir = renta × %]
       - [Lote de nómina, Lote donde se pagan., Vacío, Entrada Input utilidades]
-      - ["Factor sueldos, Factor días trabajados", Mitad de la distribución ÷ totales del año., Calculado, Por sueldos y por días]
-      - ["Sueldos, Días laborados", Datos de la línea; editables., Calculado, Recalcular reparte de nuevo]
+      - ["Factor por remuneraciones, Factor por días laborados", Mitad del monto a repartir ÷ totales del ejercicio., Calculado, Participación por remuneraciones y por días]
+      - ["Remuneraciones del año, Días laborados del año", Datos de la línea; editables., Calculado, Recalcular reparte de nuevo]
   - grupo: Adelanto y préstamo
     ruta: Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos
     campos:
-      - ["Empleado, Monto, Tipo de adelanto", Datos del adelanto., Vacío, Entrada del tipo]
+      - ["Trabajador, Importe, Tipo de adelanto", Datos del adelanto., Vacío, Entrada del tipo]
       - ["Fecha de adelanto, Fecha de descuento", La de descuento elige la boleta., Vacío, Boleta cuyo periodo la incluye]
       - [Estado del adelanto, No pagado o Pagado., No pagado, Solo se importan los no pagados]
-      - ["Fecha de préstamo, Monto de préstamo, Número de cuotas", Base del cronograma., Vacío, Generar cuotas]
-      - [Saldo final, Cuotas aún no aplicadas., Calculado, "Si difiere del monto, no se puede borrar"]
-      - ["Cuota, Monto, Fecha de pago, Deuda por pagar, Validación", Cronograma; editable mientras NO PAGADO., NO PAGADO, Importar préstamos]
-      - [Tipo de adelanto / Tipo de préstamo, Nombre e Input de planillas., Vacío, Entrada por la que se descuenta]
+      - ["Fecha de préstamo, Importe del préstamo, Número de cuotas", Base del cronograma., Vacío, Generar cuotas]
+      - [Saldo pendiente, Cuotas aún no aplicadas., Calculado, "Si difiere del monto, no se puede borrar"]
+      - ["N.º de cuota, Vencimiento, Importe de la cuota, Saldo después de la cuota, Estado", Cronograma; editable mientras no está pagada., No pagado, Importar préstamos]
+      - [Tipo de adelanto / Tipo de préstamo, Nombre y entrada de la boleta., Vacío, Entrada por la que se descuenta]
   - grupo: Adelanto quincenal
     ruta: Nómina ▸ Beneficios sociales ▸ Adelantos quincenales
     campos:
       - [Planilla, Nombre del lote quincenal., Vacío, Nombre de las boletas]
-      - [Periodo, Desde y hasta., "Del 1 al 15 del mes en curso", Fechas de las boletas]
+      - [Quincena, Desde y hasta., "Del 1 al 15 del mes en curso", Fechas de las boletas]
       - [Lote de nómina mensual, Lote donde se exporta el neto., Vacío, Entrada Input quincena]
   - grupo: Vacaciones
     ruta: Nómina ▸ Beneficios sociales ▸ Vacaciones
     campos:
       - ["Año, Lote de nómina (liquidación vacacional)", Lote del mes del goce., Año en curso, Suspensiones T21-23 del periodo]
       - [Tipo (línea), Goce de vacaciones o Venta de vacaciones., Goce de vacaciones, Entrada VAC o COMP_VAC]
-      - [(-) Retención quinta, Retención proporcional., "0,00", Importar quinta]
+      - [Retención de quinta, Retención proporcional a los días de vacaciones., "0,00", Importar quinta]
       - [Todos los empleados (récord vacacional), Recalcula a toda la compañía., Marcado, "Desmarcado: elegir empleados"]
 
 funcionalidades:
@@ -617,7 +622,7 @@ funcionalidades:
       - Divisores de pequeña empresa (CTS ÷ 24 y gratificación ÷ 12 por mes).
       - Descuento de faltas y exceso de descanso médico sobre 60 días.
       - Reserva del trabajador con menos de un mes para el semestre siguiente.
-      - Bono extraordinario de la Ley 29351 con el porcentaje del seguro social.
+      - Bonificación extraordinaria de la Ley 30334 con el porcentaje del seguro social.
       - Líneas protegidas contra el recálculo y detalle histórico mes a mes.
       - Exportación de los importes a las boletas del lote.
   - grupo: Configuración y multicompañía
@@ -655,22 +660,22 @@ ejemplos:
     tabla:
       - [Concepto, Cálculo, Importe S/]
       - [Remuneración computable, "2.500,00 + 113,00", "2.613,00"]
-      - [Monto por mes, "2.613,00 ÷ 12", "217,75"]
-      - [Monto por día, "217,75 ÷ 30", "7,26"]
-      - [CTS por meses, "217,75 × 5", "1.088,75"]
+      - [Importe por mes completo, "2.613,00 ÷ 12", "217,75"]
+      - [Importe por día, "217,75 ÷ 30", "7,26"]
+      - [CTS por meses completos, "217,75 × 5", "1.088,75"]
       - [CTS por días, "7,2583 × 26", "188,72"]
-      - [(−) Faltas, "7,2583 × 4", "−29,03"]
+      - [Descuento por faltas, "7,2583 × 4", "−29,03"]
       - [Total CTS, "", "1.248,44"]
 
-  - titulo: Gratificación de Fiestas Patrias con bono extraordinario
+  - titulo: Gratificación de Fiestas Patrias con bonificación extraordinaria
     texto: Mismo trabajador, 5 meses computables y 4 faltas, asegurado en EsSalud.
     tabla:
       - [Concepto, Cálculo, Importe S/]
-      - [Monto por mes, "2.613,00 ÷ 6", "435,50"]
-      - [Gratificación por meses, "435,50 × 5", "2.177,50"]
-      - [(−) Faltas, "435,50 ÷ 30 × 4", "−58,07"]
+      - [Importe por mes completo, "2.613,00 ÷ 6", "435,50"]
+      - [Gratificación por meses completos, "435,50 × 5", "2.177,50"]
+      - [Descuento por faltas, "435,50 ÷ 30 × 4", "−58,07"]
       - [Total gratificación, "", "2.119,43"]
-      - [(+) Bono extraordinario, "9 % de 2.119,43", "190,75"]
+      - [Bonificación extraordinaria, "9 % de 2.119,43", "190,75"]
       - [Total a pagar, "", "2.310,18"]
     nota: La provisión mensual de la misma gratificación es 435,50 + 39,20 de bono = 474,70.
 
@@ -697,7 +702,7 @@ ejemplos:
     tabla:
       - [Concepto, Cálculo, Importe S/]
       - [Gratificación trunca, "2.800,00 ÷ 6 × 2", "933,33"]
-      - [(+) Bono extraordinario, "9 % de 933,33", "84,00"]
+      - [Bonificación extraordinaria, "9 % de 933,33", "84,00"]
       - [CTS trunca, "2.800,00 ÷ 12 × 2", "466,67"]
       - [Vacaciones truncas, "2.800,00 ÷ 12 × 2", "466,67"]
       - [(−) ONP de las vacaciones, "13 % de 466,67", "−60,67"]
@@ -711,7 +716,7 @@ ejemplos:
       - [Concepto, Cálculo, Importe S/]
       - [CTS, "2.800,00 ÷ 12", "233,33"]
       - [Gratificación, "2.800,00 ÷ 6", "466,67"]
-      - [Bono extraordinario, "9 % de 466,67", "42,00"]
+      - [Bonificación extraordinaria, "9 % de 466,67", "42,00"]
       - [Vacaciones, "2.800,00 ÷ 12", "233,33"]
 
   - titulo: Reparto de utilidades
@@ -726,7 +731,7 @@ ejemplos:
 
   - titulo: Cronograma de un préstamo
     tabla:
-      - [Cuota, Vence, Monto, Deuda pendiente]
+      - [N.º de cuota, Vencimiento, Importe de la cuota, Saldo después de la cuota]
       - ["1", 30/09/2026, "500,00", "1.000,00"]
       - ["2", 31/10/2026, "500,00", "500,00"]
       - ["3", 30/11/2026, "500,00", "0,00"]
@@ -792,6 +797,15 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 22.20261008
+    fecha: 08/10/2026
+    cambios:
+      - "Formularios de cada beneficio ordenados como en Odoo: recuadro con la base legal (LIR, D.Leg. 650, Ley 27735/30334, D.Leg. 713, Ley 26790, D.Leg. 892), grupos con título en el orden del cálculo y pestañas por tema."
+      - "Etiquetas claras y ayuda (?) con la fórmula en los importes: «Promedio de comisiones», «Importe por mes completo», «Descuento por faltas», «Renta bruta anual», «Retención del mes», «Utilidades a pagar»…; se quitan abreviaturas y signos (+)/(−)."
+      - "Listas con el trabajador primero, columnas en el orden del cálculo, totales en los importes y columnas secundarias opcionales."
+      - "Línea de renta de quinta con chatter (historial de los datos ingresados a mano: ajuste manual, gratificaciones, otros empleadores, renta extraordinaria) y etiquetas cortas: «Rem. proyectada», «Grat. julio», «Deducción 7 UIT», «Impuesto por retener»…"
+      - "Chatter en todos los lotes y sus líneas (CTS, gratificación, quinta, liquidación, vacaciones, provisiones, subsidios, utilidades, saldos de vacaciones): historial del estado, el periodo y los datos editados a mano; las líneas calculadas en bloque no generan nota de creación."
+      - "Etiquetas más cortas: «Grat. por meses completos», «Vac. por meses completos», «AFP: comisión por flujo», «Por remuneraciones», «Exceso del tope», «Últimos 12 meses»…; el detalle va en la ayuda (?)."
   - version: 21.20261008
     fecha: 08/10/2026
     cambios:

@@ -19,11 +19,11 @@ class PosPrinter(models.Model):
         ondelete={"escpos_network": "set default"},
     )
     escpos_printer_ip = fields.Char(
-        string="IP de la impresora ESC/POS",
+        string='IP ESC/POS',
         help="Dirección IP o nombre de host de la impresora térmica ESC/POS genérica.",
     )
     escpos_printer_port = fields.Char(
-        string="Puerto de la impresora ESC/POS",
+        string='Puerto ESC/POS',
         default="9100",
     )
 

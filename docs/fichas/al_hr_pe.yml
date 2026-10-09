@@ -724,6 +724,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 33.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Chatter en la configuración principal de planillas y en los derechohabientes: historial de cambios del RMV, representante legal, regla del neto, vigencia, baja y acreditación del vínculo."
+      - "Etiquetas más cortas en el derechohabiente: «Documento sustentatorio» y «N.º del sustento» (el detalle va en la ayuda)."
   - version: 32.20261008
     fecha: 08/10/2026
     cambios:

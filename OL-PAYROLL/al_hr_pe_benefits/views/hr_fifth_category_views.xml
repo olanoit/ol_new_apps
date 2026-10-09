@@ -55,7 +55,7 @@
                         <div class="text-muted"><field name="identification_id" readonly="1"/></div>
                     </div>
                     <group>
-                        <group string="Proyección anual">
+                        <group string="Renta bruta anual">
                             <field name="slip_id" readonly="1" invisible="1"/>
                             <field name="monthly_rem" readonly="1"/>
                             <field name="edit_proy" readonly="l10n_pe_locked" widget="boolean_toggle"/>
@@ -63,27 +63,34 @@
                             <field name="proy_rem" readonly="1"/>
                             <field name="grat_july" readonly="(not edit_proy) or l10n_pe_locked"/>
                             <field name="grat_december" readonly="(not edit_proy) or l10n_pe_locked"/>
-                            <field name="other_emp_proy_rem" readonly="l10n_pe_locked"/>
                             <field name="past_rem" readonly="1"/>
-                            <field name="total_proy" readonly="1"/>
-                            <field name="seven_uit" readonly="1"/>
+                            <field name="other_emp_proy_rem" readonly="l10n_pe_locked"/>
+                            <field name="total_proy" readonly="1" class="fw-bold"/>
                         </group>
-                        <group string="Impuesto y retenciones">
-                            <field name="net_rent" readonly="1"/>
+                        <group string="Renta neta e impuesto anual">
+                            <field name="seven_uit" readonly="1"/>
+                            <field name="net_rent" readonly="1" class="fw-bold"/>
                             <field name="tax_proy" readonly="1"/>
                             <field name="past_months_ret" readonly="1"/>
                             <field name="other_emp_ret" readonly="l10n_pe_locked"/>
-                            <field name="annual_ret" readonly="1"/>
+                            <field name="annual_ret" readonly="1" class="fw-bold"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Retención del mes">
                             <field name="monthly_rent" readonly="1"/>
                             <field name="ext_rem" readonly="l10n_pe_locked"/>
                             <field name="total_net_rent" readonly="1"/>
                             <field name="ext_ret" readonly="(not edit_proy) or l10n_pe_locked"/>
-                            <field name="monthly_ret" readonly="1"/>
+                            <field name="monthly_ret" readonly="1" class="fw-bold"/>
                             <field name="saldo_ret" readonly="1"/>
-                            <field name="previous_line_id" invisible="not previous_line_id"/>
+                        </group>
+                        <group string="Mes anterior" invisible="not previous_line_id">
+                            <field name="previous_line_id"/>
                         </group>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -93,27 +100,27 @@
         <field name="model">hr.fifth.category.line</field>
         <field name="arch" type="xml">
             <list create="0" delete="1">
-                <field name="identification_id" string="Nro. doc." optional="show"/>
-                <field name="employee_id" optional="show"/>
-                <field name="monthly_rem" sum="Rem. mes" optional="show"/>
-                <field name="contrac_proy_rem" sum="Rem. base proy." optional="hide"/>
-                <field name="proy_rem" sum="Total rem. proy." optional="hide"/>
-                <field name="grat_july" sum="Grat. julio" optional="hide"/>
-                <field name="grat_december" sum="Grat. diciembre" optional="hide"/>
-                <field name="other_emp_proy_rem" sum="Rem. otros emp." optional="hide"/>
-                <field name="past_rem" sum="Rem. meses ant." optional="hide"/>
-                <field name="total_proy" sum="Rem. bruta anual" optional="show"/>
-                <field name="seven_uit" sum="Deducción 7 UIT" optional="show"/>
-                <field name="net_rent" sum="Rem. neta anual" optional="show"/>
-                <field name="tax_proy" sum="Imp. anual proy." optional="show"/>
-                <field name="past_months_ret" sum="Ret. meses ant." optional="hide"/>
-                <field name="other_emp_ret" sum="Ret. otros emp." optional="hide"/>
-                <field name="annual_ret" sum="Renta anual" optional="show"/>
-                <field name="monthly_rent" sum="Renta mensual" optional="show"/>
-                <field name="ext_rem" sum="Rem. ext." optional="hide"/>
-                <field name="total_net_rent" sum="Rem. neta + ext." optional="show"/>
-                <field name="ext_ret" sum="Ret. ext." optional="hide"/>
-                <field name="monthly_ret" sum="Ret. mensual" optional="show"/>
+                <field name="identification_id" string="N.º de documento" optional="show"/>
+                <field name="employee_id"/>
+                <field name="monthly_rem" sum="Total" optional="show"/>
+                <field name="contrac_proy_rem" sum="Total" optional="hide"/>
+                <field name="proy_rem" sum="Total" optional="hide"/>
+                <field name="grat_july" sum="Total" optional="hide"/>
+                <field name="grat_december" sum="Total" optional="hide"/>
+                <field name="past_rem" sum="Total" optional="hide"/>
+                <field name="other_emp_proy_rem" sum="Total" optional="hide"/>
+                <field name="total_proy" sum="Total" optional="show"/>
+                <field name="seven_uit" sum="Total" optional="hide"/>
+                <field name="net_rent" sum="Total" optional="show"/>
+                <field name="tax_proy" sum="Total" optional="show"/>
+                <field name="past_months_ret" sum="Total" optional="hide"/>
+                <field name="other_emp_ret" sum="Total" optional="hide"/>
+                <field name="annual_ret" sum="Total" optional="show"/>
+                <field name="monthly_rent" sum="Total" optional="hide"/>
+                <field name="ext_rem" sum="Total" optional="hide"/>
+                <field name="total_net_rent" sum="Total" optional="hide"/>
+                <field name="ext_ret" sum="Total" optional="hide"/>
+                <field name="monthly_ret" sum="Total"/>
             </list>
         </field>
     </record>
@@ -129,20 +136,27 @@
                         <h1><field name="employee_id" readonly="1" placeholder="Trabajador"/></h1>
                         <div class="text-muted"><field name="identification_id" readonly="1"/></div>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Su renta neta anual proyectada no supera la deducción de 7 UIT: este
+                        mes no corresponde retenerle. Se recalcula cada mes.
+                    </div>
                     <field name="slip_id" readonly="1" invisible="1"/>
                     <group>
-                        <group string="Proyección anual">
+                        <group string="Renta bruta anual">
                             <field name="monthly_rem" readonly="1"/>
                             <field name="contrac_proy_rem" readonly="1"/>
                             <field name="proy_rem" readonly="1"/>
                             <field name="grat_july" readonly="1"/>
                             <field name="grat_december" readonly="1"/>
-                            <field name="total_proy" readonly="1"/>
+                            <field name="total_proy" readonly="1" class="fw-bold"/>
+                        </group>
+                        <group string="Renta neta anual">
                             <field name="seven_uit" readonly="1"/>
-                            <field name="net_rent" readonly="1"/>
+                            <field name="net_rent" readonly="1" class="fw-bold"/>
                         </group>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -152,16 +166,16 @@
         <field name="model">hr.fifth.category.line.excluidos</field>
         <field name="arch" type="xml">
             <list create="0" delete="1">
-                <field name="identification_id" string="Nro. doc." optional="show"/>
-                <field name="employee_id" optional="show"/>
-                <field name="monthly_rem" sum="Rem. mes" optional="show"/>
-                <field name="contrac_proy_rem" sum="Rem. base proy." optional="show"/>
-                <field name="proy_rem" sum="Total rem. proy." optional="show"/>
-                <field name="grat_july" sum="Grat. julio" optional="hide"/>
-                <field name="grat_december" sum="Grat. diciembre" optional="hide"/>
-                <field name="total_proy" sum="Rem. bruta anual" optional="show"/>
-                <field name="seven_uit" sum="Deducción 7 UIT" optional="show"/>
-                <field name="net_rent" sum="Rem. neta anual" optional="show"/>
+                <field name="identification_id" string="N.º de documento" optional="show"/>
+                <field name="employee_id"/>
+                <field name="monthly_rem" sum="Total" optional="show"/>
+                <field name="contrac_proy_rem" sum="Total" optional="hide"/>
+                <field name="proy_rem" sum="Total" optional="show"/>
+                <field name="grat_july" sum="Total" optional="hide"/>
+                <field name="grat_december" sum="Total" optional="hide"/>
+                <field name="total_proy" sum="Total" optional="show"/>
+                <field name="seven_uit" sum="Total" optional="show"/>
+                <field name="net_rent" sum="Total"/>
             </list>
         </field>
     </record>
@@ -175,7 +189,7 @@
                 <header>
                     <button name="action_generate" string="Generar quinta" type="object"
                             class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="action_add_excluded_employees" string="Agregar empleados" type="object"
+                    <button name="action_add_excluded_employees" string="Pasar trabajadores a retención" type="object"
                             class="oe_highlight" invisible="state != 'verify'"/>
                     <button name="action_recompute" string="Recalcular quinta" type="object"
                             class="oe_highlight" invisible="state != 'verify'"/>
@@ -193,31 +207,40 @@
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        <strong>Renta de quinta categoría.</strong> Cada mes se proyecta la renta
+                        anual de cada trabajador, se descuentan 7 UIT, se aplica la escala del
+                        impuesto (8 % a 30 %) y se reparte lo que falta retener entre los meses
+                        que quedan (Ley del Impuesto a la Renta, arts. 46, 53 y 75, y art. 40 de
+                        su Reglamento). Al exportar, la retención pasa a la boleta de cada
+                        trabajador del lote.
+                    </div>
                     <group>
-                        <group string="Actual">
+                        <group string="Periodo">
                             <field name="payslip_run_id" readonly="state != 'draft'"
                                    options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                             <field name="middle_month_number"/>
                             <field name="company_id" readonly="1"
                                    groups="base.group_multi_company"/>
                         </group>
-                        <group string="Anterior" invisible="not previous_fifth_category_id">
+                        <group string="Mes anterior" invisible="not previous_fifth_category_id">
                             <field name="previous_fifth_category_id"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Afectos a quinta" name="afectos">
+                        <page string="Trabajadores con retención" name="afectos">
                             <field name="line_ids" readonly="state == 'exported'"
                                    context="{'list_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_view_list',
                                              'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_view_form'}"/>
                         </page>
-                        <page string="Excluidos de quinta" name="excluidos">
+                        <page string="Trabajadores sin retención" name="excluidos">
                             <field name="line_excluidos_ids" readonly="state == 'exported'"
                                    context="{'list_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_list',
                                              'form_view_ref': 'al_hr_pe_benefits.hr_fifth_category_line_excluidos_view_form'}"/>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

@@ -35,21 +35,21 @@
                     <notebook>
                         <page string="Remuneración computable" name="remuneration">
                             <group>
-                                <group>
+                                <group string="Remuneración fija">
                                     <field name="wage" readonly="1"/>
                                     <field name="household_allowance" readonly="1"/>
                                 </group>
-                                <group>
+                                <group string="Promedios">
                                     <field name="commission" readonly="l10n_pe_locked"/>
                                     <field name="bonus" readonly="l10n_pe_locked"/>
                                     <field name="extra_hours" readonly="l10n_pe_locked"/>
-                                    <field name="computable_remuneration" readonly="1"/>
+                                    <field name="computable_remuneration" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Cálculo" name="calculation">
                             <group>
-                                <group>
+                                <group string="Vacaciones truncas">
                                     <field name="amount_per_month" readonly="1"/>
                                     <field name="amount_per_day" readonly="1"/>
                                     <field name="vacation_per_month" readonly="1"/>
@@ -57,30 +57,31 @@
                                     <field name="amount_per_lack" readonly="1"/>
                                     <field name="truncated_vacation" readonly="1"/>
                                 </group>
-                                <group>
-                                    <field name="advanced_vacation" readonly="l10n_pe_locked"/>
+                                <group string="Vacaciones pendientes">
                                     <field name="accrued_vacation" readonly="l10n_pe_locked"/>
-                                    <field name="vacation_indemnity" readonly="l10n_pe_locked"/>
-                                    <field name="total_vacation" readonly="1"/>
+                                    <field name="advanced_vacation" readonly="l10n_pe_locked"/>
+                                    <field name="total_vacation" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Aportes y neto" name="net">
                             <group>
-                                <group>
+                                <group string="Aportes al sistema de pensiones">
                                     <field name="onp" readonly="1"/>
                                     <field name="afp_jub" readonly="1"/>
                                     <field name="afp_si" readonly="1"/>
-                                </group>
-                                <group>
                                     <field name="afp_mixed_com" readonly="1"/>
                                     <field name="afp_fixed_com" readonly="1"/>
-                                    <field name="total" readonly="1"/>
+                                </group>
+                                <group string="Neto a pagar">
+                                    <field name="vacation_indemnity" readonly="l10n_pe_locked"/>
+                                    <field name="total" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -90,9 +91,9 @@
         <field name="model">hr.liquidation.vacation.line</field>
         <field name="arch" type="xml">
             <list create="0" delete="0">
-                <field name="preserve_record" string="No R." optional="show"/>
-                <field name="identification_id" string="Nro. doc." optional="show"/>
-                <field name="employee_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="identification_id" optional="show"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="admission_date" optional="show"/>
                 <field name="compute_date" optional="hide"/>
                 <field name="cessation_date" optional="hide"/>
@@ -101,28 +102,28 @@
                 <field name="months" optional="show"/>
                 <field name="days" optional="show"/>
                 <field name="lacks" optional="hide"/>
-                <field name="wage" sum="Sueldo" optional="show"/>
-                <field name="household_allowance" string="Asig. familiar" sum="Asignación familiar" optional="show"/>
-                <field name="commission" sum="Comisión" optional="hide"/>
-                <field name="bonus" sum="Bonificación" optional="hide"/>
-                <field name="extra_hours" sum="Horas extras" optional="hide"/>
-                <field name="computable_remuneration" string="Rem. computable" sum="Remuneración computable" optional="show"/>
-                <field name="amount_per_month" sum="Monto por mes" optional="hide"/>
-                <field name="amount_per_day" sum="Monto por día" optional="hide"/>
-                <field name="vacation_per_month" sum="Vac. por meses" optional="hide"/>
-                <field name="vacation_per_day" sum="Vac. por días" optional="hide"/>
-                <field name="amount_per_lack" sum="Monto por faltas" optional="hide"/>
-                <field name="truncated_vacation" sum="Vac. truncas" optional="hide"/>
-                <field name="advanced_vacation" sum="Vac. adelantadas" optional="hide"/>
-                <field name="accrued_vacation" sum="Vac. devengadas" optional="hide"/>
-                <field name="vacation_indemnity" sum="Indemnización" optional="hide"/>
-                <field name="total_vacation" sum="Total vacaciones" optional="show" force_save="1"/>
-                <field name="onp" sum="ONP" optional="show" force_save="1"/>
-                <field name="afp_jub" sum="AFP jubilación" optional="show" force_save="1"/>
-                <field name="afp_si" sum="AFP seguro" optional="show" force_save="1"/>
-                <field name="afp_mixed_com" sum="AFP com. mixta" optional="hide" force_save="1"/>
-                <field name="afp_fixed_com" sum="AFP com. flujo" optional="show" force_save="1"/>
-                <field name="total" sum="Neto total" optional="show" force_save="1"/>
+                <field name="wage" sum="Total" optional="show"/>
+                <field name="household_allowance" sum="Total" optional="show"/>
+                <field name="commission" sum="Total" optional="hide"/>
+                <field name="bonus" sum="Total" optional="hide"/>
+                <field name="extra_hours" sum="Total" optional="hide"/>
+                <field name="computable_remuneration" sum="Total" optional="show"/>
+                <field name="amount_per_month" sum="Total" optional="hide"/>
+                <field name="amount_per_day" sum="Total" optional="hide"/>
+                <field name="vacation_per_month" sum="Total" optional="hide"/>
+                <field name="vacation_per_day" sum="Total" optional="hide"/>
+                <field name="amount_per_lack" sum="Total" optional="hide"/>
+                <field name="truncated_vacation" sum="Total" optional="hide"/>
+                <field name="advanced_vacation" sum="Total" optional="hide"/>
+                <field name="accrued_vacation" sum="Total" optional="hide"/>
+                <field name="total_vacation" sum="Total" optional="show" force_save="1"/>
+                <field name="onp" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_jub" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_si" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_mixed_com" sum="Total" optional="hide" force_save="1"/>
+                <field name="afp_fixed_com" sum="Total" optional="hide" force_save="1"/>
+                <field name="vacation_indemnity" sum="Total" optional="hide"/>
+                <field name="total" sum="Total" optional="show" force_save="1"/>
             </list>
         </field>
     </record>
@@ -135,13 +136,13 @@
             <list editable="bottom" create="0" delete="0">
                 <field name="l10n_pe_locked" column_invisible="1"/>
                 <field name="conceptos_lines" column_invisible="1"/>
-                <field name="preserve_record" string="No R." optional="show"/>
-                <field name="identification_id" readonly="1" optional="show"/>
                 <field name="employee_id"/>
+                <field name="identification_id" readonly="1" optional="show"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="admission_date" readonly="1" optional="show"/>
                 <field name="cessation_date" readonly="1" optional="show"/>
-                <field name="income" sum="Ingresos"/>
-                <field name="expenses" sum="Descuentos"/>
+                <field name="income" sum="Total"/>
+                <field name="expenses" sum="Total"/>
                 <button name="action_add_concepts" invisible="l10n_pe_locked and not conceptos_lines" string="Agregar conceptos" type="object" class="oe_highlight"/>
             </list>
         </field>
@@ -154,10 +155,10 @@
             <form string="Conceptos adicionales">
                 <field name="l10n_pe_locked" invisible="1"/>
                 <group>
-                    <group>
+                    <group string="Trabajador">
                         <field name="employee_id" readonly="1"/>
                     </group>
-                    <group>
+                    <group string="Totales">
                         <field name="income" readonly="1"/>
                         <field name="expenses" readonly="1"/>
                     </group>
@@ -165,7 +166,7 @@
                 <field name="conceptos_lines" readonly="l10n_pe_locked">
                     <list editable="bottom">
                         <field name="name_input_id" options="{'no_create': True}" required="1"/>
-                        <field name="amount" sum="Monto"/>
+                        <field name="amount" sum="Total"/>
                         <field name="type"/>
                     </list>
                 </field>
@@ -188,15 +189,22 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_add_employees" class="oe_stat_button" icon="fa-users" type="object" help="Empleados a liquidar" invisible="employee_count == 0">
+                        <button name="action_add_employees" class="oe_stat_button" icon="fa-users" type="object" help="Trabajadores a liquidar" invisible="employee_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="employee_count"/></span>
-                                <span class="o_stat_text">Empleados</span>
+                                <span class="o_stat_text">Cesados</span>
                             </div>
                         </button>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1" force_save="1" placeholder="Se propone al elegir el lote"/></h1>
+                    </div>
+                    <div class="alert alert-info" role="status">
+                        Liquidación de beneficios sociales al cese: para cada trabajador cesado en el
+                        periodo del lote se calculan la gratificación trunca (Ley 27735), la CTS
+                        trunca (D.Leg. 650) y las vacaciones truncas y pendientes (D.Leg. 713), más
+                        los conceptos adicionales que se registren. Al exportar, todo pasa a la
+                        boleta del trabajador en el lote.
                     </div>
                     <group>
                         <group string="Periodo">
@@ -205,7 +213,7 @@
                             <field name="gratification_type" readonly="1" force_save="1"/>
                             <field name="cts_type" readonly="1" force_save="1"/>
                         </group>
-                        <group string="Cálculo">
+                        <group string="Parámetros">
                             <field name="with_bonus" readonly="state == 'exported'"/>
                             <field name="months_and_days" readonly="state == 'exported'"/>
                             <field name="exchange_type" readonly="state == 'exported'"/>
@@ -213,27 +221,28 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Gratificación" name="gratification">
+                        <page string="Gratificación trunca" name="gratification">
                             <field name="gratification_line_ids" readonly="state == 'exported'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_list',
                                           'form_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_form'}"/>
                         </page>
-                        <page string="CTS" name="cts">
+                        <page string="CTS trunca" name="cts">
                             <field name="cts_line_ids" readonly="state == 'exported'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_cts_line_view_list',
                                           'form_view_ref': 'al_hr_pe_benefits.hr_cts_line_view_form'}"/>
                         </page>
-                        <page string="Vacaciones" name="vacation">
+                        <page string="Vacaciones truncas" name="vacation">
                             <field name="vacation_line_ids" readonly="state == 'exported'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_liquidation_vacation_line_view_list',
                                           'form_view_ref': 'al_hr_pe_benefits.hr_liquidation_vacation_line_view_form'}"/>
                         </page>
-                        <page string="Conceptos extra" name="extra_concepts">
+                        <page string="Otros conceptos" name="extra_concepts">
                             <field name="liq_ext_concept_ids" readonly="state == 'exported'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_liquidation_extra_concepts_view_list'}"/>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

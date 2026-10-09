@@ -48,7 +48,7 @@ sin dependencias externas.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '5.20261008',
+    'version': '6.20261009',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque

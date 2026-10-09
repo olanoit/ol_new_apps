@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261009 — 09/10/2026
+
+- Conexiones RUC/DNI con chatter: historial de nombre, prioridad, habilitación, motor, tipo de documento y URL (nunca de tokens ni credenciales).
+- Etiqueta más corta: «Importar representantes».
+
 ## 16.20261008 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.

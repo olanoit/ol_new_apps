@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261009 — 09/10/2026
+
+- Etiqueta más corta en el activo: «Doc. de autorización» del cambio de método de depreciación.
+
 ## 22.20261008 — 08/10/2026
 
 - Tipo de operación (tabla 12) y consignación de la transferencia en el grupo Libros electrónicos (PLE) de la página Logística PE.

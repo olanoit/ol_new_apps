@@ -199,6 +199,10 @@ faq:
       en una caja o impresora de preparación activa.
 
 novedades:
+  - version: 4.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiquetas más cortas en la impresora del TPV: «IP ESC/POS» y «Puerto ESC/POS»."
   - version: 3.20261008
     fecha: 08/10/2026
     cambios:

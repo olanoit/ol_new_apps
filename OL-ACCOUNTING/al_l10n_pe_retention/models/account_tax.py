@@ -9,4 +9,5 @@ class AccountTax(models.Model):
     is_withholding_tax_on_payment = fields.Boolean(
         string='Retención en el pago')
     withholding_sequence_id = fields.Many2one(
-        string='Secuencia del comprobante de retención')
+        string='Secuencia de retención',
+        help='Secuencia del comprobante de retención (CRE).')

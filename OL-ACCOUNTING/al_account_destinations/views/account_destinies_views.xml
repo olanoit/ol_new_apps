@@ -46,6 +46,7 @@
                         <field name="percentage" widget="percentage"/>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

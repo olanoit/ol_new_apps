@@ -54,9 +54,11 @@ class L10nPeSireRce(models.Model):
 
     nd_line_ids = fields.One2many(
         'l10n_pe.sire.rce.nd.line', 'sire_id', string='No domiciliados', copy=False)
-    count_nd = fields.Integer(string='Comprobantes de no domiciliados', compute='_compute_count_nd')
+    count_nd = fields.Integer(string='Comprobantes (ND)', compute='_compute_count_nd',
+        help='Comprobantes de no domiciliados del periodo.')
     count_nd_invalid = fields.Integer(
-        string='No domiciliados con observaciones', compute='_compute_count_nd')
+        string='Observados (ND)', compute='_compute_count_nd',
+        help='Comprobantes de no domiciliados con observaciones.')
 
     def _compute_count_nd(self):
         for record in self:

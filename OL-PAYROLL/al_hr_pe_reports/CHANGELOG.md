@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261009 — 09/10/2026
+
+- Chatter en el pago masivo bancario (TXT): historial de diario, fecha de pago y estado.
+- El contador de pagos masivos del lote se llama «N.º de pagos masivos» (ya no repite la etiqueta de la lista).
+
 ## 20.20261008 — 08/10/2026
 
 - Pago masivo finalizado: nombre, cuenta de cargo y configuración del banco de solo lectura, como el diario, la fecha y la glosa.

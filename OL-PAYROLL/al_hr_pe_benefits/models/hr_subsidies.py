@@ -66,6 +66,7 @@ class HrSubsidiesLot(models.Model):
     """Lote mensual de subsidios EsSalud (maternidad / enfermedad)."""
     _name = 'hr.subsidies.lot'
     _description = 'Lote de subsidios'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'periodo_id'
     _order = 'periodo_id desc'
     _check_company_auto = True
@@ -74,14 +75,14 @@ class HrSubsidiesLot(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     periodo_id = fields.Many2one(
-        'hr.period', string='Periodo', required=True, check_company=True)
+        'hr.period', string='Periodo', required=True, check_company=True, tracking=True)
     line_ids = fields.One2many(
-        'hr.subsidies', 'subsidies_lot_id', string='Cálculo de subsidios')
+        'hr.subsidies', 'subsidies_lot_id', string='Subsidios')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('done', 'Hecho')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
     subsidies_count = fields.Integer(
-        compute='_compute_subsidies_count', string='Cantidad')
+        compute='_compute_subsidies_count', string='N.º de subsidios')
 
     _unique_period = models.Constraint(
         'UNIQUE(company_id, periodo_id)',
@@ -183,15 +184,15 @@ class HrSubsidies(models.Model):
     # v18: leave_id (hr.leave). En v19 la contingencia viene de la
     # suspensión T21 (ver docstring del módulo).
     suspension_id = fields.Many2one(
-        'hr.work.suspension', string='Suspensión (T21)',
+        'hr.work.suspension', string='Suspensión (T-Registro)',
         check_company=True)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
-    date_start = fields.Date(string='Fecha de inicio')
-    date_end = fields.Date(string='Fecha final')
+        'hr.employee', string='Trabajador', check_company=True)
+    date_start = fields.Date(string='Inicio de la contingencia')
+    date_end = fields.Date(string='Fin de la contingencia')
     subsidies_line_ids = fields.One2many(
         'hr.subsidies.line', 'subsidies_id',
-        string='Histórico de remuneraciones')
+        string='Últimos 12 meses')
     subsidies_total_ids = fields.One2many(
         'hr.subsidies.total', 'subsidies_id', string='Subsidio total')
     subsidies_periodo_ids = fields.One2many(
@@ -202,10 +203,13 @@ class HrSubsidies(models.Model):
         string='Estado', index=True, readonly=True, copy=False,
         default='draft')
     is_compute_20_days = fields.Boolean(
-        string='Computar 20 días', default=False,
+        string='Primeros 20 días ya cubiertos', default=False,
         help='Marcar si los primeros 20 días a cargo del empleador ya '
              'fueron cubiertos en un descanso médico anterior del año.')
-    preserve_record = fields.Boolean(string='No recalcular')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.')
 
     # Botones, en el mismo orden que en la vista
     # ------------------------------------------------------------------
@@ -502,7 +506,7 @@ class HrSubsidiesLine(models.Model):
     commission = fields.Float(string='Comisiones')
     extra_hours = fields.Float(string='Horas extras')
     others_income = fields.Float(string='Otros ingresos')
-    lacks = fields.Float(string='Dscto. inasistencias')
+    lacks = fields.Float(string='Descuento por inasistencias')
     total = fields.Float(
         string='Base imponible', compute='_compute_total', store=True)
 
@@ -533,11 +537,20 @@ class HrSubsidiesTotal(models.Model):
     company_id = fields.Many2one(
         related='subsidies_id.company_id', string='Compañía', store=True,
         index=True)
-    total_rem = fields.Float(string='Total rem.')
-    sub_dia = fields.Float(string='Sub. por día')
-    days_total = fields.Integer(string='Total días')
-    days = fields.Integer(string='Días sub.')
-    total_sub = fields.Float(string='Total subsidio')
+    total_rem = fields.Float(
+        string='Rem. 12 meses',
+        help='Suma de las bases imponibles de los 12 meses previos a la '
+             'contingencia.')
+    sub_dia = fields.Float(
+        string='Subsidio diario',
+        help='Remuneraciones ÷ (30 × meses con boleta).')
+    days_total = fields.Integer(string='Días de la contingencia')
+    days = fields.Integer(
+        string='Días subsidiados',
+        help='En enfermedad se restan los primeros 20 días del año, que '
+             'paga el empleador.')
+    total_sub = fields.Float(
+        string='Total subsidio', help='Subsidio diario × días subsidiados.')
 
     @api.depends('subsidies_id')
     def _compute_display_name(self):
@@ -559,14 +572,14 @@ class HrSubsidiesPeriodo(models.Model):
         related='subsidies_id.company_id', string='Compañía', store=True,
         index=True)
     employee_id = fields.Many2one(
-        related='subsidies_id.employee_id', string='Empleado', store=True)
+        related='subsidies_id.employee_id', string='Trabajador', store=True)
     periodo_id = fields.Many2one('hr.period', string='Periodo', check_company=True)
-    days = fields.Integer(string='Días')
-    sub_dia = fields.Float(string='Sub. por día')
-    total_sub = fields.Float(string='Total subsidio')
+    days = fields.Integer(string='Días subsidiados')
+    sub_dia = fields.Float(string='Subsidio diario')
+    total_sub = fields.Float(string='Subsidio del periodo')
     validation = fields.Selection(
-        selection=[('not payed', 'NO PAGADO'), ('paid out', 'PAGADO')],
-        string='Validación', default='not payed')
+        selection=[('not payed', 'No pagado'), ('paid out', 'Pagado')],
+        string='Pago', default='not payed')
 
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})

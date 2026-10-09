@@ -26,20 +26,27 @@
                         <label for="periodo_id"/>
                         <h1><field name="periodo_id" readonly="state == 'done'" placeholder="Periodo"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Subsidios de EsSalud por incapacidad temporal y por maternidad (Ley 26790):
+                        «Procesar» trae las suspensiones por enfermedad o maternidad que empiezan en
+                        el periodo. El subsidio diario es el promedio de las remuneraciones de los
+                        12 meses previos a la contingencia ÷ 30. En enfermedad, los primeros 20 días
+                        del año los paga el empleador y no se subsidian.
+                    </div>
                     <group>
-                        <group/>
                         <group>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Empleados" name="employees">
+                        <page string="Subsidios" name="employees">
                             <field name="line_ids" readonly="state == 'done'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_subsidies_view_list',
                                           'form_view_ref': 'al_hr_pe_benefits.hr_subsidies_view_form'}"/>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -79,14 +86,14 @@
                                    options="{'no_create': True}" placeholder="Trabajador"/></h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="Contingencia">
                             <field name="suspension_id" readonly="state == 'close'" options="{'no_create': True}"/>
-                            <label for="date_start" string="Fechas de contingencia"/>
+                            <label for="date_start" string="Fechas de la contingencia"/>
                             <div name="dates_contingencia">
                                 <field name="date_start" readonly="state == 'close'" class="oe_inline"/> - <field name="date_end" readonly="state == 'close'" class="oe_inline"/>
                             </div>
                         </group>
-                        <group>
+                        <group string="Subsidio">
                             <field name="type" readonly="state == 'close'" required="1"/>
                             <field name="is_compute_20_days" invisible="type == 'maternity'" readonly="state == 'close'"/>
                             <field name="preserve_record" readonly="state == 'close'"/>
@@ -94,40 +101,40 @@
                         </group>
                     </group>
                     <notebook invisible="state != 'close'">
-                        <page string="Remuneraciones" name="remunerations">
+                        <page string="Remuneraciones previas" name="remunerations">
                     <field name="subsidies_line_ids" readonly="state == 'close'">
                         <list editable="top">
                             <field name="periodo_id" optional="show"/>
-                            <field name="wage" sum="Básico" optional="show"/>
-                            <field name="vacation" sum="Vacaciones" optional="show"/>
-                            <field name="household_allowance" sum="Asignación familiar" optional="show"/>
-                            <field name="commission" sum="Comisiones" optional="show"/>
-                            <field name="extra_hours" sum="Horas extras" optional="show"/>
-                            <field name="others_income" sum="Otros ingresos" optional="show"/>
-                            <field name="lacks" sum="Inasistencias" optional="show"/>
+                            <field name="wage" sum="Total" optional="show"/>
+                            <field name="vacation" sum="Total" optional="show"/>
+                            <field name="household_allowance" sum="Total" optional="show"/>
+                            <field name="commission" sum="Total" optional="show"/>
+                            <field name="extra_hours" sum="Total" optional="show"/>
+                            <field name="others_income" sum="Total" optional="show"/>
+                            <field name="lacks" sum="Total" optional="show"/>
                             <field name="total" sum="Total" optional="show"/>
                         </list>
                     </field>
                         </page>
                         <page string="Cálculo" name="calculation">
-                    <group string="Subsidio total">
+                    <group string="Subsidio de la contingencia">
                         <field name="subsidies_total_ids" readonly="state == 'close'" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="total_rem" optional="show"/>
                                 <field name="sub_dia" optional="show"/>
                                 <field name="days_total" optional="show"/>
                                 <field name="days" optional="show"/>
-                                <field name="total_sub" optional="show"/>
+                                <field name="total_sub" class="fw-bold"/>
                             </list>
                         </field>
                     </group>
-                    <group string="Subsidio por periodos">
+                    <group string="Reparto por periodo de planilla">
                         <field name="subsidies_periodo_ids" readonly="state == 'close'" nolabel="1" colspan="2">
                             <list editable="bottom" create="0" delete="0">
                                 <field name="periodo_id" optional="show"/>
-                                <field name="days" sum="Días" optional="show"/>
+                                <field name="days" sum="Total" optional="show"/>
                                 <field name="sub_dia" optional="show"/>
-                                <field name="total_sub" sum="Total subsidio" optional="show"/>
+                                <field name="total_sub" sum="Total" optional="show"/>
                                 <field name="validation" readonly="1" optional="show"/>
                                 <button name="action_set_unpaid" type="object" icon="fa-undo"
                                         invisible="validation != 'paid out'" string="Cambiar a no pagado"
@@ -149,8 +156,8 @@
         <field name="model">hr.subsidies</field>
         <field name="arch" type="xml">
             <list>
-                <field name="preserve_record" string="No R." optional="show"/>
                 <field name="employee_id"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="type" optional="show"/>
                 <field name="suspension_id" optional="show"/>
                 <field name="date_start" optional="show"/>
@@ -176,7 +183,7 @@
                 <filter string="Borrador" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Hecho" name="filter_close" domain="[('state', '=', 'close')]"/>
                 <separator/>
-                <filter string="Empleado" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
+                <filter string="Trabajador" name="group_by_employee_id" context="{'group_by': 'employee_id'}"/>
                 <filter string="Estado" name="group_by_state" context="{'group_by': 'state'}"/>
             </search>
         </field>

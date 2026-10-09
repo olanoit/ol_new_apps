@@ -40,6 +40,7 @@ OPERATION_KINDS = [
 class L10nPeSireOperation(models.Model):
     """Una llamada a SUNAT sobre un periodo SIRE y lo que devolvió."""
     _name = 'l10n_pe.sire.operation'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Operación SIRE'
     _check_company_auto = True
     _order = 'id desc'
@@ -57,9 +58,10 @@ class L10nPeSireOperation(models.Model):
     date = fields.Datetime(string='Fecha', readonly=True, default=fields.Datetime.now)
     state = fields.Selection(
         selection=[('sent', 'Enviada'), ('done', 'Terminada'), ('error', 'Con errores')],
-        string='Estado', default='sent', readonly=True)
+        string='Estado', default='sent', readonly=True,
+        tracking=True)
     ticket = fields.Char(string='Ticket', readonly=True, index=True)
-    ticket_state = fields.Selection(TICKET_STATES, string='Estado del ticket', readonly=True)
+    ticket_state = fields.Selection(TICKET_STATES, string='Estado del ticket', readonly=True, tracking=True)
     detail = fields.Text(string='Detalle', readonly=True)
     file = fields.Binary(string='Archivo enviado', readonly=True, attachment=True)
     filename = fields.Char(string='Nombre del archivo', readonly=True)
@@ -77,8 +79,9 @@ class L10nPeSireOperation(models.Model):
     adjustment_number = fields.Char(
         string='Número de ajuste posterior',
         help='Lo asigna SUNAT a cada carga de ajustes; se busca solo y, si no '
-             'aparece, se indica aquí antes de enviar.')
-    adjustment_sent = fields.Boolean(string='Ajustes enviados', readonly=True)
+             'aparece, se indica aquí antes de enviar.',
+        tracking=True)
+    adjustment_sent = fields.Boolean(string='Ajustes enviados', readonly=True, tracking=True)
     can_send_adjustment = fields.Boolean(string='Puede enviar ajustes', compute='_compute_can_send_adjustment')
 
     @api.depends('kind', 'ticket')

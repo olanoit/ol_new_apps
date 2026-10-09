@@ -119,7 +119,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
              'los traslados entre almacenes se valoran al costo promedio '
              'corriente. Desmarcado: kardex consolidado de la compañía.')
     include_no_movement = fields.Boolean(
-        string='Incluir productos sin movimientos', default=True,
+        string='Incluir sin movimientos', default=True,
         help='Incluye productos con saldo inicial distinto de cero aunque no '
              'tengan movimientos en el período.')
 

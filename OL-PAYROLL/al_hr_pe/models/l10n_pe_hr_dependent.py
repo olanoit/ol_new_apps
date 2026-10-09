@@ -75,6 +75,7 @@ class L10nPeHrDependentProof(models.Model):
 class L10nPeHrDependent(models.Model):
     _name = 'l10n_pe.hr.dependent'
     _description = 'Derechohabiente'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'employee_id, date_start desc, id desc'
     _check_company_auto = True
     _rec_names_search = ['name', 'identification_id']
@@ -90,7 +91,7 @@ class L10nPeHrDependent(models.Model):
     type_id = fields.Many2one(
         'l10n_pe.hr.dependent.type', string='Tipo de derechohabiente',
         required=True, ondelete='restrict',
-        check_company=True)
+        check_company=True, tracking=True)
     is_child = fields.Boolean(related='type_id.is_child')
     is_unborn = fields.Boolean(related='type_id.is_unborn')
 
@@ -123,15 +124,15 @@ class L10nPeHrDependent(models.Model):
         string='Inicio del vínculo', required=True,
         default=fields.Date.context_today,
         help='Fecha desde la que el familiar es derechohabiente. Es la que '
-             'se declara como alta en el T-Registro.')
+             'se declara como alta en el T-Registro.', tracking=True)
     date_end = fields.Date(
         string='Fin del vínculo',
         help='Fecha en la que termina la condición de derechohabiente. La '
-             'baja se declara al día siguiente.')
+             'baja se declara al día siguiente.', tracking=True)
     end_reason_id = fields.Many2one(
         'l10n_pe.hr.dependent.end.reason', string='Motivo de baja',
         ondelete='restrict',
-        check_company=True)
+        check_company=True, tracking=True)
     active = fields.Boolean(string='Activo', default=True)
     state = fields.Selection(
         selection=[('draft', 'Por declarar'), ('current', 'Vigente'),
@@ -140,13 +141,13 @@ class L10nPeHrDependent(models.Model):
     is_declared = fields.Boolean(
         string='Declarado en T-Registro', copy=False,
         help='Marcado cuando el alta se incluyó en una exportación para '
-             'SUNAT. Sirve para no volver a declarar lo ya cargado.')
+             'SUNAT. Sirve para no volver a declarar lo ya cargado.', tracking=True)
 
     # ------------------------------------------------------------------
     # Acreditación
     # ------------------------------------------------------------------
     proof_type_id = fields.Many2one(
-        'l10n_pe.hr.dependent.proof', string='Tipo de documento que acredita',
+        'l10n_pe.hr.dependent.proof', string='Documento sustentatorio',
         ondelete='restrict',
         help='Tabla 27 de SUNAT. Los tipos 01-03 aplican a la gestante, el '
              '04 al hijo mayor incapacitado, los 05-07 al cónyuge, los '
@@ -154,7 +155,7 @@ class L10nPeHrDependent(models.Model):
              'no sea DNI.',
         check_company=True)
     proof_document = fields.Char(
-        string='N° del documento que acredita',
+        string='N.º del sustento',
         help='Número o referencia del acta, partida, escritura o '
              'resolución que sustenta el vínculo.')
     disability_resolution = fields.Char(
@@ -167,7 +168,7 @@ class L10nPeHrDependent(models.Model):
     is_studying = fields.Boolean(
         string='Cursa estudios superiores',
         help='Prolonga la asignación familiar hasta los 24 años '
-             '(Ley 25129 y D.S. 035-90-TR).')
+             '(Ley 25129 y D.S. 035-90-TR).', tracking=True)
 
     # ------------------------------------------------------------------
     # Asignación familiar

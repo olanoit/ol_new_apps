@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261009 — 09/10/2026
+
+- Canje masivo con chatter en el formulario (seguimiento y actividades, como el canje normal).
+- Contador de operaciones con el banco con etiqueta propia («N.º de operaciones bancarias»): ya no repite la de la lista de asientos.
+
 ## 17.20261008 — 08/10/2026
 
 - Menú Perú ▸ Letras de cambio reordenado: en Clientes, Letras por cobrar, Canje de letras, Canje masivo, Letras en el banco, Refinanciaciones e Historial de canje masivo; en Proveedores, lo mismo sin banco; y Análisis de letras (tabla dinámica y gráfico).

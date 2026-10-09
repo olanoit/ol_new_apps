@@ -15,7 +15,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     l10n_pe_retention_eligible = fields.Boolean(
-        string='Comprendida en el régimen de retención',
+        string='En régimen de retención',
         compute='_compute_l10n_pe_retention', store=True,
         help='La compañía es agente de retención y la operación no está '
              'exceptuada (agente de retención o de percepción, buen '

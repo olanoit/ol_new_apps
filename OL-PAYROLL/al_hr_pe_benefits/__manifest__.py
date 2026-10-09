@@ -47,7 +47,7 @@ Fase 7.
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '21.20261008',
+    'version': '22.20261008',
     'license': 'OPL-1',
     'depends': ['al_hr_pe', 'hr_holidays'],
     'data': [

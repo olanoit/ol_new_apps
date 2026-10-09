@@ -205,6 +205,10 @@ faq:
       manda la última que eligió cada usuario.
 
 novedades:
+  - version: 6.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiqueta más corta en la etiqueta de producto: «Filtro del TPV»."
   - version: 5.20261008
     fecha: 08/10/2026
     cambios:

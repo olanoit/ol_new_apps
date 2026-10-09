@@ -517,6 +517,11 @@ faq:
       sale en cero.
 
 novedades:
+  - version: 21.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Chatter en el pago masivo bancario (TXT): historial de diario, fecha de pago y estado."
+      - "El contador de pagos masivos del lote se llama «N.º de pagos masivos» (ya no repite la etiqueta de la lista)."
   - version: 20.20261008
     fecha: 08/10/2026
     cambios:

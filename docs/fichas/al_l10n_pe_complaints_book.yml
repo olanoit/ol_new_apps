@@ -158,6 +158,10 @@ faq:
       art. 12.
 
 novedades:
+  - version: 6.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiquetas más cortas en el reclamo: «Fecha de respuesta», «Tipo según el consumidor», «Confirmado por el consumidor», «N.º de hoja de respaldo»; en el libro, «Domicilio». El detalle pasa a la ayuda (?)."
   - version: 5.20261008
     fecha: 08/10/2026
     cambios:

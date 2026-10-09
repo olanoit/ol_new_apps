@@ -153,6 +153,7 @@ class AccountAccount(models.Model):
 
 class L10nPeAccountDestiny(models.Model):
     _name = 'l10n_pe.account.destiny'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Cuenta destino (dinámica PCGE)'
     _order = 'id asc'
     _rec_name = 'dest_account_id'
@@ -165,15 +166,18 @@ class L10nPeAccountDestiny(models.Model):
         default=lambda self: self.env.company.root_id)
     parent_account_id = fields.Many2one(
         'account.account', string='Cuenta principal', required=True,
-        ondelete='cascade', index=True, check_company=True)
+        ondelete='cascade', index=True, check_company=True,
+        tracking=True)
     dest_account_id = fields.Many2one(
         'account.account', string='Cuenta destino', required=True,
-        ondelete='cascade', check_company=True)
+        ondelete='cascade', check_company=True,
+        tracking=True)
     percentage = fields.Float(
         string='Porcentaje %', required=True, default=1.0,
         digits=(16, PERCENTAGE_DIGITS),
         help='Fracción del importe destinada a esta cuenta (1 = 100 %). '
-             'La suma de todas las líneas debe ser 100 %.')
+             'La suma de todas las líneas debe ser 100 %.',
+        tracking=True)
     allowed_dest_ids = fields.Many2many(
         'account.account', related='parent_account_id.l10n_pe_allowed_dest_ids',
         string='Cuentas permitidas')

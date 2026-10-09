@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261009 — 09/10/2026
+
+- Chatter en la configuración principal de planillas y en los derechohabientes: historial de cambios del RMV, representante legal, regla del neto, vigencia, baja y acreditación del vínculo.
+- Etiquetas más cortas en el derechohabiente: «Documento sustentatorio» y «N.º del sustento» (el detalle va en la ayuda).
+
 ## 32.20261008 — 08/10/2026
 
 - El periodo de la boleta y del lote se bloquea con el estado, como la estructura y las fechas nativas (boleta validada, pagada o cancelada; lote fuera de «Listo»).

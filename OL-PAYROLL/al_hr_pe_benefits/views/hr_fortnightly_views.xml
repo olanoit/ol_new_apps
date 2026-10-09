@@ -28,7 +28,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-success="state in ('done', 'exported', 'close', 'paid out')" optional="show"/>
-                <field name="payslip_count" optional="show" string="Cant. de boletas"/>
+                <field name="payslip_count" optional="show"/>
                 <field name="company_id" readonly="1" optional="show" groups="base.group_multi_company"/>
             </list>
         </field>
@@ -57,36 +57,46 @@
                         <button name="action_open_payslips" class="oe_stat_button" icon="fa-book" type="object" help="Boletas generadas" invisible="payslip_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="payslip_count"/></span>
-                                <span class="o_stat_text">Quincenas</span>
+                                <span class="o_stat_text">Boletas</span>
                             </div>
                         </button>
                     </div>
-                    <label for="name" string="Planilla"/>
-                    <h1>
-                        <field name="name" readonly="state != 'draft'" placeholder="Quincena 01-2026"/>
-                    </h1>
+                    <div class="oe_title">
+                        <label for="name" string="Planilla"/>
+                        <h1>
+                            <field name="name" readonly="state != 'draft'" placeholder="Quincena 01-2026"/>
+                        </h1>
+                    </div>
+                    <div class="alert alert-info" role="status">
+                        Adelanto de la primera quincena: se genera una boleta de adelanto por
+                        trabajador con contrato vigente (un porcentaje del sueldo o los días
+                        trabajados, más la asignación familiar si se configuró). Salvo que la
+                        compañía pida adelantar la AFP o la ONP, los aportes y la
+                        retención de quinta se calculan en la boleta mensual; al exportar, el neto
+                        de la quincena pasa a esa boleta como descuento.
+                    </div>
                     <group>
-                        <group string="Periodo">
-                            <field name="date_start" class="oe_inline" readonly="state != 'draft'"/>
-                            <field name="date_end" class="oe_inline" readonly="state != 'draft'"/>
-                            <field name="payslip_run_id" readonly="state != 'draft'"/>
+                        <group string="Quincena">
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="date_end" readonly="state != 'draft'"/>
                         </group>
-                        <group>
+                        <group string="Destino">
+                            <field name="payslip_run_id" readonly="state != 'draft'"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Empleados" name="employees">
+                        <page string="Boletas de la quincena" name="employees">
                             <field name="slip_ids" readonly="state not in ('draft', 'verify')">
                                 <list create="0">
                                     <field name="currency_id" column_invisible="1"/>
                                     <field name="name" optional="hide"/>
                                     <field name="employee_id"/>
-                                    <field name="basic_wage" sum="Básico" optional="show"/>
-                                    <field name="gross_wage" sum="Bruto" optional="show"/>
-                                    <field name="worker_contributions" sum="Aportes trabajador" optional="show"/>
-                                    <field name="net_discounts" sum="Descuentos netos" optional="hide"/>
-                                    <field name="net_wage" sum="Neto" optional="show"/>
+                                    <field name="basic_wage" sum="Total" optional="show"/>
+                                    <field name="gross_wage" sum="Total" optional="show"/>
+                                    <field name="worker_contributions" sum="Total" optional="show"/>
+                                    <field name="net_discounts" sum="Total" optional="hide"/>
+                                    <field name="net_wage" sum="Total" optional="show"/>
                                     <field name="state" optional="show"/>
                                 </list>
                             </field>

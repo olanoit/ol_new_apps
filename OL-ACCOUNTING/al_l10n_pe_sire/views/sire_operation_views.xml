@@ -73,6 +73,7 @@
                     <field name="detail"/>
                     <field name="report_ids" widget="many2many_binary"/>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

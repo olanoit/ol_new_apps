@@ -177,6 +177,10 @@ faq:
       insuficientes) y puede pagar con otra tarjeta sin rehacer el pedido.
 
 novedades:
+  - version: 2.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Etiquetas más cortas en la transacción: «Fecha Niubiz» y «Constancia PagoEfectivo»."
   - version: 1.20261006
     fecha: 06/10/2026
     cambios:

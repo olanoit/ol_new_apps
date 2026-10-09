@@ -33,7 +33,7 @@ class AccountAsset(models.Model):
              '(1 = línea recta). Se propone 1 para el método lineal de Odoo '
              'y 9 para el resto; puede corregirse manualmente.')
     l10n_pe_depre_auth_doc = fields.Char(
-        string='Doc. autorización cambio de método', size=20,
+        string='Doc. de autorización', size=20,
         help='Nº del documento de autorización del cambio del método de '
              'depreciación (campo 27 del 7.1). «-» si no aplica.')
     l10n_pe_depre_rate = fields.Float(

@@ -38,6 +38,7 @@ from .hr_benefits_engine import compute_locked
 class HrUtilities(models.Model):
     _name = 'hr.utilities'
     _description = 'Utilidades (D.L. 892)'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'year desc'
     _check_company_auto = True
 
@@ -49,27 +50,41 @@ class HrUtilities(models.Model):
     year = fields.Integer(
         string='Ejercicio', required=True,
         default=lambda self: fields.Date.context_today(self).year - 1,
-        help='Ejercicio gravable cuya renta se reparte.', aggregator=False)
+        help='Ejercicio gravable cuya renta se reparte.', aggregator=False, tracking=True)
     annual_rent = fields.Float(
-        string='Renta anual antes de impuestos', digits=(64, 2))
-    percentage = fields.Float(string='Porcentaje', digits=(12, 2))
-    distribution = fields.Float(string='Distribución', digits=(64, 2))
+        string='Renta anual antes de impuestos', digits=(64, 2),
+        help='Renta neta imponible del ejercicio, antes del impuesto a la '
+             'renta.', tracking=True)
+    percentage = fields.Float(
+        string='Porcentaje de participación', digits=(12, 2),
+        help='Según la actividad de la empresa: 10 % pesqueras, de '
+             'telecomunicaciones e industriales; 8 % mineras, de comercio y '
+             'restaurantes; 5 % las demás (D.Leg. 892).', tracking=True)
+    distribution = fields.Float(
+        string='Monto a repartir', digits=(64, 2),
+        help='Renta anual × porcentaje de participación. La mitad se reparte '
+             'por días laborados y la otra mitad por remuneraciones.')
     utilities_line_ids = fields.One2many(
-        'hr.utilities.line', 'main_id', string='Líneas')
+        'hr.utilities.line', 'main_id', string='Trabajadores')
     sum_salary_year = fields.Float(
-        string='Total sueldos de todo el año', digits=(12, 2))
+        string='Remuneraciones del ejercicio', digits=(12, 2),
+        help='Suma de las remuneraciones de todos los trabajadores.')
     sum_number_of_days_year = fields.Float(
-        string='Total días laborados de todo el año', digits=(12, 2))
-    factor_salary = fields.Float(string='Factor sueldos', digits=(12, 18))
+        string='Días laborados del ejercicio', digits=(12, 2),
+        help='Suma de los días laborados de todos los trabajadores.')
+    factor_salary = fields.Float(
+        string='Factor por remuneraciones', digits=(12, 18),
+        help='(Monto a repartir ÷ 2) ÷ remuneraciones del ejercicio.')
     factor_number_of_days = fields.Float(
-        string='Factor días trabajados', digits=(12, 18))
+        string='Factor por días laborados', digits=(12, 18),
+        help='(Monto a repartir ÷ 2) ÷ días laborados del ejercicio.')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
         check_company=True,
-        help='Lote mensual donde se pagan las utilidades.')
+        help='Lote mensual donde se pagan las utilidades.', tracking=True)
     utili_count = fields.Integer(string='Repartos', compute='_compute_utilities_count')
 
     _unique_year = models.Constraint(
@@ -282,6 +297,7 @@ class HrUtilities(models.Model):
 class HrUtilitiesLine(models.Model):
     _name = 'hr.utilities.line'
     _description = 'Línea de utilidad'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id'
     _check_company_auto = True
 
@@ -301,8 +317,8 @@ class HrUtilitiesLine(models.Model):
     company_id = fields.Many2one(
         related='main_id.company_id', string='Compañía', store=True,
         index=True)
-    employee_document = fields.Char(string='N° documento')
-    employee = fields.Char(string='Empleado')
+    employee_document = fields.Char(string='N.º de documento')
+    employee = fields.Char(string='Trabajador')
     employee_id = fields.Many2one(
         'hr.employee', string='Empleado (registro)', check_company=True)
     version_id = fields.Many2one(
@@ -314,23 +330,33 @@ class HrUtilitiesLine(models.Model):
     names = fields.Char(related='employee_id.names', string='Nombres')
     admission_date = fields.Date(string='Fecha de ingreso')
     distribution_id = fields.Char(string='Distribución analítica')
-    salary = fields.Float(string='Sueldos', digits=(12, 2))
-    number_of_days = fields.Float(string='Días laborados', digits=(12, 2))
-    for_salary = fields.Float(string='Por sueldos', digits=(12, 2))
+    salary = fields.Float(
+        string='Remuneraciones del año', digits=(12, 2))
+    number_of_days = fields.Float(
+        string='Días laborados del año', digits=(12, 2))
+    for_salary = fields.Float(
+        string='Por remuneraciones', digits=(12, 2),
+        help='Remuneraciones del año × factor por remuneraciones.')
     for_number_of_days = fields.Float(
-        string='Por días laborados', digits=(12, 2))
+        string='Por días laborados', digits=(12, 2),
+        help='Días laborados del año × factor por días laborados.')
     total_utilities = fields.Float(
-        string='Total utilidades', digits=(12, 2))
+        string='Utilidades a pagar', digits=(12, 2),
+        help='Participación por remuneraciones + por días, con el tope de '
+             '18 remuneraciones mensuales.')
     monthly_remuneration = fields.Float(
         string='Rem. mensual al cierre', digits=(12, 2),
         help='Remuneración mensual vigente al cierre del ejercicio. La '
              'participación no puede superar 18 veces este importe '
              '(D.L. 892, art. 2).')
     excess_utilities = fields.Float(
-        string='Exceso (FONDOEMPLEO)', digits=(12, 2),
+        string='Exceso del tope', digits=(12, 2),
         help='Parte de la participación que supera el tope de 18 '
              'remuneraciones: no se paga al trabajador.')
-    preserve_record = fields.Boolean(string='No recalcular')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.', tracking=True)
 
     @api.depends('employee')
     def _compute_display_name(self):

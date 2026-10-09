@@ -27,6 +27,7 @@ class L10nPeKardexReport(models.Model):
     'done'. Evita bloquear la interfaz con reportes de miles de movimientos.
     """
     _name = 'l10n_pe.kardex.report'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Kardex SUNAT generado'
     _order = 'create_date desc'
     _check_company_auto = True
@@ -51,7 +52,8 @@ class L10nPeKardexReport(models.Model):
     state = fields.Selection(
         [('pending', 'Pendiente'), ('generating', 'Generando'),
          ('done', 'Listo'), ('empty', 'Sin datos'), ('error', 'Error')],
-        default='pending', required=True, string='Estado')
+        default='pending', required=True, string='Estado',
+        tracking=True)
     output_file = fields.Binary(string='Archivo', readonly=True, attachment=True)
     output_filename = fields.Char(readonly=True)
     error_message = fields.Text(string='Mensaje de error', readonly=True)

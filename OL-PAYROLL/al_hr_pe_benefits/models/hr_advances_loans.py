@@ -64,7 +64,8 @@ class HrAdvanceType(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input de planillas')
+        'hr.payslip.input.type', string='Entrada de la boleta',
+        help='Entrada de la boleta por la que se descuenta el adelanto.')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
@@ -83,17 +84,20 @@ class HrAdvance(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', tracking=True,
+        'hr.employee', string='Trabajador', tracking=True,
         check_company=True)
-    amount = fields.Float(string='Monto', tracking=True)
+    amount = fields.Float(string='Importe', tracking=True)
     date = fields.Date(string='Fecha de adelanto')
-    discount_date = fields.Date(string='Fecha de descuento', tracking=True)
+    discount_date = fields.Date(
+        string='Fecha de descuento', tracking=True,
+        help='Se descuenta en la boleta cuyo periodo incluye esta fecha.')
     advance_type_id = fields.Many2one(
         'hr.advance.type', string='Tipo de adelanto', tracking=True,
         check_company=True)
     state = fields.Selection(
         selection=[('not payed', 'No pagado'), ('paid out', 'Pagado')],
-        string='Estado', default='not payed', tracking=True)
+        string='Estado', default='not payed', tracking=True,
+        help='Pagado: ya se descontó en una boleta.')
     observations = fields.Text(string='Observaciones')
     active = fields.Boolean(string='Activo', default=True)
 
@@ -129,7 +133,8 @@ class HrLoanType(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input de planillas')
+        'hr.payslip.input.type', string='Entrada de la boleta',
+        help='Entrada de la boleta por la que se descuentan las cuotas.')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
@@ -148,18 +153,21 @@ class HrLoan(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', tracking=True,
+        'hr.employee', string='Trabajador', tracking=True,
         check_company=True)
     date = fields.Date(string='Fecha de préstamo', tracking=True)
-    amount = fields.Float(string='Monto de préstamo', tracking=True)
+    amount = fields.Float(string='Importe del préstamo', tracking=True)
     loan_type_id = fields.Many2one(
         'hr.loan.type', string='Tipo de préstamo', check_company=True)
-    fees_number = fields.Integer(string='Número de cuotas', tracking=True)
+    fees_number = fields.Integer(
+        string='Número de cuotas', tracking=True,
+        help='Cuotas mensuales iguales que vencen a fin de mes; la última '
+             'absorbe el redondeo.')
     line_ids = fields.One2many('hr.loan.line', 'loan_id', string='Cuotas')
     observations = fields.Text(string='Observaciones')
     active = fields.Boolean(string='Activo', default=True)
     saldo_final = fields.Float(
-        string='Saldo final', compute='_compute_saldo_final',
+        string='Saldo pendiente', compute='_compute_saldo_final',
         help='Suma de cuotas aún no aplicadas a una boleta.')
 
     @api.depends('line_ids.amount', 'line_ids.validation')
@@ -247,17 +255,20 @@ class HrLoanLine(models.Model):
         related='loan_id.company_id', string='Compañía', store=True,
         index=True)
     employee_id = fields.Many2one(
-        related='loan_id.employee_id', string='Empleado', store=True)
+        related='loan_id.employee_id', string='Trabajador', store=True)
     loan_type_id = fields.Many2one(
         'hr.loan.type', string='Tipo de préstamo',
         check_company=True)
-    fee = fields.Integer(string='Cuota')
-    amount = fields.Float(string='Monto')
-    date = fields.Date(string='Fecha de pago')
-    debt = fields.Float(string='Deuda por pagar')
+    fee = fields.Integer(string='N.º de cuota')
+    amount = fields.Float(string='Importe de la cuota')
+    date = fields.Date(string='Vencimiento')
+    debt = fields.Float(
+        string='Saldo después de la cuota',
+        help='Lo que queda por pagar tras esta cuota.')
     validation = fields.Selection(
-        selection=[('not payed', 'NO PAGADO'), ('paid out', 'PAGADO')],
-        string='Validación', default='not payed')
+        selection=[('not payed', 'No pagado'), ('paid out', 'Pagado')],
+        string='Estado', default='not payed',
+        help='Pagado: la cuota ya se descontó en una boleta.')
 
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})

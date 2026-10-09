@@ -26,15 +26,22 @@
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Participación de los trabajadores en las utilidades (D.Leg. 892): un
+                        porcentaje de la renta anual antes de impuestos, según la actividad de la
+                        empresa. La mitad se reparte según los días laborados y la otra mitad según
+                        las remuneraciones de cada trabajador en el ejercicio. Nadie puede recibir
+                        más de 18 remuneraciones mensuales: el exceso va al FONDOEMPLEO.
+                    </div>
                     <group>
-                        <group string="Renta a distribuir">
+                        <group string="Monto a repartir">
                             <field name="year" readonly="state == 'exported'" widget="year_selection"/>
                             <field name="payslip_run_id" readonly="state == 'exported'"/>
                             <field name="annual_rent" readonly="state == 'exported'"/>
                             <field name="percentage" readonly="state == 'exported'"/>
-                            <field name="distribution" readonly="1" force_save="1"/>
+                            <field name="distribution" readonly="1" force_save="1" class="fw-bold"/>
                         </group>
-                        <group string="Factores">
+                        <group string="Factores de reparto">
                             <field name="sum_salary_year" readonly="1" force_save="1"/>
                             <field name="sum_number_of_days_year" readonly="1" force_save="1"/>
                             <field name="factor_salary" readonly="1" force_save="1"/>
@@ -50,6 +57,7 @@
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -94,17 +102,20 @@
                             <field name="admission_date" readonly="1"/>
                             <field name="distribution_id" readonly="1"/>
                         </group>
-                        <group string="Cálculo">
+                        <group string="Datos del ejercicio">
                             <field name="salary" readonly="l10n_pe_locked"/>
                             <field name="number_of_days" readonly="l10n_pe_locked"/>
+                            <field name="monthly_remuneration" readonly="l10n_pe_locked"/>
+                        </group>
+                        <group string="Participación">
                             <field name="for_salary" readonly="1" force_save="1"/>
                             <field name="for_number_of_days" readonly="1" force_save="1"/>
-                            <field name="monthly_remuneration" readonly="l10n_pe_locked"/>
                             <field name="excess_utilities" readonly="1" force_save="1"/>
-                            <field name="total_utilities" readonly="1" force_save="1"/>
+                            <field name="total_utilities" readonly="1" force_save="1" class="fw-bold"/>
                         </group>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -114,18 +125,18 @@
         <field name="model">hr.utilities.line</field>
         <field name="arch" type="xml">
             <list edit="0" create="0" delete="0">
-                <field name="preserve_record" string="No R." optional="show"/>
+                <field name="employee_id"/>
                 <field name="employee_document" optional="show"/>
-                <field name="employee_id" optional="show"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="admission_date" optional="hide"/>
                 <field name="distribution_id" optional="hide"/>
-                <field name="salary" sum="Sueldos" optional="show"/>
-                <field name="number_of_days" sum="Días laborados" optional="show"/>
-                <field name="for_salary" sum="Por sueldos" optional="show"/>
-                <field name="for_number_of_days" sum="Por días laborados" optional="show"/>
-                <field name="monthly_remuneration" optional="hide"/>
-                <field name="excess_utilities" sum="Exceso" optional="hide"/>
-                <field name="total_utilities" sum="Total utilidades" optional="show"/>
+                <field name="salary" sum="Total" optional="show"/>
+                <field name="number_of_days" sum="Total" optional="show"/>
+                <field name="for_salary" sum="Total" optional="show"/>
+                <field name="for_number_of_days" sum="Total" optional="show"/>
+                <field name="monthly_remuneration" sum="Total" optional="hide"/>
+                <field name="excess_utilities" sum="Total" optional="hide"/>
+                <field name="total_utilities" sum="Total" optional="show"/>
             </list>
         </field>
     </record>

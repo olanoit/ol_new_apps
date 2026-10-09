@@ -24,7 +24,7 @@ class L10nPeComplaintBook(models.Model):
     company_id = fields.Many2one('res.company', string='Compañía', required=True, index=True,
                                  default=lambda self: self.env.company)
     address = fields.Text(
-        string='Domicilio del establecimiento', required=True,
+        string='Domicilio', required=True,
         compute='_compute_address', store=True, readonly=False, precompute=True,
         help='Domicilio donde se coloca el libro; en un libro virtual, el domicilio fiscal.')
     book_type = fields.Selection(

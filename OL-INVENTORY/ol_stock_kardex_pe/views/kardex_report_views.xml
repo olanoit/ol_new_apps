@@ -55,6 +55,7 @@
                     <field name="error_message" invisible="state != 'error'"
                            class="text-danger"/>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

@@ -495,6 +495,11 @@ faq:
       reemplazo.
 
 novedades:
+  - version: 18.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Operaciones SIRE con chatter: historial del estado, del ticket y de los ajustes posteriores."
+      - "Etiquetas más cortas en no domiciliados: «Clase de bien o servicio», «Aplica art. 76 LIR», «Doc. del crédito fiscal», «País del beneficiario», «Comprobantes (ND)»…; el texto completo pasa a la ayuda (?)."
   - version: 17.20261008
     fecha: 08/10/2026
     cambios:

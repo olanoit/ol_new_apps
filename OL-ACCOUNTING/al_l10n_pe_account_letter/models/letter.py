@@ -722,7 +722,7 @@ class L10nPeLetter(models.Model):
         'account.move', 'l10n_pe_letter_bank_move_rel', 'letter_id', 'move_id',
         string='Operaciones con el banco', readonly=True, copy=False,
         help='Liquidación del descuento, cobro del banco y protesto.')
-    bank_move_count = fields.Integer(string='Operaciones con el banco', compute='_compute_bank_move_count')
+    bank_move_count = fields.Integer(string='N.º de operaciones bancarias', compute='_compute_bank_move_count')
 
     @api.depends('bank_move_ids')
     def _compute_bank_move_count(self):

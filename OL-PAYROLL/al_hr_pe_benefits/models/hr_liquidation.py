@@ -43,6 +43,7 @@ from .hr_benefits_engine import compute_locked
 class HrLiquidation(models.Model):
     _name = 'hr.liquidation'
     _description = 'Liquidación de cese'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'id desc'
     _check_company_auto = True
 
@@ -54,45 +55,48 @@ class HrLiquidation(models.Model):
         string='Año', required=True,
         default=lambda self: fields.Date.context_today(self).year,
         help='Año del cese (sustituye al año fiscal contable v18); lo '
-             'usa el motor para delimitar los semestres truncos.', aggregator=False)
+             'usa el motor para delimitar los semestres truncos.', aggregator=False, tracking=True)
     with_bonus = fields.Boolean(
-        string='Bono extraordinario', default=True,
-        help='Añade el Bono Extraordinario Ley 29351 sobre la '
-             'gratificación trunca.')
+        string='Con bonificación extraordinaria', default=True,
+        help='Añade la bonificación extraordinaria de la Ley 30334 sobre la '
+             'gratificación trunca.', tracking=True)
     months_and_days = fields.Boolean(
-        string='Calcular días grati.', default=False,
+        string='Incluir días sueltos', default=False,
         help='Incluye los días sueltos (además de los meses completos) '
-             'en el prorrateo de la gratificación trunca.')
-    exchange_type = fields.Float(string='Tipo de cambio', default=1.0)
+             'en el prorrateo de la gratificación trunca.', tracking=True)
+    exchange_type = fields.Float(
+        string='Tipo de cambio', default=1.0,
+        help='Para convertir a dólares la CTS trunca de las cuentas en esa '
+             'moneda.', tracking=True)
     gratification_type = fields.Selection(
         selection=[('07', 'Gratificación Fiestas Patrias'),
                    ('12', 'Gratificación Navidad')],
-        string='Tipo gratificación', required=True)
+        string='Semestre de la gratificación', required=True, tracking=True)
     cts_type = fields.Selection(
         selection=[('11', 'CTS Mayo - Octubre'),
                    ('05', 'CTS Noviembre - Abril')],
-        string='Tipo CTS', required=True)
+        string='Semestre de la CTS', required=True, tracking=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
+        check_company=True, tracking=True)
     gratification_line_ids = fields.One2many(
         'hr.gratification.line', 'liquidation_id',
-        string='Cálculo de gratificaciones truncas')
+        string='Gratificación trunca')
     cts_line_ids = fields.One2many(
-        'hr.cts.line', 'liquidation_id', string='Cálculo de CTS trunca')
+        'hr.cts.line', 'liquidation_id', string='CTS trunca')
     vacation_line_ids = fields.One2many(
         'hr.liquidation.vacation.line', 'liquidation_id',
-        string='Cálculo de vacaciones truncas')
+        string='Vacaciones truncas')
     liq_ext_concept_ids = fields.One2many(
         'hr.liquidation.extra_concepts', 'liquidation_id',
         string='Otros conceptos')
     employee_ids = fields.Many2many(
         'hr.employee', 'hr_liquidation_employee_rel', 'liquidation_id',
-        'employee_id', string='Empleados', check_company=True)
-    employee_count = fields.Integer(string='Empleados', compute='_compute_employee_count')
+        'employee_id', string='Trabajadores cesados', check_company=True)
+    employee_count = fields.Integer(string='N.º de cesados', compute='_compute_employee_count')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
 
     _unique_run = models.Constraint(
         'UNIQUE(company_id, payslip_run_id)',
@@ -488,6 +492,7 @@ class HrLiquidation(models.Model):
 class HrLiquidationVacationLine(models.Model):
     _name = 'hr.liquidation.vacation.line'
     _description = 'Línea de vacaciones truncas en liquidación'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id'
     _check_company_auto = True
 
@@ -508,11 +513,11 @@ class HrLiquidationVacationLine(models.Model):
         related='liquidation_id.company_id', string='Compañía',
         store=True, index=True)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
+        'hr.employee', string='Trabajador', check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Contrato (versión)', check_company=True)
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     last_name = fields.Char(
         related='employee_id.last_name', string='Apellido paterno')
     m_last_name = fields.Char(
@@ -524,39 +529,64 @@ class HrLiquidationVacationLine(models.Model):
     membership_id = fields.Many2one(
         related='version_id.membership_id', string='Afiliación')
     distribution_id = fields.Char(string='Distribución analítica')
-    months = fields.Integer(string='Meses')
+    months = fields.Integer(string='Meses completos')
     # Decimal: el cómputo usa días fraccionarios y, guardados como
     # entero, «Recalcular» daba otro importe que el cálculo inicial.
-    days = fields.Float(string='Días', digits=(16, 2))
-    lacks = fields.Float(string='Faltas', digits=(16, 2))
+    days = fields.Float(string='Días adicionales', digits=(16, 2))
+    lacks = fields.Float(string='Faltas (días)', digits=(16, 2))
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
-    commission = fields.Float(string='Prom. comisión')
-    bonus = fields.Float(string='Prom. bonificación')
-    extra_hours = fields.Float(string='Prom. horas extras')
-    computable_remuneration = fields.Float(string='Remuneración computable')
-    amount_per_month = fields.Float(string='Monto por mes')
-    amount_per_day = fields.Float(string='Monto por día')
-    amount_per_lack = fields.Float(string='(-) Monto por faltas')
-    vacation_per_month = fields.Float(string='Vac. por meses')
-    vacation_per_day = fields.Float(string='Vac. por días')
-    truncated_vacation = fields.Float(string='Vac. truncas')
-    advanced_vacation = fields.Float(string='(-) Vac. adelantadas')
-    accrued_vacation = fields.Float(string='(+) Vac. devengadas')
+    commission = fields.Float(string='Promedio de comisiones')
+    bonus = fields.Float(string='Promedio de bonificaciones')
+    extra_hours = fields.Float(string='Promedio de horas extras')
+    computable_remuneration = fields.Float(
+        string='Remuneración computable',
+        help='Sueldo + asignación familiar + promedios de comisiones, '
+             'bonificaciones y horas extras.')
+    amount_per_month = fields.Float(
+        string='Importe por mes completo',
+        help='Remuneración computable ÷ 12 (÷ 24 fuera del régimen general).')
+    amount_per_day = fields.Float(
+        string='Importe por día', help='Importe por mes ÷ 30.')
+    amount_per_lack = fields.Float(
+        string='Descuento por faltas', help='Importe por día × faltas.')
+    vacation_per_month = fields.Float(
+        string='Vac. por meses completos', help='Importe por mes × meses.')
+    vacation_per_day = fields.Float(
+        string='Vac. por días', help='Importe por día × días.')
+    truncated_vacation = fields.Float(
+        string='Vacaciones truncas',
+        help='Vacaciones por meses + por días − descuento por faltas: la '
+             'parte del año vacacional en curso al cese.')
+    advanced_vacation = fields.Float(
+        string='Vacaciones adelantadas',
+        help='Vacaciones ya pagadas por adelantado: se descuentan.', tracking=True)
+    accrued_vacation = fields.Float(
+        string='Vacaciones devengadas',
+        help='Vacaciones de años completos ganadas y no gozadas: se suman.')
     vacation_indemnity = fields.Float(
-        string='(+) Indemnización vacacional',
+        string='Indemnización vacacional',
         help='D.Leg. 713, art. 23: una remuneración por cada período '
              'devengado que no se gozó dentro del año siguiente. No paga '
              'AFP/ONP ni EsSalud (sí es renta de 5ta); va a la boleta por '
              'el input INDVAC (PLAME 0504).')
-    total_vacation = fields.Float(string='Total vacaciones')
-    onp = fields.Float(string='(-) ONP')
-    afp_jub = fields.Float(string='(-) AFP jubilación')
-    afp_si = fields.Float(string='(-) AFP seguro')
-    afp_mixed_com = fields.Float(string='(-) AFP com. mixta')
-    afp_fixed_com = fields.Float(string='(-) AFP com. flujo')
-    total = fields.Float(string='Neto total')
-    preserve_record = fields.Boolean(string='No recalcular')
+    total_vacation = fields.Float(
+        string='Total vacaciones',
+        help='Devengadas + truncas − adelantadas (base de los aportes).')
+    onp = fields.Float(string='ONP')
+    afp_jub = fields.Float(string='AFP: aporte obligatorio')
+    afp_si = fields.Float(string='AFP: prima de seguro')
+    afp_mixed_com = fields.Float(string='AFP: comisión mixta')
+    afp_fixed_com = fields.Float(
+        string='AFP: comisión por flujo',
+        help='Comisión de la AFP sobre la remuneración (comisión por flujo).')
+    total = fields.Float(
+        string='Neto de vacaciones',
+        help='Total vacaciones − aportes + indemnización vacacional.')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.', tracking=True)
 
     @api.model
     def _get_pension_deductions(self, month_slip, total_vacation):
@@ -665,21 +695,24 @@ class HrLiquidationExtraConcepts(models.Model):
         related='liquidation_id.company_id', string='Compañía',
         store=True, index=True)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
+        'hr.employee', string='Trabajador', check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Contrato (versión)', check_company=True)
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     admission_date = fields.Date(string='Fecha de ingreso')
     cessation_date = fields.Date(string='Fecha de cese')
     conceptos_lines = fields.One2many(
         'hr.extra.concept.line', 'extra_concept_id',
-        string='Conceptos extra')
+        string='Conceptos')
     income = fields.Float(
-        string='Ingresos', compute='_compute_totals', store=True)
+        string='Otros ingresos', compute='_compute_totals', store=True)
     expenses = fields.Float(
-        string='Descuentos', compute='_compute_totals', store=True)
-    preserve_record = fields.Boolean(string='No recalcular')
+        string='Otros descuentos', compute='_compute_totals', store=True)
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.')
 
     @api.depends('conceptos_lines.amount', 'conceptos_lines.type')
     def _compute_totals(self):
@@ -725,8 +758,8 @@ class HrExtraConceptLine(models.Model):
         related='extra_concept_id.company_id', string='Compañía',
         store=True, index=True)
     name_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Descripción')
-    amount = fields.Float(string='Monto')
+        'hr.payslip.input.type', string='Concepto')
+    amount = fields.Float(string='Importe')
     type = fields.Selection(
         selection=[('in', 'Ingreso'), ('out', 'Descuento')],
         string='Tipo', default='in')

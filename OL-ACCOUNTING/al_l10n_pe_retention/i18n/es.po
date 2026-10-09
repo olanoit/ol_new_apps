@@ -16,6 +16,36 @@ msgid "Account Chart Template"
 msgstr "Plantilla de plan de cuentas"
 
 #. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_needaction
+msgid "Action Needed"
+msgstr "Se requiere una acción"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_ids
+msgid "Activities"
+msgstr "Actividades"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Decoración de la actividad de excepción"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_state
+msgid "Activity State"
+msgstr "Estado de la actividad"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Icono del tipo de actividad"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_attachment_count
+msgid "Attachment Count"
+msgstr "Número de archivos adjuntos"
+
+#. module: al_l10n_pe_retention
 #: model:ir.model,name:al_l10n_pe_retention.model_res_company
 msgid "Companies"
 msgstr "Empresas"
@@ -58,6 +88,47 @@ msgid "Display Name"
 msgstr "Nombre en pantalla"
 
 #. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (contactos)"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__has_message
+msgid "Has Message"
+msgstr "Tiene un mensaje"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_exception_icon
+msgid "Icon"
+msgstr "Icono"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Icono que indica una actividad de excepción."
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Si está seleccionado, hay nuevos mensajes que requieren tu atención."
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_error
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
+
+#. module: al_l10n_pe_retention
 #: model:ir.model.fields,help:al_l10n_pe_retention.field_account_tax__is_withholding_tax_on_payment
 msgid ""
 "If enabled, this tax will not affect your accounts until the registration of"
@@ -65,6 +136,11 @@ msgid ""
 msgstr ""
 "Si activas esta opción, este impuesto no afectará tus cuentas hasta que "
 "registres los pagos."
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_is_follower
+msgid "Is Follower"
+msgstr "Es un seguidor"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model,name:al_l10n_pe_retention.model_account_move
@@ -84,9 +160,64 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_error
+msgid "Message Delivery error"
+msgstr "Error al enviar el mensaje"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Fecha límite de mi actividad"
+
+#. module: al_l10n_pe_retention
 #: model:ir.model.fields,help:al_l10n_pe_retention.field_account_payment_register__withholding_net_amount
 msgid "Net amount after deducting the withholding lines"
 msgstr "Importe neto después de deducir las líneas de retención"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Siguiente evento en el calendario de actividades"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Siguiente fecha límite de la actividad"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_summary
+msgid "Next Activity Summary"
+msgstr "Resumen de la siguiente actividad"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_type_id
+msgid "Next Activity Type"
+msgstr "Siguiente tipo de actividad"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de acciones"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número de errores"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Número de mensajes que requieren una acción"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Número de mensajes con error de envío"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model,name:al_l10n_pe_retention.model_account_payment_register
@@ -99,15 +230,74 @@ msgid "Payments"
 msgstr "Pagos"
 
 #. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__rating_ids
+msgid "Ratings"
+msgstr "Calificaciones"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_user_id
+msgid "Responsible User"
+msgstr "Usuario responsable"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error en el envío del SMS"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Estado según las actividades\n"
+"Vencida: ya pasó la fecha límite\n"
+"Hoy: hoy es la fecha de la actividad\n"
+"Planeada: futuras actividades."
+
+#. module: al_l10n_pe_retention
 #: model:ir.model,name:al_l10n_pe_retention.model_account_tax
 msgid "Tax"
 msgstr "Impuesto"
 
 #. module: al_l10n_pe_retention
-#: model:ir.model.fields,help:al_l10n_pe_retention.field_account_tax__withholding_sequence_id
-msgid ""
-"This sequence will be used to generate default numbers on payment "
-"withholding lines."
-msgstr ""
-"Esta secuencia se utilizará para generar números predeterminados en las "
-"líneas de retención de pago."
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo de la actividad de excepción registrada."
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del sitio web"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields,help:al_l10n_pe_retention.field_l10n_pe_retention_received__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicación del sitio web"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_retention_received__activity_state__overdue
+msgid "Overdue"
+msgstr "Vencidas"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_retention_received__activity_state__today
+msgid "Today"
+msgstr "Hoy"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_retention_received__activity_state__planned
+msgid "Planned"
+msgstr "Planeado"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_retention_received__activity_exception_decoration__warning
+msgid "Alert"
+msgstr "Alerta"
+
+#. module: al_l10n_pe_retention
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_retention_received__activity_exception_decoration__danger
+msgid "Error"
+msgstr "Error"

@@ -7,11 +7,11 @@
         <field name="arch" type="xml">
             <list create="0" edit="0" delete="0">
                 <field name="periodo_id" optional="show"/>
-                <field name="wage" sum="Básico" optional="show"/>
-                <field name="household_allowance" sum="Asignación familiar" optional="show"/>
-                <field name="commission" sum="Comisiones" optional="show"/>
-                <field name="extra_hours" sum="Horas extras" optional="show"/>
-                <field name="others_income" sum="Bonificaciones" optional="show"/>
+                <field name="wage" sum="Total" optional="show"/>
+                <field name="household_allowance" sum="Total" optional="show"/>
+                <field name="commission" sum="Total" optional="show"/>
+                <field name="extra_hours" sum="Total" optional="show"/>
+                <field name="others_income" sum="Total" optional="show"/>
                 <field name="total" sum="Total" optional="show"/>
             </list>
         </field>
@@ -53,36 +53,37 @@
                     <notebook>
                         <page string="Remuneración computable" name="remuneration">
                             <group>
-                                <group>
+                                <group string="Remuneración fija">
                                     <field name="wage" readonly="1"/>
                                     <field name="household_allowance" readonly="1"/>
                                 </group>
-                                <group>
+                                <group string="Promedios del semestre">
                                     <field name="commission" readonly="l10n_pe_locked"/>
                                     <field name="bonus" readonly="l10n_pe_locked"/>
                                     <field name="extra_hours" readonly="l10n_pe_locked"/>
-                                    <field name="computable_remuneration" readonly="1"/>
+                                    <field name="computable_remuneration" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Cálculo" name="calculation">
                             <group>
-                                <group>
+                                <group string="Gratificación del semestre">
                                     <field name="amount_per_month" readonly="1"/>
                                     <field name="amount_per_day" readonly="1"/>
                                     <field name="grat_per_month" readonly="1"/>
                                     <field name="grat_per_day" readonly="1"/>
                                     <field name="amount_per_lack" readonly="1"/>
                                 </group>
-                                <group>
+                                <group string="Total a pagar">
                                     <field name="total_grat" readonly="1"/>
                                     <field name="bonus_essalud" readonly="1"/>
-                                    <field name="total" readonly="1"/>
+                                    <field name="total" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -93,9 +94,9 @@
         <field name="arch" type="xml">
             <list edit="0" create="0" delete="0">
                 <field name="l10n_pe_has_history" column_invisible="1"/>
-                <field name="preserve_record" string="No R." optional="show"/>
-                <field name="identification_id" string="Nro. doc." optional="show"/>
-                <field name="employee_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="identification_id" optional="show"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="admission_date" optional="show"/>
                 <field name="compute_date" optional="hide"/>
                 <field name="cessation_date" optional="hide"/>
@@ -105,20 +106,20 @@
                 <field name="months" optional="show"/>
                 <field name="days" optional="show"/>
                 <field name="lacks" optional="hide"/>
-                <field name="wage" sum="Sueldo" optional="show"/>
-                <field name="household_allowance" string="Asig. familiar" sum="Asignación familiar" optional="show"/>
-                <field name="commission" sum="Comisión" optional="hide"/>
-                <field name="bonus" sum="Bonificación" optional="hide"/>
-                <field name="extra_hours" sum="Horas extras" optional="hide"/>
-                <field name="computable_remuneration" string="Rem. computable" sum="Remuneración computable" optional="show"/>
-                <field name="amount_per_month" sum="Monto por mes" optional="hide"/>
-                <field name="amount_per_day" sum="Monto por día" optional="hide"/>
-                <field name="grat_per_month" sum="Grat. por meses" optional="hide"/>
-                <field name="grat_per_day" sum="Grat. por días" optional="hide"/>
-                <field name="amount_per_lack" sum="Monto por faltas" optional="hide"/>
-                <field name="total_grat" sum="Total gratificación" optional="show"/>
-                <field name="bonus_essalud" sum="Bono extraordinario" optional="show"/>
-                <field name="total" sum="Total a pagar" optional="show"/>
+                <field name="wage" sum="Total" optional="show"/>
+                <field name="household_allowance" sum="Total" optional="show"/>
+                <field name="commission" sum="Total" optional="hide"/>
+                <field name="bonus" sum="Total" optional="hide"/>
+                <field name="extra_hours" sum="Total" optional="hide"/>
+                <field name="computable_remuneration" sum="Total" optional="show"/>
+                <field name="amount_per_month" sum="Total" optional="hide"/>
+                <field name="amount_per_day" sum="Total" optional="hide"/>
+                <field name="grat_per_month" sum="Total" optional="hide"/>
+                <field name="grat_per_day" sum="Total" optional="hide"/>
+                <field name="amount_per_lack" sum="Total" optional="hide"/>
+                <field name="total_grat" sum="Total" optional="show"/>
+                <field name="bonus_essalud" sum="Total" optional="show"/>
+                <field name="total" sum="Total" optional="show"/>
                 <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Detalle histórico"/>
             </list>
         </field>
@@ -148,6 +149,13 @@
                     <div class="oe_title">
                         <h1><field name="name" readonly="1" force_save="1" placeholder="Se propone al elegir tipo y año"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Gratificaciones de Fiestas Patrias (julio) y Navidad (diciembre), Ley 27735:
+                        una remuneración computable por semestre (enero-junio y julio-diciembre),
+                        proporcional a los meses y días laborados y menos las faltas. Además se paga
+                        la bonificación extraordinaria de la Ley 30334: lo que el empleador
+                        aportaría a EsSalud o a la EPS sobre la gratificación.
+                    </div>
                     <group>
                         <group string="Periodo">
                             <field name="type" readonly="state == 'exported'"/>
@@ -162,13 +170,14 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Empleados" name="employees">
+                        <page string="Trabajadores" name="employees">
                             <field name="line_ids" readonly="state == 'exported'"
                                 context="{'list_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_list',
                                           'form_view_ref': 'al_hr_pe_benefits.hr_gratification_line_view_form'}"/>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

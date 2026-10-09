@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261009 — 09/10/2026
+
+- El asistente de importación de la tabla salarial distingue «Origen» (archivo o dirección) de «Origen leído» (nombre del archivo o URL).
+
 ## 20.20261008 — 08/10/2026
 
 - CONAFOVICER pagado: la constancia de pago no se edita. El botón «Trabajadores» de la obra solo aparece si tiene trabajadores.

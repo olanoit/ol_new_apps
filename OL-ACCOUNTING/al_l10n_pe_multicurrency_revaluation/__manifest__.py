@@ -42,7 +42,7 @@ Diferencias frente al módulo v18 ``mblz_l10n_pe_multicurrency_revaluation``
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '4.20261008',
+    'version': '5.20261009',
     'license': 'OPL-1',
     'depends': [
         'account_reports',

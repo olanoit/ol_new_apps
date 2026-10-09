@@ -43,32 +43,44 @@ class HrVacationRest(models.Model):
     """
     _name = 'hr.vacation.rest'
     _description = 'Saldos de vacaciones'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id, date_aplication'
     _check_company_auto = True
 
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', required=True, index=True,
+        'hr.employee', string='Trabajador', required=True, index=True,
         check_company=True)
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. de documento')
-    date_aplication = fields.Date(string='Fecha de aplicación')
-    date_from = fields.Date(string='Periodo inicio')
-    date_end = fields.Date(string='Periodo fin')
+        related='employee_id.identification_id', string='N.º de documento')
+    date_aplication = fields.Date(
+        string='Fecha del movimiento',
+        help='Fecha en que se devenga o se goza.', tracking=True)
+    date_from = fields.Date(
+        string='Inicio del año vacacional',
+        help='El año vacacional se cuenta desde la fecha de ingreso.', tracking=True)
+    date_end = fields.Date(string='Fin del año vacacional', tracking=True)
     internal_motive = fields.Selection(
         [('rest', 'Saldo anterior'), ('normal', 'Vacaciones')],
-        string='Motivo interno', default='normal')
+        string='Tipo de movimiento', default='normal',
+        help='Saldo anterior: saldo inicial cargado a mano, que el cálculo '
+             'respeta. Vacaciones: movimiento calculado (devengue a 2,5 '
+             'días por mes o goce).', tracking=True)
     motive = fields.Char(string='Motivo')
     # v18 usaba Integer; Float para soportar el devengue trunco a
     # 2.5 días/mes (p. ej. 7.5 días a los 3 meses).
-    days = fields.Float(string='Días', digits=(16, 2))
+    days = fields.Float(
+        string='Días', digits=(16, 2),
+        help='Positivo: días devengados. Negativo: días gozados.', tracking=True)
     days_rest = fields.Float(string='Saldo en días', digits=(16, 2))
-    year = fields.Char(string='Año')
-    amount = fields.Float(string='Importe')
-    amount_rest = fields.Float(string='Saldo importe')
+    year = fields.Char(string='Año vacacional')
+    amount = fields.Float(string='Importe', tracking=True)
+    amount_rest = fields.Float(string='Saldo en importe')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
-    is_saldo_final = fields.Boolean(string='Saldo final', default=False)
+    is_saldo_final = fields.Boolean(
+        string='Saldo final', default=False,
+        help='Último movimiento del trabajador: su saldo es el vigente.')
 
     def get_vacation_employee(self, employees, show_all):
         """Recalcula los saldos de vacaciones (movimientos ``normal``).
@@ -285,7 +297,7 @@ class HrAccrualVacation(models.Model):
         'hr.period', string='Periodo', required=True, check_company=True)
     days = fields.Integer(string='Días de vacaciones')
     employee_id = fields.Many2one(
-        related='slip_id.employee_id', store=True, string='Empleado',
+        related='slip_id.employee_id', store=True, string='Trabajador',
         index=True)
     date_aplication = fields.Date(string='Fecha de aplicación')
     request_date_from = fields.Date(string='Fecha inicio')

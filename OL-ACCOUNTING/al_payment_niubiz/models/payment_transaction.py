@@ -14,7 +14,7 @@ class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
     niubiz_transaction_date = fields.Char(
-        string="Fecha de la transacción Niubiz",
+        string='Fecha Niubiz',
         help="Fecha de la transacción en formato yyMMddHHmmss. Requerido para anulaciones (reversa).",
         copy=False,
     )
@@ -24,7 +24,7 @@ class PaymentTransaction(models.Model):
         copy=False,
     )
     niubiz_cip_url = fields.Char(
-        string="URL de la constancia PagoEfectivo",
+        string='Constancia PagoEfectivo',
         help="URL de la constancia de pago PagoEfectivo (CIP). Solo aplica para pagos con PagoEfectivo.",
         copy=False,
     )

@@ -9,17 +9,17 @@
             <form string="Conceptos adicionales">
                 <field name="l10n_pe_locked" invisible="1"/>
                 <group>
-                    <group>
+                    <group string="Trabajador">
                         <field name="employee_id" readonly="1"/>
                     </group>
-                    <group>
+                    <group string="Total">
                         <field name="total_cts" readonly="1"/>
                     </group>
                 </group>
                 <field name="concepto_ids" readonly="l10n_pe_locked">
                     <list editable="bottom">
                         <field name="concepto" required="1"/>
-                        <field name="monto" required="1" sum="Monto"/>
+                        <field name="monto" required="1" sum="Total"/>
                     </list>
                 </field>
             </form>
@@ -33,17 +33,17 @@
             <form string="Conceptos adicionales">
                 <field name="l10n_pe_locked" invisible="1"/>
                 <group>
-                    <group>
+                    <group string="Trabajador">
                         <field name="employee_id" readonly="1"/>
                     </group>
-                    <group>
+                    <group string="Total">
                         <field name="total_grati" readonly="1"/>
                     </group>
                 </group>
                 <field name="concepto_ids" readonly="l10n_pe_locked">
                     <list editable="bottom">
                         <field name="concepto" required="1"/>
-                        <field name="monto" required="1" sum="Monto"/>
+                        <field name="monto" required="1" sum="Total"/>
                     </list>
                 </field>
             </form>
@@ -57,17 +57,17 @@
             <form string="Conceptos adicionales">
                 <field name="l10n_pe_locked" invisible="1"/>
                 <group>
-                    <group>
+                    <group string="Trabajador">
                         <field name="employee_id" readonly="1"/>
                     </group>
-                    <group>
+                    <group string="Total">
                         <field name="total_vaca" readonly="1"/>
                     </group>
                 </group>
                 <field name="concepto_ids" readonly="l10n_pe_locked">
                     <list editable="bottom">
                         <field name="concepto" required="1"/>
-                        <field name="monto" required="1" sum="Monto"/>
+                        <field name="monto" required="1" sum="Total"/>
                     </list>
                 </field>
             </form>
@@ -92,37 +92,43 @@
                         <label for="payslip_run_id"/>
                         <h1><field name="payslip_run_id" readonly="state == 'done'" placeholder="Lote de nóminas"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Provisión mensual de beneficios sociales: cada mes se reconoce como gasto la
+                        parte devengada de la CTS (÷ 12, con el sexto de la gratificación), de la
+                        gratificación (÷ 6, más la bonificación extraordinaria) y de las vacaciones
+                        (÷ 12), aunque se paguen después. En la pequeña empresa la CTS y la
+                        gratificación se provisionan a la mitad, y las vacaciones a la mitad en la
+                        pequeña y la microempresa. «Cerrar» la deja como definitiva.
+                    </div>
                     <group>
-                        <group>
+                        <group string="Datos para el cálculo">
                             <field name="gratificacion_id" readonly="state == 'done'"/>
-                        </group>
-                        <group>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Gratificaciones" name="gratifications">
+                        <page string="Gratificación" name="gratifications">
                             <field name="grati_lines" readonly="state == 'done'">
                                 <list editable="bottom" create="0">
                                     <field name="l10n_pe_locked" column_invisible="1"/>
                                     <field name="concepto_ids" column_invisible="1"/>
-                                    <field name="nro_doc" optional="show"/>
                                     <field name="employee_id"/>
+                                    <field name="nro_doc" optional="show"/>
                                     <field name="version_id" optional="hide"/>
-                                    <field name="fecha_ingreso"/>
+                                    <field name="fecha_ingreso" optional="show"/>
                                     <field name="distribution_id" optional="hide"/>
-                                    <field name="basico" sum="Rem. básica"/>
-                                    <field name="asignacion" sum="Asignación familiar"/>
-                                    <field name="commission" sum="Comisión" optional="show"/>
-                                    <field name="bonus" sum="Bonificación" optional="show"/>
-                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
+                                    <field name="basico" sum="Total"/>
+                                    <field name="asignacion" sum="Total"/>
+                                    <field name="commission" sum="Total" optional="hide"/>
+                                    <field name="bonus" sum="Total" optional="hide"/>
+                                    <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="total_grati" sum="Total" optional="hide"/>
+                                    <field name="provisiones_grati" sum="Total" optional="show"/>
                                     <field name="tasa" optional="hide"/>
-                                    <field name="provisiones_grati" sum="Provisión gratificación" optional="show"/>
-                                    <field name="boni_grati" sum="Provisión bono" optional="show"/>
-                                    <field name="total" sum="Total" optional="show"/>
-                                    <field name="total_grati" sum="Otros adicionales" optional="hide"/>
+                                    <field name="boni_grati" sum="Total" optional="show"/>
+                                    <field name="total" sum="Total" class="fw-bold"/>
                                     <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
-                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                    <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>
                         </page>
@@ -131,21 +137,21 @@
                                 <list editable="bottom" create="0">
                                     <field name="l10n_pe_locked" column_invisible="1"/>
                                     <field name="concepto_ids" column_invisible="1"/>
-                                    <field name="nro_doc" optional="show"/>
                                     <field name="employee_id"/>
+                                    <field name="nro_doc" optional="show"/>
                                     <field name="version_id" optional="hide"/>
-                                    <field name="fecha_ingreso"/>
+                                    <field name="fecha_ingreso" optional="show"/>
                                     <field name="distribution_id" optional="hide"/>
-                                    <field name="basico" sum="Rem. básica"/>
-                                    <field name="asignacion" sum="Asignación familiar"/>
-                                    <field name="commission" sum="Comisión" optional="show"/>
-                                    <field name="bonus" sum="Bonificación" optional="show"/>
-                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
-                                    <field name="un_sexto_grati" sum="1/6 gratificación" optional="show"/>
-                                    <field name="provisiones_cts" sum="Provisión CTS" optional="show"/>
-                                    <field name="total_cts" sum="Otros adicionales" optional="hide"/>
+                                    <field name="basico" sum="Total"/>
+                                    <field name="asignacion" sum="Total"/>
+                                    <field name="commission" sum="Total" optional="hide"/>
+                                    <field name="bonus" sum="Total" optional="hide"/>
+                                    <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="un_sexto_grati" sum="Total" optional="show"/>
+                                    <field name="total_cts" sum="Total" optional="hide"/>
+                                    <field name="provisiones_cts" sum="Total" class="fw-bold"/>
                                     <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
-                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                    <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>
                         </page>
@@ -154,25 +160,26 @@
                                 <list editable="bottom" create="0">
                                     <field name="l10n_pe_locked" column_invisible="1"/>
                                     <field name="concepto_ids" column_invisible="1"/>
-                                    <field name="nro_doc" optional="show"/>
                                     <field name="employee_id"/>
+                                    <field name="nro_doc" optional="show"/>
                                     <field name="version_id" optional="hide"/>
-                                    <field name="fecha_ingreso"/>
+                                    <field name="fecha_ingreso" optional="show"/>
                                     <field name="distribution_id" optional="hide"/>
-                                    <field name="basico" sum="Rem. básica"/>
-                                    <field name="asignacion" sum="Asignación familiar"/>
-                                    <field name="commission" sum="Comisión" optional="show"/>
-                                    <field name="bonus" sum="Bonificación" optional="show"/>
-                                    <field name="extra_hours" sum="Horas extras" optional="show"/>
-                                    <field name="provisiones_vaca" sum="Provisión vacaciones" optional="show"/>
-                                    <field name="total_vaca" sum="Otros adicionales" optional="hide"/>
+                                    <field name="basico" sum="Total"/>
+                                    <field name="asignacion" sum="Total"/>
+                                    <field name="commission" sum="Total" optional="hide"/>
+                                    <field name="bonus" sum="Total" optional="hide"/>
+                                    <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="total_vaca" sum="Total" optional="hide"/>
+                                    <field name="provisiones_vaca" sum="Total" class="fw-bold"/>
                                     <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
-                                    <field name="prov_acumulado" sum="Acumulado" optional="show"/>
+                                    <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

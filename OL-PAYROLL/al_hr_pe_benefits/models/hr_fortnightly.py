@@ -54,7 +54,7 @@ class HrFortnightly(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     slip_ids = fields.One2many(
-        'hr.payslip', 'fortnightly_id', string='Nóminas')
+        'hr.payslip', 'fortnightly_id', string='Boletas de la quincena')
     state = fields.Selection(
         selection=[('draft', 'Nuevo'), ('verify', 'Confirmado'),
                    ('exported', 'Exportado')],
@@ -66,7 +66,7 @@ class HrFortnightly(models.Model):
     date_end = fields.Date(
         string='Hasta', required=True,
         default=lambda self: fields.Date.context_today(self).replace(day=15))
-    payslip_count = fields.Integer(string='Nóminas', compute='_compute_payslip_count')
+    payslip_count = fields.Integer(string='Boletas', compute='_compute_payslip_count')
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina mensual', required=True,
         check_company=True,

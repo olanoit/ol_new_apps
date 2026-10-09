@@ -196,21 +196,22 @@ class HrTareajeManager(models.Model):
     """
     _name = 'hr.tareaje.manager'
     _description = 'Gestión de tareaje'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_start desc, id desc'
     _check_company_auto = True
 
     name = fields.Char(string='Nombre', required=True)
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('done', 'Aplicado')],
-        string='Estado', readonly=True, copy=False, default='draft')
+        string='Estado', readonly=True, copy=False, default='draft', tracking=True)
     date_start = fields.Date(
         string='Desde', required=True,
-        default=lambda self: fields.Date.context_today(self).replace(day=1))
+        default=lambda self: fields.Date.context_today(self).replace(day=1), tracking=True)
     date_end = fields.Date(
         string='Hasta', required=True,
         default=lambda self: (fields.Date.context_today(self).replace(day=1)
                               + timedelta(days=32)).replace(day=1)
-        - timedelta(days=1))
+        - timedelta(days=1), tracking=True)
     time_tolerancia = fields.Float(
         string='Tolerancia de tardanza (horas)',
         default=lambda self: self._default_time_tolerancia(),

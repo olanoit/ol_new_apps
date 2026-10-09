@@ -32,6 +32,7 @@ from .hr_benefits_engine import compute_has_history, compute_locked
 class HrGratification(models.Model):
     _name = 'hr.gratification'
     _description = 'Gratificación legal'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'deposit_date desc'
     _check_company_auto = True
 
@@ -42,29 +43,30 @@ class HrGratification(models.Model):
     year = fields.Integer(
         string='Año', required=True,
         default=lambda self: fields.Date.context_today(self).year,
-        help='Año del pago (sustituye al año fiscal contable v18).', aggregator=False)
+        help='Año del pago (sustituye al año fiscal contable v18).', aggregator=False, tracking=True)
     with_bonus = fields.Boolean(
-        string='Bono extraordinario', default=True,
-        help='Añade el Bono Extraordinario Ley 29351 (% del seguro '
-             'social sobre la gratificación).')
+        string='Con bonificación extraordinaria', default=True,
+        help='Añade la bonificación extraordinaria de la Ley 30334: el '
+             'porcentaje del seguro social (EsSalud o EPS) sobre la '
+             'gratificación.', tracking=True)
     months_and_days = fields.Boolean(
-        string='Calcular días grati.', default=False,
+        string='Incluir días sueltos', default=False,
         help='Incluye los días sueltos (además de los meses completos) '
-             'en el prorrateo.')
+             'en el prorrateo.', tracking=True)
     type = fields.Selection(
         selection=[('07', 'Gratificación Fiestas Patrias'),
                    ('12', 'Gratificación Navidad')],
-        string='Tipo gratificación', required=True)
+        string='Gratificación', required=True, tracking=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
-    deposit_date = fields.Date(string='Fecha de pago', required=True)
+        check_company=True, tracking=True)
+    deposit_date = fields.Date(string='Fecha de pago', required=True, tracking=True)
     line_ids = fields.One2many(
         'hr.gratification.line', 'gratification_id',
-        string='Cálculo de gratificación')
+        string='Trabajadores')
     state = fields.Selection(
         selection=[('draft', 'Borrador'), ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
     grati_count = fields.Integer(string='Gratificaciones', compute='_compute_grati_count')
 
     _unique_semester = models.Constraint(
@@ -197,6 +199,7 @@ class HrGratification(models.Model):
 class HrGratificationLine(models.Model):
     _name = 'hr.gratification.line'
     _description = 'Línea de gratificación'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id'
     _check_company_auto = True
 
@@ -234,11 +237,11 @@ class HrGratificationLine(models.Model):
             line.company_id = (line.gratification_id.company_id
                                or line.liquidation_id.company_id)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', check_company=True)
+        'hr.employee', string='Trabajador', check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Contrato (versión)', check_company=True)
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     last_name = fields.Char(
         related='employee_id.last_name', string='Apellido paterno')
     m_last_name = fields.Char(
@@ -253,24 +256,51 @@ class HrGratificationLine(models.Model):
     social_insurance_id = fields.Many2one(
         related='version_id.social_insurance_id', string='Seguro social')
     distribution_id = fields.Char(string='Distribución analítica')
-    months = fields.Integer(string='Meses')
-    days = fields.Integer(string='Días')
-    lacks = fields.Float(string='Faltas', digits=(16, 2))
+    months = fields.Integer(string='Meses completos')
+    days = fields.Integer(string='Días adicionales')
+    lacks = fields.Float(string='Faltas (días)', digits=(16, 2))
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
-    commission = fields.Float(string='Prom. comisión')
-    bonus = fields.Float(string='Prom. bonificación')
-    extra_hours = fields.Float(string='Prom. horas extras')
-    computable_remuneration = fields.Float(string='Remuneración computable')
-    amount_per_month = fields.Float(string='Monto por mes')
-    amount_per_day = fields.Float(string='Monto por día')
-    amount_per_lack = fields.Float(string='(-) Monto por faltas')
-    grat_per_month = fields.Float(string='Grat. por meses')
-    grat_per_day = fields.Float(string='Grat. por días')
-    total_grat = fields.Float(string='Total gratificación')
-    bonus_essalud = fields.Float(string='(+) Bono extraordinario')
-    total = fields.Float(string='Total a pagar')
-    preserve_record = fields.Boolean(string='No recalcular')
+    commission = fields.Float(
+        string='Promedio de comisiones',
+        help='Promedio de las comisiones del semestre (remuneración regular).')
+    bonus = fields.Float(
+        string='Promedio de bonificaciones',
+        help='Promedio de las bonificaciones regulares del semestre.')
+    extra_hours = fields.Float(
+        string='Promedio de horas extras',
+        help='Promedio de las horas extras del semestre (remuneración regular).')
+    computable_remuneration = fields.Float(
+        string='Remuneración computable',
+        help='Sueldo + asignación familiar + promedios de comisiones, '
+             'bonificaciones y horas extras.')
+    amount_per_month = fields.Float(
+        string='Importe por mes completo',
+        help='Remuneración computable ÷ 6 (÷ 12 fuera del régimen general).')
+    amount_per_day = fields.Float(
+        string='Importe por día', help='Importe por mes ÷ 30.')
+    amount_per_lack = fields.Float(
+        string='Descuento por faltas', help='Importe por día × faltas.')
+    grat_per_month = fields.Float(
+        string='Grat. por meses completos',
+        help='Importe por mes × meses.')
+    grat_per_day = fields.Float(
+        string='Grat. por días', help='Importe por día × días.')
+    total_grat = fields.Float(
+        string='Total gratificación',
+        help='Gratificación por meses + por días − descuento por faltas.')
+    bonus_essalud = fields.Float(
+        string='Bonificación extraordinaria',
+        help='Lo que el empleador aportaría a EsSalud (9 %) o a la EPS '
+             '(6,75 %) sobre la gratificación, pagado al trabajador '
+             '(Ley 30334).')
+    total = fields.Float(
+        string='Total a pagar',
+        help='Total gratificación + bonificación extraordinaria.')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.', tracking=True)
     gratification_line_ids = fields.One2many(
         'hr.gratification.line.detalle', 'gratification_line_id',
         string='Detalle histórico')

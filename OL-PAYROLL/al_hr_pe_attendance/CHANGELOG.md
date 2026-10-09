@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261009 — 09/10/2026
+
+- Chatter en la gestión de tareaje: historial del estado y del periodo.
+
 ## 17.20261008 — 08/10/2026
 
 - Tareaje aplicado: el detalle diario queda de solo lectura; el botón de detalle de cada línea solo aparece si la línea tiene días cargados.

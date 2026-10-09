@@ -11,7 +11,7 @@ flowchart TD
   H --> J
   I --> J
   J --> K{¿Retención mayor que 0?}
-  K -- No --> L[Excluidos de quinta]
-  K -- Sí --> M[Afectos a quinta]
+  K -- No --> L[Sin retención]
+  K -- Sí --> M[Con retención]
   L -- Agregar empleados --> M
   M --> N[Exportar quinta: entradas QUINTA<br/>y retención extraordinaria]

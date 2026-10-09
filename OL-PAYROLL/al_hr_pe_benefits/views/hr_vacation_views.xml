@@ -11,28 +11,35 @@
             <form string="Saldo de vacaciones">
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="employee_id"  placeholder="Trabajador"/></h1>
+                        <h1><field name="employee_id" placeholder="Trabajador"/></h1>
+                        <div class="text-muted"><field name="identification_id"/></div>
+                    </div>
+                    <div class="alert alert-info" role="status">
+                        Récord vacacional (D.Leg. 713): por cada año completo de servicios el
+                        trabajador gana 30 días calendario de descanso (15 en la pequeña y la
+                        microempresa), si cumple el récord de días efectivos. Cada mes se devengan
+                        2,5 días; los días gozados se restan del saldo.
                     </div>
                     <group>
-                        <group string="Saldo">
-                            <field name="identification_id"/>
-                            <field name="year"/>
+                        <group string="Movimiento">
                             <field name="internal_motive"/>
                             <field name="motive"/>
-                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
-                        </group>
-                        <group string="Días y montos">
                             <field name="date_aplication"/>
+                            <field name="year"/>
                             <field name="date_from"/>
                             <field name="date_end"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Días e importe">
                             <field name="days"/>
-                            <field name="days_rest"/>
                             <field name="amount"/>
-                            <field name="amount_rest"/>
+                            <field name="days_rest" class="fw-bold"/>
+                            <field name="amount_rest" class="fw-bold"/>
                             <field name="is_saldo_final"/>
                         </group>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -42,17 +49,17 @@
         <field name="model">hr.vacation.rest</field>
         <field name="arch" type="xml">
             <list create="0">
-                <field name="year" optional="show"/>
-                <field name="identification_id" optional="show"/>
                 <field name="employee_id"/>
+                <field name="identification_id" optional="show"/>
+                <field name="year" optional="show"/>
+                <field name="date_from" optional="hide"/>
+                <field name="date_end" optional="hide"/>
                 <field name="date_aplication" optional="show"/>
-                <field name="date_from" optional="show"/>
-                <field name="date_end" optional="show"/>
                 <field name="internal_motive" optional="hide"/>
                 <field name="motive" optional="show"/>
-                <field name="days"/>
+                <field name="days" sum="Total"/>
+                <field name="amount" sum="Total" optional="show"/>
                 <field name="days_rest"/>
-                <field name="amount" optional="show"/>
                 <field name="amount_rest" optional="show"/>
                 <field name="is_saldo_final" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
@@ -65,11 +72,11 @@
         <field name="model">hr.vacation.rest</field>
         <field name="arch" type="xml">
             <list create="0">
-                <field name="year" optional="show"/>
-                <field name="identification_id" optional="show"/>
                 <field name="employee_id"/>
-                <field name="days_rest"/>
-                <field name="amount_rest" optional="show"/>
+                <field name="identification_id" optional="show"/>
+                <field name="year" optional="show"/>
+                <field name="days_rest" sum="Total"/>
+                <field name="amount_rest" sum="Total" optional="show"/>
                 <field name="is_saldo_final" optional="hide"/>
                 <field name="date_aplication" optional="hide"/>
                 <field name="internal_motive" optional="hide"/>
@@ -89,8 +96,8 @@
                 <field name="year"/>
                 <separator/>
                 <filter string="Saldo final" name="saldo_final" domain="[('is_saldo_final', '=', True)]"/>
-                    <filter string="Empleado" name="group_employee" context="{'group_by': 'employee_id'}"/>
-                    <filter string="Año" name="group_year" context="{'group_by': 'year'}"/>
+                <filter string="Trabajador" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                <filter string="Año vacacional" name="group_year" context="{'group_by': 'year'}"/>
             </search>
         </field>
     </record>
@@ -179,56 +186,63 @@
                         <group string="Trabajador">
                             <field name="preserve_record" readonly="l10n_pe_locked"/>
                             <field name="version_id" readonly="1"/>
-                            <field name="vacation_kind" readonly="l10n_pe_locked"/>
                             <field name="membership_id"/>
                             <field name="admission_date" readonly="1"/>
                         </group>
-                        <group string="Periodo computable">
+                        <group string="Vacaciones">
+                            <field name="vacation_kind" readonly="l10n_pe_locked"/>
                             <field name="compute_date" readonly="1"/>
                             <field name="compute_date_ini" readonly="1"/>
                             <field name="compute_date_fin" readonly="1"/>
-                            <field name="months" readonly="l10n_pe_locked"/>
-                            <field name="days" readonly="l10n_pe_locked"/>
-                            <field name="lacks" readonly="l10n_pe_locked"/>
-                            <field name="record_days" readonly="1"/>
-                            <field name="total_days" readonly="1"/>
+                            <field name="accrued_vacation" readonly="l10n_pe_locked" class="fw-bold"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Remuneración computable" name="remuneration">
                             <group>
-                                <group>
+                                <group string="Remuneración fija">
                                     <field name="wage" readonly="1"/>
                                     <field name="household_allowance" readonly="1"/>
                                 </group>
-                                <group>
+                                <group string="Promedios de los últimos seis meses">
                                     <field name="commission" readonly="l10n_pe_locked"/>
                                     <field name="bonus" readonly="l10n_pe_locked"/>
                                     <field name="extra_hours" readonly="l10n_pe_locked"/>
-                                    <field name="computable_remuneration" readonly="1"/>
+                                    <field name="computable_remuneration" readonly="1" class="fw-bold"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Aportes y neto" name="net">
                             <group>
-                                <group>
-                                    <field name="accrued_vacation" readonly="l10n_pe_locked"/>
+                                <group string="Aportes al sistema de pensiones">
                                     <field name="total_vacation" readonly="1"/>
                                     <field name="onp" readonly="1"/>
                                     <field name="afp_jub" readonly="1"/>
                                     <field name="afp_si" readonly="1"/>
-                                </group>
-                                <group>
                                     <field name="afp_mixed_com" readonly="1"/>
                                     <field name="afp_fixed_com" readonly="1"/>
+                                </group>
+                                <group string="Neto a pagar">
                                     <field name="neto_total" readonly="1"/>
                                     <field name="quinta" readonly="l10n_pe_locked"/>
-                                    <field name="total" readonly="1"/>
+                                    <field name="total" readonly="1" class="fw-bold"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Récord vacacional" name="record">
+                            <group>
+                                <group string="Días computables">
+                                    <field name="months" readonly="l10n_pe_locked"/>
+                                    <field name="days" readonly="l10n_pe_locked"/>
+                                    <field name="lacks" readonly="l10n_pe_locked"/>
+                                    <field name="total_days" readonly="1"/>
+                                    <field name="record_days" readonly="1"/>
                                 </group>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -239,9 +253,9 @@
         <field name="arch" type="xml">
             <list create="0" delete="0">
                 <field name="l10n_pe_has_history" column_invisible="1"/>
-                <field name="preserve_record" string="No R." optional="show"/>
-                <field name="identification_id" string="Nro. doc." optional="show"/>
-                <field name="employee_id" optional="show"/>
+                <field name="employee_id"/>
+                <field name="identification_id" optional="show"/>
+                <field name="preserve_record" optional="hide"/>
                 <field name="vacation_kind" optional="show"/>
                 <field name="admission_date" optional="hide"/>
                 <field name="compute_date" optional="hide"/>
@@ -252,22 +266,22 @@
                 <field name="days" optional="hide"/>
                 <field name="record_days" optional="hide"/>
                 <field name="total_days" optional="hide"/>
-                <field name="wage" sum="Total sueldo" optional="show"/>
-                <field name="household_allowance" string="Asig. familiar" sum="Total asignación" optional="show"/>
-                <field name="commission" sum="Total comisión" optional="hide"/>
-                <field name="bonus" sum="Total bonificación" optional="hide"/>
-                <field name="extra_hours" sum="Total horas extras" optional="hide"/>
-                <field name="computable_remuneration" string="Rem. computable" sum="Total computable" optional="show"/>
-                <field name="accrued_vacation" optional="show"/>
-                <field name="total_vacation" sum="Total vacaciones" optional="show" force_save="1"/>
-                <field name="onp" sum="Total ONP" optional="show" force_save="1"/>
-                <field name="afp_jub" sum="Total AFP JUB" optional="show" force_save="1"/>
-                <field name="afp_si" sum="Total AFP SI" optional="show" force_save="1"/>
-                <field name="afp_mixed_com" sum="Total com. mixta" optional="hide" force_save="1"/>
-                <field name="afp_fixed_com" sum="Total com. fija" optional="show" force_save="1"/>
-                <field name="neto_total" sum="Total neto" optional="show" force_save="1"/>
-                <field name="quinta" sum="Total quinta" optional="hide" force_save="1"/>
-                <field name="total" sum="Total a pagar" optional="show" force_save="1"/>
+                <field name="wage" sum="Total" optional="show"/>
+                <field name="household_allowance" sum="Total" optional="show"/>
+                <field name="commission" sum="Total" optional="hide"/>
+                <field name="bonus" sum="Total" optional="hide"/>
+                <field name="extra_hours" sum="Total" optional="hide"/>
+                <field name="computable_remuneration" sum="Total" optional="show"/>
+                <field name="accrued_vacation" sum="Total" optional="show"/>
+                <field name="total_vacation" sum="Total" optional="show" force_save="1"/>
+                <field name="onp" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_jub" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_si" sum="Total" optional="show" force_save="1"/>
+                <field name="afp_mixed_com" sum="Total" optional="hide" force_save="1"/>
+                <field name="afp_fixed_com" sum="Total" optional="hide" force_save="1"/>
+                <field name="neto_total" sum="Total" optional="show" force_save="1"/>
+                <field name="quinta" sum="Total" optional="show" force_save="1"/>
+                <field name="total" sum="Total" optional="show" force_save="1"/>
                 <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Ver detalle"/>
             </list>
         </field>
@@ -279,12 +293,12 @@
         <field name="arch" type="xml">
             <list create="0" edit="0" delete="0">
                 <field name="periodo_id" optional="show"/>
-                <field name="wage" sum="Total básico" optional="show"/>
-                <field name="household_allowance" sum="Total asignación" optional="show"/>
-                <field name="commission" sum="Total comisiones" optional="show"/>
-                <field name="extra_hours" sum="Total horas extras" optional="show"/>
-                <field name="others_income" sum="Total bonificaciones" optional="show"/>
-                <field name="total" sum="Total base" optional="show"/>
+                <field name="wage" sum="Total" optional="show"/>
+                <field name="household_allowance" sum="Total" optional="show"/>
+                <field name="commission" sum="Total" optional="show"/>
+                <field name="extra_hours" sum="Total" optional="show"/>
+                <field name="others_income" sum="Total" optional="show"/>
+                <field name="total" sum="Total" optional="show"/>
             </list>
         </field>
     </record>
@@ -307,23 +321,28 @@
                     <div class="oe_title">
                         <h1><field name="name" readonly="1" force_save="1" placeholder="Se propone al elegir el lote"/></h1>
                     </div>
+                    <div class="alert alert-info" role="status">
+                        Liquidación vacacional del mes (D.Leg. 713): por cada trabajador que goza o
+                        vende vacaciones en el periodo del lote, remuneración computable ÷ 30 × días
+                        de vacaciones, menos los aportes a la ONP o a la AFP y la retención de quinta
+                        proporcional. Al exportar, los importes pasan a las boletas del lote.
+                    </div>
                     <group>
                         <group string="Periodo">
                             <field name="year" readonly="state == 'exported'" widget="year_selection"/>
                             <field name="payslip_run_id" readonly="state == 'exported'"/>
-                        </group>
-                        <group>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Empleados" name="employees">
+                        <page string="Trabajadores" name="employees">
                             <field name="line_ids" readonly="state == 'exported'"
                                    context="{'list_view_ref': 'al_hr_pe_benefits.hr_vacation_line_view_list',
                                              'form_view_ref': 'al_hr_pe_benefits.hr_vacation_line_view_form'}"/>
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

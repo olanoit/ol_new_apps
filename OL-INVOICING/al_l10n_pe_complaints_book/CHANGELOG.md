@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_complaints_book.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261009 — 09/10/2026
+
+- Etiquetas más cortas en el reclamo: «Fecha de respuesta», «Tipo según el consumidor», «Confirmado por el consumidor», «N.º de hoja de respaldo»; en el libro, «Domicilio». El detalle pasa a la ayuda (?).
+
 ## 5.20261008 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261009 — 09/10/2026
+
+- Retenciones sufridas con chatter: historial de comprobante, fecha, cliente, factura, monto y estado.
+- Etiquetas más cortas: «N.º de comprobante», «Cliente», «En régimen de retención», «Secuencia de retención»; el detalle pasa a la ayuda (?).
+
 ## 16.20261008 — 08/10/2026
 
 - Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.

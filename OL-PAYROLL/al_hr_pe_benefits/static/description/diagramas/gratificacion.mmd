@@ -1,16 +1,16 @@
 flowchart TD
   A[Remuneración computable] --> B{Régimen laboral}
-  B -- General --> C[Monto por mes = ÷ 6]
-  B -- Pequeña empresa --> D[Monto por mes = ÷ 12]
+  B -- General --> C[Importe por mes = ÷ 6]
+  B -- Pequeña empresa --> D[Importe por mes = ÷ 12]
   C --> E[Meses completos del semestre]
   D --> E
-  E --> F{¿Calcular días grati.?}
-  F -- Sí --> G[+ días sueltos × monto por día]
+  E --> F{¿Incluir días sueltos?}
+  F -- Sí --> G[+ días sueltos × importe por día]
   F -- No --> H[Solo meses]
-  G --> I[− faltas × monto por día]
+  G --> I[− faltas × importe por día]
   H --> I
-  I --> J{¿Bono extraordinario?}
-  J -- Sí --> K[+ % del seguro social<br/>del trabajador: Ley 29351]
-  J -- No --> L[Sin bono]
+  I --> J{¿Con bonificación extraordinaria?}
+  J -- Sí --> K[+ % del seguro social<br/>del trabajador: Ley 30334]
+  J -- No --> L[Sin bonificación]
   K --> M[Exportar: entradas de gratificación<br/>y bonificación 9 %]
   L --> M

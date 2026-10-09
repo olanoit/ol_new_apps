@@ -46,6 +46,7 @@ VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
 class HrVacation(models.Model):
     _name = 'hr.vacation'
     _description = 'Liquidación vacacional'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'year desc, id desc'
     _check_company_auto = True
 
@@ -56,15 +57,15 @@ class HrVacation(models.Model):
     # v18: fiscal_year_id (account.fiscal.year, eliminado en v19).
     year = fields.Integer(
         string='Año', required=True,
-        default=lambda self: fields.Date.context_today(self).year, aggregator=False)
+        default=lambda self: fields.Date.context_today(self).year, aggregator=False, tracking=True)
     payslip_run_id = fields.Many2one(
         'hr.payslip.run', string='Lote de nómina', required=True,
-        check_company=True)
+        check_company=True, tracking=True)
     line_ids = fields.One2many(
-        'hr.vacation.line', 'vacation_id', string='Cálculo de vacaciones')
+        'hr.vacation.line', 'vacation_id', string='Trabajadores')
     state = fields.Selection(
         [('draft', 'Borrador'), ('exported', 'Exportado')],
-        string='Estado', default='draft')
+        string='Estado', default='draft', tracking=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -508,6 +509,7 @@ class HrVacation(models.Model):
 class HrVacationLine(models.Model):
     _name = 'hr.vacation.line'
     _description = 'Línea de liquidación vacacional'
+    _inherit = 'hr.benefits.line.mixin'
     _order = 'employee_id'
     _check_company_auto = True
 
@@ -534,13 +536,13 @@ class HrVacationLine(models.Model):
         related='vacation_id.company_id', store=True, string='Compañía',
         index=True)
     employee_id = fields.Many2one(
-        'hr.employee', string='Empleado', required=True,
+        'hr.employee', string='Trabajador', required=True,
         check_company=True)
     version_id = fields.Many2one(
         'hr.version', string='Versión/contrato', check_company=True,
         domain="[('employee_id', '=', employee_id)]")
     identification_id = fields.Char(
-        related='employee_id.identification_id', string='Nro. documento')
+        related='employee_id.identification_id', string='N.º de documento')
     last_name = fields.Char(
         related='employee_id.last_name', string='Apellido paterno')
     m_last_name = fields.Char(
@@ -550,39 +552,73 @@ class HrVacationLine(models.Model):
     # sin el override de ausencias se marca directamente en la línea.
     vacation_kind = fields.Selection(
         [('rest', 'Goce de vacaciones'), ('sale', 'Venta de vacaciones')],
-        string='Tipo', required=True, default='rest')
+        string='Tipo', required=True, default='rest', tracking=True)
     admission_date = fields.Date(string='Fecha de ingreso')
     compute_date = fields.Date(string='Fecha de cómputo')
-    compute_date_ini = fields.Date(string='Inicio vac.')
-    compute_date_fin = fields.Date(string='Fin vac.')
+    compute_date_ini = fields.Date(string='Inicio de las vacaciones', tracking=True)
+    compute_date_fin = fields.Date(string='Fin de las vacaciones', tracking=True)
     membership_id = fields.Many2one(
         related='version_id.membership_id', string='Afiliación')
-    months = fields.Integer(string='Meses')
-    days = fields.Integer(string='Días')
-    lacks = fields.Integer(string='Faltas', default=0)
-    record_days = fields.Integer(string='Récord vacacional')
-    total_days = fields.Integer(string='Total días')
+    months = fields.Integer(string='Meses completos')
+    days = fields.Integer(string='Días adicionales')
+    lacks = fields.Integer(string='Faltas (días)', default=0)
+    record_days = fields.Integer(
+        string='Récord vacacional exigido',
+        help='Días efectivos de trabajo que exige el récord vacacional: 260 '
+             'con jornada de seis días a la semana y 210 con jornada de '
+             'cinco (D.Leg. 713).')
+    total_days = fields.Integer(
+        string='Días computables',
+        help='Meses × 30 + días adicionales − faltas.')
     wage = fields.Float(string='Sueldo')
     household_allowance = fields.Float(string='Asignación familiar')
-    commission = fields.Float(string='Prom. comisión')
-    bonus = fields.Float(string='Prom. bonificación')
-    extra_hours = fields.Float(string='Prom. horas extras')
+    commission = fields.Float(
+        string='Promedio de comisiones',
+        help='Promedio de las comisiones de los últimos seis meses.')
+    bonus = fields.Float(
+        string='Promedio de bonificaciones',
+        help='Promedio de las bonificaciones regulares de los últimos seis '
+             'meses.')
+    extra_hours = fields.Float(
+        string='Promedio de horas extras',
+        help='Promedio de las horas extras de los últimos seis meses.')
     computable_remuneration = fields.Float(
-        string='Remuneración computable')
-    accrued_vacation = fields.Integer(string='Días vac. liquidados')
-    total_vacation = fields.Float(string='Total vacaciones')
-    onp = fields.Float(string='(-) ONP')
-    afp_jub = fields.Float(string='(-) AFP JUB')
-    afp_si = fields.Float(string='(-) AFP SI')
-    afp_mixed_com = fields.Float(string='(-) AFP com. mixta')
-    afp_fixed_com = fields.Float(string='(-) AFP com. fija')
-    neto_total = fields.Float(string='Neto vacaciones')
-    quinta = fields.Float(string='(-) Retención quinta', default=0)
-    total = fields.Float(string='Total a pagar')
+        string='Remuneración computable',
+        help='Sueldo + asignación familiar + promedios de comisiones, '
+             'bonificaciones y horas extras.')
+    accrued_vacation = fields.Integer(
+        string='Días de vacaciones',
+        help='Días de vacaciones que se pagan en esta liquidación.')
+    total_vacation = fields.Float(
+        string='Remuneración vacacional',
+        help='Remuneración computable ÷ 30 × días de vacaciones.')
+    onp = fields.Float(string='ONP')
+    afp_jub = fields.Float(string='AFP: aporte obligatorio')
+    afp_si = fields.Float(
+        string='AFP: prima de seguro',
+        help='Topada a la remuneración máxima asegurable; no se descuenta a '
+             'los mayores de 65 años.')
+    afp_mixed_com = fields.Float(string='AFP: comisión mixta')
+    afp_fixed_com = fields.Float(
+        string='AFP: comisión por flujo',
+        help='Comisión de la AFP sobre la remuneración (comisión por flujo).')
+    neto_total = fields.Float(
+        string='Neto de vacaciones',
+        help='Remuneración vacacional − aportes a la ONP o a la AFP.')
+    quinta = fields.Float(
+        string='Retención de quinta', default=0,
+        help='Retención de quinta del mes ÷ 30 × días de vacaciones (botón '
+             '«Importar quinta» del lote).')
+    total = fields.Float(
+        string='Total a pagar',
+        help='Neto de vacaciones − retención de quinta.')
     vacation_line_ids = fields.One2many(
         'hr.leave.vacation.line', 'leave_vacation_id',
         string='Detalle histórico')
-    preserve_record = fields.Boolean(string='No recalcular')
+    preserve_record = fields.Boolean(
+        string='No recalcular',
+        help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
+             'ajustes manuales.', tracking=True)
 
     def compute_quinta_line(self, lot):
         """Retención de 5ta proporcional: toma la retención QUINTA del

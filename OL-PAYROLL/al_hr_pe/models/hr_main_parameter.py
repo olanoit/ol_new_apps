@@ -16,6 +16,7 @@ class HrMainParameter(models.Model):
     """
     _name = 'hr.main.parameter'
     _description = 'Parámetros Principales de Nómina'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _check_company_auto = True
 
     name = fields.Char(string='Nombre', default='Parámetros Principales')
@@ -37,12 +38,12 @@ class HrMainParameter(models.Model):
         help='Respaldo: la boleta toma la RMV de la tabla «RMV» vigente al '
              'cierre de su periodo (S/ 1 230 desde el 01/10/2026, D.S. '
              '015-2026-TR); este valor solo se usa si la tabla no cubre la '
-             'fecha.')
+             'fecha.', tracking=True)
     family_allowance = fields.Float(
         string='Asignación familiar', compute='_compute_family_allowance',
         help='10 % de la RMV (Ley 25129).')
     reprentante_legal_id = fields.Many2one(
-        'res.partner', string='Representante legal')
+        'res.partner', string='Representante legal', tracking=True)
     signature = fields.Binary(string='Firma del empleador')
 
     # --- Referencias a reglas salariales (se pueblan en Fase 2) ---
@@ -50,9 +51,9 @@ class HrMainParameter(models.Model):
     # regla vive en la estructura); la Fase 2 decidirá si añadirlo como
     # hacía v18 o filtrar por estructura.
     net_to_pay_sr_id = fields.Many2one(
-        'hr.salary.rule', string='R.S. Neto a pagar')
+        'hr.salary.rule', string='R.S. Neto a pagar', tracking=True)
     insurable_remuneration = fields.Many2one(
-        'hr.salary.rule', string='R.S. Ingresos afectos AFP')
+        'hr.salary.rule', string='R.S. Ingresos afectos AFP', tracking=True)
 
     # --- Clasificación de work entry types por categoría PLAME ---
     wd_dlab = fields.Many2many(
