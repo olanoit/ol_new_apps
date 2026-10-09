@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Resumen de reversiones (RR) de un comprobante de retención (tipo 20).
+         SUNAT no acepta el tipo 20 en VoidedDocuments (RA, error 2308): se
+         revierte con SummaryDocuments, estado 3 e importe 0. Misma estructura
+         y firma que la comunicación de baja de l10n_pe_edi. -->
+    <template id="cre_reversal_summary">
+        <SummaryDocuments
+            xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+            xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+            xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <t t-call="l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature"/>
+            <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+            <cbc:CustomizationID>1.0</cbc:CustomizationID>
+            <cbc:ID t-out="reversal_number"/>
+            <cbc:ReferenceDate t-out="reference_date"/>
+            <cbc:IssueDate t-out="issue_date"/>
+            <cac:Signature>
+                <cbc:ID>IDSignKG</cbc:ID>
+                <cac:SignatoryParty>
+                    <cac:PartyIdentification>
+                        <cbc:ID t-out="company.vat"/>
+                    </cac:PartyIdentification>
+                    <cac:PartyName>
+                        <cbc:Name t-out="company.name.upper()"/>
+                    </cac:PartyName>
+                </cac:SignatoryParty>
+                <cac:DigitalSignatureAttachment>
+                    <cac:ExternalReference>
+                        <cbc:URI>#SignVX</cbc:URI>
+                    </cac:ExternalReference>
+                </cac:DigitalSignatureAttachment>
+            </cac:Signature>
+            <cac:AccountingSupplierParty>
+                <cbc:CustomerAssignedAccountID t-out="company.vat"/>
+                <cbc:AdditionalAccountID t-out="company.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '6'"/>
+                <cac:Party>
+                    <cac:PartyLegalEntity>
+                        <cbc:RegistrationName t-out="company.name.upper()"/>
+                    </cac:PartyLegalEntity>
+                </cac:Party>
+            </cac:AccountingSupplierParty>
+            <sac:SummaryDocumentsLine>
+                <cbc:LineID>1</cbc:LineID>
+                <cbc:DocumentTypeCode>20</cbc:DocumentTypeCode>
+                <sac:DocumentSerialID t-out="serie"/>
+                <sac:DocumentNumberID t-out="folio"/>
+                <sac:TotalAmount currencyID="PEN">0.00</sac:TotalAmount>
+                <cac:Status>
+                    <cbc:ConditionCode>3</cbc:ConditionCode>
+                </cac:Status>
+            </sac:SummaryDocumentsLine>
+        </SummaryDocuments>
+    </template>
+</odoo>

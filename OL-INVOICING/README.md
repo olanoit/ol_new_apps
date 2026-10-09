@@ -33,4 +33,5 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_delivery_guide_report](al_l10n_pe_delivery_guide_report/) | 11.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_invoice](al_l10n_pe_invoice/) | 18.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
+[al_ose_factory_hka](al_ose_factory_hka/) | 1.20261009 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 [//]: # (end addons)

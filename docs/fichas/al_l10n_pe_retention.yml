@@ -403,6 +403,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 18.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "La firma y el envío del CRE pasan a un método propio (`_l10n_pe_edi_sign_retention`) que extienden los módulos de otros operadores, como The Factory HKA."
   - version: 17.20261009
     fecha: 09/10/2026
     cambios:

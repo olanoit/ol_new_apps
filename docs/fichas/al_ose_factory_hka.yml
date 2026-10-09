@@ -1,0 +1,126 @@
+titulo: OSE The Factory HKA
+subtitulo: >-
+  The Factory HKA como operador de la facturación electrónica de Odoo: facturas,
+  boletas, notas, bajas y comprobantes de retención llegan a SUNAT por su
+  servicio, y el CRE se puede revertir desde el pago.
+categoria: Localización Perú · Facturación electrónica
+etiquetas: [OSE, The Factory HKA, Facturación electrónica, CDR, Comunicación de baja, Retenciones IGV, Reversión de CRE]
+portada: screenshots/01-ajustes.png
+
+destacados_intro: >-
+  Un operador más en la lista de Odoo, junto a IAP, SUNAT y Estela: no cambia
+  cómo se factura, solo por dónde sale el comprobante.
+destacados:
+  - icono: "⇄"
+    titulo: Mismo flujo de Odoo
+    texto: >-
+      Se publica la factura y el EDI la firma y la envía; el CDR queda adjunto
+      y los errores se ven en la factura, como con cualquier operador.
+  - icono: "✓"
+    titulo: Todo lo que pasa por el EDI
+    texto: >-
+      Facturas, boletas, notas de crédito y débito, comprobantes del TPV y
+      comunicaciones de baja.
+  - icono: "8"
+    titulo: Nombre que exige HKA
+    texto: >-
+      El archivo lleva el número con 8 dígitos (F001-00000011), sin cambiar
+      el número del comprobante.
+  - icono: "20"
+    titulo: Retenciones y su reversión
+    texto: >-
+      El comprobante de retención (CRE) va por HKA y, si hay que anularlo, se
+      revierte desde el pago con el resumen RR que exige SUNAT.
+  - icono: "⚙"
+    titulo: Funciones a la carta
+    texto: >-
+      En Ajustes se activa o desactiva el CRE por HKA y su reversión, por
+      compañía.
+  - icono: "!"
+    titulo: Sin envíos a ciegas
+    texto: >-
+      Sin credenciales o sin WSDL de producción el comprobante queda
+      pendiente con el motivo: nunca se manda al ambiente de demostración por
+      error.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo 19 trae como operadores IAP, SUNAT directo y Estela. Las empresas que
+    contrataron a The Factory HKA como OSE no podían usar la facturación
+    electrónica nativa sin cambiar de operador. Este módulo añade a HKA a esa
+    lista: usa su servicio web (el mismo billService de SUNAT, con usuario y
+    contraseña de HKA) para enviar, consultar el CDR y dar de baja.
+  nota: >-
+    **Necesita** el certificado digital de la compañía (Ajustes ▸ Facturación
+    electrónica peruana) y las credenciales que entrega The Factory HKA.
+
+pasos:
+  - seccion: Facturas, boletas y notas
+  - titulo: Elegir el operador
+    ruta: Ajustes ▸ Contabilidad ▸ Facturación electrónica peruana
+    texto: >-
+      Marque **The Factory HKA** como operador y complete usuario, contraseña
+      y los WSDL. Con **Entorno de prueba** activo se envía al WSDL de
+      demostración; sin él, al de producción.
+    puntos:
+      - "**Funciones de Factory HKA**: comprobantes de retención (CRE) y reversión del CRE, activadas por defecto."
+      - Las credenciales SOL de SUNAT se ocultan, salvo que el CRE vaya directo a SUNAT.
+      - Cada compañía tiene sus propias credenciales, WSDL y funciones.
+    imagen: screenshots/01-ajustes.png
+  - titulo: Publicar y enviar
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ Confirmar
+    texto: >-
+      El EDI envía el comprobante a HKA (al confirmar o con el cron de envíos).
+      Con el CDR aceptado la factura queda **Enviada** y el CDR adjunto; si HKA
+      o SUNAT la observan, el motivo aparece en la factura.
+  - titulo: Dar de baja
+    ruta: Factura ▸ Solicitar anulación
+    texto: >-
+      Odoo arma la comunicación de baja, la envía a HKA (sendSummary) y
+      consulta el ticket (getStatus) hasta que SUNAT la acepta.
+
+  - seccion: Comprobantes de retención
+  - titulo: Enviar el CRE
+    ruta: Perú ▸ Retenciones IGV ▸ Retenciones efectuadas ▸ Enviar CRE a SUNAT
+    texto: >-
+      Con «Comprobantes de retención (CRE)» activo, el CRE del pago se firma y
+      se envía a HKA (número en 8 dígitos). Aceptado, el pago guarda el ZIP con
+      el XML firmado y el CDR.
+  - titulo: Revertir el CRE
+    ruta: Pago con CRE aceptado ▸ Motivo de la reversión ▸ Revertir CRE
+    texto: >-
+      Envía el resumen de reversiones (RR) y el CRE queda «Reversión en
+      proceso» con el ticket. **Consultar reversión** pregunta a SUNAT hasta
+      que la acepta: el CRE queda «Anulado» con el CDR adjunto.
+    puntos:
+      - "SUNAT no acepta el CRE en una comunicación de baja (RA, error 2308): se revierte con un resumen RR, estado 3 e importe 0."
+      - El identificador RR-AAAAMMDD-N va sin el RUC (error 2220); el archivo sí lo lleva.
+      - En los reintentos se reutiliza el mismo correlativo.
+      - La reversión no toca el asiento del pago; si también debe anularse, se hace en contabilidad.
+
+campos:
+  - grupo: Credenciales de Factory HKA
+    ruta: Ajustes ▸ Contabilidad ▸ Facturación electrónica peruana
+    campos:
+      - [Usuario, Usuario del servicio web de HKA, —, Va en la cabecera de seguridad de cada envío]
+      - [Contraseña, Contraseña del servicio web de HKA, —, Solo la ven los administradores]
+      - [WSDL de demostración, Servicio de pruebas de HKA, demoose.thefactoryhka.com.pe, Se usa con Entorno de prueba]
+      - [WSDL de producción, Servicio de producción de HKA, —, Obligatorio para enviar en producción]
+      - [Comprobantes de retención (CRE), Envía el CRE por HKA, Activado, Desactivado va directo a SUNAT con la clave SOL]
+      - [Reversión del CRE, Botón «Revertir CRE» en el pago, Activado, Solo si el CRE va por HKA]
+  - grupo: Reversión del CRE
+    ruta: Pago ▸ Retención
+    campos:
+      - [Motivo de la reversión, Por qué se revierte, —, Obligatorio; queda en el historial]
+      - [Ticket de la reversión, Ticket de SUNAT del resumen RR, —, Se consulta con «Consultar reversión»]
+
+novedades:
+  - version: 1.20261009
+    fecha: 09/10/2026
+    cambios:
+      - "Migrado de 17.0 (al_ose_factory_hka y al_ose_factory_hka_retention, unificados): The Factory HKA como operador de l10n_pe_edi con los servicios comunes de Odoo 19 (envío, consulta del CDR y comunicación de baja); el número del archivo en 8 dígitos; sin credenciales o sin WSDL de producción el comprobante queda pendiente con el motivo."
+      - "Comprobante de retención (CRE) de al_l10n_pe_retention por HKA y su reversión desde el pago (resumen RR: envío del resumen y consulta del ticket)."
+      - "Funciones de Factory HKA en Ajustes: CRE por HKA y reversión del CRE, por compañía."
+
+relacionados: [al_l10n_pe_retention, al_l10n_pe_invoice, al_l10n_pe_edi_pos, al_l10n_pe_edi_downpayment_discount]

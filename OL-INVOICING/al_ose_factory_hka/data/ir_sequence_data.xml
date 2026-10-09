@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Correlativo del resumen de reversiones del CRE (RR-AAAAMMDD-N), como el
+         de las comunicaciones de baja de l10n_pe_edi (RA-…). -->
+    <record id="reversal_sequence" model="ir.sequence">
+        <field name="name">Resumen de reversiones del CRE (Perú)</field>
+        <field name="code">al_ose_factory_hka.reversal_sequence</field>
+        <field name="prefix">RR-%(year)s%(month)s%(day)s-</field>
+        <field name="padding">0</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

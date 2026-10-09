@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261009 — 09/10/2026
+
+- La firma y el envío del CRE pasan a un método propio (`_l10n_pe_edi_sign_retention`) que extienden los módulos de otros operadores, como The Factory HKA.
+
 ## 17.20261009 — 09/10/2026
 
 - Retenciones sufridas con chatter: historial de comprobante, fecha, cliente, factura, monto y estado.

@@ -133,7 +133,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 2.20261008 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
 [al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 5.20261009 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
 [al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 23.20261009 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
-[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 17.20261009 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
+[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 18.20261009 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
 [al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 18.20261009 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
@@ -147,6 +147,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 11.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 18.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
+[al_ose_factory_hka](OL-INVOICING/al_ose_factory_hka/) | 1.20261009 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 
 ### OL-PAYROLL
 

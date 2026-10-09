@@ -303,20 +303,10 @@ class AccountPayment(models.Model):
         oficial, ``{'success': True, 'zip_document': …}`` o
         ``{'message': …, 'level': …}``."""
         self.ensure_one()
-        company = self.company_id
         # el formato UBL peruano: sus métodos de credenciales piden un registro
         edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         filename = self._l10n_pe_edi_generate_retention_filename()
-        if company.l10n_pe_edi_provider == 'iap':
-            result = edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, '20')
-        else:
-            if company.l10n_pe_edi_provider == 'digiflow':
-                credentials = edi_format._l10n_pe_edi_get_digiflow_credentials(company)
-            else:
-                credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
-                credentials['wsdl'] = self._l10n_pe_edi_get_retention_sunat_wsdl()
-            result = edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
-                company, filename, edi_str, credentials, '20')
+        result = self._l10n_pe_edi_sign_retention(edi_format, filename, edi_str)
         if not result.get('success'):
             return {'message': result.get('error') or self.env._('Error desconocido'),
                     'level': 'warning' if result.get('blocking_level') == 'warning' else 'danger'}
@@ -325,6 +315,22 @@ class AccountPayment(models.Model):
             ('R-%s.xml' % filename, result['cdr']),
         ])
         return {'success': True, 'zip_document': zip_document}
+
+    def _l10n_pe_edi_sign_retention(self, edi_format, filename, edi_str):
+        """Firma y envía el CRE (tipo 20) por el operador de la compañía.
+        Devuelve el resultado de los servicios de ``l10n_pe_edi``; los
+        módulos de otros operadores (p. ej. Factory HKA) lo extienden."""
+        self.ensure_one()
+        company = self.company_id
+        if company.l10n_pe_edi_provider == 'iap':
+            return edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, '20')
+        if company.l10n_pe_edi_provider == 'digiflow':
+            credentials = edi_format._l10n_pe_edi_get_digiflow_credentials(company)
+        else:
+            credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
+            credentials['wsdl'] = self._l10n_pe_edi_get_retention_sunat_wsdl()
+        return edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
+            company, filename, edi_str, credentials, '20')
 
     def _l10n_pe_edi_get_retention_sunat_wsdl(self):
         self.ensure_one()

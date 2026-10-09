@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_factory_hka" model="ir.ui.view">
+        <field name="name">res.config.settings.form.factory.hka</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_pe_edi.res_config_settings_form_inherit_l10n_pe_edi"/>
+        <field name="arch" type="xml">
+            <!-- Con Factory HKA la clave SOL solo hace falta si el CRE va directo a SUNAT. -->
+            <xpath expr="//setting[.//field[@name='l10n_pe_edi_provider_username']]" position="attributes">
+                <attribute name="invisible">l10n_pe_edi_provider == 'iap' or (l10n_pe_edi_provider == 'factory_hka' and l10n_pe_edi_factory_hka_retention)</attribute>
+            </xpath>
+            <xpath expr="//block[@id='invoicing_peruvian_settings']" position="inside">
+                <setting id="l10n_pe_edi_factory_hka" string="Credenciales de Factory HKA" company_dependent="1"
+                         help="Usuario, contraseña y servicios web que entrega The Factory HKA al habilitar la cuenta OSE."
+                         invisible="l10n_pe_edi_provider != 'factory_hka'">
+                    <div class="content-group">
+                        <div class="row mt16">
+                            <label for="l10n_pe_edi_factory_hka_username" string="Usuario" class="col-md-5 o_light_label"/>
+                            <field name="l10n_pe_edi_factory_hka_username"/>
+                            <label for="l10n_pe_edi_factory_hka_password" string="Contraseña" class="col-md-5 o_light_label"/>
+                            <field name="l10n_pe_edi_factory_hka_password" password="True"/>
+                            <label for="l10n_pe_edi_factory_hka_wsdl_demo" string="WSDL de demostración" class="col-md-5 o_light_label"/>
+                            <field name="l10n_pe_edi_factory_hka_wsdl_demo"/>
+                            <label for="l10n_pe_edi_factory_hka_wsdl_prod" string="WSDL de producción" class="col-md-5 o_light_label"/>
+                            <field name="l10n_pe_edi_factory_hka_wsdl_prod"/>
+                        </div>
+                        <div class="text-muted mt8">
+                            Con «Entorno de prueba» activo se envía al WSDL de demostración; sin él,
+                            al de producción (si falta, el comprobante no se envía).
+                        </div>
+                    </div>
+                </setting>
+                <setting id="l10n_pe_edi_factory_hka_functions" string="Funciones de Factory HKA" company_dependent="1"
+                         help="Facturas, boletas, notas y bajas siempre van por Factory HKA; estas funciones se activan aparte."
+                         invisible="l10n_pe_edi_provider != 'factory_hka'">
+                    <div class="content-group">
+                        <div class="mt8">
+                            <field name="l10n_pe_edi_factory_hka_retention" class="oe_inline"/>
+                            <label for="l10n_pe_edi_factory_hka_retention" string="Comprobantes de retención (CRE)" class="o_light_label"/>
+                            <div class="text-muted">Desactivado, el CRE se envía directo a SUNAT con la clave SOL.</div>
+                        </div>
+                        <div class="mt8" invisible="not l10n_pe_edi_factory_hka_retention">
+                            <field name="l10n_pe_edi_factory_hka_reversal" class="oe_inline"/>
+                            <label for="l10n_pe_edi_factory_hka_reversal" string="Reversión del CRE" class="o_light_label"/>
+                            <div class="text-muted">Botón «Revertir CRE» en los pagos con el comprobante aceptado.</div>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
