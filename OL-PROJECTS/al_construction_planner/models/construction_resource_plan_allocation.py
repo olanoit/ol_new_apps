@@ -8,7 +8,7 @@ qué parte del documento corresponde a cada línea; lo hecho del documento
 fecha de necesidad: primero la línea que se necesita antes y el sobrante, a
 la última."""
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, time
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
@@ -264,8 +264,10 @@ class ConstructionResourcePlanAllocation(models.Model):
             return {'purchased': to_uom(line.qty_purchased, line.product_uom_id),
                     'dispatched': to_uom(line.qty_received_on_site, line.product_uom_id)}
         if kind == 'production':
+            date_to = self._construction_date_to()
             moves = self.production_id.move_raw_ids.filtered(
-                lambda m: m.state == 'done' and m.product_id == product)
+                lambda m: m.state == 'done' and m.product_id == product
+                and (not date_to or m.date <= date_to))
             consumed = sum(to_uom(m.quantity, m.product_uom) for m in moves)
             # Lo que la OF consume ya se entregó en planta.
             return {'dispatched': consumed, 'consumed': consumed}
@@ -273,6 +275,24 @@ class ConstructionResourcePlanAllocation(models.Model):
             line = self.purchase_line_id
             return {'done': to_uom(line.qty_received, line.product_uom_id)}
         return {}
+
+    def _construction_date_to(self):
+        """Fin del día de corte (``construction_date_to`` del contexto) para
+        medir lo consumido hasta esa fecha: la entrega semanal (fase 10)."""
+        day = self.env.context.get('construction_date_to')
+        return datetime.combine(fields.Date.to_date(day), time.max) if day else None
+
+    @api.model
+    def _construction_consumed_at(self, allocations, day):
+        """{asignación: consumido hasta ``day``} en la unidad de la línea. Lo
+        consumido es un campo calculado sin caché por contexto: se descarta
+        antes y después de leerlo con la fecha de corte."""
+        measures = ['qty_purchased', 'qty_dispatched', 'qty_consumed', 'qty_done']
+        self.invalidate_model(measures)
+        dated = allocations.with_context(construction_date_to=day)
+        result = {allocation: allocation.qty_consumed for allocation in dated}
+        self.invalidate_model(measures)
+        return {self.browse(allocation.id): qty for allocation, qty in result.items()}
 
     def _get_siblings(self):
         """Todas las asignaciones de los documentos de ``self``."""
@@ -301,6 +321,8 @@ class ConstructionResourcePlanAllocation(models.Model):
             if site and product:
                 groups[(site, product)] |= allocation
         Move = self.env['stock.move']
+        date_to = self._construction_date_to()
+        date_domain = [('date', '<=', date_to)] if date_to else []
         for (site, product), _group in groups.items():
             siblings = self.search([
                 ('kind', '=', 'material_request'),
@@ -311,10 +333,12 @@ class ConstructionResourcePlanAllocation(models.Model):
             for moves, sign in (
                 (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
                               ('location_id', 'child_of', site.id),
-                              ('location_dest_id.usage', 'in', CONSUMPTION_USAGES)]), 1),
+                              ('location_dest_id.usage', 'in', CONSUMPTION_USAGES)]
+                             + date_domain), 1),
                 (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
                               ('location_dest_id', 'child_of', site.id),
-                              ('location_id.usage', 'in', CONSUMPTION_USAGES)]), -1),
+                              ('location_id.usage', 'in', CONSUMPTION_USAGES)]
+                             + date_domain), -1),
             ):
                 consumed += sign * sum(
                     m.product_uom._compute_quantity(m.quantity, product.uom_id,

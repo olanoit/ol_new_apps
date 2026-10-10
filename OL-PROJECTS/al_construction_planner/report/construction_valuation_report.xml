@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_construction_valuation" model="ir.actions.report">
+        <field name="name">Valorización</field>
+        <field name="model">construction.valuation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_planner.report_construction_valuation</field>
+        <field name="report_file">al_construction_planner.report_construction_valuation</field>
+        <field name="print_report_name">'Valorización %s - %s' % (object.sequence_number, object.name)</field>
+        <field name="binding_model_id" ref="model_construction_valuation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_construction_valuation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page article">
+                        <h2>Valorización <t t-out="o.sequence_number"/> · <t t-out="o.name"/></h2>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div><strong>Obra:</strong> <t t-out="o.project_id.display_name"/></div>
+                                <div><strong>Cliente:</strong> <t t-out="o.partner_id.display_name"/></div>
+                                <div><strong>Contrato:</strong> <t t-out="o.sale_order_id.name"/></div>
+                            </div>
+                            <div class="col-6">
+                                <div><strong>Corte:</strong> <t t-out="o.cutoff_date" t-options="{'widget': 'date'}"/></div>
+                                <div t-if="o.submit_date"><strong>Enviada:</strong> <t t-out="o.submit_date" t-options="{'widget': 'date'}"/></div>
+                                <div><strong>Entregas:</strong>
+                                    <t t-out="', '.join(o.delivery_ids.sorted('period_start').mapped('name'))"/>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Partida</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">% anterior</th>
+                                    <th class="text-end">% periodo</th>
+                                    <th class="text-end">% acumulado</th>
+                                    <th class="text-end">Entregado</th>
+                                    <th class="text-end">Confirmado</th>
+                                    <th class="text-end" t-if="o.amount_amortization">Amortización</th>
+                                    <th class="text-end">Fondo de garantía <t t-out="'%.2f' % o.guarantee_pct"/> %</th>
+                                    <th class="text-end">Neto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids" t-as="line">
+                                    <td><t t-out="line.sale_line_id.name.splitlines()[0]"/></td>
+                                    <td class="text-end"><t t-out="line.price" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    <td class="text-end"><t t-out="'%.2f' % (line.progress_prev * 100)"/> %</td>
+                                    <td class="text-end"><t t-out="'%.2f' % (line.progress_period * 100)"/> %</td>
+                                    <td class="text-end"><t t-out="'%.2f' % (line.progress_cumulative * 100)"/> %</td>
+                                    <td class="text-end"><t t-out="line.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    <td class="text-end"><t t-out="line.amount_confirmed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    <td class="text-end" t-if="o.amount_amortization"><t t-out="line.amount_amortization" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    <td class="text-end"><t t-out="line.amount_guarantee" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    <td class="text-end"><t t-out="line.amount_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-6 offset-6">
+                                <table class="table table-sm">
+                                    <tr><td>Entregado</td><td class="text-end"><t t-out="o.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                                    <tr><td>Confirmado</td><td class="text-end"><t t-out="o.amount_confirmed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                                    <tr t-if="o.amount_amortization"><td>Amortización del adelanto</td><td class="text-end"><t t-out="o.amount_amortization" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                                    <tr><td>Fondo de garantía</td><td class="text-end"><t t-out="o.amount_guarantee" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                                    <tr class="fw-bold"><td>Neto a cobrar</td><td class="text-end"><t t-out="o.amount_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div t-if="o.confirm_date" class="mt-3">
+                            <strong>Conformidad del cliente:</strong>
+                            <t t-out="o.confirm_date" t-options="{'widget': 'date'}"/> ·
+                            <t t-out="o.confirm_name"/> (<t t-out="o.confirm_role"/>)
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -79,6 +79,13 @@ Rutas relativas a `~/odoo/ce19`. `OLP` = `myodoo/ol_new_apps/OL-PROJECTS`.
 | `construction.typology` · `.module` · `.activity` | igual | nuevos |
 | `construction.labor.activity` · `construction.labor.rate` | igual | nuevos |
 | Líneas: `floor/apartment/space/module_task_id` | igual (en la línea, sin prefijo) | `construction.resource.plan.line` |
+| `x_valuation_every` · `x_valuation_unit` · `x_valuation_submit_days` · `x_client_confirm_days` · `x_invoice_days` · `x_collection_days` · `x_advance_pct` · `x_advance_amortization_pct` · `x_guarantee_pct` · `x_guarantee_release` | `construction_` + el mismo nombre | `res.company` (valores por defecto) y `project.project` |
+| Lista de cortes de la obra («fechas fijas») | `construction_valuation_cutoff_ids` | `project.project` → `construction.valuation.cutoff` |
+| OV del contrato de la obra | `construction_sale_order_id` | `project.project` |
+| `x_valuation_id` | `construction_valuation_id` | `account.move` |
+| `x_valuation_line_ids` | `construction_valuation_line_ids` | `sale.order.line` |
+| Partida ↔ familia (decisión de la fase 10) | `construction_family` | `sale.order.line` |
+| `construction.weekly.delivery` (+ `.line`) · `construction.valuation` (+ `.line`) | igual | nuevos (fase 10) |
 
 ## 3. Estructura del módulo
 
@@ -175,7 +182,8 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Liquidación semanal (hecha; fase 6 de la especificación) | LIQ por contrata, obra y semana; acción programada; aprobación por niveles; recepción en la OC y factura con vencimiento el día de pago; «Pagada» (ver §6.3) | P-08 |
 | Control y personal propio (hecha; fase 7 de la especificación) | OC con analítica contra el presupuesto de la combinación (W-10); estado y montos de control almacenados con eventos; análisis de control; W-06 cuadrillas con turnos y horas; W-08 cambiar fechas con aviso a Logística; reversión del estado del módulo (ver §6.4) | P-13, W-06, W-08 |
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
-| 7 | OV por partida, valorizaciones e ingreso devengado, factura de la valorización con control de saldo, flujo | P-20, P-21, P-22 |
+| Ruta del ingreso (hecha; fase 10 de la especificación) | OV por partida con familia; calendario e ingresos de la obra con fechas corridas al siguiente día hábil; entrega semanal con ejecutado valorizado a la fecha; valorización con W-13, observaciones, W-14 y factura desde la OV con control de lo confirmado (ver §6.7) | P-19, P-20, P-21 |
+| 7 | Cronograma valorizado (fase 11 de la especificación) | P-22 |
 | Cronograma con recursos (hecha; fase 8 de la especificación) | Etapas del ambiente; herencia de `al.gantt.data.get_data`; pantalla sobre el componente del Gantt con selección, panel, acciones y carga semanal OWL; arrastre con recálculo y aviso (ver §6.5) | P-15 |
 | Productos, precios y abastecimiento (hecha; fase 9 de la especificación) | Vista SQL de precios de compra en soles; P-16 con estadísticos y gráfico; W-12 con media móvil; W-11 crear producto con código de familia; tablero de abastecimiento y alertas (ver §6.6) | P-16, P-17, P-18 |
 
@@ -421,6 +429,66 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   registra al proveedor en el producto (estándar de compras): «sin proveedor
   habitual» es el producto sin compras ni proveedor cargado.
 
+### 6.7 Ruta del ingreso (fase 10)
+
+- **Partida ↔ líneas del plan (decisión).** La partida es una línea de
+  producto de la OV del contrato (`project.construction_sale_order_id`). Se
+  descartó configurar la partida en la obra o en la tipología: la OV ya es
+  «una línea por partida» (D23) y la familia de la tipología es lo que
+  distingue cocinas de closets. `sale.order.line.construction_family` reúne
+  las líneas del plan vigente cuyo ambiente (o la propia línea, si no cuelga
+  de un ambiente) tiene tipología de esa familia; la única línea sin familia
+  toma el resto (MOMEN: una sola partida). `project._construction_lines_by_partida()`.
+- **Ejecutado a una fecha.** `plan.line._construction_valued_execution(day)`
+  separa contratas, personal propio y material. Material: las asignaciones
+  calculan lo consumido con `construction_date_to` en el contexto, que filtra
+  la fecha de los movimientos de la OF y del consumo en obra
+  (`_get_document_totals`, `_get_site_consumption`); como los campos no
+  dependen del contexto, `_construction_consumed_at` descarta la caché antes
+  y después. Horas: `_get_timesheet_by_employee` con el mismo contexto.
+- **Entrega semanal.** Las líneas guardan el ejecutado al cierre por tipo y
+  copian el de la entrega anterior: el avance anterior es el cierre de la
+  previa y el ingreso y el costo son diferencias (lo confirmado no se
+  recalcula y un avance tardío cae en la siguiente). Se usan precio y
+  avance en la moneda de la compañía (la OV se convierte a la fecha del
+  cierre). La acción programada de las liquidaciones llama a
+  `_prepare_deliveries` y a `construction.valuation._prepare_valuations`.
+- **Valorización.** Entregado = precio × avance de la última entrega −
+  confirmado antes: lo no confirmado vuelve solo. Las entregas se enlazan
+  con `sudo` (Proyectos prepara y confirma sin editar entregas). El estado
+  Confirmada exige fecha, nombre, cargo y adjunto (restricción en el modelo,
+  además de W-14). Observaciones: `mail.message` con el subtipo
+  `mt_valuation_observation`, listadas por `observation_ids`.
+- **Factura.** Sin `_create_invoices` (facturaría todo lo pendiente de la
+  OV): `_prepare_invoice` + `_prepare_invoice_line(quantity=…)` de las
+  partidas confirmadas. Cantidad = redondeo de (cantidad de la OV × %
+  acumulado confirmado) − `qty_invoiced`, para no acumular redondeos; con
+  «Product Unit» a 2 decimales (`ol_pe_v19`) el precio unitario se ajusta
+  hacia abajo para que el subtotal no pase lo confirmado. El gancho de §6.4
+  es `construction.valuation._construction_check_invoice_balance()`: corre al
+  crear y en `account.move._post` (con `sudo`, la publica contabilidad) y
+  compara lo facturado por partida (notas de crédito restan) con lo
+  confirmado. Publicar / reabrir / anular la factura sincroniza
+  Facturada ↔ Confirmada.
+- **Fondo de garantía y adelanto (decisión abierta de la especificación,
+  propuesta).** Se calculan en la línea de la valorización sobre lo
+  confirmado, con los % de la obra al prepararla (la amortización, con tope
+  en el adelanto que queda). En la factura, por defecto **no van**: la
+  factura es por lo confirmado y el fondo se cobra al cierre (fila del
+  calendario), que es lo que admite la factura electrónica peruana (no
+  acepta líneas negativas ni sin impuestos; comprobado en `ol_pe_v19`). Con
+  `res.company.construction_guarantee_account_id` /
+  `construction_advance_account_id`, líneas negativas sin impuestos a esas
+  cuentas (como la retención de las liquidaciones). Contabilidad decide.
+- **Días hábiles del ingreso.** `res.company._construction_next_working_day`
+  usa `construction_income_calendar_id` (o el calendario de la compañía) y
+  los feriados globales. En `ol_pe_v19` el calendario de la compañía trabaja
+  los sábados: sin un horario de lunes a viernes, las fechas del cliente
+  caerían en sábado.
+- **P-21** es un campo Html calculado (como el resumen por etapa); los
+  datos salen de `project._construction_get_valuation_forecast()`, pensado
+  para reutilizarse en P-22.
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -439,10 +507,17 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 - **Dos «obras»** (proyecto y `l10n_pe.hr.construction.site` de planilla):
   se encuentran por la cuenta analítica (§6.4); un campo de enlace iría en un
   módulo puente.
-- **Siguiente**: entregas, valorizaciones e ingresos (con la factura de la
-  valorización y su control de saldo) y cronograma valorizado (P-22), que
-  reparte el plan con las fechas de `construction.space.stage`; inicio de la
-  aplicación (P-01) con las alertas de abastecimiento.
+- **Siguiente**: cronograma valorizado (P-22: plan con
+  `_construction_planned_by_day` y el calendario de
+  `_construction_get_valuation_forecast`; real con entregas confirmadas,
+  valorizaciones confirmadas, facturas y pagos conciliados) e inicio de la
+  aplicación (P-01) con las alertas de abastecimiento y las entregas y
+  valorizaciones pendientes.
+- **Ingresos (fase 10)**: replanificar cambia el monto planificado de la
+  partida y los avances validados de la versión anterior no pasan a la
+  nueva si ya estaban liquidados (el avance de la partida puede bajar); la
+  OV en otra moneda se convierte a la fecha de cada cierre; facturar por
+  fuera de la valorización (desde la OV) no tiene control.
 - **Precios (fase 9)**: el criterio 13 con las 27 compras reales de MOMEN
   necesita la base limpia con sus OC y tipos de cambio; los tests lo
   reproducen con 27 compras sintéticas. La semana de la vista SQL es la de
@@ -455,7 +530,8 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 - **Control por eventos**: un cambio que no pasa por los ganchos de §6.4
   espera a la acción programada horaria.
 - **Retención y fondo de garantía**: sin cuenta configurada la factura va por
-  el bruto; falta acordar con contabilidad el tratamiento.
+  el bruto; falta acordar con contabilidad el tratamiento (con la factura
+  electrónica peruana, el fondo de garantía no puede ir como línea negativa).
 - **Secuencia**: los tests consumen números de la secuencia `PLR` en bases de
   desarrollo (comportamiento normal de `ir.sequence` estándar).
 - **Control multicompañía** de `al_base_module_info`: en verde (10/10/2026,

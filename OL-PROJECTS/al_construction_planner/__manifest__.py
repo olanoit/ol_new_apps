@@ -143,6 +143,22 @@ Fase 9 (productos, precios y abastecimiento, P-16 a P-18):
 * Alertas de abastecimiento: precio sobre el plan (umbral en Ajustes),
   necesidad sin OC a menos de una semana y producto sin proveedor habitual.
 
+Fase 10 (ruta del ingreso, P-19 a P-21):
+
+* «Calendario e ingresos» de la obra (P-21): orden de venta del contrato,
+  valorización cada n semanas o en fechas fijas, días para presentar, para
+  la confirmación del cliente y para facturar, plazo de cobro, adelanto y
+  fondo de garantía, con valores por defecto en Ajustes y tabla de
+  valorizaciones previstas corridas al siguiente día hábil.
+* Entrega semanal (P-19): una por obra y semana, preparada por la acción
+  programada del día de liquidación y confirmada por la Jefatura; avance
+  valorizado de cada partida con el material consumido, ingreso devengado,
+  costo y margen.
+* Valorización con el cliente (P-20): W-13 con las entregas confirmadas,
+  envío con PDF, observaciones del cliente, conformidad obligatoria (W-14),
+  lo no confirmado por valorizar y factura desde la OV al % acumulado
+  confirmado, sin superar lo confirmado.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -152,7 +168,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '8.20261010',
+    'version': '9.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -178,12 +194,15 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'data/ir_sequence_data.xml',
         'data/tier_definition_data.xml',
         'data/ir_cron_data.xml',
+        'data/mail_message_subtype_data.xml',
+        'report/construction_valuation_report.xml',
         'wizards/plan_generate_wizard_views.xml',
         'wizards/plan_replan_wizard_views.xml',
         'wizards/plan_price_wizard_views.xml',
         'wizards/plan_supply_wizard_views.xml',
         'wizards/plan_contract_wizard_views.xml',
         'wizards/plan_crew_wizard_views.xml',
+        'wizards/valuation_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_progress_views.xml',
@@ -196,6 +215,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_schedule_views.xml',
         'views/construction_supply_views.xml',
         'views/construction_price_views.xml',
+        'views/construction_income_views.xml',
         'views/menus.xml',
     ],
     'demo': [

@@ -56,6 +56,16 @@
                   action="action_construction_contract_settlement" sequence="30"/>
     </menuitem>
 
+    <menuitem id="menu_planner_income" name="Ingresos" parent="menu_planner_root" sequence="45"
+              groups="group_planner_user">
+        <menuitem id="menu_planner_deliveries" name="Entregas semanales"
+                  action="action_construction_weekly_delivery" sequence="10"/>
+        <menuitem id="menu_planner_valuations" name="Valorizaciones"
+                  action="action_construction_valuation" sequence="20"/>
+        <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización"
+                  action="action_construction_valuation_prepare_wizard" sequence="30"/>
+    </menuitem>
+
     <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
               groups="group_planner_planner">
         <menuitem id="menu_planner_supply_board" name="Abastecimiento de la obra"

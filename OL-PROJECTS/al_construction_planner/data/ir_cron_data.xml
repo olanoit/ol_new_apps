@@ -2,7 +2,9 @@
 <odoo noupdate="1">
     <!-- Cada día, a primera hora: en el día de liquidación de cada obra crea
          en borrador (06:00 en Lima) las liquidaciones de las contratas con avances validados
-         por liquidar, y pasa a «Pagada» las de factura pagada. -->
+         por liquidar, y pasa a «Pagada» las de factura pagada. Desde la fase 10
+         prepara también la entrega semanal de la obra y, pasado el corte, la
+         valorización en borrador. -->
     <record id="ir_cron_prepare_settlements" model="ir.cron">
         <field name="name">Planificación de obra: preparar liquidaciones de contratas</field>
         <field name="model_id" ref="model_construction_contract_settlement"/>

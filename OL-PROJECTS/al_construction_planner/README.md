@@ -20,7 +20,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 7 | Control y personal propio: control de la OC con analítica contra el presupuesto, estado y montos de control guardados, análisis de control (P-13), cuadrillas (W-06), cambiar fechas (W-08), reversión del estado del módulo | hecha |
 | 8 | Cronograma con recursos (P-15): etapas del ambiente, herencia de `al.gantt.data`, pantalla «Cronograma» sobre el Gantt de la suite con selección, panel de recursos, acciones W-02 a W-08, arrastre de etapas con recálculo de la necesidad y aviso a Logística, carga semanal | hecha |
 | 9 | Productos, precios y abastecimiento: vista de precios de compra en soles, P-16 con estadísticos y gráfico, W-12 con media móvil de 4 semanas, crear producto desde el plan (W-11, P-17), abastecimiento de la obra (P-18) y alertas | hecha |
-| 10+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma valorizado, inicio de la aplicación | pendiente |
+| 10 | Ruta del ingreso: calendario e ingresos de la obra (P-21), entrega semanal (P-19), valorización con el cliente (P-20) con W-13 y W-14, factura de la valorización con control de lo confirmado | hecha |
+| 11+ | Cronograma valorizado (P-22), inicio de la aplicación (P-01) | pendiente |
 
 ## Modelos
 
@@ -70,6 +71,17 @@ Diseño técnico, equivalencias de nombres y plan de fases:
   `product.category` (`construction_family_code`), `product.template`
   (`construction_created_from_plan_id`), `res.company`
   (`construction_price_alert_pct`) y `product_ids` en W-02.
+- Fase 10: `construction.weekly.delivery` / `.line` (entrega semanal,
+  `ENT/año/#####`), `construction.valuation` / `.line` (valorización,
+  `VAL/año/#####` y número por obra), `construction.valuation.cutoff`
+  (cortes en fechas fijas), asistentes `construction.valuation.prepare.wizard`
+  (W-13) y `construction.valuation.confirm.wizard` (W-14), subtipo
+  `mt_valuation_observation` y reporte PDF de la valorización;
+  `project.project` (OV del contrato y calendario de ingresos),
+  `res.company` (valores por defecto, días hábiles del ingreso y cuentas del
+  fondo de garantía y del adelanto), `sale.order.line`
+  (`construction_family`, `construction_valuation_line_ids`) y
+  `account.move` (`construction_valuation_id` y control al publicar).
 
 ## Árbol de recursos (P-02)
 
@@ -503,6 +515,64 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
   falta para la necesidad de los próximos 7 días sin stock ni OC) y
   `no_supplier`; pensadas para el inicio de la aplicación (fase 11).
 
+## Ruta del ingreso (fase 10, P-19 a P-21)
+
+- **Partida ↔ líneas del plan (`_construction_lines_by_partida`).** Las
+  partidas son las líneas de producto de la OV del contrato
+  (`construction_sale_order_id`). Una partida con `construction_family`
+  toma las líneas del plan vigente cuyo ambiente (o la propia línea) tiene
+  una tipología de esa familia; la única partida sin familia toma el resto
+  (MOMEN: una sola partida «Cocinas»). Dos partidas sin familia: error.
+- **Ejecutado valorizado a una fecha (`plan.line._construction_valued_execution(day)`).**
+  Contratas y personal propio por driver: avances validados con fecha hasta
+  el corte × `price_unit_planned`; personal propio por horas: hoja de horas
+  hasta el corte × costo hora; material, servicio y producción: consumido
+  hasta el corte × costo del plan. Lo consumido a una fecha sale de las
+  asignaciones con `construction_date_to` en el contexto (filtra la fecha de
+  los movimientos), descartando la caché antes y después.
+- **Entrega semanal.** `_prepare_deliveries(today)` corre en
+  `_cron_prepare_settlements` (misma acción programada): en el día de
+  liquidación crea o actualiza en borrador la entrega de la semana que
+  cerró, para obras con OV del contrato y plan vigente. Cada línea guarda el
+  ejecutado al cierre por tipo y toma el anterior de la entrega previa: el
+  avance al cierre es la suma entre el monto planificado (sin redondear), el
+  ingreso = precio × (cierre − anterior) y el costo = cierre − anterior por
+  tipo. Confirmar (Jefatura) recalcula una última vez y exige confirmar las
+  anteriores; reabrir exige que no esté en una valorización ni haya
+  posteriores confirmadas. Los avances de la entrega son los validados hasta
+  el cierre que no están en otra entrega confirmada.
+- **Valorización.** `_get_line_values` toma el avance de la última entrega
+  incluida y lo confirmado antes en la partida: entregado = precio × avance −
+  confirmado antes (lo no confirmado vuelve). Fondo de garantía y
+  amortización sobre lo confirmado con los % de la obra al preparar (la
+  amortización con tope en el adelanto restante). Enviar adjunta el PDF;
+  observar usa `construction.reason.wizard` con el subtipo propio; W-14 exige
+  fecha, nombre, cargo y documento (además, una restricción en el modelo) y
+  pasa las entregas a «Valorizada». `_prepare_valuations` (misma acción
+  programada) la prepara en borrador al pasar un corte.
+- **Factura.** `action_create_invoice` (grupo de ingresos): `_prepare_invoice`
+  de la OV y una línea por partida con `_prepare_invoice_line(quantity=…)`,
+  cantidad = `round(cantidad de la OV × % acumulado confirmado) −
+  qty_invoiced`; si cantidad × precio no da lo confirmado (2 decimales en la
+  cantidad), el precio unitario se redondea hacia abajo. La línea de la OV
+  (método manual) queda con `qty_delivered` al % acumulado.
+  `_construction_check_invoice_balance()` corre antes de crear y en
+  `account.move._post`: lo facturado por partida (facturas menos notas de
+  crédito no anuladas) no puede superar lo confirmado. Publicada →
+  «Facturada»; a borrador o anulada → «Confirmada».
+- **Fondo de garantía y adelanto en la factura.** Sin cuenta en Ajustes
+  (recomendado con la factura electrónica peruana, que no admite líneas
+  negativas ni sin impuestos), la factura va por lo confirmado y ambos quedan
+  en la valorización. Con `construction_guarantee_account_id` /
+  `construction_advance_account_id`, líneas negativas sin impuestos a esas
+  cuentas.
+- **Calendario (P-21).** Cortes cada n semanas desde el primer inicio de
+  semana de la obra (o fechas fijas); cada fecha prevista se corre al
+  siguiente día hábil (`res.company._construction_next_working_day`: con
+  horario en `construction_income_calendar_id` o el calendario de la
+  compañía, y sin feriado). Monto previsto: precio × avance previsto, con
+  cada línea repartida en los días hábiles de su `construction.space.stage`.
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -574,7 +644,22 @@ sobre el costo del plan, 40 planchas en el central y la familia 3105.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_prices.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (99 tests;
+Fase 10 (después de los anteriores): OV del contrato con la partida
+«Cocinas», calendario de ingresos, tres entregas semanales confirmadas y la
+valorización 1 enviada, observada, confirmada y facturada.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_income.py
+```
+
+Tests: `--test-tags /al_construction_planner` (108 tests; `test_income.py`
+cubre la fase 10: criterio 16 (S/ 23,627.65 de la semana 29/10–04/11 con
+material consumido), criterio 17 (confirmación obligatoria, factura al %
+acumulado y control de lo confirmado), lo no confirmado en la siguiente,
+avance tardío en la entrega siguiente, orden de confirmación, anulación,
+fechas de P-21 con el feriado del 25/12, fechas fijas y adelanto, partidas
+por familia, línea del fondo de garantía y multicompañía.
 `test_prices_supply.py` cubre la fase 9: conversión de moneda y unidad,
 estadísticos exactos, criterio 13 adaptado con 27 compras, P-16 y W-12,
 criterio 15 con W-11, el ejemplo 192.13 − 40 − 96 → 57 de P-18, la alerta de

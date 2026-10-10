@@ -5,7 +5,7 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra, Entrega semanal, Valorización, Calendario e ingresos]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
@@ -13,7 +13,8 @@ destacados_intro: >-
   línea base aprobada con su presupuesto analítico y las compras,
   requerimientos y órdenes de fabricación que nacen del plan y lo descuentan,
   las contratas (asignación, avance por driver y liquidación semanal), el
-  personal propio y el control de lo planificado contra lo real.
+  personal propio, el control de lo planificado contra lo real y la ruta
+  del ingreso: entrega semanal, valorización con el cliente y factura.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -138,6 +139,23 @@ destacados:
       Necesidad por semana, stock, OC abiertas y cantidad a comprar por
       producto, con alerta de precio; la compra masiva sale de la misma
       tabla.
+  - icono: "📈"
+    titulo: Ingreso devengado cada semana
+    texto: >-
+      La entrega semanal mide el avance valorizado de cada partida (contratas,
+      personal propio y material consumido) y devenga precio × avance del
+      periodo, con su costo y su margen.
+  - icono: "🤝"
+    titulo: Valorización trazable
+    texto: >-
+      Envío, observaciones y conformidad del cliente con fecha, nombre, cargo
+      y documento; lo no confirmado vuelve en la siguiente y la factura no
+      supera lo confirmado.
+  - icono: "📅"
+    titulo: Fechas del ingreso por obra
+    texto: >-
+      Corte, presentación, confirmación, factura y cobro previstos según el
+      calendario de cada obra, corridos al siguiente día hábil.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -615,6 +633,58 @@ pasos:
       - "El último precio en rojo supera el costo del plan en el umbral de Ajustes (5 %) o más."
       - "«Marcar lo que falta» y «Compra masiva» abren W-02 con los productos marcados, la etapa del filtro y la necesidad hasta el fin del horizonte."
     imagen: screenshots/35-abastecimiento-obra.png
+  - titulo: Calendario e ingresos de la obra
+    ruta: Proyecto (obra) ▸ Calendario e ingresos
+    texto: >-
+      La orden de venta del contrato (una línea por partida, cantidad 1), la
+      frecuencia de valorización (cada n semanas o en fechas fijas), los días
+      para presentar, para la confirmación del cliente y para facturar, el
+      plazo de cobro (por defecto el del cliente), el adelanto con su
+      amortización y el fondo de garantía con su cobro. Debajo, las
+      valorizaciones previstas.
+    puntos:
+      - "Presentación = corte + días para presentar; confirmación = presentación + días del cliente; factura = confirmación + días para facturar; cobro = factura + plazo de cobro."
+      - "Una fecha que cae en día no hábil pasa al siguiente: la presentación de la valorización 5 caería el viernes 25/12 (feriado) y pasa al lunes 28/12."
+      - "Monto previsto: precio de cada partida × su avance previsto, con las líneas del plan repartidas en los días hábiles de su etapa; la última valorización cierra en el precio."
+      - "La partida «Cocinas» de una OV sin familia toma toda la obra; con varias partidas, cada línea de la OV lleva su familia (cocina, closet…)."
+    imagen: screenshots/36-calendario-ingresos.png
+  - titulo: Entrega semanal
+    ruta: Ingresos ▸ Entregas semanales (o el botón «Entregas» de la obra)
+    texto: >-
+      La prepara la acción programada del día de liquidación, una por obra y
+      semana, y la confirma la Jefatura de Proyectos. Por partida: avance
+      anterior y al cierre, ingreso devengado, costo devengado y margen.
+    puntos:
+      - "Avance de la partida = (driver acumulado × tarifa + horas × costo hora + material consumido × costo del plan) ÷ monto planificado de la partida."
+      - "Ingreso devengado = precio × (avance al cierre − anterior), sin redondear el avance: 159,231.23 × (42.94 % − 28.10 %) = 23,627.65."
+      - "Costo devengado = lo ejecutado en la semana, separado en contratas, materiales y personal propio."
+      - "Un avance validado después de confirmar la entrega cae en la siguiente."
+    imagen: screenshots/37-entrega-semanal.png
+  - titulo: Valorización con el cliente
+    ruta: Ingresos ▸ Valorizaciones · Preparar valorización (W-13)
+    texto: >-
+      Reúne las entregas confirmadas hasta el corte y valoriza cada partida:
+      % anterior (lo confirmado antes), % del periodo, % acumulado,
+      entregado, confirmado, fondo de garantía y neto. Se envía al cliente
+      con su PDF en el historial, recibe observaciones y se reenvía.
+    puntos:
+      - "Borrador › enviada › observada › confirmada › facturada; la anula la Jefatura sin factura y sus entregas vuelven a Confirmada."
+      - "Cada observación del cliente queda con fecha y autor (subtipo «Observación del cliente») y se lista en su pestaña."
+      - "La acción programada la prepara en borrador al pasar cada corte de la obra."
+    imagen: screenshots/38-valorizacion.png
+  - titulo: Conformidad del cliente y factura
+    ruta: Valorización ▸ Confirmar (W-14) · Crear factura
+    texto: >-
+      Sin fecha, nombre, cargo y documento del cliente no pasa a Confirmada.
+      El monto confirmado por partida puede ser menor que lo entregado: la
+      diferencia queda por valorizar y entra en la siguiente. «Crear
+      factura» (Administración y Finanzas) factura lo confirmado desde la OV
+      del contrato.
+    puntos:
+      - "La línea de la OV queda con la cantidad entregada al % acumulado confirmado y la factura guarda su valorización; publicada, la valorización pasa a Facturada."
+      - "La factura no puede publicarse por encima de lo confirmado en ninguna partida."
+      - "Con 2 decimales en la cantidad (0.42 de 1), el precio unitario se ajusta hacia abajo para que el subtotal sea lo confirmado."
+    imagen: screenshots/39-conformidad-cliente.png
 
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
@@ -765,6 +835,38 @@ campos:
     campos:
       - [Control de presupuesto, "En plan, excede el plan o exceso aprobado.", En plan, Al confirmar una OC con analítica de la obra]
       - [Justificación del exceso, Por qué se compra por encima del presupuesto., Vacía, Obligatoria con «pedir aprobación»]
+  - grupo: Calendario e ingresos de la obra
+    ruta: Proyecto ▸ Calendario e ingresos · Ajustes ▸ Planificación de obra ▸ Ingresos
+    campos:
+      - [Orden de venta del contrato, Una línea por partida con cantidad 1., Vacía, "De la compañía de la obra"]
+      - ["Valorizar cada, frecuencia", "Cada n semanas o en fechas fijas (lista de cortes).", "2 semanas", Valor por defecto de la compañía]
+      - ["Días para presentar, para la confirmación, para facturar", "Desde el corte, la presentación y la confirmación.", "2, 5 y 2", Se corren al siguiente día hábil]
+      - [Plazo de cobro, Días desde la factura., "El del cliente; si no, 30", "—"]
+      - ["Adelanto, amortización", "% del contrato y % de cada valorización.", "0 %", "La amortización es una previsión"]
+      - ["Fondo de garantía, cobro", "% retenido en cada valorización; al cierre o en fecha fija.", "5 %, al cierre", "—"]
+      - [Días hábiles del ingreso, "Horario de los días hábiles (Ajustes).", El de la compañía, "Feriados: ausencias globales de la compañía"]
+      - ["Cuentas del fondo y del adelanto", "Líneas negativas en la factura de la valorización (Ajustes).", Vacías, "Sin cuenta, solo en la valorización"]
+  - grupo: Entrega semanal
+    ruta: Ingresos ▸ Entregas semanales
+    campos:
+      - ["Número, obra, semana", "ENT/año/número; una por obra y semana.", "—", Jueves a miércoles por defecto]
+      - [Estado, "Borrador, confirmada, valorizada.", Borrador, Confirma la Jefatura de Proyectos]
+      - [Avances de la semana, Validados hasta el cierre que no entraron en otra entrega confirmada., "—", "—"]
+      - ["Partida, precio", Línea de la OV del contrato y su subtotal., "—", "—"]
+      - ["Avance anterior, al cierre, del periodo", Avance valorizado de la partida sin redondear., "—", "El anterior es el cierre de la entrega previa"]
+      - ["Ingreso, costo y margen devengados", "Precio × avance del periodo; ejecutado de la semana.", "—", "Costo por contratas, materiales y personal propio"]
+  - grupo: Valorización
+    ruta: Ingresos ▸ Valorizaciones
+    campos:
+      - ["Número, nº en la obra", "VAL/año/número y Valorización 1, 2…", "—", "—"]
+      - ["Corte y fechas previstas", "Presentación, confirmación, facturación y cobro.", "—", Según el calendario de la obra]
+      - [Estado, "Borrador, enviada, observada, confirmada, facturada, anulada.", Borrador, Con seguimiento]
+      - ["Conformidad", "Fecha, quién confirma, cargo y documento.", Vacía, Obligatoria para Confirmada]
+      - [Observaciones del cliente, "Mensajes con fecha y autor.", "—", Subtipo propio]
+      - ["% anterior, periodo, acumulado", "Confirmado antes, entregado y su suma ÷ precio.", "—", Por partida]
+      - ["Entregado, confirmado, por valorizar", "Lo confirmado de 0 a lo entregado.", "Confirmado = entregado", "Lo pendiente vuelve en la siguiente"]
+      - ["Fondo de garantía, amortización, neto", "Sobre lo confirmado.", "—", "% de la obra al preparar"]
+      - [Factura, La que se creó desde la OV., Vacía, "La factura guarda la valorización"]
 
 funcionalidades:
   - grupo: Jerarquía y catálogo
@@ -842,6 +944,13 @@ funcionalidades:
       - "Crear producto desde el plan (W-11) con código de familia sin colisiones, parecidos por nombre, marca del plan y actividad a Logística."
       - "Abastecimiento de la obra (P-18) con necesidad semanal por etapa, stock, OC abiertas, cantidad a comprar, alerta de precio y compra masiva de lo marcado."
       - "Alertas de abastecimiento reutilizables: precio sobre el plan, necesidad sin OC a menos de una semana y producto sin proveedor habitual."
+  - grupo: Ruta del ingreso
+    items:
+      - "Calendario e ingresos por obra (P-21) con valores por defecto en Ajustes y tabla de valorizaciones previstas con días no hábiles corridos al siguiente día hábil."
+      - "Entrega semanal (P-19) creada por la acción programada del día de liquidación, con avance valorizado de la partida, ingreso, costo y margen devengados."
+      - "Valorización (P-20) con W-13, envío con PDF, observaciones del cliente, conformidad obligatoria (W-14) y lo no confirmado por valorizar."
+      - "Factura desde la OV con la cantidad entregada al % acumulado confirmado y control: no se publica por encima de lo confirmado."
+      - "Fondo de garantía y amortización del adelanto en la valorización; como líneas negativas de la factura solo si se configuran sus cuentas."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -908,6 +1017,8 @@ configuracion:
   - "Las OC con la analítica de la obra se controlan contra el presupuesto del plan vigente; las OC de servicio de las contratas se controlan al asignar y al liquidar."
   - "Ponga el **código de familia** (4 dígitos) en las categorías de producto donde los planificadores crearán productos, y el umbral de la **alerta de precio** en **Ajustes ▸ Planificación de obra**."
   - "`tools/planner_demo_prices.py` carga 27 compras de la melamina blanca del demo (24 en dólares y 3 en soles) y la familia 3105."
+  - "Ruta del ingreso: en la obra, pestaña **Calendario e ingresos**, elija la **orden de venta del contrato** (servicio con política de facturación por entregas, una línea por partida) y revise el calendario; los valores por defecto y los **días hábiles del ingreso** están en **Ajustes ▸ Planificación de obra ▸ Ingresos**. Quien factura necesita el grupo **Planificación de obra: ingresos** y facturación."
+  - "`tools/planner_demo_income.py` crea la OV de la partida «Cocinas», tres entregas semanales confirmadas y la valorización 1 confirmada y facturada."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
@@ -974,12 +1085,31 @@ faq:
       cuenta analítica. Ponga en la obra de la planilla de construcción civil
       la cuenta analítica del proyecto y los costos de ambas caen en la misma
       obra.
+  - pregunta: "¿Cómo se registra el fondo de garantía en la factura?"
+    respuesta: >-
+      Por defecto la factura va por lo confirmado y el fondo de garantía (y la
+      amortización del adelanto) quedan en la valorización, que es lo que
+      acepta la factura electrónica peruana. Con una cuenta en Ajustes, la
+      factura los lleva como líneas negativas sin impuestos (útil en otras
+      localizaciones). La decisión final es de contabilidad.
+  - pregunta: "¿Qué partida toma cada línea del plan?"
+    respuesta: >-
+      La línea de la OV con la familia de la tipología del ambiente (cocina,
+      closet…). La única línea sin familia toma el resto de la obra, como
+      MOMEN con una sola partida «Cocinas».
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 9.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Calendario e ingresos de la obra (fase 10, P-21): OV del contrato, valorización cada n semanas o en fechas fijas, plazos de presentación, confirmación, factura y cobro, adelanto y fondo de garantía, con valores por defecto en Ajustes y tabla de valorizaciones previstas corridas al siguiente día hábil."
+      - "Entrega semanal (P-19): una por obra y semana, creada por la acción programada del día de liquidación y confirmada por la Jefatura; avance valorizado de la partida con material consumido, ingreso devengado sin redondear el avance, costo y margen."
+      - "Valorización con el cliente (P-20): W-13 con las entregas confirmadas hasta el corte, envío con PDF, observaciones con fecha y autor, conformidad obligatoria (W-14) y lo no confirmado por valorizar."
+      - "«Crear factura» desde la OV con la cantidad entregada al % acumulado confirmado y la valorización en la factura; no se publica por encima de lo confirmado."
   - version: 8.20261010
     fecha: 10/10/2026
     cambios:

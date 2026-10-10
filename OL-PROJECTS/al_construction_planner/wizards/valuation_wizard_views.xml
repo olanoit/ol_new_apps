@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Preparar valorización (W-13) -->
+    <record id="construction_valuation_prepare_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.valuation.prepare.wizard.form</field>
+        <field name="model">construction.valuation.prepare.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Preparar valorización">
+                <group>
+                    <group>
+                        <field name="project_id" options="{'no_create': True}"/>
+                        <field name="cutoff_date"/>
+                    </group>
+                    <group>
+                        <field name="amount_delivered"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                    </group>
+                </group>
+                <separator string="Entregas confirmadas sin valorizar"/>
+                <field name="delivery_ids" readonly="1">
+                    <list>
+                        <field name="name"/>
+                        <field name="period_start"/>
+                        <field name="period_end"/>
+                        <field name="revenue_amount" sum="Total"/>
+                        <field name="currency_id" column_invisible="True"/>
+                    </list>
+                </field>
+                <separator string="Monto por partida"/>
+                <field name="line_ids" readonly="1">
+                    <list>
+                        <field name="sale_line_id"/>
+                        <field name="progress_delivered" widget="percentage"/>
+                        <field name="amount_delivered" sum="Total"/>
+                        <field name="currency_id" column_invisible="True"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Lo entregado de cada partida es su precio × el avance de la última entrega menos
+                    lo confirmado en las valorizaciones anteriores: lo que el cliente no confirmó
+                    vuelve aquí.
+                </p>
+                <footer>
+                    <button name="action_create" type="object" string="Crear valorización"
+                            class="btn-primary" invisible="not delivery_ids"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_valuation_prepare_wizard" model="ir.actions.act_window">
+        <field name="name">Preparar valorización</field>
+        <field name="res_model">construction.valuation.prepare.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Confirmar valorización (W-14) -->
+    <record id="construction_valuation_confirm_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.valuation.confirm.wizard.form</field>
+        <field name="model">construction.valuation.confirm.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirmar valorización">
+                <group>
+                    <group string="Conformidad del cliente">
+                        <field name="valuation_id"/>
+                        <field name="confirm_date"/>
+                        <field name="confirm_name" placeholder="Nombre de quien confirma"/>
+                        <field name="confirm_role" placeholder="Residente, gerente de proyecto…"/>
+                    </group>
+                    <group string="Documento">
+                        <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"/>
+                    </group>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="sale_line_id"/>
+                        <field name="amount_delivered" sum="Total"/>
+                        <field name="amount_confirmed" sum="Total"/>
+                        <field name="amount_difference" sum="Total"
+                               decoration-warning="amount_difference &gt; 0"/>
+                        <field name="valuation_line_id" column_invisible="True"/>
+                        <field name="currency_id" column_invisible="True"/>
+                    </list>
+                </field>
+                <group class="oe_subtotal_footer">
+                    <field name="amount_delivered"/>
+                    <field name="amount_confirmed"/>
+                    <field name="amount_pending"/>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+                <p class="text-muted small">
+                    Fecha, nombre, cargo y documento son obligatorios. La diferencia entre lo
+                    entregado y lo confirmado queda por valorizar en la siguiente valorización.
+                </p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -5,7 +5,9 @@ planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
 y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
 la fase 2.
 
-``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 a 8,
+``CAPTURAS_DESDE=36`` rehace solo las de la fase 10 (ruta del ingreso,
+datos de planner_demo_income.py), ``CAPTURAS_DESDE=17`` solo las de las
+fases 5 a 8,
 ``CAPTURAS_DESDE=24`` solo las de las fases 7 y 8 y ``CAPTURAS_DESDE=28``
 solo las del cronograma (las anteriores dependen del
 estado de los datos de su fase)."""
@@ -167,7 +169,38 @@ def fase_8(c, v1):
     c.foto('30-cronograma-etapa', selector=FULL)
 
 
+def fase_10(c):
+    """Fase 10: ruta del ingreso (P-19 a P-21), con los datos de
+    tools/planner_demo_income.py."""
+    # 36. Calendario e ingresos de la obra (P-21): valorizaciones previstas
+    project = buscar(c, 'project.project', [['name', '=', 'DEMO PLAN MOMEN-35-26']])[0]
+    c.abrir_registro('project.project', project, ms=2000)
+    c.texto('Calendario e ingresos', ms=2000)
+    c.js("document.querySelector('.o_construction_forecast').scrollIntoView({block: 'end'})")
+    c.esperar(800)
+    c.foto('36-calendario-ingresos', selector=FULL)
+
+    # 37. Entrega semanal del 29/10 al 04/11 (P-19)
+    delivery = buscar(c, 'construction.weekly.delivery', [
+        ['project_id', '=', project], ['period_start', '=', '2026-10-29']])[0]
+    c.abrir_registro('construction.weekly.delivery', delivery, ms=2000)
+    c.foto('37-entrega-semanal', selector=FULL)
+
+    # 38. Valorización 1 confirmada y facturada (P-20)
+    valuation = buscar(c, 'construction.valuation', [
+        ['project_id', '=', project], ['state', '=', 'invoiced']])[0]
+    c.abrir_registro('construction.valuation', valuation, ms=2000)
+    c.foto('38-valorizacion', selector=FULL)
+
+    # 39. Conformidad del cliente (W-14) y observaciones en el historial
+    c.texto('Conformidad del cliente', ms=1500)
+    c.foto('39-conformidad-cliente', selector=FULL)
+
+
 with Captura(M) as c:
+    if DESDE >= 36:
+        fase_10(c)
+        raise SystemExit
     v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
     if DESDE >= 28:
         fase_8(c, v1)

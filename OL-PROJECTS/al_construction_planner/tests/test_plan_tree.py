@@ -5,6 +5,7 @@ from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 from .common import load_demo
 
 
+@tagged('post_install', '-at_install')
 class TestPlanTree(TransactionCase):
     """Árbol de recursos (P-02) sobre el piso 05 de demostración: 66 módulos,
     41.33 ML, S/ 8,944.44; Dpto 501 con 7 módulos y S/ 993.66."""

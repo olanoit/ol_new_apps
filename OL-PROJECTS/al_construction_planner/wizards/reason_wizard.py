@@ -6,12 +6,14 @@ from odoo.exceptions import UserError
 REASON_ACTIONS = {
     'reject': ('construction.task.progress', '_action_reject'),
     'return': ('construction.contract.settlement', '_action_return'),
+    'observe': ('construction.valuation', '_action_observe'),
 }
 
 
 class ConstructionReasonWizard(models.TransientModel):
-    """Motivo obligatorio para rechazar un avance (P-07) o devolver una
-    liquidación a la contrata (P-08)."""
+    """Motivo obligatorio para rechazar un avance (P-07), devolver una
+    liquidación a la contrata (P-08) o registrar la observación del cliente
+    a una valorización (P-20)."""
     _name = 'construction.reason.wizard'
     _description = 'Motivo del rechazo o la devolución'
 

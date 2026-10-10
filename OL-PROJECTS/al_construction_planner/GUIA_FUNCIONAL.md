@@ -161,7 +161,14 @@ flowchart TD
 | 31 | Revisar los precios de compra | Línea del plan ▸ ícono de gráfico, o Abastecimiento ▸ Precios de compra del producto | Planificador | Estadísticos en soles de la ventana; «Aplicar costo» con la base elegida |
 | 32 | Crear un producto que no existe | Línea del plan sin producto ▸ Crear producto (o Plan ▸ Crear producto) | Planificador | Producto activo con código de su familia, en la línea y marcado con el plan; actividad para Logística |
 | 33 | Abastecer la obra | Abastecimiento ▸ Abastecimiento de la obra (o botón del plan) | Logística, planificador | Cantidad a comprar por producto; «Compra masiva» con las filas marcadas |
-| 34 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
+| 34 | Configurar el ingreso de la obra | Proyecto ▸ Calendario e ingresos | Jefatura, Administración y Finanzas | OV del contrato, calendario de valorización y valorizaciones previstas |
+| 35 | Preparar la entrega semanal | Automático cada día de liquidación, o «Actualizar» | Sistema | Entrega en borrador con ingreso, costo y margen devengados por partida |
+| 36 | Confirmar la entrega | Ingresos ▸ Entregas semanales ▸ Confirmar | Jefatura de Proyectos | Ingreso y costo de la semana fijados |
+| 37 | Preparar la valorización | Automático al pasar el corte, o Ingresos ▸ Preparar valorización (W-13) | Sistema / Proyectos | Valorización en borrador con las entregas confirmadas hasta el corte |
+| 38 | Enviar y levantar observaciones | Valorización ▸ Enviar al cliente · Observación del cliente · Levantar y reenviar | Proyectos | Enviada (PDF en el historial) u Observada con fecha y autor |
+| 39 | Registrar la conformidad | Valorización ▸ Confirmar (W-14) | Proyectos o Administración y Finanzas | Confirmada con fecha, nombre, cargo y documento; entregas Valorizadas |
+| 40 | Facturar | Valorización ▸ Crear factura; factura ▸ Confirmar | Administración y Finanzas | Factura de lo confirmado desde la OV; valorización Facturada |
+| 41 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -489,6 +496,36 @@ OC con la analítica de la obra: a comprar 192.13 − 40 − 96 = 56.13 → 57
 planchas, a S/ 122.79 del plan = S/ 6,999.03. La melamina coñac (plan
 228.07) se compró a 239.42: +5.0 %, alerta con el umbral de 5 %.
 
+### Ruta del ingreso (P-19 a P-21)
+
+**Calendario (P-21).** MOMEN va del 12/10 al 18/12/2026 con semanas de
+jueves a miércoles y valorización cada 2 semanas: cortes el 28/10, 11/11,
+25/11, 09/12 y 23/12. Con 2 días para presentar, 5 para la confirmación, 2
+para facturar y 30 de cobro, la valorización 1 se presenta el 30/10, se
+confirma el 04/11, se factura el 06/11 y se cobra el 07/12 (el 06/12 es
+domingo). La 5 se presentaría el viernes 25/12, feriado: pasa al lunes
+28/12, y de ahí la confirmación al 04/01/2027 (el 02/01 es sábado), la
+factura al 06/01 y el cobro al 05/02. El fondo de garantía (5 %) se cobra al
+cierre.
+
+**Entrega semanal (P-19).** La partida «Cocinas» vale S/ 159,231.23 y su
+plan S/ 170,764.10. Hasta el 28/10 hay S/ 47,984.71 ejecutados a tarifa y a
+costo del plan (28.10 %); en la semana del 29/10 al 04/11 se suman S/ 5,552.96
+de contratas y S/ 19,786.00 de material consumido: el avance llega a 42.94 %.
+El ingreso devengado es 159,231.23 × (42.94 % − 28.10 %) = S/ 23,627.65 (con
+el avance sin redondear), el costo S/ 25,338.96 y el margen −S/ 1,711.31.
+
+**Valorización (P-20).** Con las entregas confirmadas hasta el corte del
+11/11 la valorización entrega el avance de la última menos lo ya
+confirmado. Si el cliente confirma S/ 1,000 menos, esos S/ 1,000 quedan
+«por valorizar» y vuelven en la siguiente. La factura lleva la línea de la
+OV (cantidad 1) con la cantidad al % acumulado confirmado: 0.42 si el
+acumulado confirmado es 42.31 %, por el monto confirmado.
+
+En el demo (solo el piso 05), la partida vale S/ 8,698.43 (la misma
+proporción que MOMEN) y la valorización 1 entrega S/ 408.31 (4.69 %), con
+S/ 20.42 de fondo de garantía y S/ 387.89 neto.
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -539,6 +576,16 @@ planchas, a S/ 122.79 del plan = S/ 6,999.03. La melamina coñac (plan
     producto): cuatro dígitos en cada categoría donde se crearán productos
     desde el plan. **Alerta de precio** en Ajustes ▸ Planificación de obra ▸
     Abastecimiento (5 % por defecto).
+18. **Ruta del ingreso:** la OV del contrato lleva una línea por partida,
+    cantidad 1, con un producto de servicio facturado por entregas. En la
+    obra, pestaña **Calendario e ingresos**, elegir la OV y revisar el
+    calendario; los valores por defecto están en Ajustes ▸ Planificación de
+    obra ▸ Ingresos, junto con los **días hábiles del ingreso** (p. ej. un
+    horario de lunes a viernes aunque la obra trabaje los sábados) y las
+    cuentas opcionales del fondo de garantía y del adelanto. Con varias
+    partidas, cada línea de la OV lleva su **familia** (columna opcional).
+    Quien factura necesita el grupo **Planificación de obra: ingresos** y el
+    de facturación.
 
 ## 6. Reportes y libros relacionados
 
@@ -622,6 +669,13 @@ No alimenta libros PLE ni archivos SUNAT.
 | «Compra masiva» del tablero no abre | El plan no está aprobado o en ejecución | Aprobar el plan |
 | «Sin proveedor habitual» | El producto no tiene proveedor ni compras confirmadas | Que Logística complete el producto |
 | «Tiene liquidaciones de contrata pendientes» al cerrar el plan | Hay liquidaciones sin aprobar o avances validados sin liquidar | Aprobarlas o anularlas |
+| No se prepara la entrega semanal | La obra no tiene OV del contrato o plan vigente, o aún no es el día de liquidación | Elegir la OV en «Calendario e ingresos»; esperar al día o crearla a mano |
+| «Confirme primero las entregas anteriores» | Hay una entrega anterior en borrador | Confirmarlas en orden |
+| «Tiene N partidas sin familia» | Más de una línea de la OV sin familia | Poner la familia de cada partida |
+| «Para confirmar la valorización falta…» | Falta fecha, nombre, cargo o documento del cliente | Completarlos en W-14 |
+| «No alcanza una unidad facturable» | El % confirmado es menor que la precisión de la cantidad (0.01) | Facturar con la siguiente valorización o subir la precisión de «Product Unit» |
+| «La factura … supera lo confirmado» | Se cambió la cantidad o el precio de la factura | Dejarla en lo confirmado |
+| Las fechas previstas caen en sábado | El horario de la compañía trabaja los sábados | Elegir los días hábiles del ingreso en Ajustes |
 
 ## 8. Preguntas frecuentes del consultor
 
@@ -680,6 +734,20 @@ No alimenta libros PLE ni archivos SUNAT.
   OC confirmadas con la analítica de la obra.
 - **¿La necesidad del tablero descuenta lo consumido?** Sí: es lo
   planificado menos lo consumido de cada línea.
+- **¿Por qué el avance de la partida no es el del árbol?** El del árbol
+  mide contratas y personal propio (para pagar y controlar); el de la
+  partida suma el material consumido a costo del plan y se divide entre todo
+  lo planificado de la partida (para el ingreso).
+- **¿Qué pasa con un avance validado después de confirmar la entrega?**
+  Entra a la entrega siguiente: lo confirmado no cambia.
+- **¿Cómo va el fondo de garantía en la factura?** Por defecto no va: la
+  factura es por lo confirmado y el fondo queda en la valorización y en el
+  cobro previsto (la factura electrónica peruana no admite líneas
+  negativas). Con una cuenta en Ajustes va como línea negativa; la decisión
+  es de contabilidad.
+- **¿Por qué el precio unitario de la factura no es el de la OV?** Con 2
+  decimales en la cantidad, 0.42 × precio no da lo confirmado: el precio se
+  ajusta hacia abajo para que el subtotal sea lo confirmado.
 
 ## 9. Referencias
 

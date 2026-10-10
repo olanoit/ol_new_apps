@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261010 — 10/10/2026
+
+- Calendario e ingresos de la obra (fase 10, P-21): OV del contrato, valorización cada n semanas o en fechas fijas, plazos de presentación, confirmación, factura y cobro, adelanto y fondo de garantía, con valores por defecto en Ajustes y tabla de valorizaciones previstas corridas al siguiente día hábil.
+- Entrega semanal (P-19): una por obra y semana, creada por la acción programada del día de liquidación y confirmada por la Jefatura; avance valorizado de la partida con material consumido, ingreso devengado sin redondear el avance, costo y margen.
+- Valorización con el cliente (P-20): W-13 con las entregas confirmadas hasta el corte, envío con PDF, observaciones con fecha y autor, conformidad obligatoria (W-14) y lo no confirmado por valorizar.
+- «Crear factura» desde la OV con la cantidad entregada al % acumulado confirmado y la valorización en la factura; no se publica por encima de lo confirmado.
+
 ## 8.20261010 — 10/10/2026
 
 - Precios de compra del producto (fase 9, P-16): compras confirmadas de una ventana editable en soles al tipo de cambio de su fecha, con ponderado, mediana, desviación, medias móviles de 4 semanas y 3 meses, resumen por semana, mes y proveedor y gráfico semanal con las compras atípicas.

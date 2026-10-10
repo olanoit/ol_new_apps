@@ -34,6 +34,70 @@
                             <field name="construction_retention_account_id" options="{'no_create': True}"/>
                         </setting>
                     </block>
+                    <block title="Ingresos" name="construction_planner_income">
+                        <setting company_dependent="1" id="construction_valuation_calendar" string="Calendario de valorización"
+                                 help="Valores por defecto de las obras nuevas (pestaña «Calendario e ingresos»). Una fecha que cae en día no hábil pasa al siguiente día hábil.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_valuation_unit" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_valuation_unit"/>
+                                </div>
+                                <div class="row" invisible="construction_valuation_unit != 'week'">
+                                    <label for="construction_valuation_every" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_valuation_every" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_valuation_submit_days" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_valuation_submit_days" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_client_confirm_days" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_client_confirm_days" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_invoice_days" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_invoice_days" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_collection_days" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_collection_days" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_income_calendar_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_income_calendar_id" options="{'no_create': True}"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting company_dependent="1" id="construction_valuation_retentions" string="Adelanto y fondo de garantía"
+                                 help="Con cuenta, la factura de la valorización lleva el fondo de garantía y la amortización del adelanto como líneas negativas y su total es el neto. Sin cuenta, la factura va por lo confirmado y ambos quedan en la valorización.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_advance_pct" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_advance_pct" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_advance_amortization_pct" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_advance_amortization_pct" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_guarantee_pct" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_guarantee_pct" class="oe_inline"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_guarantee_release" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_guarantee_release"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_guarantee_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_guarantee_account_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_advance_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_advance_account_id" options="{'no_create': True}"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
                     <block title="Abastecimiento" name="construction_planner_supply">
                         <setting company_dependent="1" id="construction_price_alert" string="Alerta de precio"
                                  help="El abastecimiento de la obra y las alertas marcan el producto cuyo último precio de compra supera el costo del plan en este porcentaje o más.">

@@ -14,3 +14,4 @@ from . import plan_crew_wizard
 from . import plan_reschedule_wizard
 from . import purchase_price_analysis
 from . import product_create_wizard
+from . import valuation_wizard

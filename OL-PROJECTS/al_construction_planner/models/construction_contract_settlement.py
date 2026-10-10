@@ -317,6 +317,10 @@ class ConstructionContractSettlement(models.Model):
     def _cron_prepare_settlements(self):
         self._prepare_settlements()
         self.search([('state', '=', 'approved'), ('invoice_id', '!=', False)])._sync_paid()
+        # Ruta del ingreso (fase 10): la entrega semanal se prepara el mismo
+        # día de liquidación y la valorización, al pasar el corte de la obra.
+        self.env['construction.weekly.delivery']._prepare_deliveries()
+        self.env['construction.valuation']._prepare_valuations()
 
     # ------------------------------------------------------------------
     # Estados

@@ -79,3 +79,14 @@ WEEKDAYS = [
 UNIT_STATE_RANK = {state: rank for rank, (state, _label) in enumerate(UNIT_STATES)}
 # Líneas que pagan por driver: su avance pondera el de los nodos del árbol.
 DRIVER_TYPES = ('contract', 'labor')
+
+# Ruta del ingreso (fase 10): frecuencia de valorización y cobro del fondo de
+# garantía de la obra (P-21).
+VALUATION_UNITS = [
+    ('week', 'Semanas'),
+    ('dates', 'Fechas fijas'),
+]
+GUARANTEE_RELEASES = [
+    ('close', 'Al cierre de la obra'),
+    ('date', 'En una fecha fija'),
+]

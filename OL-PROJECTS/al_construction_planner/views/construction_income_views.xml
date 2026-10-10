@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Entrega semanal (P-19) -->
+    <record id="construction_weekly_delivery_view_list" model="ir.ui.view">
+        <field name="name">construction.weekly.delivery.list</field>
+        <field name="model">construction.weekly.delivery</field>
+        <field name="arch" type="xml">
+            <list string="Entregas semanales" sample="1" decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="revenue_amount" sum="Total"/>
+                <field name="cost_amount" sum="Total"/>
+                <field name="margin_amount" sum="Total" decoration-danger="margin_amount &lt; 0"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="valuation_id" optional="show"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirmed'" decoration-success="state == 'valued'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_weekly_delivery_view_form" model="ir.ui.view">
+        <field name="name">construction.weekly.delivery.form</field>
+        <field name="model">construction.weekly.delivery</field>
+        <field name="arch" type="xml">
+            <form string="Entrega semanal">
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_manager"/>
+                    <button name="action_draft" type="object" string="Reabrir"
+                            invisible="state != 'confirmed' or valuation_id"
+                            groups="al_construction_planner.group_planner_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_progress" type="object" class="oe_stat_button"
+                                icon="fa-check-square-o">
+                            <field name="progress_count" widget="statinfo" string="Avances"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" readonly="id" options="{'no_create': True}"/>
+                            <field name="sale_order_id"/>
+                            <field name="plan_id" invisible="not plan_id"/>
+                            <field name="valuation_id" invisible="not valuation_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <label for="period_start" string="Semana"/>
+                            <div class="o_row">
+                                <field name="period_start" readonly="id"/>
+                                <span>—</span>
+                                <field name="period_end"/>
+                            </div>
+                            <field name="confirmed_by_id" invisible="not confirmed_by_id"/>
+                            <field name="date_confirmed" invisible="not date_confirmed"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Partidas" name="lines">
+                            <field name="line_ids" nolabel="1">
+                                <list create="0" delete="0">
+                                    <field name="sale_line_id"/>
+                                    <field name="price"/>
+                                    <field name="progress_prev" widget="percentage"/>
+                                    <field name="progress_end" widget="percentage"/>
+                                    <field name="progress_period" widget="percentage"/>
+                                    <field name="revenue_amount" sum="Ingreso"/>
+                                    <field name="cost_amount" sum="Costo"/>
+                                    <field name="margin_amount" sum="Margen"
+                                           decoration-danger="margin_amount &lt; 0"/>
+                                    <field name="amount_planned" optional="hide"/>
+                                    <field name="cost_contract" optional="hide"/>
+                                    <field name="cost_labor" optional="hide"/>
+                                    <field name="cost_material" optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group>
+                                <group string="Costo de la semana">
+                                    <field name="cost_contract"/>
+                                    <field name="cost_material"/>
+                                    <field name="cost_labor"/>
+                                </group>
+                                <group class="oe_subtotal_footer">
+                                    <field name="revenue_amount"/>
+                                    <field name="cost_amount"/>
+                                    <field name="margin_amount" class="oe_subtotal_footer_separator"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Avances de la semana" name="progress">
+                            <field name="progress_ids" nolabel="1"
+                                   context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
+                        </page>
+                    </notebook>
+                    <p class="text-muted small">
+                        Avance de la partida: contratas y personal propio ejecutados a tarifa más el
+                        material consumido a costo del plan, entre el monto planificado de la
+                        partida (sin redondear). Ingreso devengado = precio × (avance al cierre −
+                        avance anterior); costo devengado = lo ejecutado en la semana. Un avance
+                        validado después de confirmar la entrega cae en la siguiente.
+                    </p>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_weekly_delivery_view_search" model="ir.ui.view">
+        <field name="name">construction.weekly.delivery.search</field>
+        <field name="model">construction.weekly.delivery</field>
+        <field name="arch" type="xml">
+            <search string="Entregas semanales">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="valuation_id"/>
+                <filter string="Por confirmar" name="to_confirm" domain="[('state', '=', 'draft')]"/>
+                <filter string="Sin valorizar" name="not_valued"
+                        domain="[('state', '=', 'confirmed'), ('valuation_id', '=', False)]"/>
+                <filter string="Valorizadas" name="valued" domain="[('state', '=', 'valued')]"/>
+                <separator/>
+                <filter string="Semana" name="period_start" date="period_start"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_weekly_delivery" model="ir.actions.act_window">
+        <field name="name">Entregas semanales</field>
+        <field name="res_model">construction.weekly.delivery</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_weekly_delivery_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin entregas semanales</p>
+            <p>La acción programada del día de liquidación prepara la entrega de cada obra con
+               orden de venta del contrato y plan vigente; la Jefatura de Proyectos la confirma.</p>
+        </field>
+    </record>
+
+    <!-- Valorización con el cliente (P-20) -->
+    <record id="construction_valuation_view_list" model="ir.ui.view">
+        <field name="name">construction.valuation.list</field>
+        <field name="model">construction.valuation</field>
+        <field name="arch" type="xml">
+            <list string="Valorizaciones" sample="1" decoration-muted="state == 'cancel'"
+                  decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="sequence_number" string="Nº"/>
+                <field name="project_id"/>
+                <field name="partner_id" optional="show"/>
+                <field name="cutoff_date"/>
+                <field name="planned_submit_date" optional="hide"/>
+                <field name="submit_date" optional="show"/>
+                <field name="confirm_date" optional="show"/>
+                <field name="planned_collection_date" optional="show"/>
+                <field name="amount_delivered" sum="Total"/>
+                <field name="amount_confirmed" sum="Total"/>
+                <field name="amount_guarantee" sum="Total" optional="show"/>
+                <field name="amount_net" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="invoice_id" optional="show"/>
+                <field name="state" widget="badge" decoration-info="state in ('draft', 'sent')"
+                       decoration-warning="state == 'observed'"
+                       decoration-success="state in ('confirmed', 'invoiced')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_valuation_view_form" model="ir.ui.view">
+        <field name="name">construction.valuation.form</field>
+        <field name="model">construction.valuation</field>
+        <field name="arch" type="xml">
+            <form string="Valorización">
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar entregas"
+                            invisible="state != 'draft' or not id"/>
+                    <button name="action_send" type="object" string="Enviar al cliente"
+                            class="btn-primary" invisible="state != 'draft' or not id"/>
+                    <button name="action_open_observe_wizard" type="object"
+                            string="Observación del cliente" invisible="state != 'sent'"/>
+                    <button name="action_send" type="object" string="Levantar y reenviar"
+                            class="btn-primary" invisible="state != 'observed'"/>
+                    <button name="action_open_confirm_wizard" type="object" string="Confirmar"
+                            class="btn-primary" invisible="state != 'sent'"/>
+                    <button name="action_create_invoice" type="object" string="Crear factura"
+                            class="btn-primary"
+                            invisible="state != 'confirmed' or (invoice_id and invoice_state != 'cancel')"
+                            groups="al_construction_planner.group_planner_revenue"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state not in ('draft', 'sent', 'observed') or not id"
+                            groups="al_construction_planner.group_planner_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,sent,observed,confirmed,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_deliveries" type="object" class="oe_stat_button"
+                                icon="fa-truck">
+                            <field name="delivery_count" widget="statinfo" string="Entregas"/>
+                        </button>
+                        <button name="action_view_invoice" type="object" class="oe_stat_button"
+                                icon="fa-file-text-o" string="Factura" invisible="not invoice_id"
+                                groups="account.group_account_invoice"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                            <span class="text-muted fs-4" invisible="not sequence_number">
+                                · Valorización <field name="sequence_number" class="oe_inline"/>
+                            </span>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" readonly="id" options="{'no_create': True}"/>
+                            <field name="sale_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                            <field name="invoice_state" invisible="not invoice_id"/>
+                            <field name="invoice_payment_state" invisible="not invoice_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="cutoff_date" readonly="id"/>
+                            <field name="planned_submit_date"/>
+                            <field name="submit_date" invisible="not submit_date"/>
+                            <field name="planned_confirm_date"/>
+                            <field name="planned_invoice_date"/>
+                            <field name="planned_collection_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Partidas" name="lines">
+                            <field name="line_ids" nolabel="1" readonly="1">
+                                <list create="0" delete="0">
+                                    <field name="sale_line_id"/>
+                                    <field name="price"/>
+                                    <field name="progress_prev" widget="percentage"/>
+                                    <field name="progress_period" widget="percentage"/>
+                                    <field name="progress_cumulative" widget="percentage"/>
+                                    <field name="amount_delivered" sum="Entregado"/>
+                                    <field name="amount_confirmed" sum="Confirmado"/>
+                                    <field name="amount_pending" sum="Por valorizar" optional="hide"/>
+                                    <field name="amount_amortization" sum="Amortización" optional="hide"/>
+                                    <field name="amount_guarantee" sum="Fondo de garantía"/>
+                                    <field name="amount_net" sum="Neto"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group>
+                                <group string="Retenciones">
+                                    <field name="guarantee_pct" string="Fondo de garantía (%)"/>
+                                    <field name="advance_amortization_pct"/>
+                                </group>
+                                <group class="oe_subtotal_footer">
+                                    <field name="amount_delivered"/>
+                                    <field name="amount_confirmed"/>
+                                    <field name="amount_pending"/>
+                                    <field name="amount_amortization"/>
+                                    <field name="amount_guarantee"/>
+                                    <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Entregas incluidas" name="deliveries">
+                            <field name="delivery_ids" nolabel="1"/>
+                        </page>
+                        <page string="Conformidad del cliente" name="confirmation"
+                              invisible="state not in ('confirmed', 'invoiced')">
+                            <group>
+                                <group>
+                                    <field name="confirm_date"/>
+                                    <field name="confirm_name"/>
+                                    <field name="confirm_role"/>
+                                </group>
+                                <group>
+                                    <field name="confirm_attachment_ids" widget="many2many_binary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Observaciones del cliente" name="observations"
+                              invisible="not observation_ids">
+                            <field name="observation_ids" nolabel="1">
+                                <list create="0" delete="0" edit="0">
+                                    <field name="date"/>
+                                    <field name="author_id"/>
+                                    <field name="body"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <p class="text-muted small">
+                        Sin fecha, nombre, cargo y documento del cliente no pasa a Confirmada, y
+                        sin Confirmada no se factura. Lo no confirmado queda por valorizar y entra
+                        en la siguiente. «Crear factura» lleva la cantidad entregada de la línea de
+                        la OV al % acumulado confirmado.
+                    </p>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_valuation_view_search" model="ir.ui.view">
+        <field name="name">construction.valuation.search</field>
+        <field name="model">construction.valuation</field>
+        <field name="arch" type="xml">
+            <search string="Valorizaciones">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <filter string="En curso" name="open"
+                        domain="[('state', 'in', ('draft', 'sent', 'observed'))]"/>
+                <filter string="Por facturar" name="to_invoice"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Facturadas" name="invoiced" domain="[('state', '=', 'invoiced')]"/>
+                <separator/>
+                <filter string="Corte" name="cutoff_date" date="cutoff_date"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_valuation" model="ir.actions.act_window">
+        <field name="name">Valorizaciones</field>
+        <field name="res_model">construction.valuation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_valuation_view_search"/>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin valorizaciones</p>
+            <p>«Preparar valorización» reúne las entregas semanales confirmadas de la obra hasta
+               el corte; la acción programada la prepara al pasar cada corte.</p>
+        </field>
+    </record>
+
+    <!-- Calendario e ingresos de la obra (P-21) -->
+    <record id="project_project_view_form_construction_income" model="ir.ui.view">
+        <field name="name">project.project.form.construction.income</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_deliveries" type="object"
+                        class="oe_stat_button" icon="fa-truck"
+                        invisible="not is_construction_site or not construction_delivery_count"
+                        groups="al_construction_planner.group_planner_user">
+                    <field name="construction_delivery_count" widget="statinfo" string="Entregas"/>
+                </button>
+                <button name="action_view_construction_valuations" type="object"
+                        class="oe_stat_button" icon="fa-handshake-o"
+                        invisible="not is_construction_site or not construction_valuation_count"
+                        groups="al_construction_planner.group_planner_user">
+                    <field name="construction_valuation_count" widget="statinfo" string="Valorizaciones"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='settings']" position="after">
+                <page string="Calendario e ingresos" name="construction_income"
+                      invisible="not is_construction_site"
+                      groups="al_construction_planner.group_planner_user">
+                    <group>
+                        <group string="Contrato">
+                            <field name="construction_sale_order_id" options="{'no_create': True}"
+                                   context="{'default_partner_id': partner_id}"/>
+                            <label for="construction_valuation_every" string="Valorizar cada"
+                                   invisible="construction_valuation_unit != 'week'"/>
+                            <div class="o_row" invisible="construction_valuation_unit != 'week'">
+                                <field name="construction_valuation_every" class="oe_inline"/>
+                                <span>semanas</span>
+                            </div>
+                            <field name="construction_valuation_unit"/>
+                        </group>
+                        <group string="Plazos (días)">
+                            <field name="construction_valuation_submit_days"/>
+                            <field name="construction_client_confirm_days"/>
+                            <field name="construction_invoice_days"/>
+                            <field name="construction_collection_days"/>
+                        </group>
+                        <group string="Adelanto y fondo de garantía">
+                            <field name="construction_advance_pct"/>
+                            <field name="construction_advance_amortization_pct"/>
+                            <field name="construction_guarantee_pct"/>
+                            <field name="construction_guarantee_release"/>
+                            <field name="construction_guarantee_release_date"
+                                   invisible="construction_guarantee_release != 'date'"
+                                   required="construction_guarantee_release == 'date'"/>
+                        </group>
+                        <group string="Cortes de valorización"
+                               invisible="construction_valuation_unit != 'dates'">
+                            <field name="construction_valuation_cutoff_ids" nolabel="1" colspan="2">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <h5 class="mb-0">Valorizaciones previstas</h5>
+                        <button name="action_construction_prepare_valuation" type="object"
+                                string="Preparar valorización" class="btn-secondary btn-sm"
+                                icon="fa-plus" invisible="not construction_sale_order_id"/>
+                    </div>
+                    <field name="construction_valuation_forecast_html" nolabel="1" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partida del contrato en la OV -->
+    <record id="sale_order_view_form_construction_income" model="ir.ui.view">
+        <field name="name">sale.order.form.construction.income</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="construction_family" optional="hide"
+                       groups="al_construction_planner.group_planner_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Valorización de la factura -->
+    <record id="account_move_view_form_construction_income" model="ir.ui.view">
+        <field name="name">account.move.form.construction.income</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_origin']" position="after">
+                <field name="construction_valuation_id" invisible="not construction_valuation_id"
+                       groups="al_construction_planner.group_planner_user"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -21,4 +21,18 @@
         <field name="padding">5</field>
         <field name="company_id" eval="False"/>
     </record>
+    <record id="seq_construction_weekly_delivery" model="ir.sequence">
+        <field name="name">Entrega semanal de obra</field>
+        <field name="code">construction.weekly.delivery</field>
+        <field name="prefix">ENT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_construction_valuation" model="ir.sequence">
+        <field name="name">Valorización de obra</field>
+        <field name="code">construction.valuation</field>
+        <field name="prefix">VAL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

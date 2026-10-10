@@ -1051,6 +1051,9 @@ class ConstructionResourcePlanLine(models.Model):
             return {}
         domain = [('task_id', 'child_of', self.task_id.id), ('project_id', '=', self.project_id.id),
                   ('employee_id', '!=', False)]
+        # Hasta una fecha de corte: la entrega semanal (fase 10).
+        if self.env.context.get('construction_date_to'):
+            domain.append(('date', '<=', self.env.context['construction_date_to']))
         role = self._get_role()
         if role:
             domain.append(('employee_id.planning_role_ids', 'in', role.ids))
@@ -1117,6 +1120,46 @@ class ConstructionResourcePlanLine(models.Model):
             line.qty_executed = qty
             line.qty_settled = settled.get(line.id, 0.0)
             line.progress_pct = min(qty / line.qty_planned, 1.0) if line.qty_planned else 0.0
+
+    def _construction_valued_execution(self, day):
+        """Ejecutado valorizado de las líneas hasta ``day`` (inclusive), por
+        tipo: {línea: {'contract', 'labor', 'material'}}. Es el numerador del
+        avance de la partida (especificación, «Avance de la partida»):
+        contratas y personal propio por driver = avances validados con fecha
+        hasta el corte × tarifa del plan; personal propio por horas = horas
+        registradas × costo hora del empleado; material, servicio y
+        producción = consumido hasta el corte × costo del plan."""
+        result = {line: {'contract': 0.0, 'labor': 0.0, 'material': 0.0} for line in self}
+        if not self:
+            return result
+        day = fields.Date.to_date(day)
+        drivers = self.filtered(lambda l: l.resource_type in DRIVER_TYPES)
+        hour_based = drivers.filtered(lambda l: l._is_hour_based())
+        by_driver = drivers - hour_based
+        if by_driver:
+            # sudo: se valoriza lo validado de todas las contratas aunque quien
+            # prepara la entrega no vea sus avances.
+            progress_sudo = self.env['construction.task.progress'].sudo()
+            for line, qty in progress_sudo._read_group(
+                    [('plan_line_id', 'in', by_driver.ids), ('state', '=', 'validated'),
+                     ('date', '<=', day)], ['plan_line_id'], ['qty:sum']):
+                line = self.browse(line.id)
+                result[line][line.resource_type] += (qty or 0.0) * line.price_unit_planned
+        for line in hour_based:
+            registered = line.with_context(
+                construction_date_to=day)._get_timesheet_by_employee()
+            # sudo: el costo hora es de RR. HH.; solo para valorizar la línea.
+            result[line]['labor'] += sum(
+                employee.sudo().hourly_cost * hours for employee, hours in registered.items())
+        materials = self - drivers
+        allocations = materials.allocation_ids
+        if allocations:
+            Allocation = self.env['construction.resource.plan.allocation']
+            for allocation, qty in Allocation._construction_consumed_at(
+                    allocations, day).items():
+                line = allocation.plan_line_id
+                result[line]['material'] += qty * line.price_unit_planned
+        return result
 
     def _get_reported_qty(self):
         """Avance reportado y aún no validado de la línea."""

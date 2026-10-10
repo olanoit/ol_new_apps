@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Observaciones del cliente a la valorización (P-20): cada una queda
+         con fecha y autor en el historial y se listan en la valorización. -->
+    <record id="mt_valuation_observation" model="mail.message.subtype">
+        <field name="name">Observación del cliente</field>
+        <field name="description">Observación del cliente</field>
+        <field name="res_model">construction.valuation</field>
+        <field name="default" eval="True"/>
+        <field name="internal" eval="True"/>
+        <field name="sequence">50</field>
+    </record>
+</odoo>
