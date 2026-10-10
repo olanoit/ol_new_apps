@@ -77,7 +77,7 @@ Guías: 47 (todas las áreas OL-*; `ol_licencia_perpetua` no tiene guía funcion
 | Guía | Módulo | Versión |
 |---|---|---|
 | [Requerimiento de materiales de obra (AL)](../OL-PROJECTS/al_construction_material_request/GUIA_FUNCIONAL.md) | `al_construction_material_request` | 9.20261009 |
-| [Planificación de obra (AL)](../OL-PROJECTS/al_construction_planner/GUIA_FUNCIONAL.md) | `al_construction_planner` | 1.20261010 |
+| [Planificación de obra (AL)](../OL-PROJECTS/al_construction_planner/GUIA_FUNCIONAL.md) | `al_construction_planner` | 10.20261010 |
 | [Gantt de Proyectos — Asistente IA (AL)](../OL-PROJECTS/al_project_gantt_ai/GUIA_FUNCIONAL.md) | `al_project_gantt_ai` | 5.20261008 |
 | [Gantt de Proyectos — Backend (AL)](../OL-PROJECTS/al_project_gantt_backend/GUIA_FUNCIONAL.md) | `al_project_gantt_backend` | 14.20261009 |
 | [Gantt de Proyectos — Base (AL)](../OL-PROJECTS/al_project_gantt_base/GUIA_FUNCIONAL.md) | `al_project_gantt_base` | 16.20261008 |

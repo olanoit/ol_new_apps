@@ -131,8 +131,16 @@ Menú raíz **Planificación de obra** (ícono propio: edificio de pisos con las
 barras de su plan, carmesí `#BE123C`, trazo blanco; generado con
 `icons/make_icons.py` del scratchpad):
 
-- Obras ▸ Planes de recursos (P-01 básica) · Árbol de recursos (P-02) · Tareas de la obra · Recursos planificados · Obras
-- Configuración ▸ Tipologías (P-12) · Actividades de obra (P-14) · Tarifas de contrata (P-14)
+Menú al cierre (fase 11; la acción del menú raíz es el Inicio, P-01):
+
+- Obras ▸ Inicio (P-01) · Planes de recursos (P-03) · Árbol de recursos (P-02) · Etapas del cronograma · Tareas de la obra · Recursos planificados · Análisis del plan · Obras (P-21 en la pestaña «Calendario e ingresos»)
+- Cronograma (P-15)
+- Avance ▸ Registrar avance (P-06) · Avances por validar (P-07) · Avances
+- Contratas ▸ Asignar contrata (P-05) · Asignar cuadrilla (W-06) · OC de servicio · Liquidaciones semanales (P-08)
+- Ingresos ▸ Entregas semanales (P-19) · Valorizaciones (P-20) · Preparar valorización (W-13) · Cobranza de la obra
+- Abastecimiento ▸ Abastecimiento de la obra (P-18) · Precios de compra del producto (P-16) · Compras por producto · Requerimientos de obra (P-11) · Requerimientos de compra · Órdenes de fabricación · Asignaciones del plan
+- Reportes ▸ Cronograma valorizado (P-22) · Análisis del cronograma valorizado · Control de saldo (P-13) · Precios de compra (P-16)
+- Configuración ▸ Ajustes · Tipologías (P-12) · Actividades de obra (P-14) · Tarifas de contrata (P-14) · Reglas de aprobación
 
 Multicompañía: `_check_company_auto` y `check_company=True` en todas las
 relaciones; reglas `company_id in company_ids` (las actividades admiten
@@ -183,7 +191,7 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Control y personal propio (hecha; fase 7 de la especificación) | OC con analítica contra el presupuesto de la combinación (W-10); estado y montos de control almacenados con eventos; análisis de control; W-06 cuadrillas con turnos y horas; W-08 cambiar fechas con aviso a Logística; reversión del estado del módulo (ver §6.4) | P-13, W-06, W-08 |
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
 | Ruta del ingreso (hecha; fase 10 de la especificación) | OV por partida con familia; calendario e ingresos de la obra con fechas corridas al siguiente día hábil; entrega semanal con ejecutado valorizado a la fecha; valorización con W-13, observaciones, W-14 y factura desde la OV con control de lo confirmado (ver §6.7) | P-19, P-20, P-21 |
-| 7 | Cronograma valorizado (fase 11 de la especificación) | P-22 |
+| Cronograma valorizado e inicio (hecha; fase 11 de la especificación) | `construction.schedule.report` plan y real por semana; P-22 con curva S, Excel, pivote y gráfico; P-01 con obras, próximo hito y pendientes por grupo como acción por defecto; menú Reportes (ver §6.8) | P-22, P-01 |
 | Cronograma con recursos (hecha; fase 8 de la especificación) | Etapas del ambiente; herencia de `al.gantt.data.get_data`; pantalla sobre el componente del Gantt con selección, panel, acciones y carga semanal OWL; arrastre con recálculo y aviso (ver §6.5) | P-15 |
 | Productos, precios y abastecimiento (hecha; fase 9 de la especificación) | Vista SQL de precios de compra en soles; P-16 con estadísticos y gráfico; W-12 con media móvil; W-11 crear producto con código de familia; tablero de abastecimiento y alertas (ver §6.6) | P-16, P-17, P-18 |
 
@@ -489,6 +497,50 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   datos salen de `project._construction_get_valuation_forecast()`, pensado
   para reutilizarse en P-22.
 
+### 6.8 Cronograma valorizado e inicio (fase 11)
+
+- **Tabla calculada, no vista SQL.** `construction.schedule.report` es un
+  modelo normal (una fila por obra, semana, concepto y escenario, con
+  marcas de fondo de garantía y adelanto) que se recalcula por obra con
+  `_construction_refresh` al abrir P-22 y con la acción programada diaria.
+  Se descartó la vista SQL: el plan reparte cada línea en los días hábiles
+  de su etapa (calendario del ingreso y feriados) y el calendario de P-21
+  corre fechas al siguiente día hábil; reproducirlo en SQL duplicaría la
+  lógica de las fases 8 y 10. El pivote y el gráfico leen la tabla. El
+  recálculo usa `sudo` tras `check_access('read')` de la obra (resume
+  inventario, fabricación, horas y contabilidad); los usuarios solo leen.
+- **Plan.** Costo: `_construction_planned_by_day({False: plan.line_ids})`
+  agrupado por `_construction_period`. Ingreso: precio de cada partida ×
+  su reparto (el avance previsto con material). Valorización, factura y
+  cobro: `_construction_get_valuation_forecast()` en la semana de la
+  confirmación, la factura y el cobro (neto); el fondo de garantía en la
+  semana de su cobro (fila «al cierre» en P-22) y el adelanto, si hay
+  amortización, facturado y cobrado al inicio. `_construction_weekly` hace
+  que la última semana absorba el redondeo.
+- **Real.** Costo: diferencias de `_construction_valued_execution` al
+  cierre de cada semana, desde el inicio hasta hoy. Ingreso: entregas
+  confirmadas o valorizadas. Valorización: confirmadas o facturadas, en la
+  semana de `confirm_date`. Factura: facturas y notas de crédito publicadas
+  de la OV del contrato (`amount_untaxed_signed`). Cobro: conciliaciones de
+  la cuenta por cobrar con pagos o extractos (no con notas de crédito), en
+  proporción base imponible ÷ total. En v19 un pago sin asiento no cuenta
+  hasta conciliar el extracto.
+- **P-22** es una acción de cliente OWL (`schedule_report`) con la curva S
+  en SVG, la tabla plan o real y la exportación a Excel (`xlsxwriter`, un
+  adjunto sin documento que descarga quien lo genera).
+- **P-01** (`construction.planner.home`, acción de cliente `home`) es la
+  acción del menú raíz. Obras: plan vigente (o en preparación), planificado
+  y saldo (solo aprobados), avance valorizado de la obra y próximo hito (el
+  más cercano entre las fechas previstas de P-21 y el fin de etapa; un plan
+  en borrador tiene «Aprobar el plan»). Pendientes: cada fila es una acción
+  de ventana con su dominio y sin los filtros por defecto de la acción
+  base; solo las del grupo del usuario. Las alertas de abastecimiento abren
+  el tablero de la primera obra con alertas.
+- **«Sus obras».** `project.construction_supervisor_ids` más el
+  responsable del proyecto. Un planificador que no supervisa ninguna obra
+  ve todo; la Jefatura, siempre todo. Se aplica a avances y liquidaciones
+  por validar.
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -507,12 +559,12 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 - **Dos «obras»** (proyecto y `l10n_pe.hr.construction.site` de planilla):
   se encuentran por la cuenta analítica (§6.4); un campo de enlace iría en un
   módulo puente.
-- **Siguiente**: cronograma valorizado (P-22: plan con
-  `_construction_planned_by_day` y el calendario de
-  `_construction_get_valuation_forecast`; real con entregas confirmadas,
-  valorizaciones confirmadas, facturas y pagos conciliados) e inicio de la
-  aplicación (P-01) con las alertas de abastecimiento y las entregas y
-  valorizaciones pendientes.
+- **Cronograma valorizado (fase 11)**: el costo real recorre las semanas
+  desde el inicio de la obra con `_construction_valued_execution` (una
+  consulta de horas por línea de personal propio por semana); con el volumen
+  de MOMEN conviene medirlo. El inicio calcula las alertas de abastecimiento
+  de todas las obras vigentes al abrirse. Criterios de aceptación y lo que
+  falta para validarlos con MOMEN: `ACEPTACION.md`.
 - **Ingresos (fase 10)**: replanificar cambia el monto planificado de la
   partida y los avances validados de la versión anterior no pasan a la
   nueva si ya estaban liquidados (el avance de la partida puede bajar); la

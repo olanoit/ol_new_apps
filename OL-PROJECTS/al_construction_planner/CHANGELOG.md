@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261010 — 10/10/2026
+
+- Cronograma valorizado (fase 11, P-22): por obra y semana, costo, ingreso devengado, margen, valorización confirmada, facturado y cobrado en plan (líneas repartidas en los días hábiles de su etapa y calendario de P-21) y real (ejecutado, entregas, valorizaciones, facturas y cobros conciliados), con curva S, fondo de garantía al cierre, Excel, pivote y gráfico.
+- Inicio de la aplicación (P-01) como acción por defecto: obras con plan, planificado, saldo, avance, próximo hito y estado, y «Pendientes de hoy» por grupo con su lista filtrada.
+- Supervisores de obra en el proyecto: el supervisor ve en su inicio solo los avances y liquidaciones por validar de sus obras.
+- Menú «Reportes» (cronograma valorizado, su análisis, control de saldo y precios de compra) y «Cobranza de la obra» en Ingresos.
+
 ## 9.20261010 — 10/10/2026
 
 - Calendario e ingresos de la obra (fase 10, P-21): OV del contrato, valorización cada n semanas o en fechas fijas, plazos de presentación, confirmación, factura y cobro, adelanto y fondo de garantía, con valores por defecto en Ajustes y tabla de valorizaciones previstas corridas al siguiente día hábil.

@@ -1,0 +1,12 @@
+// Inicio de la aplicación (P-01).
+.o_cp_home {
+    background-color: $o-view-background-color;
+
+    .o_cp_home_work,
+    .o_cp_home_item {
+        cursor: pointer;
+    }
+    .o_cp_home_works th {
+        white-space: nowrap;
+    }
+}

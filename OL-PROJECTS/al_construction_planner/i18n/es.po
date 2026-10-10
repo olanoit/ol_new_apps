@@ -138,6 +138,7 @@ msgstr "Crear una tarea"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_allocation__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_schedule_report__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_space_stage__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_uid
@@ -186,6 +187,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_allocation__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_schedule_report__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_space_stage__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_date
@@ -233,6 +235,7 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_supply_mixin__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_planner_home__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__display_name
@@ -241,6 +244,7 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_allocation__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_schedule_report__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_space_stage__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_supply_board__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__display_name
@@ -428,6 +432,7 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_allocation__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_schedule_report__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_space_stage__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_uid
@@ -476,6 +481,7 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_allocation__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_schedule_report__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_space_stage__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_date
@@ -831,8 +837,8 @@ msgstr "ID"
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_exception_decoration__danger
-#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_exception_decoration__danger
+#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_exception_decoration__danger
 msgid "Error"
 msgstr "Error"
 
@@ -840,8 +846,8 @@ msgstr "Error"
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_exception_decoration__warning
-#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_exception_decoration__warning
+#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_exception_decoration__warning
 msgid "Alert"
 msgstr "Alerta"
 
@@ -849,8 +855,8 @@ msgstr "Alerta"
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__overdue
+#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__overdue
 msgid "Overdue"
 msgstr "Vencidas"
 
@@ -858,8 +864,8 @@ msgstr "Vencidas"
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__planned
+#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__planned
 msgid "Planned"
 msgstr "Planeado"
 
@@ -867,12 +873,7 @@ msgstr "Planeado"
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__today
+#: model:ir.model.fields.selection,name:mail.selection__construction_weekly_delivery__activity_state__today
 msgid "Today"
 msgstr "Hoy"
-
-#. module: al_construction_planner
-#: code:addons/al_construction_planner/static/src/plan_tree/plan_tree.xml:0
-msgid "Driver"
-msgstr "Driver"

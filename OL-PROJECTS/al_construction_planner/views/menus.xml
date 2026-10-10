@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- La acción por defecto es el inicio (P-01): obras y pendientes de hoy. -->
     <menuitem id="menu_planner_root" name="Planificación de obra"
               web_icon="al_construction_planner,static/description/icon.png"
+              action="action_construction_planner_home"
               groups="group_planner_progress" sequence="46"/>
 
     <menuitem id="menu_planner_works" name="Obras" parent="menu_planner_root" sequence="10">
+        <menuitem id="menu_planner_home" name="Inicio"
+                  action="action_construction_planner_home" sequence="1"/>
         <menuitem id="menu_planner_plans" name="Planes de recursos"
                   action="action_construction_resource_plan" sequence="10"/>
         <menuitem id="menu_planner_plan_tree" name="Árbol de recursos"
@@ -20,9 +24,6 @@
                   groups="group_planner_planner"/>
         <menuitem id="menu_planner_analysis" name="Análisis del plan"
                   action="action_construction_resource_plan_line_analysis" sequence="35"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_control" name="Análisis de control"
-                  action="action_construction_plan_control" sequence="36"
                   groups="group_planner_planner"/>
         <menuitem id="menu_planner_sites" name="Obras"
                   action="al_construction_material_request.action_construction_sites" sequence="40"
@@ -64,6 +65,9 @@
                   action="action_construction_valuation" sequence="20"/>
         <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización"
                   action="action_construction_valuation_prepare_wizard" sequence="30"/>
+        <menuitem id="menu_planner_collections" name="Cobranza de la obra"
+                  action="action_construction_collections" sequence="40"
+                  groups="account.group_account_invoice"/>
     </menuitem>
 
     <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
@@ -84,6 +88,22 @@
                   action="mrp.mrp_production_action" sequence="30" groups="mrp.group_mrp_user"/>
         <menuitem id="menu_planner_allocations" name="Asignaciones del plan"
                   action="action_construction_resource_plan_allocation" sequence="40"/>
+    </menuitem>
+
+    <menuitem id="menu_planner_reports" name="Reportes" parent="menu_planner_root" sequence="60"
+              groups="group_planner_planner,group_planner_revenue">
+        <menuitem id="menu_planner_schedule_report" name="Cronograma valorizado"
+                  action="action_construction_schedule_report_screen" sequence="10"
+                  groups="group_planner_manager,group_planner_revenue"/>
+        <menuitem id="menu_planner_schedule_report_analysis" name="Análisis del cronograma valorizado"
+                  action="action_construction_schedule_report" sequence="15"
+                  groups="group_planner_manager,group_planner_revenue"/>
+        <menuitem id="menu_planner_control" name="Control de saldo"
+                  action="action_construction_plan_control" sequence="20"
+                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_report_prices" name="Precios de compra"
+                  action="action_construction_purchase_price_analysis" sequence="30"
+                  groups="group_planner_planner"/>
     </menuitem>
 
     <menuitem id="menu_planner_config" name="Configuración" parent="menu_planner_root" sequence="90"

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner.ScheduleReport">
+        <div class="o_action o_cp_schedule_report d-flex flex-column h-100">
+            <div class="o_cp_toolbar d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom">
+                <select class="form-select form-select-sm w-auto o_cp_sr_project" t-on-change="onProjectChange"
+                        aria-label="Obra">
+                    <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                        <option t-att-value="project.id" t-att-selected="project.id === state.projectId"
+                                t-esc="project.name"/>
+                    </t>
+                </select>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Escenario">
+                    <button class="btn o_cp_sr_plan" t-att-class="state.scenario === 'plan' ? 'btn-primary' : 'btn-secondary'"
+                            t-on-click="() => this.setScenario('plan')">Previsto</button>
+                    <button class="btn o_cp_sr_real" t-att-class="state.scenario === 'real' ? 'btn-primary' : 'btn-secondary'"
+                            t-on-click="() => this.setScenario('real')">Real</button>
+                </div>
+                <span t-if="state.data?.plan_name" class="small text-muted">
+                    Plan de recursos <t t-esc="state.data.plan_name"/>
+                </span>
+                <div class="ms-auto d-flex gap-2">
+                    <button class="btn btn-sm btn-secondary" t-on-click="load" t-att-disabled="state.loading">
+                        <i class="fa fa-refresh me-1"/>Actualizar
+                    </button>
+                    <button class="btn btn-sm btn-secondary o_cp_sr_analysis" t-on-click="openAnalysis"
+                            t-att-disabled="!state.projectId">
+                        <i class="fa fa-table me-1"/>Pivote y gráfico
+                    </button>
+                    <button class="btn btn-sm btn-primary o_cp_sr_export" t-on-click="exportXlsx"
+                            t-att-disabled="!rows.length">
+                        <i class="fa fa-file-excel-o me-1"/>Exportar a Excel
+                    </button>
+                </div>
+            </div>
+            <div class="o_cp_sr_body flex-grow-1 overflow-auto px-3 py-2">
+                <t t-if="!state.projectId">
+                    <div class="o_view_nocontent">
+                        <div class="o_nocontent_help">
+                            <p class="o_view_nocontent_empty_folder">Ninguna obra tiene plan de recursos</p>
+                            <p>El cronograma valorizado sale del plan de la obra, sus entregas, valorizaciones,
+                               facturas y cobros.</p>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="state.data">
+                    <div class="o_cp_sr_kpis d-flex flex-wrap gap-3 mb-3">
+                        <div class="o_cp_sr_kpi">
+                            <div class="o_cp_sr_kpi_value" t-esc="moneyAlways(totals.cost)"/>
+                            <div class="o_cp_sr_kpi_label">Costo <t t-esc="state.scenario === 'plan' ? 'del plan' : 'ejecutado'"/></div>
+                        </div>
+                        <div class="o_cp_sr_kpi">
+                            <div class="o_cp_sr_kpi_value" t-esc="moneyAlways(totals.revenue)"/>
+                            <div class="o_cp_sr_kpi_label"><t t-esc="state.scenario === 'plan' ? 'Precio del contrato' : 'Ingreso devengado'"/></div>
+                        </div>
+                        <div class="o_cp_sr_kpi">
+                            <div class="o_cp_sr_kpi_value" t-att-class="totals.margin &lt; 0 ? 'text-danger' : ''"
+                                 t-esc="moneyAlways(totals.margin)"/>
+                            <div class="o_cp_sr_kpi_label">Margen <t t-esc="state.scenario === 'plan' ? 'al cierre' : 'a la fecha'"/></div>
+                        </div>
+                        <div class="o_cp_sr_kpi">
+                            <div class="o_cp_sr_kpi_value" t-esc="moneyAlways(totals.collection_total)"/>
+                            <div class="o_cp_sr_kpi_label">Cobrado con el fondo de garantía</div>
+                        </div>
+                        <div class="o_cp_sr_kpi" t-if="totals.max_gap_week">
+                            <div class="o_cp_sr_kpi_value" t-esc="moneyAlways(totals.max_gap)"/>
+                            <div class="o_cp_sr_kpi_label">Mayor brecha costo − cobrado</div>
+                        </div>
+                        <div class="o_cp_sr_kpi text-muted small align-self-center">
+                            Símbolo: <t t-esc="state.data.currency_symbol"/>. La brecha usa el costo devengado,
+                            que no es lo pagado.
+                        </div>
+                    </div>
+
+                    <div t-if="rows.length" class="o_cp_sr_chart mb-3">
+                        <svg t-att-viewBox="'0 0 ' + chart.width + ' ' + chart.height" preserveAspectRatio="none"
+                             role="img" aria-label="Curva S">
+                            <t t-foreach="yTicks" t-as="tick" t-key="tick_index">
+                                <line class="o_cp_grid" t-att-x1="chart.left" t-att-x2="chart.width - chart.right"
+                                      t-att-y1="tick.y" t-att-y2="tick.y"/>
+                                <text class="o_cp_axis" t-att-x="chart.left - 6" t-att-y="tick.y + 4"
+                                      text-anchor="end" t-esc="tick.label"/>
+                            </t>
+                            <t t-foreach="xTicks" t-as="tick" t-key="tick_index">
+                                <text class="o_cp_axis" t-att-x="tick.x" t-att-y="chart.height - 8"
+                                      text-anchor="middle" t-esc="tick.label"/>
+                            </t>
+                            <line t-if="todayX" class="o_cp_today" t-att-x1="todayX" t-att-x2="todayX"
+                                  t-att-y1="chart.top" t-att-y2="chart.height - chart.bottom"/>
+                            <t t-foreach="series" t-as="serie" t-key="serie_index">
+                                <polyline t-if="serie.points" t-att-class="'o_cp_serie ' + serie.css + (serie.dashed ? ' o_cp_dashed' : '')"
+                                          t-att-points="serie.points"/>
+                            </t>
+                        </svg>
+                        <div class="d-flex flex-wrap gap-3 small text-muted">
+                            <t t-foreach="series" t-as="serie" t-key="serie_index">
+                                <span><span t-att-class="'o_cp_legend ' + serie.css + (serie.dashed ? ' o_cp_dashed' : '')"/>
+                                    <t t-esc="serie.label"/></span>
+                            </t>
+                            <span><span class="o_cp_legend o_cp_today"/>Semana actual</span>
+                        </div>
+                    </div>
+
+                    <table class="table table-sm table-hover o_cp_sr_table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Semana</th>
+                                <th class="text-end">Costo</th>
+                                <th class="text-end">Costo acum.</th>
+                                <th class="text-end">Ingreso devengado</th>
+                                <th class="text-end">Ingreso acum.</th>
+                                <th class="text-end">Margen acum.</th>
+                                <th class="text-end">Valorización confirmada</th>
+                                <th class="text-end">Facturado</th>
+                                <th class="text-end">Cobrado</th>
+                                <th class="text-end">Cobrado acum.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="rows" t-as="row" t-key="row.week_start">
+                                <t t-set="data" t-value="row[state.scenario]"/>
+                                <tr t-att-class="isTodayWeek(row) ? 'o_cp_sr_today' : ''">
+                                    <td class="text-nowrap" t-esc="row.label"/>
+                                    <td class="text-end" t-esc="money(data.cost)"/>
+                                    <td class="text-end" t-esc="moneyAlways(data.cost_cum)"/>
+                                    <td class="text-end" t-esc="money(data.revenue)"/>
+                                    <td class="text-end" t-esc="moneyAlways(data.revenue_cum)"/>
+                                    <td class="text-end" t-att-class="data.margin_cum &lt; 0 ? 'text-danger' : ''"
+                                        t-esc="moneyAlways(data.margin_cum)"/>
+                                    <td class="text-end" t-esc="money(data.valuation)"/>
+                                    <td class="text-end" t-esc="money(data.invoice)"/>
+                                    <td class="text-end" t-esc="money(data.collection)"/>
+                                    <td class="text-end" t-esc="moneyAlways(data.collection_cum)"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot t-if="totals.guarantee">
+                            <tr class="fw-bold">
+                                <td colspan="8">Fondo de garantía, al cierre</td>
+                                <td class="text-end" t-esc="moneyAlways(totals.guarantee)"/>
+                                <td class="text-end" t-esc="moneyAlways(totals.collection_total)"/>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p class="text-muted small">
+                        Plan: cada línea del plan repartida en los días hábiles de su etapa; ingreso = precio de la
+                        partida × su avance previsto, con material; valorización, factura y cobro según el calendario
+                        de la obra. Real: lo ejecutado valorizado (avances validados, horas y consumos), entregas
+                        confirmadas, valorizaciones confirmadas, facturas publicadas y cobros conciliados, sin IGV.
+                        La última semana del plan absorbe el redondeo.
+                    </p>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

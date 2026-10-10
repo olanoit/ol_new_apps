@@ -5,7 +5,9 @@ planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
 y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
 la fase 2.
 
-``CAPTURAS_DESDE=36`` rehace solo las de la fase 10 (ruta del ingreso,
+``CAPTURAS_DESDE=40`` rehace solo las de la fase 11 (cronograma valorizado
+e inicio, datos de planner_demo_schedule.py), ``CAPTURAS_DESDE=36`` solo
+las de la fase 10 (ruta del ingreso,
 datos de planner_demo_income.py), ``CAPTURAS_DESDE=17`` solo las de las
 fases 5 a 8,
 ``CAPTURAS_DESDE=24`` solo las de las fases 7 y 8 y ``CAPTURAS_DESDE=28``
@@ -197,9 +199,39 @@ def fase_10(c):
     c.foto('39-conformidad-cliente', selector=FULL)
 
 
+def fase_11(c):
+    """Fase 11: cronograma valorizado (P-22) e inicio (P-01), con los datos
+    de tools/planner_demo_schedule.py."""
+    project = buscar(c, 'project.project', [['name', '=', 'DEMO PLAN MOMEN-35-26']])[0]
+    # 40. Cronograma valorizado, escenario plan: curva S y tabla semanal
+    c.abrir_accion(f'{M}.action_construction_schedule_report_screen', ms=3000)
+    c.page.locator('.o_cp_sr_project').select_option(str(project))
+    c.esperar(3000)
+    c.page.locator('.o_cp_sr_table').wait_for()
+    c.foto('40-cronograma-valorizado', selector=FULL)
+
+    # 41. Escenario real: entregas, valorización, factura y cobro
+    c.clic('.o_cp_sr_real', ms=1500)
+    c.foto('41-cronograma-valorizado-real', selector=FULL)
+
+    # 42. Las mismas filas en el pivote nativo
+    c.clic('.o_cp_sr_analysis', ms=3000)
+    c.foto('42-cronograma-pivote', selector=FULL)
+
+    # 43. Inicio de la aplicación (P-01): obras y pendientes de hoy
+    c.abrir_accion(f'{M}.action_construction_planner_home', ms=4000)
+    c.page.locator('.o_cp_home_pending').wait_for()
+    c.esperar(1000)
+    c.foto('43-inicio', selector=FULL)
+
+
 with Captura(M) as c:
+    if DESDE >= 40:
+        fase_11(c)
+        raise SystemExit
     if DESDE >= 36:
         fase_10(c)
+        fase_11(c)
         raise SystemExit
     v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
     if DESDE >= 28:

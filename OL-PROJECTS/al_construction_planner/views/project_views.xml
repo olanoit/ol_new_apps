@@ -25,8 +25,25 @@
                         groups="al_construction_planner.group_planner_progress">
                     <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
                 </button>
+                <button name="action_view_construction_schedule_report" type="object"
+                        class="oe_stat_button" icon="fa-line-chart" string="Cronograma valorizado"
+                        invisible="not is_construction_site or not construction_plan_count"
+                        groups="al_construction_planner.group_planner_manager,al_construction_planner.group_planner_revenue"/>
             </xpath>
             <xpath expr="//page[@name='settings']" position="inside">
+                <group string="Supervisión de obra" name="construction_supervision"
+                       invisible="not is_construction_site"
+                       groups="al_construction_planner.group_planner_manager">
+                    <group>
+                        <field name="construction_supervisor_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <div class="text-muted small" colspan="2">
+                            Con el responsable del proyecto, son las obras del supervisor: en el inicio
+                            de la aplicación ve solo los avances y liquidaciones por validar de ellas.
+                        </div>
+                    </group>
+                </group>
                 <group string="Semana de liquidación de contratas" name="construction_week"
                        invisible="not is_construction_site"
                        groups="al_construction_planner.group_planner_manager">

@@ -1,12 +1,13 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `8.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `10.20261010` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso de las fases 1 a 9 (plan, árbol, línea base, asignaciones y
-> compras, contratas, liquidación semanal, control y personal propio,
-> cronograma con recursos, y productos, precios y abastecimiento) con un
-> ejemplo que cuadra. Enlaces verificados el
-> 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
+> proceso completo de las fases 1 a 11 (plan, árbol, línea base,
+> asignaciones y compras, contratas, liquidación semanal, control y personal
+> propio, cronograma con recursos, productos, precios y abastecimiento, ruta
+> del ingreso, cronograma valorizado e inicio) con un ejemplo que cuadra y el
+> mapa de las 22 pantallas (P-01 a P-22) y los 14 asistentes (W-01 a W-14).
+> Enlaces verificados el 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
 ## 1. Para qué sirve
 
@@ -40,9 +41,18 @@ no existe (P-17) y Logística compra desde el **abastecimiento de la obra**
 (P-18) lo que falta para las próximas semanas, con alertas de precio y de
 necesidad sin OC.
 
-Fuera del alcance de las fases 1 a 9: ingresos (entregas, valorizaciones y
-su factura) y el inicio de la aplicación (ver
-`docs/planificador/DISENO_TECNICO.md`).
+Desde la fase 10 el plan también cobra: cada semana la **entrega** devenga
+el ingreso de cada partida del contrato (precio × avance de la partida, con
+el material consumido), la **valorización** agrupa las entregas
+confirmadas, el cliente la observa y la confirma, y Administración y
+Finanzas factura lo confirmado desde la orden de venta, con las fechas del
+**calendario de la obra** (P-21).
+
+Desde la fase 11 la obra se lee de un vistazo: el **cronograma valorizado**
+(P-22) muestra por semana el costo, el ingreso, el margen, lo valorizado,
+facturado y cobrado, en plan y real, con la curva S; y el **inicio** de la
+aplicación (P-01) lista las obras con su próximo hito y lo que cada usuario
+tiene que atender hoy.
 
 ## 2. Marco normativo y conceptual
 
@@ -75,6 +85,16 @@ No hay norma que obligue el proceso: es planificación de gestión. Conceptos:
 | % ejecutado | Real entre planificado | Plan ▸ Control |
 | Cuadrilla | Obreros propios con un rol, asignados por semanas a niveles de la obra con turnos | Plan ▸ Asignar cuadrilla; Planificación (turnos) |
 | Presupuesto de la combinación | Línea del presupuesto analítico del plan que cubre las cuentas analíticas de una línea de compra | Contabilidad ▸ Presupuestos |
+| Partida | Línea de producto de la orden de venta del contrato (cantidad 1); su familia (cocina, closet…) dice qué ambientes le pertenecen | Obra ▸ Calendario e ingresos; línea de la OV |
+| Avance de la partida | (contratas a tarifa + horas a costo + material consumido a costo del plan) ÷ planificado de la partida | Entrega semanal |
+| Entrega semanal | Ingreso y costo devengados de la semana por partida; la confirma la Jefatura | Ingresos ▸ Entregas semanales |
+| Valorización | Lo entregado y no confirmado hasta un corte, que el cliente observa y confirma; con fondo de garantía y amortización del adelanto | Ingresos ▸ Valorizaciones |
+| Fondo de garantía | Porcentaje de cada valorización que el cliente retiene y paga al cierre de la obra | Obra ▸ Calendario e ingresos |
+| Cronograma valorizado | Costo, ingreso devengado, margen, valorización, facturado y cobrado por semana de la obra | Reportes ▸ Cronograma valorizado |
+| Escenario plan / real | Plan: lo que dicen el plan, sus etapas y el calendario; real: lo ejecutado, confirmado, facturado y cobrado | Cronograma valorizado |
+| Curva S | Costo, ingreso y cobrado acumulados por semana: muestra la brecha de caja de la obra | Cronograma valorizado |
+| Supervisor de obra | Usuario responsable de la obra o en «Supervisores de obra»: su inicio muestra solo los avances y liquidaciones de sus obras | Proyecto ▸ Ajustes ▸ Supervisión de obra |
+| Pendientes de hoy | Lo que el usuario tiene que atender según sus grupos; cada fila abre la lista filtrada | Inicio (P-01) |
 
 Prioridad de la tarifa: obra y contrata › solo obra › solo contrata › tarifa
 base › precio de la actividad.
@@ -122,6 +142,16 @@ flowchart TD
   CH --> CT
   Y --> CT
   M --> CF[Cambiar fechas] --> CL[Fechas de necesidad nuevas y actividad para Logística]
+  Y --> EN[Día de liquidación: entrega semanal con ingreso y costo devengados]
+  EN --> EC[Jefatura confirma la entrega] --> VA[Corte: valorización con las entregas confirmadas]
+  VA --> VE[Enviar al cliente] --> VO{¿Observa?}
+  VO -- Sí --> VE
+  VO -- Conformidad --> VC[Confirmada con fecha, nombre, cargo y documento]
+  VC --> FA[Factura desde la OV por lo confirmado] --> CO[Cobro conciliado]
+  EN --> SR[Cronograma valorizado: plan y real por semana, curva S]
+  FA --> SR
+  CO --> SR
+  W --> IN[Inicio: obras, próximo hito y pendientes de hoy por grupo]
   U --> P[Cerrar: sin documentos abiertos ni liquidaciones pendientes]
   Z2 --> P
 ```
@@ -157,7 +187,7 @@ flowchart TD
 | 27 | Asignar la cuadrilla propia | Árbol de recursos (selección) o plan ▸ Asignar cuadrilla | Planificador | Turnos por obrero y semana con la tarea y la línea del plan |
 | 28 | Registrar las horas | Hoja de horas de la tarea (o de sus módulos) | Capataz | Ejecutado y real de la línea de personal propio |
 | 29 | Cambiar fechas | Árbol de recursos o plan ▸ Cambiar fechas | Planificador | Tareas y fechas de necesidad movidas; actividad para Logística en los documentos desfasados |
-| 30 | Controlar | Plan ▸ Control; Obras ▸ Análisis de control | Jefatura, Finanzas | Planificado, comprometido, real, saldo y % ejecutado por etapa, tipo de recurso, contrata o producto |
+| 30 | Controlar | Plan ▸ Control; Reportes ▸ Control de saldo | Jefatura, Finanzas | Planificado, comprometido, real, saldo y % ejecutado por etapa, tipo de recurso, contrata o producto |
 | 31 | Revisar los precios de compra | Línea del plan ▸ ícono de gráfico, o Abastecimiento ▸ Precios de compra del producto | Planificador | Estadísticos en soles de la ventana; «Aplicar costo» con la base elegida |
 | 32 | Crear un producto que no existe | Línea del plan sin producto ▸ Crear producto (o Plan ▸ Crear producto) | Planificador | Producto activo con código de su familia, en la línea y marcado con el plan; actividad para Logística |
 | 33 | Abastecer la obra | Abastecimiento ▸ Abastecimiento de la obra (o botón del plan) | Logística, planificador | Cantidad a comprar por producto; «Compra masiva» con las filas marcadas |
@@ -168,7 +198,47 @@ flowchart TD
 | 38 | Enviar y levantar observaciones | Valorización ▸ Enviar al cliente · Observación del cliente · Levantar y reenviar | Proyectos | Enviada (PDF en el historial) u Observada con fecha y autor |
 | 39 | Registrar la conformidad | Valorización ▸ Confirmar (W-14) | Proyectos o Administración y Finanzas | Confirmada con fecha, nombre, cargo y documento; entregas Valorizadas |
 | 40 | Facturar | Valorización ▸ Crear factura; factura ▸ Confirmar | Administración y Finanzas | Factura de lo confirmado desde la OV; valorización Facturada |
-| 41 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
+| 41 | Cobrar | Ingresos ▸ Cobranza de la obra; Contabilidad (conciliar el pago o el extracto) | Tesorería | Factura pagada; cobro real en el cronograma valorizado |
+| 42 | Revisar el cronograma valorizado | Reportes ▸ Cronograma valorizado (o botón de la obra) | Gerencia, Finanzas, Jefatura | Curva S y tabla semanal plan contra real; Excel, pivote y gráfico |
+| 43 | Atender lo del día | Inicio (al abrir la aplicación) | Cada usuario según su grupo | La fila de cada pendiente abre su lista filtrada |
+| 44 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
+
+### Mapa de pantallas y asistentes
+
+Los códigos son los de la especificación v1.4.
+
+| Código | Pantalla o asistente | Dónde en Odoo |
+|---|---|---|
+| P-01 | Inicio: obras y pendientes de hoy | Al abrir la aplicación; Obras ▸ Inicio |
+| P-02 | Árbol del plan con selección en cascada | Obras ▸ Árbol de recursos; botón del plan |
+| P-03 | Resumen por etapa | Plan ▸ pestaña Resumen por etapa |
+| P-04 / W-01 | Generar plan | Plan ▸ Generar plan |
+| P-05 / W-05 | Asignar contrata a la selección | Contratas ▸ Asignar contrata; árbol, plan o cronograma |
+| P-06 / W-07 | Registrar avance | Avance ▸ Registrar avance; árbol, plan o tarea |
+| P-07 | Avances por validar | Avance ▸ Avances por validar |
+| P-08 | Liquidación semanal de contrata | Contratas ▸ Liquidaciones semanales |
+| P-09 | Recursos y avance del nivel | Tarea (piso, departamento, ambiente o módulo) ▸ pestaña Recursos y avance |
+| P-10 / W-02 | Compra masiva | Árbol, plan, cronograma o Abastecimiento de la obra ▸ Compra masiva |
+| P-11 / W-03 | Requerimiento de obra con control de plan | Árbol o plan ▸ Requerimiento de obra; Abastecimiento ▸ Requerimientos de obra |
+| W-04 | Orden de fabricación desde la BOM | Árbol o plan ▸ Orden de fabricación |
+| W-06 | Asignar cuadrilla | Contratas ▸ Asignar cuadrilla; árbol, plan o cronograma |
+| W-08 | Cambiar fechas | Árbol, plan o cronograma ▸ Cambiar fechas |
+| W-09 | Nueva versión (replanificar) | Plan aprobado ▸ Nueva versión |
+| W-10 | Exceso sobre el plan | Se abre solo al pasar el saldo (requerimiento, OF u OC con la analítica de la obra) |
+| P-12 | Tipología de la obra | Configuración ▸ Tipologías |
+| P-13 | Control de saldo | Plan ▸ pestaña Control; Reportes ▸ Control de saldo |
+| P-14 | Actividades y tarifas de contratas | Configuración ▸ Actividades de obra / Tarifas de contrata |
+| P-15 | Cronograma con recursos | Cronograma |
+| P-16 | Precios de compra del producto | Abastecimiento ▸ Precios de compra del producto; Reportes ▸ Precios de compra |
+| P-17 / W-11 | Crear producto desde el plan | Línea del plan sin producto ▸ Crear producto |
+| W-12 | Aplicar costo | Plan ▸ Aplicar costo; P-16 ▸ Aplicar costo |
+| P-18 | Abastecimiento de la obra | Abastecimiento ▸ Abastecimiento de la obra |
+| P-19 | Entrega semanal | Ingresos ▸ Entregas semanales |
+| P-20 | Valorización con el cliente | Ingresos ▸ Valorizaciones |
+| W-13 | Preparar valorización | Ingresos ▸ Preparar valorización; obra ▸ Calendario e ingresos |
+| W-14 | Confirmar valorización | Valorización ▸ Confirmar |
+| P-21 | Calendario e ingresos de la obra | Proyecto (obra) ▸ pestaña Calendario e ingresos |
+| P-22 | Cronograma valorizado de la obra | Reportes ▸ Cronograma valorizado; botón de la obra; ícono de gráfico en el inicio |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -526,6 +596,34 @@ En el demo (solo el piso 05), la partida vale S/ 8,698.43 (la misma
 proporción que MOMEN) y la valorización 1 entrega S/ 408.31 (4.69 %), con
 S/ 20.42 de fondo de garantía y S/ 387.89 neto.
 
+### Cronograma valorizado e inicio (P-22, P-01)
+
+**Cronograma valorizado (P-22).** Con la obra de la ruta del ingreso
+(partida de S/ 159,231.23, plan de S/ 170,764.10, semanas de jueves a
+miércoles) y las etapas del ambiente repartidas entre el 12/10 y el 18/12, el
+escenario plan cierra el costo en S/ 170,764.10 y el ingreso en
+S/ 159,231.23: margen −S/ 11,532.87. Cada línea se reparte en los días
+hábiles de su etapa (lunes a viernes) y la última semana absorbe el
+redondeo. La valorización 2 (corte del 11/11) aparece confirmada en la
+semana 12/11–18/11 (conformidad prevista el 18/11), facturada en la
+19/11–25/11 (20/11) y cobrada en la 17/12–23/12 (21/12), por su neto sin el
+5 % del fondo. Sumando el fondo de garantía (fila «al cierre»), el cobrado
+acumulado llega a S/ 159,231.23.
+
+En el escenario real, con los avances y consumos del ejemplo de P-19: S/
+29,975.79 de material consumido el 20/10 caen en la semana 15/10–21/10, S/
+18,008.92 de contrata del 22/10 en la 22/10–28/10 y S/ 25,338.96 en la
+29/10–04/11; el ingreso es el de las entregas confirmadas, la valorización
+cae en la semana de su conformidad, la factura en la de su fecha (sin IGV) y
+el cobro en la del pago conciliado, en proporción a la base imponible.
+
+**Inicio (P-01).** El jueves 05/11 la obra muestra su plan (v1 · 12/10 →
+18/12), lo planificado, el saldo, el avance y como próximo hito
+«Valorización 1 · factura 06/11». Un supervisor con la obra en
+«Supervisores de obra» ve en «Avances reportados por validar» solo los
+avances de esa obra; la Jefatura ve los de todas, más las entregas por
+confirmar; Finanzas, las valorizaciones confirmadas por facturar.
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -586,6 +684,14 @@ S/ 20.42 de fondo de garantía y S/ 387.89 neto.
     partidas, cada línea de la OV lleva su **familia** (columna opcional).
     Quien factura necesita el grupo **Planificación de obra: ingresos** y el
     de facturación.
+19. **Supervisores de obra** (Proyecto ▸ Ajustes ▸ Supervisión de obra): con
+    el responsable del proyecto, son las obras de cada supervisor. En su
+    inicio ve solo los avances y liquidaciones por validar de ellas; si no
+    supervisa ninguna obra, ve los de todas.
+20. **Cronograma valorizado:** lo ven la Jefatura (Administrador) y
+    Administración y Finanzas (**Planificación de obra: ingresos**). Se
+    recalcula al abrirlo y cada día con la acción programada «Planificación
+    de obra: actualizar el cronograma valorizado».
 
 ## 6. Reportes y libros relacionados
 
@@ -609,8 +715,8 @@ S/ 20.42 de fondo de garantía y S/ 387.89 neto.
   contrata y semana; OC de servicio de las contratas.
 - Pestaña «Recursos y avance» de cada piso, departamento, ambiente o módulo
   y medida «Avance» del árbol.
-- Control del plan (P-13, pestaña «Control») y Análisis de control (Obras ▸
-  Análisis de control): planificado, comprometido, real, saldo y %
+- Control del plan (P-13, pestaña «Control») y Control de saldo (Reportes ▸
+  Control de saldo): planificado, comprometido, real, saldo y %
   ejecutado por etapa y tipo de recurso, contrata o producto, en pivote y
   gráfico.
 - Turnos de las cuadrillas (Planificación) con la tarea y la línea del plan.
@@ -619,6 +725,14 @@ S/ 20.42 de fondo de garantía y S/ 387.89 neto.
   su precio en soles, en pivote, lista y gráfico.
 - Abastecimiento de la obra (P-18): necesidad por semana, stock, OC
   abiertas, a comprar, costo del plan, último precio y alertas.
+- Entregas semanales y valorizaciones (Ingresos ▸ …), con el PDF de la
+  valorización; Cobranza de la obra: las facturas de las valorizaciones y su
+  estado de pago.
+- Cronograma valorizado (P-22, Reportes ▸ Cronograma valorizado): curva S y
+  tabla semanal plan contra real, exportable a Excel; Análisis del
+  cronograma valorizado: las mismas filas en pivote y gráfico (por obra,
+  semana, concepto y escenario).
+- Inicio (P-01): obras con su próximo hito y pendientes de hoy.
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -676,6 +790,12 @@ No alimenta libros PLE ni archivos SUNAT.
 | «No alcanza una unidad facturable» | El % confirmado es menor que la precisión de la cantidad (0.01) | Facturar con la siguiente valorización o subir la precisión de «Product Unit» |
 | «La factura … supera lo confirmado» | Se cambió la cantidad o el precio de la factura | Dejarla en lo confirmado |
 | Las fechas previstas caen en sábado | El horario de la compañía trabaja los sábados | Elegir los días hábiles del ingreso en Ajustes |
+| El cronograma valorizado no tiene ingreso, valorización ni cobro | La obra no tiene OV del contrato | Elegirla en «Calendario e ingresos» |
+| Todo el ingreso del plan cae en las primeras semanas | Las etapas del ambiente no tienen fechas y las líneas se reparten en su fecha de necesidad | Revisar el cronograma (P-15) |
+| El costo real está en cero | El escenario real llega hasta hoy: la obra no empezó, o no hay avances validados, horas ni consumos | Validar avances y registrar consumos |
+| El cobro real no aparece | El pago no está conciliado con la factura (en Odoo 19 un pago sin asiento queda «en proceso» hasta conciliar el extracto) | Conciliar el extracto o el pago |
+| El supervisor no ve un avance en su inicio | La obra no lo tiene como responsable ni como supervisor de obra | Agregarlo en Proyecto ▸ Ajustes ▸ Supervisión de obra |
+| Un pendiente no aparece en el inicio | El grupo del usuario no lo atiende (p. ej. Finanzas no valida avances) | Es lo esperado; revisar los grupos |
 
 ## 8. Preguntas frecuentes del consultor
 
@@ -745,6 +865,18 @@ No alimenta libros PLE ni archivos SUNAT.
   cobro previsto (la factura electrónica peruana no admite líneas
   negativas). Con una cuenta en Ajustes va como línea negativa; la decisión
   es de contabilidad.
+- **¿Por qué el cronograma valorizado no coincide con la contabilidad?**
+  Es un reporte de gestión: el costo es devengado (lo ejecutado al costo
+  del plan), no lo pagado ni lo contabilizado, y los montos van sin IGV.
+- **¿Cuándo se actualiza el cronograma valorizado?** Al abrir la pantalla
+  (para esa obra) y cada día con la acción programada; el pivote lee la
+  última actualización.
+- **¿El plan del cronograma cambia con una versión nueva?** Sí: el plan es
+  siempre el de la versión vigente (o en preparación si aún no hay una
+  aprobada).
+- **¿Por qué el pendiente de abastecimiento abre el tablero y no una
+  lista?** Las alertas se calculan (necesidad, stock, OC y precios); el
+  tablero muestra la obra con alertas y su detalle.
 - **¿Por qué el precio unitario de la factura no es el de la OV?** Con 2
   decimales en la cantidad, 0.42 × precio no da lo confirmado: el precio se
   ajusta hacia abajo para que el subtotal sea lo confirmado.

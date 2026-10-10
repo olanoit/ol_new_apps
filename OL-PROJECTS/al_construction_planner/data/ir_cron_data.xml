@@ -28,4 +28,17 @@
         <field name="interval_type">hours</field>
         <field name="active" eval="True"/>
     </record>
+
+    <!-- Cada día: cronograma valorizado (P-22) de las obras con plan, para
+         el pivote y el gráfico (la pantalla recalcula la obra al abrirla). -->
+    <record id="ir_cron_refresh_schedule_report" model="ir.cron">
+        <field name="name">Planificación de obra: actualizar el cronograma valorizado</field>
+        <field name="model_id" ref="model_construction_schedule_report"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 10:30:00')"/>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>

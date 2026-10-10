@@ -21,7 +21,10 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 8 | Cronograma con recursos (P-15): etapas del ambiente, herencia de `al.gantt.data`, pantalla «Cronograma» sobre el Gantt de la suite con selección, panel de recursos, acciones W-02 a W-08, arrastre de etapas con recálculo de la necesidad y aviso a Logística, carga semanal | hecha |
 | 9 | Productos, precios y abastecimiento: vista de precios de compra en soles, P-16 con estadísticos y gráfico, W-12 con media móvil de 4 semanas, crear producto desde el plan (W-11, P-17), abastecimiento de la obra (P-18) y alertas | hecha |
 | 10 | Ruta del ingreso: calendario e ingresos de la obra (P-21), entrega semanal (P-19), valorización con el cliente (P-20) con W-13 y W-14, factura de la valorización con control de lo confirmado | hecha |
-| 11+ | Cronograma valorizado (P-22), inicio de la aplicación (P-01) | pendiente |
+| 11 | Cronograma valorizado (P-22) plan y real con curva S, Excel, pivote y gráfico; inicio de la aplicación (P-01) con obras, próximo hito y pendientes por grupo; menú Reportes y cobranza de la obra | hecha |
+
+Criterios de aceptación de la especificación y su test:
+[`docs/planificador/ACEPTACION.md`](../../docs/planificador/ACEPTACION.md).
 
 ## Modelos
 
@@ -82,6 +85,9 @@ Diseño técnico, equivalencias de nombres y plan de fases:
   fondo de garantía y del adelanto), `sale.order.line`
   (`construction_family`, `construction_valuation_line_ids`) y
   `account.move` (`construction_valuation_id` y control al publicar).
+- Fase 11: `construction.schedule.report` (cronograma valorizado: obra,
+  semana, concepto, escenario, monto), `construction.planner.home` (inicio,
+  modelo abstracto) y `project.project` (`construction_supervisor_ids`).
 
 ## Árbol de recursos (P-02)
 
@@ -573,6 +579,42 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
   compañía, y sin feriado). Monto previsto: precio × avance previsto, con
   cada línea repartida en los días hábiles de su `construction.space.stage`.
 
+## Cronograma valorizado e inicio (fase 11, P-22 y P-01)
+
+- **`construction.schedule.report`.** Tabla calculada (no vista SQL): una
+  fila por obra, semana de la obra, concepto (costo, ingreso devengado,
+  valorización confirmada, facturado, cobrado) y escenario (plan, real),
+  con las marcas `is_guarantee` e `is_advance`. `_construction_refresh(obras)`
+  la recalcula al abrir P-22 y en la acción programada diaria; comprueba la
+  lectura de la obra y calcula con `sudo` (resume inventario, fabricación,
+  horas y contabilidad). Solo lectura para los usuarios; regla por compañía.
+- **Plan.** Costo: cada línea del plan vigente repartida en los días hábiles
+  de la etapa de su ambiente (`_construction_planned_by_day`). Ingreso:
+  precio de cada partida × su reparto. Valorización, factura y cobro: las
+  fechas de confirmación, factura y cobro de las valorizaciones previstas
+  (P-21); fondo de garantía en su fecha de cobro y adelanto al inicio.
+  `_construction_weekly`: la última semana absorbe el redondeo.
+- **Real.** Costo: diferencias semanales de
+  `_construction_valued_execution` hasta hoy. Ingreso: entregas confirmadas.
+  Valorización: confirmadas, por `confirm_date`. Factura: facturas y notas
+  de crédito publicadas de la OV (sin IGV). Cobro: conciliaciones de la
+  cuenta por cobrar con pagos o extractos, en proporción base ÷ total.
+- **P-22** (acción de cliente `al_construction_planner.schedule_report`):
+  selector de obra, plan o real, indicadores (costo, precio o ingreso,
+  margen, cobrado con el fondo, mayor brecha costo − cobrado), curva S en
+  SVG, tabla semanal y fila del fondo de garantía al cierre; «Exportar a
+  Excel» (`xlsxwriter`, hojas Plan y Real) y «Pivote y gráfico».
+- **P-01** (acción de cliente `al_construction_planner.home`, acción del
+  menú raíz): `construction.planner.home.get_home_data()` devuelve las obras
+  (plan, periodo, planificado y saldo si está aprobado, avance valorizado,
+  próximo hito y estado) y los pendientes del usuario: avances y
+  liquidaciones por validar (Planificador; un supervisor, solo de sus
+  obras), entregas por confirmar (Administrador), valorizaciones por
+  facturar (Ingresos), necesidades sin OC y último precio sobre el plan
+  (alertas de P-18), etapas sin contrata que empiezan en 2 semanas y líneas
+  sin costo en planes en borrador. Cada pendiente es una acción de ventana
+  con su dominio.
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -653,7 +695,22 @@ valorización 1 enviada, observada, confirmada y facturada.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_income.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (108 tests; `test_income.py`
+Fase 11 (después de los anteriores): la administradora como supervisora de
+la obra demo y el cronograma valorizado calculado.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_schedule.py
+```
+
+Tests: `--test-tags /al_construction_planner` (115 tests;
+`test_schedule_report.py` cubre la fase 11: criterio 18 (valorización 2
+confirmada, facturada y cobrada en sus semanas y cobrado acumulado en el
+precio con el fondo), el escenario real (costo ejecutado, entrega,
+valorización, factura y cobro conciliado), el reparto por días hábiles y el
+redondeo de la última semana, la exportación a Excel, el criterio 19
+(supervisor con sus obras y la fila que abre la lista filtrada), el próximo
+hito, las etapas sin contrata y la multicompañía; `test_income.py`
 cubre la fase 10: criterio 16 (S/ 23,627.65 de la semana 29/10–04/11 con
 material consumido), criterio 17 (confirmación obligatoria, factura al %
 acumulado y control de lo confirmado), lo no confirmado en la siguiente,

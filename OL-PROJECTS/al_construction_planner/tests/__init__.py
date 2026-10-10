@@ -11,3 +11,4 @@ from . import test_control
 from . import test_schedule
 from . import test_prices_supply
 from . import test_income
+from . import test_schedule_report

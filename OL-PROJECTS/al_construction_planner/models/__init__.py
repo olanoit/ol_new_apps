@@ -31,3 +31,5 @@ from . import sale_order_line
 from . import project_income
 from . import construction_weekly_delivery
 from . import construction_valuation
+from . import construction_schedule_report
+from . import construction_planner_home

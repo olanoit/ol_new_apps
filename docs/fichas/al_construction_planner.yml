@@ -5,7 +5,7 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra, Entrega semanal, Valorización, Calendario e ingresos]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra, Entrega semanal, Valorización, Calendario e ingresos, Cronograma valorizado, Curva S, Inicio con pendientes]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
@@ -13,8 +13,10 @@ destacados_intro: >-
   línea base aprobada con su presupuesto analítico y las compras,
   requerimientos y órdenes de fabricación que nacen del plan y lo descuentan,
   las contratas (asignación, avance por driver y liquidación semanal), el
-  personal propio, el control de lo planificado contra lo real y la ruta
-  del ingreso: entrega semanal, valorización con el cliente y factura.
+  personal propio, el control de lo planificado contra lo real, la ruta
+  del ingreso (entrega semanal, valorización con el cliente y factura), el
+  cronograma valorizado con su curva S y el inicio con los pendientes de
+  cada usuario.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -156,6 +158,17 @@ destacados:
     texto: >-
       Corte, presentación, confirmación, factura y cobro previstos según el
       calendario de cada obra, corridos al siguiente día hábil.
+  - icono: "📈"
+    titulo: Cronograma valorizado
+    texto: >-
+      Costo, ingreso, margen, valorizado, facturado y cobrado por semana, en
+      plan y real, con la curva S, la brecha de caja y la exportación a
+      Excel.
+  - icono: "☑"
+    titulo: Pendientes de hoy
+    texto: >-
+      Al entrar, cada usuario ve sus obras con el próximo hito y lo que le
+      toca atender; cada fila abre la lista filtrada.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -685,6 +698,52 @@ pasos:
       - "La factura no puede publicarse por encima de lo confirmado en ninguna partida."
       - "Con 2 decimales en la cantidad (0.42 de 1), el precio unitario se ajusta hacia abajo para que el subtotal sea lo confirmado."
     imagen: screenshots/39-conformidad-cliente.png
+  - titulo: Cronograma valorizado (plan)
+    ruta: Reportes ▸ Cronograma valorizado (o el botón de la obra)
+    texto: >-
+      Una fila por semana de la obra con el costo, el ingreso devengado, el
+      margen acumulado, la valorización confirmada, lo facturado y lo
+      cobrado, y encima la curva S de costo, ingreso y cobrado acumulados.
+      En plan, cada línea del plan se reparte en los días hábiles de su
+      etapa y el ingreso sigue el avance previsto de cada partida.
+    puntos:
+      - "Valorización, factura y cobro en las semanas del calendario de la obra (P-21): la valorización 2 confirmada en la semana 12/11–18/11, facturada en la 19/11–25/11 y cobrada en la 17/12–23/12."
+      - "El fondo de garantía se cobra al cierre (fila final): el cobrado acumulado llega al precio del contrato."
+      - "La última semana absorbe el redondeo: cierra en el costo del plan y en el precio."
+      - "Indicadores: costo, precio, margen al cierre, cobrado con el fondo y la mayor brecha costo − cobrado (costo devengado, no pagado)."
+    imagen: screenshots/40-cronograma-valorizado.png
+  - titulo: Cronograma valorizado (real) y análisis
+    ruta: Cronograma valorizado ▸ Real · Pivote y gráfico · Exportar a Excel
+    texto: >-
+      El escenario real toma lo ejecutado valorizado (avances validados a
+      tarifa, horas a costo hora y consumos a costo del plan), las entregas
+      confirmadas, las valorizaciones confirmadas en su fecha de
+      conformidad, las facturas publicadas de la OV del contrato y los cobros
+      conciliados, sin IGV. Las mismas filas se ven en el pivote y el
+      gráfico nativos por obra, semana, concepto y escenario.
+    puntos:
+      - "Se recalcula al abrir la pantalla y cada día con la acción programada."
+      - "El cobro cuenta cuando el pago o el extracto está conciliado con la factura."
+      - "Excel con una hoja para el plan y otra para lo real."
+    imagen: screenshots/41-cronograma-valorizado-real.png
+  - titulo: Análisis del cronograma valorizado
+    ruta: Reportes ▸ Análisis del cronograma valorizado
+    texto: >-
+      Pivote por semana y concepto (y gráfico de líneas acumulado) de las
+      filas del cronograma, filtrables por obra y escenario.
+    imagen: screenshots/42-cronograma-pivote.png
+  - titulo: Inicio con obras y pendientes de hoy
+    ruta: Planificación de obra (al abrir la aplicación) · Obras ▸ Inicio
+    texto: >-
+      Las obras con su plan, lo planificado, el saldo, el avance, el próximo
+      hito y el estado; al costado, los pendientes de hoy según el grupo del
+      usuario, cada uno con su cantidad. Pulsar una fila abre la lista ya
+      filtrada.
+    puntos:
+      - "Próximo hito: el más cercano entre corte, presentación, confirmación, factura y cobro de las valorizaciones previstas y fin de etapa; un plan en borrador tiene «Aprobar el plan»."
+      - "El supervisor ve solo los avances y liquidaciones por validar de sus obras (responsable del proyecto o en «Supervisores de obra»)."
+      - "Jefatura: entregas por confirmar; Finanzas: valorizaciones por facturar; Planificador: abastecimiento, etapas sin contrata y líneas sin costo."
+    imagen: screenshots/43-inicio.png
 
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
@@ -951,6 +1010,13 @@ funcionalidades:
       - "Valorización (P-20) con W-13, envío con PDF, observaciones del cliente, conformidad obligatoria (W-14) y lo no confirmado por valorizar."
       - "Factura desde la OV con la cantidad entregada al % acumulado confirmado y control: no se publica por encima de lo confirmado."
       - "Fondo de garantía y amortización del adelanto en la valorización; como líneas negativas de la factura solo si se configuran sus cuentas."
+  - grupo: Cronograma valorizado e inicio
+    items:
+      - "Cronograma valorizado (P-22) por obra y semana, plan y real: costo, ingreso devengado, margen, valorización, facturado y cobrado con la curva S y el fondo de garantía al cierre."
+      - "Exportación a Excel (plan y real), pivote y gráfico nativos; recálculo al abrir y acción programada diaria."
+      - "Inicio (P-01) como acción por defecto: obras con planificado, saldo, avance, próximo hito y estado."
+      - "Pendientes de hoy por grupo con su lista filtrada: avances y liquidaciones por validar, entregas por confirmar, valorizaciones por facturar, alertas de abastecimiento, etapas sin contrata y líneas sin costo."
+      - "Supervisores de obra en el proyecto; menú Reportes y Cobranza de la obra."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -1097,12 +1163,29 @@ faq:
       La línea de la OV con la familia de la tipología del ambiente (cocina,
       closet…). La única línea sin familia toma el resto de la obra, como
       MOMEN con una sola partida «Cocinas».
+  - pregunta: "¿El cronograma valorizado es contable?"
+    respuesta: >-
+      No: es de gestión. El costo es devengado (lo ejecutado al costo del
+      plan), no lo pagado, y los montos van sin IGV. Sirve para ver la
+      brecha entre lo que la obra consume y lo que se cobra.
+  - pregunta: "¿Quién es supervisor de una obra?"
+    respuesta: >-
+      El responsable del proyecto y los usuarios de «Supervisores de obra»
+      (Proyecto ▸ Ajustes). Un planificador que no supervisa ninguna obra ve
+      los pendientes de todas.
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 10.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Cronograma valorizado (fase 11, P-22): por obra y semana, costo, ingreso devengado, margen, valorización confirmada, facturado y cobrado en plan (líneas repartidas en los días hábiles de su etapa y calendario de P-21) y real (ejecutado, entregas, valorizaciones, facturas y cobros conciliados), con curva S, fondo de garantía al cierre, Excel, pivote y gráfico."
+      - "Inicio de la aplicación (P-01) como acción por defecto: obras con plan, planificado, saldo, avance, próximo hito y estado, y «Pendientes de hoy» por grupo con su lista filtrada."
+      - "Supervisores de obra en el proyecto: el supervisor ve en su inicio solo los avances y liquidaciones por validar de sus obras."
+      - "Menú «Reportes» (cronograma valorizado, su análisis, control de saldo y precios de compra) y «Cobranza de la obra» en Ingresos."
   - version: 9.20261010
     fecha: 10/10/2026
     cambios:

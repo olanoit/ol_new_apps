@@ -12,11 +12,9 @@ PHOTO = (b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAE'
 PRICE = 159231.23
 
 
-@tagged('post_install', '-at_install')
-class TestIncome(TransactionCase):
-    """Fase 10, ruta del ingreso: calendario e ingresos de la obra (P-21),
-    entrega semanal (P-19) y valorización con el cliente (P-20) con W-13 y
-    W-14. Criterios de aceptación 16 y 17 de la especificación.
+class IncomeCommon(TransactionCase):
+    """Obra con plan aprobado, contrato y calendario de lunes a viernes para
+    la ruta del ingreso (fase 10) y el cronograma valorizado (fase 11).
 
     La partida «Cocinas» (S/ 159,231.23) reúne un plan de S/ 170,764.10:
     contrata 13,000 × 4.00, material 1,200 × 98.93 y un servicio de 48.10.
@@ -183,6 +181,14 @@ class TestIncome(TransactionCase):
             if amounts and line.sale_line_id in amounts:
                 line.amount_confirmed = amounts[line.sale_line_id]
         wizard.action_confirm()
+
+
+
+@tagged('post_install', '-at_install')
+class TestIncome(IncomeCommon):
+    """Fase 10, ruta del ingreso: calendario e ingresos de la obra (P-21),
+    entrega semanal (P-19) y valorización con el cliente (P-20) con W-13 y
+    W-14. Criterios de aceptación 16 y 17 de la especificación."""
 
     # ------------------------------------------------------------------
     # P-19 · Entrega semanal (criterio 16)

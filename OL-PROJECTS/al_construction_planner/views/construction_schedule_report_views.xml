@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- P-22 · Cronograma valorizado: filas por obra, semana, concepto y
+         escenario para el pivote y el gráfico nativos. -->
+    <record id="construction_schedule_report_view_list" model="ir.ui.view">
+        <field name="name">construction.schedule.report.list</field>
+        <field name="model">construction.schedule.report</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="project_id"/>
+                <field name="week_start"/>
+                <field name="week_end" optional="hide"/>
+                <field name="scenario"/>
+                <field name="concept"/>
+                <field name="is_guarantee" optional="hide"/>
+                <field name="is_advance" optional="hide"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_schedule_report_view_pivot" model="ir.ui.view">
+        <field name="name">construction.schedule.report.pivot</field>
+        <field name="model">construction.schedule.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Cronograma valorizado" sample="1">
+                <field name="week_start" interval="day" type="row"/>
+                <field name="concept" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_schedule_report_view_graph" model="ir.ui.view">
+        <field name="name">construction.schedule.report.graph</field>
+        <field name="model">construction.schedule.report</field>
+        <field name="arch" type="xml">
+            <graph string="Cronograma valorizado" type="line" cumulated="1" sample="1">
+                <field name="week_start" interval="day"/>
+                <field name="concept"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="construction_schedule_report_view_search" model="ir.ui.view">
+        <field name="name">construction.schedule.report.search</field>
+        <field name="model">construction.schedule.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <filter name="plan" string="Plan" domain="[('scenario', '=', 'plan')]"/>
+                <filter name="real" string="Real" domain="[('scenario', '=', 'real')]"/>
+                <separator/>
+                <filter name="cost" string="Costo" domain="[('concept', '=', 'cost')]"/>
+                <filter name="revenue" string="Ingreso devengado" domain="[('concept', '=', 'revenue')]"/>
+                <filter name="valuation" string="Valorización confirmada"
+                        domain="[('concept', '=', 'valuation')]"/>
+                <filter name="invoice" string="Facturado" domain="[('concept', '=', 'invoice')]"/>
+                <filter name="collection" string="Cobrado" domain="[('concept', '=', 'collection')]"/>
+                <separator/>
+                <filter name="week" string="Semana" date="week_start"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_scenario" string="Escenario" context="{'group_by': 'scenario'}"/>
+                    <filter name="group_concept" string="Concepto" context="{'group_by': 'concept'}"/>
+                    <filter name="group_week" string="Semana" context="{'group_by': 'week_start:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_schedule_report" model="ir.actions.act_window">
+        <field name="name">Análisis del cronograma valorizado</field>
+        <field name="res_model">construction.schedule.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="construction_schedule_report_view_search"/>
+        <field name="context">{'search_default_plan': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin cronograma valorizado</p>
+            <p>Las filas se calculan al abrir «Cronograma valorizado» de cada obra y con la acción
+               programada diaria: costo, ingreso devengado, valorización, facturado y cobrado por
+               semana, en plan y real.</p>
+        </field>
+    </record>
+
+    <record id="action_construction_schedule_report_screen" model="ir.actions.client">
+        <field name="name">Cronograma valorizado</field>
+        <field name="tag">al_construction_planner.schedule_report</field>
+    </record>
+
+    <!-- P-01 · Inicio de la aplicación. -->
+    <record id="action_construction_planner_home" model="ir.actions.client">
+        <field name="name">Inicio</field>
+        <field name="tag">al_construction_planner.home</field>
+    </record>
+
+    <!-- Cobranza de la obra: facturas de las valorizaciones. -->
+    <record id="action_construction_collections" model="ir.actions.act_window">
+        <field name="name">Cobranza de la obra</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="account.view_out_invoice_tree"/>
+        <field name="domain">[('construction_valuation_id', '!=', False), ('move_type', '=', 'out_invoice')]</field>
+        <field name="context">{'default_move_type': 'out_invoice', 'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Todavía no hay facturas de valorizaciones</p>
+            <p>Las facturas se crean desde la valorización confirmada; aquí se sigue su cobro.</p>
+        </field>
+    </record>
+
+</odoo>

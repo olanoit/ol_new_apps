@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner.Home">
+        <div class="o_action o_cp_home h-100 overflow-auto">
+            <div class="container-fluid py-3">
+                <div class="row g-3">
+                    <div class="col-12 col-xl-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <h4 class="mb-0">Obras</h4>
+                            <button class="btn btn-sm btn-link ms-auto" t-on-click="load" t-att-disabled="state.loading">
+                                <i class="fa fa-refresh me-1"/>Actualizar
+                            </button>
+                        </div>
+                        <t t-if="state.data and !works.length">
+                            <div class="o_view_nocontent position-relative">
+                                <div class="o_nocontent_help">
+                                    <p class="o_view_nocontent_empty_folder">Todavía no hay planes de recursos</p>
+                                    <p>Cree el plan de la obra desde «Obras ▸ Planes de recursos» y genérelo desde
+                                       sus tipologías.</p>
+                                </div>
+                            </div>
+                        </t>
+                        <table t-elif="works.length" class="table table-sm table-hover align-middle o_cp_home_works">
+                            <thead>
+                                <tr>
+                                    <th>Obra · plan</th>
+                                    <th class="text-end">Planificado</th>
+                                    <th class="text-end">Saldo</th>
+                                    <th class="text-end">Avance</th>
+                                    <th>Próximo hito</th>
+                                    <th>Estado</th>
+                                    <th/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="works" t-as="work" t-key="work.plan_id">
+                                    <tr class="o_cp_home_work" t-on-click="() => this.openWork(work)">
+                                        <td>
+                                            <div class="fw-bold" t-esc="work.project_name"/>
+                                            <div class="small text-muted">
+                                                <t t-esc="work.plan_name"/> · <t t-esc="work.period"/>
+                                            </div>
+                                        </td>
+                                        <td class="text-end" t-esc="money(work.amount_total)"/>
+                                        <td class="text-end" t-esc="money(work.amount_remaining)"/>
+                                        <td class="text-end" t-esc="pct(work.progress)"/>
+                                        <td t-esc="work.milestone or '—'"/>
+                                        <td><span t-att-class="'badge ' + badge(work.state)" t-esc="work.state_label"/></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-link o_cp_home_schedule" title="Cronograma valorizado"
+                                                    t-on-click.stop="() => this.openSchedule(work)">
+                                                <i class="fa fa-line-chart"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 col-xl-4">
+                        <div class="card o_cp_home_pending">
+                            <div class="card-header">
+                                <h5 class="mb-0">Pendientes de hoy</h5>
+                                <div class="small text-muted text-capitalize" t-esc="state.data?.today_label"/>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <t t-foreach="pending" t-as="item" t-key="item.key">
+                                    <li class="list-group-item list-group-item-action d-flex align-items-center gap-2 o_cp_home_item"
+                                        t-att-data-key="item.key" t-on-click="() => this.openPending(item)">
+                                        <span class="flex-grow-1">
+                                            <span t-esc="item.label"/>
+                                            <span class="d-block small text-muted" t-esc="item.where"/>
+                                        </span>
+                                        <span t-att-class="'badge rounded-pill ' + (item.count ? 'text-bg-primary' : 'text-bg-light')"
+                                              t-esc="item.count"/>
+                                    </li>
+                                </t>
+                                <li t-if="state.data and !pending.length" class="list-group-item text-muted small">
+                                    Sus grupos no atienden pendientes del planificador.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

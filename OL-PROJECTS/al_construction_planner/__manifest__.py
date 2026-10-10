@@ -159,6 +159,23 @@ Fase 10 (ruta del ingreso, P-19 a P-21):
   lo no confirmado por valorizar y factura desde la OV al % acumulado
   confirmado, sin superar lo confirmado.
 
+Fase 11 (cronograma valorizado e inicio, P-22 y P-01):
+
+* «Cronograma valorizado» (P-22): por obra y semana, costo, ingreso
+  devengado, margen, valorización confirmada, facturado y cobrado, en plan
+  (líneas repartidas en los días hábiles de su etapa, ingreso por el avance
+  previsto de cada partida y el calendario de P-21) y real (ejecutado
+  valorizado, entregas y valorizaciones confirmadas, facturas publicadas y
+  cobros conciliados). Curva S, fondo de garantía al cierre, exportación a
+  Excel, pivote y gráfico; la última semana absorbe el redondeo.
+* «Inicio» (P-01), acción por defecto de la aplicación: obras con plan,
+  planificado, saldo, avance, próximo hito y estado, y «Pendientes de hoy»
+  según los grupos del usuario, cada uno con su lista filtrada. El supervisor
+  ve los avances y liquidaciones de sus obras (responsable o supervisor de
+  obra).
+* Menú «Reportes» (P-22, control de saldo y precios de compra) y «Cobranza de
+  la obra» en Ingresos.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -168,7 +185,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '9.20261010',
+    'version': '10.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -216,6 +233,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_supply_views.xml',
         'views/construction_price_views.xml',
         'views/construction_income_views.xml',
+        'views/construction_schedule_report_views.xml',
         'views/menus.xml',
     ],
     'demo': [
@@ -226,6 +244,8 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
             'al_construction_planner/static/src/supply_board/*',
+            'al_construction_planner/static/src/schedule_report/*',
+            'al_construction_planner/static/src/home/*',
         ],
         'web.assets_tests': [
             'al_construction_planner/static/tests/tours/*',

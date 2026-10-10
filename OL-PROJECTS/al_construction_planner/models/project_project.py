@@ -39,6 +39,11 @@ class ProjectProject(models.Model):
              'factura de la contrata. Si es feriado, se corre al día hábil anterior.')
     construction_settlement_count = fields.Integer(
         string='Nº de liquidaciones', compute='_compute_construction_settlement_count')
+    construction_supervisor_ids = fields.Many2many(
+        'res.users', 'project_construction_supervisor_rel', 'project_id', 'user_id',
+        string='Supervisores de obra', domain=[('share', '=', False)],
+        help='Con el responsable del proyecto, son «sus obras» en el inicio de la '
+             'aplicación: el supervisor ve ahí solo los avances por validar de ellas.')
 
     @api.depends('company_id')
     def _compute_construction_week_days(self):
@@ -107,6 +112,22 @@ class ProjectProject(models.Model):
         return (Plan.search([('project_id', '=', self.id), ('state', 'in', OPEN_STATES)], limit=1)
                 or Plan.search([('project_id', '=', self.id), ('state', 'in', DRAFT_STATES)],
                                limit=1))
+
+    def _construction_supervised_domain(self, user=None):
+        """Obras del supervisor: las que tiene como responsable o como
+        supervisor de obra."""
+        user = user or self.env.user
+        return ['|', ('user_id', '=', user.id), ('construction_supervisor_ids', 'in', user.ids)]
+
+    def action_view_construction_schedule_report(self):
+        """Cronograma valorizado (P-22) de la obra."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'al_construction_planner.schedule_report',
+            'name': self.env._('Cronograma valorizado'),
+            'context': {'construction_project_id': self.id},
+        }
 
     def action_view_construction_plans(self):
         self.ensure_one()
