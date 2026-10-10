@@ -34,6 +34,24 @@
         </field>
     </record>
 
+    <!-- Aviso: con recurso la factura cedida sigue pendiente, pero la cobra el factor. -->
+    <record id="view_move_form_factoring_alert" model="ir.ui.view">
+        <field name="name">account.move.form.factoring.alert.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info mb-0" role="alert"
+                     invisible="l10n_pe_factoring_state != 'assigned'">
+                    Factura cedida a <field name="l10n_pe_factor_id" readonly="1" class="oe_inline"/>
+                    en la operación <field name="l10n_pe_factoring_id" readonly="1" class="oe_inline"/>:
+                    la cobra el factor. Registre el cobro desde la operación (Cobro del factor).
+                    <field name="l10n_pe_factoring_state" invisible="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_out_invoice_list_factoring" model="ir.ui.view">
         <field name="name">account.move.list.factoring.pe</field>
         <field name="model">account.move</field>

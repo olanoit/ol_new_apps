@@ -164,6 +164,10 @@ campos:
       - [Comisiones y gastos, Comisión del factor y gastos, 6391, —]
 
 novedades:
+  - version: 3.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Una factura cedida que sigue pendiente no se puede pagar con «Pagar» (la cobra el factor): aviso en la factura y el cobro se registra desde la operación."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261010 — 10/10/2026
+
+- Una factura cedida que sigue pendiente no se puede pagar con «Pagar» (la cobra el factor): aviso en la factura y el cobro se registra desde la operación.
+
 ## 2.20261010 — 10/10/2026
 
 - Con recurso la factura ya no se da por pagada al cederla: sigue pendiente en la cuenta del cliente (NIIF 9), en su saldo, vencimientos y recordatorios, y queda pagada con el cobro del factor; la recompra solo devuelve el adelanto.

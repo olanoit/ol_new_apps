@@ -30,6 +30,19 @@ class AccountMove(models.Model):
             move.l10n_pe_factoring_id = line.factoring_id
             move.l10n_pe_factoring_state = line.state or False
 
+    def action_register_payment(self):
+        # Con recurso la factura cedida sigue pendiente, pero la cobra el
+        # factor: su cobro se registra desde la operación («Cobro del factor»),
+        # que cancela a la vez la obligación con el factor.
+        assigned = self.filtered(lambda m: m.l10n_pe_factoring_state == 'assigned')
+        if assigned:
+            raise UserError(self.env._(
+                'Estas facturas están cedidas a factoring y las cobra el factor: %(invoices)s. '
+                'Registre el cobro desde la operación (Cobro del factor) o, si el cliente no '
+                'pagó, la recompra.', invoices=', '.join(
+                    '%s (%s)' % (m.name, m.l10n_pe_factoring_id.name) for m in assigned)))
+        return super().action_register_payment()
+
     def action_l10n_pe_factoring_create(self):
         """«Ceder a factoring» desde la lista de facturas: operación en borrador
         con las facturas elegidas, para completar el factor y la modalidad."""

@@ -125,6 +125,8 @@ class TestFactoring(TransactionCase):
         self.assertFalse(operation.move_ids, 'con recurso la cesión no genera asiento')
         self.assertEqual(invoice.payment_state, 'not_paid', 'la cuenta por cobrar no se da de baja (NIIF 9)')
         self.assertEqual(invoice.l10n_pe_factoring_state, 'assigned')
+        with self.assertRaises(UserError, msg='la cobra el factor: no se registra un pago normal'):
+            invoice.action_register_payment()
 
         self._wizard(operation, 'disburse', interest_amount=30.0)
         self.assertEqual(self._balance(operation, config.obligation_account_id, self.factor), -1600.0,
