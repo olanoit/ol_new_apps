@@ -1,12 +1,13 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `10.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `11.20261011` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso completo de las fases 1 a 11 (plan, árbol, línea base,
+> proceso completo de las fases 1 a 12 (plan, árbol, línea base,
 > asignaciones y compras, contratas, liquidación semanal, control y personal
 > propio, cronograma con recursos, productos, precios y abastecimiento, ruta
-> del ingreso, cronograma valorizado e inicio) con un ejemplo que cuadra y el
-> mapa de las 22 pantallas (P-01 a P-22) y los 14 asistentes (W-01 a W-14).
+> del ingreso, cronograma valorizado e inicio, importación del maestro y del
+> ETO) con un ejemplo que cuadra y el mapa de las 22 pantallas (P-01 a P-22)
+> y los 15 asistentes (W-01 a W-15).
 > Enlaces verificados el 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
 ## 1. Para qué sirve
@@ -53,6 +54,13 @@ Desde la fase 11 la obra se lee de un vistazo: el **cronograma valorizado**
 facturado y cobrado, en plan y real, con la curva S; y el **inicio** de la
 aplicación (P-01) lista las obras con su próximo hito y lo que cada usuario
 tiene que atender hoy.
+
+Desde la fase 12 el maestro no se transcribe: **«Importar maestro y ETO»**
+(W-15) lee el libro Excel del maestro de planificación (actividades,
+tipologías, módulos, actividades por ambiente, BOM y árbol de la obra) y el
+ETO con el ancho real de cada módulo, muestra antes lo que hará y lo que
+falta corregir, y se puede repetir sin duplicar nada. El módulo trae un
+maestro y un ETO de ejemplo de una obra genérica para aprenderlo.
 
 ## 2. Marco normativo y conceptual
 
@@ -103,6 +111,9 @@ base › precio de la actividad.
 
 ```mermaid
 flowchart TD
+  IM[Importar maestro y ETO: vista previa y advertencias] --> A
+  IM --> C
+  IM --> B
   A[Actividades y tarifas] --> C[Tipologías con módulos, actividades y BOM con etapa]
   B[Obra con su árbol: pisos, departamentos, ambientes con tipología] --> D
   C --> D[Plan de recursos en borrador]
@@ -226,6 +237,7 @@ Los códigos son los de la especificación v1.4.
 | W-09 | Nueva versión (replanificar) | Plan aprobado ▸ Nueva versión |
 | W-10 | Exceso sobre el plan | Se abre solo al pasar el saldo (requerimiento, OF u OC con la analítica de la obra) |
 | P-12 | Tipología de la obra | Configuración ▸ Tipologías |
+| W-15 | Importar maestro y ETO | Configuración ▸ Importar maestro y ETO; obra ▸ Importar maestro y ETO |
 | P-13 | Control de saldo | Plan ▸ pestaña Control; Reportes ▸ Control de saldo |
 | P-14 | Actividades y tarifas de contratas | Configuración ▸ Actividades de obra / Tarifas de contrata |
 | P-15 | Cronograma con recursos | Cronograma |
@@ -274,6 +286,72 @@ La instalación del piso suma S/ 941.17 (instalación, regulación, tapas,
 recortes, pines y push), como en P-05 de la especificación. El reparto entre
 las tipologías 04 a 08 y los precios de material son de ejemplo y cuadran con
 una línea de ajuste marcada «(ajuste demo)».
+
+### Importar el maestro y el ETO (W-15)
+
+El maestro de planificación es un libro Excel con una hoja por cosa que el
+planificador carga: **CATALOGO** (actividades de obra con su driver y su
+tarifa base), **TIPOLOGIAS**, **MODULOS** (plantilla de cada tipología, con
+su ancho y su actividad de armado), **ACTIVIDADES** (por ambiente),
+**BOM** (materiales de un ambiente con su etapa de consumo y su costo) y
+**ARBOL** (piso › departamento › ambiente con su tipología). El **ETO** es la
+hoja con los módulos reales de cada ambiente (código y ancho), que sale del
+despiece de ingeniería. Todas las hojas son opcionales: se puede importar
+el maestro y, semanas después, el ETO de un piso. La hoja **LEEME** de la
+plantilla explica cada columna.
+
+Paso a paso con el ejemplo que trae el módulo (una obra genérica de 3 pisos
+con 4 departamentos por piso y, en cada departamento, cocina, closet y baño;
+datos ficticios con códigos `EJ-`):
+
+1. Cree una obra vacía (Proyecto con **Es obra**) y su cuenta analítica.
+2. **Configuración ▸ Importar maestro y ETO** (o el botón **Importar maestro
+   y ETO** de la obra). Pulse **Descargar ejemplo**
+   (`maestro_planificacion_ejemplo.xlsx`) y **Descargar ETO de ejemplo**
+   (`eto_ejemplo.xlsx`). **Descargar plantilla** da el libro vacío.
+3. Elija la obra, suba el maestro y marque **Crear los productos que no
+   existen** (los productos `EJ-` no existen en una base nueva). La **vista
+   previa** muestra, sin escribir nada: 13 actividades, 4 tipologías (C01 y
+   C02 cocinas, CL01 closet, B01 baño), 17 módulos de plantilla, 19
+   actividades por ambiente, 30 filas de BOM, 10 productos por crear y 36
+   ambientes nuevos.
+4. Lea las **advertencias**, que el ejemplo trae a propósito (están en su hoja
+   LEEME):
+   - la melamina hidrófuga de C01 no tiene etapa: se importa, pero el plan
+     no se aprueba hasta indicarla; el aviso da su monto en la obra al costo
+     del libro (0.5 × 195.00 × 6 cocinas = S/ 585.00);
+   - el tornillo de C02 está en dos filas: se suman (100 unidades);
+   - el pin de repisa no tiene costo;
+   - 2.4375 planchas de melamina blanca: si la base guarda las cantidades
+     con dos decimales, la BOM las redondea a 2.44.
+5. Pulse **Importar**. Se abre la lista de tipologías de la obra, cada una
+   con su BOM, y el historial de la obra registra la importación. La hoja
+   CATALOGO solo la aplica un **Administrador** del planificador; un
+   Planificador ve el aviso y carga las actividades antes (Configuración ▸
+   Actividades de obra).
+6. Vuelva a abrir el asistente con el ETO de ejemplo e impórtelo en la misma
+   obra. Crea los módulos reales de las 4 cocinas del piso 01 (26 módulos)
+   con su ancho; la fila del Dpto 105 se avisa y se omite porque ese
+   departamento no existe.
+7. En **Obras ▸ Planes de recursos**, cree el plan de la obra y pulse
+   **Generar plan**: crea los 100 módulos que faltan (126 en total) y 390
+   líneas de contrata por S/ 3,300.00 (armado S/ 1,398.00, instalación
+   S/ 1,366.50 y acabado S/ 535.50) más 240 de material, 6 de ellas sin
+   etapa. Las cocinas del piso 01 usan el ancho real del ETO: la del Dpto
+   101 cuesta S/ 157.00 de contrata; con el ancho de la plantilla serían
+   S/ 159.40, como la del Dpto 201. Sin el ETO, el plan sumaría S/ 3,303.60.
+8. Corrija la etapa de la melamina hidrófuga en la BOM de C01, escriba el
+   costo de los materiales con **Aplicar costo** (al costo del libro, el
+   material de la obra suma S/ 22,341.00) y siga con la aprobación del plan.
+
+Volver a importar el mismo libro no duplica nada: las tipologías se
+reconocen por su código, los módulos por su código, los pisos,
+departamentos y ambientes por su nombre bajo su nivel superior y los
+productos por su referencia interna. Lo que el libro trae de una tipología
+(plantilla de módulos, actividades y BOM) queda exactamente así: una fila
+borrada del libro se borra de la tipología. Las tarifas de la obra y de las
+contratas no forman parte del maestro (Configuración ▸ Tarifas de
+contrata).
 
 ### Árbol de recursos (P-02)
 
@@ -415,7 +493,7 @@ Leandro (instalación)». Tarifa de la obra (18.00 por ML, no la base de
 | **Total · neto S/ 847.05** | | | | **941.17** | **94.12** |
 
 Pone a Leandro en las 64 líneas de instalación del piso (8 actividades × 8
-cocinas; el maestro de MOMEN tiene 59) y crea su OC de servicio con 8 líneas
+cocinas; el maestro de referencia tiene 59) y crea su OC de servicio con 8 líneas
 por S/ 941.17. Una segunda asignación a Leandro en la obra suma a la misma
 OC; las líneas que ya tienen otra contrata no se reasignan.
 
@@ -568,7 +646,7 @@ planchas, a S/ 122.79 del plan = S/ 6,999.03. La melamina coñac (plan
 
 ### Ruta del ingreso (P-19 a P-21)
 
-**Calendario (P-21).** MOMEN va del 12/10 al 18/12/2026 con semanas de
+**Calendario (P-21).** La obra del demo va del 12/10 al 18/12/2026 con semanas de
 jueves a miércoles y valorización cada 2 semanas: cortes el 28/10, 11/11,
 25/11, 09/12 y 23/12. Con 2 días para presentar, 5 para la confirmación, 2
 para facturar y 30 de cobro, la valorización 1 se presenta el 30/10, se
@@ -593,7 +671,7 @@ OV (cantidad 1) con la cantidad al % acumulado confirmado: 0.42 si el
 acumulado confirmado es 42.31 %, por el monto confirmado.
 
 En el demo (solo el piso 05), la partida vale S/ 8,698.43 (la misma
-proporción que MOMEN) y la valorización 1 entrega S/ 408.31 (4.69 %), con
+proporción que la obra completa) y la valorización 1 entrega S/ 408.31 (4.69 %), con
 S/ 20.42 de fondo de garantía y S/ 387.89 neto.
 
 ### Cronograma valorizado e inicio (P-22, P-01)
@@ -631,7 +709,8 @@ confirmar; Finanzas, las valorizaciones confirmadas por facturar.
 3. Asignar grupos en Ajustes ▸ Usuarios: **Planificador** a Oficina Técnica,
    **Administrador** a Jefatura de Proyectos, **Reporte de avance** a
    capataces y supervisores.
-4. Cargar actividades, tarifas y tipologías (pasos 1 a 3).
+4. Cargar actividades, tarifas y tipologías (pasos 1 a 3), a mano o con
+   **Importar maestro y ETO** (W-15, ver «Importar el maestro y el ETO»).
 5. Definir las reglas de aprobación del plan en **Configuración ▸ Reglas de
    aprobación** (por grupo o usuario, con condición por monto
    `amount_total`). Sin reglas, el plan se aprueba al solicitarlo.
@@ -741,6 +820,11 @@ No alimenta libros PLE ni archivos SUNAT.
 | Situación | Qué pasa | Qué hacer |
 |---|---|---|
 | Ambiente sin tipología | No se genera; se avisa | Asignar la tipología al ambiente |
+| Importar: «no tiene las columnas obligatorias» | Una hoja del libro no tiene un encabezado obligatorio; no se importa nada | Corregir el encabezado (ver la hoja LEEME de la plantilla) |
+| Importar: productos que no existen | Esas filas de BOM se omiten y se avisan | Marcar «Crear los productos que no existen» o crearlos antes con su referencia interna |
+| Importar: actividades que no existen | Las filas de módulos o actividades se omiten | Cargarlas en la hoja CATALOGO (administrador) o en Configuración ▸ Actividades de obra |
+| Importar: ambientes del ETO que no existen | La fila se omite | Importar antes el árbol (hoja ARBOL) o corregir piso, departamento y ambiente |
+| Importar: productos repetidos en una BOM | Se suman en una sola línea | Revisar el maestro si la repetición no era intencional |
 | Componente sin etapa de consumo | La línea se genera «sin etapa» y se avisa | Indicar la etapa en la BOM y regenerar |
 | Líneas de material sin costo | Se avisa | Escribir el costo unitario |
 | Tipología sin anchos | La instalación por ML queda en el ambiente; se avisa | Cargar los anchos del ETO por módulo |
@@ -881,10 +965,20 @@ No alimenta libros PLE ni archivos SUNAT.
   decimales en la cantidad, 0.42 × precio no da lo confirmado: el precio se
   ajusta hacia abajo para que el subtotal sea lo confirmado.
 
+- **¿Puedo importar el maestro varias veces?** Sí: no duplica nada. Lo que
+  el libro trae de una tipología queda exactamente así (una fila borrada se
+  borra); lo que no trae (otras tipologías, ambientes, tarifas) no cambia.
+  Los planes ya generados no se tocan: regenere el plan en borrador.
+- **¿El ETO reemplaza a la plantilla?** No: la completa. Con el ETO, cada
+  módulo real lleva su ancho y la instalación y la limpieza por ML se
+  calculan con él; los ambientes sin ETO usan el ancho de la plantilla.
+
 ## 9. Referencias
 
 - Especificación v1.4: [`docs/planificador/ESPECIFICACION_v1.4.md`](../../docs/planificador/ESPECIFICACION_v1.4.md)
 - Diseño técnico: [`docs/planificador/DISENO_TECNICO.md`](../../docs/planificador/DISENO_TECNICO.md)
+- Criterios de aceptación: [`docs/planificador/ACEPTACION.md`](../../docs/planificador/ACEPTACION.md)
+- Maestro de ejemplo: [`static/examples/maestro_planificacion_ejemplo.xlsx`](static/examples/maestro_planificacion_ejemplo.xlsx); ETO de ejemplo: [`static/examples/eto_ejemplo.xlsx`](static/examples/eto_ejemplo.xlsx); se generan con [`tools/generar_ejemplos_importacion.py`](tools/generar_ejemplos_importacion.py)
 - Odoo 19, Proyecto: https://www.odoo.com/documentation/19.0/applications/services/project.html
 - Odoo 19, Fabricación (listas de materiales): https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing.html
 - Odoo 19, Compras (recepción manual de servicios y facturas desde la OC): https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/purchase.html

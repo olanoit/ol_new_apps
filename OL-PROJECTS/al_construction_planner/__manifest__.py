@@ -176,6 +176,27 @@ Fase 11 (cronograma valorizado e inicio, P-22 y P-01):
 * Menú «Reportes» (P-22, control de saldo y precios de compra) y «Cobranza de
   la obra» en Ingresos.
 
+Fase 12 (importar maestro y ETO, W-15):
+
+* «Importar maestro y ETO»: un libro Excel con las hojas del maestro de
+  planificación (catálogo de actividades, tipologías, plantilla de módulos,
+  actividades por ambiente, BOM con etapa de consumo y árbol de la obra) o
+  solo con el ETO (código y ancho real de cada módulo). Todas las hojas son
+  opcionales.
+* Vista previa sin escribir nada, con conteos por hoja y advertencias: BOM
+  sin etapa (con su monto en la obra), productos que no existen o sin costo,
+  productos repetidos en una BOM (se suman), actividades o tipologías
+  desconocidas, ambientes del ETO que no existen y cantidades con más
+  decimales que la precisión de la unidad.
+* Importación idempotente: volver a importar no duplica; lo que trae el libro
+  de una tipología queda exactamente así. Opción para crear los productos que
+  no existen; la hoja de actividades la aplica un administrador.
+* «Generar plan» usa el ancho real del módulo del ETO: la instalación y la
+  limpieza por ML bajan al módulo con su ancho.
+* Plantilla vacía y libros de ejemplo (maestro de una obra genérica de 3
+  pisos y su ETO) para descargar desde el asistente; se generan con
+  tools/generar_ejemplos_importacion.py.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -185,7 +206,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '10.20261010',
+    'version': '11.20261011',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -220,6 +241,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'wizards/plan_contract_wizard_views.xml',
         'wizards/plan_crew_wizard_views.xml',
         'wizards/valuation_wizard_views.xml',
+        'wizards/master_import_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_progress_views.xml',

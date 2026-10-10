@@ -6,6 +6,13 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(al_construction_planner.action_construction_master_import_wizard)d"
+                        type="action" string="Importar maestro y ETO"
+                        context="{'default_project_id': id}"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_plans" type="object"
                         class="oe_stat_button" icon="fa-sitemap"

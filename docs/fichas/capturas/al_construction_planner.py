@@ -5,7 +5,8 @@ planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
 y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
 la fase 2.
 
-``CAPTURAS_DESDE=40`` rehace solo las de la fase 11 (cronograma valorizado
+``CAPTURAS_DESDE=44`` rehace solo las de la fase 12 (importar maestro y ETO
+con los libros de ejemplo, en una obra vacía), ``CAPTURAS_DESDE=40`` rehace solo las de la fase 11 (cronograma valorizado
 e inicio, datos de planner_demo_schedule.py), ``CAPTURAS_DESDE=36`` solo
 las de la fase 10 (ruta del ingreso,
 datos de planner_demo_income.py), ``CAPTURAS_DESDE=17`` solo las de las
@@ -225,7 +226,62 @@ def fase_11(c):
     c.foto('43-inicio', selector=FULL)
 
 
+EXAMPLES = Path(__file__).resolve().parents[3] / 'OL-PROJECTS' / M / 'static' / 'examples'
+OBRA_EJEMPLO = 'Obra de ejemplo (importación)'
+
+
+def obra_ejemplo(c):
+    """Id de la obra vacía donde se importan los libros de ejemplo."""
+    found = buscar(c, 'project.project', [['name', '=', OBRA_EJEMPLO]])
+    if found:
+        return found[0]
+    return c.page.evaluate("""async (name) => {
+        const res = await fetch('/web/dataset/call_kw', {method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {
+                model: 'project.project', method: 'create',
+                args: [{name, is_construction_site: true}], kwargs: {}}})});
+        return (await res.json()).result;
+    }""", OBRA_EJEMPLO)
+
+
+def importar(c, archivo, crear_productos=False):
+    """Abre W-15, elige la obra de ejemplo y sube ``archivo``."""
+    c.abrir_accion(f'{M}.action_construction_master_import_wizard', ms=2000)
+    campo = c.page.locator('.modal div[name=project_id] input')
+    campo.fill(OBRA_EJEMPLO)
+    c.esperar(1200)
+    c.page.locator('.o-autocomplete--dropdown-item a', has_text=OBRA_EJEMPLO).first.click()
+    c.esperar(800)
+    c.page.locator('.modal input.o_input_file').set_input_files(str(EXAMPLES / archivo))
+    c.esperar(2500)
+    if crear_productos:
+        c.clic('.modal div[name=create_missing_products] input', ms=2000)
+
+
+def fase_12(c):
+    """Fase 12: «Importar maestro y ETO» (W-15) con los libros de ejemplo
+    de static/examples, en una obra vacía."""
+    obra_ejemplo(c)
+    # 44. Vista previa del maestro de ejemplo con sus advertencias
+    importar(c, 'maestro_planificacion_ejemplo.xlsx', crear_productos=True)
+    c.foto('44-importar-maestro', selector=MODAL)
+    c.clic('.modal-footer button[name=action_import]', ms=4000)
+    # 45. ETO de ejemplo: el ambiente que no existe se avisa
+    importar(c, 'eto_ejemplo.xlsx')
+    c.foto('45-importar-eto', selector=MODAL)
+    c.clic('.modal-footer button[name=action_import]', ms=4000)
+    # 46. Tipología importada: módulos con ancho, actividades y BOM
+    typology = buscar(c, 'construction.typology', [['project_id.name', '=', OBRA_EJEMPLO],
+                                                    ['code', '=', 'C01']])[0]
+    c.abrir_registro('construction.typology', typology, ms=2500)
+    c.foto('46-tipologia-importada', selector=FULL)
+
+
 with Captura(M) as c:
+    if DESDE >= 44:
+        fase_12(c)
+        raise SystemExit
     if DESDE >= 40:
         fase_11(c)
         raise SystemExit

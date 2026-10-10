@@ -5,7 +5,7 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra, Entrega semanal, Valorización, Calendario e ingresos, Cronograma valorizado, Curva S, Inicio con pendientes]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra, Entrega semanal, Valorización, Calendario e ingresos, Cronograma valorizado, Curva S, Inicio con pendientes, Importar maestro y ETO]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
@@ -169,6 +169,12 @@ destacados:
     texto: >-
       Al entrar, cada usuario ve sus obras con el próximo hito y lo que le
       toca atender; cada fila abre la lista filtrada.
+  - icono: "⇪"
+    titulo: Maestro y ETO desde Excel
+    texto: >-
+      Tipologías, módulos, actividades, BOM y árbol de la obra en un libro;
+      el ETO con el ancho real de cada módulo. Vista previa con advertencias
+      y reimportación sin duplicar.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -744,6 +750,38 @@ pasos:
       - "El supervisor ve solo los avances y liquidaciones por validar de sus obras (responsable del proyecto o en «Supervisores de obra»)."
       - "Jefatura: entregas por confirmar; Finanzas: valorizaciones por facturar; Planificador: abastecimiento, etapas sin contrata y líneas sin costo."
     imagen: screenshots/43-inicio.png
+  - titulo: Importar el maestro de planificación
+    ruta: Configuración ▸ Importar maestro y ETO · Obra ▸ Importar maestro y ETO
+    texto: >-
+      El maestro de ejemplo (obra genérica de 3 pisos con cocina, closet y
+      baño) en una obra vacía: la vista previa cuenta lo que se creará por
+      hoja, sin escribir nada, y muestra las advertencias que el ejemplo trae
+      a propósito.
+    puntos:
+      - "Hojas opcionales: CATALOGO, TIPOLOGIAS, MODULOS, ACTIVIDADES, BOM, ARBOL y ETO; columnas por su encabezado, en cualquier orden."
+      - "Advertencias: BOM sin etapa con su monto en la obra, productos que no existen o sin costo, productos repetidos (se suman), actividades o tipologías desconocidas y cantidades con más decimales que la unidad."
+      - "«Crear los productos que no existen» los crea con el código, nombre, unidad y costo del libro; la hoja CATALOGO la aplica un administrador."
+      - "Descargar plantilla (vacía, con la hoja LEEME), Descargar ejemplo y Descargar ETO de ejemplo."
+    imagen: screenshots/44-importar-maestro.png
+  - titulo: Importar el ETO
+    ruta: Configuración ▸ Importar maestro y ETO
+    texto: >-
+      El ETO de ejemplo crea los módulos reales de las cocinas del piso 01
+      con su ancho; el departamento que no existe se avisa y se omite.
+    puntos:
+      - "Los módulos se reconocen por su código en el ambiente: volver a importar actualiza su ancho."
+      - "«Generar plan» usa el ancho real del módulo: la instalación y la limpieza por ML bajan al módulo con ese ancho."
+    imagen: screenshots/45-importar-eto.png
+  - titulo: Tipología importada
+    ruta: Configuración ▸ Tipologías
+    texto: >-
+      La cocina C01 del ejemplo con sus seis módulos con ancho, sus
+      actividades por ambiente y su lista de materiales con la etapa de
+      consumo de cada componente.
+    puntos:
+      - "Lo que el libro trae de una tipología queda exactamente así: una fila borrada del libro se borra de la tipología."
+      - "Con el plan generado: 126 módulos y 390 líneas de contrata por S/ 3,300.00 en la obra de ejemplo."
+    imagen: screenshots/46-tipologia-importada.png
 
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
@@ -1179,6 +1217,13 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 11.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Importar maestro y ETO (fase 12, W-15): libro Excel con catálogo de actividades, tipologías, plantilla de módulos, actividades por ambiente, BOM con etapa y árbol de la obra, o solo con el ETO (código y ancho real de cada módulo)."
+      - "Vista previa sin escribir nada con conteos por hoja y advertencias (BOM sin etapa con su monto, productos que no existen o sin costo, productos repetidos, actividades o tipologías desconocidas, ambientes del ETO que no existen, decimales de más); importación idempotente."
+      - "«Generar plan» usa el ancho real del módulo del ETO para la instalación y la limpieza por ML."
+      - "Plantilla vacía y libros de ejemplo de una obra genérica (maestro y ETO) para descargar desde el asistente."
   - version: 10.20261010
     fecha: 10/10/2026
     cambios:

@@ -110,6 +110,8 @@
               groups="group_planner_planner">
         <menuitem id="menu_planner_typologies" name="Tipologías"
                   action="action_construction_typology" sequence="10"/>
+        <menuitem id="menu_planner_master_import" name="Importar maestro y ETO"
+                  action="action_construction_master_import_wizard" sequence="15"/>
         <menuitem id="menu_planner_activities" name="Actividades de obra"
                   action="action_construction_labor_activity" sequence="20"/>
         <menuitem id="menu_planner_rates" name="Tarifas de contrata"

@@ -177,6 +177,29 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 8. **Compañía de la actividad**: la activa por defecto; vacía (compartida)
    solo por importación, porque la compañía es de solo lectura en las vistas.
 
+### 5.1 Decisiones aceptadas el 11/10/2026
+
+Vicente aceptó todas las propuestas de ALTA de la tabla «Abiertas» de la
+especificación v1.4. Estado de cada una:
+
+| # | Decisión | Propuesta aceptada | Dónde está o qué queda |
+|---|---|---|---|
+| 1 | OC de servicio | Una por contrata y obra | Implementada: `purchase.order._construction_open_service_order` (W-05 suma a la OC abierta de la contrata en la obra; §6.3) |
+| 2 | Ponderación del avance agregado | Por valor (driver × tarifa) | Implementada: `_progress_amounts` y `construction_progress_pct` (ejecutado × costo unitario ÷ planificado de contrata y personal propio) |
+| 3 | Quién presenta la liquidación | El supervisor, en nombre de la contrata; más adelante, portal | Implementada: estado «Presentada» que pone el supervisor de obra (`construction_contract_settlement.py`); el portal queda para después |
+| 4 | Avances validados tarde | Entran a la siguiente liquidación como rezagados | Implementada: la liquidación toma los avances del periodo más los rezagados (§6.3) |
+| 5 | Feriados de liquidación y pago | Al día hábil anterior según el calendario de la compañía | Implementada: `res.company._construction_previous_working_day` |
+| 6 | Anchos por módulo | Cargar el ETO de cada obra nueva | Implementada en la fase 12: hoja ETO de W-15 y ancho del módulo real en W-01 (§6.9) |
+| 7 | Stock del modo con analítica | Solo analítica, sin reserva | Implementada: W-02 en modo «obra» solo pone la distribución analítica (§6.2) |
+| 8 | Planes analíticos del presupuesto | Confirmar en la base limpia | Implementada la regla (una línea de presupuesto por combinación de cuentas, §6.1); queda que el cliente confirme sus planes analíticos en la base limpia |
+| 9 | Enganche en el requerimiento | Método para heredar antes de crear las revisiones | Implementado: el control hereda `action_request_approval` y corre antes de `super()`, que crea las revisiones (§6.2) |
+| 10 | Puntos de extensión del Gantt | Columnas, panel lateral, selección múltiple y botones de barra | Implementados en `al_project_gantt_backend` 15 y `al_project_gantt_base` 17 (§6.5) |
+| 11 | Licencia de dhtmlxGantt | Si no trae la carga de recursos, tabla OWL propia | Implementada: la carga semanal por contrata y etapa es una tabla OWL propia (la vista de recursos de dhtmlxGantt es PRO) |
+| 12 | Contrato de la obra de referencia | Confirmar con Proyectos antes de probar el ingreso | Del cliente: monto adjudicado (con o sin IGV), adelanto y calendario real (ver `ACEPTACION.md`) |
+| 13 | Fondo de garantía en la factura | Acordar con contabilidad | Implementado lo que admite la factura electrónica: por defecto no va en la factura y se cobra al cierre; con las cuentas de Ajustes, líneas negativas (§6.7). Contabilidad confirma el tratamiento |
+| 14 | Umbral de alerta de precio | 5 %, parámetro de la compañía | Implementado: `res.company.construction_price_alert_pct` (5 % por defecto, Ajustes ▸ Planificación de obra) |
+| 15 | Días no hábiles del ingreso | Al siguiente día hábil | Implementado: `res.company._construction_next_working_day` con el horario de días hábiles del ingreso |
+
 ## 6. Plan de fases
 
 | Fase | Contenido | Pantallas |
@@ -194,6 +217,7 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Cronograma valorizado e inicio (hecha; fase 11 de la especificación) | `construction.schedule.report` plan y real por semana; P-22 con curva S, Excel, pivote y gráfico; P-01 con obras, próximo hito y pendientes por grupo como acción por defecto; menú Reportes (ver §6.8) | P-22, P-01 |
 | Cronograma con recursos (hecha; fase 8 de la especificación) | Etapas del ambiente; herencia de `al.gantt.data.get_data`; pantalla sobre el componente del Gantt con selección, panel, acciones y carga semanal OWL; arrastre con recálculo y aviso (ver §6.5) | P-15 |
 | Productos, precios y abastecimiento (hecha; fase 9 de la especificación) | Vista SQL de precios de compra en soles; P-16 con estadísticos y gráfico; W-12 con media móvil; W-11 crear producto con código de familia; tablero de abastecimiento y alertas (ver §6.6) | P-16, P-17, P-18 |
+| Importar maestro y ETO (hecha; fase 12, fuera de la especificación) | W-15: libro Excel con catálogo, tipologías, módulos, actividades, BOM, árbol y ETO; vista previa con advertencias; importación idempotente; ancho del ETO en la generación; plantilla y ejemplos (ver §6.9) | W-15 |
 
 ### 6.1 Línea base: presupuesto y ganchos
 
@@ -541,7 +565,75 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   ve todo; la Jefatura, siempre todo. Se aplica a avances y liquidaciones
   por validar.
 
+### 6.9 Importar maestro y ETO (fase 12)
+
+Es lo que `ACEPTACION.md` pedía para validar con el maestro real (puntos 1 y
+2) y la decisión aceptada «Cargar el ETO de cada obra nueva».
+
+- **Formato.** `wizards/master_import_layout.py` (Python puro) define las
+  hojas `CATALOGO`, `TIPOLOGIAS`, `MODULOS`, `ACTIVIDADES`, `BOM`, `ARBOL` y
+  `ETO` con sus columnas (encabezado en español, obligatoria, ayuda) y los
+  textos aceptados de cada lista (etapa, tipo de módulo, grupo ML, familia,
+  «se mide por»). Las columnas se reconocen por su encabezado sin tildes ni
+  mayúsculas, en cualquier orden; todas las hojas son opcionales. Lo usan el
+  asistente (lectura y plantilla vacía) y
+  `tools/generar_ejemplos_importacion.py` (libros de ejemplo).
+- **W-15** `construction.master.import.wizard`: `_analyze()` lee el libro con
+  openpyxl y devuelve lo que se haría, sin escribir: alimenta la vista
+  previa (filas, nuevos y actualizados por hoja) y las advertencias (BOM sin
+  etapa con su monto en la obra al costo del libro, productos inexistentes o
+  sin costo, productos repetidos en una BOM, actividades o tipologías
+  desconocidas, actividad de armado que no se mide por módulo, ambientes del
+  ETO que no existen, cantidades con más decimales que «Product Unit»,
+  unidades incompatibles y valores no reconocidos). Las columnas
+  obligatorias que faltan son errores y bloquean la importación.
+  `action_import()` vuelve a analizar y aplica `_apply()`.
+- **Idempotencia.** Upsert por código de actividad (compañía de la obra o
+  compartida), código de tipología en la obra, código de módulo en la
+  tipología, referencia interna del producto y nombre bajo el nivel superior
+  en el árbol. Lo que el libro trae de una tipología (plantilla de módulos,
+  actividades por ambiente y BOM) queda exactamente así: las filas que ya no
+  están se borran; las filas repetidas de un producto se suman. Las tarifas
+  no forman parte del maestro.
+- **Permisos.** El asistente es del grupo Planificador. La hoja `CATALOGO`
+  solo la aplica un Administrador (las actividades son catálogo de la
+  compañía); para el resto se avisa y se omite. La BOM de la tipología, su
+  producto terminado y los productos nuevos se escriben con `sudo`
+  justificado (el planificador es usuario de fabricación, sin escritura en
+  BOM ni productos), con la compañía de la obra. El historial de la obra
+  registra la importación con el usuario como autor (`sudo`: el planificador
+  puede no escribir el proyecto).
+- **ETO en la generación (decisión de diseño 5).** El ETO crea o actualiza
+  las tareas de módulo del ambiente por código (`construction_module_code`)
+  con su ancho, tipo y grupo ML. W-01 ya emparejaba esos módulos con la
+  plantilla por código (decisión 6); ahora `_collect` usa el ancho y el grupo
+  ML del módulo real si los tiene y, si no, los de la plantilla: la
+  instalación y la limpieza por ML bajan al módulo con su ancho real.
+- **Ejemplos.** `static/examples/maestro_planificacion_ejemplo.xlsx` (obra
+  genérica de 3 pisos × 4 departamentos con cocina C01/C02, closet CL01 y
+  baño B01: 13 actividades `EJ-`, 17 módulos con ancho, 30 filas de BOM, 36
+  ambientes) y `static/examples/eto_ejemplo.xlsx` (cocinas del piso 01). Traen
+  a propósito una fila de BOM sin etapa, un producto repetido, uno sin costo,
+  una cantidad con 4 decimales y un ambiente del ETO que no existe,
+  documentados en su hoja LEEME. El asistente los descarga («Descargar
+  ejemplo», «Descargar ETO de ejemplo») junto a la plantilla vacía.
+- **Tests** (`tests/test_import.py`): los ejemplos publicados coinciden con
+  el script; el ejemplo se importa tal cual con sus advertencias y el plan
+  generado cuadra con lo calculado desde las constantes del script (126
+  módulos, 390 líneas de contrata por S/ 3,300.00, 240 de material, la
+  instalación del módulo con el ancho del ETO); la reimportación no
+  duplica; el libro reemplaza la plantilla de la tipología; el piso 05 del
+  demo exportado al formato e importado en otra obra da el mismo plan
+  (66 módulos, S/ 2,301.53 + S/ 6,642.91 = S/ 8,944.44); advertencias y
+  errores; permisos (Planificador sin catálogo, Reporte de avance sin
+  acceso) y multicompañía.
+
 ## 7. Riesgos y pendientes
+
+- **Maestro real.** El importador está probado con los ejemplos y con el
+  piso 05 del demo; falta importar el libro real de una obra (sus
+  encabezados pueden diferir de la plantilla: se ajustan en el libro o se
+  añaden como sinónimos en `master_import_layout.py`).
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
   e indexados evitan recursión; el árbol OWL carga por niveles. Medido con

@@ -43,31 +43,39 @@ Resultados:
 | 18 | Con el calendario de P-21, la valorización 2 confirmada en la semana 12/11–18/11, facturada en la 19/11–25/11 y cobrada en la 17/12–23/12; el cobrado acumulado cierra en S/ 159,231.23 con el fondo de garantía | `test_schedule_report.TestScheduleReport.test_plan_schedule` (plan), `test_real_schedule` (real), `test_plan_cost_by_working_days` (reparto y redondeo) | **Adaptado al demo**: mismas semanas y mismo cierre, sobre la obra sintética de la ruta del ingreso con etapas de ejemplo (el monto de cada valorización depende del calendario real de MOMEN) |
 | 19 | El inicio muestra a un supervisor solo los avances por validar de sus obras y la fila abre esa lista filtrada | `test_schedule_report.test_home_supervisor_sees_own_works`, `test_home_works_and_milestone`, `test_home_stage_without_contract` | **Verde** («sus obras»: responsable del proyecto o en «Supervisores de obra») |
 
-Resumen: **13 en verde, 5 adaptados al demo y 1 pendiente de MOMEN.**
+Resumen: **13 en verde, 5 adaptados al demo y 1 pendiente de MOMEN** (el
+importador del maestro ya está hecho, fase 12: falta el libro real).
 
 Control de multicompañía: `al_base_module_info` (`TestMulticompany`) y los
 tests `test_multicompany` de cada fase.
 
 ## Qué falta para validarlos con MOMEN
 
-1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): un
-   importador de tipologías (módulos, ML, actividades y BOM con su etapa) y
-   del árbol de la obra (20 pisos, 153 departamentos y ambientes con su
-   tipología). Con él se comprueban los criterios 1, 2 (sin la línea de
-   ajuste), 4 (59 líneas) y 5 (37.9 %). Antes hay que resolver lo que la
-   especificación ya señala del maestro: 20 filas de BOM sin etapa
-   (S/ 10,709.20), 3 productos sin costo, armado de cajones sin cantidades y
-   tornillos repetidos en PROYECCION_MATERIALES.
-2. **ETO por módulo** (anchos y códigos): para bajar la instalación por ML
-   al módulo; sin él queda en el ambiente (decisión de diseño 5).
+1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): el
+   importador ya existe (fase 12, «Importar maestro y ETO», W-15: tipologías,
+   módulos, ML, actividades, BOM con su etapa y árbol de la obra; ver
+   `DISENO_TECNICO.md` §6.9). Falta solo el libro real: pasarlo al formato de
+   la plantilla (o añadir sus encabezados como sinónimos) e importarlo en la
+   base limpia. Con él se comprueban los criterios 1, 2 (sin la línea de
+   ajuste), 4 (59 líneas) y 5 (37.9 %). La vista previa del importador ya
+   avisa lo que la especificación señala del maestro: filas de BOM sin etapa
+   (con su monto), productos sin costo y productos repetidos (los tornillos
+   de PROYECCION_MATERIALES se suman); el armado de cajones sin cantidades
+   hay que completarlo en el libro.
+2. **ETO por módulo** (anchos y códigos): la hoja ETO del mismo importador
+   crea los módulos reales con su ancho y «Generar plan» baja la instalación
+   por ML al módulo (decisión aceptada el 11/10/2026). Falta el ETO real de
+   la obra.
 3. **Compras reales**: las 27 OC de 3101508 entre el 10/04 y el 10/10/2026
    con sus tipos de cambio en la base limpia (criterio 13).
 4. **Contrato**: el monto adjudicado (S/ 159,231.23, ¿con o sin IGV?), el
    adelanto (el correo dice 30 % con carta fianza y el contrato «No aplica»)
    y el calendario real de valorización y cobro (criterios 16 a 18).
-5. **Decisiones abiertas** que cambian cifras: fondo de garantía y
-   retención en la factura (contabilidad), partidas por familia de
-   tipología, horario de días hábiles del ingreso y cuenta de la retención.
+5. **Decisiones** que cambian cifras: las propuestas de ALTA se aceptaron
+   el 11/10/2026 (`DISENO_TECNICO.md` §5.1). Quedan los datos del cliente:
+   las cuentas del fondo de garantía y de la retención (contabilidad), las
+   partidas por familia de tipología en la OV y el horario de días hábiles
+   del ingreso.
 
 ## Revisión final del módulo (fase 11)
 

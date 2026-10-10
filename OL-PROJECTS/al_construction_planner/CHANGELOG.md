@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261011 — 11/10/2026
+
+- Importar maestro y ETO (fase 12, W-15): libro Excel con catálogo de actividades, tipologías, plantilla de módulos, actividades por ambiente, BOM con etapa y árbol de la obra, o solo con el ETO (código y ancho real de cada módulo).
+- Vista previa sin escribir nada con conteos por hoja y advertencias (BOM sin etapa con su monto, productos que no existen o sin costo, productos repetidos, actividades o tipologías desconocidas, ambientes del ETO que no existen, decimales de más); importación idempotente.
+- «Generar plan» usa el ancho real del módulo del ETO para la instalación y la limpieza por ML.
+- Plantilla vacía y libros de ejemplo de una obra genérica (maestro y ETO) para descargar desde el asistente.
+
 ## 10.20261010 — 10/10/2026
 
 - Cronograma valorizado (fase 11, P-22): por obra y semana, costo, ingreso devengado, margen, valorización confirmada, facturado y cobrado en plan (líneas repartidas en los días hábiles de su etapa y calendario de P-21) y real (ejecutado, entregas, valorizaciones, facturas y cobros conciliados), con curva S, fondo de garantía al cierre, Excel, pivote y gráfico.

@@ -139,7 +139,16 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                             result['modules_to_create'].append((space, template))
                         else:
                             result['warnings']['no_modules'].append(space.display_name)
-            has_widths = any(templates.mapped('width_mm'))
+            # Ancho y grupo ML de cada módulo: los del módulo real (ETO) si los
+            # tiene; si no, los de la plantilla (decisión de diseño 5).
+            def width(task, template):
+                return (task and task.construction_width_mm) or template.width_mm
+
+            def ml_group(task, template):
+                return (task and task.construction_width_mm and task.construction_ml_group) \
+                    or template.ml_group
+
+            has_widths = any(width(task, template) for task, template in modules)
             common = {
                 'plan_id': plan.id, 'typology_id': typology.id, 'source': 'generated',
                 'source_ref': typology.code, 'analytic_distribution': analytic,
@@ -169,10 +178,11 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                                 price_basis=basis, price_basis_date=basis_date)
                     if activity.ml_based and has_widths:
                         for task, template in modules:
-                            if template.ml_group == activity.ml_group and template.width_mm:
+                            if ml_group(task, template) == activity.ml_group \
+                                    and width(task, template):
                                 add('contract_module', dict(
                                     base, task_id=task.id if task else False,
-                                    qty_planned=template.width_mm / 1000.0,
+                                    qty_planned=width(task, template) / 1000.0,
                                     _space=space, _template=template))
                     else:
                         if activity.ml_based:
