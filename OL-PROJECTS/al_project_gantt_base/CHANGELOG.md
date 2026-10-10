@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261010 — 10/10/2026
+
+- La edición del diagrama admite que una interfaz deje arrastrar filas propias que no son tareas (por ejemplo, las etapas del cronograma de obra) y las guarde ella misma; las tareas se editan igual que antes.
+
 ## 16.20261008 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.

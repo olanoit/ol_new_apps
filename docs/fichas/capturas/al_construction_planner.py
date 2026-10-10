@@ -1,12 +1,13 @@
-"""Capturas de las fases 3 a 7 de al_construction_planner (línea base,
+"""Capturas de las fases 3 a 8 de al_construction_planner (línea base,
 asignaciones y compras, contratas, liquidación semanal, control y personal
-propio): datos «DEMO PLAN» de tools/planner_demo_data.py,
+propio, cronograma con recursos): datos «DEMO PLAN» de tools/planner_demo_data.py,
 planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
 y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
 la fase 2.
 
-``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 a 7 y
-``CAPTURAS_DESDE=24`` solo las de la fase 7 (las anteriores dependen del
+``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 a 8,
+``CAPTURAS_DESDE=24`` solo las de las fases 7 y 8 y ``CAPTURAS_DESDE=28``
+solo las del cronograma (las anteriores dependen del
 estado de los datos de su fase)."""
 import os
 import sys
@@ -139,14 +140,46 @@ def fase_7(c, v1):
     c.clic('.modal-footer button.btn-secondary', ms=800)
 
 
+def fase_8(c, v1):
+    """Fase 8: cronograma con recursos (P-15)."""
+    # 28. Cronograma del plan: etapas por ambiente, panel y carga semanal
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.clic('button[name=action_open_schedule]', ms=4000)
+    c.page.locator('.gantt_row', has_text='Producción').first.wait_for()
+    c.esperar(1500)
+    c.foto('28-cronograma', selector=FULL)
+
+    # 29. Solo instalación, piso 05 marcado: recursos de la selección
+    c.page.locator('.o_cp_stage_filter').select_option('installation')
+    c.esperar(3000)
+    c.page.locator('.gantt_row', has_text='Piso 05').locator('.algantt-check').click()
+    c.esperar(2500)
+    c.foto('29-cronograma-seleccion', selector=FULL)
+
+    # 30. Etapa de instalación de un ambiente: contrata, monto y avance
+    c.page.locator('.o_cp_stage_filter').select_option('')
+    c.esperar(3000)
+    c.clic('.algantt-selection-clear', ms=1500)
+    box = c.page.locator('.gantt_task_line.o_cp_stage_installation').first.bounding_box()
+    c.page.mouse.move(box['x'] + 4, box['y'] + 4)
+    c.page.mouse.move(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2, steps=5)
+    c.esperar(1500)
+    c.foto('30-cronograma-etapa', selector=FULL)
+
+
 with Captura(M) as c:
     v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
+    if DESDE >= 28:
+        fase_8(c, v1)
+        raise SystemExit
     if DESDE >= 24:
         fase_7(c, v1)
+        fase_8(c, v1)
         raise SystemExit
     if DESDE >= 17:
         fases_5_6(c, v1)
         fase_7(c, v1)
+        fase_8(c, v1)
         raise SystemExit
 
     # 4. Versión aprobada: resumen por etapa, presupuesto y versiones
@@ -226,3 +259,4 @@ with Captura(M) as c:
     # --- Fases 5 a 7: contratas, liquidación, control y personal propio ---
     fases_5_6(c, v1)
     fase_7(c, v1)
+    fase_8(c, v1)

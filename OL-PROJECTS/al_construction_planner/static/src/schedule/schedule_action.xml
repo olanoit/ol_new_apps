@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Plantillas que el Gantt de proyectos pinta en sus puntos de extensión
+         (`toolbarTemplate`, `sidePanelTemplate`, `bottomPanelTemplate`), con
+         ConstructionScheduleAction como contexto. -->
+
+    <t t-name="al_construction_planner.ScheduleToolbar">
+        <div class="o_cp_schedule_toolbar d-flex flex-wrap align-items-center gap-2">
+            <label class="fw-bold mb-0" for="o_cp_schedule_plan">Plan:</label>
+            <select id="o_cp_schedule_plan" class="form-select form-select-sm w-auto o_cp_schedule_plan"
+                    t-on-change="onPlanChange">
+                <option t-if="!schedule.plans.length" value="">Sin planes</option>
+                <t t-foreach="schedule.plans" t-as="plan" t-key="plan.id">
+                    <option t-att-value="plan.id" t-att-selected="plan.id === schedule.planId"
+                            t-esc="plan.display_name"/>
+                </t>
+            </select>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary o_cp_rows_stages"
+                        t-att-class="schedule.rows === 'stages' ? 'active' : ''"
+                        title="Pisos, departamentos y ambientes con sus etapas"
+                        t-on-click="() => this.onRowsChange('stages')">Etapas</button>
+                <button type="button" class="btn btn-outline-secondary o_cp_rows_tasks"
+                        t-att-class="schedule.rows === 'tasks' ? 'active' : ''"
+                        title="Las tareas de la obra"
+                        t-on-click="() => this.onRowsChange('tasks')">Tareas</button>
+            </div>
+            <select class="form-select form-select-sm w-auto o_cp_stage_filter"
+                    title="Solo una etapa: las filas, la selección y la carga semanal"
+                    t-on-change="onStageChange">
+                <option value="">Todas las etapas</option>
+                <t t-foreach="stageOptions" t-as="option" t-key="option.value">
+                    <option t-att-value="option.value" t-att-selected="option.selected"
+                            t-esc="option.label"/>
+                </t>
+            </select>
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary"
+                        t-att-class="schedule.showPanel ? 'active' : ''"
+                        title="Recursos de la selección"
+                        t-on-click="() => this.togglePanel()">
+                    <i class="fa fa-columns"/>
+                </button>
+                <button type="button" class="btn btn-outline-secondary"
+                        t-att-class="schedule.showLoad ? 'active' : ''"
+                        title="Carga semanal por contrata y etapa"
+                        t-on-click="() => this.toggleLoad()">
+                    <i class="fa fa-bar-chart"/>
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="al_construction_planner.SchedulePanel">
+        <aside class="o_cp_schedule_panel border-start p-2" t-if="schedule.showPanel">
+            <h6 class="mb-2">Recursos de la selección</h6>
+            <p class="text-muted small" t-if="!schedule.planId">
+                La obra no tiene plan de recursos: genérelo para ver sus etapas.
+            </p>
+            <p class="text-muted small" t-elif="!schedule.summary">
+                Marque pisos, ambientes o etapas en la primera columna.
+            </p>
+            <t t-else="">
+                <div class="o_cp_schedule_summary small mb-2">
+                    <div><span class="o_cp_summary_modules" t-esc="schedule.summary.modules"/> módulos ·
+                        <t t-esc="schedule.summary.ml"/> ML</div>
+                    <div>Material S/ <t t-esc="fmt(schedule.summary.material)"/> ·
+                        contrata S/ <t t-esc="fmt(schedule.summary.contract)"/></div>
+                    <div>Avance <t t-esc="pct(schedule.summary.progress)"/></div>
+                </div>
+                <table class="table table-sm o_cp_schedule_resources mb-0">
+                    <thead>
+                        <tr>
+                            <th>Recurso</th>
+                            <th class="text-end">Plan S/</th>
+                            <th class="text-end">Avance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="schedule.summary.resources" t-as="resource" t-key="resource_index">
+                            <tr>
+                                <td>
+                                    <div t-esc="resource.name"/>
+                                    <div class="text-muted small">
+                                        <t t-esc="resource.type_label"/>
+                                        <t t-if="resource.partners"> · <t t-esc="resource.partners"/></t>
+                                    </div>
+                                </td>
+                                <td class="text-end" t-esc="fmt(resource.amount)"/>
+                                <td class="text-end" t-esc="resourceProgress(resource)"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total de la selección</th>
+                            <th class="text-end o_cp_schedule_total" t-esc="fmt(schedule.summary.total)"/>
+                            <th/>
+                        </tr>
+                    </tfoot>
+                </table>
+            </t>
+        </aside>
+    </t>
+
+    <t t-name="al_construction_planner.ScheduleLoad">
+        <div class="o_cp_schedule_load border-top" t-if="schedule.showLoad and schedule.load">
+            <div class="d-flex flex-wrap align-items-baseline gap-2 px-2 pt-1">
+                <span class="fw-bold">Carga semanal</span>
+                <span class="text-muted small">
+                    Contratas y personal propio por semana, repartidos entre los días hábiles de cada etapa.
+                </span>
+            </div>
+            <p class="text-muted small px-2 mb-1" t-if="!schedule.load.rows.length">
+                Sin montos de contratas ni personal propio en las etapas del cronograma.
+            </p>
+            <div class="table-responsive" t-else="">
+                <table class="table table-sm mb-0 o_cp_load_table">
+                    <thead>
+                        <tr>
+                            <th>Contrata · etapa</th>
+                            <t t-foreach="schedule.load.weeks" t-as="week" t-key="week">
+                                <th class="text-end" t-esc="weekLabel(week)"/>
+                            </t>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="schedule.load.rows" t-as="row" t-key="row_index">
+                            <tr>
+                                <td t-att-class="row.unassigned ? 'text-warning' : ''">
+                                    <t t-esc="row.label"/> · <t t-esc="row.stage_label"/>
+                                </td>
+                                <t t-foreach="row.values" t-as="value" t-key="value_index">
+                                    <td class="text-end" t-esc="value ? fmt(value) : '—'"/>
+                                </t>
+                                <td class="text-end fw-bold" t-esc="fmt(row.total)"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <t t-foreach="schedule.load.totals" t-as="value" t-key="value_index">
+                                <th class="text-end" t-esc="fmt(value)"/>
+                            </t>
+                            <th class="text-end o_cp_load_total" t-esc="fmt(schedule.load.total)"/>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

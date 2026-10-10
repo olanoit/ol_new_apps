@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261010 — 10/10/2026
+
+- Puntos de extensión para pantallas que reutilizan el diagrama heredando su componente (como el cronograma de la planificación de obra): opciones extra para los datos, filas y columnas propias, casillas de selección en cascada con barra de selección y botones propios, y paneles a la derecha y debajo del diagrama. Sin heredarlo, el Gantt se ve y funciona igual.
+
 ## 14.20261009 — 09/10/2026
 
 - Ícono propio en el menú principal (barras escalonadas de un diagrama de Gantt), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Proyecto; en Aplicaciones sigue el ícono nativo.

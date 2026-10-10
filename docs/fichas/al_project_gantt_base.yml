@@ -182,6 +182,10 @@ faq:
       bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
 
 novedades:
+  - version: 17.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "La edición del diagrama admite que una interfaz deje arrastrar filas propias que no son tareas (por ejemplo, las etapas del cronograma de obra) y las guarde ella misma; las tareas se editan igual que antes."
   - version: 16.20261008
     fecha: 08/10/2026
     cambios:

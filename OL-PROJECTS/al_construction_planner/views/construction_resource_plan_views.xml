@@ -347,6 +347,10 @@
                             invisible="state not in ('approved', 'in_progress')"
                             context="{'default_plan_id': id}"
                             groups="al_construction_planner.group_planner_progress"/>
+                    <button name="action_sync_space_stages" type="object"
+                            string="Crear etapas del cronograma"
+                            invisible="not line_count or state in ('closed', 'replaced', 'cancel')"
+                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_close" type="object" string="Cerrar"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_manager"
@@ -364,6 +368,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_tree" type="object"
                                 class="oe_stat_button" icon="fa-sitemap" string="Árbol de recursos"/>
+                        <button name="action_open_schedule" type="object"
+                                class="oe_stat_button" icon="fa-tasks" string="Cronograma"
+                                groups="al_project_gantt_base.group_gantt_user"/>
                         <button name="action_view_lines" type="object"
                                 class="oe_stat_button" icon="fa-list">
                             <field name="line_count" widget="statinfo" string="Líneas"/>

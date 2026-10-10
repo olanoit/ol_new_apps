@@ -49,6 +49,12 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
             res['task_ids'] = [Command.set(task_ids)]
         if 'whole_project' in fields_list:
             res['whole_project'] = bool(ctx.get('construction_selection_project')) or not task_ids
+        # Etapas marcadas en el cronograma (P-15): solo esas quedan activas.
+        stages = [s for s in ctx.get('construction_selection_stages') or [] if s in STAGE_FIELDS]
+        if stages:
+            for stage, field in STAGE_FIELDS.items():
+                if field in fields_list:
+                    res[field] = stage in stages
         return res
 
     def _get_stages(self):

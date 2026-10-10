@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """W-08 «Cambiar fechas» (F-08): desplaza n días, o lleva a una fecha nueva,
-la selección del árbol. Con todas las etapas mueve las tareas (y su Gantt) y
+la selección del árbol (y las etapas del cronograma de sus ambientes). Con todas las etapas mueve las tareas (y su Gantt) y
 recalcula la fecha de necesidad de sus líneas; con algunas etapas solo
 desplaza la fecha de necesidad de las líneas de esas etapas. Avisa a
 Logística, con una actividad en cada documento, de los requerimientos y OC
@@ -9,7 +9,6 @@ from datetime import timedelta
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools.misc import format_date
 
 from .plan_generate_wizard import STAGE_FIELDS
 
@@ -136,6 +135,14 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
                 for line in lines}
         for new, same in lines.grouped(lambda line: news[line]).items():
             same.write({'date_needed': new})
+        # Las barras del cronograma (P-15) de las etapas elegidas se mueven
+        # igual; sus líneas ya se movieron arriba.
+        spaces = lines.space_task_id | tasks.filtered(lambda t: t.construction_level == 'space')
+        stages = self.env['construction.space.stage'].search([
+            ('space_task_id', 'in', spaces.ids), ('stage', 'in', self._get_stages())])
+        for stage in stages:
+            stage.with_context(construction_stage_keep_lines=True).write({
+                'date_start': stage.date_start + shift, 'date_end': stage.date_end + shift})
         notified = self._notify_logistics(lines, delta)
         body = self.env._(
             'Fechas cambiadas %(delta)s días (%(selection)s): %(tasks)s tareas y %(lines)s '
@@ -149,76 +156,10 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
     # ------------------------------------------------------------------
     # Avisos a Logística
     # ------------------------------------------------------------------
-    def _get_logistics_user(self, company):
-        group = self.env.ref(
-            'al_construction_material_request.group_construction_logistics',
-            raise_if_not_found=False)
-        users = group.sudo().all_user_ids.filtered(
-            lambda u: not u.share and company in u.company_ids) if group else False
-        return users[:1] or self.env.user
-
-    def _get_open_documents(self, lines):
-        """{documento: (fecha del documento, fecha de necesidad más temprana de
-        sus líneas)} de los requerimientos de obra, compras masivas y OC
-        abiertos de las líneas."""
-        documents = {}
-
-        def add(document, doc_date, need):
-            if not document or not doc_date or not need:
-                return
-            doc_date = fields.Date.to_date(doc_date)
-            prev = documents.get(document)
-            documents[document] = (doc_date, min(need, prev[1]) if prev else need)
-
-        # sudo: los documentos son de compras y almacén; solo se leen sus
-        # fechas para avisar a Logística.
-        for allocation in lines.sudo().allocation_ids.filtered(lambda a: a.state == 'open'):
-            need = allocation.plan_line_id.date_needed
-            if allocation.kind == 'material_request':
-                request = allocation.material_request_line_id.request_id
-                add(request, request.date_required, need)
-            elif allocation.kind == 'purchase_request':
-                pr_line = allocation.purchase_request_line_id
-                add(pr_line.request_id, pr_line.date_required, need)
-                for po_line in pr_line.purchase_lines.filtered(
-                        lambda l: l.state not in ('cancel', 'done')):
-                    add(po_line.order_id, po_line.date_planned, need)
-            elif allocation.kind == 'service_order':
-                po_line = allocation.purchase_line_id
-                add(po_line.order_id, po_line.date_planned, need)
-        return documents
-
     def _notify_logistics(self, lines, delta):
-        """Actividad para Logística en cada documento cuya fecha queda antes
-        de la nueva necesidad (al postergar: llegaría antes de tiempo) o
-        después (al adelantar: llegaría tarde)."""
-        notified = []
-        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
-        for document, (doc_date, need) in self._get_open_documents(lines).items():
-            if delta > 0 and doc_date >= need or delta < 0 and doc_date <= need:
-                continue
-            if delta > 0:
-                note = self.env._(
-                    'El plan %(plan)s se postergó %(days)s días: la nueva necesidad es el '
-                    '%(need)s y este documento tiene fecha %(date)s. Revise si conviene '
-                    'postergarlo.', plan=self.plan_id.display_name, days=delta,
-                    need=format_date(self.env, need), date=format_date(self.env, doc_date))
-            else:
-                note = self.env._(
-                    'El plan %(plan)s se adelantó %(days)s días: la nueva necesidad es el '
-                    '%(need)s y este documento tiene fecha %(date)s. Revise si se puede '
-                    'adelantar.', plan=self.plan_id.display_name, days=-delta,
-                    need=format_date(self.env, need), date=format_date(self.env, doc_date))
-            user = document.user_id if document._name == 'purchase.order' and \
-                document.user_id else self._get_logistics_user(document.company_id)
-            # sudo: quien cambia las fechas (Proyectos) no suele tener acceso
-            # a compras ni almacén; la actividad es el aviso a Logística.
-            document.sudo().activity_schedule(
-                activity_type_id=activity_type.id if activity_type else False,
-                summary=self.env._('Fechas del plan cambiadas'),
-                note=note, user_id=user.id, date_deadline=fields.Date.context_today(self))
-            notified.append(document.display_name)
-        return notified
+        """Ver ``construction.resource.plan._notify_logistics`` (lo comparte
+        con el arrastre de etapas en el cronograma)."""
+        return self.plan_id._notify_logistics(lines, delta)
 
 
 class ConstructionPlanRescheduleWizardLine(models.TransientModel):

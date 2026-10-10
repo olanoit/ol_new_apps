@@ -336,9 +336,11 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 vals['task_id'] = module_map[(space.id, template.id)].id
             vals_list.append(vals)
         lines = self.env['construction.resource.plan.line'].create(vals_list)
+        # Las barras del cronograma (P-15): una por ambiente y etapa con líneas.
+        stages = self.env['construction.space.stage']._sync_from_plan(plan)
         plan.message_post(body=self.env._(
-            'Plan generado: %(modules)s tareas de módulo y %(lines)s líneas.',
-            modules=len(module_map), lines=len(lines)))
+            'Plan generado: %(modules)s tareas de módulo, %(lines)s líneas y %(stages)s etapas '
+            'en el cronograma.', modules=len(module_map), lines=len(lines), stages=len(stages)))
         return plan.action_view_lines()
 
     @api.model

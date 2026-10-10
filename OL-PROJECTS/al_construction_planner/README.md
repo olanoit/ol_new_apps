@@ -18,7 +18,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 5 | Contratas: asignar contrata con OC de servicio por contrata y obra (W-05, P-05), avance por driver con fotos (W-07, P-06), avances por validar (P-07), avance de nodos y pestaña «Recursos y avance» (P-09), estado del módulo | hecha |
 | 6 | Liquidación semanal (P-08): acción programada, aprobación por niveles, recepción en la OC y factura con vencimiento el día de pago | hecha |
 | 7 | Control y personal propio: control de la OC con analítica contra el presupuesto, estado y montos de control guardados, análisis de control (P-13), cuadrillas (W-06), cambiar fechas (W-08), reversión del estado del módulo | hecha |
-| 8+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma con recursos | pendiente |
+| 8 | Cronograma con recursos (P-15): etapas del ambiente, herencia de `al.gantt.data`, pantalla «Cronograma» sobre el Gantt de la suite con selección, panel de recursos, acciones W-02 a W-08, arrastre de etapas con recálculo de la necesidad y aviso a Logística, carga semanal | hecha |
+| 9+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma valorizado | pendiente |
 
 ## Modelos
 
@@ -399,6 +400,46 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
   (al_hr_pe_construction) con el proyecto para no crear una dependencia con
   la planilla: ambos se encuentran por la cuenta analítica (ponga en la obra
   de la planilla la cuenta analítica del proyecto).
+
+## Cronograma con recursos (fase 8, P-15)
+
+- **Etapa del ambiente (`construction.space.stage`).** Una por ambiente y
+  etapa (restricción `UNIQUE(space_task_id, stage)`), con `date_start` y
+  `date_end`. Pertenece al ambiente, no a la versión del plan. `_sync_from_plan`
+  crea las que faltan al generar el plan (una semana por etapa desde el
+  inicio del ambiente o del plan, de lunes a viernes); botón «Crear etapas
+  del cronograma» y migración `7.20261010` para los planes ya generados.
+  `partner_id`, `role_id`, `amount_planned` y `progress_pct` se calculan en
+  lote desde las líneas del plan vigente (`_resources_by_stage`,
+  `_progress_by_stage`); `predecessor_id`, por el orden de las etapas.
+- **Mover fechas.** `write` de `date_start` desplaza `date_needed` de las
+  líneas de esa etapa en el ambiente y sus módulos tantos días como el
+  inicio y llama a `construction.resource.plan._notify_logistics` (el mismo
+  aviso de W-08, ahora en el plan; un documento con el aviso pendiente suma
+  la nota en vez de recibir otra actividad). `action_gantt_reschedule` es la
+  entrada del arrastre: con `chain` empuja las etapas siguientes solapadas al
+  lunes siguiente. W-08 mueve también las etapas de las etapas elegidas (con
+  `construction_stage_keep_lines`, porque ya movió las líneas).
+- **Capa de datos (`models/gantt_data.py`).** Hereda `al.gantt.data` sin
+  tocar el Gantt. Solo con `options['construction_schedule']`: en el modo
+  «Etapas» filtra pisos, departamentos y ambientes (`_get_task_domain`) e
+  incluye los que no tienen fecha; añade a cada tarea `construction`
+  (nivel, monto, avance, contratas, estado del módulo, alertas de líneas
+  excedidas, con un `_read_group` por nivel), y al payload
+  `construction_stages` y `construction_stage_links`. Opciones
+  `construction_plan_id`, `construction_rows` y `construction_stage`.
+- **Pantalla (`static/src/schedule/`).** `ConstructionScheduleAction` hereda
+  `GanttAction` (`al_project_gantt_backend`) por sus puntos de extensión:
+  filas `t<id>`/`s<id>` (de solo lectura las tareas, cuya barra resume sus
+  etapas), columnas de monto, avance y contrata, casillas en cascada, panel
+  con `get_selection_summary` (el del árbol, con el filtro de etapas), los
+  botones de `get_tree_actions` con `construction_selection_stages` en el
+  contexto (los asistentes activan solo esas etapas; W-05 toma la etapa si es
+  una) y la carga semanal (`construction.resource.plan.get_schedule_load`:
+  contratas y personal propio por contrata o rol y etapa, repartidos entre
+  los días hábiles de la etapa).
+- **Grupos.** El usuario de la planificación implica el usuario del Gantt;
+  las etapas se leen con «Reporte de avance» y se mueven con «Planificador».
 
 ## Generar plan (`construction.plan.generate.wizard`)
 

@@ -176,7 +176,7 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Control y personal propio (hecha; fase 7 de la especificación) | OC con analítica contra el presupuesto de la combinación (W-10); estado y montos de control almacenados con eventos; análisis de control; W-06 cuadrillas con turnos y horas; W-08 cambiar fechas con aviso a Logística; reversión del estado del módulo (ver §6.4) | P-13, W-06, W-08 |
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
 | 7 | OV por partida, valorizaciones e ingreso devengado, factura de la valorización con control de saldo, flujo | P-20, P-21, P-22 |
-| 8 | Cronograma con recursos: heredar `al.gantt.data.get_data`, panel y carga semanal OWL | P-15 |
+| Cronograma con recursos (hecha; fase 8 de la especificación) | Etapas del ambiente; herencia de `al.gantt.data.get_data`; pantalla sobre el componente del Gantt con selección, panel, acciones y carga semanal OWL; arrastre con recálculo y aviso (ver §6.5) | P-15 |
 
 ### 6.1 Línea base: presupuesto y ganchos
 
@@ -349,6 +349,35 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   lleva `analytic_account_id`; el proyecto, `account_id`). Si se quiere un
   campo, va en un módulo puente.
 
+### 6.5 Cronograma con recursos (fase 8)
+
+- **Etapas.** `construction.space.stage` (ambiente + etapa, única) con
+  fechas; pertenece al ambiente, no a la versión del plan, para que el
+  cronograma sobreviva a las versiones nuevas. Contrata, cuadrilla, monto y
+  avance se calculan en lote desde las líneas del plan vigente. Se crean al
+  generar el plan; migración `7.20261010` y botón para los ya generados.
+- **Fecha de necesidad.** No cambia su cálculo (inicio de la tarea o del
+  plan menos la anticipación): mover una etapa la **desplaza** los mismos
+  días en sus líneas, como W-08 con algunas etapas. Así los tests y planes
+  anteriores conservan sus fechas.
+- **Puntos de extensión del Gantt.** Lo que faltaba se añadió de forma
+  genérica (sin referencias al planificador): en `al_project_gantt_backend`
+  15.20261010, `transformGanttData`, `extraColumns`, `editorOptions`,
+  `onGanttReady`, selección en cascada (`gantt_selection.js`, porque
+  `multiselect` es PRO), botones de la barra de selección, `showProjectBar` y
+  plantillas de barra, panel lateral y panel inferior; en
+  `al_project_gantt_base` 17.20261010, la opción `canDragRow` del editor
+  (antes solo se arrastraban tareas reales). Sin heredar, el Gantt queda
+  igual (tests de la suite Gantt en verde).
+- **Ids de fila.** En el modo «Etapas» las tareas pasan a `t<id>` y las
+  etapas a `s<id>`: el editor del Gantt ignora las filas que no son tareas,
+  así que no intenta guardar las barras resumen ni las etapas; la pantalla
+  guarda el arrastre de las etapas con su propio `onAfterTaskUpdate`.
+- **Carga semanal.** Tabla OWL (la vista de recursos de dhtmlxGantt es PRO):
+  líneas de contrata y personal propio por contrata (o rol) y etapa,
+  repartidas en partes iguales entre los días hábiles de la etapa del
+  ambiente y sumadas por semana calendario.
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -368,7 +397,13 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   se encuentran por la cuenta analítica (§6.4); un campo de enlace iría en un
   módulo puente.
 - **Siguiente**: entregas, valorizaciones e ingresos (con la factura de la
-  valorización y su control de saldo) y cronograma con recursos.
+  valorización y su control de saldo) y cronograma valorizado (P-22), que
+  reparte el plan con las fechas de `construction.space.stage`.
+- **Cronograma**: los pisos y departamentos con fechas propias muestran en el
+  modo «Etapas» el resumen de sus etapas, no sus fechas; para editar las
+  tareas se usa el modo «Tareas» o el Gantt de proyectos. El arrastre de
+  etapas exige permiso de escritura en las tareas del proyecto (activa la
+  edición del Gantt).
 - **Control por eventos**: un cambio que no pasa por los ganchos de §6.4
   espera a la acción programada horaria.
 - **Retención y fondo de garantía**: sin cuenta configurada la factura va por

@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261010 — 10/10/2026
+
+- Cronograma con recursos (fase 8, P-15): el Gantt de proyectos con pisos, departamentos y ambientes y, debajo de cada ambiente, sus etapas (producción, armado, instalación, acabado) enlazadas; monto, avance y contrata en la rejilla y barra clara si la etapa no tiene contrata ni cuadrilla.
+- Etapas del ambiente con fechas: se crean al generar el plan (y con «Crear etapas del cronograma» en los planes ya generados); contrata, cuadrilla, monto y avance salen de sus líneas.
+- Casillas con selección en cascada, panel con los recursos de la selección y los botones de los asistentes W-02 a W-08 con ella; carga semanal por contrata y etapa debajo del diagrama.
+- Arrastrar una etapa desplaza la fecha de necesidad de sus líneas y avisa a Logística de los requerimientos y OC desfasados; «Cambiar fechas» también mueve las etapas.
+
 ## 6.20261010 — 10/10/2026
 
 - Control y personal propio (fase 7, P-13): estado de la línea y montos de control (comprometido, real, saldo, % ejecutado) guardados, filtrables y agrupables; pestaña «Control» del plan y «Análisis de control» en pivote y gráfico.

@@ -98,6 +98,9 @@ flowchart TD
   R -- Pedir aprobación --> T[Justificación y revisión de la jefatura] --> S
   R -- Bloquear --> Q
   S --> U[Comprado, despachado, consumido y estado de la línea]
+  M --> CR[Cronograma: etapas por ambiente, selección y carga semanal]
+  CR --> Q
+  CR --> CM[Arrastrar una etapa: nueva necesidad y aviso a Logística]
   M --> V[Asignar contrata: tarifa vigente, OC de servicio]
   V --> W[Registrar avance con foto] --> X{¿Supervisor valida?}
   X -- Rechaza con motivo --> W
@@ -402,6 +405,38 @@ Logística. Con todas las etapas, también se mueven las tareas en el Gantt.
 **Revertir un avance.** Si un módulo pasó a «Producido» con su armado
 validado y se vuelve a reportado uno de esos avances, el módulo vuelve al
 estado que tenía antes (p. ej. «En producción»).
+
+### Cronograma con recursos (P-15)
+
+Planificación de obra ▸ Cronograma (o el botón «Cronograma» del plan). Al
+generar el plan, cada ambiente recibe una barra por etapa con líneas, una
+semana por etapa desde el inicio del plan (lunes 12/10/2026 en el demo):
+
+| Etapa | Semana del piso 05 | Contrata | Monto del piso |
+|---|---|---|---|
+| Producción | 12/10 – 16/10 | (material) | — |
+| Armado | 19/10 – 23/10 | Sin asignar | según tipologías |
+| Instalación | 26/10 – 30/10 | Sin asignar | 941.17 |
+| Acabado y entrega | 02/11 – 06/11 | Sin asignar | según tipologías |
+
+Las barras sin contrata ni cuadrilla se ven claras. La carga semanal, debajo
+del diagrama, suma por contrata y etapa los montos de contratas y personal
+propio, repartidos entre los días hábiles de cada etapa: S/ 941.17 de
+instalación caen en la semana del 26/10.
+
+**Asignar la instalación del piso (criterio 11).** Etapa «Instalación» en
+el selector, casilla del piso 05 (se marcan sus departamentos, ambientes y
+etapas) y «Asignar contrata»: el asistente W-05 se abre con la etapa
+Instalación, las 8 actividades del piso y S/ 941.17. Con Leandro asignado,
+las barras de instalación dicen «Leandro» y dejan de ser claras.
+
+**Mover la instalación una semana (criterio 12).** Arrastrar las barras de
+instalación del piso 05 a la semana del 02/11 desplaza 7 días la fecha de
+necesidad de sus líneas (los tornillos, por ejemplo); las de las otras
+etapas no cambian. El requerimiento de obra del piso, con fecha anterior a
+la nueva necesidad, recibe una sola actividad «Fechas del plan cambiadas»
+para Logística aunque se muevan las 8 barras. Con «Encadenar» activo, si la
+instalación pisa el acabado, el acabado se corre al lunes siguiente.
 
 ## 5. Configuración inicial
 

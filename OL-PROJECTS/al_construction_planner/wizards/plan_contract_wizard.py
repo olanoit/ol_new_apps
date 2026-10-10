@@ -50,6 +50,15 @@ class ConstructionPlanContractWizard(models.TransientModel):
         help='La OC abierta de la contrata en la obra; vacía: se creará una en borrador.')
     note = fields.Text(string='Avisos', compute='_compute_line_ids', store=True)
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        # Desde el cronograma (P-15): la etapa marcada; con varias, todas.
+        stages = self.env.context.get('construction_selection_stages') or []
+        if 'stage' in fields_list and stages:
+            res['stage'] = stages[0] if len(stages) == 1 else False
+        return res
+
     def _get_stages(self):
         self.ensure_one()
         return [self.stage] if self.stage else [s for s, _label in STAGES]

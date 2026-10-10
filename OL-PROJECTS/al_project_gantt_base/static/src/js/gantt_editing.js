@@ -52,6 +52,8 @@ export class GanttEditor {
      * @param {Function} options.defaultProjectId () => id para las tareas nuevas
      * @param {Boolean}  options.rescheduleChain empujar sucesoras al mover
      * @param {Boolean}  options.canEditProgress el avance se puede guardar
+     * @param {Function} [options.canDragRow] (id, mode, event) => bool, para
+     *        filas que no son tareas (por defecto no se arrastran)
      */
     constructor(gantt, options) {
         this.gantt = gantt;
@@ -283,8 +285,13 @@ export class GanttEditor {
 
         // Las filas de proyecto y los hitos de `project.milestone` no son
         // tareas: no se pueden arrastrar ni borrar desde aquí.
+        // `canDragRow` deja a la interfaz arrastrar filas propias que no son
+        // tareas (p. ej. etapas de otro modelo); el guardado lo hace ella con
+        // su propio `onAfterTaskUpdate`, porque aquí esas filas se ignoran.
         this.eventIds.push(
-            gantt.attachEvent("onBeforeTaskDrag", (id) => isRealTask(id))
+            gantt.attachEvent("onBeforeTaskDrag", (id, mode, event) =>
+                isRealTask(id) || Boolean(this.options.canDragRow?.(id, mode, event))
+            )
         );
         this.eventIds.push(
             gantt.attachEvent("onBeforeTaskDelete", (id) => isRealTask(id))

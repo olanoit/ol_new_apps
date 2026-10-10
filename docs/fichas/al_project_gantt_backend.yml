@@ -230,6 +230,10 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: 15.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Puntos de extensión para pantallas que reutilizan el diagrama heredando su componente (como el cronograma de la planificación de obra): opciones extra para los datos, filas y columnas propias, casillas de selección en cascada con barra de selección y botones propios, y paneles a la derecha y debajo del diagrama. Sin heredarlo, el Gantt se ve y funciona igual."
   - version: 14.20261009
     fecha: 09/10/2026
     cambios:

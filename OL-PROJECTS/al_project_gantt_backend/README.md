@@ -98,6 +98,29 @@ la librería no se cuele en el bundle.
 | Traducción de eventos a *changeset* | `gantt_editing.js` → `GanttEditor` (módulo base) |
 | Qué se puede editar | `enableEditing` + `meta.editable`/`task.editable` del contrato |
 
+### Reutilizar el diagrama en otra pantalla
+
+Una pantalla propia puede **heredar** el componente (`class MiPantalla extends
+GanttAction`, de `@al_project_gantt_backend/gantt_action`) y registrarse con
+otro `tag` de acción, sin copiar nada. Puntos de extensión (todos opcionales;
+sin sobrescribirlos el Gantt funciona igual):
+
+| Punto | Para qué |
+|---|---|
+| `getOptions()` | Opciones extra para `get_gantt_data`; una herencia de `al.gantt.data` las lee en `options` |
+| `transformGanttData(ganttData, payload)` | Añadir o retocar filas y enlaces ya adaptados a dhtmlxGantt |
+| `extraColumns()` | Columnas añadidas a la rejilla |
+| `editorOptions()` | Opciones extra del editor; `canDragRow(id, mode, event)` deja arrastrar filas que no son tareas (la pantalla las guarda con su propio `onAfterTaskUpdate`) |
+| `onGanttReady(gantt)` | Enganchar eventos propios tras montar la instancia |
+| `selectionEnabled` + `onSelectionChange()` | Columna de casillas con selección en cascada (`this.selection`: `topIds`, `allIds`, `clear()`); la edición MIT no trae `multiselect` |
+| `isRowSelectable(task)` | Qué filas muestran casilla (por defecto, todas menos proyectos e hitos) |
+| `extraToolbarButtons` | Botones `{key, label, icon, run, disabled, title}` de la barra de selección |
+| `showProjectBar` | Ocultar la barra de proyectos en pantallas de un solo proyecto |
+| `toolbarTemplate`, `sidePanelTemplate`, `bottomPanelTemplate` | Plantilla OWL que se pinta en la barra, a la derecha del diagrama o debajo de él, con el propio componente como contexto |
+
+Ejemplo real: el cronograma con recursos de `al_construction_planner`
+(`static/src/schedule/`).
+
 ## Detalles de maquetación que conviene no romper
 
 Dos ajustes son necesarios para que la librería reciba un alto real; si se

@@ -5,7 +5,7 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
@@ -487,6 +487,42 @@ pasos:
       fecha de necesidad; con algunas, solo la de esas líneas. La vista
       previa muestra la necesidad actual y la nueva.
     imagen: screenshots/27-cambiar-fechas.png
+  - titulo: Cronograma con recursos
+    ruta: Planificación de obra ▸ Cronograma (o el botón «Cronograma» del plan)
+    texto: >-
+      El Gantt de proyectos con los pisos, departamentos y ambientes de la
+      obra y, debajo de cada ambiente, sus etapas (producción, armado,
+      instalación, acabado) enlazadas en ese orden. Cada barra dice su
+      contrata y su avance; la clara es una etapa sin contrata ni cuadrilla.
+      Las columnas suman el monto del plan, el avance y la contrata de cada
+      nivel.
+    puntos:
+      - "«Etapas» o «Tareas» cambia las filas; el selector de etapa deja solo una (las filas, la selección y la carga semanal)."
+      - "Debajo, la carga semanal: monto de contratas y personal propio por contrata y etapa, repartido entre los días hábiles de cada etapa."
+    imagen: screenshots/28-cronograma.png
+  - titulo: Pedir y asignar desde el cronograma
+    ruta: Cronograma ▸ casillas de la primera columna
+    texto: >-
+      Marcar un piso marca todo lo que cuelga de él, igual que en el árbol.
+      El panel de la derecha muestra los recursos de la selección y los
+      botones de la barra abren los asistentes (compra masiva, requerimiento,
+      OF, asignar contrata, cuadrilla, avance, cambiar fechas) con ella.
+    puntos:
+      - "Con «Instalación» en el selector de etapa, marcar el piso 05 y «Asignar contrata» abre el asistente con las 8 actividades de instalación del piso por S/ 941.17."
+      - "Marcar barras de etapa sueltas lleva al asistente sus ambientes y esas etapas."
+    imagen: screenshots/29-cronograma-seleccion.png
+  - titulo: Mover una etapa
+    ruta: Cronograma ▸ arrastrar la barra de la etapa
+    texto: >-
+      Arrastrar o estirar la barra guarda las fechas de la etapa. La fecha de
+      necesidad de sus líneas (en el ambiente y sus módulos) se desplaza los
+      mismos días y Logística recibe una actividad en los requerimientos y OC
+      que quedan con fecha anterior a la nueva necesidad (o posterior, si se
+      adelanta).
+    puntos:
+      - "Con «Encadenar» activo, las etapas siguientes del ambiente que quedan solapadas se empujan al lunes siguiente, con su duración."
+      - "«Cambiar fechas» (W-08) también mueve las etapas de las etapas elegidas; «Etapas del cronograma» las lista para editarlas."
+    imagen: screenshots/30-cronograma-etapa.png
 
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
@@ -608,6 +644,14 @@ campos:
       - [Estado, "Planificada, parcial, en compra, completa, excedida o cancelada.", Planificada, "Guardado: se filtra y agrupa; lo actualiza cada documento"]
       - ["Comprometido, real, saldo", Montos de control de la línea., Cero, Guardados para el pivote]
       - ["% ejecutado", Real entre planificado., Cero, "—"]
+  - grupo: Etapa del ambiente
+    ruta: Obras ▸ Etapas del cronograma · Cronograma
+    campos:
+      - ["Ambiente, etapa", Barra del cronograma de una etapa en un ambiente., "—", Una por ambiente y etapa; se crean al generar el plan]
+      - ["Inicio, fin", Fechas de la etapa., "Una semana por etapa desde el inicio del ambiente o del plan", Moverlas desplaza la necesidad de sus líneas y avisa a Logística]
+      - ["Contrata, cuadrilla", De las líneas de contrata y personal propio de la etapa., Vacías, "Calculadas; sin ninguna, la barra es clara"]
+      - [Etapa anterior, Producción › armado › instalación › acabado., "—", Son los vínculos del cronograma]
+      - ["Monto, avance", Monto planificado y avance valorizado de la etapa en el ambiente y sus módulos., "—", Calculados]
   - grupo: Orden de compra
     ruta: Compras ▸ OC
     campos:
@@ -675,6 +719,13 @@ funcionalidades:
       - "«Asignar cuadrilla»: turnos por obrero y semana con la tarea y la línea; horas de la hoja de horas como ejecutado y real, turnos sin horas como comprometido."
       - "«Cambiar fechas»: desplaza o fija la fecha de la selección por etapas y avisa a Logística de los requerimientos y OC desfasados."
       - "Revertir un avance validado baja el estado del módulo a lo que justifica el avance que queda."
+  - grupo: Cronograma con recursos
+    items:
+      - "Etapas de cada ambiente con fechas, creadas al generar el plan (y con «Crear etapas del cronograma» en planes ya generados)."
+      - "Gantt de proyectos de la suite con las etapas como filas hijas del ambiente y sus vínculos de precedencia; monto, avance, contrata, estado del módulo y alertas en la rejilla."
+      - "Casillas con selección en cascada, panel con los recursos de la selección y botones de los asistentes W-02 a W-08."
+      - "Arrastrar una etapa desplaza la necesidad de sus líneas y avisa a Logística, con un solo aviso por documento aunque se muevan varias etapas."
+      - "Carga semanal por contrata y etapa debajo del diagrama, filtrable por etapa."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -800,6 +851,13 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 7.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Cronograma con recursos (fase 8, P-15): el Gantt de proyectos con pisos, departamentos y ambientes y, debajo de cada ambiente, sus etapas (producción, armado, instalación, acabado) enlazadas; monto, avance y contrata en la rejilla y barra clara si la etapa no tiene contrata ni cuadrilla."
+      - "Etapas del ambiente con fechas: se crean al generar el plan (y con «Crear etapas del cronograma» en los planes ya generados); contrata, cuadrilla, monto y avance salen de sus líneas."
+      - "Casillas con selección en cascada, panel con los recursos de la selección y los botones de los asistentes W-02 a W-08 con ella; carga semanal por contrata y etapa debajo del diagrama."
+      - "Arrastrar una etapa desplaza la fecha de necesidad de sus líneas y avisa a Logística de los requerimientos y OC desfasados; «Cambiar fechas» también mueve las etapas."
   - version: 6.20261010
     fecha: 10/10/2026
     cambios:

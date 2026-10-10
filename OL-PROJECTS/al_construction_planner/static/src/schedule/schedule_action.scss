@@ -1,0 +1,27 @@
+// Cronograma con recursos (P-15): panel lateral, carga semanal y barras de
+// etapa. La maquetación del diagrama es la del Gantt de proyectos.
+.o_algantt_action {
+    .o_cp_schedule_panel {
+        flex: 0 0 320px;
+        width: 320px;
+        overflow-y: auto;
+        background-color: var(--o-view-background-color, #fff);
+    }
+
+    .o_cp_schedule_load {
+        flex: 0 0 auto;
+        max-height: 30vh;
+        overflow: auto;
+
+        td,
+        th {
+            white-space: nowrap;
+        }
+    }
+
+    // Etapa sin contrata ni cuadrilla: barra clara.
+    .gantt_task_line.o_cp_stage_unassigned {
+        opacity: 0.45;
+        border-style: dashed;
+    }
+}

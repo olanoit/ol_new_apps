@@ -318,6 +318,7 @@ de la librería **no incluye**, implementadas aquí sobre su API pública:
 | Configuración de la librería (columnas, escalas, tooltip) | `gantt_setup.js` |
 | Estado y serialización de los filtros | `gantt_filters.js` → `filtersToOptions` |
 | Herramientas de vista (búsqueda, EDT, calendario…) | `gantt_tools.js` |
+| Arrastrar filas propias que no son tareas (la interfaz las guarda) | `enableEditing(gantt, {canDragRow})` en `gantt_editing.js` |
 | Días laborables y feriados | `al.gantt.data._read_calendar` |
 
 ## Librería

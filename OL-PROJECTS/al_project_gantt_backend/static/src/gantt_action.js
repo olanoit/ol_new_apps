@@ -41,6 +41,31 @@ import {
     isInvalidRange,
     selectedValues,
 } from "@al_project_gantt_base/js/gantt_filters";
+import { GanttSelection } from "./gantt_selection";
+
+/**
+ * Puntos de extensión para pantallas que reutilizan este componente
+ * heredándolo (`class MiPantalla extends GanttAction`). Todos son opcionales
+ * y, sin sobrescribir, el Gantt se comporta exactamente igual:
+ *
+ * - `getOptions()`: opciones extra para `get_gantt_data` (el servidor las
+ *   recibe en `options` y una herencia de `al.gantt.data` puede usarlas).
+ * - `transformGanttData(ganttData, payload)`: filas y enlaces ya adaptados a
+ *   dhtmlxGantt, para añadir o retocar filas antes de pintarlas.
+ * - `extraColumns()`: columnas que se añaden a la rejilla.
+ * - `editorOptions()`: opciones extra del editor (p. ej. `canDragRow`, para
+ *   permitir arrastrar filas que no son tareas y guardarlas por su cuenta).
+ * - `onGanttReady(gantt)`: tras montar la instancia (eventos propios).
+ * - `selectionEnabled` + `onSelectionChange()`: columna de casillas con
+ *   selección en cascada (`this.selection`, ver `gantt_selection.js`).
+ * - `isRowSelectable(task)`: qué filas muestran casilla.
+ * - `extraToolbarButtons`: botones `{key, label, icon, run, disabled, title}`
+ *   de la barra de selección, que aparece si hay botones o casillas.
+ * - `showProjectBar`: ocultar la barra de proyectos (pantallas de una obra).
+ * - `toolbarTemplate`, `sidePanelTemplate`, `bottomPanelTemplate`: nombre de
+ *   una plantilla OWL que se pinta en la barra, a la derecha del diagrama o
+ *   debajo de él, con el propio componente como contexto.
+ */
 
 export class GanttAction extends Component {
     static template = "al_project_gantt_backend.GanttAction";
@@ -53,6 +78,15 @@ export class GanttAction extends Component {
         this.notification = useService("notification");
         this.containerRef = useRef("ganttContainer");
         this.gantt = null;
+        this.selection = this.selectionEnabled
+            ? new GanttSelection({
+                  onChange: () => {
+                      this.state.selectionCount = this.selection.size;
+                      this.onSelectionChange();
+                  },
+                  isSelectable: (task) => this.isRowSelectable(task),
+              })
+            : null;
         // El botón inteligente del formulario de proyecto abre esta acción con
         // el proyecto ya acotado (`action_open_gantt`).
         const contextProjectIds = this.props.action?.context?.gantt_project_ids || [];
@@ -91,6 +125,8 @@ export class GanttAction extends Component {
             expanded: true,
             saving: false,
             lastSavedAt: null,
+            // Filas marcadas (solo con `selectionEnabled`).
+            selectionCount: 0,
         });
 
         onWillStart(async () => {
@@ -164,7 +200,7 @@ export class GanttAction extends Component {
         this.state.baselines = payload.baselines || [];
         this.calendar = payload.calendar || null;
         this.state.criticalSummary = this.state.meta.critical_path || { computed: false };
-        this.ganttData = toDhtmlxData(payload);
+        this.ganttData = this.transformGanttData(toDhtmlxData(payload), payload);
         this.state.undated = this.ganttData.undated;
     }
 
@@ -273,6 +309,7 @@ export class GanttAction extends Component {
         if (this.state.search) {
             this.state.searchMatches = applySearch(this.gantt, this.state.search);
         }
+        this.onGanttReady(this.gantt);
 
         // El contenedor cambia de alto al plegar avisos o al redimensionar la
         // ventana; sin esto la librería conserva el tamaño del primer render.
@@ -291,6 +328,14 @@ export class GanttAction extends Component {
             showBaseline: Boolean(this.state.baselineId),
             showWbs: this.state.showWbs,
         });
+        const extra = this.extraColumns();
+        if (extra.length) {
+            this.gantt.config.columns = [...this.gantt.config.columns, ...extra];
+        }
+        if (this.selection) {
+            this.gantt.config.columns = [this.selection.column(), ...this.gantt.config.columns];
+            this.selection.attach(this.gantt);
+        }
         applyWorkingCalendar(this.gantt, this.calendar, this.state.meta.tz);
         // Formulario de tarea con los campos reales de project.task.
         configureLightbox(this.gantt, {
@@ -314,8 +359,65 @@ export class GanttAction extends Component {
                 defaultProjectId: () => this.state.selectedIds[0] || null,
                 rescheduleChain: () => this.state.rescheduleChain,
                 canEditProgress: Boolean(this.state.meta.can_edit_progress),
+                ...this.editorOptions(),
             });
         }
+    }
+
+    // ------------------------------------------------------------------
+    // Puntos de extensión (ver el comentario al inicio del archivo)
+    // ------------------------------------------------------------------
+    transformGanttData(ganttData, payload) {
+        return ganttData;
+    }
+
+    extraColumns() {
+        return [];
+    }
+
+    editorOptions() {
+        return {};
+    }
+
+    onGanttReady(gantt) {}
+
+    /** Barra de proyectos (una pantalla acotada a una obra puede ocultarla). */
+    get showProjectBar() {
+        return true;
+    }
+
+    get selectionEnabled() {
+        return false;
+    }
+
+    isRowSelectable(task) {
+        return !task.al_is_project && !task.al_is_milestone_record;
+    }
+
+    onSelectionChange() {}
+
+    clearSelection() {
+        this.selection?.clear();
+    }
+
+    get extraToolbarButtons() {
+        return [];
+    }
+
+    get showActionBar() {
+        return Boolean(this.selection) || this.extraToolbarButtons.length > 0;
+    }
+
+    get toolbarTemplate() {
+        return null;
+    }
+
+    get sidePanelTemplate() {
+        return null;
+    }
+
+    get bottomPanelTemplate() {
+        return null;
     }
 
     // ------------------------------------------------------------------
@@ -343,6 +445,10 @@ export class GanttAction extends Component {
     parseData() {
         if (this.gantt && this.ganttData) {
             parseGanttData(this.gantt, this.ganttData);
+            if (this.selection) {
+                this.selection.prune();
+                this.state.selectionCount = this.selection.size;
+            }
         }
     }
 
@@ -354,6 +460,9 @@ export class GanttAction extends Component {
         if (this.editor) {
             this.editor.detach();
             this.editor = null;
+        }
+        if (this.selection) {
+            this.selection.detach();
         }
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();

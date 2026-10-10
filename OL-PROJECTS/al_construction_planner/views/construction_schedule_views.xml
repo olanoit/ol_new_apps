@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Cronograma con recursos (P-15): acción de cliente OWL sobre el Gantt
+         de proyectos de la suite. -->
+    <record id="action_construction_schedule" model="ir.actions.client">
+        <field name="name">Cronograma</field>
+        <field name="tag">al_construction_planner.schedule</field>
+        <field name="path">cronograma-obra</field>
+    </record>
+
+    <!-- Etapas del ambiente: las barras del cronograma. -->
+    <record id="construction_space_stage_view_list" model="ir.ui.view">
+        <field name="name">construction.space.stage.list</field>
+        <field name="model">construction.space.stage</field>
+        <field name="arch" type="xml">
+            <list string="Etapas del cronograma" editable="bottom" create="false">
+                <field name="project_id" optional="show"/>
+                <field name="floor_task_id" optional="show"/>
+                <field name="apartment_task_id" optional="show"/>
+                <field name="space_task_id" readonly="1"/>
+                <field name="stage" readonly="1"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="partner_id"/>
+                <field name="role_id" optional="hide"/>
+                <field name="amount_planned" sum="Total"/>
+                <field name="progress_pct" widget="percentage"/>
+                <field name="predecessor_id" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_space_stage_view_form" model="ir.ui.view">
+        <field name="name">construction.space.stage.form</field>
+        <field name="model">construction.space.stage</field>
+        <field name="arch" type="xml">
+            <form string="Etapa del ambiente" create="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="space_task_id" readonly="1"/>
+                            <field name="stage" readonly="1"/>
+                            <field name="predecessor_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="partner_id"/>
+                            <field name="role_id"/>
+                            <field name="amount_planned"/>
+                            <field name="progress_pct" widget="percentage"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <p class="text-muted">
+                        Mover el inicio desplaza la fecha de necesidad de las líneas de esta etapa en el
+                        ambiente y sus módulos, y avisa a Logística de los requerimientos y OC que quedan
+                        desfasados.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_space_stage_view_search" model="ir.ui.view">
+        <field name="name">construction.space.stage.search</field>
+        <field name="model">construction.space.stage</field>
+        <field name="arch" type="xml">
+            <search string="Etapas del cronograma">
+                <field name="space_task_id"/>
+                <field name="floor_task_id"/>
+                <field name="project_id"/>
+                <filter string="Producción" name="production" domain="[('stage', '=', 'production')]"/>
+                <filter string="Armado" name="assembly" domain="[('stage', '=', 'assembly')]"/>
+                <filter string="Instalación" name="installation" domain="[('stage', '=', 'installation')]"/>
+                <filter string="Acabado y entrega" name="finishing" domain="[('stage', '=', 'finishing')]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
+                    <filter string="Inicio" name="group_start" context="{'group_by': 'date_start:week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_space_stage" model="ir.actions.act_window">
+        <field name="name">Etapas del cronograma</field>
+        <field name="res_model">construction.space.stage</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_project': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin etapas en el cronograma</p>
+            <p>Se crean al generar el plan: una por ambiente y etapa con líneas. En un plan ya
+               generado, use «Crear etapas del cronograma».</p>
+        </field>
+    </record>
+
+</odoo>

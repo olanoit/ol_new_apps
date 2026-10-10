@@ -109,6 +109,19 @@ Fase 7 (control y personal propio, P-13, W-06, W-08):
   etapas, recalcula la fecha de necesidad y avisa a Logística.
 * Revertir un avance validado baja el estado del módulo.
 
+Fase 8 (cronograma con recursos, P-15):
+
+* Etapas de cada ambiente (producción, armado, instalación, acabado) con sus
+  fechas, creadas al generar el plan; contrata, cuadrilla, monto y avance
+  salen de las líneas.
+* «Cronograma»: el Gantt de proyectos de la suite con las etapas como filas
+  hijas de cada ambiente y sus vínculos, casillas de selección en cascada,
+  panel con los recursos de la selección, botones de los asistentes W-02 a
+  W-08 y carga semanal por contrata y etapa debajo del diagrama.
+* Arrastrar una etapa desplaza la fecha de necesidad de sus líneas y avisa a
+  Logística de los requerimientos y OC desfasados; «Cambiar fechas» (W-08)
+  también mueve las etapas.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -118,7 +131,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '6.20261010',
+    'version': '7.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -159,6 +172,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/res_config_settings_views.xml',
         'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',
+        'views/construction_schedule_views.xml',
         'views/construction_supply_views.xml',
         'views/menus.xml',
     ],
@@ -168,6 +182,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'assets': {
         'web.assets_backend': [
             'al_construction_planner/static/src/plan_tree/*',
+            'al_construction_planner/static/src/schedule/*',
         ],
         'web.assets_tests': [
             'al_construction_planner/static/tests/tours/*',

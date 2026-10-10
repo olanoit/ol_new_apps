@@ -9,7 +9,7 @@
             <div class="algantt-wrapper d-flex flex-column h-100">
 
                 <div class="algantt-toolbar d-flex flex-wrap align-items-center gap-3 p-2 border-bottom">
-                    <div class="algantt-projects d-flex flex-wrap align-items-center gap-1">
+                    <div class="algantt-projects d-flex flex-wrap align-items-center gap-1" t-if="showProjectBar">
                         <span class="fw-bold me-1">Proyectos:</span>
                         <t t-if="!projectButtons.length">
                             <span class="text-muted">Ninguno visible</span>
@@ -32,6 +32,9 @@
                                 t-if="state.pinnedToProject"
                                 t-on-click="() => this.onShowAllProjects()">Ver todos los proyectos</button>
                     </div>
+
+                    <!-- Punto de extensión: contenido propio de una pantalla heredada. -->
+                    <t t-if="toolbarTemplate" t-call="{{ toolbarTemplate }}"/>
 
                     <div class="algantt-tools d-flex flex-wrap align-items-center gap-2 ms-auto">
                         <div class="algantt-search input-group input-group-sm" style="width: 210px;">
@@ -150,6 +153,34 @@
                     </div>
                 </div>
 
+                <!-- Barra de selección: casillas marcadas y acciones propias de
+                     una pantalla heredada (`extraToolbarButtons`). -->
+                <div class="algantt-actionbar d-flex flex-wrap align-items-center gap-2 px-2 py-1 border-bottom"
+                     t-if="showActionBar">
+                    <t t-if="selection">
+                        <span class="small" t-if="state.selectionCount">
+                            <i class="fa fa-check-square me-1"/>
+                            <span class="algantt-selection-count" t-esc="state.selectionCount"/> fila(s) marcada(s)
+                        </span>
+                        <span class="small text-muted" t-else="">Marque filas en la primera columna</span>
+                        <button type="button" class="btn btn-sm btn-link algantt-selection-clear"
+                                t-if="state.selectionCount"
+                                t-on-click="() => this.clearSelection()">Quitar selección</button>
+                    </t>
+                    <div class="d-flex flex-wrap gap-1 ms-auto">
+                        <t t-foreach="extraToolbarButtons" t-as="button" t-key="button.key">
+                            <button type="button" class="btn btn-sm btn-outline-primary algantt-extra-button"
+                                    t-att-data-key="button.key"
+                                    t-att-disabled="button.disabled"
+                                    t-att-title="button.title or button.label"
+                                    t-on-click="() => button.run()">
+                                <i t-if="button.icon" t-att-class="'fa ' + button.icon + ' me-1'"/>
+                                <t t-esc="button.label"/>
+                            </button>
+                        </t>
+                    </div>
+                </div>
+
                 <div class="algantt-filters border-bottom p-2" t-if="state.showFilters">
                     <div class="row g-2 align-items-end">
                         <div class="col-12 col-md-3">
@@ -229,6 +260,7 @@
                     </div>
                 </div>
 
+                <div class="algantt-main d-flex flex-grow-1">
                 <div class="algantt-body flex-grow-1 position-relative">
                     <div t-if="state.loading" class="algantt-loading position-absolute top-50 start-50 translate-middle">
                         <i class="fa fa-circle-o-notch fa-spin fa-2x text-muted"/>
@@ -248,6 +280,11 @@
                     </div>
                     <div class="algantt-container h-100 w-100" t-ref="ganttContainer"/>
                 </div>
+                <!-- Punto de extensión: panel a la derecha del diagrama. -->
+                <t t-if="sidePanelTemplate" t-call="{{ sidePanelTemplate }}"/>
+                </div>
+                <!-- Punto de extensión: panel debajo del diagrama. -->
+                <t t-if="bottomPanelTemplate" t-call="{{ bottomPanelTemplate }}"/>
 
             </div>
         </Layout>
