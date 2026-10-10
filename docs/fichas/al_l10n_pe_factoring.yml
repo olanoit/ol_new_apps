@@ -5,6 +5,7 @@ subtitulo: >-
   del PCGE.
 categoria: Localización Perú · Contabilidad
 etiquetas: [Factoring, Factura negociable, CAVALI, Con recurso, Sin recurso, NIIF 9, PCGE]
+portada: screenshots/01-operaciones.png
 
 destacados_intro: >-
   La operación se arma sobre las facturas de Odoo: no se duplica la factura ni
@@ -28,8 +29,8 @@ destacados:
   - icono: "↩"
     titulo: Recompra
     texto: >-
-      Con recurso, si el cliente no paga se devuelve el adelanto y la factura
-      vuelve a quedar pendiente de cobro.
+      Con recurso, si el cliente no paga se devuelve el adelanto; la factura
+      nunca dejó de estar pendiente de cobro.
   - icono: "✓"
     titulo: Sin dobles cesiones
     texto: >-
@@ -58,19 +59,23 @@ flujos:
   - id: factoring
     titulo: Operación de factoring
     texto: >-
-      La cesión retira la factura de la cuenta del cliente; el desembolso
-      registra el adelanto neto; al final, el cobro del factor o (con recurso)
-      la recompra cierran la operación.
+      Sin recurso, la cesión retira la factura de la cuenta del cliente; con
+      recurso la factura sigue pendiente hasta el cobro. El desembolso registra
+      el adelanto neto; al final, el cobro del factor o (con recurso) la
+      recompra cierran la operación.
     mermaid: |
       flowchart TD
-        A[Operación en borrador<br/>factor, modalidad, facturas] --> B[Ceder facturas<br/>1212 → 1214]
-        B --> C[Registrar desembolso<br/>banco + intereses + comisión]
+        A[Operación en borrador<br/>factor, modalidad, facturas] --> B{¿Modalidad?}
+        B -- Sin recurso --> B1[Ceder facturas<br/>1212 → 1214, factura pagada]
+        B -- Con recurso --> B2[Ceder facturas<br/>sin asiento, factura pendiente]
+        B1 --> C[Registrar desembolso<br/>banco + intereses + comisión]
+        B2 --> C
         C --> D{¿Modalidad?}
         D -- Sin recurso --> E[Cobro del factor<br/>retenido al banco]
         D -- Con recurso --> F[Devengo de intereses<br/>3731 → 6734]
         F --> G{¿El cliente pagó?}
-        G -- Sí --> H[Cobro del factor<br/>cancela la obligación 4512]
-        G -- No --> I[Recompra<br/>devuelve el adelanto,<br/>la factura vuelve a pendiente]
+        G -- Sí --> H[Cobro del factor<br/>cancela 4512 y la factura]
+        G -- No --> I[Recompra<br/>devuelve el adelanto,<br/>la factura sigue pendiente]
         E --> J[Liquidada]
         H --> J
         I --> K[Recomprada]
@@ -90,11 +95,15 @@ pasos:
     texto: >-
       Indique el factor, la modalidad, el contrato y el % de adelanto. En cada
       factura puede ajustar el nominal, el vencimiento y la anotación CAVALI.
+    imagen: screenshots/02-borrador.png
   - titulo: Ceder
     ruta: Operación ▸ Ceder facturas
     texto: >-
-      Sin recurso la factura queda pagada y la deuda pasa al factor (1214); con
-      recurso se reclasifica a 1214 a nombre del cliente.
+      Sin recurso la factura queda pagada y la deuda pasa al factor (1214). Con
+      recurso no hay asiento: la factura sigue pendiente (NIIF 9) y queda
+      pagada recién con el cobro del factor. La factura muestra la operación en
+      Facturación PE ▸ Factoring.
+    imagen: screenshots/07-factura.png
 
   - seccion: Desembolso y cierre
   - titulo: Registrar el desembolso
@@ -103,17 +112,39 @@ pasos:
       Banco, fecha, intereses, comisión y gastos. Entra al banco el neto
       (S/ 865 en el ejemplo); con recurso el adelanto queda como obligación
       con el factor (4512).
+    imagen: screenshots/03-sin-recurso.png
   - titulo: Devengar intereses
     ruta: Operación ▸ Devengar intereses
     texto: >-
       Solo con recurso y con la cuenta de intereses diferidos: pasa a gasto la
       parte del periodo. Al cerrar la operación se devenga lo que falte.
+    imagen: screenshots/05-devengo.png
   - titulo: Cobro del factor o recompra
     ruta: Operación ▸ Cobro del factor / Recompra
     texto: >-
       Cuando el cliente paga al factor se cancelan las facturas cedidas y entra
       el retenido. Con recurso, si el cliente no paga, la recompra devuelve el
-      adelanto y la factura vuelve a quedar pendiente.
+      adelanto al factor y la factura sigue pendiente.
+    imagen: screenshots/04-con-recurso.png
+
+  - seccion: Seguimiento
+  - titulo: Facturas cedidas
+    ruta: Perú ▸ Factoring ▸ Facturas cedidas
+    texto: >-
+      Todas las facturas cedidas con su factor, modalidad, anotación CAVALI,
+      adelanto, retenido y estado; las vencidas en rojo.
+    imagen: screenshots/06-facturas-cedidas.png
+  - titulo: Análisis
+    ruta: Perú ▸ Factoring ▸ Análisis
+    texto: >-
+      Nominal, adelanto, retenido y costo por factor, modalidad y mes.
+    imagen: screenshots/08-analisis.png
+  - titulo: Cuentas
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Factoring
+    texto: >-
+      Una fila por modalidad y moneda, creada sola con el PCGE; ajústela al
+      plan de cuentas de la empresa.
+    imagen: screenshots/09-cuentas.png
 
 campos:
   - grupo: Operación
@@ -133,6 +164,11 @@ campos:
       - [Comisiones y gastos, Comisión del factor y gastos, 6391, —]
 
 novedades:
+  - version: 2.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Con recurso la factura ya no se da por pagada al cederla: sigue pendiente en la cuenta del cliente (NIIF 9), en su saldo, vencimientos y recordatorios, y queda pagada con el cobro del factor; la recompra solo devuelve el adelanto."
+      - "Datos de demostración «DEMO FAC» (tools/factoring_demo_data.py) y capturas de la ficha."
   - version: 1.20261010
     fecha: 10/10/2026
     cambios:

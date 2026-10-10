@@ -217,13 +217,23 @@ class L10nPeFactoring(models.Model):
                     invoice=invoice.display_name, residual=invoice.amount_residual))
 
     def action_assign(self):
-        """Cede las facturas: las retira de la cuenta del cliente (1212)."""
+        """Cede las facturas. Sin recurso, la deuda pasa al factor (1212 →
+        1214) y la factura queda pagada. Con recurso no hay asiento: la cuenta
+        por cobrar no se da de baja (NIIF 9) y la factura sigue pendiente
+        hasta que el cliente paga al factor."""
         for operation in self:
             if operation.state != 'draft':
                 raise UserError(operation.env._('Solo se ceden operaciones en borrador.'))
             operation._check_before_assign()
             config = operation._config()
             without_recourse = operation.modality == 'without_recourse'
+            if not without_recourse:
+                operation.line_ids.write({'state': 'assigned'})
+                operation.state = 'assigned'
+                operation.message_post(body=operation.env._(
+                    'Facturas cedidas a %(factor)s (%(modality)s): siguen pendientes hasta el cobro.',
+                    factor=operation.factor_id.name, modality=dict(MODALITIES)[operation.modality]))
+                continue
             vals = []
             for line in operation.line_ids:
                 invoice = line.move_id

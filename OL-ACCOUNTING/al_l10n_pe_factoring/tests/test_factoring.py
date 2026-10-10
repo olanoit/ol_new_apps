@@ -122,8 +122,9 @@ class TestFactoring(TransactionCase):
         operation = self._operation(invoice, modality='with_recourse', percent=80.0)
         config = operation._config()
         operation.action_assign()
-        self.assertEqual(self._balance(operation, config.assigned_account_id, self.customer), 2000.0,
-                         'con recurso la deuda sigue a nombre del cliente')
+        self.assertFalse(operation.move_ids, 'con recurso la cesión no genera asiento')
+        self.assertEqual(invoice.payment_state, 'not_paid', 'la cuenta por cobrar no se da de baja (NIIF 9)')
+        self.assertEqual(invoice.l10n_pe_factoring_state, 'assigned')
 
         self._wizard(operation, 'disburse', interest_amount=30.0)
         self.assertEqual(self._balance(operation, config.obligation_account_id, self.factor), -1600.0,
@@ -136,31 +137,31 @@ class TestFactoring(TransactionCase):
         with self.assertRaises(UserError, msg='no se devenga más de lo pendiente'):
             self._wizard(operation, 'accrue', amount=50.0)
 
+        self.assertEqual(invoice.payment_state, 'not_paid', 'pendiente hasta que el cliente paga al factor')
         self._wizard(operation, 'settle')
         self.assertEqual(operation.state, 'done')
+        self.assertIn(invoice.payment_state, ('paid', 'in_payment'), 'el cobro del factor cancela la factura')
         self.assertEqual(operation.interest_pending_amount, 0.0, 'al cerrar se devenga el resto')
         self.assertEqual(self._balance(operation, config.obligation_account_id), 0.0)
-        self.assertEqual(self._balance(operation, config.assigned_account_id), 0.0)
         self.assertEqual(self._balance(operation, config.interest_account_id), 30.0)
         self.assertEqual(self._balance(operation, self.bank_journal.default_account_id), 1970.0,
                          'adelanto neto 1570 + retenido 400')
         self._assert_balanced(operation)
 
-    def test_with_recourse_repurchase_reopens_the_invoice(self):
+    def test_with_recourse_repurchase_keeps_the_invoice(self):
         invoice = self._invoice(1500.0)
         operation = self._operation(invoice, modality='with_recourse', percent=100.0)
         config = operation._config()
         operation.action_assign()
-        self.assertIn(invoice.payment_state, ('paid', 'in_payment'))
+        self.assertEqual(invoice.payment_state, 'not_paid')
         self._wizard(operation, 'disburse', fee_amount=15.0)
 
         self._wizard(operation, 'repurchase')
         self.assertEqual(operation.state, 'repurchased')
         self.assertEqual(operation.line_ids.state, 'repurchased')
-        self.assertEqual(invoice.payment_state, 'not_paid', 'la factura vuelve a estar pendiente')
+        self.assertEqual(invoice.payment_state, 'not_paid', 'la factura sigue pendiente')
         self.assertEqual(invoice.amount_residual, 1500.0)
         self.assertEqual(self._balance(operation, config.obligation_account_id), 0.0)
-        self.assertEqual(self._balance(operation, config.assigned_account_id), 0.0)
         self.assertEqual(self._balance(operation, self.bank_journal.default_account_id), -15.0,
                          'solo cuesta la comisión')
         self._assert_balanced(operation)

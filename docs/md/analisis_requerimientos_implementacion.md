@@ -113,11 +113,14 @@ factura:
 
 | Momento | Sin recurso | Con recurso |
 |---|---|---|
-| Cesión | 1214 o 1689 (factor) / 1212 (concilia la factura: queda pagada) | 1214 / 1212 (reclasifica; el riesgo sigue en la empresa) |
-| Desembolso | Banco + 673x (interés) + 639x (comisión) + 1689 retenido / 1214 | Banco + 373x (interés diferido) / 45x (obligación) |
+| Cesión | 1214 (factor) / 1212 (concilia la factura: queda pagada) | Sin asiento: la factura sigue pendiente en 1212 (NIIF 9) y se marca «Cedida» |
+| Desembolso | Banco + 673x (interés) + 639x (comisión) / 1214 (adelanto) | Banco + 373x (interés diferido) + 639x / 45x (obligación) |
 | Devengo | — | 673x / 373x (mensual) |
-| Cobro del factor al cliente | Banco (saldo retenido) / 1689 | 45x / 1214 |
-| Impago (recompra) | — | 1212 / banco (devuelve) y 45x / 1214 revertido |
+| Cobro del factor al cliente | Banco (saldo retenido) / 1214 | 45x + banco (retenido) / 1212 (la factura queda pagada) |
+| Impago (recompra) | — | 45x / banco (devuelve el adelanto); la factura sigue pendiente |
+
+> Implementado en `al_l10n_pe_factoring` (versión 2): con recurso la factura no
+> aparece pagada hasta que el cliente paga al factor (decisión del 10/10/2026).
 
 **Integración:**
 

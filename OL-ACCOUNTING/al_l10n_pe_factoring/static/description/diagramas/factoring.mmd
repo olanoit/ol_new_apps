@@ -1,12 +1,15 @@
 flowchart TD
-  A[Operación en borrador<br/>factor, modalidad, facturas] --> B[Ceder facturas<br/>1212 → 1214]
-  B --> C[Registrar desembolso<br/>banco + intereses + comisión]
+  A[Operación en borrador<br/>factor, modalidad, facturas] --> B{¿Modalidad?}
+  B -- Sin recurso --> B1[Ceder facturas<br/>1212 → 1214, factura pagada]
+  B -- Con recurso --> B2[Ceder facturas<br/>sin asiento, factura pendiente]
+  B1 --> C[Registrar desembolso<br/>banco + intereses + comisión]
+  B2 --> C
   C --> D{¿Modalidad?}
   D -- Sin recurso --> E[Cobro del factor<br/>retenido al banco]
   D -- Con recurso --> F[Devengo de intereses<br/>3731 → 6734]
   F --> G{¿El cliente pagó?}
-  G -- Sí --> H[Cobro del factor<br/>cancela la obligación 4512]
-  G -- No --> I[Recompra<br/>devuelve el adelanto,<br/>la factura vuelve a pendiente]
+  G -- Sí --> H[Cobro del factor<br/>cancela 4512 y la factura]
+  G -- No --> I[Recompra<br/>devuelve el adelanto,<br/>la factura sigue pendiente]
   E --> J[Liquidada]
   H --> J
   I --> K[Recomprada]

@@ -177,14 +177,20 @@ class L10nPeFactoringWizard(models.TransientModel):
         with_recourse = operation.modality == 'with_recourse'
         vals = []
         for line in self.line_ids:
-            residual = line.assignment_line_id.amount_residual_currency
-            vals.append(operation._line_vals(self.date, line.assignment_line_id.account_id, -residual,
-                                             self.env._('Cobro %s', line.move_id.name),
-                                             partner=line.assignment_line_id.partner_id, factoring_line=line))
             if with_recourse:
+                # La factura sigue en la cuenta del cliente: se cancela aquí.
+                receivable = line._open_receivable_lines()[:1]
+                vals.append(operation._line_vals(self.date, receivable.account_id, -line.nominal_amount,
+                                                 self.env._('Cobro %s', line.move_id.name),
+                                                 partner=line.move_id.commercial_partner_id, factoring_line=line))
                 vals.append(operation._line_vals(self.date, config.obligation_account_id, line.advance_amount,
                                                  self.env._('Cancelación del adelanto %s', line.move_id.name),
                                                  partner=operation.factor_id))
+            else:
+                residual = line.assignment_line_id.amount_residual_currency
+                vals.append(operation._line_vals(self.date, line.assignment_line_id.account_id, -residual,
+                                                 self.env._('Cobro %s', line.move_id.name),
+                                                 partner=line.assignment_line_id.partner_id, factoring_line=line))
         bank = -sum(v['amount_currency'] for v in vals) - (
             self.interest_amount + self.fee_amount + self.expense_amount)
         vals.insert(0, operation._line_vals(self.date, self._bank_account(), bank,
@@ -193,10 +199,14 @@ class L10nPeFactoringWizard(models.TransientModel):
         move = operation._post_move(self.bank_journal_id, self.date,
                                     self.env._('Cobro del factor %s', operation.name), vals)
         for line in self.line_ids:
-            closing = move.line_ids.filtered(
-                lambda l: l.l10n_pe_factoring_line_id == line and l.account_id == line.assignment_line_id.account_id)
-            if closing:
-                (closing + line.assignment_line_id).reconcile()
+            mine = move.line_ids.filtered(lambda l: l.l10n_pe_factoring_line_id == line)
+            if with_recourse:
+                receivables = line._open_receivable_lines()
+                (mine.filtered(lambda l: l.account_id in receivables.account_id) + receivables).reconcile()
+            else:
+                closing = mine.filtered(lambda l: l.account_id == line.assignment_line_id.account_id)
+                if closing:
+                    (closing + line.assignment_line_id).reconcile()
         self.line_ids.write({'state': 'collected'})
         operation._update_final_state()
 
@@ -204,40 +214,19 @@ class L10nPeFactoringWizard(models.TransientModel):
     # Recompra (con recurso)
     # ------------------------------------------------------------------
     def _apply_repurchase(self):
-        """El cliente no pagó: se devuelve el adelanto al factor y la factura
-        vuelve a la cuenta del cliente, otra vez pendiente."""
+        """El cliente no pagó: se devuelve el adelanto al factor. La factura
+        no cambia: con recurso nunca dejó de estar pendiente."""
         operation = self.factoring_id
         config = operation._config()
-        vals = []
-        for line in self.line_ids:
-            invoice_receivable = line.receivable_line_id
-            nominal = line.assignment_line_id.amount_residual_currency
-            vals += [
-                operation._line_vals(self.date, config.obligation_account_id, line.advance_amount,
+        vals = [operation._line_vals(self.date, config.obligation_account_id, line.advance_amount,
                                      self.env._('Devolución del adelanto %s', line.move_id.name),
-                                     partner=operation.factor_id),
-                operation._line_vals(self.date, invoice_receivable.account_id, nominal,
-                                     self.env._('Recompra %s', line.move_id.name),
-                                     partner=invoice_receivable.partner_id, factoring_line=line),
-                operation._line_vals(self.date, line.assignment_line_id.account_id, -nominal,
-                                     self.env._('Recompra %s', line.move_id.name),
-                                     partner=line.assignment_line_id.partner_id, factoring_line=line),
-            ]
+                                     partner=operation.factor_id, factoring_line=line)
+                for line in self.line_ids]
         vals += self._charges_vals(operation, config, operation.name)
         bank = -sum(v['amount_currency'] for v in vals)
         vals.insert(0, operation._line_vals(self.date, self._bank_account(), bank,
                                             self.env._('Recompra al factor %s', operation.name)))
-        move = operation._post_move(self.bank_journal_id, self.date,
-                                    self.env._('Recompra de facturas %s', operation.name), vals)
-        for line in self.line_ids:
-            mine = move.line_ids.filtered(lambda l: l.l10n_pe_factoring_line_id == line)
-            closing = mine.filtered(lambda l: l.account_id == line.assignment_line_id.account_id)
-            (closing + line.assignment_line_id).reconcile()
-            # La factura vuelve a quedar pendiente: su cuenta por cobrar se
-            # desconcilia de la cesión y la cesión se salda con la recompra.
-            line.receivable_line_id.remove_move_reconcile()
-            reopen = mine.filtered(lambda l: l.account_id == line.receivable_line_id.account_id
-                                   and l.amount_currency > 0)
-            (reopen + line.receivable_line_id).reconcile()
+        operation._post_move(self.bank_journal_id, self.date,
+                             self.env._('Recompra de facturas %s', operation.name), vals)
         self.line_ids.write({'state': 'repurchased'})
         operation._update_final_state()

@@ -30,7 +30,7 @@ por modalidad y moneda; se crean solas con el PCGE.
 
 | Cuenta | PCGE |
 |---|---|
-| Facturas cedidas | 1214 Facturas en descuento |
+| Facturas cedidas (sin recurso) | 1214 Facturas en descuento |
 | Obligación con el factor (con recurso) | 4512 Préstamos de otras entidades |
 | Intereses | 6734 Intereses por documentos vendidos o descontados |
 | Intereses diferidos (con recurso, opcional) | 3731 Intereses no devengados |
@@ -48,16 +48,20 @@ cobrar):
 | Desembolso | Banco 865 · 6734 20 · 6391 15 | 1214 (factor) 900 |
 | Cobro del factor | Banco 100 | 1214 (factor) 100 (retenido) |
 
-**Con recurso** (el riesgo sigue en la empresa; el adelanto es una
-obligación), mismo ejemplo con intereses diferidos:
+**Con recurso** (el riesgo sigue en la empresa; NIIF 9: la cuenta por cobrar
+**no** se da de baja y el adelanto es una obligación), mismo ejemplo con
+intereses diferidos:
 
 | Paso | Debe | Haber |
 |---|---|---|
-| Cesión | 1214 (cliente) 1 000 | 1212 (cliente) 1 000 |
+| Cesión | — sin asiento: la factura sigue pendiente en 1212 y se marca «Cedida» | — |
 | Desembolso | Banco 865 · 3731 20 · 6391 15 | 4512 (factor) 900 |
 | Devengo | 6734 | 3731 |
-| Cobro del factor | 4512 900 · Banco 100 | 1214 (cliente) 1 000 |
-| Recompra | 4512 900 · 1212 (cliente) 1 000 | Banco 900 · 1214 1 000 — la factura vuelve a quedar pendiente |
+| Cobro del factor | 4512 900 · Banco 100 | 1212 (cliente) 1 000 — concilia la factura: queda pagada |
+| Recompra | 4512 900 | Banco 900 — la factura no cambia (sigue pendiente) |
+
+Así la factura con recurso no aparece pagada mientras el cliente no paga:
+sigue en el saldo y el vencimiento del cliente y en sus recordatorios.
 
 Los importes van en la moneda de la operación (la de las facturas) con su
 contravalor a la fecha; el céntimo de diferencia va al banco o a la
@@ -97,6 +101,6 @@ obligación, como en las letras.
 
 `tests/test_factoring.py` (11): flujo sin recurso completo (factura pagada,
 retenido, asientos cuadrados), con recurso cobrado (obligación, devengo y cierre
-de intereses), con recurso recomprado (factura otra vez pendiente), no ceder dos
+de intereses), con recurso recomprado (la factura sigue pendiente; nunca se dio de baja), no ceder dos
 veces y cancelación, nominal mayor que el saldo, cargos mayores que el adelanto,
 creación desde la lista, moneda extranjera, multicompañía y formulario.
