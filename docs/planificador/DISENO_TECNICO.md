@@ -124,7 +124,7 @@ Menú raíz **Planificación de obra** (ícono propio: edificio de pisos con las
 barras de su plan, carmesí `#BE123C`, trazo blanco; generado con
 `icons/make_icons.py` del scratchpad):
 
-- Obras ▸ Planes de recursos (P-01 básica) · Árbol de la obra · Recursos planificados · Obras
+- Obras ▸ Planes de recursos (P-01 básica) · Árbol de recursos (P-02) · Tareas de la obra · Recursos planificados · Obras
 - Configuración ▸ Tipologías (P-12) · Actividades de obra (P-14) · Tarifas de contrata (P-14)
 
 Multicompañía: `_check_company_auto` y `check_company=True` en todas las
@@ -167,7 +167,7 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Fase | Contenido | Pantallas |
 |---|---|---|
 | **1 (hecha)** | Jerarquía, catálogo, plan y generación | P-01 básica, P-04, P-12, P-14 |
-| 2 | Árbol del plan OWL con selección en cascada y carga por niveles; resumen por etapa; W-12 aplicar costo (última compra, promedio ponderado, maestro); aprobación con tier validation y bloqueo por líneas sin etapa/costo; replanificación (copia a versión nueva, `previous_line_id`) | P-02, P-03, W-12 |
+| 2 (árbol hecho) | **Hecho:** árbol del plan OWL con selección en cascada y carga por niveles (P-02). **Pendiente:** resumen por etapa; W-12 aplicar costo (última compra, promedio ponderado, maestro); aprobación con tier validation y bloqueo por líneas sin etapa/costo; replanificación (copia a versión nueva, `previous_line_id`) | P-02, P-03, W-12 |
 | 3 | Requerimientos desde la selección: columnas planificado/pedido/saldo y control de exceso en `_check_ready_to_submit` del requerimiento | P-07 |
 | 4 | Contratas: asignar contrata (OC de servicio por contrata y obra), avances por driver con foto, liquidación semanal con retención | P-05, P-06, P-08 |
 | 5 | Personal propio: turnos de planificación por rol, horas; enlace con la obra de planilla | P-09 |
@@ -178,7 +178,10 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
-  e indexados evitan recursión; el árbol OWL (fase 2) debe cargar por niveles.
+  e indexados evitan recursión; el árbol OWL carga por niveles. Medido con
+  `tools/planner_tree_benchmark.py` (20 pisos, 153 departamentos, 1,257
+  módulos, 7,800 líneas): cada nivel del árbol responde en 8-25 ms y el
+  resumen de la selección en 31-65 ms (servidor, sin red).
   El recálculo de ancestros al mover un departamento recorre sus descendientes
   (recursivo almacenado): aceptable, pero conviene medirlo con el volumen real.
 - **Precisión de cantidades.** `ol_pe_v19` tiene «Product Unit» = 2 decimales:

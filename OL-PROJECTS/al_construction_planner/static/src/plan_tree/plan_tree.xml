@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner.PlanTree">
+        <div class="o_action o_cp_tree d-flex flex-column h-100">
+            <!-- Plan y filtros -->
+            <div class="o_cp_toolbar d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom">
+                <select class="form-select form-select-sm o_cp_plan_select w-auto"
+                        t-on-change="onPlanChange" aria-label="Plan de recursos">
+                    <t t-foreach="state.plans" t-as="plan" t-key="plan.id">
+                        <option t-att-value="plan.id" t-att-selected="plan.id === state.planId"
+                                t-esc="plan.display_name + ' · ' + plan.project_id[1]"/>
+                    </t>
+                </select>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <i class="fa fa-filter me-1"/>Filtros
+                        <t t-set="nf" t-value="state.filters.stages.length + state.filters.resource_types.length + state.filters.unit_states.length + (state.filters.partner ? 1 : 0)"/>
+                        <span t-if="nf" class="badge text-bg-primary ms-1" t-esc="nf"/>
+                    </button>
+                    <div class="dropdown-menu p-2 o_cp_filters">
+                        <div class="fw-bold small text-muted">Etapa</div>
+                        <t t-foreach="state.options.stages" t-as="opt" t-key="opt[0]">
+                            <label class="dropdown-item d-flex gap-2">
+                                <input type="checkbox" t-att-checked="state.filters.stages.includes(opt[0])"
+                                       t-on-change="() => this.toggleFilter('stages', opt[0])"/>
+                                <span t-esc="opt[1]"/>
+                            </label>
+                        </t>
+                        <div class="fw-bold small text-muted mt-2">Tipo de recurso</div>
+                        <t t-foreach="state.options.resource_types" t-as="opt" t-key="opt[0]">
+                            <label class="dropdown-item d-flex gap-2">
+                                <input type="checkbox" t-att-checked="state.filters.resource_types.includes(opt[0])"
+                                       t-on-change="() => this.toggleFilter('resource_types', opt[0])"/>
+                                <span t-esc="opt[1]"/>
+                            </label>
+                        </t>
+                        <div class="fw-bold small text-muted mt-2">Estado del módulo</div>
+                        <t t-foreach="state.options.unit_states" t-as="opt" t-key="opt[0]">
+                            <label class="dropdown-item d-flex gap-2">
+                                <input type="checkbox" t-att-checked="state.filters.unit_states.includes(opt[0])"
+                                       t-on-change="() => this.toggleFilter('unit_states', opt[0])"/>
+                                <span t-esc="opt[1]"/>
+                            </label>
+                        </t>
+                    </div>
+                </div>
+                <select class="form-select form-select-sm w-auto o_cp_partner_select" t-on-change="onPartnerChange"
+                        aria-label="Contrata">
+                    <option value="" t-att-selected="!state.filters.partner">Todas las contratas</option>
+                    <option value="none" t-att-selected="state.filters.partner === 'none'">Sin asignar</option>
+                    <t t-foreach="state.partners" t-as="partner" t-key="partner[0]">
+                        <option t-att-value="partner[0]" t-att-selected="state.filters.partner == partner[0]"
+                                t-esc="partner[1]"/>
+                    </t>
+                </select>
+                <div class="btn-group btn-group-sm ms-auto o_cp_measure" role="group" aria-label="Medida">
+                    <button class="btn" t-att-class="state.measure === 'amount' ? 'btn-primary' : 'btn-secondary'"
+                            t-on-click="() => this.setMeasure('amount')">Soles</button>
+                    <button class="btn" t-att-class="state.measure === 'driver' ? 'btn-primary' : 'btn-secondary'"
+                            t-on-click="() => this.setMeasure('driver')">Cantidad</button>
+                    <button class="btn" t-att-class="state.measure === 'progress' ? 'btn-primary' : 'btn-secondary'"
+                            t-on-click="() => this.setMeasure('progress')">Avance</button>
+                </div>
+            </div>
+
+            <!-- Barra de selección -->
+            <div t-if="state.summary and !state.summary.empty"
+                 class="o_cp_selbar d-flex flex-wrap align-items-center gap-3 px-3 py-2 border-bottom">
+                <span class="fw-bold o_cp_summary">
+                    Selección:
+                    <span class="o_cp_summary_modules" t-esc="state.summary.modules"/> módulos ·
+                    <span t-esc="state.summary.spaces"/> ambientes ·
+                    <span t-esc="fmt(state.summary.ml)"/> ML ·
+                    S/ <span class="o_cp_summary_total" t-esc="fmt(state.summary.total)"/>
+                </span>
+                <span class="text-muted small">
+                    Material S/ <t t-esc="fmt(state.summary.material)"/> ·
+                    Contrata S/ <t t-esc="fmt(state.summary.contract)"/>
+                </span>
+                <div class="ms-auto d-flex flex-wrap gap-1">
+                    <t t-foreach="state.actions" t-as="act" t-key="act.xmlid">
+                        <button class="btn btn-sm btn-primary" t-on-click="() => this.runAction(act.xmlid)">
+                            <i t-att-class="'fa me-1 ' + act.icon"/><t t-esc="act.name"/>
+                        </button>
+                    </t>
+                    <button class="btn btn-sm btn-secondary o_cp_clear" t-on-click="clearSelection">Quitar selección</button>
+                </div>
+            </div>
+
+            <div t-if="!state.plans.length" class="o_view_nocontent p-5 text-center">
+                <p class="o_view_nocontent_smiling_face">No hay planes de recursos</p>
+                <p>Cree el plan de una obra y genérelo desde sus tipologías.</p>
+            </div>
+
+            <div t-else="" class="o_cp_body d-flex flex-grow-1 overflow-hidden">
+                <!-- Árbol -->
+                <div class="o_cp_table_wrap flex-grow-1 overflow-auto">
+                    <table class="table table-sm o_cp_table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nivel</th>
+                                <th>Tipología</th>
+                                <th class="text-end">Módulos</th>
+                                <th class="text-end">ML</th>
+                                <t t-if="state.measure !== 'progress'">
+                                    <t t-foreach="columns" t-as="col" t-key="col.field">
+                                        <th class="text-end" t-esc="col.label"/>
+                                    </t>
+                                </t>
+                                <th class="text-end">Avance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="rows" t-as="row" t-key="row.node.key">
+                                <t t-set="node" t-value="row.node"/>
+                                <t t-set="cs" t-value="checkState(node.key)"/>
+                                <tr class="o_cp_tree_row" t-att-data-key="node.key" t-att-data-name="node.name"
+                                    t-att-data-level="node.level"
+                                    t-att-class="{'o_cp_row_sel': cs === 'on', 'fw-bold': node.level !== 'module'}">
+                                    <td class="o_cp_name text-nowrap" t-att-style="'padding-left:' + (4 + row.depth * 18) + 'px'">
+                                        <span class="o_cp_caret" t-on-click="() => this.toggleExpand(node.key)">
+                                            <i t-if="node.has_children"
+                                               t-att-class="'fa fa-fw ' + (state.expanded[node.key] ? 'fa-caret-down' : 'fa-caret-right')"/>
+                                            <i t-else="" class="fa fa-fw"/>
+                                        </span>
+                                        <span t-att-class="'o_cp_check o_cp_' + cs" role="checkbox"
+                                              t-att-aria-checked="cs === 'on' ? 'true' : (cs === 'part' ? 'mixed' : 'false')"
+                                              t-on-click="() => this.toggleCheck(node.key)"/>
+                                        <a href="#" t-if="node.task_id" t-on-click.prevent="() => this.openTask(node)"
+                                           t-esc="node.name"/>
+                                        <span t-else="" t-esc="node.name"/>
+                                        <span class="o_cp_lvl" t-esc="levelLabel(node.level)"/>
+                                    </td>
+                                    <td t-esc="node.typology"/>
+                                    <td class="text-end" t-esc="node.modules"/>
+                                    <td class="text-end" t-esc="node.ml ? fmt(node.ml) : ''"/>
+                                    <t t-if="state.measure !== 'progress'">
+                                        <t t-foreach="columns" t-as="col" t-key="col.field">
+                                            <td class="text-end" t-esc="node[col.field] ? fmt(node[col.field]) : ''"/>
+                                        </t>
+                                    </t>
+                                    <td class="text-end" t-esc="progressLabel(node)"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel de recursos de la selección -->
+                <aside class="o_cp_panel border-start overflow-auto">
+                    <h5 class="px-3 py-2 m-0 border-bottom">Recursos acumulados de la selección</h5>
+                    <div t-if="!state.summary or state.summary.empty" class="p-3 text-muted small">
+                        Marque una obra, un piso, un departamento o módulos para ver sus recursos.
+                    </div>
+                    <t t-else="">
+                        <table class="table table-sm mb-0 o_cp_panel_table">
+                            <thead>
+                                <tr><th>Recurso</th><th class="text-end">Driver</th><th class="text-end">Acum.</th><th class="text-end">S/</th><th>Contrata</th></tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.summary.resources" t-as="res" t-key="res_index">
+                                    <tr>
+                                        <td><span t-esc="res.name"/><div class="text-muted small" t-esc="res.type_label"/></td>
+                                        <td class="text-end text-nowrap"><t t-esc="fmt(res.qty)"/> <t t-esc="res.uom"/></td>
+                                        <td class="text-end" t-esc="fmt(res.executed)"/>
+                                        <td class="text-end" t-esc="fmt(res.amount)"/>
+                                        <td t-esc="res.partners"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr><td colspan="3"><t t-esc="state.summary.resources.length"/> recursos</td>
+                                    <td class="text-end fw-bold" t-esc="fmt(state.summary.total)"/><td/></tr>
+                            </tfoot>
+                        </table>
+                        <div class="p-2">
+                            <button class="btn btn-link btn-sm" t-on-click="filterUnassigned">
+                                Ver solo lo que no tiene contrata
+                            </button>
+                        </div>
+                    </t>
+                </aside>
+            </div>
+        </div>
+    </t>
+
+</templates>

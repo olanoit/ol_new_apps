@@ -185,6 +185,8 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_open_tree" type="object"
+                                class="oe_stat_button" icon="fa-sitemap" string="Árbol de recursos"/>
                         <button name="action_view_lines" type="object"
                                 class="oe_stat_button" icon="fa-list">
                             <field name="line_count" widget="statinfo" string="Líneas"/>

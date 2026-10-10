@@ -8,7 +8,9 @@
     <menuitem id="menu_planner_works" name="Obras" parent="menu_planner_root" sequence="10">
         <menuitem id="menu_planner_plans" name="Planes de recursos"
                   action="action_construction_resource_plan" sequence="10"/>
-        <menuitem id="menu_planner_tree" name="Árbol de la obra"
+        <menuitem id="menu_planner_plan_tree" name="Árbol de recursos"
+                  action="action_construction_plan_tree" sequence="15"/>
+        <menuitem id="menu_planner_tree" name="Tareas de la obra"
                   action="action_construction_tree" sequence="20"/>
         <menuitem id="menu_planner_lines" name="Recursos planificados"
                   action="action_construction_resource_plan_line" sequence="30"

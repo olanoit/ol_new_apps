@@ -1,0 +1,92 @@
+// Árbol de recursos (P-02).
+.o_cp_tree {
+    background-color: $o-view-background-color;
+
+    .o_cp_table {
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: $o-gray-100;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle;
+        }
+        .o_cp_row_sel td {
+            background-color: rgba($o-action, 0.08);
+        }
+    }
+
+    .o_cp_caret {
+        cursor: pointer;
+        color: $o-gray-600;
+    }
+
+    .o_cp_lvl {
+        margin-left: 0.4rem;
+        font-size: 0.7rem;
+        font-weight: normal;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: $o-gray-600;
+    }
+
+    // Casilla de tres estados: marcada, parcial (guion) o vacía.
+    .o_cp_check {
+        position: relative;
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin-right: 6px;
+        vertical-align: -2px;
+        border: 1.5px solid $o-gray-600;
+        border-radius: 2px;
+        cursor: pointer;
+        background-color: $o-view-background-color;
+
+        &.o_cp_on {
+            background-color: $o-action;
+            border-color: $o-action;
+            &::after {
+                content: "";
+                position: absolute;
+                left: 3px;
+                top: 0;
+                width: 4px;
+                height: 8px;
+                border: solid $o-white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+        }
+        &.o_cp_part {
+            border-color: $o-action;
+            &::after {
+                content: "";
+                position: absolute;
+                left: 2px;
+                top: 5px;
+                width: 7px;
+                height: 2px;
+                background-color: $o-action;
+            }
+        }
+    }
+
+    .o_cp_selbar {
+        background-color: rgba($o-action, 0.1);
+    }
+
+    .o_cp_panel {
+        width: 30rem;
+        max-width: 40%;
+        flex: none;
+    }
+
+    .o_cp_filters {
+        min-width: 16rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

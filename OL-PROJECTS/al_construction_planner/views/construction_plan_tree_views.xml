@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Árbol de recursos (P-02): acción de cliente OWL. -->
+    <record id="action_construction_plan_tree" model="ir.actions.client">
+        <field name="name">Árbol de recursos</field>
+        <field name="tag">al_construction_planner.plan_tree</field>
+        <field name="path">arbol-recursos</field>
+    </record>
+
+</odoo>

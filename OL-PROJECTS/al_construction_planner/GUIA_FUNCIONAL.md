@@ -44,7 +44,8 @@ flowchart TD
   D --> E[Generar plan: vista previa y advertencias]
   E --> F[Módulos creados y líneas de armado, contratas y materiales]
   F --> G[El planificador escribe el costo de los materiales]
-  G --> H[Revisión por nivel: monto planificado del árbol]
+  G --> H[Árbol de recursos: revisar por nivel y seleccionar]
+  H --> I[Recursos acumulados de la selección]
 ```
 
 | # | Paso | Dónde en Odoo | Quién | Resultado |
@@ -56,7 +57,8 @@ flowchart TD
 | 5 | Crear el plan | Obras ▸ Planes de recursos ▸ Nuevo | Planificador | PLR/2026/##### · v1 en borrador |
 | 6 | Generar | Plan ▸ Generar plan | Planificador | Módulos (estado Planificado) y líneas |
 | 7 | Aplicar costos | Plan ▸ Líneas (columna Costo unitario) | Planificador | Monto total del plan |
-| 8 | Revisar por nivel | Obras ▸ Árbol de la obra | Todos | Monto planificado de cada nivel |
+| 8 | Revisar por nivel | Obras ▸ Árbol de recursos (o botón «Árbol de recursos» del plan) | Todos | Módulos, ML y montos de cada nivel |
+| 9 | Seleccionar y revisar los recursos | Árbol de recursos: casillas de piso, departamento, ambiente o módulo | Planificador | Barra de selección y panel de recursos acumulados |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -91,6 +93,33 @@ recortes, pines y push), como en P-05 de la especificación. El reparto entre
 las tipologías 04 a 08 y los precios de material son de ejemplo y cuadran con
 una línea de ajuste marcada «(ajuste demo)».
 
+### Árbol de recursos (P-02)
+
+**Obras ▸ Árbol de recursos** muestra la obra como árbol: obra › piso ›
+departamento › ambiente › módulo. Cada nivel se abre con la flecha y trae
+sus módulos, ML, material, contrata y total. En el piso 05 de demostración:
+
+| Fila | Módulos | ML | Material | Contrata | Total |
+|---|---|---|---|---|---|
+| Piso 05 | 66 | 41.33 | 6,642.91 | 2,301.53 | 8,944.44 |
+| Dpto 501 | 7 | 4.22 | 735.29 | 258.37 | 993.66 |
+
+- **Marcar** el piso marca todos sus departamentos, ambientes y módulos; la
+  barra de selección muestra «66 módulos · 8 ambientes · 41.33 ML ·
+  S/ 8,944.44». **Desmarcar** un módulo deja al ambiente, al departamento y
+  al piso con un guion (selección parcial) y la barra pasa a 65 módulos.
+- El panel **Recursos acumulados de la selección** lista cada actividad,
+  material o rol con su cantidad de driver, lo ejecutado (desde la fase de
+  avances), el monto y la contrata asignada («sin asignar» si falta).
+  «Ver solo lo que no tiene contrata» filtra contratas y personal sin
+  asignar.
+- **Filtros**: etapa (p. ej. solo instalación: S/ 941.17 de contrata en el
+  piso 05), tipo de recurso, estado del módulo y contrata.
+- **Medida**: soles, cantidad de driver o avance (el avance por driver llega
+  con la fase de contratas y avances; hoy el módulo muestra su estado).
+- Los botones de la barra (compra, requerimiento, fabricación, contrata,
+  cuadrilla, avance, fechas) aparecen a medida que se instalan sus fases.
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -104,7 +133,8 @@ una línea de ajuste marcada «(ajuste demo)».
 
 - Planes de recursos (lista con montos por tipo y estado).
 - Recursos planificados (pivote por departamento y etapa).
-- Árbol de la obra (lista de niveles con su monto planificado).
+- Árbol de recursos (P-02): árbol por niveles con la selección y sus recursos.
+- Tareas de la obra (lista de niveles con su monto planificado).
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -119,6 +149,7 @@ No alimenta libros PLE ni archivos SUNAT.
 | El ambiente ya tiene módulos del ETO | Se usan por código; los que faltan se avisan | Crear el módulo faltante o corregir el código |
 | «Debe colgar de un …» | Un nivel no cuelga del nivel inmediato superior | Corregir la tarea padre |
 | «Ya tiene un plan en preparación» | Solo un borrador o en aprobación por obra | Usar el existente o cancelarlo |
+| El árbol no muestra líneas de ambiente con el filtro «Estado del módulo» | Ese filtro solo aplica a lo que cuelga de un módulo | Quitar el filtro para ver instalación y actividades por ambiente |
 | Editar una línea de un plan aprobado | Bloqueado (salvo la fecha de necesidad) | Crear una versión nueva (fase 2) |
 
 ## 8. Preguntas frecuentes del consultor

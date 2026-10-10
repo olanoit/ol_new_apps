@@ -12,7 +12,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | Fase | Contenido | Estado |
 |---|---|---|
 | 1 | Jerarquía de la obra, tipologías, actividades y tarifas, etapa de consumo, plan de recursos y «Generar plan» (P-01 básica, P-04, P-12, P-14) | hecha |
-| 2 | Árbol del plan OWL (P-02), resumen por etapa (P-03), aplicar costo (W-12), aprobación con tier validation | pendiente |
+| 2 | Árbol del plan OWL (P-02) | hecha |
+| 2 (resto) | Resumen por etapa (P-03), aplicar costo (W-12), aprobación con tier validation, replanificación | pendiente |
 | 3-8 | Requerimientos, contratas, avances y liquidaciones, producción, ingresos, cronograma con recursos | pendiente |
 
 ## Modelos
@@ -27,6 +28,45 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 - `project.task`: `construction_level` y ancestros `construction_*_task_id`
   (calculados y almacenados), datos del módulo y `construction_unit_state`.
 - `mrp.bom.line`: `construction_consumption_stage`.
+
+## Árbol de recursos (P-02)
+
+Acción de cliente OWL `al_construction_planner.plan_tree`
+(`static/src/plan_tree/`), en **Obras ▸ Árbol de recursos** y en el botón
+«Árbol de recursos» del plan.
+
+- Carga por niveles: `construction.resource.plan.get_tree_nodes(parent_key,
+  filters)` con `'root'` (la obra), `'p'` (pisos) o el id de una tarea. Cada
+  nodo trae módulos, ML, material, contrata, total, cantidades de driver y
+  estado del módulo; lo acumulado sale de un `_read_group` por el ancestro
+  almacenado de la línea (`floor/apartment/space/module_task_id`).
+- Selección en cascada (`selection.js`): se guardan solo los nodos marcados
+  de más arriba; el servidor los expande con `child_of`
+  (`get_selection_summary`). Desmarcar un hijo deja a los padres en parcial.
+- Barra de selección: módulos, ambientes, ML y montos, más los botones de los
+  asistentes W-02 a W-08 que estén instalados (`get_tree_actions`; reciben
+  `construction_selection_keys` y `construction_selection_task_ids` en el
+  contexto).
+- Panel lateral: recursos de la selección por actividad, producto o rol, con
+  driver, acumulado (fase 5), monto y contrata.
+- Filtros: etapa, tipo de recurso, estado del módulo y contrata (o «sin
+  asignar»); medida en soles, cantidad de driver o avance.
+- Permisos: lectura del plan (`check_access`) y reglas de compañía del plan y
+  de las tareas.
+
+Rendimiento (`tools/planner_tree_benchmark.py`, 20 pisos, 153 departamentos,
+1,257 módulos, 7,800 líneas; mejor de 5, en el servidor):
+
+| RPC | ms |
+|---|---|
+| `get_tree_nodes('root')` – obra | 19.3 |
+| `get_tree_nodes('p')` – 20 pisos | 24.8 |
+| `get_tree_nodes(piso)` – departamentos | 15.1 |
+| `get_tree_nodes(ambiente)` – módulos | 7.7 |
+| `get_tree_nodes('p')` con filtro de material | 22.7 |
+| `get_selection_summary` de un piso | 37.2 |
+| `get_selection_summary` de 10 pisos | 64.6 |
+| `get_selection_summary` de la obra | 39.5 |
 
 ## Generar plan (`construction.plan.generate.wizard`)
 
@@ -51,7 +91,15 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 Piso 05 (Dptos 501 a 508): 66 módulos, 41.33 ML, S/ 6,642.91 de material,
 S/ 2,301.53 de contrata, S/ 8,944.44 en total; el script lo comprueba.
 
-Tests: `--test-tags /al_construction_planner` (22 tests).
+Tests: `--test-tags /al_construction_planner` (30 tests, con el tour
+`al_construction_planner_plan_tree` del árbol).
+
+Rendimiento del árbol con volumen tipo MOMEN (deshace todo al terminar):
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_tree_benchmark.py
+```
 
 ## Licencia
 

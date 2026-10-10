@@ -21,6 +21,14 @@ Fase 1 (jerarquía y catálogo):
 * Plan de recursos versionado y asistente «Generar plan» que crea las tareas de
   módulo y las líneas de armado, contrata y material desde las tipologías.
 
+Fase 2 (árbol del plan, P-02):
+
+* «Árbol de recursos»: obra › piso › departamento › ambiente › módulo cargado
+  por niveles, con módulos, ML, material, contrata y total acumulados en el
+  servidor.
+* Selección en cascada con barra de resumen, panel de recursos acumulados de
+  la selección y filtros por etapa, tipo de recurso, estado y contrata.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -30,7 +38,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '1.20261010',
+    'version': '2.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -57,8 +65,17 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_resource_plan_views.xml',
         'views/project_views.xml',
         'views/mrp_bom_views.xml',
+        'views/construction_plan_tree_views.xml',
         'views/menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'al_construction_planner/static/src/plan_tree/*',
+        ],
+        'web.assets_tests': [
+            'al_construction_planner/static/tests/tours/*',
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

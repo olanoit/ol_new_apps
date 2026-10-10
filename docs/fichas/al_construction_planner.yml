@@ -4,11 +4,12 @@ subtitulo: >-
   departamento, ambiente y módulo, con sus materiales y contratas generados
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
-etiquetas: [Plan de recursos, Tipologías, Árbol de la obra, Contratas por driver, Tarifas por obra, Etapa de consumo]
+portada: screenshots/02-seleccion-parcial.png
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo]
 
 destacados_intro: >-
-  Primera fase del planificador: la jerarquía de la obra, el catálogo de
-  tipologías, actividades y tarifas, y la generación del plan.
+  La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
+  la generación del plan y el árbol de recursos con selección en cascada.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -35,6 +36,11 @@ destacados:
     texto: >-
       El piso suma sus departamentos, el departamento sus ambientes y el
       ambiente sus módulos, sin recorrer el árbol.
+  - icono: "☑"
+    titulo: Árbol de recursos
+    texto: >-
+      Obra › piso › departamento › ambiente › módulo cargado por niveles.
+      Marque un piso o unos módulos y vea al lado todo lo que consumen.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -63,7 +69,7 @@ contexto:
     `docs/planificador/DISENO_TECNICO.md`.
 
 flujos_intro: >-
-  De la tipología al plan, en la fase 1.
+  De la tipología al plan y del plan a la selección.
 flujos:
   - id: generar
     titulo: Generar el plan
@@ -84,6 +90,47 @@ flujos:
         F --> I[Contratas por ambiente o por ML del módulo]
         F --> J[Materiales de la BOM, sin costo]
         J --> K[El planificador escribe el costo]
+  - id: arbol
+    titulo: Árbol de recursos
+    texto: >-
+      El árbol carga cada nivel cuando se abre. Marcar un nodo marca lo que
+      cuelga de él; el servidor suma la selección y la barra ofrece las
+      acciones de las fases instaladas.
+    mermaid: |
+      flowchart LR
+        A[Obras ▸ Árbol de recursos] --> B[Obra › pisos › departamentos › ambientes › módulos]
+        B --> C[Marcar nodos: cascada y parciales]
+        C --> D[Barra: módulos, ML, montos]
+        C --> E[Panel: recursos por actividad, producto o rol]
+        D --> F[Compra, requerimiento, contrata, avance…]
+
+pasos_intro: >-
+  El árbol de recursos con el piso 05 de demostración («DEMO PLAN
+  MOMEN-35-26»).
+pasos:
+  - titulo: Árbol de recursos
+    ruta: Planificación de obra ▸ Obras ▸ Árbol de recursos
+    texto: >-
+      Elija el plan arriba a la izquierda. Cada nivel se abre con la flecha y
+      trae sus módulos, ML, material, contrata y total: el piso 05 suma 66
+      módulos, 41.33 ML y S/ 8,944.44; el Dpto 501, 7 módulos y S/ 993.66.
+    imagen: screenshots/01-arbol-recursos.png
+  - titulo: Selección en cascada
+    ruta: Árbol de recursos ▸ casillas
+    texto: >-
+      Marcar el piso marca todo lo que cuelga de él. Al desmarcar un módulo,
+      el ambiente, el departamento y el piso quedan con un guion (selección
+      parcial) y la barra pasa a 65 módulos.
+    puntos:
+      - "El panel de la derecha suma los recursos de la selección por actividad, material o rol, con su contrata."
+      - "Los botones de compra, requerimiento, contrata o avance aparecen en la barra a medida que se instalan sus fases."
+    imagen: screenshots/02-seleccion-parcial.png
+  - titulo: Medida en cantidades
+    ruta: Árbol de recursos ▸ Cantidad
+    texto: >-
+      Cambia los montos por las cantidades de driver: material, driver de
+      las contratas y total. «Avance» muestra el estado de cada módulo.
+    imagen: screenshots/03-medida-cantidad.png
 
 campos_intro: >-
   Los campos de la fase 1 en los modelos nuevos y en los que el módulo amplía.
@@ -148,6 +195,13 @@ funcionalidades:
       - "Regenerar sin duplicar módulos y conservando costos y líneas manuales."
       - "Monto planificado de cada nivel por sus ancestros almacenados."
       - "Analítica de la obra en cada línea."
+  - grupo: Árbol de recursos
+    items:
+      - "Árbol OWL obra › piso › departamento › ambiente › módulo cargado por niveles."
+      - "Módulos, ML, material, contrata y total de cada nivel acumulados en el servidor."
+      - "Selección en cascada con estado parcial y barra de resumen."
+      - "Panel de recursos acumulados de la selección con su contrata."
+      - "Filtros por etapa, tipo de recurso, estado del módulo y contrata; medida en soles, cantidad o avance."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -210,6 +264,12 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 2.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Árbol de recursos (fase 2, P-02): obra › piso › departamento › ambiente › módulo cargado por niveles, con módulos, ML y montos de cada nivel."
+      - "Selección en cascada con barra de resumen y panel de recursos acumulados de la selección; filtros por etapa, tipo de recurso, estado del módulo y contrata."
+      - "Botón «Árbol de recursos» en el plan; el menú «Árbol de la obra» pasa a llamarse «Tareas de la obra»."
   - version: 1.20261010
     fecha: 10/10/2026
     cambios:
