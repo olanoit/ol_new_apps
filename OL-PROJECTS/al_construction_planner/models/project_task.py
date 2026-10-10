@@ -2,7 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .common import LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATES
+from .common import DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES
 
 # Nivel inmediatamente superior de cada nivel (la obra es el proyecto).
 PARENT_LEVEL = {'apartment': 'floor', 'space': 'apartment', 'module': 'space'}
@@ -42,6 +42,17 @@ class ProjectTask(models.Model):
         help='Suma de las líneas del plan vigente de este nivel y de todo lo que tiene debajo.')
     construction_currency_id = fields.Many2one(
         related='company_id.currency_id', string='Moneda de la obra')
+    # Pestaña «Recursos y avance» (P-09).
+    construction_current_line_ids = fields.Many2many(
+        'construction.resource.plan.line', string='Recursos del plan vigente',
+        compute='_compute_construction_current_line_ids',
+        help='Líneas del plan vigente de este nivel y de todo lo que tiene debajo.')
+    construction_progress_ids = fields.One2many(
+        'construction.task.progress', 'task_id', string='Avances reportados')
+    construction_progress_pct = fields.Float(
+        string='Avance valorizado', compute='_compute_construction_progress_pct',
+        help='Σ ejecutado × costo unitario entre Σ monto planificado de las líneas de contrata '
+             'y personal propio del nivel y sus descendientes.')
 
     @api.depends('parent_id', 'construction_level',
                  'parent_id.construction_floor_task_id',
@@ -99,3 +110,66 @@ class ProjectTask(models.Model):
                 continue
             result = Line._read_group(task._construction_plan_domain(), [], ['amount_planned:sum'])
             task.construction_plan_amount = result[0][0] if result else 0.0
+
+    def _compute_construction_current_line_ids(self):
+        Line = self.env['construction.resource.plan.line']
+        for task in self:
+            if not task.id or not task.construction_level:
+                task.construction_current_line_ids = Line
+                continue
+            task.construction_current_line_ids = Line.search(task._construction_plan_domain())
+
+    def _compute_construction_progress_pct(self):
+        Plan = self.env['construction.resource.plan']
+        for task in self:
+            if not task.id or not task.construction_level:
+                task.construction_progress_pct = 0.0
+                continue
+            executed, planned = Plan._progress_amounts(task._construction_plan_domain()).get(
+                False, (0.0, 0.0))
+            task.construction_progress_pct = executed / planned if planned else 0.0
+
+    def _construction_update_unit_state(self):
+        """Estado del módulo por el avance validado (especificación, «Avance
+        por driver»): con todo el armado del módulo hecho pasa a Producido;
+        con todas sus actividades de instalación (del módulo o, si cuelgan
+        del ambiente, de su ambiente), a Instalado. Solo hace subir el
+        estado: revertir un avance no lo baja (se corrige a mano)."""
+        modules = self.filtered(lambda t: t.construction_level == 'module')
+        spaces = self.filtered(lambda t: t.construction_level == 'space')
+        if spaces:
+            modules |= self.search([('parent_id', 'in', spaces.ids),
+                                    ('construction_level', '=', 'module')])
+        Line = self.env['construction.resource.plan.line']
+        for module in modules:
+            plan = module.project_id._construction_current_plan()
+            space = module.construction_space_task_id
+            lines = Line.search([
+                ('plan_id', '=', plan.id), ('resource_type', 'in', DRIVER_TYPES),
+                '|', ('task_id', '=', module.id), ('task_id', '=', space.id)])
+            assembly = lines.filtered(lambda l: l.stage == 'assembly' and l.task_id == module)
+            installation = lines.filtered(lambda l: l.stage == 'installation')
+
+            def complete(group):
+                return bool(group) and all(
+                    l.product_uom_id.compare(l.qty_executed, l.qty_planned) >= 0 for l in group)
+
+            target = 'installed' if complete(installation) else \
+                'produced' if complete(assembly) else False
+            current = module.construction_unit_state or 'planned'
+            if target and UNIT_STATE_RANK[target] > UNIT_STATE_RANK[current]:
+                # sudo: el estado lo mueve el sistema con el avance validado;
+                # el supervisor que valida puede no poder editar la tarea.
+                module.sudo().construction_unit_state = target
+
+    def action_construction_register_progress(self):
+        """Registrar avance (W-07) de este nivel."""
+        self.ensure_one()
+        plan = self.project_id._construction_current_plan()
+        action = self.env['ir.actions.act_window']._for_xml_id(
+            'al_construction_planner.action_plan_progress_wizard')
+        action['context'] = {
+            'default_plan_id': plan.id,
+            'construction_selection_task_ids': self.ids,
+        }
+        return action

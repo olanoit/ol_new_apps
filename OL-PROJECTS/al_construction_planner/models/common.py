@@ -63,3 +63,19 @@ EXCEED_STATES = [
     ('exceeded', 'Excede el plan'),
     ('approved', 'Exceso aprobado'),
 ]
+
+# Días de la semana (valor = date.weekday()): inicio de semana, liquidación y
+# pago de contratas (fases 5 y 6).
+WEEKDAYS = [
+    ('0', 'Lunes'),
+    ('1', 'Martes'),
+    ('2', 'Miércoles'),
+    ('3', 'Jueves'),
+    ('4', 'Viernes'),
+    ('5', 'Sábado'),
+    ('6', 'Domingo'),
+]
+# Orden del avance físico del módulo: el avance validado solo lo hace subir.
+UNIT_STATE_RANK = {state: rank for rank, (state, _label) in enumerate(UNIT_STATES)}
+# Líneas que pagan por driver: su avance pondera el de los nodos del árbol.
+DRIVER_TYPES = ('contract', 'labor')

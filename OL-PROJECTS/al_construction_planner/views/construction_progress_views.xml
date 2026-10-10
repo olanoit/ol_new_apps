@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Avances reportados (P-07) -->
+    <record id="construction_task_progress_view_list" model="ir.ui.view">
+        <field name="name">construction.task.progress.list</field>
+        <field name="model">construction.task.progress</field>
+        <field name="arch" type="xml">
+            <list string="Avances" create="0" sample="1"
+                  decoration-muted="state == 'rejected'" decoration-info="state == 'draft'">
+                <header>
+                    <button name="action_validate" type="object" string="Validar"
+                            class="btn-primary"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_reject_wizard" type="object" string="Rechazar"
+                            groups="al_construction_planner.group_planner_planner"/>
+                </header>
+                <field name="name"/>
+                <field name="project_id" optional="hide"/>
+                <field name="partner_id" optional="hide"/>
+                <field name="apartment_task_id" optional="show"/>
+                <field name="task_id"/>
+                <field name="activity_id"/>
+                <field name="date"/>
+                <field name="qty" sum="Total"/>
+                <field name="uom_id" groups="uom.group_uom"/>
+                <field name="qty_executed" optional="show"/>
+                <field name="qty_planned" optional="show"/>
+                <field name="photo_count" optional="show"/>
+                <field name="settlement_date_planned" optional="show"/>
+                <field name="period_start" optional="hide"/>
+                <field name="settlement_id" optional="hide"/>
+                <field name="reported_by_id" widget="many2one_avatar_user" optional="hide"/>
+                <field name="amount" optional="hide" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'"
+                       decoration-success="state == 'validated'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_task_progress_view_form" model="ir.ui.view">
+        <field name="name">construction.task.progress.form</field>
+        <field name="model">construction.task.progress</field>
+        <field name="arch" type="xml">
+            <form string="Avance reportado">
+                <header>
+                    <button name="action_validate" type="object" string="Validar" class="btn-primary"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_reject_wizard" type="object" string="Rechazar"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_reset" type="object" string="Volver a reportado"
+                            invisible="state == 'draft' or settled"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_photos" type="object" class="oe_stat_button"
+                                icon="fa-camera">
+                            <field name="photo_count" widget="statinfo" string="Fotos"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-danger mb-2" role="alert" invisible="state != 'rejected'">
+                        <strong>Rechazado:</strong> <field name="reject_reason" class="oe_inline"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Qué y dónde">
+                            <field name="project_id"/>
+                            <field name="task_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="activity_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="plan_line_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="partner_id"/>
+                            <field name="stage"/>
+                        </group>
+                        <group string="Cuánto">
+                            <field name="date" readonly="state != 'draft'"/>
+                            <label for="qty"/>
+                            <div class="o_row">
+                                <field name="qty" readonly="state != 'draft'"/>
+                                <field name="uom_id" groups="uom.group_uom"/>
+                            </div>
+                            <field name="qty_executed"/>
+                            <field name="qty_planned"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Reporte y validación">
+                            <field name="reported_by_id" widget="many2one_avatar_user"
+                                   readonly="state != 'draft'"/>
+                            <field name="validator_id" invisible="not validator_id"/>
+                            <field name="validation_date" invisible="not validation_date"/>
+                        </group>
+                        <group string="Liquidación">
+                            <field name="settlement_date_planned"/>
+                            <field name="period_start"/>
+                            <field name="settlement_id"/>
+                            <field name="settled"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="attachment_ids" widget="many2many_binary" string="Fotos"
+                           readonly="state != 'draft'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_task_progress_view_search" model="ir.ui.view">
+        <field name="name">construction.task.progress.search</field>
+        <field name="model">construction.task.progress</field>
+        <field name="arch" type="xml">
+            <search string="Avances">
+                <field name="name"/>
+                <field name="task_id"/>
+                <field name="activity_id"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <filter string="Por validar" name="to_validate" domain="[('state', '=', 'draft')]"/>
+                <filter string="Validados" name="validated" domain="[('state', '=', 'validated')]"/>
+                <filter string="Rechazados" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Sin liquidar" name="unsettled"
+                        domain="[('state', '=', 'validated'), ('settled', '=', False)]"/>
+                <filter string="Fecha de ejecución" name="date" date="date"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contrata" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Semana de liquidación" name="group_period"
+                            context="{'group_by': 'period_start:day'}"/>
+                    <filter string="Actividad" name="group_activity" context="{'group_by': 'activity_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_progress_to_validate" model="ir.actions.act_window">
+        <field name="name">Avances por validar</field>
+        <field name="res_model">construction.task.progress</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_task_progress_view_search"/>
+        <field name="context">{'search_default_to_validate': 1, 'search_default_group_project': 1, 'search_default_group_partner': 1, 'search_default_group_period': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay avances por validar</p>
+            <p>Los avances que reportan las contratas desde «Registrar avance» esperan aquí la
+               validación del supervisor. Solo lo validado suma al acumulado y entra a la
+               liquidación semanal.</p>
+        </field>
+    </record>
+
+    <record id="action_construction_progress" model="ir.actions.act_window">
+        <field name="name">Avances</field>
+        <field name="res_model">construction.task.progress</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_task_progress_view_search"/>
+        <field name="context">{'create': False}</field>
+    </record>
+
+</odoo>

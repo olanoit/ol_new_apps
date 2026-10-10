@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Liquidación semanal de contrata (P-08) -->
+    <record id="construction_contract_settlement_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.list</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="arch" type="xml">
+            <list string="Liquidaciones" sample="1" decoration-muted="state == 'cancel'"
+                  decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="settlement_date" optional="show"/>
+                <field name="payment_date"/>
+                <field name="purchase_order_id" optional="hide"/>
+                <field name="amount_gross" sum="Total" optional="show"/>
+                <field name="retention_amount" sum="Total" optional="show"/>
+                <field name="amount_net" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="invoice_id" optional="hide"/>
+                <field name="state" widget="badge" decoration-info="state in ('draft', 'submitted')"
+                       decoration-warning="state == 'validated'"
+                       decoration-success="state in ('approved', 'paid')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_contract_settlement_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.form</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="arch" type="xml">
+            <form string="Liquidación semanal de contrata">
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar avances"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_submit" type="object" string="Presentar" class="btn-primary"
+                            invisible="state != 'draft' or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_validate" type="object" string="Validar" class="btn-primary"
+                            invisible="state != 'submitted'"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_return_wizard" type="object" string="Devolver a la contrata"
+                            invisible="state != 'submitted'"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state not in ('draft', 'submitted', 'validated') or not id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancel'"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,validated,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_progress" type="object" class="oe_stat_button"
+                                icon="fa-check-square-o">
+                            <field name="progress_count" widget="statinfo" string="Avances"/>
+                        </button>
+                        <button name="action_view_invoice" type="object" class="oe_stat_button"
+                                icon="fa-file-text-o" string="Factura" invisible="not invoice_id"
+                                groups="account.group_account_invoice"/>
+                    </div>
+                    <div class="alert alert-warning mb-2" role="alert"
+                         invisible="not return_reason or state != 'draft'">
+                        <strong>Devuelta:</strong> <field name="return_reason" class="oe_inline"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="id" options="{'no_create': True}"/>
+                            <field name="project_id" readonly="id" options="{'no_create': True}"/>
+                            <field name="purchase_order_id"/>
+                            <field name="plan_id" invisible="not plan_id"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                            <field name="invoice_payment_state" invisible="not invoice_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <label for="period_start" string="Periodo"/>
+                            <div class="o_row">
+                                <field name="period_start" readonly="id"/>
+                                <span>—</span>
+                                <field name="period_end"/>
+                            </div>
+                            <field name="settlement_date"/>
+                            <field name="payment_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Líneas" name="lines">
+                            <field name="line_ids" nolabel="1">
+                                <list create="0" delete="0">
+                                    <field name="activity_id"/>
+                                    <field name="uom_id" groups="uom.group_uom"/>
+                                    <field name="qty_period"/>
+                                    <field name="price_unit"/>
+                                    <field name="amount" sum="Bruto"/>
+                                    <field name="retention_pct" optional="hide"/>
+                                    <field name="qty_cumulative"/>
+                                    <field name="qty_planned"/>
+                                    <field name="progress_pct" widget="percentage"/>
+                                    <field name="purchase_line_id" optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_gross"/>
+                                <field name="retention_amount"/>
+                                <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                                <field name="amount_planned"/>
+                                <field name="progress_pct" widget="percentage"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Avances liquidados" name="progress">
+                            <field name="progress_ids" nolabel="1"
+                                   context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
+                        </page>
+                    </notebook>
+                    <p class="text-muted small">
+                        Entran los avances validados del periodo más los validados antes y aún sin
+                        liquidar; lo reportado sin validar pasa a la semana siguiente. Al aprobar
+                        se recibe en la OC de servicio y se crea la factura con vencimiento el día
+                        de pago.
+                    </p>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_contract_settlement_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.search</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="arch" type="xml">
+            <search string="Liquidaciones">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <filter string="Por presentar" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Por validar" name="submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Por aprobar" name="validated" domain="[('state', '=', 'validated')]"/>
+                <filter string="Por pagar" name="approved" domain="[('state', '=', 'approved')]"/>
+                <separator/>
+                <filter string="Fecha de pago" name="payment_date" date="payment_date"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contrata" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_settlement" model="ir.actions.act_window">
+        <field name="name">Liquidaciones semanales</field>
+        <field name="res_model">construction.contract.settlement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_contract_settlement_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay liquidaciones de contratas</p>
+            <p>Cada día de liquidación de la obra (jueves por defecto) se crean en borrador las
+               liquidaciones de las contratas con avances validados de la semana. Se presentan,
+               se validan, las aprueba la jefatura y se pagan el día de pago.</p>
+        </field>
+    </record>
+
+    <!-- OC de servicio de las contratas -->
+    <record id="purchase_order_view_form_construction_planner" model="ir.ui.view">
+        <field name="name">purchase.order.form.construction.planner</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_settlements" type="object"
+                        class="oe_stat_button" icon="fa-calendar-check-o"
+                        invisible="not construction_settlement_count"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_settlement_count" widget="statinfo" string="Liquidaciones"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field name="construction_is_service_order" invisible="not construction_is_service_order"/>
+                <field name="construction_project_id" invisible="not construction_project_id"/>
+                <field name="construction_plan_id" invisible="not construction_plan_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_construction_service_orders" model="ir.actions.act_window">
+        <field name="name">OC de servicio</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('construction_is_service_order', '=', True)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay OC de servicio de contratas</p>
+            <p>«Asignar contrata» crea una OC de servicio por contrata y obra y le suma el alcance
+               de cada asignación.</p>
+        </field>
+    </record>
+
+</odoo>

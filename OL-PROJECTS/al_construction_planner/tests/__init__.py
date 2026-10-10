@@ -6,3 +6,4 @@ from . import test_security
 from . import test_plan_tree
 from . import test_baseline
 from . import test_supply
+from . import test_contracts

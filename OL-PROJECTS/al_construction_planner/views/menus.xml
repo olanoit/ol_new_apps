@@ -23,6 +23,26 @@
                   groups="group_planner_planner"/>
     </menuitem>
 
+    <menuitem id="menu_planner_progress" name="Avance" parent="menu_planner_root" sequence="30">
+        <menuitem id="menu_planner_progress_register" name="Registrar avance"
+                  action="action_plan_progress_wizard" sequence="10"/>
+        <menuitem id="menu_planner_progress_to_validate" name="Avances por validar"
+                  action="action_construction_progress_to_validate" sequence="20"/>
+        <menuitem id="menu_planner_progress_all" name="Avances"
+                  action="action_construction_progress" sequence="30"/>
+    </menuitem>
+
+    <menuitem id="menu_planner_contracts" name="Contratas" parent="menu_planner_root" sequence="40">
+        <menuitem id="menu_planner_contract_assign" name="Asignar contrata"
+                  action="action_plan_contract_wizard" sequence="10"
+                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_service_orders" name="OC de servicio"
+                  action="action_construction_service_orders" sequence="20"
+                  groups="purchase.group_purchase_user"/>
+        <menuitem id="menu_planner_settlements" name="Liquidaciones semanales"
+                  action="action_construction_contract_settlement" sequence="30"/>
+    </menuitem>
+
     <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
               groups="group_planner_planner">
         <menuitem id="menu_planner_material_requests" name="Requerimientos de obra"
@@ -45,6 +65,9 @@
                   action="action_construction_labor_activity" sequence="20"/>
         <menuitem id="menu_planner_rates" name="Tarifas de contrata"
                   action="action_construction_labor_rate" sequence="30"
+                  groups="group_planner_manager"/>
+        <menuitem id="menu_planner_settings" name="Ajustes"
+                  action="action_construction_planner_settings" sequence="5"
                   groups="group_planner_manager"/>
         <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"
                   action="action_construction_plan_tier_definition" sequence="40"

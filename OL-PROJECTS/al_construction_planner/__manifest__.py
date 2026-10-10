@@ -63,6 +63,36 @@ Fase 4 (asignaciones y compras, P-10 y P-11):
 * Las asignaciones abiertas pasan a la versión nueva al aprobarla y el plan no
   se cierra con documentos abiertos.
 
+Fase 5 (contratas, P-05 a P-07 y P-09):
+
+* «Asignar contrata» (W-05): actividades de la selección con su driver total,
+  la tarifa vigente (obra y contrata › obra › contrata › base), monto y
+  retención; pone la contrata en las líneas y suma el alcance a la OC de
+  servicio abierta de la contrata en la obra (una por contrata y obra).
+* Avance reportado (AVN) por driver con fotos obligatorias: reportado,
+  validado o rechazado con motivo; «Registrar avance» (W-07) propone el saldo
+  por módulo o ambiente y no acepta más que el saldo más la tolerancia.
+* «Avances por validar» (P-07) agrupado por obra, contrata y semana de
+  liquidación.
+* Ejecutado, liquidado y avance de cada línea; avance valorizado de cada nivel
+  en el árbol y en la tarea (pestaña «Recursos y avance», P-09); el módulo
+  pasa a Producido o Instalado con su avance.
+* Semana de la obra configurable (inicio, día de liquidación y de pago), con
+  valores por defecto en la compañía.
+
+Fase 6 (liquidación semanal, P-08):
+
+* Liquidación (LIQ) por contrata, obra y semana: avances validados del periodo
+  más los rezagados; driver × tarifa de la OC, retención según la tarifa,
+  acumulado y avance informativos.
+* Acción programada diaria que prepara las liquidaciones en el día de
+  liquidación de cada obra (feriados: el día hábil anterior).
+* Presentar, devolver con motivo, validar y aprobación por niveles (jefatura);
+  al aprobar recibe en la OC de servicio y crea la factura con vencimiento el
+  día de pago; pasa a Pagada con la factura pagada.
+* El plan no se cierra con liquidaciones pendientes y los avances no
+  liquidados pasan a la versión nueva.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -72,7 +102,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '4.20261010',
+    'version': '5.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -94,14 +124,19 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/tier_definition_data.xml',
+        'data/ir_cron_data.xml',
         'wizards/plan_generate_wizard_views.xml',
         'wizards/plan_replan_wizard_views.xml',
         'wizards/plan_price_wizard_views.xml',
         'wizards/plan_supply_wizard_views.xml',
+        'wizards/plan_contract_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
+        'views/construction_progress_views.xml',
         'views/construction_resource_plan_views.xml',
+        'views/construction_settlement_views.xml',
         'views/project_views.xml',
+        'views/res_config_settings_views.xml',
         'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',
         'views/construction_supply_views.xml',

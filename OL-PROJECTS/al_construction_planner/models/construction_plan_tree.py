@@ -5,7 +5,7 @@ ancestros almacenados de las líneas (floor/apartment/space/module_task_id),
 sin recorrer el árbol en Python."""
 from odoo import api, models
 
-from .common import LEVELS, RESOURCE_TYPES, UNIT_STATES
+from .common import DRIVER_TYPES, LEVELS, RESOURCE_TYPES, UNIT_STATES
 
 # Campo de la línea del plan que agrupa por cada nivel (el nodo incluido).
 LINE_FIELD = {
@@ -81,6 +81,48 @@ class ConstructionResourcePlan(models.Model):
         return domain
 
     # ------------------------------------------------------------------
+    # Avance valorizado
+    # ------------------------------------------------------------------
+    @api.model
+    def _progress_amounts(self, line_domain, group_field=None):
+        """Avance de nodos por valor (especificación, «Avance de un nodo»):
+        {clave: (Σ ejecutado × costo unitario, Σ monto planificado)} sobre
+        las líneas de contrata y personal propio de ``line_domain``. La
+        clave es el id del ancestro ``group_field`` o ``False`` sin agrupar.
+
+        Lo ejecutado son los avances validados (valor guardado en el avance);
+        el personal propio por horas suma sus horas al costo del plan."""
+        Line = self.env['construction.resource.plan.line']
+        Progress = self.env['construction.task.progress']
+        domain = list(line_domain) + [('resource_type', 'in', DRIVER_TYPES)]
+        groupby = [group_field] if group_field else []
+
+        def key(record):
+            return record.id if group_field else False
+
+        planned = {}
+        for row in Line._read_group(domain, groupby, ['amount_planned:sum']):
+            planned[key(row[0]) if group_field else False] = row[-1] or 0.0
+        executed = dict.fromkeys(planned, 0.0)
+        for row in Progress._read_group(
+                [('state', '=', 'validated'), ('plan_line_id', 'any', domain)],
+                groupby, ['amount:sum']):
+            group = key(row[0]) if group_field else False
+            executed[group] = executed.get(group, 0.0) + (row[-1] or 0.0)
+        for line in Line.search(domain + [('resource_type', '=', 'labor')]):
+            if line._is_hour_based():
+                group = line[group_field].id if group_field else False
+                executed[group] = executed.get(group, 0.0) + \
+                    line.qty_executed * line.price_unit_planned
+        return {group: (executed.get(group, 0.0), planned.get(group, 0.0))
+                for group in set(planned) | set(executed)}
+
+    @staticmethod
+    def _progress_ratio(amounts, group):
+        executed, planned = amounts.get(group, (0.0, 0.0))
+        return round(executed / planned, 4) if planned else 0.0
+
+    # ------------------------------------------------------------------
     # Nodos
     # ------------------------------------------------------------------
     @api.model
@@ -145,7 +187,8 @@ class ConstructionResourcePlan(models.Model):
             'key': ROOT_KEY, 'task_id': False, 'name': self.project_id.display_name,
             'level': 'project', 'typology': '', 'modules': modules,
             'ml': round(sum(self._tree_space_ml(spaces).values()), 2),
-            'progress': 0.0, 'unit_state': False, 'has_children': has_children,
+            'progress': self._progress_ratio(self._progress_amounts(domain), False),
+            'unit_state': False, 'has_children': has_children,
         })
 
     @staticmethod
@@ -214,6 +257,8 @@ class ConstructionResourcePlan(models.Model):
                 [('parent_id', 'in', ids), ('construction_level', '=', CHILD_LEVEL[level])],
                 ['parent_id'], ['__count'])}
 
+        progress = self._progress_amounts(
+            self._tree_line_domain(filters) + [(line_field, 'in', ids)], line_field)
         unit_labels = dict(UNIT_STATES)
         nodes = []
         for task in children:
@@ -222,8 +267,7 @@ class ConstructionResourcePlan(models.Model):
                 'key': str(task.id), 'task_id': task.id, 'name': task.name, 'level': level,
                 'typology': typology.get(task.id, ''), 'modules': modules.get(task.id, 0),
                 'ml': round(ml.get(task.id, 0.0), 2),
-                # El avance por driver llega en la fase 5 (contratas y avances).
-                'progress': 0.0,
+                'progress': self._progress_ratio(progress, task.id),
                 'unit_state': task.construction_unit_state or False,
                 'unit_state_label': unit_labels.get(task.construction_unit_state, ''),
                 'has_children': bool(has_children.get(task.id)),
@@ -309,6 +353,17 @@ class ConstructionResourcePlan(models.Model):
                 item['partners'].add(partner.display_name)
             elif rtype in ('contract', 'labor'):
                 item['unassigned'] = True
+        # Acumulado de contratas y personal propio: avances validados por
+        # actividad y unidad (las horas del personal propio, por línea).
+        executed = {}
+        for line in Line.search(line_domain + [('resource_type', 'in', DRIVER_TYPES)]):
+            key = (line.resource_type, 'construction.labor.activity', line.activity_id.id,
+                   line.product_uom_id.id)
+            executed[key] = executed.get(key, 0.0) + line.qty_executed
+        for key, qty in executed.items():
+            if key in resources:
+                resources[key]['executed'] = round(qty, 2)
+        totals['progress'] = self._progress_ratio(self._progress_amounts(line_domain), False)
         rows = []
         for item in sorted(resources.values(), key=lambda r: (-r['amount'], r['name'])):
             partners = sorted(item.pop('partners'))
@@ -330,10 +385,12 @@ class ConstructionResourcePlan(models.Model):
 
     @api.model
     def get_tree_actions(self):
-        """Botones de la barra de selección: solo los asistentes instalados."""
+        """Botones de la barra de selección: los asistentes instalados que el
+        usuario puede abrir."""
         actions = []
         for xmlid, label, icon in TREE_ACTIONS:
             action = self.env.ref(xmlid, raise_if_not_found=False)
-            if action:
+            if action and (not action.group_ids
+                           or action.group_ids & self.env.user.all_group_ids):
                 actions.append({'xmlid': xmlid, 'name': label, 'icon': icon})
         return actions

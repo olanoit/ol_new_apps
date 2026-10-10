@@ -1,9 +1,9 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `4.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `5.20261010` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso de las fases 1 a 4 (plan, árbol, línea base, asignaciones y
-> compras) con un ejemplo que cuadra. Enlaces verificados el
+> proceso de las fases 1 a 6 (plan, árbol, línea base, asignaciones y
+> compras, contratas y liquidación semanal) con un ejemplo que cuadra. Enlaces verificados el
 > 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
 ## 1. Para qué sirve
@@ -19,9 +19,15 @@ Desde la fase 4 el plan también abastece: la compra masiva, los
 requerimientos de obra y las órdenes de fabricación nacen de la selección
 del árbol y descuentan el saldo de cada línea, con control de exceso.
 
-Fuera del alcance de las fases 1 a 4: asignación de contratas, avances,
-liquidaciones, cuadrillas, ingresos y cronograma (fases 5 a 8, ver
-`docs/planificador/DISENO_TECNICO.md`).
+Desde las fases 5 y 6 el plan también paga a las contratas a destajo: se
+asignan desde el árbol con su tarifa vigente (y su OC de servicio), reportan
+unidades de su driver con foto, el supervisor valida, cada jueves se prepara
+la liquidación de la semana y, aprobada, se recibe en la OC y se factura con
+vencimiento el sábado.
+
+Fuera del alcance de las fases 1 a 6: cuadrillas de personal propio,
+ingresos (entregas y valorizaciones) y cronograma con recursos (fases 7 y 8,
+ver `docs/planificador/DISENO_TECNICO.md`).
 
 ## 2. Marco normativo y conceptual
 
@@ -43,6 +49,12 @@ No hay norma que obligue el proceso: es planificación de gestión. Conceptos:
 | Saldo del plan | Planificado menos lo ya pedido (requerimientos de obra y OF) | Línea del plan; columna del requerimiento de obra |
 | Política de exceso | Qué pasa al pedir más que el saldo más la tolerancia: avisar, pedir aprobación o bloquear | Plan ▸ Políticas |
 | Compra masiva con analítica / stock general | Compra para la obra con su cuenta analítica, o para el almacén central descontando lo libre | Plan ▸ Compra masiva |
+| OC de servicio | Orden de compra de la contrata en la obra (una por contrata y obra) con una línea por actividad y tarifa; recibe cada liquidación | Contratas ▸ OC de servicio |
+| Avance reportado | Unidades de driver que la contrata dice haber hecho en un módulo o ambiente, con foto; solo lo validado suma | Avance ▸ Avances |
+| Avance valorizado | Σ ejecutado × costo ÷ Σ planificado de las contratas y el personal propio de un nivel: pondera por valor porque las unidades no se suman | Árbol (medida «Avance»), tarea ▸ Recursos y avance |
+| Semana de liquidación | Del día de inicio de la obra (jueves) al día anterior (miércoles); se liquida el jueves siguiente y se paga el sábado | Proyecto ▸ Ajustes; Ajustes ▸ Planificación de obra |
+| Retención | Porcentaje de la tarifa que se retiene a la contrata en cada liquidación | Tarifa de contrata; línea de la OC |
+| Rezagado | Avance validado de una semana ya liquidada: entra a la liquidación siguiente | Liquidación |
 
 Prioridad de la tarifa: obra y contrata › solo obra › solo contrata › tarifa
 base › precio de la actividad.
@@ -73,7 +85,14 @@ flowchart TD
   R -- Pedir aprobación --> T[Justificación y revisión de la jefatura] --> S
   R -- Bloquear --> Q
   S --> U[Comprado, despachado, consumido y estado de la línea]
-  U --> P[Cerrar: sin documentos abiertos, solo lectura]
+  M --> V[Asignar contrata: tarifa vigente, OC de servicio]
+  V --> W[Registrar avance con foto] --> X{¿Supervisor valida?}
+  X -- Rechaza con motivo --> W
+  X -- Valida --> Y[Acumulado y avance de la línea y los niveles]
+  Y --> Z[Jueves: liquidación de jueves a miércoles]
+  Z --> Z1[Presentar, validar, aprobar] --> Z2[Recepción en la OC y factura con vencimiento el sábado]
+  U --> P[Cerrar: sin documentos abiertos ni liquidaciones pendientes]
+  Z2 --> P
 ```
 
 | # | Paso | Dónde en Odoo | Quién | Resultado |
@@ -95,7 +114,15 @@ flowchart TD
 | 15 | Pedir a la obra | Árbol de recursos o plan ▸ Requerimiento de obra | Planificador / residente | Requerimiento de obra en borrador con saldo y control por línea |
 | 16 | Solicitar la aprobación del requerimiento | Requerimiento ▸ Solicitar aprobación | Residente | Según la política: sigue, pide justificación y revisión de la jefatura, o se bloquea |
 | 17 | Fabricar | Árbol de recursos o plan ▸ Orden de fabricación; OF ▸ Confirmar | Planificador / planta | OF por piso con la BOM; al confirmar se controla el saldo; al cerrar sube lo consumido |
-| 18 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos) |
+| 18 | Asignar la contrata | Árbol de recursos (selección) o plan ▸ Asignar contrata | Planificador (Proyectos) | Contrata en las líneas; alcance sumado a su OC de servicio en la obra |
+| 19 | Confirmar la OC de servicio | Contratas ▸ OC de servicio ▸ Confirmar | Compras | OC confirmada (requisito para aprobar liquidaciones) |
+| 20 | Registrar el avance | Avance ▸ Registrar avance, el plan, el árbol o la tarea ▸ Recursos y avance | Capataz de la contrata o supervisor | Avances en «Reportado», con fotos |
+| 21 | Validar o rechazar | Avance ▸ Avances por validar | Supervisor (Planificador) | Validado: sube el acumulado y el avance; rechazado con motivo |
+| 22 | Preparar la liquidación | Automático cada día de liquidación (jueves), o «Actualizar avances» | Sistema | Liquidación en borrador de la semana con los rezagados |
+| 23 | Presentar y validar | Contratas ▸ Liquidaciones semanales | Supervisor (en nombre de la contrata) | Presentada › Validada; o devuelta con motivo |
+| 24 | Aprobar | Liquidación ▸ Validar (bloque de revisiones) | Jefatura de Proyectos | Recepción en la OC y factura con vencimiento el sábado |
+| 25 | Pagar | Contabilidad ▸ Facturas de proveedor ▸ Registrar pago | Tesorería | Liquidación «Pagada» al quedar pagada la factura |
+| 26 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -251,6 +278,62 @@ planificado más la tolerancia), **Completa** (llegó a la obra lo
 planificado), **En compra** (compra masiva abierta o faltante en compra),
 **Parcial** y **Planificada**.
 
+### Contratas y liquidación semanal (P-05 a P-09)
+
+Con `tools/planner_demo_contracts.py`, sobre la versión 1 vigente:
+
+**Asignar contrata (W-05).** Piso 05, etapa Instalación, contrata «DEMO PLAN
+Leandro (instalación)». Tarifa de la obra (18.00 por ML, no la base de
+16.00) y retención 10 %:
+
+| Actividad | Und | Driver | Tarifa | Monto | Retención |
+|---|---|---|---|---|---|
+| Instalación mueble bajo | ML | 21.27 | 18.00 | 382.86 | 38.29 |
+| Regulación puerta mueble bajo | ML | 16.12 | 2.50 | 40.30 | 4.03 |
+| Instalación mueble alto | ML | 20.06 | 18.00 | 361.08 | 36.11 |
+| Regulación puertas mueble alto | ML | 13.17 | 2.50 | 32.93 | 3.29 |
+| Colocación tapas de cajones | Und | 24 | 1.50 | 36.00 | 3.60 |
+| Recortes de muebles | Und | 12 | 4.00 | 48.00 | 4.80 |
+| Colocación pines y repisas | Und | 24 | 1.00 | 24.00 | 2.40 |
+| Instalación sistema push tip on | Und | 16 | 1.00 | 16.00 | 1.60 |
+| **Total · neto S/ 847.05** | | | | **941.17** | **94.12** |
+
+Pone a Leandro en las 64 líneas de instalación del piso (8 actividades × 8
+cocinas; el maestro de MOMEN tiene 59) y crea su OC de servicio con 8 líneas
+por S/ 941.17. Una segunda asignación a Leandro en la obra suma a la misma
+OC; las líneas que ya tienen otra contrata no se reasignan.
+
+**Avance (W-07, P-07).** Reportar y validar 2.70 ML de mueble bajo en la
+cocina del Dpto 504 deja esa línea en 100 % («Completa») y la instalación de
+la cocina en 42.2 % (48.60 de 115.10; en el maestro, 2.76 ML → 49.68 de
+131.06 = 37.9 %). Nadie escribe un porcentaje. El saldo ya reportado (aún sin
+validar) cuenta para el siguiente: no se acepta más que lo presupuestado más
+la tolerancia del plan.
+
+**Liquidación (P-08).** Del 29/10 al 03/11/2026 Leandro instala las cocinas
+501 a 503 y parte de la 504; el supervisor valida. El jueves 05/11 la acción
+programada crea su liquidación del 29/10 al 04/11, con pago el sábado 07/11:
+
+| Actividad | Driver de la semana | Tarifa | Monto |
+|---|---|---|---|
+| Instalación mueble bajo | 10.14 ML | 18.00 | 182.52 |
+| Regulación puerta mueble bajo | 6.02 ML | 2.50 | 15.05 |
+| Instalación mueble alto | 7.36 ML | 18.00 | 132.48 |
+| Regulación puertas mueble alto | 5.33 ML | 2.50 | 13.33 |
+| Tapas · recortes · pines · push | 9 · 3 · 6 · 6 | 1.50 · 4 · 1 · 1 | 37.50 |
+| **Bruto · retención 10 % · neto** | | | **380.88 · 38.09 · 342.79** |
+
+Un avance ejecutado el jueves 05/11 ya es del periodo 05/11 a 11/11 y entra
+a la liquidación del 12/11, junto con lo validado tarde de semanas
+anteriores. Al aprobarla la jefatura, la OC recibe 10.14 ML de mueble bajo
+(nunca más de lo ordenado: si no alcanza, la aprobación se detiene) y se crea
+la factura de proveedor con vencimiento el 07/11; cuando la factura queda
+pagada, la liquidación pasa a «Pagada».
+
+**Estado del módulo.** Cuando todo el armado de un módulo está validado pasa
+a «Producido»; cuando toda la instalación de su ambiente (o del módulo, si
+las actividades cuelgan de él), a «Instalado».
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -272,6 +355,21 @@ planificado), **En compra** (compra masiva abierta o faltante en compra),
    requerimiento de obra viene con el módulo (Requerimientos de obra ▸
    Configuración ▸ Reglas de aprobación). Sus revisores deben poder ver los
    requerimientos: déles también el grupo de aprobador del requerimiento.
+10. **Semana de las contratas** en **Ajustes ▸ Planificación de obra**:
+    inicio de semana, día de liquidación y día de pago (jueves, jueves,
+    sábado); cada obra puede cambiarlos en **Proyecto ▸ Ajustes**. Los
+    feriados se toman de las ausencias globales de la compañía (Empleados ▸
+    Configuración ▸ Horarios laborales ▸ Ausencias públicas): si el jueves o
+    el sábado es feriado, se corre al día hábil anterior.
+11. **Cuenta de retención** (opcional, mismo ajuste): con ella la factura
+    de la liquidación lleva la retención como línea negativa y su total es
+    el neto; sin ella, la factura va por el bruto.
+12. La regla «Liquidación de contrata: jefatura de proyectos» viene con el
+    módulo (Configuración ▸ Reglas de aprobación); sin reglas, la
+    liquidación se aprueba al validarla.
+13. Cada actividad puede tener su **producto de servicio** (con sus
+    impuestos); si no lo tiene, «Asignar contrata» crea uno sin impuestos y
+    con recepción manual.
 
 ## 6. Reportes y libros relacionados
 
@@ -288,7 +386,13 @@ planificado), **En compra** (compra masiva abierta o faltante en compra),
   del plan): por documento y producto, con lo asignado, lo ejecutado y su
   estado; pivote.
 - Columnas de ejecución de las líneas: pedido, comprado, despachado,
-  consumido y saldo por pedir.
+  consumido, saldo por pedir, ejecutado, liquidado y avance.
+- Avances por validar y Avances (Avance ▸ …): por obra, contrata, semana de
+  liquidación, actividad y estado.
+- Liquidaciones semanales (Contratas ▸ …): bruto, retención y neto por
+  contrata y semana; OC de servicio de las contratas.
+- Pestaña «Recursos y avance» de cada piso, departamento, ambiente o módulo
+  y medida «Avance» del árbol.
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -317,6 +421,15 @@ No alimenta libros PLE ni archivos SUNAT.
 | «Tiene documentos abiertos» al cerrar el plan | Hay compras, requerimientos u OF sin terminar | Terminarlos o cancelarlos |
 | Consumido en cero en material de obra | Se cuenta lo que sale de la ubicación de la obra a una ubicación de consumo | Registrar el consumo en obra |
 | Eliminar un plan aprobado | No se permite: queda como historia de la obra | Cerrarlo o reemplazarlo con una versión nueva |
+| «No hay actividades de contrata por asignar» | Las líneas de la selección ya están asignadas (sin saldo) o son de otra etapa | Revisar la etapa y la contrata de las líneas |
+| «Necesita al menos una foto» | El avance no tiene fotos | Adjuntar la foto en el asistente o en el avance |
+| «Con este avance se reportan … de … presupuestados» | Lo reportado (validado o por validar) pasa lo planificado más la tolerancia | Corregir la cantidad o replanificar |
+| «Solo se corrige un avance reportado» | El avance ya está validado | «Volver a reportado» (supervisor), si no está liquidado |
+| El avance no entra a la liquidación | Está reportado sin validar, es de otra semana o su línea no tiene OC de servicio de esa contrata | Validarlo; asignar la contrata con «Asignar contrata» |
+| «Confirme la OC de servicio … antes de aprobar» | La OC está en borrador | Que Compras la confirme |
+| «Con esta liquidación se recibirían … de … ordenados» | La semana pasa lo ordenado en la OC | Ampliar la OC (asignar de nuevo con saldo o replanificar) o corregir los avances |
+| La liquidación no pasa a «Pagada» | La factura no está pagada del todo | Registrar y conciliar el pago |
+| «Tiene liquidaciones de contrata pendientes» al cerrar el plan | Hay liquidaciones sin aprobar o avances validados sin liquidar | Aprobarlas o anularlas |
 
 ## 8. Preguntas frecuentes del consultor
 
@@ -345,11 +458,25 @@ No alimenta libros PLE ni archivos SUNAT.
   neto de descuento, en la unidad del producto y convertido a la moneda de la
   compañía al tipo de cambio de la fecha de cada compra.
 
+- **¿Quién presenta la liquidación si la contrata no tiene usuario?** El
+  supervisor, en su nombre (decisión de la especificación; más adelante,
+  portal).
+- **¿El porcentaje de avance se escribe?** No: la contrata reporta unidades
+  de driver y el sistema compara contra lo presupuestado. En niveles con
+  varias actividades pondera por valor (driver × costo).
+- **¿Qué pasa con los avances al replanificar?** Al aprobar la versión
+  nueva, los no liquidados pasan a la línea que continúa a la suya; los
+  liquidados quedan en la anterior como historia.
+- **¿Se puede revertir un avance pagado?** No: un avance en una liquidación
+  aprobada no se revierte. Si la liquidación está presentada o validada,
+  primero se devuelve.
+
 ## 9. Referencias
 
 - Especificación v1.4: [`docs/planificador/ESPECIFICACION_v1.4.md`](../../docs/planificador/ESPECIFICACION_v1.4.md)
 - Diseño técnico: [`docs/planificador/DISENO_TECNICO.md`](../../docs/planificador/DISENO_TECNICO.md)
 - Odoo 19, Proyecto: https://www.odoo.com/documentation/19.0/applications/services/project.html
 - Odoo 19, Fabricación (listas de materiales): https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing.html
+- Odoo 19, Compras (recepción manual de servicios y facturas desde la OC): https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/purchase.html
 - Odoo 19, Presupuestos: https://www.odoo.com/documentation/19.0/applications/finance/accounting/reporting/budget.html
 - OCA `base_tier_validation` (rama 18.0; la 19.0 aún no está publicada): https://github.com/OCA/server-ux/tree/18.0/base_tier_validation

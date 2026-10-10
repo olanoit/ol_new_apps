@@ -13,5 +13,17 @@
             <field name="sequence">5</field>
             <field name="approve_sequence" eval="True"/>
         </record>
+        <!-- Liquidación semanal (P-08): la valida el supervisor y la aprueba
+             la jefatura de proyectos; la aprobación recibe en la OC y crea la
+             factura. -->
+        <record id="tier_contract_settlement_manager" model="tier.definition">
+            <field name="name">Liquidación de contrata: jefatura de proyectos</field>
+            <field name="model_id" ref="model_construction_contract_settlement"/>
+            <field name="review_type">group</field>
+            <field name="reviewer_group_id" ref="group_planner_manager"/>
+            <field name="definition_domain">[]</field>
+            <field name="sequence">10</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
     </data>
 </odoo>

@@ -5,13 +5,14 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
   la generación del plan, el árbol de recursos con selección en cascada, la
   línea base aprobada con su presupuesto analítico y las compras,
-  requerimientos y órdenes de fabricación que nacen del plan y lo descuentan.
+  requerimientos y órdenes de fabricación que nacen del plan y lo descuentan,
+  y las contratas: asignación, avance por driver y liquidación semanal.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -76,6 +77,24 @@ destacados:
       Una orden de fabricación por piso con el producto de la tipología por
       sus ambientes y los componentes de la BOM; al cerrarla sube lo
       consumido.
+  - icono: "🤝"
+    titulo: Asignar contrata a un grupo
+    texto: >-
+      Marque el piso, elija la etapa y la contrata: ve cada actividad con su
+      driver total, la tarifa vigente, el monto y la retención, y el alcance
+      se suma a la OC de servicio de la contrata en la obra.
+  - icono: "📷"
+    titulo: Avance por driver con foto
+    texto: >-
+      La contrata reporta metros lineales, módulos o tapas, con foto; el
+      supervisor valida. El porcentaje lo calcula el sistema, ponderado por
+      valor en cada nivel.
+  - icono: "📅"
+    titulo: Liquidación semanal automática
+    texto: >-
+      Cada jueves se preparan las liquidaciones de jueves a miércoles. Al
+      aprobarlas se recibe en la OC y se crea la factura con vencimiento el
+      sábado.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -184,6 +203,28 @@ flujos:
         D2 --> X
         X --> Y[Pedido, comprado, despachado, consumido, saldo y estado de la línea]
         Y --> Z[Nueva versión: las abiertas pasan a la línea nueva]
+  - id: contratas
+    titulo: Contrata, avance, liquidación y pago
+    texto: >-
+      La contrata cobra por su driver: reporta las unidades con foto, el
+      supervisor valida, el jueves se prepara la liquidación de la semana y,
+      aprobada, se recibe en la OC de servicio y se factura con vencimiento el
+      sábado.
+    mermaid: |
+      flowchart TD
+        A[Árbol: selección y etapa] --> B[Asignar contrata: tarifa vigente y retención]
+        B --> C[Contrata en las líneas y OC de servicio de la contrata en la obra]
+        C --> D[Compras confirma la OC]
+        D --> E[Registrar avance: unidades de driver con foto]
+        E --> F{¿El supervisor valida?}
+        F -- No, con motivo --> E
+        F -- Sí --> G[Acumulado y % de avance de la línea y de los niveles]
+        G --> H[Jueves: liquidación en borrador de jueves a miércoles]
+        H --> I[Presentar] --> J{¿Validar?}
+        J -- Devolver con motivo --> H
+        J -- Sí --> K[Aprobación de la jefatura]
+        K --> L[Recepción en la OC y factura con vencimiento el sábado]
+        L --> M[Pagada al quedar pagada la factura]
 
 pasos_intro: >-
   El árbol de recursos con el piso 05 de demostración («DEMO PLAN
@@ -316,8 +357,73 @@ pasos:
       y armado de esos ambientes; al confirmar se controla su saldo.
     imagen: screenshots/16-of-desde-plan.png
 
+  - seccion: Contratas y liquidación semanal
+    texto: >-
+      Leandro con la instalación del piso 05, el avance del ejemplo de la
+      especificación y su liquidación del 29/10 al 04/11
+      (`tools/planner_demo_contracts.py`).
+  - titulo: Asignar contrata
+    ruta: Plan ▸ Asignar contrata (o Árbol de recursos ▸ Asignar contrata)
+    texto: >-
+      Selección, etapa, actividades y contrata. Cada actividad con su driver
+      presupuestado, la tarifa vigente (obra y contrata › obra › contrata ›
+      base), el monto y la retención. Para la instalación del piso 05 a
+      Leandro: 8 actividades, 64 líneas, S/ 941.17 y neto S/ 847.05; en la
+      imagen, el armado del piso a Gonza.
+    puntos:
+      - "Indica a qué OC de servicio se suma el alcance; si la contrata no tiene una abierta en la obra, se crea en borrador."
+      - "Las líneas que ya tienen otra contrata no se reasignan y se avisa."
+    imagen: screenshots/17-asignar-contrata.png
+  - titulo: OC de servicio
+    ruta: Contratas ▸ OC de servicio
+    texto: >-
+      Una por contrata y obra, con una línea por actividad y tarifa y su
+      retención. Compras la confirma; cada liquidación aprobada recibe en
+      ella lo de la semana.
+    imagen: screenshots/18-oc-de-servicio.png
+  - titulo: Registrar avance
+    ruta: Avance ▸ Registrar avance (o el plan, el árbol o la tarea)
+    texto: >-
+      Elija la actividad: una fila por módulo o ambiente donde cuelga, con
+      presupuestado, acumulado, por validar y saldo. Propone el saldo y no
+      acepta más que el saldo más la tolerancia del plan. Las fotos son
+      obligatorias.
+    imagen: screenshots/19-registrar-avance.png
+  - titulo: Avances por validar
+    ruta: Avance ▸ Avances por validar
+    texto: >-
+      Agrupados por obra, contrata y semana de liquidación. «Validar» suma al
+      acumulado; «Rechazar» pide el motivo. La columna «Liquidación prevista»
+      dice en qué jueves se paga cada avance.
+    imagen: screenshots/20-avances-por-validar.png
+  - titulo: Liquidación semanal
+    ruta: Contratas ▸ Liquidaciones semanales
+    texto: >-
+      Periodo de jueves a miércoles, liquidación el jueves y pago el sábado.
+      Cada línea es el driver de la semana por la tarifa de la OC; el
+      acumulado y el avance son informativos. Ejemplo: bruto S/ 380.88,
+      retención 10 % S/ 38.09, neto S/ 342.79.
+    puntos:
+      - "Presentar › Validar (supervisor) › aprobación de la jefatura; «Devolver a la contrata» pide el motivo."
+      - "Al aprobar recibe en la OC (nunca más de lo ordenado) y crea la factura con vencimiento el sábado."
+    imagen: screenshots/21-liquidacion-semanal.png
+  - titulo: Recursos y avance del ambiente
+    ruta: Tarea del ambiente o módulo ▸ Recursos y avance
+    texto: >-
+      Las líneas del plan vigente del nivel con su contrata, presupuestado,
+      acumulado, monto y avance, el avance valorizado y los avances
+      reportados. «Registrar avance» abre el asistente con este nivel.
+    imagen: screenshots/22-recursos-y-avance.png
+  - titulo: Árbol con la medida «Avance»
+    ruta: Árbol de recursos ▸ Avance
+    texto: >-
+      El avance valorizado de cada nivel: Σ ejecutado × costo entre Σ
+      planificado de las contratas y el personal propio. Los módulos muestran
+      su estado (Producido, Instalado).
+    imagen: screenshots/23-arbol-avance.png
+
 campos_intro: >-
-  Los campos de la fase 1 en los modelos nuevos y en los que el módulo amplía.
+  Los campos de los modelos nuevos y de los que el módulo amplía.
 campos:
   - grupo: Tarea (nivel de obra)
     ruta: Proyecto ▸ Tarea ▸ Obra
@@ -395,6 +501,37 @@ campos:
       - [Modo de compra masiva, Con analítica de la obra o stock general., "—", En la línea del requerimiento de compra]
       - ["Plan, ambientes incluidos", Plan y ambientes de la OF., "—", Los pone «Orden de fabricación»]
       - ["Control de plan y justificación", Como en el requerimiento., En plan, "—"]
+  - grupo: Avance reportado
+    ruta: Avance ▸ Avances
+    campos:
+      - [Número, "AVN/año/#####.", Automático, "—"]
+      - ["Módulo o ambiente, actividad", Dónde y qué se hizo., "—", Debe haber una línea del plan vigente con esa actividad]
+      - [Fecha de ejecución, Decide la semana de liquidación., Hoy, "—"]
+      - [Unidades de driver, Lo que reporta la contrata en la unidad de la actividad., "—", "No más que lo presupuestado más la tolerancia"]
+      - [Fotos, Evidencia del avance., "—", Al menos una]
+      - [Estado, "Reportado, validado o rechazado con motivo.", Reportado, Solo lo validado suma]
+      - ["Liquidación, liquidado", La liquidación que lo pagó., "—", Liquidado no se revierte]
+  - grupo: Liquidación semanal
+    ruta: Contratas ▸ Liquidaciones semanales
+    campos:
+      - [Número, "LIQ/año/#####.", Automático, "Una por contrata, obra y semana"]
+      - [Periodo, Del inicio de semana de la obra al día anterior., "—", "Empieza el día de inicio (jueves)"]
+      - ["Fecha de liquidación y de pago", Primer día de liquidación tras el cierre y primer día de pago desde ella., Calculado, "Feriado: el día hábil anterior"]
+      - ["Líneas", "Actividad, driver de la semana, tarifa de la OC, monto, retención, acumulado, presupuestado, avance.", Calculado, "—"]
+      - ["Bruto, retención, neto", "—", Calculado, Retención según la tarifa]
+      - [Estado, "Borrador, presentada, validada, aprobada, pagada, anulada.", Borrador, Aprobación por niveles]
+      - [Factura, Factura de proveedor desde lo recibido., Al aprobar, Vence el día de pago]
+  - grupo: Ejecución por driver de la línea
+    ruta: Plan ▸ Líneas (columnas opcionales)
+    campos:
+      - [Ejecutado, "Contrata: avances validados. Personal propio por horas: hoja de horas del nivel con empleados del rol. Material: consumido.", Calculado, "—"]
+      - [Liquidado, Avances en liquidaciones aprobadas., Calculado, "—"]
+      - [Avance, "Ejecutado entre planificado, hasta 100 %.", Calculado, "La línea pasa a «Completa» al llegar a lo planificado"]
+  - grupo: Obra y compañía
+    ruta: Proyecto ▸ Ajustes · Ajustes ▸ Planificación de obra
+    campos:
+      - ["Inicio de semana, día de liquidación, día de pago", Semana de las contratas de la obra., "Jueves, jueves, sábado (de la compañía)", Por obra]
+      - [Cuenta de retención de contratas, Línea negativa de la retención en la factura., Vacía, "Sin cuenta, la factura va por el bruto"]
   - grupo: Lista de materiales
     ruta: Fabricación ▸ Lista de materiales ▸ Componentes
     campos:
@@ -439,6 +576,20 @@ funcionalidades:
       - "Saldo del plan y control por línea en el requerimiento de obra; política de exceso al solicitar la aprobación con justificación y revisión adicional."
       - "Orden de fabricación por piso o selección desde la BOM de la tipología, con control al confirmar y consumo al cerrar."
       - "Las asignaciones abiertas pasan a la versión nueva al aprobarla; el plan no se cierra con documentos abiertos."
+  - grupo: Contratas
+    items:
+      - "«Asignar contrata» desde la selección con la tarifa vigente, la retención y la OC de servicio de la contrata en la obra (una por contrata y obra)."
+      - "Avance por driver con fotos obligatorias, saldo y tolerancia del plan; validación y rechazo con motivo por el supervisor."
+      - "Avances por validar por obra, contrata y semana de liquidación."
+      - "Ejecutado, liquidado y avance de cada línea; avance valorizado de cada nivel en el árbol y en la tarea (pestaña «Recursos y avance»)."
+      - "Estado del módulo automático: Producido con todo su armado, Instalado con toda su instalación."
+  - grupo: Liquidación semanal
+    items:
+      - "Liquidación por contrata, obra y semana con los avances validados del periodo y los rezagados."
+      - "Acción programada diaria en el día de liquidación de cada obra; feriados al día hábil anterior."
+      - "Presentar, devolver con motivo, validar y aprobación por niveles de la jefatura."
+      - "Recepción en la OC de servicio sin pasar lo ordenado y factura con vencimiento el día de pago; «Pagada» con la factura pagada."
+      - "El plan no se cierra con liquidaciones pendientes; los avances no liquidados pasan a la versión nueva."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -468,6 +619,21 @@ ejemplos:
       - [Instalación mueble bajo, "2.12 ML", "18.00 (obra)", "38.16"]
       - [Instalación mueble alto, "2.10 ML", "18.00 (obra)", "37.80"]
     nota: "Armado de la tipología: 54.00 + 31.29 = S/ 85.29, como en el maestro."
+  - titulo: Liquidación de Leandro del 29/10 al 04/11
+    tabla:
+      - [Actividad, Driver de la semana, Tarifa, Monto]
+      - [Instalación mueble bajo, "10.14 ML", "18.00", "182.52"]
+      - [Regulación puerta mueble bajo, "6.02 ML", "2.50", "15.05"]
+      - [Instalación mueble alto, "7.36 ML", "18.00", "132.48"]
+      - [Regulación puertas mueble alto, "5.33 ML", "2.50", "13.33"]
+      - ["Tapas, recortes, pines y push", "9 · 3 · 6 · 6 und", "1.50 · 4 · 1 · 1", "37.50"]
+      - [Bruto · retención 10 % · neto, "", "", "380.88 · 38.09 · 342.79"]
+    nota: >-
+      Liquidación del jueves 05/11/2026 con pago el sábado 07/11. Un avance
+      ejecutado el 05/11 ya es del periodo siguiente y se liquida el 12/11.
+      En el demo, la instalación de la cocina del Dpto 504 es S/ 115.10: su
+      mueble bajo completo (2.70 × 18 = 48.60) es el 42.2 % (37.9 % en el
+      maestro de MOMEN).
 
 configuracion_intro: >-
   El script `tools/planner_demo_data.py` crea la obra «DEMO PLAN
@@ -483,6 +649,9 @@ configuracion:
   - "Defina las **reglas de aprobación** del plan en **Planificación de obra ▸ Configuración ▸ Reglas de aprobación**."
   - "La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento de obra viene con el módulo; sus revisores necesitan ver los requerimientos (grupo de aprobador del requerimiento)."
   - "Para la compra masiva y los requerimientos, el planificador necesita también los grupos de requerimientos de compra y de requerimientos de obra."
+  - "Revise la semana de las contratas en **Ajustes ▸ Planificación de obra** (jueves, jueves y sábado) y, si se quiere la factura por el neto, la **cuenta de retención**; cada obra puede cambiar los días en su pestaña Ajustes."
+  - "La regla «Liquidación de contrata: jefatura de proyectos» viene con el módulo; los feriados se toman de las ausencias globales de la compañía."
+  - "`tools/planner_demo_contracts.py` asigna las contratas del demo, registra el avance del ejemplo y prepara la liquidación del 05/11."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
@@ -511,12 +680,35 @@ faq:
       Al aprobar la versión nueva, las asignaciones abiertas pasan a la línea
       que continúa a la suya; las cerradas quedan en la anterior. «Solo
       saldos» copia lo planificado menos lo pedido con documentos cerrados.
+  - pregunta: "¿Qué pasa con un avance validado después del jueves?"
+    respuesta: >-
+      Entra a la liquidación siguiente como rezagado. Lo reportado y aún no
+      validado al preparar la liquidación también espera a la semana
+      siguiente.
+  - pregunta: "¿Se puede revertir un avance?"
+    respuesta: >-
+      Sí, mientras no esté en una liquidación aprobada. Si está en una
+      liquidación en borrador sale de ella; si está presentada o validada,
+      primero se devuelve la liquidación.
+  - pregunta: "¿Cómo se registra la retención en la factura?"
+    respuesta: >-
+      Con una cuenta de retención en Ajustes, como una línea negativa: la
+      factura queda por el neto. Sin cuenta, la factura va por el bruto y la
+      retención queda en la liquidación para que contabilidad la trate.
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 5.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Contratas (fase 5, P-05 a P-07 y P-09): «Asignar contrata» con tarifa vigente, monto y retención por actividad; pone la contrata en las líneas y suma el alcance a la OC de servicio de la contrata en la obra."
+      - "Avance reportado (AVN) por driver con fotos obligatorias, «Registrar avance» con el saldo por módulo o ambiente y la tolerancia del plan, y «Avances por validar» por obra, contrata y semana."
+      - "Ejecutado, liquidado y avance de cada línea; avance valorizado de los niveles en el árbol y en la pestaña «Recursos y avance» de la tarea; estado del módulo automático."
+      - "Liquidación semanal (fase 6, P-08): LIQ por contrata, obra y semana con acción programada en el día de liquidación, aprobación de la jefatura, recepción en la OC y factura con vencimiento el día de pago; «Pagada» con la factura pagada."
+      - "Semana de la obra configurable (inicio, liquidación y pago) con valores por defecto en Ajustes; feriados al día hábil anterior; el plan no se cierra con liquidaciones pendientes."
   - version: 4.20261010
     fecha: 10/10/2026
     cambios:

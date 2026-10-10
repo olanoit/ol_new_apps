@@ -7,4 +7,18 @@
         <field name="padding">5</field>
         <field name="company_id" eval="False"/>
     </record>
+    <record id="seq_construction_task_progress" model="ir.sequence">
+        <field name="name">Avance reportado de obra</field>
+        <field name="code">construction.task.progress</field>
+        <field name="prefix">AVN/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_construction_contract_settlement" model="ir.sequence">
+        <field name="name">Liquidación semanal de contrata</field>
+        <field name="code">construction.contract.settlement</field>
+        <field name="prefix">LIQ/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

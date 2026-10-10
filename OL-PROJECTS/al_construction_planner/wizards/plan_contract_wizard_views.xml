@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-05 · Asignar contrata (P-05) -->
+    <record id="construction_plan_contract_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.contract.wizard.form</field>
+        <field name="model">construction.plan.contract.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asignar contrata">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="available_activity_ids" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}"
+                               readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <field name="stage"/>
+                        <field name="activity_ids" widget="many2many_tags"
+                               options="{'no_create': True}" placeholder="Todas"/>
+                    </group>
+                    <group string="Contrata">
+                        <field name="partner_id" options="{'no_create': True}"/>
+                        <label for="date_start" string="Ejecución"/>
+                        <div class="o_row">
+                            <field name="date_start"/>
+                            <span>—</span>
+                            <field name="date_end"/>
+                        </div>
+                        <field name="purchase_order_id" placeholder="Se creará una en borrador"/>
+                        <field name="plan_line_count"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list create="0" delete="0" editable="bottom">
+                        <field name="activity_id" readonly="1" force_save="1"/>
+                        <field name="uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="qty" readonly="1" force_save="1"/>
+                        <field name="price_unit" readonly="1" force_save="1"/>
+                        <field name="amount" sum="Total"/>
+                        <field name="retention_pct" readonly="1" force_save="1" optional="show"/>
+                        <field name="retention_amount" sum="Total"/>
+                        <field name="rate_id" readonly="1" force_save="1" optional="hide"/>
+                        <field name="plan_line_ids" column_invisible="1"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <group class="oe_subtotal_footer">
+                    <field name="amount_total"/>
+                    <field name="retention_total"/>
+                    <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                </group>
+                <div class="alert alert-warning" role="alert" invisible="not note">
+                    <field name="note" nolabel="1"/>
+                </div>
+                <p class="text-muted small">
+                    Tarifa vigente de la actividad con su prioridad: obra y contrata, solo obra, solo
+                    contrata y tarifa base. La contrata queda en las líneas del plan y su alcance se
+                    suma a la OC de servicio abierta de la contrata en la obra (una por contrata y
+                    obra; si no existe, se crea en borrador).
+                </p>
+                <footer>
+                    <button name="action_assign" type="object" string="Asignar contrata"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_contract_wizard" model="ir.actions.act_window">
+        <field name="name">Asignar contrata</field>
+        <field name="res_model">construction.plan.contract.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    <!-- W-07 · Registrar avance (P-06) -->
+    <record id="construction_plan_progress_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.progress.wizard.form</field>
+        <field name="model">construction.plan.progress.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registrar avance">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="available_activity_ids" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}"
+                               readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <field name="partner_id" options="{'no_create': True}"/>
+                    </group>
+                    <group string="Avance">
+                        <field name="activity_id" options="{'no_create': True}"/>
+                        <field name="date"/>
+                        <label for="qty_total"/>
+                        <div class="o_row">
+                            <field name="qty_total"/>
+                            <field name="uom_id" groups="uom.group_uom"/>
+                        </div>
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1" invisible="not activity_id">
+                    <list create="0" editable="bottom">
+                        <field name="plan_line_id" column_invisible="1"/>
+                        <field name="apartment_task_id"/>
+                        <field name="task_id"/>
+                        <field name="typology_id" optional="show"/>
+                        <field name="partner_id" optional="hide"/>
+                        <field name="qty_planned" readonly="1" force_save="1"/>
+                        <field name="qty_executed" readonly="1" force_save="1"/>
+                        <field name="qty_pending" readonly="1" force_save="1" optional="show"/>
+                        <field name="qty_balance" readonly="1" force_save="1"/>
+                        <field name="qty_report" sum="Total"
+                               decoration-danger="qty_report &gt; qty_balance"/>
+                        <field name="progress_pct" widget="percentage"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Se reportan unidades del driver (las mismas que se pagan); el porcentaje lo
+                    calcula el sistema. Por defecto, el saldo; no se acepta más que el saldo más
+                    la tolerancia del plan. Los avances quedan en «Reportado» hasta que el
+                    supervisor los valide.
+                </p>
+                <footer>
+                    <button name="action_register" type="object" string="Registrar avance"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_progress_wizard" model="ir.actions.act_window">
+        <field name="name">Registrar avance</field>
+        <field name="res_model">construction.plan.progress.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_progress'))]"/>
+    </record>
+
+    <!-- Motivo del rechazo o la devolución -->
+    <record id="construction_reason_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.reason.wizard.form</field>
+        <field name="model">construction.reason.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Motivo">
+                <field name="reason" placeholder="Qué hay que corregir…"/>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirmar"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

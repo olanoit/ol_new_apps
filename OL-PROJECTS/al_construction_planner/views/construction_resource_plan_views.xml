@@ -40,6 +40,9 @@
                 <field name="qty_dispatched" optional="hide"/>
                 <field name="qty_consumed" optional="hide"/>
                 <field name="qty_remaining" optional="hide"/>
+                <field name="qty_executed" optional="hide"/>
+                <field name="qty_settled" optional="hide"/>
+                <field name="progress_pct" widget="percentage" optional="hide"/>
                 <field name="amount_budgeted" sum="Total" optional="hide"/>
                 <field name="amount_committed" optional="hide"/>
                 <field name="amount_actual" optional="hide"/>
@@ -56,6 +59,29 @@
                        decoration-success="line_state == 'done'"
                        decoration-danger="line_state == 'exceeded'"
                        decoration-info="line_state in ('partial', 'purchasing')"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Recursos y avance de un nivel (P-09) -->
+    <record id="construction_resource_plan_line_view_list_progress" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.list.progress</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <list string="Recursos y avance" default_group_by="stage" create="0" edit="0">
+                <field name="stage"/>
+                <field name="task_id" optional="hide"/>
+                <field name="resource_type" optional="hide"/>
+                <field name="resource_name"/>
+                <field name="partner_id" optional="show"/>
+                <field name="qty_planned" string="Presupuestado"/>
+                <field name="product_uom_id" string="Und" groups="uom.group_uom"/>
+                <field name="qty_executed" string="Acumulado"/>
+                <field name="amount_planned" sum="Total"/>
+                <field name="progress_pct" widget="percentage"/>
+                <field name="currency_id" column_invisible="True"/>
                 <field name="company_id" column_invisible="True"/>
             </list>
         </field>
@@ -108,6 +134,9 @@
                             <field name="qty_dispatched"/>
                             <field name="qty_consumed"/>
                             <field name="qty_remaining"/>
+                            <field name="qty_executed"/>
+                            <field name="qty_settled"/>
+                            <field name="progress_pct" widget="percentage"/>
                         </group>
                         <group string="Cuándo y estado">
                             <field name="date_needed"/>
@@ -241,6 +270,16 @@
                             invisible="state not in ('approved', 'in_progress')"
                             context="{'default_plan_id': id}"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_contract_wizard)d" type="action"
+                            string="Asignar contrata"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_progress_wizard)d" type="action"
+                            string="Registrar avance"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_progress"/>
                     <button name="action_close" type="object" string="Cerrar"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_manager"
@@ -404,7 +443,7 @@
         <field name="name">Reglas de aprobación</field>
         <field name="res_model">tier.definition</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('model', '=', 'construction.resource.plan')]</field>
+        <field name="domain">[('model', 'in', ('construction.resource.plan', 'construction.contract.settlement'))]</field>
         <field name="context">{'default_model_id': ref('al_construction_planner.model_construction_resource_plan')}</field>
     </record>
 

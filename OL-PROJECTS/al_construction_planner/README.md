@@ -15,7 +15,9 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 2 | Árbol del plan OWL (P-02) | hecha |
 | 3 | Línea base: aprobación por niveles, presupuesto analítico, resumen por etapa (P-03), aplicar costo (W-12), nueva versión (W-09), cierre | hecha |
 | 4 | Asignaciones y compras: asignaciones del plan, ejecución por línea, compra masiva (W-02, P-10), requerimiento de obra con control de plan (W-03, W-10, P-11), OF desde la BOM (W-04) | hecha |
-| 5-8 | Contratas, avances y liquidaciones, personal propio, ingresos, cronograma con recursos | pendiente |
+| 5 | Contratas: asignar contrata con OC de servicio por contrata y obra (W-05, P-05), avance por driver con fotos (W-07, P-06), avances por validar (P-07), avance de nodos y pestaña «Recursos y avance» (P-09), estado del módulo | hecha |
+| 6 | Liquidación semanal (P-08): acción programada, aprobación por niveles, recepción en la OC y factura con vencimiento el día de pago | hecha |
+| 7-8 | Personal propio (cuadrillas W-06), ingresos (entregas y valorizaciones), cronograma con recursos | pendiente |
 
 ## Modelos
 
@@ -40,6 +42,19 @@ Diseño técnico, equivalencias de nombres y plan de fases:
   de exceso); `purchase.order` (`construction_plan_id`) y su línea
   (asignaciones); `planning.slot` (`construction_task_id`,
   `construction_plan_line_id`, asignaciones).
+- `construction.task.progress` (fase 5): avance reportado por driver
+  (`AVN/año/#####`) con fotos, reportado / validado / rechazado.
+- `construction.contract.settlement` / `.line` (fase 6): liquidación semanal
+  (`LIQ/año/#####`) con aprobación por niveles (`tier.validation`).
+- Herencias de las fases 5 y 6: `purchase.order` (`construction_is_service_order`,
+  `construction_project_id`, liquidaciones) y su línea
+  (`construction_activity_id`, `construction_retention_pct`); `account.move`
+  (`construction_settlement_ids`, sincroniza «Pagada»); `project.project`
+  (`construction_week_start_day`, `construction_settlement_day`,
+  `construction_payment_day`); `res.company` (los mismos días por defecto y
+  `construction_retention_account_id`); `project.task`
+  (`construction_progress_ids`, `construction_current_line_ids`,
+  `construction_progress_pct`).
 
 ## Árbol de recursos (P-02)
 
@@ -210,6 +225,104 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
   «Control» y cabecera de control en el requerimiento de obra, modo de compra
   masiva en el requerimiento de compra y pestaña «Plan de obra» en la OF.
 
+## Contratas (fase 5, P-05 a P-07 y P-09)
+
+- **W-05 «Asignar contrata»** (`construction.plan.contract.wizard`,
+  `action_plan_contract_wizard`; base `construction.plan.supply.mixin`): etapa
+  (una o todas), actividades (vacío = todas), contrata y fechas de ejecución.
+  Toma las líneas de contrata de la selección con saldo por asignar
+  (planificado − pedido) y sin otra contrata (se avisan), y propone una fila
+  por actividad: driver total, tarifa vigente
+  (`construction.labor.activity._get_rate(obra, contrata, inicio)`), monto y
+  retención. Al confirmar: busca la OC de servicio abierta de la contrata en
+  la obra (`construction_is_service_order`, `construction_project_id`, no
+  anulada ni bloqueada) o la crea en borrador; suma la cantidad a la línea de
+  la misma actividad y tarifa o agrega una (`construction_activity_id`,
+  `construction_retention_pct`, analítica de las líneas o de la obra); pone
+  `partner_id` en las líneas del plan con `construction_plan_force` y crea
+  las asignaciones `service_order`. La OC y el producto se escriben con
+  `sudo` (justificado en el código): quien asigna no necesita permisos de
+  compras. Si la actividad no tiene producto de servicio se crea uno (servicio,
+  recepción manual, unidad del driver, sin impuestos).
+- **Avance reportado** (`construction.task.progress`): `task_id` + `activity_id`
+  → `plan_line_id` (línea del plan vigente, calculada); contrata, etapa y
+  ancestros relacionados y almacenados; fotos (`attachment_ids`, al menos
+  una, también al crear); `amount` = unidades × costo unitario de la línea
+  (pondera el avance de los nodos); `period_start` y
+  `settlement_date_planned` (semana de liquidación por la fecha y la
+  configuración de la obra). Restricción: lo reportado no rechazado de la
+  línea ≤ planificado + tolerancia del plan. Validar, rechazar (asistente
+  `construction.reason.wizard` con motivo) y volver a reportado (no si está
+  liquidado ni en una liquidación presentada o validada; si estaba en una en
+  borrador, sale de ella) son del grupo Planificador. Solo se corrige en
+  reportado; se borra si no está validado.
+- **W-07 «Registrar avance»** (`construction.plan.progress.wizard`,
+  `action_plan_progress_wizard`, grupo Reporte de avance): actividad (solo las
+  de la selección), contrata opcional, fecha y fotos; una fila por línea
+  (módulo o ambiente) con presupuestado, acumulado, por validar, saldo y
+  «Reportar hoy» (por defecto el saldo; no más que saldo + tolerancia). Copia
+  las fotos a cada avance.
+- **P-07 «Avances por validar»** (`action_construction_progress_to_validate`):
+  reportados agrupados por obra › contrata › semana de liquidación, con validar
+  y rechazar en lote.
+- **Ejecución por driver** en la línea (no almacenados, `compute_sudo`):
+  `qty_executed` (contrata: avances validados; personal propio con unidad de
+  horas: horas de la hoja de horas del nivel y sus descendientes con
+  empleados del rol; material: consumido), `qty_settled` (avances en
+  liquidaciones aprobadas o pagadas) y `progress_pct` (≤ 100 %). `line_state`
+  de contratas: Excedida si el ejecutado pasa lo planificado + tolerancia,
+  Completa al llegar a lo planificado (o todo asignado y recibido).
+- **Avance de nodos**: `construction.resource.plan._progress_amounts(dominio,
+  campo)` = Σ valor de los avances validados (`_read_group` sobre los
+  ancestros del avance) ÷ Σ monto planificado de contrata y personal propio.
+  Lo usan el árbol (columna y medida «Avance», panel «Acum.») y la tarea
+  (`construction_progress_pct`). Pestaña **«Recursos y avance»** (P-09) en la
+  tarea: líneas del plan vigente del nivel y sus descendientes, avance
+  valorizado, avances reportados y botón «Registrar avance».
+- **Estado del módulo** (`project.task._construction_update_unit_state`, al
+  validar o revertir): Producido con todo su armado (líneas del módulo),
+  Instalado con toda la instalación (del módulo o de su ambiente). Solo sube.
+- **Semana de la obra**: `project.project._construction_period(fecha)` y
+  `_construction_settlement_dates(inicio)`: periodo desde el día de inicio
+  (jueves) seis días; liquidación = primer día de liquidación tras el cierre;
+  pago = primer día de pago desde la liquidación; feriado → día hábil
+  anterior (`res.company._construction_previous_working_day`: ausencias
+  globales de la compañía, de cualquiera de sus calendarios; los días sin
+  horario no cuentan como feriado).
+
+## Liquidación semanal (fase 6, P-08)
+
+- `construction.contract.settlement`: contrata, obra, OC de servicio, plan,
+  periodo (`period_start` restringido al día de inicio de la obra;
+  `period_end`, `settlement_date` y `payment_date` calculados), estados
+  Borrador › Presentada › Validada › Aprobada › Pagada (+ Anulada), una por
+  contrata, obra y semana (`models.UniqueIndex` salvo anuladas). Líneas
+  (`.line`) por línea de la OC: driver de la semana (avances agrupados por la
+  línea de OC de su asignación), tarifa de la OC, monto, retención (%) de la
+  OC; acumulado, presupuestado y avance informativos (líneas de la contrata
+  con esa actividad en el plan vigente). Retención = Σ por porcentaje de
+  round(monto × %), sobre el total para no acumular redondeos.
+- `_prepare_settlements(hoy, obras)`: para cada obra y contrata con avances
+  validados sin liquidar mira la semana anterior y la actual; si su fecha de
+  liquidación ya llegó crea la liquidación en borrador (o refresca la que
+  sigue en borrador) con los validados hasta el fin del periodo (incluidos los
+  rezagados). Acción programada diaria `ir_cron_prepare_settlements` (también
+  sincroniza «Pagada»). «Actualizar avances» refresca a mano.
+- Flujo: «Presentar» y «Validar» (Planificador), «Devolver a la contrata»
+  (motivo), «Anular» (libera los avances). Al validar se piden las revisiones
+  (`tier_contract_settlement_manager`, jefatura; `_state_from = validated`);
+  la última aprobación (`_action_approve`, con `sudo` justificado) exige la OC
+  confirmada, suma la semana a `qty_received` sin pasar lo ordenado y crea la
+  factura de proveedor con `_prepare_invoice` / `_prepare_account_move_line`
+  (cantidad de la semana, sin plazo de pago y con `invoice_date_due` = día de
+  pago); con cuenta de retención en la compañía agrega la línea negativa. El
+  rechazo de la jefatura la vuelve a Presentada.
+- «Pagada»: `account.move._compute_payment_state` sincroniza las liquidaciones
+  de la factura (pagada ↔ aprobada).
+- Ganchos del plan completados: `action_close` se niega con liquidaciones en
+  borrador, presentadas o validadas, o con avances validados sin liquidar;
+  `_transfer_to_new_version` pasa los avances no liquidados a la línea nueva.
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -252,11 +365,26 @@ justificación y una OF del Dpto 502 en borrador.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_supply.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (49 tests, con el tour
+Fases 5 y 6 (después de los anteriores): Leandro con la instalación del
+piso 05 (64 líneas, OC de servicio confirmada por S/ 941.17), Gonza con el
+armado del Dpto 501, el avance del ejemplo de P-08 validado, la liquidación
+del 29/10 al 04/11 presentada (bruto S/ 380.88, neto S/ 342.79) y avances por
+validar.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_contracts.py
+```
+
+Tests: `--test-tags /al_construction_planner` (61 tests, con el tour
 `al_construction_planner_plan_tree` del árbol; `test_supply.py` cubre la
 fase 4: compra masiva en los dos modos, el requerimiento con las tres
 políticas y la tolerancia, la OF con su BOM y el control al confirmar, el
-estado de la línea, el traspaso al replanificar y la multicompañía).
+estado de la línea, el traspaso al replanificar y la multicompañía;
+`test_contracts.py` cubre las fases 5 y 6 sobre una copia del piso 05 del
+demo: criterios de aceptación 4 a 8, saldo y tolerancia, fotos, rechazo y
+reversión, estado del módulo, periodos y feriados, cierre y traspaso,
+seguridad y multicompañía).
 
 Rendimiento del árbol con volumen tipo MOMEN (deshace todo al terminar):
 

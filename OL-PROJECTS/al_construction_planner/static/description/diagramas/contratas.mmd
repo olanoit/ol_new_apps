@@ -1,0 +1,14 @@
+flowchart TD
+  A[Árbol: selección y etapa] --> B[Asignar contrata: tarifa vigente y retención]
+  B --> C[Contrata en las líneas y OC de servicio de la contrata en la obra]
+  C --> D[Compras confirma la OC]
+  D --> E[Registrar avance: unidades de driver con foto]
+  E --> F{¿El supervisor valida?}
+  F -- No, con motivo --> E
+  F -- Sí --> G[Acumulado y % de avance de la línea y de los niveles]
+  G --> H[Jueves: liquidación en borrador de jueves a miércoles]
+  H --> I[Presentar] --> J{¿Validar?}
+  J -- Devolver con motivo --> H
+  J -- Sí --> K[Aprobación de la jefatura]
+  K --> L[Recepción en la OC y factura con vencimiento el sábado]
+  L --> M[Pagada al quedar pagada la factura]

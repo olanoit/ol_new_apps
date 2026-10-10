@@ -9,7 +9,7 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import formatLang
 
-from .common import RESOURCE_TYPES, STAGES
+from .common import DRIVER_TYPES, RESOURCE_TYPES, STAGES
 
 PLAN_STATES = [
     ('draft', 'Borrador'),
@@ -440,8 +440,8 @@ class ConstructionResourcePlan(models.Model):
         """Gancho de la versión aprobada que reemplaza a ``self``: las
         asignaciones abiertas pasan a la línea nueva que la continúa
         (``previous_line_id``). Las cerradas (documento hecho o cancelado) se
-        quedan en la versión anterior como historia. Los avances no
-        liquidados llegarán con las contratas (fase 5)."""
+        quedan en la versión anterior como historia, igual que los avances
+        liquidados; los no liquidados pasan a la línea nueva."""
         self.ensure_one()
         successors = {
             line.previous_line_id: line
@@ -458,6 +458,22 @@ class ConstructionResourcePlan(models.Model):
                 allocations.write({'plan_line_id': successor.id})
                 moved |= allocations
         left = allocations_sudo - moved
+        # Avances no liquidados (reportados, validados o rechazados fuera de
+        # una liquidación aprobada) pasan con su línea; los liquidados quedan
+        # como historia de esta versión.
+        progress_sudo = self.env['construction.task.progress'].sudo().search([
+            ('plan_id', '=', self.id), ('settled', '=', False)])
+        moved_progress = 0
+        for line, progresses in progress_sudo.grouped('plan_line_id').items():
+            successor = successors.get(line)
+            if successor:
+                progresses.with_context(construction_progress_force=True).write(
+                    {'plan_line_id': successor.id})
+                moved_progress += len(progresses)
+        if moved_progress:
+            new_plan.message_post(body=self.env._(
+                'Avances no liquidados pasados a %(plan)s: %(count)s.',
+                plan=new_plan.display_name, count=moved_progress))
         if moved or left:
             body = self.env._('Asignaciones abiertas pasadas a %(plan)s: %(count)s.',
                               plan=new_plan.display_name, count=len(moved))
@@ -559,8 +575,8 @@ class ConstructionResourcePlan(models.Model):
     def action_close(self):
         """Cierra el plan vigente: queda de solo lectura y su presupuesto
         analítico pasa a «Hecho». No se cierra con documentos abiertos
-        (asignaciones de compras, requerimientos u OF sin terminar); las
-        liquidaciones pendientes se controlarán con las contratas (fase 5)."""
+        (asignaciones de compras, requerimientos, OF u OC de servicio sin
+        terminar) ni con liquidaciones de contrata pendientes."""
         if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
             raise UserError(self.env._('Solo el administrador del planificador cierra un plan.'))
         self._check_state(OPEN_STATES)
@@ -573,6 +589,18 @@ class ConstructionResourcePlan(models.Model):
                     'cancélelos antes de cerrar el plan.',
                     plan=plan.display_name,
                     docs=', '.join(docs[:10]) + (' …' if len(docs) > 10 else '')))
+            pending = self.env['construction.contract.settlement'].search([
+                ('project_id', '=', plan.project_id.id),
+                ('state', 'in', ('draft', 'submitted', 'validated'))])
+            unsettled = self.env['construction.task.progress'].search_count([
+                ('plan_id', '=', plan.id), ('state', '=', 'validated'),
+                '|', ('settlement_id', '=', False), ('settlement_id.state', '=', 'cancel')])
+            if pending or unsettled:
+                raise UserError(self.env._(
+                    'El plan %(plan)s tiene liquidaciones de contrata pendientes (%(names)s) o '
+                    '%(count)s avances validados sin liquidar. Apruébelas o anúlelas antes de '
+                    'cerrar el plan.', plan=plan.display_name,
+                    names=', '.join(pending.mapped('name')[:10]) or '—', count=unsettled))
         self.write({'state': 'closed', 'date_closed': fields.Date.context_today(self)})
         # sudo: mismo motivo que al crearlo (permisos de contabilidad).
         self.budget_analytic_id.sudo().filtered(
@@ -792,6 +820,25 @@ class ConstructionResourcePlanLine(models.Model):
     qty_remaining = fields.Float(
         string='Saldo por pedir', compute='_compute_execution_qty', digits='Product Unit',
         compute_sudo=True, help='Planificado menos pedido.')
+    resource_name = fields.Char(
+        string='Actividad o producto', compute='_compute_resource_name',
+        help='La actividad (driver) de contratas y personal propio; el producto o el rol en '
+             'las demás líneas.')
+    # Avance por driver (fase 5): la contrata reporta unidades y el sistema
+    # calcula el porcentaje.
+    progress_ids = fields.One2many(
+        'construction.task.progress', 'plan_line_id', string='Avances')
+    qty_executed = fields.Float(
+        string='Ejecutado', compute='_compute_progress_qty', digits='Product Unit',
+        compute_sudo=True,
+        help='Contrata: avances validados. Personal propio por horas: horas de la hoja de '
+             'horas del nivel y sus descendientes con empleados del rol. Material: consumido.')
+    qty_settled = fields.Float(
+        string='Liquidado', compute='_compute_progress_qty', digits='Product Unit',
+        compute_sudo=True, help='Avances que entraron a una liquidación aprobada.')
+    progress_pct = fields.Float(
+        string='Avance', compute='_compute_progress_qty', compute_sudo=True,
+        help='Ejecutado entre planificado, hasta 100 %.')
     line_state = fields.Selection(
         [('planned', 'Planificada'), ('partial', 'Parcial'), ('purchasing', 'En compra'),
          ('done', 'Completa'), ('exceeded', 'Excedida'), ('cancel', 'Cancelada')],
@@ -856,13 +903,73 @@ class ConstructionResourcePlanLine(models.Model):
             line.qty_consumed = sum(allocations.mapped('qty_consumed'))
             line.qty_remaining = line.qty_planned - line.qty_requested
 
+    def _is_hour_based(self):
+        """Personal propio medido en horas: su ejecutado sale de la hoja de horas."""
+        self.ensure_one()
+        hour = self.env.ref('uom.product_uom_hour', raise_if_not_found=False)
+        return bool(self.resource_type == 'labor' and hour and self.product_uom_id
+                    and self.product_uom_id._has_common_reference(hour))
+
+    def _get_timesheet_hours(self):
+        """Horas de la hoja de horas del nivel de la línea y sus descendientes
+        con empleados del rol de la línea (o de su actividad)."""
+        self.ensure_one()
+        if not self.task_id:
+            return 0.0
+        domain = [('task_id', 'child_of', self.task_id.id), ('project_id', '=', self.project_id.id)]
+        role = self.role_id or self.activity_id.role_id
+        if role:
+            domain.append(('employee_id.planning_role_ids', 'in', role.ids))
+        # sudo: las horas de otros empleados se suman sin dar acceso a sus
+        # registros; solo para el avance de la línea.
+        lines_sudo = self.env['account.analytic.line'].sudo()
+        hours = lines_sudo._read_group(domain, [], ['unit_amount:sum'])[0][0] or 0.0
+        hour = self.env.ref('uom.product_uom_hour')
+        return hour._compute_quantity(hours, self.product_uom_id) if self.product_uom_id else hours
+
+    @api.depends('activity_id', 'product_id', 'role_id')
+    def _compute_resource_name(self):
+        for line in self:
+            line.resource_name = (line.activity_id or line.product_id or line.role_id).display_name
+
+    @api.depends('qty_planned', 'resource_type', 'qty_consumed', 'progress_ids.state',
+                 'progress_ids.qty', 'progress_ids.settled')
+    def _compute_progress_qty(self):
+        Progress = self.env['construction.task.progress']
+        executed = defaultdict(float)
+        settled = defaultdict(float)
+        real = self.filtered(lambda l: l.id and l.resource_type in DRIVER_TYPES)
+        if real:
+            for line, is_settled, qty in Progress._read_group(
+                    [('plan_line_id', 'in', real.ids), ('state', '=', 'validated')],
+                    ['plan_line_id', 'settled'], ['qty:sum']):
+                executed[line.id] += qty or 0.0
+                if is_settled:
+                    settled[line.id] += qty or 0.0
+        for line in self:
+            if line.resource_type not in DRIVER_TYPES:
+                qty = line.qty_consumed
+            elif line.id and line._is_hour_based():
+                qty = line._get_timesheet_hours()
+            else:
+                qty = executed.get(line.id, 0.0)
+            line.qty_executed = qty
+            line.qty_settled = settled.get(line.id, 0.0)
+            line.progress_pct = min(qty / line.qty_planned, 1.0) if line.qty_planned else 0.0
+
+    def _get_reported_qty(self):
+        """Avance reportado y aún no validado de la línea."""
+        self.ensure_one()
+        return self.env['construction.task.progress']._read_group(
+            [('plan_line_id', '=', self.id), ('state', '=', 'draft')], [], ['qty:sum'])[0][0]
+
     def _get_tolerance_qty(self):
         self.ensure_one()
         return self.qty_planned * (self.plan_id.exceed_tolerance or 0.0) / 100.0
 
     @api.depends('qty_planned', 'plan_id.state', 'plan_id.exceed_tolerance', 'resource_type',
                  'allocation_ids.state', 'allocation_ids.qty_allocated',
-                 'allocation_ids.qty_dispatched')
+                 'allocation_ids.qty_dispatched', 'progress_ids.state', 'progress_ids.qty')
     def _compute_line_state(self):
         for line in self:
             line.line_state = line._get_line_state()
@@ -878,9 +985,16 @@ class ConstructionResourcePlanLine(models.Model):
         allocations = self.allocation_ids
         if uom.compare(self.qty_requested, planned + self._get_tolerance_qty()) > 0:
             return 'exceeded'
-        if self.resource_type in ('contract', 'labor'):
-            # «Completa» de contrata: todo asignado y sus documentos cerrados
-            # (los avances y liquidaciones llegan en la fase 5).
+        if self.resource_type in DRIVER_TYPES:
+            # Contrata y personal propio: el driver acumulado (avances
+            # validados u horas) sobre lo planificado más la tolerancia es
+            # «Excedida»; si llega a lo planificado, o todo se asignó y se
+            # recibió en la OC, «Completa».
+            executed = self.qty_executed
+            if uom.compare(executed, planned + self._get_tolerance_qty()) > 0:
+                return 'exceeded'
+            if not uom.is_zero(planned) and uom.compare(executed, planned) >= 0:
+                return 'done'
             if not uom.is_zero(planned) and uom.compare(self.qty_requested, planned) >= 0 \
                     and not allocations.filtered(lambda a: a.state == 'open'):
                 return 'done'

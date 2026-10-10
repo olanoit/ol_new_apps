@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
+
 from odoo.tests import TransactionCase, new_test_user
+
+DEMO_SCRIPT = Path(__file__).parents[1] / 'tools' / 'planner_demo_data.py'
+
+
+def load_demo(env, prefix):
+    """Ejecuta el script demo (piso 05 de la especificación) sin su commit,
+    en una obra propia del test (otro prefijo y otros códigos de actividad,
+    para no depender de los datos demo de la base) y devuelve sus variables
+    (plan, project, floor, act…)."""
+    code = (DEMO_SCRIPT.read_text()
+            .replace('env.cr.commit()', '')
+            .replace("P = 'DEMO PLAN'", 'P = %r' % prefix)
+            .replace("full_code = f'DEMO-{code}'",
+                     "full_code = f'%s-{code}'" % prefix.replace(' ', '')))
+    namespace = {'env': env, 'print': lambda *args, **kwargs: None}
+    exec(compile(code, str(DEMO_SCRIPT), 'exec'), namespace)  # noqa: S102
+    return namespace
 
 
 class PlannerCommon(TransactionCase):

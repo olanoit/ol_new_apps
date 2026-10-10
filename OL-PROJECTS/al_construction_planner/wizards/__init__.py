@@ -7,3 +7,6 @@ from . import plan_purchase_wizard
 from . import plan_request_wizard
 from . import plan_production_wizard
 from . import plan_exceed_wizard
+from . import plan_contract_wizard
+from . import plan_progress_wizard
+from . import reason_wizard

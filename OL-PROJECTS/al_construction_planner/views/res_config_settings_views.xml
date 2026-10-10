@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_construction_planner" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.planner</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="65"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Planificación de obra" string="Planificación de obra"
+                     name="al_construction_planner"
+                     groups="al_construction_planner.group_planner_manager">
+                    <block title="Contratas" name="construction_planner_contracts">
+                        <setting company_dependent="1" id="construction_week_days" string="Semana de liquidación"
+                                 help="Valores por defecto de las obras nuevas; cada obra puede cambiarlos. Si el día de liquidación o de pago es feriado del calendario de la compañía, se corre al día hábil anterior.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_week_start_day" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_week_start_day"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_settlement_day" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_settlement_day"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_payment_day" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_payment_day"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting company_dependent="1" id="construction_retention_account" string="Retención en la factura"
+                                 help="Con una cuenta, la factura de cada liquidación lleva la retención como línea negativa y su total es el neto a pagar. Sin cuenta, la factura va por el bruto.">
+                            <field name="construction_retention_account_id" options="{'no_create': True}"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_construction_planner_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_construction_planner', 'bin_size': False}</field>
+    </record>
+
+</odoo>

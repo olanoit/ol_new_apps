@@ -42,5 +42,20 @@
             <field name="model_id" ref="model_construction_resource_plan_allocation"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="rule_construction_task_progress_company" model="ir.rule">
+            <field name="name">Avance reportado: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_task_progress"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_contract_settlement_company" model="ir.rule">
+            <field name="name">Liquidación de contrata: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_contract_settlement"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_contract_settlement_line_company" model="ir.rule">
+            <field name="name">Línea de liquidación: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_contract_settlement_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

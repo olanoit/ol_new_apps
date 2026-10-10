@@ -15,3 +15,8 @@ from . import mrp_production
 from . import purchase_request
 from . import purchase_order
 from . import planning_slot
+from . import res_company
+from . import res_config_settings
+from . import construction_task_progress
+from . import construction_contract_settlement
+from . import account_move

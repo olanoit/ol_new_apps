@@ -1,19 +1,8 @@
 # -*- coding: utf-8 -*-
-from pathlib import Path
-
 from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 
-DEMO_SCRIPT = Path(__file__).parents[1] / 'tools' / 'planner_demo_data.py'
-
-
-def load_demo(env):
-    """Ejecuta el script de datos demo (piso 05 de la especificación) sin su
-    commit final y devuelve sus variables (plan, project, floor, …)."""
-    code = DEMO_SCRIPT.read_text().replace('env.cr.commit()', '')
-    namespace = {'env': env, 'print': lambda *args, **kwargs: None}
-    exec(compile(code, str(DEMO_SCRIPT), 'exec'), namespace)  # noqa: S102
-    return namespace
+from .common import load_demo
 
 
 class TestPlanTree(TransactionCase):
@@ -23,7 +12,9 @@ class TestPlanTree(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        demo = load_demo(cls.env)
+        # Copia propia del piso 05 (otra obra): los datos demo de la base
+        # pueden tener ya contratas y avances (planner_demo_contracts.py).
+        demo = load_demo(cls.env, 'TEST TREE')
         cls.plan = demo['plan']
         cls.project = demo['project']
         cls.floor = demo['floor']
@@ -160,7 +151,7 @@ class TestPlanTree(TransactionCase):
 class TestPlanTreeTour(HttpCase):
 
     def test_plan_tree_tour(self):
-        plan = load_demo(self.env)['plan']
+        plan = load_demo(self.env, 'TEST TOUR')['plan']
         self.start_tour(
             f'/odoo/{plan.id}/action-al_construction_planner.action_construction_plan_tree',
             'al_construction_planner_plan_tree', login='admin')

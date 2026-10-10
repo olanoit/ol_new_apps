@@ -13,12 +13,37 @@
                         groups="al_construction_planner.group_planner_progress">
                     <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
                 </button>
+                <button name="action_view_construction_settlements" type="object"
+                        class="oe_stat_button" icon="fa-calendar-check-o"
+                        invisible="not is_construction_site or not construction_settlement_count"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_settlement_count" widget="statinfo" string="Liquidaciones"/>
+                </button>
                 <button name="action_view_construction_typologies" type="object"
                         class="oe_stat_button" icon="fa-th"
                         invisible="not is_construction_site"
                         groups="al_construction_planner.group_planner_progress">
                     <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
                 </button>
+            </xpath>
+            <xpath expr="//page[@name='settings']" position="inside">
+                <group string="Semana de liquidación de contratas" name="construction_week"
+                       invisible="not is_construction_site"
+                       groups="al_construction_planner.group_planner_manager">
+                    <group>
+                        <field name="construction_week_start_day"/>
+                        <field name="construction_settlement_day"/>
+                        <field name="construction_payment_day"/>
+                    </group>
+                    <group>
+                        <div class="text-muted small" colspan="2">
+                            El periodo va del inicio de semana al día anterior; la liquidación es
+                            el primer día de liquidación después del cierre y el pago, el primer
+                            día de pago desde la liquidación. Si caen en feriado, el día hábil
+                            anterior.
+                        </div>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>
@@ -52,11 +77,27 @@
                         </group>
                         <group string="Plan">
                             <field name="construction_plan_amount"/>
+                            <field name="construction_progress_pct" widget="percentage"/>
                             <field name="construction_currency_id" invisible="1"/>
                         </group>
                     </group>
-                    <field name="construction_plan_line_ids" readonly="1"
-                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list'}"/>
+                </page>
+                <page string="Recursos y avance" name="construction_resources"
+                      invisible="not construction_level"
+                      groups="al_construction_planner.group_planner_progress">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <span class="fw-bold">Avance valorizado:</span>
+                        <field name="construction_progress_pct" widget="percentage" class="oe_inline"/>
+                        <button name="action_construction_register_progress" type="object"
+                                string="Registrar avance" class="btn-secondary btn-sm"
+                                icon="fa-check-square-o"
+                                invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"/>
+                    </div>
+                    <field name="construction_current_line_ids" readonly="1"
+                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list_progress'}"/>
+                    <field name="construction_progress_ids" readonly="1"
+                           invisible="not construction_progress_ids"
+                           context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
                 </page>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="after">
@@ -83,6 +124,7 @@
                 <field name="construction_module_code" optional="hide"/>
                 <field name="construction_unit_state" optional="show"/>
                 <field name="construction_plan_amount"/>
+                <field name="construction_progress_pct" widget="percentage" optional="show"/>
                 <field name="construction_currency_id" column_invisible="True"/>
                 <field name="company_id" column_invisible="True"/>
             </list>

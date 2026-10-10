@@ -171,7 +171,8 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Línea base (hecha; fase 3 de la especificación) | Aprobación con tier validation y bloqueo por líneas sin etapa/costo/actividad; presupuesto analítico por combinación de cuentas (ver §6.1); resumen por etapa; W-12 aplicar costo (manual, último precio, ponderado 3 y 6 meses); W-09 nueva versión (todo o solo saldos, `previous_line_id`); cierre | P-03, W-09, W-12 |
 | Asignaciones y compras (hecha; fase 4 de la especificación) | Modelo de asignación; pedido/comprado/despachado/consumido/saldo y estado de la línea; W-02 compra masiva en dos modos; W-03 requerimiento de obra con saldo y control de exceso (W-10, revisión adicional); W-04 OF desde la BOM con control al confirmar (ver §6.2) | P-10, P-11 |
 | 3 | ~~Requerimientos desde la selección~~: hecho en la fase 4 (el control va en `action_request_approval`, no en `_check_ready_to_submit`, que también corre al procesar) | P-07 |
-| 4 | Contratas: asignar contrata (OC de servicio por contrata y obra), avances por driver con foto, liquidación semanal con retención | P-05, P-06, P-08 |
+| Contratas (hecha; fase 5 de la especificación) | W-05 asignar contrata con OC de servicio por contrata y obra; avance por driver con fotos (AVN), W-07 y avances por validar; ejecutado y avance de líneas y nodos; estado del módulo; semana de la obra (ver §6.3) | P-05, P-06, P-07, P-09 |
+| Liquidación semanal (hecha; fase 6 de la especificación) | LIQ por contrata, obra y semana; acción programada; aprobación por niveles; recepción en la OC y factura con vencimiento el día de pago; «Pagada» (ver §6.3) | P-08 |
 | 5 | Personal propio: turnos de planificación por rol, horas; enlace con la obra de planilla | P-09 |
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
 | 7 | Presupuesto analítico, OV por partida, valorizaciones e ingreso devengado, flujo | P-11, P-13 |
@@ -230,6 +231,44 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   `construction_space_task_ids`; `x_task_id` / `x_plan_line_id` (turno) →
   `construction_task_id` / `construction_plan_line_id`.
 
+### 6.3 Contratas y liquidación semanal (fases 5 y 6)
+
+- Modelos nuevos: `construction.task.progress` (AVN), `construction.contract.settlement`
+  (LIQ, `tier.validation` con `_state_from = ['validated']`) y su línea;
+  asistentes `construction.plan.contract.wizard` (W-05),
+  `construction.plan.progress.wizard` (W-07) y `construction.reason.wizard`
+  (motivo de rechazo y devolución).
+- Nombres: `x_is_service_order` → `construction_is_service_order`; la obra de
+  la OC, `construction_project_id` (sin depender de `project_purchase`);
+  `x_settlement_ids` → `construction_settlement_ids`; `x_week_start_day` /
+  `x_settlement_day` / `x_payment_day` → `construction_week_start_day` /
+  `construction_settlement_day` / `construction_payment_day` (proyecto,
+  calculados desde la compañía y editables); `x_progress_pct` /
+  `x_progress_ids` → `construction_progress_pct` / `construction_progress_ids`.
+  Línea de la OC: `construction_activity_id`, `construction_retention_pct`.
+- La OC de servicio «abierta» es la no anulada ni bloqueada (`locked`). Si
+  la compañía bloquea las OC confirmadas, cada asignación nueva abre otra OC.
+- La línea de la liquidación se enlaza con la línea de la OC por la
+  asignación `service_order` de la línea del plan del avance (no por la
+  actividad): una actividad con dos tarifas da dos líneas.
+- Avance de nodos: el avance guarda su valor (`amount` = unidades × costo
+  unitario de la línea) y los ancestros de su línea; el nodo es un
+  `_read_group` por ancestro sobre los validados entre el monto planificado de
+  contrata y personal propio. Personal propio con unidad de horas: horas de
+  la hoja de horas (empleados con el rol de la línea), sumadas en Python.
+- Feriados: ausencias globales (sin recurso) de la compañía en cualquiera de
+  sus calendarios (en `ol_pe_v19` los feriados están en un calendario aparte
+  del de la compañía); los días sin horario no son feriado (el sábado de
+  pago no se mueve por estar fuera del horario de lunes a viernes).
+- Factura: `_prepare_invoice` de la OC y `_prepare_account_move_line` de cada
+  línea con la cantidad de la semana; sin plazo de pago para que el
+  vencimiento sea el día de pago. Retención en la factura solo con la cuenta
+  de la compañía (decisión abierta de la especificación sobre el fondo de
+  garantía).
+- `sudo` justificado en: OC y producto de servicio al asignar, recepción y
+  factura al aprobar (jefatura sin permisos de compras ni contabilidad), horas
+  de otros empleados, feriados, estado del módulo, sincronización «Pagada».
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -246,7 +285,13 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   los 8 ambientes (64 líneas); el maestro tiene 59 porque algunas tipologías no
   tienen todas las actividades. Los montos cuadran (S/ 941.17).
 - **Dos «obras»** (proyecto y `l10n_pe.hr.construction.site` de planilla):
-  decidir el enlace en la fase 5.
+  decidir el enlace con las cuadrillas de personal propio (fase 7).
+- **Fase 7 (siguiente)**: cuadrillas W-06 (turnos con tarea y línea; las
+  asignaciones `planning_slot` ya existen), costo de las horas en el real,
+  entregas, valorizaciones e ingresos; `line_state` sigue sin almacenarse.
+- **Retención y fondo de garantía**: sin cuenta configurada la factura va por
+  el bruto; falta acordar con contabilidad el tratamiento.
+- **Estado del módulo**: solo sube con el avance; revertir no lo baja.
 - **Secuencia**: los tests consumen números de la secuencia `PLR` en bases de
   desarrollo (comportamiento normal de `ir.sequence` estándar).
 - **Control multicompañía** de `al_base_module_info`: falla hoy por

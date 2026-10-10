@@ -1,7 +1,12 @@
-"""Capturas de las fases 3 y 4 de al_construction_planner (línea base,
-asignaciones y compras): datos «DEMO PLAN» de tools/planner_demo_data.py,
-tools/planner_demo_baseline.py y tools/planner_demo_supply.py. Las capturas
-01 a 03 (árbol de recursos) son de la fase 2."""
+"""Capturas de las fases 3 a 6 de al_construction_planner (línea base,
+asignaciones y compras, contratas y liquidación semanal): datos «DEMO PLAN»
+de tools/planner_demo_data.py, planner_demo_baseline.py,
+planner_demo_supply.py y planner_demo_contracts.py. Las capturas 01 a 03
+(árbol de recursos) son de la fase 2.
+
+``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 y 6 (las anteriores
+dependen del estado de los datos de su fase)."""
+import os
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -11,6 +16,7 @@ M = 'al_construction_planner'
 PLAN = 'construction.resource.plan'
 FULL = '.o_action_manager'
 MODAL = '.modal-content'
+DESDE = int(os.environ.get('CAPTURAS_DESDE', '1'))
 
 
 
@@ -27,8 +33,77 @@ def buscar(c, model, domain, order='id'):
     }""", [model, domain, order])
 
 
+def elegir(c, campo, texto):
+    """Elige ``texto`` en el many2one ``campo`` del asistente abierto."""
+    field = c.page.locator(f'.modal-content div[name={campo}] input')
+    field.fill(texto)
+    c.esperar(1200)
+    c.page.locator('.o-autocomplete--dropdown-item').first.click()
+    c.esperar(1500)
+
+
+def fases_5_6(c, v1):
+    """Fases 5 y 6: contratas, avance y liquidación semanal (P-05 a P-09)."""
+    # 17. Asignar contrata (W-05, P-05): armado del piso a Gonza
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.texto('Asignar contrata', ms=2000)
+    c.page.locator('.modal-content div[name=stage] input').click()
+    c.esperar(600)
+    c.page.locator('.o_select_menu_item', has_text='Armado').first.click()
+    c.esperar(1500)
+    elegir(c, 'partner_id', 'DEMO PLAN Armado Gonza')
+    c.foto('17-asignar-contrata', selector=MODAL)
+    c.clic('.modal-footer button.btn-secondary', ms=800)
+
+    # 18. OC de servicio de Leandro en la obra (8 actividades, S/ 941.17)
+    orders = buscar(c, 'purchase.order', [['construction_is_service_order', '=', True],
+                                          ['partner_id.name', '=like', 'DEMO PLAN Leandro%']])
+    c.abrir_registro('purchase.order', orders[-1], ms=2000)
+    c.foto('18-oc-de-servicio', selector=FULL)
+
+    # 19. Registrar avance (W-07, P-06): instalación mueble alto del piso
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.texto('Registrar avance', ms=2000)
+    elegir(c, 'activity_id', 'DEMO PLAN Instalación mueble alto')
+    c.foto('19-registrar-avance', selector=MODAL)
+    c.clic('.modal-footer button.btn-secondary', ms=800)
+
+    # 20. Avances por validar (P-07), por obra, contrata y semana
+    c.abrir_accion(f'{M}.action_construction_progress_to_validate', ms=2000)
+    for _i in range(3):
+        headers = c.page.locator('.o_group_header:not(.o_group_open)')
+        if headers.count():
+            headers.first.click()
+            c.esperar(1000)
+    c.foto('20-avances-por-validar', selector=FULL)
+
+    # 21. Liquidación semanal (P-08)
+    settlements = buscar(c, 'construction.contract.settlement',
+                         [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']])
+    c.abrir_registro('construction.contract.settlement', settlements[0], ms=2000)
+    c.foto('21-liquidacion-semanal', selector=FULL)
+
+    # 22. Ambiente: pestaña «Recursos y avance» (P-09), cocina del Dpto 504
+    space = buscar(c, 'project.task', [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26'],
+                                       ['parent_id.name', '=', 'Dpto 504'],
+                                       ['construction_level', '=', 'space']])
+    c.abrir_registro('project.task', space[0], ms=2000)
+    c.texto('Recursos y avance', ms=1500)
+    c.foto('22-recursos-y-avance', selector=FULL)
+
+    # 23. Árbol de recursos con la medida «Avance»
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.clic('button[name=action_open_tree]', ms=2500)
+    c.clic('.o_cp_toolbar button:has-text("Avance")', ms=1000)
+    c.clic('tr[data-name="Piso 05"] .o_cp_caret', ms=1500)
+    c.foto('23-arbol-avance', selector=FULL)
+
+
 with Captura(M) as c:
     v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
+    if DESDE >= 17:
+        fases_5_6(c, v1)
+        raise SystemExit
 
     # 4. Versión aprobada: resumen por etapa, presupuesto y versiones
     c.abrir_registro(PLAN, v1, ms=2000)
@@ -103,3 +178,6 @@ with Captura(M) as c:
     c.abrir_registro('mrp.production', productions[-1], ms=2000)
     c.texto('Plan de obra', ms=1200)
     c.foto('16-of-desde-plan', selector=FULL)
+
+    # --- Fases 5 y 6: contratas y liquidación semanal ----------------------
+    fases_5_6(c, v1)
