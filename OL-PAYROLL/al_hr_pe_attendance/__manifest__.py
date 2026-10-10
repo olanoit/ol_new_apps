@@ -34,7 +34,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_attendance/static/description/icon.png',
-    'version': '19.20261010',
+    'version': '20.20261010',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',

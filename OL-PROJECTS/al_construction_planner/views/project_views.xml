@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_project_view_form_construction_planner" model="ir.ui.view">
+        <field name="name">project.project.form.construction.planner</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_plans" type="object"
+                        class="oe_stat_button" icon="fa-sitemap"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
+                </button>
+                <button name="action_view_construction_typologies" type="object"
+                        class="oe_stat_button" icon="fa-th"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_construction_planner" model="ir.ui.view">
+        <field name="name">project.task.form.construction.planner</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='description_page']" position="after">
+                <page string="Obra" name="construction_planner"
+                      invisible="not construction_level"
+                      groups="al_construction_planner.group_planner_progress">
+                    <group>
+                        <group string="Jerarquía">
+                            <field name="construction_level"/>
+                            <field name="construction_floor_task_id" invisible="construction_level == 'floor'"/>
+                            <field name="construction_apartment_task_id"
+                                   invisible="construction_level in ('floor', 'apartment')"/>
+                            <field name="construction_space_task_id"
+                                   invisible="construction_level not in ('module',)"/>
+                            <field name="construction_typology_id" invisible="construction_level != 'space'"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Módulo" invisible="construction_level != 'module'">
+                            <field name="construction_module_code"/>
+                            <field name="construction_module_type"/>
+                            <field name="construction_width_mm"/>
+                            <field name="construction_ml_group"/>
+                            <field name="construction_unit_state"/>
+                        </group>
+                        <group string="Plan">
+                            <field name="construction_plan_amount"/>
+                            <field name="construction_currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="construction_plan_line_ids" readonly="1"
+                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list'}"/>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="construction_level" invisible="not project_id"
+                       groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Árbol de la obra: niveles con su monto planificado -->
+    <record id="project_task_view_list_construction_tree" model="ir.ui.view">
+        <field name="name">project.task.list.construction.tree</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Árbol de la obra" default_order="construction_floor_task_id, construction_apartment_task_id, construction_space_task_id, id">
+                <field name="project_id" optional="hide"/>
+                <field name="name"/>
+                <field name="construction_level"/>
+                <field name="construction_floor_task_id" optional="hide"/>
+                <field name="construction_apartment_task_id" optional="show"/>
+                <field name="construction_space_task_id" optional="hide"/>
+                <field name="construction_typology_id" optional="show"/>
+                <field name="construction_module_code" optional="hide"/>
+                <field name="construction_unit_state" optional="show"/>
+                <field name="construction_plan_amount"/>
+                <field name="construction_currency_id" column_invisible="True"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="project_task_view_search_construction_tree" model="ir.ui.view">
+        <field name="name">project.task.search.construction.tree</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Árbol de la obra">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="construction_floor_task_id"/>
+                <field name="construction_apartment_task_id"/>
+                <field name="construction_typology_id"/>
+                <filter string="Pisos" name="floors" domain="[('construction_level', '=', 'floor')]"/>
+                <filter string="Departamentos" name="apartments" domain="[('construction_level', '=', 'apartment')]"/>
+                <filter string="Ambientes" name="spaces" domain="[('construction_level', '=', 'space')]"/>
+                <filter string="Módulos" name="modules" domain="[('construction_level', '=', 'module')]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Piso" name="group_floor" context="{'group_by': 'construction_floor_task_id'}"/>
+                    <filter string="Departamento" name="group_apartment" context="{'group_by': 'construction_apartment_task_id'}"/>
+                    <filter string="Estado del módulo" name="group_unit_state" context="{'group_by': 'construction_unit_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_tree" model="ir.actions.act_window">
+        <field name="name">Árbol de la obra</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('construction_level', '!=', False)]</field>
+        <field name="context">{'search_default_spaces': 1, 'search_default_group_project': 1, 'search_default_group_floor': 1}</field>
+        <field name="search_view_id" ref="project_task_view_search_construction_tree"/>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_construction_tree')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('project.view_task_form2')})]"/>
+    </record>
+
+</odoo>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261010 — 10/10/2026
+
+- La plantilla de turno de la asignación de ciclos atípicos se valida contra la compañía del trabajador (multicompañía).
+
 ## 19.20261010 — 10/10/2026
 
 - Centro de costo del día en la marcación y en el detalle del tareaje (se copia de la marcación al generar). La boleta reparte su costo entre los centros de costo por días o por horas (Ajustes ▸ Perú: tareaje ▸ Reparto del costo por obra); los días sin centro de costo van a la ficha del trabajador.

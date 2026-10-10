@@ -21,6 +21,8 @@ LICENSE_DEFAULT = 'OPL-1'
 LICENSE_EXCEPTIONS = {
     # Extiende base_tier_validation (AGPL-3): no puede ser propietario.
     'al_construction_material_request': 'LGPL-3',
+    # Depende de base_tier_validation (AGPL-3) por la aprobación del plan.
+    'al_construction_planner': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts'}

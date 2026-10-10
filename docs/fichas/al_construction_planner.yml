@@ -1,0 +1,219 @@
+titulo: Planificación de obra
+subtitulo: >-
+  El plan de recursos de la obra en el mismo árbol que se ejecuta: piso,
+  departamento, ambiente y módulo, con sus materiales y contratas generados
+  desde las tipologías y el monto planificado de cada nivel a la vista.
+categoria: Construcción · Proyectos
+etiquetas: [Plan de recursos, Tipologías, Árbol de la obra, Contratas por driver, Tarifas por obra, Etapa de consumo]
+
+destacados_intro: >-
+  Primera fase del planificador: la jerarquía de la obra, el catálogo de
+  tipologías, actividades y tarifas, y la generación del plan.
+destacados:
+  - icono: "🏢"
+    titulo: La obra como árbol
+    texto: >-
+      Piso › departamento › ambiente › módulo sobre las tareas del proyecto.
+      Cada nivel sabe a qué piso, departamento y ambiente pertenece.
+  - icono: "▦"
+    titulo: Tipologías como plantilla
+    texto: >-
+      Cada tipología de cocina o closet trae sus módulos, sus actividades por
+      ambiente y su lista de materiales con la etapa en que se consume.
+  - icono: "⚙"
+    titulo: Generar plan en un paso
+    texto: >-
+      Crea los módulos de cada ambiente y las líneas de armado, contratas y
+      materiales, con una vista previa de cantidades y montos.
+  - icono: "S/"
+    titulo: Tarifas con prioridad
+    texto: >-
+      Obra y contrata, solo obra, solo contrata o tarifa base, con vigencias
+      que no se superponen.
+  - icono: "Σ"
+    titulo: Monto de cualquier nivel
+    texto: >-
+      El piso suma sus departamentos, el departamento sus ambientes y el
+      ambiente sus módulos, sin recorrer el árbol.
+  - icono: "!"
+    titulo: Advertencias que no bloquean
+    texto: >-
+      Materiales sin etapa, líneas sin costo, ambientes sin tipología o
+      módulos que faltan: se ven antes de generar y se corrigen antes de
+      aprobar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En una obra de muebles a medida el costo se calcula en un maestro de
+    Excel: por tipología, cuántos módulos, cuántos metros lineales de mueble
+    bajo y alto, qué materiales y qué contratas. Cuando la obra arranca, ese
+    maestro no está en el ERP: compras, producción y las contratas trabajan
+    sin saber cuánto estaba previsto para cada departamento.
+
+
+    El planificador lleva el maestro a Odoo como **tipologías** y genera el
+    **plan de recursos** de la obra sobre su propio árbol de tareas. Las
+    fases siguientes usan el plan para aprobar, pedir materiales, asignar
+    contratas, registrar avances y comparar lo planificado con lo real.
+  nota: >-
+    **Nombres sin prefijo x_.** La especificación usa los nombres de Studio
+    (x_level, x_typology_id…); en el módulo son campos propios con prefijo
+    `construction_` en los modelos de Odoo. La tabla de equivalencias está en
+    `docs/planificador/DISENO_TECNICO.md`.
+
+flujos_intro: >-
+  De la tipología al plan, en la fase 1.
+flujos:
+  - id: generar
+    titulo: Generar el plan
+    texto: >-
+      El planificador carga las tipologías y el árbol de la obra, crea el plan
+      en borrador y lo genera. Puede volver a generarlo: no duplica módulos y
+      conserva los costos escritos y las líneas manuales.
+    mermaid: |
+      flowchart TD
+        A[Tipología: módulos, actividades, BOM con etapa] --> C
+        B[Árbol: piso, departamento, ambiente con tipología] --> C
+        C[Plan de recursos en borrador] --> D[Generar plan: vista previa]
+        D --> E{¿Advertencias?}
+        E -- Sí, no bloquean --> F[Generar]
+        E -- No --> F
+        F --> G[Tareas de módulo con estado Planificado]
+        F --> H[Armado por módulo a la tarifa vigente]
+        F --> I[Contratas por ambiente o por ML del módulo]
+        F --> J[Materiales de la BOM, sin costo]
+        J --> K[El planificador escribe el costo]
+
+campos_intro: >-
+  Los campos de la fase 1 en los modelos nuevos y en los que el módulo amplía.
+campos:
+  - grupo: Tarea (nivel de obra)
+    ruta: Proyecto ▸ Tarea ▸ Obra
+    campos:
+      - [Nivel de obra, "Piso, departamento, ambiente o módulo.", Vacío, "Cada nivel cuelga del inmediato superior"]
+      - ["Piso, departamento, ambiente", Ancestros por nivel., Calculado, Base de la acumulación]
+      - [Tipología, Plantilla del ambiente., Vacío, De ella sale el plan]
+      - ["Código, tipo, ancho y grupo ML del módulo", Del ETO o de la tipología., Al generar, El ancho baja la instalación por ML al módulo]
+      - [Estado del módulo, "Planificado, en producción, producido, en obra, instalado, entregado.", Planificado, Con seguimiento]
+      - [Monto planificado, Suma del plan vigente del nivel y de lo que tiene debajo., Calculado, "—"]
+  - grupo: Tipología
+    ruta: Planificación de obra ▸ Configuración ▸ Tipologías
+    campos:
+      - ["Obra, familia, código", Identificación única por obra y familia., "—", "—"]
+      - ["Módulos", "Código, tipo, ancho, grupo ML, actividad de armado y BOM opcional.", "—", "Uno por módulo de la plantilla"]
+      - [Actividades por ambiente, Actividad y cantidad de driver por ambiente., "—", "Puertas, entarugado, instalación…"]
+      - ["ML bajo y alto", De los anchos o escritos a mano., Calculado, "—"]
+      - [Lista de materiales, Componentes con su etapa de consumo., "—", Materiales del plan]
+  - grupo: Actividad y tarifa
+    ruta: Planificación de obra ▸ Configuración
+    campos:
+      - ["Código, etapa, unidad del driver", "Und, ML o módulo.", "—", "—"]
+      - ["Por módulo / por metro lineal", Cómo se mide la actividad., Desmarcado, "No ambos a la vez"]
+      - [Tarifa base, Precio si no hay tarifa., "0", "—"]
+      - ["Tarifa: obra, contrata, vigencia, retención", Precio por combinación., "—", Sin superposición]
+  - grupo: Plan de recursos
+    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos
+    campos:
+      - [Número y versión, "PLR/año/##### · vN.", Automático, Una versión vigente y una en preparación por obra]
+      - ["Inicio y fin", Fechas del plan., De la obra, "—"]
+      - [Política de exceso, "Avisar, pedir aprobación o bloquear.", Pedir aprobación, Se aplica en la fase de requerimientos]
+      - [Anticipación, "Días antes del inicio de la tarea por tipo de recurso.", "7 / 3 / 7", Fecha de necesidad]
+      - ["Montos por tipo", "Material, servicio, contrata, personal propio, producción.", Calculado, "—"]
+  - grupo: Línea del plan
+    ruta: Plan ▸ Líneas
+    campos:
+      - [Nivel, Tarea de la obra., "—", "De ella salen piso, departamento, ambiente y módulo"]
+      - ["Tipo de recurso y etapa", "—", "—", "Sin etapa no se aprueba"]
+      - ["Producto / actividad", "—", "—", "La contrata y el personal propio necesitan actividad"]
+      - ["Cantidad, costo unitario, monto", "—", "Contrata: tarifa vigente; material: vacío", "Editable solo en borrador"]
+      - [Fecha de necesidad, Inicio de la tarea menos la anticipación., Calculado, Editable]
+  - grupo: Lista de materiales
+    ruta: Fabricación ▸ Lista de materiales ▸ Componentes
+    campos:
+      - [Etapa de consumo, Etapa en que se consume el componente., Vacío, Etapa de la línea de material]
+
+funcionalidades:
+  - grupo: Jerarquía y catálogo
+    items:
+      - "Niveles de obra en las tareas con validación de la jerarquía y ancestros almacenados."
+      - "Tipologías con módulos, actividades por ambiente y lista de materiales."
+      - "Actividades de mano de obra con driver por unidad, ML o módulo."
+      - "Tarifas por obra y contrata con prioridad y vigencias sin superposición."
+      - "Etapa de consumo en las líneas de la lista de materiales."
+  - grupo: Plan de recursos
+    items:
+      - "Plan por obra con versiones, estados y políticas de exceso y anticipación."
+      - "Generación desde las tipologías con vista previa y advertencias."
+      - "Regenerar sin duplicar módulos y conservando costos y líneas manuales."
+      - "Monto planificado de cada nivel por sus ancestros almacenados."
+      - "Analítica de la obra en cada línea."
+  - grupo: Seguridad
+    items:
+      - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
+      - "Multicompañía en todos los modelos, con reglas por compañía."
+
+ejemplos_intro: >-
+  Piso 05 de los datos de demostración (`tools/planner_demo_data.py`), con
+  las cifras del maestro de la especificación.
+ejemplos:
+  - titulo: Piso 05, ocho departamentos
+    tabla:
+      - [Nivel, Tipología, Módulos, ML, Material, Contrata, Total]
+      - [Dpto 501, "01", "7", "4.22", "735.29", "258.37", "993.66"]
+      - [Dpto 502, "02", "8", "5.00", "795.84", "272.80", "1,068.64"]
+      - [Dpto 503, "03", "10", "5.52", "897.68", "307.30", "1,204.98"]
+      - [Dptos 504 a 508, "04 a 08", "41", "26.59", "4,214.10", "1,463.06", "5,677.16"]
+      - [Piso 05, "", "66", "41.33", "6,642.91", "2,301.53", "8,944.44"]
+    nota: >-
+      El reparto entre las tipologías 04 a 08 y los precios de los materiales
+      son de ejemplo; cada tipología cuadra con una línea de ajuste marcada.
+  - titulo: Tipología 01
+    tabla:
+      - [Concepto, Driver, Tarifa, Monto]
+      - [Armado por módulo, "1 tornillo, 3 tarugo, microondas, campana, cajonera", "6 / 8 / 10 / 7 / 7", "54.00"]
+      - [Colocación de puertas, "1.93 und", "3.00", "5.79"]
+      - [Entarugado de muebles, "8.5 und", "3.00", "25.50"]
+      - [Instalación mueble bajo, "2.12 ML", "18.00 (obra)", "38.16"]
+      - [Instalación mueble alto, "2.10 ML", "18.00 (obra)", "37.80"]
+    nota: "Armado de la tipología: 54.00 + 31.29 = S/ 85.29, como en el maestro."
+
+configuracion_intro: >-
+  El script `tools/planner_demo_data.py` crea la obra «DEMO PLAN
+  MOMEN-35-26», sus actividades, tarifas, tipologías y el piso 05, y genera
+  el plan.
+configuracion:
+  - Instale el módulo desde Aplicaciones.
+  - "Marque la obra con **Es obra** (módulo de requerimientos de obra)."
+  - "Cargue las **actividades** y sus **tarifas** en **Planificación de obra ▸ Configuración**."
+  - "Cree las **tipologías** de la obra con sus módulos, actividades y lista de materiales, indicando la **etapa de consumo** de cada componente."
+  - "Cree el árbol: pisos, departamentos y ambientes con su tipología."
+  - "Cree el **plan de recursos** de la obra y pulse **Generar plan**."
+requisitos_nota: >-
+  Requiere Enterprise (planificación y previsión de proyectos) y los módulos
+  OCA de requerimientos de compra y de aprobación por niveles. Licencia
+  LGPL-3 porque depende de `base_tier_validation` (AGPL-3).
+
+faq:
+  - pregunta: "¿Por qué los materiales salen sin costo?"
+    respuesta: >-
+      La especificación pide que el costo lo escriba el planificador después
+      de revisar los precios de compra. Al regenerar se conserva el costo ya
+      escrito de cada producto.
+  - pregunta: "¿Qué pasa si el ambiente ya tiene módulos del ETO?"
+    respuesta: >-
+      No se duplican: se usan los existentes por código. Los de la plantilla
+      que no están en el ambiente se avisan y no se generan.
+  - pregunta: "¿Cuándo la instalación por ML va al módulo?"
+    respuesta: >-
+      Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
+      ambiente con su cantidad por ambiente, y se avisa.
+
+novedades:
+  - version: 1.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Primera versión (fase 1): niveles de obra en las tareas, tipologías con módulos, actividades y lista de materiales, actividades y tarifas de contrata, etapa de consumo en la BOM, plan de recursos con versiones y el asistente «Generar plan» con vista previa y advertencias."
+      - "Ícono propio en el menú principal: edificio de pisos con las barras de su plan."
+
+relacionados: [al_construction_material_request, al_project_gantt_backend, al_hr_pe_construction]

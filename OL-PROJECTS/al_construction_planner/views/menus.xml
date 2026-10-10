@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_planner_root" name="Planificación de obra"
+              web_icon="al_construction_planner,static/description/icon.png"
+              groups="group_planner_progress" sequence="46"/>
+
+    <menuitem id="menu_planner_works" name="Obras" parent="menu_planner_root" sequence="10">
+        <menuitem id="menu_planner_plans" name="Planes de recursos"
+                  action="action_construction_resource_plan" sequence="10"/>
+        <menuitem id="menu_planner_tree" name="Árbol de la obra"
+                  action="action_construction_tree" sequence="20"/>
+        <menuitem id="menu_planner_lines" name="Recursos planificados"
+                  action="action_construction_resource_plan_line" sequence="30"
+                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_sites" name="Obras"
+                  action="al_construction_material_request.action_construction_sites" sequence="40"
+                  groups="group_planner_planner"/>
+    </menuitem>
+
+    <menuitem id="menu_planner_config" name="Configuración" parent="menu_planner_root" sequence="90"
+              groups="group_planner_planner">
+        <menuitem id="menu_planner_typologies" name="Tipologías"
+                  action="action_construction_typology" sequence="10"/>
+        <menuitem id="menu_planner_activities" name="Actividades de obra"
+                  action="action_construction_labor_activity" sequence="20"/>
+        <menuitem id="menu_planner_rates" name="Tarifas de contrata"
+                  action="action_construction_labor_rate" sequence="30"
+                  groups="group_planner_manager"/>
+    </menuitem>
+
+</odoo>

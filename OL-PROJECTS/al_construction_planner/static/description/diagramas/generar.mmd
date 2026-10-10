@@ -1,0 +1,12 @@
+flowchart TD
+  A[Tipología: módulos, actividades, BOM con etapa] --> C
+  B[Árbol: piso, departamento, ambiente con tipología] --> C
+  C[Plan de recursos en borrador] --> D[Generar plan: vista previa]
+  D --> E{¿Advertencias?}
+  E -- Sí, no bloquean --> F[Generar]
+  E -- No --> F
+  F --> G[Tareas de módulo con estado Planificado]
+  F --> H[Armado por módulo a la tarifa vigente]
+  F --> I[Contratas por ambiente o por ML del módulo]
+  F --> J[Materiales de la BOM, sin costo]
+  J --> K[El planificador escribe el costo]

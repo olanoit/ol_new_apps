@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- P-14 · Catálogo de actividades y tarifas de mano de obra -->
+    <record id="construction_labor_activity_view_list" model="ir.ui.view">
+        <field name="name">construction.labor.activity.list</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="arch" type="xml">
+            <list string="Actividades de obra">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="stage"/>
+                <field name="uom_id"/>
+                <field name="module_level" optional="show"/>
+                <field name="ml_based" optional="show"/>
+                <field name="ml_group" optional="hide"/>
+                <field name="default_price" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="role_id" optional="hide"/>
+                <field name="productivity" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_labor_activity_view_form" model="ir.ui.view">
+        <field name="name">construction.labor.activity.form</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="arch" type="xml">
+            <form string="Actividad de obra">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Armado de módulo bajo"/></h1>
+                    </div>
+                    <group>
+                        <group string="Actividad">
+                            <field name="code"/>
+                            <field name="stage"/>
+                            <field name="uom_id" options="{'no_create': True}"/>
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Cómo se mide">
+                            <field name="module_level"/>
+                            <field name="ml_based"/>
+                            <field name="ml_group" invisible="not ml_based"/>
+                            <field name="default_price"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Personal propio">
+                            <field name="role_id" options="{'no_create': True}"/>
+                            <field name="productivity"/>
+                            <field name="productivity_source"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tarifas" name="rates">
+                            <field name="rate_ids" context="{'default_activity_id': id}">
+                                <list editable="bottom">
+                                    <field name="project_id" options="{'no_create': True}"/>
+                                    <field name="partner_id" options="{'no_create': True}"/>
+                                    <field name="price"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="retention_pct"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_labor_activity_view_search" model="ir.ui.view">
+        <field name="name">construction.labor.activity.search</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="arch" type="xml">
+            <search string="Actividades de obra">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="product_id"/>
+                <filter string="Por módulo" name="module_level" domain="[('module_level', '=', True)]"/>
+                <filter string="Por metro lineal" name="ml_based" domain="[('ml_based', '=', True)]"/>
+                <separator/>
+                <filter string="Archivadas" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_labor_activity" model="ir.actions.act_window">
+        <field name="name">Actividades de obra</field>
+        <field name="res_model">construction.labor.activity</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las actividades de mano de obra</p>
+            <p>Cada actividad tiene su driver (unidad, metro lineal o módulo), su etapa y su tarifa base.</p>
+        </field>
+    </record>
+
+    <record id="construction_labor_rate_view_list" model="ir.ui.view">
+        <field name="name">construction.labor.rate.list</field>
+        <field name="model">construction.labor.rate</field>
+        <field name="arch" type="xml">
+            <list string="Tarifas de contrata" editable="bottom">
+                <field name="activity_id" options="{'no_create': True}"/>
+                <field name="uom_id" optional="show"/>
+                <field name="project_id" options="{'no_create': True}"/>
+                <field name="partner_id" options="{'no_create': True}"/>
+                <field name="price"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="retention_pct"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_labor_rate_view_search" model="ir.ui.view">
+        <field name="name">construction.labor.rate.search</field>
+        <field name="model">construction.labor.rate</field>
+        <field name="arch" type="xml">
+            <search string="Tarifas de contrata">
+                <field name="activity_id"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <filter string="Tarifa base" name="base" domain="[('project_id', '=', False), ('partner_id', '=', False)]"/>
+                <group>
+                    <filter string="Actividad" name="group_activity" context="{'group_by': 'activity_id'}"/>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_labor_rate" model="ir.actions.act_window">
+        <field name="name">Tarifas de contrata</field>
+        <field name="res_model">construction.labor.rate</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_activity': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las tarifas por obra y contratista</p>
+            <p>Prioridad: obra y contratista, luego obra, luego contratista y, al final, la tarifa base.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Multicompañía: cada registro, en las compañías activas del usuario. -->
+        <record id="rule_construction_labor_activity_company" model="ir.rule">
+            <field name="name">Actividad de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_labor_activity"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+        <record id="rule_construction_labor_rate_company" model="ir.rule">
+            <field name="name">Tarifa de contrata: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_labor_rate"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_typology_company" model="ir.rule">
+            <field name="name">Tipología: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_typology"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_typology_module_company" model="ir.rule">
+            <field name="name">Módulo de la tipología: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_typology_module"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_typology_activity_company" model="ir.rule">
+            <field name="name">Actividad de la tipología: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_typology_activity"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_resource_plan_company" model="ir.rule">
+            <field name="name">Plan de recursos: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_resource_plan"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_resource_plan_line_company" model="ir.rule">
+            <field name="name">Línea del plan: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_resource_plan_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

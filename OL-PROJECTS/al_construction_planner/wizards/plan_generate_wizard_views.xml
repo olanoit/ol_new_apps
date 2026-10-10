@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-01 · Generar plan -->
+    <record id="construction_plan_generate_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.generate.wizard.form</field>
+        <field name="model">construction.plan.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar plan">
+                <field name="plan_id" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group string="Alcance">
+                        <field name="space_task_ids" widget="many2many_tags"
+                               placeholder="Todos los ambientes de la obra"
+                               options="{'no_create': True}"/>
+                        <field name="create_modules"/>
+                        <field name="mode" widget="radio"/>
+                    </group>
+                    <group string="Qué generar">
+                        <field name="include_material"/>
+                        <field name="include_contract"/>
+                        <label for="stage_production" string="Etapas"/>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span><field name="stage_production" class="oe_inline"/> Producción</span>
+                            <span><field name="stage_assembly" class="oe_inline"/> Armado</span>
+                            <span><field name="stage_installation" class="oe_inline"/> Instalación</span>
+                            <span><field name="stage_finishing" class="oe_inline"/> Acabado y entrega</span>
+                        </div>
+                    </group>
+                </group>
+                <separator string="Vista previa"/>
+                <field name="preview_html" readonly="1" nolabel="1"/>
+                <field name="warning_html" readonly="1" nolabel="1" invisible="not warning_html"/>
+                <footer>
+                    <button name="action_generate" type="object" string="Generar" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -563,6 +563,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 20.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "La plantilla de turno de la asignación de ciclos atípicos se valida contra la compañía del trabajador (multicompañía)."
   - version: 19.20261010
     fecha: 10/10/2026
     cambios:

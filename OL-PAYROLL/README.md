@@ -32,7 +32,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_hr_pe](al_hr_pe/) | 34.20261010 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
 [al_hr_pe_account](al_hr_pe_account/) | 11.20261010 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](al_hr_pe_attendance/) | 19.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe_attendance](al_hr_pe_attendance/) | 20.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](al_hr_pe_benefits/) | 22.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
 [al_hr_pe_construction](al_hr_pe_construction/) | 22.20261010 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](al_hr_pe_import/) | 9.20261008 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- P-12 · Tipologías de la obra -->
+    <record id="construction_typology_view_list" model="ir.ui.view">
+        <field name="name">construction.typology.list</field>
+        <field name="model">construction.typology</field>
+        <field name="arch" type="xml">
+            <list string="Tipologías">
+                <field name="project_id"/>
+                <field name="family"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="module_count"/>
+                <field name="ml_low" optional="show"/>
+                <field name="ml_high" optional="show"/>
+                <field name="bom_id" optional="show"/>
+                <field name="module_assembly_amount" optional="show" sum="Total"/>
+                <field name="space_contract_amount" optional="show" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_typology_view_form" model="ir.ui.view">
+        <field name="name">construction.typology.form</field>
+        <field name="model">construction.typology</field>
+        <field name="arch" type="xml">
+            <form string="Tipología">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_space_tasks" type="object"
+                                class="oe_stat_button" icon="fa-th-large">
+                            <field name="space_task_count" widget="statinfo" string="Ambientes"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Cocina tipo 01"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="family"/>
+                            <field name="code"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="module_count"/>
+                            <field name="ml_low"/>
+                            <field name="ml_high"/>
+                            <field name="module_assembly_amount"/>
+                            <field name="space_contract_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Módulos" name="modules">
+                            <field name="module_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="module_type"/>
+                                    <field name="width_mm"/>
+                                    <field name="ml_group"/>
+                                    <field name="assembly_activity_id" options="{'no_create': True}"/>
+                                    <field name="bom_id" optional="show" options="{'no_create': True}"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Actividades por ambiente" name="activities">
+                            <field name="activity_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="activity_id" options="{'no_create': True}"/>
+                                    <field name="stage"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Producto y lista de materiales" name="bom">
+                            <group>
+                                <group>
+                                    <field name="product_tmpl_id" options="{'no_create': True}"/>
+                                    <field name="bom_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_typology_view_search" model="ir.ui.view">
+        <field name="name">construction.typology.search</field>
+        <field name="model">construction.typology</field>
+        <field name="arch" type="xml">
+            <search string="Tipologías">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="project_id"/>
+                <filter string="Sin lista de materiales" name="no_bom" domain="[('bom_id', '=', False)]"/>
+                <separator/>
+                <filter string="Archivadas" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Familia" name="group_family" context="{'group_by': 'family'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_typology" model="ir.actions.act_window">
+        <field name="name">Tipologías</field>
+        <field name="res_model">construction.typology</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_project': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las tipologías de la obra</p>
+            <p>Cada tipología es la plantilla de un ambiente: sus módulos, sus actividades y su lista de materiales.</p>
+        </field>
+    </record>
+
+</odoo>
