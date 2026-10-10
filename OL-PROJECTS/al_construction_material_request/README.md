@@ -15,7 +15,7 @@ faltante pasa a requerimiento de compra (`purchase_request`, OCA).
 | F2 | Modelos, seguridad, vistas, secuencia `RQO/<año>/` | hecha |
 | F3 | División stock/compra, transferencias, requerimiento de compra, tests | hecha |
 | F4 | Aprobación multinivel (tier validation), datos demo | hecha |
-| F5 | Kanban, botones, móvil, vale PDF | pendiente |
+| F5 | Kanban, botones, móvil, vale PDF | hecha |
 
 ## Procesamiento (botón «Procesar», Logística)
 

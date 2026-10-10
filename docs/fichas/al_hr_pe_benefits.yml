@@ -145,7 +145,7 @@ flujos:
         F -- Sí, mismo impuesto --> G[Parte del saldo pendiente]
         F -- Sí, impuesto distinto --> H[Reproyecta descontando<br/>lo ya retenido]
         F -- No --> I[Impuesto − retenciones previas<br/>− otros empleadores]
-        G --> J[Retención = saldo ÷ divisor del mes<br/>12 en enero … 1 en diciembre]
+        G --> J[Retención = saldo ÷ divisor del mes<br/>12, 9, 8, 5, 4 o 1 según el mes]
         H --> J
         I --> J
         J --> K{¿Retención mayor que 0?}
@@ -344,7 +344,7 @@ pasos:
       extraordinaria del mes**, y pulsar **Calcular**. Cada importe explica su
       fórmula en la ayuda (?).
     imagen: screenshots/09-renta-5ta-linea.png
-    pie: "Retención de junio: S/ 4.951,20 ÷ 7 = S/ 707,31; quedan S/ 4.243,89 por retener."
+    pie: "Retención de junio: S/ 4.759,20 ÷ 8 = S/ 594,90; quedan S/ 4.164,30 por retener."
 
   - seccion: Liquidación de cese
     texto: Los truncos del trabajador que termina su vínculo.
@@ -689,10 +689,12 @@ ejemplos:
       - [Primer tramo, "8 % de 27.500,00 (5 UIT)", "2.200,00"]
       - [Segundo tramo, "14 % de 18.280,00", "2.559,20"]
       - [Impuesto anual proyectado, "", "4.759,20"]
-      - [Retención de junio, "4.759,20 ÷ 7", "679,89"]
+      - [Retención de junio, "4.759,20 ÷ 8", "594,90"]
     nota: >-
-      El divisor lo fija el mes: 12 en enero, 11 en febrero… 7 en junio y 1 en
-      diciembre, restando antes las retenciones ya practicadas.
+      El divisor lo fija el art. 40 del Reglamento de la LIR: 12 de enero a
+      marzo, 9 en abril, 8 de mayo a julio, 5 en agosto, 4 de setiembre a
+      noviembre y 1 en diciembre (regularización), restando antes las
+      retenciones ya practicadas (en este ejemplo, ninguna).
 
   - titulo: Liquidación de cese de la trabajadora DEMO
     texto: >-

@@ -19,7 +19,7 @@ Lleva la facturación electrónica peruana a la caja:
 * **Ticket con formato CPE**: el recibo del TPV replica el diseño del
   ticket 80mm de ``al_l10n_pe_invoice`` (encabezado RUC, tipo y número
   de documento, desglose IGV, importe en letras y QR de representación
-  impresa según R.S. 018-2005/SUNAT).
+  impresa según R.S. 340-2017/SUNAT).
 
 Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
 (farmaniacos) portado a la arquitectura OWL/data-model de Odoo 19.

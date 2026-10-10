@@ -10,7 +10,7 @@ pagados del lote de nómina del mes de cese:
   sobre ``hr.cts.line`` con ``liquidation_id``.
 * **Gratificación trunca** (``gratification_line_ids``): meses del
   semestre vigente al cese (Ley 27735) + bono EsSalud trunco
-  (Ley 29351 si ``with_bonus``); mismas líneas ``hr.gratification.line``
+  (Ley 30334 si ``with_bonus``); mismas líneas ``hr.gratification.line``
   colgadas de ``liquidation_id``.
 * **Vacaciones truncas y devengadas** (``vacation_line_ids``): saldo
   no gozado al cese (D.L. 713 art. 23), con descuento AFP/ONP.

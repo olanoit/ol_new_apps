@@ -56,13 +56,13 @@ class HrMainParameter(models.Model):
     boni_debe_account_id = fields.Many2one(
         'account.account', string='Gasto bono extraordinario (debe)',
         company_dependent=True, ondelete='restrict',
-        help='Cuenta de gasto del Bono Extraordinario Ley 29351 en la '
+        help='Cuenta de gasto del Bono Extraordinario Ley 30334 en la '
              'provisión mensual (v18: «Bono Debe»).')
     boni_haber_account_id = fields.Many2one(
         'account.account', string='Provisión bono extraordinario (haber)',
         company_dependent=True, ondelete='restrict',
         help='Pasivo de la provisión del Bono Extraordinario Ley '
-             '29351 (v18: «Bono Haber»).')
+             '30334 (v18: «Bono Haber»).')
     vaca_debe_account_id = fields.Many2one(
         'account.account', string='Gasto vacaciones (debe)',
         company_dependent=True, ondelete='restrict',

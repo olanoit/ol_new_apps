@@ -57,7 +57,8 @@ contexto:
     diarios y convierte el ticket en la representación impresa del
     comprobante.
   nota: >-
-    **Sin esperar a SUNAT.** El QR del ticket sigue la R.S. 018-2005/SUNAT
+    **Sin esperar a SUNAT.** El QR del ticket sigue la R.S. 340-2017/SUNAT (obligatorio desde el
+    1/1/2019, modifica las R.S. 097-2012 y 117-2017)
     (RUC, tipo, serie, número, IGV, total, fecha y documento del cliente) y
     está disponible en cuanto la factura se publica, sin esperar la
     constancia de recepción.
@@ -155,7 +156,7 @@ funcionalidades:
       - Formato del ticket de 80 mm de los comprobantes impresos.
       - "Tipo de documento: boleta, factura, nota de crédito o débito, o ticket de venta para el recibo."
       - Desglose de Op. gravadas, exoneradas, inafectas, ICBPER e IGV, importe en letras y pagos con vuelto.
-      - QR de representación impresa según la R.S. 018-2005/SUNAT.
+      - QR de representación impresa según la R.S. 340-2017/SUNAT.
       - Recibo estándar del TPV para compañías no peruanas, cajas sin diarios configurados o recibos simples.
 
 ejemplos:

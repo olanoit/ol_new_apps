@@ -42,7 +42,7 @@ class ResConfigSettings(models.TransientModel):
     al_gantt_ai_model = fields.Char(
         string="Modelo",
         config_parameter=PARAM_PREFIX + 'model',
-        help="Por ejemplo claude-opus-5 (Anthropic), gpt-5 (OpenAI) o "
+        help="Por ejemplo claude-opus-5-5 (Anthropic), gpt-5 (OpenAI) o "
              "deepseek-chat (DeepSeek). El modelo debe admitir «function "
              "calling»: es como el asistente devuelve las propuestas. Si se "
              "deja vacío se usa el modelo por defecto del proveedor.",

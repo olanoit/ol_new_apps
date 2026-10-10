@@ -246,9 +246,11 @@ pasos:
       - La UIT se toma del catálogo del ejercicio; si falta, el asistente lo avisa antes de imprimir.
     imagen: screenshots/11-certificado-5ta.png
     pie: >-
-      Ejercicio 2026 con los datos de prueba: renta bruta S/ 82.290,33 − 7 UIT
-      (S/ 37.450,00) = S/ 44.840,33. Las boletas de prueba no tienen retención
-      de 5ta, por eso el impuesto sale en cero.
+      Ejercicio 2026 con los datos de prueba (UIT 2026 = S/ 5.500): renta bruta
+      S/ 82.290,33 − 7 UIT (S/ 38.500,00) = S/ 43.790,33. Impuesto de la escala:
+      8 % de S/ 27.500 + 14 % de S/ 16.290,33 = S/ 4.480,65. Las boletas de
+      prueba no tienen retención de 5ta, así que todo el impuesto queda por
+      regularizar.
 
   - seccion: Contratos
     texto: Plantillas por compañía y contrato impreso por trabajador.
@@ -512,9 +514,11 @@ faq:
       quincena).
   - pregunta: ¿El certificado de 5ta calcula el impuesto anual?
     respuesta: >-
-      Muestra como impuesto la suma retenida en el año por la regla de quinta,
-      igual que la retención efectuada, por lo que el saldo por regularizar
-      sale en cero.
+      Sí. Desde la versión 11 el impuesto es el de la escala del art. 53 de la
+      LIR sobre la renta imponible, con los tramos reescalados a la UIT del
+      ejercicio; la retención efectuada es la suma retenida en el año por la
+      regla de quinta, y el saldo (impuesto − retención) muestra lo que falta
+      regularizar o lo retenido en exceso.
 
 novedades:
   - version: 21.20261009

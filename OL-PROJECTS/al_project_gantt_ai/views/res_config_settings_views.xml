@@ -39,7 +39,7 @@
 
                         <setting string="Modelo"
                                  help="Debe admitir «function calling»: es como el asistente devuelve las propuestas.">
-                            <field name="al_gantt_ai_model" placeholder="claude-opus-5"/>
+                            <field name="al_gantt_ai_model" placeholder="claude-opus-5-5"/>
                             <div class="mt8">
                                 <widget name="documentation_link" icon="fa-list"
                                         label="Modelos de Anthropic"

@@ -11,7 +11,7 @@ paridad de fórmulas:
   '11' (may-oct, depósito noviembre) y '05' (nov-abr, depósito mayo).
 * Gratificación: computable/6 por mes (÷12 pequeña empresa); tipos
   '07' (Fiestas Patrias) y '12' (Navidad); bono extraordinario
-  EsSalud = total × % del seguro de la versión (Ley 29351).
+  EsSalud = total × % del seguro de la versión (Ley 30334).
 
 El motor queda preparado para la liquidación de cese (Fase 4): las
 ramas ``liquidation`` se conservan y sólo se ejecutan cuando se pasa

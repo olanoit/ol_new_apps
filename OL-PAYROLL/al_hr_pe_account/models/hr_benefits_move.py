@@ -32,7 +32,7 @@ Estructura de cada asiento (misma que v18):
   extra) + retenciones AFP/ONP (cuenta de la afiliación) + descuentos
   extra.
 * **Provisión mensual** (1 asiento por lote): debe = gasto de cada
-  concepto (CTS, gratificación, bono Ley 29351, vacaciones); haber =
+  concepto (CTS, gratificación, bono Ley 30334, vacaciones); haber =
   pasivo provisional por concepto, detallado por trabajador si
   ``detallar_provision`` está activo.
 """
@@ -292,7 +292,7 @@ class HrGratification(models.Model):
     """Asiento contable del pago semestral de gratificación.
 
     Misma estructura que la CTS; el gasto cubre gratificación + Bono
-    Extraordinario Ley 29351 (v18 usaba la regla GRA para ambos en el
+    Extraordinario Ley 30334 (v18 usaba la regla GRA para ambos en el
     asiento de pago) y el haber abona ``total`` (grati + bono).
     """
     _name = 'hr.gratification'
@@ -659,7 +659,7 @@ class HrLiquidationMove(models.Model):
 class HrProvisiones(models.Model):
     """Asiento de la provisión mensual de BBSS.
 
-    Debe: gasto por concepto (CTS, gratificación, bono Ley 29351,
+    Debe: gasto por concepto (CTS, gratificación, bono Ley 30334,
     vacaciones), con distribución analítica de cada versión si el flag
     está activo. Haber: pasivo provisional por concepto; con
     ``detallar_provision`` activo se genera una línea por trabajador

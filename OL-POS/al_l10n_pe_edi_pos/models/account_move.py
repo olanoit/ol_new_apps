@@ -49,7 +49,7 @@ class AccountMove(models.Model):
                  'l10n_latam_document_number', 'l10n_latam_document_type_id',
                  'company_id.vat')
     def _compute_l10n_pe_pos_qr_str(self):
-        """QR de la representación impresa (R.S. 018-2005/SUNAT):
+        """QR de la representación impresa (R.S. 340-2017/SUNAT):
         RUC|tipo|serie|folio|igv|total|fecha|tipoDocCliente|nroDocCliente.
         Disponible desde el asiento publicado, sin esperar el envío del
         XML a SUNAT (el QR oficial con hash llega con el CDR)."""

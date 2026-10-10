@@ -168,7 +168,7 @@ pasos:
   - titulo: API con método POST
     ruta: Conexiones RUC/DNI ▸ json.pe
     texto: >-
-      Con **Http Method** POST aparecen **Body RUC (POST)** y **Body DNI
+      Con **Método HTTP** POST aparecen **Body RUC (POST)** y **Body DNI
       (POST)**: la plantilla JSON del cuerpo con `{doc}`. La cinta
       **Deshabilitada** indica que la conexión no se consulta.
     imagen: screenshots/05-conexion-post.png
@@ -279,18 +279,18 @@ campos:
   - grupo: Conexión
     ruta: Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI
     campos:
-      - [Name, Nombre de la conexión., Vacío, "Se usa en los mensajes de error y para buscar el token desde el tipo de cambio"]
-      - [Engine, "API REST / JSON, SUNAT oficial (scraping) o SUNAT multi-consulta (scraping).", API REST / JSON, Muestra la sección REST o la del scraper]
+      - [Nombre, Nombre de la conexión., Vacío, "Se usa en los mensajes de error y para buscar el token desde el tipo de cambio"]
+      - [Motor, "API REST / JSON, SUNAT oficial (scraping) o SUNAT multi-consulta (scraping).", API REST / JSON, Muestra la sección REST o la del scraper]
       - [Tipo de documento, "RUC, DNI o RUC y DNI.", RUC, Documentos que atiende]
-      - [Sequence, Prioridad; también se cambia arrastrando la fila., "10", Orden de la consulta]
+      - [Prioridad, Prioridad; también se cambia arrastrando la fila., "10", Orden de la consulta]
       - [Habilitada, Incluye o saca la conexión de la consulta sin borrarla., Activada, "Desactivada: cinta «Deshabilitada»"]
-      - [Company, Compañía dueña de la conexión., Compañía activa, Solo la usa esa compañía]
+      - [Compañía, Compañía dueña de la conexión., Compañía activa, Solo la usa esa compañía]
       - [URL base, Dirección del servicio., Vacío, Obligatoria para consultar por REST]
       - [Endpoint RUC / Endpoint DNI, "Ruta relativa con el marcador `{doc}`.", Vacío, Se une a la URL base]
-      - [Http Method, GET o POST., GET, POST muestra los cuerpos JSON]
+      - [Método HTTP, GET o POST., GET, POST muestra los cuerpos JSON]
       - ["Body RUC (POST) / Body DNI (POST)", "Plantilla JSON del cuerpo, con `{doc}`.", Vacío, Si el JSON es inválido la consulta falla con el motivo]
-      - ["Timeout (s)", Segundos de espera de la respuesta., "10", "—"]
-      - [Auth Type, "Sin autenticación, Bearer token, Cabecera personalizada o Parámetro de URL.", Bearer token, "Sin token, una conexión con autenticación se salta"]
+      - ["Tiempo de espera (s)", Segundos de espera de la respuesta., "10", "—"]
+      - [Autenticación, "Sin autenticación, Bearer token, Cabecera personalizada o Parámetro de URL.", Bearer token, "Sin token, una conexión con autenticación se salta"]
       - [Nombre de clave, Nombre de la cabecera o del parámetro (p. ej. X-Api-Key)., Vacío, Obligatorio con cabecera o parámetro]
       - [Token / clave, Credencial del servicio (oculta)., Vacío, Habilita la conexión]
       - [Ruta de éxito, "Atributo que indica éxito (p. ej. `success`).", Vacío, Si viene falso la consulta cuenta como fallida]
@@ -417,6 +417,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 18.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "El método de la conexión se muestra como «Método HTTP» (antes salía «Http Method»); ficha con las etiquetas en español."
   - version: 17.20261009
     fecha: 09/10/2026
     cambios:

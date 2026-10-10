@@ -29,7 +29,7 @@ class TestGanttAi(GanttCommon):
         # la instalación: el test fija los que necesita en vez de dar por bueno
         # lo que haya configurado quien use esta base.
         cls._set_param('provider', 'anthropic')
-        cls._set_param('model', 'claude-opus-5')
+        cls._set_param('model', 'claude-opus-5-5')
         cls._set_key('sk-test-key')
 
     @classmethod

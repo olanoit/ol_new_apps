@@ -32,7 +32,7 @@ Principios de diseño
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '5.20261008',
+    'version': '6.20261010',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',

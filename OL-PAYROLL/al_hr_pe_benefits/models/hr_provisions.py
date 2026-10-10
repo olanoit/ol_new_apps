@@ -8,7 +8,7 @@ efectivo, calculado por lote de nómina (``payslip_run_id``):
   asignación familiar + promedios + 1/6 de gratificación + otros
   adicionales) / 12; ÷2 en pequeña empresa.
 * **Gratificación** (Ley 27735): computable / 6 (÷2 pequeña empresa)
-  + Bono Extraordinario EsSalud (Ley 29351) según la ``tasa`` del
+  + Bono Extraordinario EsSalud (Ley 30334) según la ``tasa`` del
   seguro social del trabajador.
 * **Vacaciones**: computable / 12 (÷2 pequeña y microempresa).
 

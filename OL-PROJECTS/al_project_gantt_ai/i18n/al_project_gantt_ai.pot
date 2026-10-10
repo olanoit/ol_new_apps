@@ -453,7 +453,7 @@ msgstr ""
 #. module: al_project_gantt_ai
 #: model:ir.model.fields,help:al_project_gantt_ai.field_res_config_settings__al_gantt_ai_model
 msgid ""
-"Por ejemplo claude-opus-5 (Anthropic), gpt-5 (OpenAI) o deepseek-chat "
+"Por ejemplo claude-opus-5-5 (Anthropic), gpt-5 (OpenAI) o deepseek-chat "
 "(DeepSeek). El modelo debe admitir «function calling»: es como el asistente "
 "devuelve las propuestas. Si se deja vacío se usa el modelo por defecto del "
 "proveedor."
@@ -639,7 +639,7 @@ msgstr ""
 
 #. module: al_project_gantt_ai
 #: model_terms:ir.ui.view,arch_db:al_project_gantt_ai.res_config_settings_view_form
-msgid "claude-opus-5"
+msgid "claude-opus-5-5"
 msgstr ""
 
 #. module: al_project_gantt_ai

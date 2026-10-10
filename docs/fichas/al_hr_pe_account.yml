@@ -342,7 +342,7 @@ campos:
       - ["Gasto gratificación (debe)", Gasto de la gratificación legal., Vacío, "Provisión, pago y gratificación trunca"]
       - ["Provisión gratificación (haber)", Pasivo de la provisión de gratificación., Vacío, Se abona al provisionar y se carga al revertir]
       - ["Gratificación por pagar (haber)", Pasivo del pago semestral., Vacío, Haber del asiento de gratificación]
-      - ["Gasto bono extraordinario (debe)", Gasto del bono de la Ley 29351 en la provisión., Vacío, Debe de la provisión mensual]
+      - ["Gasto bono extraordinario (debe)", Gasto del bono de la Ley 30334 en la provisión., Vacío, Debe de la provisión mensual]
       - ["Provisión bono extraordinario (haber)", Pasivo de la provisión del bono., Vacío, Haber de la provisión mensual]
       - ["Gasto vacaciones (debe)", Gasto de vacaciones., Vacío, Provisión y vacaciones truncas]
       - ["Provisión vacaciones (haber)", Pasivo de la provisión de vacaciones., Vacío, Se abona al provisionar y se carga al revertir]
@@ -513,7 +513,7 @@ funcionalidades:
   - grupo: Beneficios sociales
     items:
       - CTS y gratificación con reversión de la provisión acumulada y gasto por la diferencia.
-      - Bono extraordinario de la Ley 29351 dentro del asiento de gratificación.
+      - Bono extraordinario de la Ley 30334 dentro del asiento de gratificación.
       - Un asiento por trabajador cesado, con truncos, conceptos extra y retenciones de AFP u ONP.
       - Provisión mensual por concepto, al haber detallada por trabajador o agrupada, que pasa a Hecho al contabilizarse.
       - Un único asistente de generación para los cuatro tipos de documento, con cuenta de ajuste propuesta.

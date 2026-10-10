@@ -4,7 +4,7 @@ Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
 
 Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT) sobre el marco
 nativo de Odoo 19 (`l10n_account_withholding_tax`).
-**Guía funcional:** [`docs/retenciones.md`](docs/retenciones.md) ·
+**Guía técnica de retenciones:** [`docs/retenciones.md`](docs/retenciones.md) ·
 **Plan:** [`docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md`](../../docs/retencion/PLAN_MODULO_al_l10n_pe_retention.md) ·
 **Demo/validación:** [`tools/retention_demo_data.py`](tools/retention_demo_data.py).
 
@@ -43,11 +43,15 @@ nativo de Odoo 19 (`l10n_account_withholding_tax`).
 
 ## Pendiente
 
-Reversión del CRE (resumen diario de reversiones), letras y compensaciones
-como momento del pago, descuento de una nota de crédito posterior en la
-siguiente retención. El módulo oficial de Odoo 20 tampoco implementa la
-reversión (solo reserva el estado «cancelled»). Ver
+Letras y compensaciones como momento del pago, y descuento de una nota de
+crédito posterior en la siguiente retención. Ver
 `docs/retencion/INVESTIGACION_APPS_Y_NORMA.md`.
+
+La **reversión del CRE** (resumen de reversiones RR) ya existe cuando el
+operador es The Factory HKA: la añade `al_ose_factory_hka` en el pago
+(«Revertir CRE» y «Consultar reversión»). Con otros operadores sigue sin
+implementarse (el módulo oficial de Odoo 20 tampoco la tiene: solo reserva el
+estado «cancelled»).
 
 ## Pruebas
 

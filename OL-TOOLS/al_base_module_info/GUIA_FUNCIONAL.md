@@ -80,8 +80,9 @@ Si un módulo nuevo no cumple, la prueba falla y lo señala por nombre.
 
 1. Instalar el módulo (solo depende de `base`).
 2. Para que un módulo nuevo ofrezca su ficha, generarla con el generador de
-   fichas de la suite (`docs/fichas/generar_fichas.py`), que añade el enlace y
-   la marca, y reiniciar el servidor (la detección se guarda en caché).
+   fichas de la suite (`docs/fichas/generar_fichas.py`), que al final aplica
+   `docs/validacion/fichas_modulos.py` (añade el enlace y la marca
+   `al-ficha-link`), y reiniciar el servidor (la detección se guarda en caché).
 
 ## 6. Reportes y libros relacionados
 

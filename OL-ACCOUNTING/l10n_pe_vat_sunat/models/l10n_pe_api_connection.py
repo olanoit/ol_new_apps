@@ -81,7 +81,7 @@ class L10nPeApiConnection(models.Model):
              "Ej.: '/ruc/{doc}' o '/v1/ruc?numero={doc}'.")
     endpoint_dni = fields.Char(string='Endpoint DNI', help="Usa {doc}.")
     http_method = fields.Selection(
-        [('get', 'GET'), ('post', 'POST')], default='get', required=True)
+        [('get', 'GET'), ('post', 'POST')], string='Método HTTP', default='get', required=True)
     body_ruc = fields.Char(
         string='Body RUC (POST)',
         help="Plantilla JSON del cuerpo para POST, con {doc}. "

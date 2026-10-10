@@ -117,7 +117,7 @@ Guía paso a paso más detallada (con tabla de solución de problemas): ver
 **Ajustes → Punto de Venta → (seleccionar el PDV) → Dispositivos conectados → ePos Printer**
 
 1. Activar "ePos Printer" (`other_devices`).
-2. Completar **"Generic ESC/POS printer IP (not Epson)"** con la IP de la impresora y el puerto
+2. Completar **«IP ESC/POS»** con la IP de la impresora y el puerto
    (9100 por defecto).
 3. Dejar vacío el campo de IP Epson de Odoo — no se pueden configurar ambos a la vez (hay una
    validación que lo impide, ver [Seguridad](#seguridad)).

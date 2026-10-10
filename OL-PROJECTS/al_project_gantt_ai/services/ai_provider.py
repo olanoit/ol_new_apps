@@ -44,7 +44,7 @@ DEFAULT_BASE_URL = {
 #: depende de *function calling* para devolver las propuestas estructuradas, y
 #: el modelo de razonamiento no lo ha soportado de forma estable.
 DEFAULT_MODEL = {
-    'anthropic': 'claude-opus-5',
+    'anthropic': 'claude-opus-5-5',
     'openai': 'gpt-5',
     'deepseek': 'deepseek-chat',
 }

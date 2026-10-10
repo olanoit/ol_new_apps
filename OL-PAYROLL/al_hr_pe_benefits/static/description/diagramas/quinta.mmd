@@ -7,7 +7,7 @@ flowchart TD
   F -- Sí, mismo impuesto --> G[Parte del saldo pendiente]
   F -- Sí, impuesto distinto --> H[Reproyecta descontando<br/>lo ya retenido]
   F -- No --> I[Impuesto − retenciones previas<br/>− otros empleadores]
-  G --> J[Retención = saldo ÷ divisor del mes<br/>12 en enero … 1 en diciembre]
+  G --> J[Retención = saldo ÷ divisor del mes<br/>12, 9, 8, 5, 4 o 1 según el mes]
   H --> J
   I --> J
   J --> K{¿Retención mayor que 0?}

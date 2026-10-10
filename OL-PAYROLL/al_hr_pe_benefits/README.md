@@ -15,7 +15,7 @@ motor de remuneración computable.
 | Beneficio | Qué resuelve |
 |---|---|
 | **CTS** | Depósitos semestrales mayo–octubre y noviembre–abril, con reserva para quien lleva menos de un mes y descuento del exceso de descanso médico |
-| **Gratificaciones** | Fiestas Patrias y Navidad, con la bonificación extraordinaria de EsSalud (Ley 29351) |
+| **Gratificaciones** | Fiestas Patrias y Navidad, con la bonificación extraordinaria de EsSalud (Ley 30334) |
 | **Renta de 5ta** | Proyección anual por tramos de UIT, reproyección del art. 40 y excluidos |
 | **Liquidación de cese** | Truncos de CTS, gratificación y vacaciones más conceptos extra |
 | **Provisiones** | Devengo mensual de CTS, gratificación y vacaciones |

@@ -137,7 +137,7 @@ ejemplos:
   - titulo: Proveedores y modelo por defecto
     tabla:
       - [Proveedor, Modelo propuesto, Dónde crear la clave]
-      - [Anthropic (Claude), claude-opus-5, console.anthropic.com]
+      - [Anthropic (Claude), claude-opus-5-5, console.anthropic.com]
       - [OpenAI, gpt-5, platform.openai.com]
       - [DeepSeek, deepseek-chat, platform.deepseek.com]
     nota: >-
@@ -178,6 +178,10 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: 6.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Modelo por defecto de Anthropic actualizado a claude-opus-5-5 (el más reciente)."
   - version: 5.20261008
     fecha: 08/10/2026
     cambios:

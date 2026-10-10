@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261010 — 10/10/2026
+
+- El método de la conexión se muestra como «Método HTTP» (antes salía «Http Method»); ficha con las etiquetas en español.
+
 ## 17.20261009 — 09/10/2026
 
 - Conexiones RUC/DNI con chatter: historial de nombre, prioridad, habilitación, motor, tipo de documento y URL (nunca de tokens ni credenciales).

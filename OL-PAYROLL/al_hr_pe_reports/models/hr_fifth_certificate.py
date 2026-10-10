@@ -106,7 +106,7 @@ class HrFifthCertificateWizard(models.TransientModel):
 
         * ``rem_bruta``: reglas afectas ordinaria + extraordinaria de
           las boletas de lote del año, más las gratificaciones reales
-          de julio y diciembre (total + bono EsSalud, Ley 29351).
+          de julio y diciembre (total + bono EsSalud, Ley 30334).
         * ``other_emp_rem``: rentas de otros empleadores declaradas en
           las quintas mensuales del año.
         * ``deduccion``: 7 UIT del ejercicio.

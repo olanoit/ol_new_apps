@@ -14,8 +14,9 @@ Este módulo lleva a la tarjeta del kanban un acceso a la ficha completa:
   a la web del autor.
 - Los módulos sin ficha, incluidos los de Odoo, no cambian.
 
-Una ficha cuenta como tal cuando la ha preparado
-`docs/validacion/fichas_modulos.py`, que deja la marca `al-ficha-link`. Al crear
-un módulo nuevo, correr ese script para que su tarjeta ofrezca la ficha.
+Una ficha cuenta como tal cuando lleva la marca `al-ficha-link`. La deja
+`docs/validacion/fichas_modulos.py`, que el generador de fichas
+(`docs/fichas/generar_fichas.py`) aplica al final: al crear un módulo nuevo,
+basta con generar su ficha para que su tarjeta la ofrezca.
 
 Solo depende de `base`. No requiere configuración.

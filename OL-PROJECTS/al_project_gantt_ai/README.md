@@ -71,7 +71,7 @@ y tenerla a un clic ahorra la búsqueda.
 
 | Proveedor | Modelo por defecto | Crear la clave |
 | --- | --- | --- |
-| Anthropic (Claude) | `claude-opus-5` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| Anthropic (Claude) | `claude-opus-5-5` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
 | OpenAI | `gpt-5` | [platform.openai.com](https://platform.openai.com/api-keys) |
 | DeepSeek | `deepseek-chat` | [platform.deepseek.com](https://platform.deepseek.com/api_keys) |
 

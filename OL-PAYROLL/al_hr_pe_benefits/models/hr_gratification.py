@@ -8,7 +8,7 @@ cada una (medio sueldo en pequeña empresa):
 * **Tipo '12' (Navidad, diciembre)**: cubre julio-diciembre.
 
 El monto se prorratea por meses laborados en el semestre. Con
-``with_bonus=True`` se añade el Bono Extraordinario Ley 29351: el % del
+``with_bonus=True`` se añade el Bono Extraordinario Ley 30334: el % del
 seguro social de la versión (9 % EsSalud / 6.75 % EPS) sobre la
 gratificación, no afecto a aportes.
 

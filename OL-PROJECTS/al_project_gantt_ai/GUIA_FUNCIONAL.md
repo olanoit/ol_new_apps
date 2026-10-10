@@ -96,7 +96,7 @@ el desvío de 7,2 días es el de la línea base de demostración.
    backend).
 2. Crear la clave de API en la consola del proveedor.
 3. **Gantt ▸ Configuración ▸ Ajustes:** proveedor, clave, modelo (se propone
-   solo: `claude-opus-5`, `gpt-5` o `deepseek-chat`), y opcionalmente URL base
+   solo: `claude-opus-5-5`, `gpt-5` o `deepseek-chat`), y opcionalmente URL base
    para pasarelas compatibles.
 4. Definir la política de privacidad: activar o no **Enviar personas
    asignadas** (necesario para proponer reasignaciones).

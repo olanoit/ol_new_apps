@@ -105,7 +105,7 @@ ejemplos:
 
 configuracion:
   - Instale el módulo desde Aplicaciones.
-  - "Para que un módulo nuevo de la suite ofrezca su ficha, genere su descripción con el generador de fichas (`docs/fichas/generar_fichas.py`), que añade el enlace y la marca."
+  - "Para que un módulo nuevo de la suite ofrezca su ficha, genere su descripción con el generador de fichas (`docs/fichas/generar_fichas.py`), que al final aplica `docs/validacion/fichas_modulos.py`: este añade el enlace y la marca `al-ficha-link`."
 requisitos_nota: >-
   Funciona en Community y Enterprise. La caché de la ficha se renueva al
   reiniciar el servidor: una ficha recién generada puede tardar en ofrecer el

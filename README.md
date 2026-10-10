@@ -140,7 +140,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 2.20261010 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 17.20261009 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
+[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 18.20261010 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 
 ### OL-INVOICING
 
@@ -188,7 +188,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 9.20261009 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 5.20261008 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
+[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 6.20261010 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 14.20261009 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 16.20261008 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 12.20261008 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.

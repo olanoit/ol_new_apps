@@ -14,7 +14,7 @@ Fase 3:
   '05' (nov-abr), con reserva de saldos de trabajadores con menos de
   un mes y exceso de descanso médico.
 * **Gratificación** (``hr.gratification``): Fiestas Patrias ('07') y
-  Navidad ('12'), con Bono Extraordinario EsSalud (Ley 29351).
+  Navidad ('12'), con Bono Extraordinario EsSalud (Ley 30334).
 * **Motor de beneficios** en ``hr.main.parameter``
   (``compute_benefits``): remuneración computable con promedios de
   variables (regla de las 3 apariciones), reutilizado por la

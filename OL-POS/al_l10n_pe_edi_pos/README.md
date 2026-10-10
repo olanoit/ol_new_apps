@@ -22,7 +22,8 @@ Facturación electrónica peruana desde el punto de venta de Odoo 19.
   número de documento entre reglas, datos del cliente, detalle sin
   bordes verticales, desglose SUNAT (Op. gravadas/exoneradas/inafectas,
   ICBPER, IGV), importe en letras (SON:), pagos/vuelto y **QR de
-  representación impresa** (R.S. 018-2005/SUNAT:
+  representación impresa** (R.S. 340-2017/SUNAT, que modifica las R.S.
+  097-2012 y 117-2017: desde el 1/1/2019 el QR es obligatorio;
   `RUC|tipo|serie|folio|IGV|total|fecha|tipoDoc|nroDoc`), disponible en
   cuanto la factura se publica, sin esperar el CDR de SUNAT.
 
