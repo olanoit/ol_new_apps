@@ -388,9 +388,13 @@ class ConstructionResourcePlan(models.Model):
         """Botones de la barra de selección: los asistentes instalados que el
         usuario puede abrir."""
         actions = []
+        user_groups = self.env.user.all_group_ids
         for xmlid, label, icon in TREE_ACTIONS:
-            action = self.env.ref(xmlid, raise_if_not_found=False)
-            if action and (not action.group_ids
-                           or action.group_ids & self.env.user.all_group_ids):
+            # sudo: los grupos de la acción solo los lee el administrador; se
+            # miran para mostrar el botón a quien puede abrirla.
+            action_sudo = self.env.ref(xmlid, raise_if_not_found=False)
+            action_sudo = action_sudo.sudo() if action_sudo else action_sudo
+            if action_sudo and (not action_sudo.group_ids
+                                or action_sudo.group_ids & user_groups):
                 actions.append({'xmlid': xmlid, 'name': label, 'icon': icon})
         return actions

@@ -91,6 +91,22 @@ class ConstructionMaterialRequest(models.Model):
         plans_sudo._mark_in_progress()
         return res
 
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' in vals:
+            self._construction_refresh_plan()
+        return res
+
+    def action_process(self):
+        res = super().action_process()
+        self._construction_refresh_plan()
+        return res
+
+    def _construction_refresh_plan(self):
+        """Estado y montos de control de las líneas del plan asignadas."""
+        self.env['construction.resource.plan.allocation']._refresh_for_documents(
+            'material_request_line_id', self.line_ids)
+
     def _construction_open_exceed_wizard(self):
         self.ensure_one()
         wizard = self.env['construction.plan.exceed.wizard'].create({
@@ -156,6 +172,13 @@ class ConstructionMaterialRequestLine(models.Model):
     construction_plan_exceeded = fields.Boolean(
         string='Excede el plan', compute='_compute_construction_plan_control',
         compute_sudo=True)
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {'cancelled', 'product_qty', 'product_uom_id'} & set(vals):
+            self.env['construction.resource.plan.allocation']._refresh_for_documents(
+                'material_request_line_id', self)
+        return res
 
     def _construction_candidate_plan_lines(self, plan):
         """Líneas del plan que cubre esta línea: las ya asignadas en ese plan

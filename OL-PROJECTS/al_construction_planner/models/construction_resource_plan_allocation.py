@@ -360,6 +360,45 @@ class ConstructionResourcePlanAllocation(models.Model):
             allocation.qty_consumed = converted['consumed']
             allocation.qty_done = converted[DONE_MEASURE.get(allocation.kind, 'done')]
 
+    # ------------------------------------------------------------------
+    # Control de las líneas (estado y montos almacenados)
+    # ------------------------------------------------------------------
+    @api.model_create_multi
+    def create(self, vals_list):
+        allocations = super().create(vals_list)
+        allocations._refresh_plan_lines()
+        return allocations
+
+    def write(self, vals):
+        before = self.plan_line_id
+        res = super().write(vals)
+        (before | self.plan_line_id)._refresh_control()
+        return res
+
+    def unlink(self):
+        lines = self.plan_line_id
+        res = super().unlink()
+        lines._refresh_control()
+        return res
+
+    def _refresh_plan_lines(self):
+        """Actualiza las líneas del plan de estas asignaciones y de las demás
+        del mismo documento (lo hecho se reparte entre todas)."""
+        allocations = self.exists()
+        if allocations:
+            allocations._get_siblings().plan_line_id._refresh_control()
+
+    @api.model
+    def _refresh_for_documents(self, field, documents):
+        """Gancho de los documentos: actualiza las líneas del plan de sus
+        asignaciones (``field`` es el campo de la asignación que los enlaza)."""
+        if not documents:
+            return
+        # sudo: el documento lo cambia quien no ve el plan (compras,
+        # almacén, planta); solo se actualiza el control de las líneas.
+        allocations_sudo = self.sudo().search([(field, 'in', documents.ids)])
+        allocations_sudo._refresh_plan_lines()
+
     def _get_requested_qty(self):
         """Lo que la asignación cuenta como «Pedido» de su línea (en la unidad
         de la línea): lo asignado; si el documento se canceló, solo lo hecho."""

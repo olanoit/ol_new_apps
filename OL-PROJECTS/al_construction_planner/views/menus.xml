@@ -18,6 +18,9 @@
         <menuitem id="menu_planner_analysis" name="Análisis del plan"
                   action="action_construction_resource_plan_line_analysis" sequence="35"
                   groups="group_planner_planner"/>
+        <menuitem id="menu_planner_control" name="Análisis de control"
+                  action="action_construction_plan_control" sequence="36"
+                  groups="group_planner_planner"/>
         <menuitem id="menu_planner_sites" name="Obras"
                   action="al_construction_material_request.action_construction_sites" sequence="40"
                   groups="group_planner_planner"/>
@@ -35,6 +38,9 @@
     <menuitem id="menu_planner_contracts" name="Contratas" parent="menu_planner_root" sequence="40">
         <menuitem id="menu_planner_contract_assign" name="Asignar contrata"
                   action="action_plan_contract_wizard" sequence="10"
+                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_crew_assign" name="Asignar cuadrilla"
+                  action="action_plan_crew_wizard" sequence="15"
                   groups="group_planner_planner"/>
         <menuitem id="menu_planner_service_orders" name="OC de servicio"
                   action="action_construction_service_orders" sequence="20"

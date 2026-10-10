@@ -20,3 +20,5 @@ from . import res_config_settings
 from . import construction_task_progress
 from . import construction_contract_settlement
 from . import account_move
+from . import stock_move
+from . import account_analytic_line

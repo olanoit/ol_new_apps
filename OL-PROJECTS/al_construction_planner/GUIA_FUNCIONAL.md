@@ -1,9 +1,10 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `5.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `6.20261010` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso de las fases 1 a 6 (plan, árbol, línea base, asignaciones y
-> compras, contratas y liquidación semanal) con un ejemplo que cuadra. Enlaces verificados el
+> proceso de las fases 1 a 7 (plan, árbol, línea base, asignaciones y
+> compras, contratas, liquidación semanal, control y personal propio) con un
+> ejemplo que cuadra. Enlaces verificados el
 > 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
 ## 1. Para qué sirve
@@ -25,9 +26,16 @@ unidades de su driver con foto, el supervisor valida, cada jueves se prepara
 la liquidación de la semana y, aprobada, se recibe en la OC y se factura con
 vencimiento el sábado.
 
-Fuera del alcance de las fases 1 a 6: cuadrillas de personal propio,
-ingresos (entregas y valorizaciones) y cronograma con recursos (fases 7 y 8,
-ver `docs/planificador/DISENO_TECNICO.md`).
+Desde la fase 7 el plan controla lo real: cada línea guarda su estado y sus
+montos de control (comprometido, real, saldo, % ejecutado), el análisis de
+control (P-13) los muestra por etapa y tipo de recurso, la OC con la
+analítica de la obra se contrasta con el presupuesto al confirmarla, las
+cuadrillas de personal propio se asignan con turnos y sus horas son el real,
+y «Cambiar fechas» mueve la selección y avisa a Logística.
+
+Fuera del alcance de las fases 1 a 7: ingresos (entregas, valorizaciones y
+su factura) y cronograma con recursos (ver
+`docs/planificador/DISENO_TECNICO.md`).
 
 ## 2. Marco normativo y conceptual
 
@@ -55,6 +63,11 @@ No hay norma que obligue el proceso: es planificación de gestión. Conceptos:
 | Semana de liquidación | Del día de inicio de la obra (jueves) al día anterior (miércoles); se liquida el jueves siguiente y se paga el sábado | Proyecto ▸ Ajustes; Ajustes ▸ Planificación de obra |
 | Retención | Porcentaje de la tarifa que se retiene a la contrata en cada liquidación | Tarifa de contrata; línea de la OC |
 | Rezagado | Avance validado de una semana ya liquidada: entra a la liquidación siguiente | Liquidación |
+| Comprometido | Lo que ya está pedido y aún no es real: requerimientos y compras sin consumir, OC de servicio sin recibir, turnos sin horas registradas | Línea del plan; Plan ▸ Control |
+| Real | Lo consumido al costo del plan, lo recibido en la OC de servicio y las horas registradas por el costo hora del empleado | Línea del plan; Plan ▸ Control |
+| % ejecutado | Real entre planificado | Plan ▸ Control |
+| Cuadrilla | Obreros propios con un rol, asignados por semanas a niveles de la obra con turnos | Plan ▸ Asignar cuadrilla; Planificación (turnos) |
+| Presupuesto de la combinación | Línea del presupuesto analítico del plan que cubre las cuentas analíticas de una línea de compra | Contabilidad ▸ Presupuestos |
 
 Prioridad de la tarifa: obra y contrata › solo obra › solo contrata › tarifa
 base › precio de la actividad.
@@ -91,6 +104,14 @@ flowchart TD
   X -- Valida --> Y[Acumulado y avance de la línea y los niveles]
   Y --> Z[Jueves: liquidación de jueves a miércoles]
   Z --> Z1[Presentar, validar, aprobar] --> Z2[Recepción en la OC y factura con vencimiento el sábado]
+  M --> CU[Asignar cuadrilla: turnos por obrero y semana] --> CH[Horas en la hoja de horas: ejecutado y real]
+  M --> OC[OC con analítica de la obra] --> OB{¿Pasa el presupuesto de la combinación?}
+  OB -- No --> OK[Confirmada]
+  OB -- Avisar o pedir aprobación --> OW[Exceso sobre el plan: justificación] --> OK
+  U --> CT[Control P-13: comprometido, real, saldo, % ejecutado]
+  CH --> CT
+  Y --> CT
+  M --> CF[Cambiar fechas] --> CL[Fechas de necesidad nuevas y actividad para Logística]
   U --> P[Cerrar: sin documentos abiertos ni liquidaciones pendientes]
   Z2 --> P
 ```
@@ -122,7 +143,12 @@ flowchart TD
 | 23 | Presentar y validar | Contratas ▸ Liquidaciones semanales | Supervisor (en nombre de la contrata) | Presentada › Validada; o devuelta con motivo |
 | 24 | Aprobar | Liquidación ▸ Validar (bloque de revisiones) | Jefatura de Proyectos | Recepción en la OC y factura con vencimiento el sábado |
 | 25 | Pagar | Contabilidad ▸ Facturas de proveedor ▸ Registrar pago | Tesorería | Liquidación «Pagada» al quedar pagada la factura |
-| 26 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
+| 26 | Comprar con la analítica de la obra | Compras ▸ OC ▸ Confirmar | Compras | Se contrasta con el presupuesto de la combinación: confirmada, aviso (W-10), justificación y confirmación de la jefatura, o bloqueo |
+| 27 | Asignar la cuadrilla propia | Árbol de recursos (selección) o plan ▸ Asignar cuadrilla | Planificador | Turnos por obrero y semana con la tarea y la línea del plan |
+| 28 | Registrar las horas | Hoja de horas de la tarea (o de sus módulos) | Capataz | Ejecutado y real de la línea de personal propio |
+| 29 | Cambiar fechas | Árbol de recursos o plan ▸ Cambiar fechas | Planificador | Tareas y fechas de necesidad movidas; actividad para Logística en los documentos desfasados |
+| 30 | Controlar | Plan ▸ Control; Obras ▸ Análisis de control | Jefatura, Finanzas | Planificado, comprometido, real, saldo y % ejecutado por etapa, tipo de recurso, contrata o producto |
+| 31 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -334,6 +360,49 @@ pagada, la liquidación pasa a «Pagada».
 a «Producido»; cuando toda la instalación de su ambiente (o del módulo, si
 las actividades cuelgan de él), a «Instalado».
 
+### Control y personal propio (P-13, W-06, W-08)
+
+Con `tools/planner_demo_control.py`, sobre la versión 1 vigente: personal
+propio de 16 h a S/ 12.00 en las cocinas de los Dpto 501 y 502 (S/ 192.00
+cada una) y obreros con costo hora S/ 9.50.
+
+**Asignar cuadrilla (W-06).** Cocina del Dpto 501, rol «Instalador propio»,
+dos obreros, dos semanas desde el jueves 29/10/2026 y 4 h por semana cada
+uno: 4 turnos y 16 h, lo planificado. Un obrero registra 6 h en la hoja de
+horas de un módulo de esa cocina:
+
+| Concepto | Cálculo | Monto |
+|---|---|---|
+| Ejecutado | 6 h registradas | 6 h de 16 (37.5 %) |
+| Real | 6 h × S/ 9.50 | 57.00 |
+| Comprometido | (8 − 6) h del obrero 1 + 8 h del obrero 2 = 10 h × S/ 9.50 | 95.00 |
+| Saldo | 192.00 − 95.00 − 57.00 | 40.00 |
+
+El real va al costo hora del empleado, no al costo del plan: el saldo de la
+línea muestra si la cuadrilla sale más cara o más barata que lo planificado.
+
+**Control (P-13).** La pestaña «Control» del plan da, por etapa y dentro de
+ella por tipo de recurso, planificado, comprometido, real, saldo y %
+ejecutado; «Análisis de control» abre las mismas líneas en pivote y gráfico
+para agrupar por contrata, producto, actividad, nivel o estado.
+
+**OC con analítica de la obra.** Si una OC de material con la cuenta
+analítica de la obra lleva el comprometido de la combinación (OC confirmadas
+sin facturar más lo imputado) por encima del presupuesto más la tolerancia,
+la política del plan decide: avisar y confirmar (queda «Excede el plan»),
+justificar y que confirme la jefatura del planificador («Exceso aprobado») o
+bloquear.
+
+**Cambiar fechas (W-08).** Postergar 14 días la instalación del piso 05
+(solo esa etapa) desplaza 14 días la fecha de necesidad de sus líneas sin
+mover las tareas; el requerimiento de obra del piso, con fecha anterior a la
+nueva necesidad, recibe la actividad «Fechas del plan cambiadas» para
+Logística. Con todas las etapas, también se mueven las tareas en el Gantt.
+
+**Revertir un avance.** Si un módulo pasó a «Producido» con su armado
+validado y se vuelve a reportado uno de esos avances, el módulo vuelve al
+estado que tenía antes (p. ej. «En producción»).
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -370,6 +439,16 @@ las actividades cuelgan de él), a «Instalado».
 13. Cada actividad puede tener su **producto de servicio** (con sus
     impuestos); si no lo tiene, «Asignar contrata» crea uno sin impuestos y
     con recepción manual.
+14. **Personal propio:** actividades en horas con su **rol** (Planificación ▸
+    Configuración ▸ Roles) y empleados con **costo hora** (Empleados ▸
+    Ajustes de RR. HH.). El capataz necesita el permiso de hoja de horas
+    sobre otros empleados para registrar las de la cuadrilla.
+15. **OC con analítica:** el control usa el presupuesto analítico del plan
+    vigente; las OC de servicio de las contratas no se controlan aquí (lo
+    hacen «Asignar contrata» y la liquidación).
+16. **Obra de la planilla de construcción civil:** póngale la cuenta
+    analítica del proyecto; el planificador y la planilla no dependen uno
+    del otro y se encuentran por esa cuenta.
 
 ## 6. Reportes y libros relacionados
 
@@ -393,6 +472,11 @@ las actividades cuelgan de él), a «Instalado».
   contrata y semana; OC de servicio de las contratas.
 - Pestaña «Recursos y avance» de cada piso, departamento, ambiente o módulo
   y medida «Avance» del árbol.
+- Control del plan (P-13, pestaña «Control») y Análisis de control (Obras ▸
+  Análisis de control): planificado, comprometido, real, saldo y %
+  ejecutado por etapa y tipo de recurso, contrata o producto, en pivote y
+  gráfico.
+- Turnos de las cuadrillas (Planificación) con la tarea y la línea del plan.
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -412,7 +496,13 @@ No alimenta libros PLE ni archivos SUNAT.
 | «No se puede enviar a aprobación» | Hay líneas sin etapa, sin costo o contratas sin actividad (el mensaje las lista) | Corregir la etapa, aplicar el costo o asignar la actividad |
 | «Ya tiene la versión … en preparación» | Solo una versión en preparación por obra | Terminarla o cancelarla |
 | El revisor no ve el botón Validar | No pertenece al grupo de la regla o falta un nivel previo | Revisar la regla y el orden de los niveles |
-| Comprometido y real en cero | Se llenan con las asignaciones (compra, requerimiento, OF); contratas y personal desde la fase 5 | Generar los documentos desde el plan |
+| Comprometido y real en cero | Se llenan con las asignaciones (compra, requerimiento, OF, OC de servicio, turnos) y las horas | Generar los documentos desde el plan; «Actualizar control» |
+| «Pasa el presupuesto analítico … bloquear» al confirmar una OC | La OC con la analítica de la obra lleva la combinación sobre su presupuesto | Reducir la OC, cambiar la política o replanificar |
+| «El exceso lo aprueba la jefatura del planificador» | Política «pedir aprobación» en una OF o una OC | Que el administrador del planificador confirme el aviso |
+| «Combinación fuera del presupuesto» | La OC usa una combinación analítica sin línea en el presupuesto del plan | Usar la combinación del plan o replanificar |
+| «La selección no tiene líneas de personal propio del rol» | No hay líneas de personal propio en la selección o tienen otro rol | Revisar la selección y el rol de la línea o de su actividad |
+| Las horas no suben el ejecutado | El empleado no tiene el rol de la línea o registró en otra tarea | «Asignar cuadrilla» le da el rol; registrar en la tarea del nivel o sus módulos |
+| «Las fechas no cambian» | Cero días o la fecha nueva es la actual | Indicar los días o la fecha |
 | «El plan … no está vigente» al abrir una compra masiva, requerimiento u OF | Los asistentes trabajan sobre el plan aprobado o en ejecución | Aprobar el plan |
 | El asistente no propone un material | Ya no tiene saldo (comprado o pedido) o su etapa no está marcada | Revisar las etapas y las asignaciones de la línea |
 | «Pide más de lo que queda en el plan … bloquear» | La política del plan es bloquear | Reducir la cantidad o replanificar |
@@ -470,6 +560,13 @@ No alimenta libros PLE ni archivos SUNAT.
 - **¿Se puede revertir un avance pagado?** No: un avance en una liquidación
   aprobada no se revierte. Si la liquidación está presentada o validada,
   primero se devuelve.
+- **¿Revertir un avance baja el estado del módulo?** Sí: vuelve a lo que
+  justifica el avance que queda o al estado que tenía antes del avance.
+- **¿Cuándo se actualiza el estado de la línea?** Con cada documento del
+  plan; lo que cambia con el tiempo (turnos que terminan) lo recoge la
+  acción programada horaria o «Actualizar control».
+- **¿El costo del personal propio va por liquidación?** No: va por hoja de
+  horas, al costo hora de cada empleado.
 
 ## 9. Referencias
 

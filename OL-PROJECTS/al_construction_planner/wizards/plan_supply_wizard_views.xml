@@ -206,17 +206,25 @@
                 <div class="alert alert-danger" role="alert" invisible="policy != 'approval'">
                     Se pide más de lo que queda en el plan. Justifique el exceso: el
                     requerimiento recibirá una revisión adicional de la jefatura del planificador
-                    (la OF la confirma esa jefatura).
+                    (la OF y la OC las confirma esa jefatura).
                 </div>
                 <group>
                     <field name="material_request_id" invisible="not material_request_id"/>
                     <field name="production_id" invisible="not production_id"/>
+                    <field name="purchase_order_id" invisible="not purchase_order_id"/>
                     <field name="policy"/>
                 </group>
+                <p class="text-muted small" invisible="not purchase_order_id">
+                    Montos en la moneda de la compañía: saldo del presupuesto analítico de la
+                    combinación (presupuesto menos comprometido), monto de esta OC y exceso sobre
+                    la tolerancia del plan.
+                </p>
                 <field name="line_ids" nolabel="1" readonly="1">
                     <list>
-                        <field name="product_id"/>
-                        <field name="product_uom_id" groups="uom.group_uom"/>
+                        <field name="name" column_invisible="not parent.purchase_order_id"/>
+                        <field name="product_id" column_invisible="parent.purchase_order_id"/>
+                        <field name="product_uom_id" groups="uom.group_uom"
+                               column_invisible="parent.purchase_order_id"/>
                         <field name="qty_remaining"/>
                         <field name="qty_requested"/>
                         <field name="qty_excess" decoration-danger="1"/>

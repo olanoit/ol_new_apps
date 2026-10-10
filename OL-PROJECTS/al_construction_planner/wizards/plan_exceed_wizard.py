@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """W-10 «Exceso sobre plan»: se abre al pedir la aprobación de un
 requerimiento de obra o al confirmar una OF que piden más de lo que queda en
-el plan. Con la política «avisar» basta confirmar; con «pedir aprobación» la
-justificación es obligatoria y el requerimiento recibe una revisión más (la
-OF la confirma la jefatura del planificador)."""
+el plan, o al confirmar una OC con analítica de la obra que pasa su
+presupuesto analítico. Con la política «avisar» basta confirmar; con «pedir
+aprobación» la justificación es obligatoria y el requerimiento recibe una
+revisión más (la OF y la OC las confirma la jefatura del planificador)."""
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
+
+from ..models.purchase_order import POLICY_RANK
 
 
 class ConstructionPlanExceedWizard(models.TransientModel):
@@ -16,6 +19,8 @@ class ConstructionPlanExceedWizard(models.TransientModel):
         'construction.material.request', string='Requerimiento de obra', readonly=True)
     production_id = fields.Many2one(
         'mrp.production', string='Orden de fabricación', readonly=True)
+    purchase_order_id = fields.Many2one(
+        'purchase.order', string='Orden de compra', readonly=True)
     policy = fields.Selection(
         [('warn', 'Avisar'), ('approval', 'Pedir aprobación'), ('block', 'Bloquear')],
         string='Política', compute='_compute_lines', store=True)
@@ -26,12 +31,13 @@ class ConstructionPlanExceedWizard(models.TransientModel):
 
     # El residente o la planta no ven el plan: la política y el saldo se leen
     # sin sus permisos, solo para mostrarlos.
-    @api.depends('material_request_id', 'production_id')
+    @api.depends('material_request_id', 'production_id', 'purchase_order_id')
     def _compute_lines(self):
         for wizard in self:
             commands = [Command.clear()]
             request_sudo = wizard.material_request_id.sudo()
             production_sudo = wizard.production_id.sudo()
+            order_sudo = wizard.purchase_order_id.sudo()
             if request_sudo:
                 wizard.policy = request_sudo.construction_plan_id.exceed_policy
                 for line in request_sudo._construction_exceeding_lines():
@@ -53,6 +59,18 @@ class ConstructionPlanExceedWizard(models.TransientModel):
                         'product_uom_id': product.uom_id.id,
                         'qty_remaining': balance,
                         'qty_requested': qty,
+                        'qty_excess': excess,
+                    }))
+            elif order_sudo:
+                rows = order_sudo._construction_budget_excess()
+                policies = [row[0].exceed_policy for row in rows]
+                wizard.policy = max(policies, key=lambda p: POLICY_RANK[p]) if policies else False
+                for plan, budget_line, budget, used, amount, excess in rows:
+                    commands.append(Command.create({
+                        'name': budget_line.display_name if budget_line else self.env._(
+                            '%s (combinación fuera del presupuesto)', plan.display_name),
+                        'qty_remaining': budget - used,
+                        'qty_requested': amount,
                         'qty_excess': excess,
                     }))
             else:
@@ -80,18 +98,27 @@ class ConstructionPlanExceedWizard(models.TransientModel):
             request.construction_exceed_reason = reason or request.construction_exceed_reason
             res = request.with_context(construction_exceed_checked=True).action_request_approval()
         else:
-            production = self.production_id
+            document = self.production_id or self.purchase_order_id
             if self.policy == 'approval' and not self.env.user.has_group(
                     'al_construction_planner.group_planner_manager'):
                 raise UserError(self.env._(
-                    'El exceso de una OF lo aprueba la jefatura del planificador: pídale que '
-                    'confirme la orden %s.', production.name))
-            production.write({
-                'construction_exceed_reason': reason or production.construction_exceed_reason,
-                'construction_exceed_state': (
-                    'approved' if self.policy == 'approval' else 'exceeded'),
-            })
-            res = production.with_context(construction_exceed_checked=True).action_confirm()
+                    'El exceso lo aprueba la jefatura del planificador: pídale que confirme '
+                    '%s.', document.name))
+            values = {'construction_exceed_state': (
+                'approved' if self.policy == 'approval' else 'exceeded')}
+            if reason:
+                values['construction_exceed_reason'] = reason
+            if self.purchase_order_id and self.policy == 'approval':
+                # sudo: la jefatura del planificador aprueba el exceso sin ser
+                # compradora; solo confirma la OC que Compras ya preparó.
+                order_sudo = document.sudo().with_context(construction_exceed_checked=True)
+                order_sudo.write(values)
+                res = order_sudo.button_confirm()
+            else:
+                document.write(values)
+                document = document.with_context(construction_exceed_checked=True)
+                res = document.action_confirm() if self.production_id \
+                    else document.button_confirm()
         return res if isinstance(res, dict) else {'type': 'ir.actions.act_window_close'}
 
 
@@ -102,6 +129,7 @@ class ConstructionPlanExceedWizardLine(models.TransientModel):
     wizard_id = fields.Many2one(
         'construction.plan.exceed.wizard', string='Asistente', required=True,
         ondelete='cascade')
+    name = fields.Char(string='Concepto', help='Combinación del presupuesto analítico (OC).')
     product_id = fields.Many2one('product.product', string='Producto')
     product_uom_id = fields.Many2one('uom.uom', string='Unidad')
     qty_remaining = fields.Float(string='Saldo', digits='Product Unit')

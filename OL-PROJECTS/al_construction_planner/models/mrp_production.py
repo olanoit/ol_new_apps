@@ -32,6 +32,13 @@ class MrpProduction(models.Model):
         EXCEED_STATES, string='Control de plan', default='ok', copy=False, readonly=True)
     construction_exceed_reason = fields.Text(string='Justificación del exceso', copy=False)
 
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' in vals:
+            self.env['construction.resource.plan.allocation']._refresh_for_documents(
+                'production_id', self)
+        return res
+
     def _construction_plan_lines(self, product):
         """Líneas de producción y armado del material en los ambientes de la OF."""
         self.ensure_one()

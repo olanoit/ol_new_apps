@@ -10,3 +10,5 @@ from . import plan_exceed_wizard
 from . import plan_contract_wizard
 from . import plan_progress_wizard
 from . import reason_wizard
+from . import plan_crew_wizard
+from . import plan_reschedule_wizard

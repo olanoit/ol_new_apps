@@ -191,6 +191,12 @@
                 <field name="construction_is_service_order" invisible="not construction_is_service_order"/>
                 <field name="construction_project_id" invisible="not construction_project_id"/>
                 <field name="construction_plan_id" invisible="not construction_plan_id"/>
+                <field name="construction_exceed_state" widget="badge"
+                       invisible="construction_exceed_state == 'ok'"
+                       decoration-danger="construction_exceed_state == 'exceeded'"
+                       decoration-info="construction_exceed_state == 'approved'"/>
+                <field name="construction_exceed_reason"
+                       invisible="construction_exceed_state == 'ok'"/>
             </xpath>
         </field>
     </record>

@@ -1,11 +1,13 @@
-"""Capturas de las fases 3 a 6 de al_construction_planner (línea base,
-asignaciones y compras, contratas y liquidación semanal): datos «DEMO PLAN»
-de tools/planner_demo_data.py, planner_demo_baseline.py,
-planner_demo_supply.py y planner_demo_contracts.py. Las capturas 01 a 03
-(árbol de recursos) son de la fase 2.
+"""Capturas de las fases 3 a 7 de al_construction_planner (línea base,
+asignaciones y compras, contratas, liquidación semanal, control y personal
+propio): datos «DEMO PLAN» de tools/planner_demo_data.py,
+planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
+y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
+la fase 2.
 
-``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 y 6 (las anteriores
-dependen del estado de los datos de su fase)."""
+``CAPTURAS_DESDE=17`` rehace solo las de las fases 5 a 7 y
+``CAPTURAS_DESDE=24`` solo las de la fase 7 (las anteriores dependen del
+estado de los datos de su fase)."""
 import os
 import sys
 from pathlib import Path
@@ -99,10 +101,52 @@ def fases_5_6(c, v1):
     c.foto('23-arbol-avance', selector=FULL)
 
 
+def fase_7(c, v1):
+    """Fase 7: control (P-13), cuadrilla (W-06) y cambiar fechas (W-08)."""
+    # 24. Pestaña «Control» del plan (P-13)
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.clic('a.nav-link[name=control]', ms=1500)
+    c.foto('24-control', selector=FULL)
+
+    # 25. Análisis de control en pivote: etapa › tipo de recurso
+    c.clic('button[name=action_open_control_analysis]', ms=2500)
+    c.foto('25-analisis-control', selector=FULL)
+
+    # 26. Asignar cuadrilla (W-06): toda la obra con el rol propio
+    c.abrir_registro(PLAN, v1, ms=2000)
+    c.texto('Asignar cuadrilla', ms=2000)
+    elegir(c, 'role_id', 'DEMO PLAN Instalador propio')
+    resources = c.page.locator('.modal-content div[name=resource_ids] input')
+    for name in ('DEMO PLAN Obrero propio 1', 'DEMO PLAN Obrero propio 2'):
+        resources.fill(name)
+        c.esperar(1200)
+        c.page.locator('.o-autocomplete--dropdown-item').first.click()
+        c.esperar(1200)
+    c.page.locator('.modal-content div[name=hours_per_week] input').fill('8')
+    c.page.locator('.modal-content div[name=weeks] input').fill('2')
+    c.page.locator('.modal-content div[name=weeks] input').press('Tab')
+    c.esperar(1500)
+    c.foto('26-asignar-cuadrilla', selector=MODAL)
+    c.clic('.modal-footer button.btn-secondary', ms=800)
+
+    # 27. Cambiar fechas (W-08): postergar la instalación 7 días
+    c.texto('Cambiar fechas', ms=2000)
+    for stage in ('stage_production', 'stage_assembly', 'stage_finishing'):
+        c.page.locator(f'.modal-content div[name={stage}] input').uncheck()
+        c.esperar(600)
+    c.esperar(1200)
+    c.foto('27-cambiar-fechas', selector=MODAL)
+    c.clic('.modal-footer button.btn-secondary', ms=800)
+
+
 with Captura(M) as c:
     v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
+    if DESDE >= 24:
+        fase_7(c, v1)
+        raise SystemExit
     if DESDE >= 17:
         fases_5_6(c, v1)
+        fase_7(c, v1)
         raise SystemExit
 
     # 4. Versión aprobada: resumen por etapa, presupuesto y versiones
@@ -179,5 +223,6 @@ with Captura(M) as c:
     c.texto('Plan de obra', ms=1200)
     c.foto('16-of-desde-plan', selector=FULL)
 
-    # --- Fases 5 y 6: contratas y liquidación semanal ----------------------
+    # --- Fases 5 a 7: contratas, liquidación, control y personal propio ---
     fases_5_6(c, v1)
+    fase_7(c, v1)

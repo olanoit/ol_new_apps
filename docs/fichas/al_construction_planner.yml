@@ -5,14 +5,15 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
   la generación del plan, el árbol de recursos con selección en cascada, la
   línea base aprobada con su presupuesto analítico y las compras,
   requerimientos y órdenes de fabricación que nacen del plan y lo descuentan,
-  y las contratas: asignación, avance por driver y liquidación semanal.
+  las contratas (asignación, avance por driver y liquidación semanal), el
+  personal propio y el control de lo planificado contra lo real.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -95,6 +96,30 @@ destacados:
       Cada jueves se preparan las liquidaciones de jueves a miércoles. Al
       aprobarlas se recibe en la OC y se crea la factura con vencimiento el
       sábado.
+  - icono: "%"
+    titulo: Análisis de control
+    texto: >-
+      Planificado, comprometido, real, saldo y % ejecutado por etapa y tipo
+      de recurso, por contrata o por producto, en pivote y gráfico. El estado
+      de cada línea se filtra y se agrupa.
+  - icono: "👷"
+    titulo: Cuadrillas propias
+    texto: >-
+      Turnos por obrero y semana con la tarea del nivel. Las horas de la hoja
+      de horas suben el ejecutado y el real (por el costo hora); los turnos
+      sin horas son el comprometido.
+  - icono: "⇆"
+    titulo: Cambiar fechas
+    texto: >-
+      Desplace la selección n días o llévela a una fecha nueva: se recalculan
+      las fechas de necesidad y Logística recibe una actividad en los
+      requerimientos y OC desfasados.
+  - icono: "🧾"
+    titulo: OC contra el presupuesto
+    texto: >-
+      Una OC con la analítica de la obra se contrasta al confirmarla con el
+      presupuesto analítico de su combinación: avisa, pide aprobación o
+      bloquea según el plan.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -422,6 +447,47 @@ pasos:
       su estado (Producido, Instalado).
     imagen: screenshots/23-arbol-avance.png
 
+  - seccion: Control y personal propio
+    texto: >-
+      La cuadrilla propia en la cocina del Dpto 501 y el control del plan
+      vigente (`tools/planner_demo_control.py`).
+  - titulo: Control del plan (P-13)
+    ruta: Plan ▸ pestaña Control
+    texto: >-
+      Por etapa y, dentro de ella, por tipo de recurso: planificado,
+      comprometido, real, saldo y % ejecutado (real entre planificado), con
+      el total de la obra. «Actualizar control» recalcula; además se
+      actualiza con cada documento y cada hora.
+    puntos:
+      - "Comprometido: pedido o comprado sin consumir, OC de servicio sin recibir y turnos sin horas registradas."
+      - "Real: consumido al costo del plan, recibido en la OC de servicio y horas registradas por el costo hora del empleado."
+    imagen: screenshots/24-control.png
+  - titulo: Análisis de control
+    ruta: Obras ▸ Análisis de control (o el botón del plan)
+    texto: >-
+      Las líneas en pivote y gráfico con planificado, comprometido, real y
+      saldo; agrupe por etapa, tipo de recurso, contrata, producto,
+      actividad, nivel o estado de la línea.
+    imagen: screenshots/25-analisis-control.png
+  - titulo: Asignar cuadrilla
+    ruta: Plan ▸ Asignar cuadrilla (o Árbol de recursos, o Contratas ▸ Asignar cuadrilla)
+    texto: >-
+      Rol, obreros, primera semana, semanas y horas por semana. La vista
+      previa da un turno por obrero, semana y línea de personal propio de la
+      selección, con las horas repartidas por monto planificado.
+    puntos:
+      - "Los obreros reciben el rol si no lo tienen, para que sus horas cuenten en la línea."
+      - "El capataz registra las horas en la hoja de horas de la tarea (o de sus módulos)."
+    imagen: screenshots/26-asignar-cuadrilla.png
+  - titulo: Cambiar fechas
+    ruta: Plan ▸ Cambiar fechas (o Árbol de recursos ▸ Cambiar fechas)
+    texto: >-
+      Desplazar n días o fecha nueva para el inicio más temprano de la
+      selección. Con todas las etapas se mueven las tareas y se recalcula la
+      fecha de necesidad; con algunas, solo la de esas líneas. La vista
+      previa muestra la necesidad actual y la nueva.
+    imagen: screenshots/27-cambiar-fechas.png
+
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
 campos:
@@ -536,6 +602,17 @@ campos:
     ruta: Fabricación ▸ Lista de materiales ▸ Componentes
     campos:
       - [Etapa de consumo, Etapa en que se consume el componente., Vacío, Etapa de la línea de material]
+  - grupo: Línea del plan (control)
+    ruta: Plan ▸ Líneas · Análisis de control
+    campos:
+      - [Estado, "Planificada, parcial, en compra, completa, excedida o cancelada.", Planificada, "Guardado: se filtra y agrupa; lo actualiza cada documento"]
+      - ["Comprometido, real, saldo", Montos de control de la línea., Cero, Guardados para el pivote]
+      - ["% ejecutado", Real entre planificado., Cero, "—"]
+  - grupo: Orden de compra
+    ruta: Compras ▸ OC
+    campos:
+      - [Control de presupuesto, "En plan, excede el plan o exceso aprobado.", En plan, Al confirmar una OC con analítica de la obra]
+      - [Justificación del exceso, Por qué se compra por encima del presupuesto., Vacía, Obligatoria con «pedir aprobación»]
 
 funcionalidades:
   - grupo: Jerarquía y catálogo
@@ -590,6 +667,14 @@ funcionalidades:
       - "Presentar, devolver con motivo, validar y aprobación por niveles de la jefatura."
       - "Recepción en la OC de servicio sin pasar lo ordenado y factura con vencimiento el día de pago; «Pagada» con la factura pagada."
       - "El plan no se cierra con liquidaciones pendientes; los avances no liquidados pasan a la versión nueva."
+  - grupo: Control y personal propio
+    items:
+      - "Estado de la línea y montos de control guardados: se filtran y agrupan, con acción programada horaria de respaldo."
+      - "Análisis de control (P-13) en la pestaña del plan y en pivote y gráfico por etapa, tipo de recurso, contrata o producto."
+      - "OC con analítica de la obra contrastada al confirmar con el presupuesto analítico de la combinación (avisar, pedir aprobación a la jefatura o bloquear)."
+      - "«Asignar cuadrilla»: turnos por obrero y semana con la tarea y la línea; horas de la hoja de horas como ejecutado y real, turnos sin horas como comprometido."
+      - "«Cambiar fechas»: desplaza o fija la fecha de la selección por etapas y avisa a Logística de los requerimientos y OC desfasados."
+      - "Revertir un avance validado baja el estado del módulo a lo que justifica el avance que queda."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -652,6 +737,8 @@ configuracion:
   - "Revise la semana de las contratas en **Ajustes ▸ Planificación de obra** (jueves, jueves y sábado) y, si se quiere la factura por el neto, la **cuenta de retención**; cada obra puede cambiar los días en su pestaña Ajustes."
   - "La regla «Liquidación de contrata: jefatura de proyectos» viene con el módulo; los feriados se toman de las ausencias globales de la compañía."
   - "`tools/planner_demo_contracts.py` asigna las contratas del demo, registra el avance del ejemplo y prepara la liquidación del 05/11."
+  - "Personal propio: actividades en horas con su **rol** y empleados con **costo hora**; el capataz necesita permiso de hoja de horas sobre otros empleados. `tools/planner_demo_control.py` deja una cuadrilla demo."
+  - "Las OC con la analítica de la obra se controlan contra el presupuesto del plan vigente; las OC de servicio de las contratas se controlan al asignar y al liquidar."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
@@ -695,12 +782,32 @@ faq:
       Con una cuenta de retención en Ajustes, como una línea negativa: la
       factura queda por el neto. Sin cuenta, la factura va por el bruto y la
       retención queda en la liquidación para que contabilidad la trate.
+  - pregunta: "¿Por qué el estado de la línea no cambia al instante?"
+    respuesta: >-
+      Cambia con cada documento del plan (asignaciones, compras,
+      requerimientos, OF, movimientos, avances, turnos y horas). Lo que no
+      pasa por un documento, como un turno que termina con el paso del
+      tiempo, lo recoge la acción programada horaria o «Actualizar control».
+  - pregunta: "¿La obra del planificador es la obra de la planilla?"
+    respuesta: >-
+      Son modelos distintos y no dependen uno del otro: se enlazan por la
+      cuenta analítica. Ponga en la obra de la planilla de construcción civil
+      la cuenta analítica del proyecto y los costos de ambas caen en la misma
+      obra.
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 6.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Control y personal propio (fase 7, P-13): estado de la línea y montos de control (comprometido, real, saldo, % ejecutado) guardados, filtrables y agrupables; pestaña «Control» del plan y «Análisis de control» en pivote y gráfico."
+      - "La OC con analítica de la obra se contrasta al confirmarla con el presupuesto analítico de su combinación según la política del plan (W-10)."
+      - "«Asignar cuadrilla» (W-06): turnos por obrero y semana con la tarea y la línea del plan; las horas registradas suben el ejecutado y el real, los turnos sin horas son el comprometido."
+      - "«Cambiar fechas» (W-08): desplaza n días o lleva a una fecha nueva la selección por etapas, recalcula la fecha de necesidad y avisa a Logística con una actividad en los requerimientos y OC desfasados."
+      - "Revertir un avance validado baja el estado del módulo; los botones del árbol «Asignar cuadrilla» y «Cambiar fechas» quedan activos."
   - version: 5.20261010
     fecha: 10/10/2026
     cambios:

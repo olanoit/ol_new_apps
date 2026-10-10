@@ -93,6 +93,22 @@ Fase 6 (liquidación semanal, P-08):
 * El plan no se cierra con liquidaciones pendientes y los avances no
   liquidados pasan a la versión nueva.
 
+Fase 7 (control y personal propio, P-13, W-06, W-08):
+
+* Estado y montos de control de cada línea (comprometido, real, saldo, %
+  ejecutado) guardados, filtrables y agrupables; se actualizan con cada
+  documento del plan y con una acción programada horaria.
+* Pestaña «Control» del plan y «Análisis de control» en pivote y gráfico por
+  etapa, tipo de recurso, contrata o producto.
+* La OC con analítica de la obra se contrasta al confirmarla con el
+  presupuesto analítico de su combinación según la política del plan (W-10).
+* «Asignar cuadrilla» (W-06): turnos por obrero y semana con la tarea y la
+  línea; las horas de la hoja de horas son el ejecutado y el real (costo
+  hora), los turnos sin horas el comprometido.
+* «Cambiar fechas» (W-08): desplaza o fija la fecha de la selección por
+  etapas, recalcula la fecha de necesidad y avisa a Logística.
+* Revertir un avance validado baja el estado del módulo.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -102,7 +118,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '5.20261010',
+    'version': '6.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -116,6 +132,9 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'project_forecast',
         'hr_timesheet',
         'account_budget',
+        # Comprometido de la línea de presupuesto (OC confirmadas sin facturar):
+        # base del control de la OC con analítica de la obra (fase 7).
+        'account_budget_purchase',
         'sale_management',
     ],
     'data': [
@@ -130,6 +149,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'wizards/plan_price_wizard_views.xml',
         'wizards/plan_supply_wizard_views.xml',
         'wizards/plan_contract_wizard_views.xml',
+        'wizards/plan_crew_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_progress_views.xml',

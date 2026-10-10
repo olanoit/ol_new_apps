@@ -17,7 +17,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 4 | Asignaciones y compras: asignaciones del plan, ejecución por línea, compra masiva (W-02, P-10), requerimiento de obra con control de plan (W-03, W-10, P-11), OF desde la BOM (W-04) | hecha |
 | 5 | Contratas: asignar contrata con OC de servicio por contrata y obra (W-05, P-05), avance por driver con fotos (W-07, P-06), avances por validar (P-07), avance de nodos y pestaña «Recursos y avance» (P-09), estado del módulo | hecha |
 | 6 | Liquidación semanal (P-08): acción programada, aprobación por niveles, recepción en la OC y factura con vencimiento el día de pago | hecha |
-| 7-8 | Personal propio (cuadrillas W-06), ingresos (entregas y valorizaciones), cronograma con recursos | pendiente |
+| 7 | Control y personal propio: control de la OC con analítica contra el presupuesto, estado y montos de control guardados, análisis de control (P-13), cuadrillas (W-06), cambiar fechas (W-08), reversión del estado del módulo | hecha |
+| 8+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma con recursos | pendiente |
 
 ## Modelos
 
@@ -55,6 +56,11 @@ Diseño técnico, equivalencias de nombres y plan de fases:
   `construction_retention_account_id`); `project.task`
   (`construction_progress_ids`, `construction_current_line_ids`,
   `construction_progress_pct`).
+- Fase 7: asistentes `construction.plan.crew.wizard` (W-06) y
+  `construction.plan.reschedule.wizard` (W-08); en la línea del plan, estado
+  y montos de control almacenados; `purchase.order`
+  (`construction_exceed_state`, `construction_exceed_reason`); `project.task`
+  (`construction_unit_state_base`).
 
 ## Árbol de recursos (P-02)
 
@@ -323,6 +329,77 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
   borrador, presentadas o validadas, o con avances validados sin liquidar;
   `_transfer_to_new_version` pasa los avances no liquidados a la línea nueva.
 
+## Control y personal propio (fase 7, P-13, W-06, W-08)
+
+- **Estado y montos de control guardados.** En la línea del plan,
+  `line_state`, `amount_committed`, `amount_actual`, `amount_remaining` y
+  `executed_pct` son campos almacenados sin `compute`: dependen de documentos
+  de otros modelos (compras, inventario, fabricación, turnos, horas) que no se
+  pueden declarar en `@api.depends`. Los escribe
+  `construction.resource.plan.line._refresh_control()` (con `sudo`
+  justificado), llamado por los eventos: asignaciones (alta, cambio, baja),
+  líneas del plan (cantidad, costo, unidad, tipo, rol, actividad, nivel),
+  plan (estado, tolerancia), requerimiento de obra (estado, procesar, líneas),
+  compra masiva (estado, líneas), OC (estado; recepción de la línea), OF
+  (estado), `stock.move._action_done`, avances (alta, estado, cantidad,
+  liquidación, baja), turnos (horas, fechas, recurso, baja) y hojas de horas
+  (alta, cambio, baja). Red de seguridad: acción programada horaria
+  `ir_cron_refresh_plan_control` (los turnos terminan con el paso del tiempo)
+  y el botón «Actualizar control». La migración `6.20261010` los calcula para
+  las líneas existentes.
+- **Análisis de control (P-13).** Pestaña «Control» del plan
+  (`control_html`: etapa › tipo de recurso con planificado, comprometido,
+  real, saldo y % ejecutado, leídos con `_read_group` de los montos
+  guardados) y acción `action_construction_plan_control` (pivote y gráfico
+  propios; menú Obras ▸ Análisis de control y botón del plan). Filtros y
+  agrupaciones por estado, contrata, producto y actividad.
+- **Personal propio.** Real = horas de la hoja de horas de la tarea y sus
+  descendientes con empleados del rol × `hourly_cost` de cada empleado;
+  comprometido = horas de los turnos de la línea aún no registradas (por
+  empleado) × su costo hora. El ejecutado en horas ya venía de la hoja de
+  horas (fase 5).
+- **Asignar cuadrilla (W-06, `construction.plan.crew.wizard`).** Selección,
+  etapas, rol, recursos, primera semana (inicio de semana de la obra),
+  semanas y horas por semana; un `planning.slot` por recurso, semana y línea
+  de personal propio con `construction_task_id`, `construction_plan_line_id`,
+  rol, obra y horas (repartidas por monto planificado), y su asignación
+  `planning_slot` (horas en la unidad de la línea si se mide en horas; si
+  se paga por driver, 0). Los recursos reciben el rol si no lo tienen. Al
+  cambiar las horas del turno, la asignación lo sigue.
+- **Cambiar fechas (W-08, `construction.plan.reschedule.wizard`).** Desplazar
+  n días o fecha nueva (para el inicio más temprano de la selección). Con
+  todas las etapas mueve las fechas de inicio y fin del Gantt de las tareas
+  (`al.gantt.field.map`) y recalcula `date_needed` desde el nuevo inicio
+  (`_get_default_date_needed`); con algunas, solo desplaza `date_needed` de
+  esas líneas. Avisa a Logística (actividad «Fechas del plan cambiadas») en
+  los requerimientos de obra, compras masivas y OC abiertos de las líneas
+  cuya fecha queda antes de la nueva necesidad al postergar (o después, al
+  adelantar). Responsable: el comprador de la OC o el primer usuario de
+  Logística de la compañía.
+- **OC con analítica de la obra.** `purchase.order.button_confirm` (salvo las
+  OC de servicio, que se controlan al asignar y liquidar): por cada
+  combinación analítica de sus líneas con la cuenta de una obra con plan
+  vigente busca la línea del presupuesto analítico del plan que la cubre
+  (`_construction_match_budget_line`, la más específica) y compara
+  comprometido de esa línea (`account_budget_purchase`: OC confirmadas sin
+  facturar más lo imputado) + esta OC con el presupuesto × (1 + tolerancia).
+  Una combinación sin línea de presupuesto queda fuera del presupuesto.
+  Política más estricta de las obras tocadas: bloquear (error), avisar (W-10
+  y confirmar) o pedir aprobación (W-10 con justificación; confirma la
+  jefatura del planificador con `sudo` justificado). Campos
+  `construction_exceed_state` / `construction_exceed_reason` en la OC.
+- **Factura de la valorización (fase 10).** Queda el gancho: el control
+  «Monto confirmado menos facturado de cada partida» irá en el botón «Crear
+  factura» de la valorización, que aún no existe.
+- **Estado del módulo al revertir.** `_construction_update_unit_state(revert=True)`
+  desde `action_reset`: un módulo en Producido o Instalado baja a lo que
+  justifica el avance que queda o, si es mayor, al estado que tenía antes de
+  que el avance lo subiera (`construction_unit_state_base`).
+- **Obra de planilla.** No se enlaza `l10n_pe.hr.construction.site`
+  (al_hr_pe_construction) con el proyecto para no crear una dependencia con
+  la planilla: ambos se encuentran por la cuenta analítica (ponga en la obra
+  de la planilla la cuenta analítica del proyecto).
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -376,7 +453,16 @@ validar.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_contracts.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (61 tests, con el tour
+Fase 7 (después de los anteriores): personal propio en las cocinas de los
+Dpto 501 y 502, la cuadrilla de dos obreros en la del 501 (4 turnos de 4 h)
+y 6 h registradas.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_control.py
+```
+
+Tests: `--test-tags /al_construction_planner` (72 tests, con el tour
 `al_construction_planner_plan_tree` del árbol; `test_supply.py` cubre la
 fase 4: compra masiva en los dos modos, el requerimiento con las tres
 políticas y la tolerancia, la OF con su BOM y el control al confirmar, el
@@ -384,7 +470,10 @@ estado de la línea, el traspaso al replanificar y la multicompañía;
 `test_contracts.py` cubre las fases 5 y 6 sobre una copia del piso 05 del
 demo: criterios de aceptación 4 a 8, saldo y tolerancia, fotos, rechazo y
 reversión, estado del módulo, periodos y feriados, cierre y traspaso,
-seguridad y multicompañía).
+seguridad y multicompañía; `test_control.py` cubre la fase 7: OC con
+analítica y las tres políticas, P-13 contra las líneas, estado filtrable,
+cuadrilla con turnos y horas, cambiar fechas con aviso a Logística, reversión
+del estado del módulo y multicompañía).
 
 Rendimiento del árbol con volumen tipo MOMEN (deshace todo al terminar):
 

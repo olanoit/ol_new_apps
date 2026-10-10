@@ -47,6 +47,7 @@
                 <field name="amount_committed" optional="hide"/>
                 <field name="amount_actual" optional="hide"/>
                 <field name="amount_remaining" optional="hide"/>
+                <field name="executed_pct" widget="percentage" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="price_basis" optional="hide"/>
                 <field name="price_basis_date" optional="hide"/>
@@ -195,6 +196,12 @@
                 <filter string="Personal propio" name="labor" domain="[('resource_type', '=', 'labor')]"/>
                 <separator/>
                 <filter string="Sin etapa" name="no_stage" domain="[('stage', '=', False)]"/>
+                <separator/>
+                <filter string="Planificadas" name="state_planned" domain="[('line_state', '=', 'planned')]"/>
+                <filter string="Parciales" name="state_partial" domain="[('line_state', '=', 'partial')]"/>
+                <filter string="En compra" name="state_purchasing" domain="[('line_state', '=', 'purchasing')]"/>
+                <filter string="Completas" name="state_done" domain="[('line_state', '=', 'done')]"/>
+                <filter string="Excedidas" name="state_exceeded" domain="[('line_state', '=', 'exceeded')]"/>
                 <filter string="Sin costo" name="no_price" domain="[('price_unit_planned', '=', False)]"/>
                 <separator/>
                 <filter string="Planes vigentes" name="current_plan"
@@ -202,12 +209,62 @@
                 <group>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
                     <filter string="Tipo de recurso" name="group_type" context="{'group_by': 'resource_type'}"/>
+                    <filter string="Estado" name="group_line_state" context="{'group_by': 'line_state'}"/>
+                    <filter string="Contrata o proveedor" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Producto" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Actividad" name="group_activity" context="{'group_by': 'activity_id'}"/>
                     <filter string="Piso" name="group_floor" context="{'group_by': 'floor_task_id'}"/>
                     <filter string="Departamento" name="group_apartment" context="{'group_by': 'apartment_task_id'}"/>
                     <filter string="Ambiente" name="group_space" context="{'group_by': 'space_task_id'}"/>
                     <filter string="Plan" name="group_plan" context="{'group_by': 'plan_id'}"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <!-- P-13 · Análisis de control: planificado, comprometido, real y saldo -->
+    <record id="construction_plan_control_view_pivot" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.pivot.control</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de control" sample="1">
+                <field name="stage" type="row"/>
+                <field name="amount_planned" type="measure" string="Planificado"/>
+                <field name="amount_committed" type="measure"/>
+                <field name="amount_actual" type="measure"/>
+                <field name="amount_remaining" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_plan_control_view_graph" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.graph.control</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de control" type="bar" sample="1">
+                <field name="stage"/>
+                <field name="amount_planned" type="measure" string="Planificado"/>
+                <field name="amount_actual" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_construction_plan_control" model="ir.actions.act_window">
+        <field name="name">Análisis de control</field>
+        <field name="res_model">construction.resource.plan.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'pivot', 'view_id': ref('construction_plan_control_view_pivot')}),
+            Command.create({'view_mode': 'graph', 'view_id': ref('construction_plan_control_view_graph')}),
+            Command.create({'view_mode': 'list', 'view_id': ref('construction_resource_plan_line_view_list')})]"/>
+        <field name="context">{'search_default_current_plan': 1, 'search_default_group_stage': 1, 'search_default_group_type': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay líneas en planes vigentes</p>
+            <p>Planificado, comprometido, real y saldo por etapa y tipo de recurso, por contrata
+               o por producto. El % ejecutado de cada etapa está en la pestaña «Control» del
+               plan.</p>
         </field>
     </record>
 
@@ -275,6 +332,16 @@
                             invisible="state not in ('approved', 'in_progress')"
                             context="{'default_plan_id': id}"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_crew_wizard)d" type="action"
+                            string="Asignar cuadrilla"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_reschedule_wizard)d" type="action"
+                            string="Cambiar fechas"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="%(action_plan_progress_wizard)d" type="action"
                             string="Registrar avance"
                             invisible="state not in ('approved', 'in_progress')"
@@ -305,6 +372,10 @@
                                 class="oe_stat_button" icon="fa-link" invisible="not allocation_count">
                             <field name="allocation_count" widget="statinfo" string="Asignaciones"/>
                         </button>
+                        <button name="action_open_control_analysis" type="object"
+                                class="oe_stat_button" icon="fa-bar-chart"
+                                string="Análisis de control"
+                                invisible="state in ('draft', 'to_approve', 'cancel')"/>
                         <button name="action_view_budget" type="object"
                                 class="oe_stat_button" icon="fa-money" string="Presupuesto"
                                 invisible="not budget_analytic_id"/>
@@ -360,6 +431,23 @@
                                 preparación, el presupuesto es el de la versión vigente.
                                 Comprometido y real se llenan con las asignaciones, contratas y
                                 producción; «Sin etapa» impide aprobar el plan.
+                            </p>
+                        </page>
+                        <page string="Control" name="control"
+                              invisible="state in ('draft', 'to_approve', 'cancel')">
+                            <div class="d-flex justify-content-end mb-2">
+                                <button name="action_refresh_control" type="object"
+                                        string="Actualizar control" icon="fa-refresh"
+                                        class="btn btn-secondary btn-sm"/>
+                            </div>
+                            <field name="control_html" nolabel="1"/>
+                            <p class="text-muted small">
+                                Análisis de control (P-13). Comprometido: pedido o comprado sin
+                                consumir, OC de servicio sin recibir y turnos sin horas
+                                registradas. Real: consumido al costo del plan, recibido en la OC
+                                de servicio y horas registradas por el costo hora del empleado.
+                                % ejecutado = real ÷ planificado. Se actualiza con cada documento
+                                y cada hora.
                             </p>
                         </page>
                         <page string="Políticas" name="policies">

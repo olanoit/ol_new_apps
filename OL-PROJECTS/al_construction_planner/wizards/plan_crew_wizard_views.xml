@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-06 · Asignar cuadrilla (personal propio) -->
+    <record id="construction_plan_crew_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.crew.wizard.form</field>
+        <field name="model">construction.plan.crew.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asignar cuadrilla">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}"
+                               readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <label for="stage_production" string="Etapas"/>
+                        <div class="o_row">
+                            <field name="stage_production"/><span>Producción</span>
+                            <field name="stage_assembly"/><span>Armado</span>
+                            <field name="stage_installation"/><span>Instalación</span>
+                            <field name="stage_finishing"/><span>Acabado</span>
+                        </div>
+                    </group>
+                    <group string="Cuadrilla">
+                        <field name="role_id" options="{'no_create': True}"/>
+                        <field name="resource_ids" widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                        <field name="date_start"/>
+                        <field name="weeks"/>
+                        <field name="hours_per_week"/>
+                        <field name="plan_line_count"/>
+                        <field name="hours_total"/>
+                    </group>
+                </group>
+                <div class="alert alert-warning" role="alert" invisible="not note">
+                    <field name="note" nolabel="1"/>
+                </div>
+                <field name="line_ids" nolabel="1" readonly="1">
+                    <list>
+                        <field name="week_start"/>
+                        <field name="resource_id"/>
+                        <field name="apartment_task_id"/>
+                        <field name="task_id"/>
+                        <field name="activity_id"/>
+                        <field name="hours" sum="Total"/>
+                        <field name="plan_line_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Un turno por recurso, semana y línea de personal propio, con la tarea del
+                    nivel: las horas por semana de cada recurso se reparten entre las líneas según
+                    su monto planificado. El capataz registra las horas en la hoja de horas de la
+                    tarea; esas horas por el costo hora del empleado son el real de la línea y los
+                    turnos aún sin horas, su comprometido.
+                </p>
+                <footer>
+                    <button name="action_assign" type="object" string="Asignar cuadrilla"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_crew_wizard" model="ir.actions.act_window">
+        <field name="name">Asignar cuadrilla</field>
+        <field name="res_model">construction.plan.crew.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    <!-- W-08 · Cambiar fechas -->
+    <record id="construction_plan_reschedule_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.reschedule.wizard.form</field>
+        <field name="model">construction.plan.reschedule.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cambiar fechas">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}"
+                               readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <label for="stage_production" string="Etapas"/>
+                        <div class="o_row">
+                            <field name="stage_production"/><span>Producción</span>
+                            <field name="stage_assembly"/><span>Armado</span>
+                            <field name="stage_installation"/><span>Instalación</span>
+                            <field name="stage_finishing"/><span>Acabado</span>
+                        </div>
+                    </group>
+                    <group string="Fechas">
+                        <field name="mode" widget="radio" options="{'horizontal': true}"/>
+                        <field name="days" invisible="mode != 'shift'"/>
+                        <field name="date_current" invisible="mode != 'date'"/>
+                        <field name="date_new" invisible="mode != 'date'"
+                               required="mode == 'date'"/>
+                        <field name="delta_days"/>
+                        <field name="move_tasks"/>
+                        <field name="task_count" invisible="not move_tasks"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1" readonly="1">
+                    <list>
+                        <field name="apartment_task_id"/>
+                        <field name="task_id"/>
+                        <field name="stage"/>
+                        <field name="resource_type"/>
+                        <field name="resource_name"/>
+                        <field name="date_old"/>
+                        <field name="date_new" decoration-info="1"/>
+                        <field name="plan_line_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Con todas las etapas se mueven las tareas de la selección (y su Gantt) y la
+                    fecha de necesidad de sus líneas se recalcula desde el nuevo inicio; con
+                    algunas etapas solo se desplaza la fecha de necesidad de esas líneas. Los
+                    requerimientos y OC abiertos cuya fecha queda desfasada reciben una actividad
+                    para Logística.
+                </p>
+                <footer>
+                    <button name="action_apply" type="object" string="Cambiar fechas"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_reschedule_wizard" model="ir.actions.act_window">
+        <field name="name">Cambiar fechas</field>
+        <field name="res_model">construction.plan.reschedule.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+</odoo>

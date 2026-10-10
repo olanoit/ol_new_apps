@@ -97,6 +97,10 @@ msgstr "Crear una tarea"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__create_uid
@@ -128,6 +132,10 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__create_date
@@ -162,6 +170,10 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_material_request_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__display_name
@@ -313,6 +325,10 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__write_uid
@@ -344,6 +360,10 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_reschedule_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_exceed_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__write_date

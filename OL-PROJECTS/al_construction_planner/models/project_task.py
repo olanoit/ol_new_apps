@@ -4,6 +4,8 @@ from odoo.exceptions import ValidationError
 
 from .common import DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES
 
+# Estados del módulo que pone el avance validado (y que su reversión quita).
+PROGRESS_UNIT_STATES = ('produced', 'installed')
 # Nivel inmediatamente superior de cada nivel (la obra es el proyecto).
 PARENT_LEVEL = {'apartment': 'floor', 'space': 'apartment', 'module': 'space'}
 
@@ -34,6 +36,10 @@ class ProjectTask(models.Model):
         UNIT_STATES, string='Estado del módulo', tracking=True,
         help='Avance físico del módulo: planificado, en producción, producido, en obra, '
              'instalado y entregado.')
+    construction_unit_state_base = fields.Selection(
+        UNIT_STATES, string='Estado del módulo antes del avance', readonly=True, copy=False,
+        help='El que tenía el módulo cuando el avance validado lo subió por primera vez: a él '
+             'vuelve si se revierten esos avances.')
     construction_plan_line_ids = fields.One2many(
         'construction.resource.plan.line', 'task_id', string='Recursos del nivel')
     construction_plan_amount = fields.Monetary(
@@ -129,12 +135,14 @@ class ProjectTask(models.Model):
                 False, (0.0, 0.0))
             task.construction_progress_pct = executed / planned if planned else 0.0
 
-    def _construction_update_unit_state(self):
+    def _construction_update_unit_state(self, revert=False):
         """Estado del módulo por el avance validado (especificación, «Avance
         por driver»): con todo el armado del módulo hecho pasa a Producido;
         con todas sus actividades de instalación (del módulo o, si cuelgan
-        del ambiente, de su ambiente), a Instalado. Solo hace subir el
-        estado: revertir un avance no lo baja (se corrige a mano)."""
+        del ambiente, de su ambiente), a Instalado. Validar solo lo hace
+        subir. Al revertir (``revert``), un módulo que el avance había dejado
+        en Producido o Instalado baja a lo que justifica el avance que queda
+        o, si es mayor, al estado que tenía antes del avance."""
         modules = self.filtered(lambda t: t.construction_level == 'module')
         spaces = self.filtered(lambda t: t.construction_level == 'space')
         if spaces:
@@ -157,10 +165,20 @@ class ProjectTask(models.Model):
             target = 'installed' if complete(installation) else \
                 'produced' if complete(assembly) else False
             current = module.construction_unit_state or 'planned'
+            # sudo: el estado lo mueve el sistema con el avance validado o
+            # revertido; el supervisor puede no poder editar la tarea.
+            module_sudo = module.sudo()
             if target and UNIT_STATE_RANK[target] > UNIT_STATE_RANK[current]:
-                # sudo: el estado lo mueve el sistema con el avance validado;
-                # el supervisor que valida puede no poder editar la tarea.
-                module.sudo().construction_unit_state = target
+                vals = {'construction_unit_state': target}
+                if current not in PROGRESS_UNIT_STATES:
+                    vals['construction_unit_state_base'] = current
+                module_sudo.write(vals)
+            elif revert and current in PROGRESS_UNIT_STATES and (
+                    not target or UNIT_STATE_RANK[target] < UNIT_STATE_RANK[current]):
+                base = module.construction_unit_state_base or 'planned'
+                lower = max(target or 'planned', base, key=UNIT_STATE_RANK.get)
+                if UNIT_STATE_RANK[lower] < UNIT_STATE_RANK[current]:
+                    module_sudo.construction_unit_state = lower
 
     def action_construction_register_progress(self):
         """Registrar avance (W-07) de este nivel."""

@@ -199,6 +199,7 @@ class ConstructionTaskProgress(models.Model):
                 raise UserError(self.env._(
                     'El plan %s no está vigente: el avance se reporta sobre el plan aprobado.',
                     progress.plan_id.display_name))
+        progresses.plan_line_id._refresh_control()
         return progresses
 
     def write(self, vals):
@@ -208,7 +209,18 @@ class ConstructionTaskProgress(models.Model):
                 raise UserError(self.env._(
                     'Solo se corrige un avance reportado; vuelva a reportado %s primero.',
                     ', '.join(locked.mapped('name'))))
-        return super().write(vals)
+        before = self.plan_line_id
+        res = super().write(vals)
+        # Lo validado es el ejecutado de la línea (estado y control).
+        if {'state', 'qty', 'plan_line_id', 'settlement_id'} & set(vals):
+            (before | self.plan_line_id)._refresh_control()
+        return res
+
+    def unlink(self):
+        lines = self.plan_line_id
+        res = super().unlink()
+        lines._refresh_control()
+        return res
 
     @api.ondelete(at_uninstall=False)
     def _unlink_only_draft(self):
@@ -272,7 +284,7 @@ class ConstructionTaskProgress(models.Model):
         self.write({'state': 'draft', 'settlement_id': False, 'validator_id': False,
                     'validation_date': False})
         settlements._refresh_lines()
-        validated.task_id._construction_update_unit_state()
+        validated.task_id._construction_update_unit_state(revert=True)
 
     def action_view_photos(self):
         self.ensure_one()

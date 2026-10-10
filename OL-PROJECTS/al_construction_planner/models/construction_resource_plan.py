@@ -7,6 +7,7 @@ from markupsafe import Markup
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import split_every
 from odoo.tools.misc import formatLang
 
 from .common import DRIVER_TYPES, RESOURCE_TYPES, STAGES
@@ -119,6 +120,10 @@ class ConstructionResourcePlan(models.Model):
         help='Planificado menos comprometido menos real.')
     stage_summary_html = fields.Html(
         string='Resumen por etapa', compute='_compute_stage_summary_html', sanitize=False)
+    control_html = fields.Html(
+        string='Análisis de control', compute='_compute_control_html', sanitize=False,
+        help='Planificado, comprometido, real, saldo y % ejecutado por etapa y tipo de '
+             'recurso (P-13).')
     version_count = fields.Integer(string='Versiones', compute='_compute_version_count')
     date_approved = fields.Datetime(string='Aprobado el', readonly=True, copy=False)
     date_closed = fields.Date(string='Cerrado el', readonly=True, copy=False)
@@ -266,6 +271,92 @@ class ConstructionResourcePlan(models.Model):
                 '<table class="table table-sm o_construction_stage_summary">'
                 '<thead><tr>%s</tr></thead><tbody>%s</tbody></table>') % (head, body)
 
+    def _get_control_data(self):
+        """Análisis de control (P-13): {(etapa, tipo de recurso): {planned,
+        committed, actual}} con los montos guardados en las líneas."""
+        self.ensure_one()
+        result = {}
+        if not self.id:
+            return result
+        for stage, rtype, planned, committed, actual in self.env[
+                'construction.resource.plan.line']._read_group(
+                [('plan_id', '=', self.id)], groupby=['stage', 'resource_type'],
+                aggregates=['amount_planned:sum', 'amount_committed:sum', 'amount_actual:sum']):
+            result[(stage, rtype)] = {
+                'planned': planned, 'committed': committed, 'actual': actual}
+        return result
+
+    @api.depends('line_ids.amount_planned', 'line_ids.amount_committed',
+                 'line_ids.amount_actual')
+    def _compute_control_html(self):
+        """Tabla P-13: etapa › tipo de recurso con planificado, comprometido,
+        real, saldo y % ejecutado (real entre planificado)."""
+        headers = [self.env._('Etapa › Tipo de recurso'), self.env._('Planificado'),
+                   self.env._('Comprometido'), self.env._('Real'), self.env._('Saldo'),
+                   self.env._('% ejecutado')]
+        stage_labels = dict(STAGES)
+        type_labels = dict(RESOURCE_TYPES)
+        for plan in self:
+            data = plan._get_control_data()
+            if not data:
+                plan.control_html = False
+                continue
+
+            def cells(values):
+                remaining = values['planned'] - values['committed'] - values['actual']
+                pct = values['actual'] / values['planned'] if values['planned'] else 0.0
+                amounts = [values['planned'], values['committed'], values['actual'], remaining]
+                return Markup('').join(
+                    Markup('<td class="text-end">%s</td>') % (
+                        formatLang(plan.env, value, digits=2) if value else '—')
+                    for value in amounts) + Markup('<td class="text-end">%s %%</td>') % (
+                        formatLang(plan.env, pct * 100, digits=1))
+
+            def add(total, values):
+                for key in ('planned', 'committed', 'actual'):
+                    total[key] += values[key]
+
+            body = Markup('')
+            grand = dict.fromkeys(('planned', 'committed', 'actual'), 0.0)
+            for stage in [key for key, _label in STAGES] + [False]:
+                rows = [(rtype, values) for (st, rtype), values in data.items() if st == stage]
+                if not rows:
+                    continue
+                subtotal = dict.fromkeys(('planned', 'committed', 'actual'), 0.0)
+                for _rtype, values in rows:
+                    add(subtotal, values)
+                add(grand, subtotal)
+                body += Markup('<tr class="fw-bold%s"><td>%s</td>%s</tr>') % (
+                    '' if stage else ' table-danger',
+                    stage_labels.get(stage, self.env._('Sin etapa')), cells(subtotal))
+                for rtype, values in sorted(rows, key=lambda r: list(type_labels).index(r[0])):
+                    body += Markup('<tr><td class="ps-4">%s</td>%s</tr>') % (
+                        type_labels.get(rtype, rtype), cells(values))
+            body += Markup('<tr class="fw-bold table-active"><td>%s</td>%s</tr>') % (
+                self.env._('Total obra'), cells(grand))
+            head = Markup('').join(
+                Markup('<th class="%s">%s</th>') % ('' if i == 0 else 'text-end', h)
+                for i, h in enumerate(headers))
+            plan.control_html = Markup(
+                '<table class="table table-sm o_construction_control">'
+                '<thead><tr>%s</tr></thead><tbody>%s</tbody></table>') % (head, body)
+
+    def action_refresh_control(self):
+        """«Actualizar control»: recalcula el estado y los montos de las líneas."""
+        self.line_ids._refresh_control()
+        return True
+
+    def action_open_control_analysis(self):
+        """Análisis de control (P-13) del plan en pivote y gráfico."""
+        self.ensure_one()
+        self.line_ids._refresh_control()
+        action = self.env['ir.actions.act_window']._for_xml_id(
+            'al_construction_planner.action_construction_plan_control')
+        action['name'] = self.env._('Análisis de control · %s', self.display_name)
+        action['domain'] = [('plan_id', '=', self.id)]
+        action['context'] = {'search_default_group_stage': 1, 'search_default_group_type': 1}
+        return action
+
     def _compute_version_count(self):
         counts = dict(self.with_context(active_test=False)._read_group(
             [('project_id', 'in', self.project_id.ids)], ['project_id'], ['__count']))
@@ -322,6 +413,14 @@ class ConstructionResourcePlan(models.Model):
                 vals.setdefault('date_end', project.date or fields.Date.to_date(
                     vals['date_start']) + timedelta(days=90))
         return super().create(vals_list)
+
+    def write(self, vals):
+        res = super().write(vals)
+        # El estado de las líneas sigue al plan (cancelada) y la tolerancia
+        # decide cuándo una línea está excedida.
+        if {'state', 'exceed_tolerance'} & set(vals):
+            self.line_ids._refresh_control()
+        return res
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_approved(self):
@@ -516,6 +615,21 @@ class ConstructionResourcePlan(models.Model):
                 biggest = max(values, key=lambda v: abs(v['budget_amount']))
                 biggest['budget_amount'] = currency.round(biggest['budget_amount'] + difference)
         return values
+
+    def _construction_match_budget_line(self, combo):
+        """Línea del presupuesto analítico del plan que cubre una combinación
+        de cuentas ({columna: id}): la que tiene todas sus cuentas en la
+        combinación (sus columnas vacías no filtran, como en el informe de
+        presupuesto de Odoo) y, entre ellas, la más específica."""
+        self.ensure_one()
+        best, best_size = self.env['budget.line'], 0
+        for budget_line in self.budget_analytic_id.budget_line_ids:
+            values = {fname: budget_line[fname].id for fname in budget_line._get_plan_fnames()
+                      if budget_line[fname]}
+            if values and len(values) > best_size and all(
+                    combo.get(fname) == value for fname, value in values.items()):
+                best, best_size = budget_line, len(values)
+        return best
 
     def _create_budget(self, parent_budget=False):
         self.ensure_one()
@@ -775,15 +889,25 @@ class ConstructionResourcePlanLine(models.Model):
     amount_budgeted = fields.Monetary(
         string='Presupuesto', readonly=True, copy=False, currency_field='currency_id',
         help='Monto de la línea congelado al aprobar el plan.')
+    # Control (P-13): almacenados para filtrar, agrupar y analizar en pivote.
+    # No dependen de campos almacenados (salen de compras, inventario,
+    # fabricación, avances, turnos y hojas de horas): los actualiza
+    # ``_refresh_control`` con cada evento de esos documentos y la acción
+    # programada de control (ver DISENO_TECNICO.md, fase 7).
     amount_committed = fields.Monetary(
-        string='Comprometido', compute='_compute_execution', currency_field='currency_id',
-        help='Asignaciones, requerimientos y órdenes abiertos (fases 4 a 6).')
+        string='Comprometido', readonly=True, copy=False, currency_field='currency_id',
+        help='Pedido o comprado sin consumir, OC de servicio sin recibir y turnos sin horas '
+             'registradas.')
     amount_actual = fields.Monetary(
-        string='Real', compute='_compute_execution', currency_field='currency_id',
-        help='Consumos, avances liquidados y producción terminada (fases 4 a 6).')
+        string='Real', readonly=True, copy=False, currency_field='currency_id',
+        help='Consumido al costo del plan, recibido en la OC de servicio y horas registradas '
+             'por el costo hora del empleado.')
     amount_remaining = fields.Monetary(
-        string='Saldo', compute='_compute_execution', currency_field='currency_id',
+        string='Saldo', readonly=True, copy=False, currency_field='currency_id',
         help='Planificado menos comprometido menos real.')
+    executed_pct = fields.Float(
+        string='% ejecutado', readonly=True, copy=False, aggregator='avg',
+        help='Real entre planificado.')
     date_needed = fields.Date(
         string='Fecha de necesidad', compute='_compute_date_needed', store=True,
         readonly=False, help='Inicio de la tarea menos la anticipación del tipo de recurso.')
@@ -842,9 +966,11 @@ class ConstructionResourcePlanLine(models.Model):
     line_state = fields.Selection(
         [('planned', 'Planificada'), ('partial', 'Parcial'), ('purchasing', 'En compra'),
          ('done', 'Completa'), ('exceeded', 'Excedida'), ('cancel', 'Cancelada')],
-        string='Estado', compute='_compute_line_state', compute_sudo=True,
+        string='Estado', default='planned', required=True, readonly=True, copy=False,
+        index=True,
         help='En este orden: Excedida (pedido sobre lo planificado más la tolerancia), '
-             'Completa, En compra, Parcial y Planificada.')
+             'Completa, En compra, Parcial y Planificada. Se actualiza con cada documento '
+             'del plan.')
 
     @api.depends('task_id', 'task_id.construction_level', 'task_id.construction_floor_task_id',
                  'task_id.construction_apartment_task_id', 'task_id.construction_space_task_id')
@@ -868,7 +994,8 @@ class ConstructionResourcePlanLine(models.Model):
         Material, servicio y producción, al costo del plan: comprometido es lo
         pedido o comprado aún no consumido; real, lo consumido. Contratas: lo
         asignado a la OC de servicio no recibido y lo recibido, a la tarifa de
-        la OC. Las fases 5 y 6 lo completan con avances y turnos."""
+        la OC. Personal propio: además, horas registradas por el costo hora
+        del empleado (real) y horas de turnos aún sin registrar (comprometido)."""
         result = {}
         for line in self:
             committed = actual = 0.0
@@ -878,6 +1005,8 @@ class ConstructionResourcePlanLine(models.Model):
                 committed = max(covered - line.qty_consumed, 0.0) * price
                 actual = line.qty_consumed * price
             else:
+                if line.resource_type == 'labor':
+                    committed, actual = line._get_labor_amounts()
                 for allocation in line.allocation_ids.filtered(
                         lambda a: a.kind == 'service_order' and a.state != 'cancel'):
                     # La tarifa de la OC se lee aunque el usuario del plan no
@@ -910,22 +1039,54 @@ class ConstructionResourcePlanLine(models.Model):
         return bool(self.resource_type == 'labor' and hour and self.product_uom_id
                     and self.product_uom_id._has_common_reference(hour))
 
-    def _get_timesheet_hours(self):
-        """Horas de la hoja de horas del nivel de la línea y sus descendientes
-        con empleados del rol de la línea (o de su actividad)."""
+    def _get_role(self):
+        self.ensure_one()
+        return self.role_id or self.activity_id.role_id
+
+    def _get_timesheet_by_employee(self):
+        """{empleado: horas} de la hoja de horas del nivel de la línea y sus
+        descendientes con empleados del rol de la línea (o de su actividad)."""
         self.ensure_one()
         if not self.task_id:
-            return 0.0
-        domain = [('task_id', 'child_of', self.task_id.id), ('project_id', '=', self.project_id.id)]
-        role = self.role_id or self.activity_id.role_id
+            return {}
+        domain = [('task_id', 'child_of', self.task_id.id), ('project_id', '=', self.project_id.id),
+                  ('employee_id', '!=', False)]
+        role = self._get_role()
         if role:
             domain.append(('employee_id.planning_role_ids', 'in', role.ids))
         # sudo: las horas de otros empleados se suman sin dar acceso a sus
-        # registros; solo para el avance de la línea.
+        # registros; solo para el avance y el costo de la línea.
         lines_sudo = self.env['account.analytic.line'].sudo()
-        hours = lines_sudo._read_group(domain, [], ['unit_amount:sum'])[0][0] or 0.0
+        return {employee: hours or 0.0 for employee, hours in lines_sudo._read_group(
+            domain, ['employee_id'], ['unit_amount:sum'])}
+
+    def _get_timesheet_hours(self):
+        """Horas registradas de la línea, en su unidad."""
+        self.ensure_one()
+        hours = sum(self._get_timesheet_by_employee().values())
         hour = self.env.ref('uom.product_uom_hour')
         return hour._compute_quantity(hours, self.product_uom_id) if self.product_uom_id else hours
+
+    def _get_labor_amounts(self):
+        """(comprometido, real) del personal propio: real = horas registradas
+        por el costo hora de cada empleado; comprometido = horas de sus turnos
+        de la línea aún no registradas, al mismo costo."""
+        self.ensure_one()
+        registered = self._get_timesheet_by_employee()
+        # sudo: el costo hora y los turnos son de RR. HH. y Planificación; se
+        # leen solo para valorizar la línea.
+        actual = sum(employee.sudo().hourly_cost * hours for employee, hours in registered.items())
+        planned = defaultdict(float)
+        for allocation in self.allocation_ids.filtered(
+                lambda a: a.kind == 'planning_slot' and a.state != 'cancel'):
+            slot_sudo = allocation.sudo().slot_id
+            employee = slot_sudo.employee_id
+            if employee:
+                planned[employee] += slot_sudo.allocated_hours
+        committed = sum(
+            max(hours - registered.get(employee, 0.0), 0.0) * employee.sudo().hourly_cost
+            for employee, hours in planned.items())
+        return committed, actual
 
     @api.depends('activity_id', 'product_id', 'role_id')
     def _compute_resource_name(self):
@@ -966,13 +1127,6 @@ class ConstructionResourcePlanLine(models.Model):
     def _get_tolerance_qty(self):
         self.ensure_one()
         return self.qty_planned * (self.plan_id.exceed_tolerance or 0.0) / 100.0
-
-    @api.depends('qty_planned', 'plan_id.state', 'plan_id.exceed_tolerance', 'resource_type',
-                 'allocation_ids.state', 'allocation_ids.qty_allocated',
-                 'allocation_ids.qty_dispatched', 'progress_ids.state', 'progress_ids.qty')
-    def _compute_line_state(self):
-        for line in self:
-            line.line_state = line._get_line_state()
 
     def _get_line_state(self):
         self.ensure_one()
@@ -1021,13 +1175,58 @@ class ConstructionResourcePlanLine(models.Model):
                 result[line.stage] = (prev_committed + committed, prev_actual + actual)
         return result
 
-    def _compute_execution(self):
-        execution = self._get_line_execution()
-        for line in self:
+    # Campos no almacenados de los que salen el estado y los montos de
+    # control: se descartan de la caché antes de recalcular, porque cambian
+    # con documentos de otros modelos sin dependencia declarada.
+    _CONTROL_SOURCE_FIELDS = (
+        'qty_requested', 'qty_purchased', 'qty_dispatched', 'qty_consumed', 'qty_remaining',
+        'qty_executed', 'qty_settled', 'progress_pct')
+    # Campos de la línea que cambian su control.
+    _CONTROL_TRIGGERS = {
+        'qty_planned', 'price_unit_planned', 'product_uom_id', 'resource_type', 'role_id',
+        'activity_id', 'task_id', 'plan_id'}
+
+    def _refresh_control(self):
+        """Recalcula y guarda el estado de la línea y sus montos de control
+        (comprometido, real, saldo, % ejecutado). Lo llaman los eventos de
+        los documentos del plan (asignaciones, compras, requerimientos, OF,
+        movimientos, avances, turnos y hojas de horas), el cambio de estado
+        del plan y la acción programada de control."""
+        # sudo: el control mira compras, inventario, fabricación, turnos y
+        # horas que quien dispara el evento puede no ver; solo se guardan el
+        # estado y los montos de la propia línea.
+        lines_sudo = self.sudo().exists()
+        if not lines_sudo:
+            return
+        self.env['construction.resource.plan.allocation'].invalidate_model(
+            ['state', 'qty_done', 'qty_purchased', 'qty_dispatched', 'qty_consumed'])
+        lines_sudo.invalidate_recordset(list(self._CONTROL_SOURCE_FIELDS))
+        execution = lines_sudo._get_line_execution()
+        updates = defaultdict(lambda: lines_sudo.browse())
+        for line in lines_sudo:
             committed, actual = execution.get(line, (0.0, 0.0))
-            line.amount_committed = committed
-            line.amount_actual = actual
-            line.amount_remaining = line.amount_planned - committed - actual
+            currency = line.currency_id
+            remaining = line.amount_planned - committed - actual
+            pct = actual / line.amount_planned if line.amount_planned else 0.0
+            vals = {
+                'line_state': line._get_line_state(),
+                'amount_committed': committed,
+                'amount_actual': actual,
+                'amount_remaining': currency.round(remaining) if currency else remaining,
+                'executed_pct': round(pct, 6),
+            }
+            if any(line[key] != value for key, value in vals.items()):
+                updates[tuple(sorted(vals.items()))] |= line
+        for vals, lines in updates.items():
+            lines.with_context(construction_plan_force=True).write(dict(vals))
+
+    @api.model
+    def _cron_refresh_control(self):
+        """Red de seguridad del control: los turnos que terminan con el paso
+        del tiempo y cualquier evento que no pase por el ORM."""
+        lines = self.search([('plan_id.state', 'in', OPEN_STATES)])
+        for ids in split_every(1000, lines.ids):
+            self.browse(ids)._refresh_control()
 
     def _get_consumed_qty(self):
         """Cantidad ya pedida o ejecutada de la línea que se queda en esta
@@ -1048,7 +1247,14 @@ class ConstructionResourcePlanLine(models.Model):
     @api.depends('task_id', 'resource_type', 'plan_id.date_start', 'plan_id.lead_days_material',
                  'plan_id.lead_days_contract', 'plan_id.lead_days_production')
     def _compute_date_needed(self):
+        for line, date_needed in self._get_default_date_needed().items():
+            line.date_needed = date_needed
+
+    def _get_default_date_needed(self):
+        """{línea: inicio de su tarea (o del plan) menos la anticipación de su
+        tipo de recurso}. Base de la fecha de necesidad y de «Cambiar fechas»."""
         start_field = self.env['al.gantt.field.map'].get_map().get('date_start')
+        result = {}
         for line in self:
             plan = line.plan_id
             start = line.task_id[start_field] if line.task_id and start_field else False
@@ -1058,7 +1264,8 @@ class ConstructionResourcePlanLine(models.Model):
                 'contract': plan.lead_days_contract, 'labor': plan.lead_days_contract,
                 'production': plan.lead_days_production,
             }.get(line.resource_type, 0)
-            line.date_needed = start - timedelta(days=lead or 0) if start else False
+            result[line] = start - timedelta(days=lead or 0) if start else False
+        return result
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -1091,7 +1298,8 @@ class ConstructionResourcePlanLine(models.Model):
                     'El nivel %s no pertenece a la obra del plan.', line.task_id.display_name))
 
     # Líneas editables solo con el plan en borrador (especificación).
-    _LOCKED_ALLOWED = {'date_needed', 'line_state'}
+    _LOCKED_ALLOWED = {'date_needed', 'line_state', 'amount_committed', 'amount_actual',
+                       'amount_remaining', 'executed_pct'}
 
     def _check_plan_editable(self, vals=None):
         if self.env.context.get('construction_plan_force'):
@@ -1108,11 +1316,15 @@ class ConstructionResourcePlanLine(models.Model):
     def create(self, vals_list):
         lines = super().create(vals_list)
         lines._check_plan_editable()
+        lines._refresh_control()
         return lines
 
     def write(self, vals):
         self._check_plan_editable(vals)
-        return super().write(vals)
+        res = super().write(vals)
+        if self._CONTROL_TRIGGERS & set(vals):
+            self._refresh_control()
+        return res
 
     def unlink(self):
         self._check_plan_editable()

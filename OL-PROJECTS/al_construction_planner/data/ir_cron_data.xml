@@ -13,4 +13,17 @@
         <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 11:00:00')"/>
         <field name="active" eval="True"/>
     </record>
+
+    <!-- Cada hora: estado y montos de control de las líneas de los planes
+         vigentes (los turnos terminan con el paso del tiempo; red de
+         seguridad de los eventos de los documentos). -->
+    <record id="ir_cron_refresh_plan_control" model="ir.cron">
+        <field name="name">Planificación de obra: actualizar el control de los planes</field>
+        <field name="model_id" ref="model_construction_resource_plan_line"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh_control()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>

@@ -173,9 +173,9 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | 3 | ~~Requerimientos desde la selección~~: hecho en la fase 4 (el control va en `action_request_approval`, no en `_check_ready_to_submit`, que también corre al procesar) | P-07 |
 | Contratas (hecha; fase 5 de la especificación) | W-05 asignar contrata con OC de servicio por contrata y obra; avance por driver con fotos (AVN), W-07 y avances por validar; ejecutado y avance de líneas y nodos; estado del módulo; semana de la obra (ver §6.3) | P-05, P-06, P-07, P-09 |
 | Liquidación semanal (hecha; fase 6 de la especificación) | LIQ por contrata, obra y semana; acción programada; aprobación por niveles; recepción en la OC y factura con vencimiento el día de pago; «Pagada» (ver §6.3) | P-08 |
-| 5 | Personal propio: turnos de planificación por rol, horas; enlace con la obra de planilla | P-09 |
+| Control y personal propio (hecha; fase 7 de la especificación) | OC con analítica contra el presupuesto de la combinación (W-10); estado y montos de control almacenados con eventos; análisis de control; W-06 cuadrillas con turnos y horas; W-08 cambiar fechas con aviso a Logística; reversión del estado del módulo (ver §6.4) | P-13, W-06, W-08 |
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
-| 7 | Presupuesto analítico, OV por partida, valorizaciones e ingreso devengado, flujo | P-11, P-13 |
+| 7 | OV por partida, valorizaciones e ingreso devengado, factura de la valorización con control de saldo, flujo | P-20, P-21, P-22 |
 | 8 | Cronograma con recursos: heredar `al.gantt.data.get_data`, panel y carga semanal OWL | P-15 |
 
 ### 6.1 Línea base: presupuesto y ganchos
@@ -269,6 +269,86 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   factura al aprobar (jefatura sin permisos de compras ni contabilidad), horas
   de otros empleados, feriados, estado del módulo, sincronización «Pagada».
 
+### 6.4 Control y personal propio (fase 7)
+
+- **Estado y montos almacenados por eventos.** `line_state`,
+  `amount_committed`, `amount_actual`, `amount_remaining` y `executed_pct`
+  de `construction.resource.plan.line` son almacenados y **sin** `compute`:
+  dependen de campos no almacenados de las asignaciones (estado y cantidades
+  repartidas, que siguen a compras, inventario y fabricación), de avances,
+  turnos y hojas de horas; un `@api.depends` no los dispararía y un
+  `store=True` con dependencias incompletas dejaría valores viejos sin aviso.
+  `_refresh_control()` (sudo justificado) descarta de la caché esos campos no
+  almacenados, recalcula con `_get_line_execution()` / `_get_line_state()` y
+  escribe solo lo que cambió, agrupado por valores. Eventos: asignación
+  (create/write/unlink, con las del mismo documento), línea (campos de
+  `_CONTROL_TRIGGERS`), plan (`state`, `exceed_tolerance`), requerimiento de
+  obra (`state`, `action_process`, línea: cancelada/cantidad/unidad), compra
+  masiva (`state`, línea), OC (`state`) y su línea (`qty_received`,
+  `qty_received_manual`, `product_qty`), OF (`state`),
+  `stock.move._action_done` (asignaciones de requerimiento por producto y de
+  OF), avance (create, `state`/`qty`/`plan_line_id`/`settlement_id`,
+  unlink), turno (horas, fechas, recurso, unlink: la cascada de la base no
+  pasa por el ORM y las líneas se leen antes) y hoja de horas (create, write,
+  unlink; líneas de personal propio con `task_id parent_of`). Red de
+  seguridad: `ir_cron_refresh_plan_control` cada hora (planes vigentes, en
+  lotes de 1000) y «Actualizar control». Migración `6.20261010`: cálculo
+  inicial. Lo que no cubren los eventos: un `qty_received_on_site` o un
+  `line_state` del requerimiento que cambie por un cálculo sin `write` ni
+  movimiento hecho (lo recoge la acción programada).
+- **P-13.** `plan._get_control_data()` = `_read_group` por etapa y tipo de
+  recurso de los montos guardados; `control_html` añade subtotales por etapa,
+  total de la obra y % ejecutado (real ÷ planificado, que el pivote no puede
+  calcular). Acción `action_construction_plan_control` con pivote y gráfico
+  propios (prioridad 20).
+- **OC con analítica.** `purchase.order.button_confirm` (no las de servicio):
+  `_construction_budget_amounts()` reparte cada línea por su distribución;
+  para cada cuenta busca el plan vigente de la obra con esa cuenta
+  (`project.account_id`, misma compañía) y la línea de presupuesto que cubre
+  la combinación (`plan._construction_match_budget_line`: todas sus columnas
+  en la combinación, la más específica; como el informe de presupuesto de
+  Odoo). Usado = `budget.line.committed_amount` de `account_budget_purchase`
+  (nueva dependencia; `auto_install` con `account_budget` + `purchase`),
+  invalidado antes de leer porque no tiene dependencias. Exceso = usado +
+  esta OC − presupuesto × (1 + tolerancia). W-10 con `purchase_order_id`
+  (concepto, saldo, pedido y exceso en moneda de la compañía). La aprobación
+  la confirma la jefatura con `sudo` justificado (no es compradora).
+- **Personal propio.** `_get_timesheet_by_employee()` (sudo) agrupa las horas
+  por empleado; real = Σ horas × `hourly_cost`; comprometido = Σ por empleado
+  de max(horas de turnos de la línea − horas registradas, 0) × costo hora.
+  Limitación: dos líneas de personal propio del mismo rol en el mismo nivel
+  cuentan las mismas horas.
+- **W-06** (`construction.plan.crew.wizard`, hereda la selección del mixin):
+  un `planning.slot` por recurso, semana (inicio de semana de la obra,
+  08:00-17:00 hora local del usuario de la semana completa) y línea, con
+  `allocated_hours` explícitas (repartidas por monto planificado),
+  `construction_task_id`, `construction_plan_line_id`, rol y obra. Turnos y
+  roles con `sudo` justificado. Asignación `planning_slot`: horas en la
+  unidad de la línea si se mide en horas, 0 si se paga por driver;
+  `planning.slot.write` la sincroniza con las horas del turno.
+- **W-08** (`construction.plan.reschedule.wizard`): con todas las etapas
+  desplaza `date_start`/`date_end` del mapa del Gantt de las tareas
+  (selección y descendientes) y recalcula `date_needed` con
+  `_get_default_date_needed()` para las líneas cuya tarea tiene inicio; con
+  algunas etapas solo desplaza `date_needed`. Aviso: actividad «Por hacer»
+  en requerimiento de obra, compra masiva u OC abiertos de las líneas cuya
+  fecha (`date_required` / `date_planned`) queda antes de la nueva necesidad
+  al postergar, o después al adelantar; responsable el comprador de la OC o
+  el primer usuario de Logística de la compañía.
+- **Estado del módulo.** `construction_unit_state_base` guarda el estado
+  previo cuando el avance lo sube por primera vez; `revert=True` (desde
+  `action_reset`) baja a max(lo que justifica el avance, ese estado previo).
+- **Factura de la valorización (fase 10):** el control «monto confirmado
+  menos facturado por partida» queda para el botón «Crear factura» de la
+  valorización (modelo aún inexistente). Gancho previsto: un método
+  `_construction_check_invoice_balance()` en la valorización, llamado antes de
+  `_create_invoices`, con la misma política que los demás documentos.
+- **Obra de planilla.** Sin enlace de modelo con
+  `l10n_pe.hr.construction.site` (al_hr_pe_construction): exigiría depender
+  de la planilla. Se encuentran por la cuenta analítica (la obra de planilla
+  lleva `analytic_account_id`; el proyecto, `account_id`). Si se quiere un
+  campo, va en un módulo puente.
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -285,15 +365,15 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   los 8 ambientes (64 líneas); el maestro tiene 59 porque algunas tipologías no
   tienen todas las actividades. Los montos cuadran (S/ 941.17).
 - **Dos «obras»** (proyecto y `l10n_pe.hr.construction.site` de planilla):
-  decidir el enlace con las cuadrillas de personal propio (fase 7).
-- **Fase 7 (siguiente)**: cuadrillas W-06 (turnos con tarea y línea; las
-  asignaciones `planning_slot` ya existen), costo de las horas en el real,
-  entregas, valorizaciones e ingresos; `line_state` sigue sin almacenarse.
+  se encuentran por la cuenta analítica (§6.4); un campo de enlace iría en un
+  módulo puente.
+- **Siguiente**: entregas, valorizaciones e ingresos (con la factura de la
+  valorización y su control de saldo) y cronograma con recursos.
+- **Control por eventos**: un cambio que no pasa por los ganchos de §6.4
+  espera a la acción programada horaria.
 - **Retención y fondo de garantía**: sin cuenta configurada la factura va por
   el bruto; falta acordar con contabilidad el tratamiento.
-- **Estado del módulo**: solo sube con el avance; revertir no lo baja.
 - **Secuencia**: los tests consumen números de la secuencia `PLR` en bases de
   desarrollo (comportamiento normal de `ir.sequence` estándar).
-- **Control multicompañía** de `al_base_module_info`: falla hoy por
-  `l10n_pe.hr.shift.cycle.assignment.template_id` (módulo de planillas, ajeno
-  a este trabajo).
+- **Control multicompañía** de `al_base_module_info`: en verde (10/10/2026,
+  con la fase 7).
