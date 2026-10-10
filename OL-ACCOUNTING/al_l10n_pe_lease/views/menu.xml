@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perú ▸ Arrendamientos -->
+    <menuitem id="menu_lease_root" name="Arrendamientos"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_user"
+              sequence="37"/>
+    <menuitem id="menu_lease_contracts" name="Contratos"
+              parent="menu_lease_root" action="action_lease" sequence="10"/>
+    <menuitem id="menu_lease_lines" name="Tabla de cuotas"
+              parent="menu_lease_root" action="action_lease_lines" sequence="20"/>
+    <menuitem id="menu_lease_analysis" name="Análisis de arrendamientos"
+              parent="menu_lease_root" action="action_lease_analysis" sequence="30"/>
+</odoo>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contratos -->
+    <record id="view_lease_list" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.list</field>
+        <field name="model">l10n_pe.lease</field>
+        <field name="arch" type="xml">
+            <list string="Arrendamientos" sample="1"
+                  decoration-muted="state in ('cancelled', 'closed')"
+                  decoration-info="state == 'draft'">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="property_description"/>
+                <field name="date_start"/>
+                <field name="date_end" optional="show"/>
+                <field name="term_months" string="Meses" optional="show"/>
+                <field name="payment_amount" sum="Cuotas"/>
+                <field name="liability_amount" sum="Pasivo" optional="show"/>
+                <field name="rou_amount" sum="Derecho de uso" optional="show"/>
+                <field name="exemption" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'running'"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'exempt'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_lease_form" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.form</field>
+        <field name="model">l10n_pe.lease</field>
+        <field name="arch" type="xml">
+            <form string="Arrendamiento">
+                <header>
+                    <button name="action_compute" type="object" string="Calcular"
+                            invisible="state != 'draft' or exemption != 'none'"/>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Se registran el derecho de uso, el pasivo y sus asientos. ¿Continuar?"/>
+                    <button name="action_register_installment" type="object" string="Registrar cuota"
+                            class="btn-primary" invisible="state not in ('running', 'exempt')"/>
+                    <button name="action_close" type="object" string="Terminar"
+                            invisible="state not in ('running', 'exempt')"/>
+                    <button name="action_cancel" type="object" string="Cancelar" invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_bills" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not bill_count">
+                            <field name="bill_count" widget="statinfo" string="Facturas"/>
+                        </button>
+                        <button name="action_open_asset" type="object" class="oe_stat_button" icon="fa-building"
+                                string="Derecho de uso" invisible="not asset_id"/>
+                        <button name="action_open_loan" type="object" class="oe_stat_button" icon="fa-bars"
+                                string="Pasivo" invisible="not loan_id"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        NIIF 16: el arrendatario reconoce un <strong>pasivo</strong> por el valor presente de
+                        las cuotas y un <strong>activo por derecho de uso</strong> que se deprecia en el plazo;
+                        el gasto es depreciación más intereses, no alquiler. Los contratos de 12 meses o menos
+                        y los de bienes de bajo valor pueden quedar exentos: la cuota va a gasto.
+                    </div>
+                    <group>
+                        <group string="Contrato">
+                            <field name="partner_id" readonly="state != 'draft'" options="{'no_quick_create': True}"/>
+                            <field name="property_description" readonly="state != 'draft'"/>
+                            <field name="contract_ref"/>
+                            <field name="exemption" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group string="Condiciones">
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="term_months" readonly="state != 'draft'"/>
+                            <field name="date_end"/>
+                            <field name="payment_amount" readonly="state != 'draft'"/>
+                            <field name="payment_timing" readonly="state != 'draft'"/>
+                            <field name="annual_rate" readonly="state != 'draft'" invisible="exemption != 'none'"/>
+                        </group>
+                    </group>
+                    <group invisible="exemption != 'none'">
+                        <group string="Medición inicial">
+                            <field name="initial_direct_costs" readonly="state != 'draft'"/>
+                            <field name="incentives" readonly="state != 'draft'"/>
+                            <field name="guarantee_amount"/>
+                        </group>
+                        <group string="Resultado">
+                            <field name="monthly_rate"/>
+                            <field name="liability_amount"/>
+                            <field name="rou_amount"/>
+                            <field name="total_payments"/>
+                            <field name="total_interest"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tabla del pasivo" name="schedule" invisible="exemption != 'none'">
+                            <field name="line_ids">
+                                <list>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="number"/>
+                                    <field name="date"/>
+                                    <field name="payment" sum="Cuotas"/>
+                                    <field name="interest" sum="Intereses"/>
+                                    <field name="principal" sum="Capital"/>
+                                    <field name="balance"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Contabilidad" name="accounting">
+                            <group>
+                                <group string="Activo" invisible="exemption != 'none'">
+                                    <field name="rou_account_id" readonly="state != 'draft'"/>
+                                    <field name="depreciation_account_id" readonly="state != 'draft'"/>
+                                    <field name="depreciation_expense_account_id" readonly="state != 'draft'"/>
+                                    <field name="asset_id"/>
+                                </group>
+                                <group string="Pasivo" invisible="exemption != 'none'">
+                                    <field name="liability_long_account_id" readonly="state != 'draft'"/>
+                                    <field name="liability_short_account_id" readonly="state != 'draft'"/>
+                                    <field name="interest_account_id" readonly="state != 'draft'"/>
+                                    <field name="clearing_account_id" readonly="state != 'draft'"/>
+                                    <field name="loan_id"/>
+                                    <field name="initial_move_id"/>
+                                </group>
+                                <group string="Diario y gasto">
+                                    <field name="journal_id" readonly="state != 'draft'"/>
+                                    <field name="rent_expense_account_id" readonly="state != 'draft'"
+                                           invisible="exemption == 'none'"/>
+                                    <field name="next_period" invisible="state not in ('running', 'exempt')"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lease_search" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.search</field>
+        <field name="model">l10n_pe.lease</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="property_description"/>
+                <filter name="running" string="En curso" domain="[('state', '=', 'running')]"/>
+                <filter name="exempt" string="Exentos" domain="[('state', '=', 'exempt')]"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <group>
+                    <filter name="by_partner" string="Arrendador" context="{'group_by': 'partner_id'}"/>
+                    <filter name="by_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_lease" model="ir.actions.act_window">
+        <field name="name">Arrendamientos</field>
+        <field name="res_model">l10n_pe.lease</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un contrato de alquiler</p>
+            <p>Oficinas, almacenes o equipos tomados en arrendamiento: el pasivo y el derecho de uso
+               según NIIF 16, o el gasto si el contrato es exento.</p>
+        </field>
+    </record>
+
+    <!-- Tabla de cuotas -->
+    <record id="view_lease_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.line.list</field>
+        <field name="model">l10n_pe.lease.line</field>
+        <field name="arch" type="xml">
+            <list string="Cuotas de arrendamiento" create="false" sample="1">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="lease_id"/>
+                <field name="partner_id"/>
+                <field name="number"/>
+                <field name="date"/>
+                <field name="payment" sum="Cuotas"/>
+                <field name="interest" sum="Intereses"/>
+                <field name="principal" sum="Capital"/>
+                <field name="balance"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_lease_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.line.pivot</field>
+        <field name="model">l10n_pe.lease.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de arrendamientos" sample="1">
+                <field name="lease_id" type="row"/>
+                <field name="date" interval="year" type="col"/>
+                <field name="interest" type="measure"/>
+                <field name="principal" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_lease_line_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.line.graph</field>
+        <field name="model">l10n_pe.lease.line</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de arrendamientos" type="bar" stacked="1" sample="1">
+                <field name="date" interval="year"/>
+                <field name="interest" type="measure"/>
+                <field name="principal" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_lease_lines" model="ir.actions.act_window">
+        <field name="name">Tabla de cuotas</field>
+        <field name="res_model">l10n_pe.lease.line</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_lease_line_list')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_lease_line_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_lease_line_graph')})]"/>
+    </record>
+
+    <record id="action_lease_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de arrendamientos</field>
+        <field name="res_model">l10n_pe.lease.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_lease_line_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_lease_line_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_lease_line_list')})]"/>
+    </record>
+</odoo>

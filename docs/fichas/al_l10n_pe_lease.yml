@@ -1,0 +1,179 @@
+titulo: Arrendamientos NIIF 16
+subtitulo: >-
+  Alquileres de oficinas, almacenes y equipos según NIIF 16: pasivo a valor
+  presente, activo por derecho de uso con su depreciación y cuotas del
+  arrendador contra el pasivo, sobre los activos y préstamos de Odoo.
+categoria: Localización Perú · Contabilidad
+etiquetas: [NIIF 16, Arrendamientos, Derecho de uso, Pasivo por arrendamiento, Alquileres, Enterprise]
+portada: screenshots/02-contrato.png
+ediciones: [enterprise]
+
+destacados_intro: >-
+  El contrato se arma una vez; los asientos de cada mes los generan los motores
+  de activos y préstamos de Odoo.
+destacados:
+  - icono: "%"
+    titulo: Valor presente
+    texto: >-
+      Pasivo por el valor presente de las cuotas con la tasa incremental de
+      endeudamiento; tabla por el método del interés efectivo.
+  - icono: "▣"
+    titulo: Derecho de uso
+    texto: >-
+      Activo = pasivo + cuota adelantada + costos directos − incentivos, con
+      depreciación lineal mensual en el plazo del contrato.
+  - icono: "⇄"
+    titulo: Interés y capital cada mes
+    texto: >-
+      El pasivo vive en un préstamo de Odoo: cada cuota separa interés y
+      capital y reclasifica el corto plazo.
+  - icono: "＋"
+    titulo: Cuotas del arrendador
+    texto: >-
+      «Registrar cuota» crea la factura del arrendador contra el pasivo; IGV y
+      detracción como cualquier factura.
+  - icono: "12"
+    titulo: Exenciones
+    texto: >-
+      Contratos de 12 meses o menos y bienes de bajo valor: sin activo ni
+      pasivo, la cuota va a gasto de alquiler.
+
+contexto:
+  titulo: Qué pide la NIIF 16
+  texto: >-
+    Desde 2019 el arrendatario ya no registra el alquiler como gasto del mes:
+    reconoce un pasivo por las cuotas futuras (a valor presente) y un activo
+    por el derecho de usar el bien, que se deprecia en el plazo. El gasto del
+    periodo pasa a ser depreciación (683) más intereses (673). Las empresas
+    que reportan con NIIF plenas lo aplican a oficinas, almacenes, locales y
+    equipos; quedan fuera los contratos de corto plazo y los de bienes de bajo
+    valor.
+  nota: >-
+    **Requiere Odoo Enterprise**: usa los módulos de activos fijos
+    (account_asset) y préstamos (account_loans).
+
+flujos:
+  - id: arrendamiento
+    titulo: Del contrato a los asientos
+    texto: >-
+      El contrato confirmado crea el asiento inicial, el activo y el préstamo;
+      cada mes se deprecia el activo, se devenga el interés y llega la factura
+      del arrendador.
+    mermaid: |
+      flowchart TD
+        A[Contrato en borrador<br/>plazo, cuota, tasa] --> B{¿Exento?}
+        B -- Corto plazo o bajo valor --> C[Exento<br/>cuota a gasto de alquiler]
+        B -- No --> D[Calcular<br/>valor presente y tabla]
+        D --> E[Confirmar]
+        E --> F[Asiento inicial<br/>32 derecho de uso / 45 pasivo]
+        E --> G[Activo<br/>depreciación lineal 683 / 39]
+        E --> H[Préstamo<br/>interés 673 y capital por cuota]
+        H --> I[Registrar cuota<br/>factura del arrendador contra el pasivo]
+
+pasos_intro: >-
+  Ejemplo: oficina a 36 meses, cuota adelantada de S/ 4 500 sin IGV, tasa
+  incremental del 12 % anual y S/ 1 200 de costos directos.
+pasos:
+  - seccion: Contrato
+  - titulo: Registrar el contrato
+    ruta: Perú ▸ Arrendamientos ▸ Contratos ▸ Nuevo
+    texto: >-
+      Arrendador, bien, inicio, plazo, cuota y si se paga al inicio o al final
+      del mes. Con 12 meses o menos queda marcado como exento (corto plazo);
+      «Activo de bajo valor» se elige a mano.
+    imagen: screenshots/04-borrador.png
+  - titulo: Calcular y confirmar
+    ruta: Contrato ▸ Calcular / Confirmar
+    texto: >-
+      «Calcular» muestra el pasivo, el derecho de uso y la tabla. «Confirmar»
+      registra el asiento inicial, el activo y el préstamo, enlazados por un
+      grupo de activos.
+    puntos:
+      - "Cuota adelantada: la primera se paga al firmar y va al activo, no al pasivo (35 cuotas en la tabla)."
+      - "La tasa es la incremental de endeudamiento: la de un préstamo al mismo plazo."
+    imagen: screenshots/02-contrato.png
+  - titulo: Cuentas del contrato
+    ruta: Contrato ▸ Contabilidad
+    texto: >-
+      Cuentas del activo, del pasivo, de intereses y la transitoria, con las del
+      PCGE por defecto; se pueden cambiar mientras el contrato esté en borrador.
+    imagen: screenshots/03-cuentas.png
+  - titulo: El activo y el pasivo
+    ruta: Contrato ▸ Derecho de uso / Pasivo
+    texto: >-
+      El derecho de uso es un activo fijo con su tabla de depreciación mensual;
+      el pasivo es un préstamo de Odoo con la tabla del contrato: cada cuota
+      publica su interés y su capital en su fecha.
+    imagen: screenshots/07-pasivo.png
+  - titulo: Contrato exento
+    ruta: Perú ▸ Arrendamientos ▸ Contratos
+    texto: >-
+      A 12 meses o menos (o de bajo valor), el contrato queda «Exento»: sin
+      activo ni pasivo; sus cuotas se facturan a gasto de alquiler.
+    imagen: screenshots/05-exento.png
+  - seccion: Cada mes
+  - titulo: Registrar la cuota
+    ruta: Contrato ▸ Registrar cuota
+    texto: >-
+      Crea en borrador la factura del arrendador de la siguiente cuota: la
+      primera (adelantada) contra la cuenta transitoria y las demás contra el
+      pasivo de corto plazo. El préstamo ya registró su interés y su capital.
+    imagen: screenshots/08-factura.png
+  - titulo: Seguimiento
+    ruta: Perú ▸ Arrendamientos ▸ Tabla de cuotas / Análisis
+    texto: >-
+      Cuotas, intereses, capital y saldo por contrato y por año.
+    imagen: screenshots/09-analisis.png
+
+asientos_intro: >-
+  Oficina del ejemplo: pasivo S/ 133 483,38 (valor presente de 35 cuotas) y
+  derecho de uso S/ 139 183,38 (pasivo + cuota adelantada 4 500 + costos 1 200).
+asientos:
+  - titulo: Reconocimiento inicial
+    referencia: Reconocimiento inicial ARR/2026/0029
+    lineas:
+      - ["32331", "Derecho de uso – edificaciones", "139.183,38", ""]
+      - ["452", "Pasivo por arrendamiento", "", "133.483,38"]
+      - ["183", "Cuota adelantada y costos directos (transitoria)", "", "5.700,00"]
+    nota: >-
+      La factura de la primera cuota y las de los costos directos cargan la
+      cuenta transitoria y la saldan.
+  - titulo: Cuota del mes 2 (préstamo)
+    referencia: ARR/2026/0029 - Oficina Av. Javier Prado 450, piso 8 - Principal & Interest 08/2026
+    lineas:
+      - ["452", "Capital (largo plazo)", "3.233,40", ""]
+      - ["6732", "Intereses del arrendamiento", "1.266,60", ""]
+      - ["452", "Cuota por pagar (corto plazo)", "", "4.500,00"]
+    nota: >-
+      La factura del arrendador carga el corto plazo con la cuota (más IGV) y
+      la abona al proveedor.
+
+campos:
+  - grupo: Contrato
+    ruta: Perú ▸ Arrendamientos ▸ Contratos
+    campos:
+      - [Plazo (meses), Duración del contrato, 36, Define la depreciación y la tabla]
+      - [Cuota mensual, Importe sin IGV, —, La factura agrega el IGV]
+      - [Pago, Al inicio o al final del mes, Al inicio, Adelantada la primera cuota va al activo]
+      - [Tasa incremental anual, Tasa efectiva anual del arrendatario, —, Descuenta las cuotas]
+      - [Costos directos, Gastos para obtener el contrato, 0, Suman al activo]
+      - [Incentivos, Pagos o descuentos del arrendador, 0, Restan al activo]
+      - [Exención NIIF 16, Corto plazo o bajo valor, Según el plazo, Sin activo ni pasivo]
+  - grupo: Cuentas (por contrato, con el PCGE por defecto)
+    ruta: Contrato ▸ Contabilidad
+    campos:
+      - [Derecho de uso, Activo, 32331, —]
+      - [Depreciación acumulada, Activo (contra), 39412, —]
+      - [Gasto de depreciación, Gasto, 683111, —]
+      - [Pasivo largo y corto plazo, Pasivo, 452, Puede usar subcuentas]
+      - [Gasto por intereses, Gasto, 6732, —]
+      - [Cuenta transitoria, Cuota adelantada y costos, 183, Alquileres pagados por anticipado]
+      - [Gasto de alquiler, Contratos exentos, 6352, —]
+
+novedades:
+  - version: 1.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Primera versión: contratos de arrendamiento NIIF 16 con valor presente, derecho de uso en activos fijos, pasivo en préstamos, facturas del arrendador por cuota, exenciones de corto plazo y bajo valor, y menú Perú ▸ Arrendamientos."
+
+relacionados: [al_account_base, al_l10n_pe_ple, al_l10n_pe_detraction]

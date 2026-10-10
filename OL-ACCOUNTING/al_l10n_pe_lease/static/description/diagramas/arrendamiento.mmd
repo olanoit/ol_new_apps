@@ -1,0 +1,9 @@
+flowchart TD
+  A[Contrato en borrador<br/>plazo, cuota, tasa] --> B{¿Exento?}
+  B -- Corto plazo o bajo valor --> C[Exento<br/>cuota a gasto de alquiler]
+  B -- No --> D[Calcular<br/>valor presente y tabla]
+  D --> E[Confirmar]
+  E --> F[Asiento inicial<br/>32 derecho de uso / 45 pasivo]
+  E --> G[Activo<br/>depreciación lineal 683 / 39]
+  E --> H[Préstamo<br/>interés 673 y capital por cuota]
+  H --> I[Registrar cuota<br/>factura del arrendador contra el pasivo]

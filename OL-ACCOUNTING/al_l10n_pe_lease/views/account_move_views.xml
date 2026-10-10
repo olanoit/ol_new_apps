@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Factura del arrendador: pestaña «Arrendamiento» dentro de «Facturación PE». -->
+    <record id="view_move_form_lease" model="ir.ui.view">
+        <field name="name">account.move.form.lease.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="al_account_base.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Arrendamiento" name="l10n_pe_lease" invisible="not l10n_pe_lease_id">
+                    <group>
+                        <group>
+                            <field name="l10n_pe_lease_id"/>
+                            <field name="l10n_pe_lease_period"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

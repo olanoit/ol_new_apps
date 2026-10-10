@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lease_user,l10n_pe.lease contabilidad,model_l10n_pe_lease,account.group_account_user,1,1,1,1
+access_lease_line_user,l10n_pe.lease.line contabilidad,model_l10n_pe_lease_line,account.group_account_user,1,1,1,1
+access_lease_readonly,l10n_pe.lease auditor,model_l10n_pe_lease,account.group_account_readonly,1,0,0,0
+access_lease_line_readonly,l10n_pe.lease.line auditor,model_l10n_pe_lease_line,account.group_account_readonly,1,0,0,0

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="sequence_lease" model="ir.sequence">
+        <field name="name">Arrendamientos (NIIF 16)</field>
+        <field name="code">l10n_pe.lease</field>
+        <field name="prefix">ARR/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>
