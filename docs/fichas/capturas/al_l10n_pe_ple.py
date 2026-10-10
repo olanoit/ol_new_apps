@@ -11,7 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from capturar import Captura  # noqa: E402
+from capturar import Captura, module_dir  # noqa: E402
 
 ALTO = {'width': 1440, 'height': 1400}
 # Bloques a ejecutar (todos por defecto): p. ej. ``... al_l10n_pe_ple.py 3 4``
@@ -166,7 +166,7 @@ if 5 in BLOQUES:
     from PIL import Image, ImageChops
 
     ODOO = Path('/home/och/odoo/ce19')
-    destino = Path(__file__).resolve().parents[3] / 'al_l10n_pe_ple' / 'static' / 'description' / 'screenshots' / '22-excel-13-1.png'
+    destino = module_dir('al_l10n_pe_ple') / 'static' / 'description' / 'screenshots' / '22-excel-13-1.png'
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         xlsx = tmp / 'ple_13_1.xlsx'

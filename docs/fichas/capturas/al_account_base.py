@@ -36,12 +36,16 @@ def error_al_guardar(c, campo, valor, nombre):
 
 with Captura('al_account_base') as c:
     if '1' in BLOQUES:
-        # 1. App Perú con el menú Configuración desplegado
+        # 1. App Perú con el menú Configuración desplegado. Con todas las
+        # secciones (factoring, guías…) a 1440 px «Configuración» cae en el
+        # desplegable «+»: se captura más ancho.
+        c.page.set_viewport_size({'width': 1920, 'height': 900})
         c.abrir_accion('al_account_base.action_pe_settings', ms=2500)
         c.clic('.o_menu_sections button:has-text("Configuración")', ms=900)
-        c.foto('01-menu-configuracion', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 690},
+        c.foto('01-menu-configuracion', clip={'x': 0, 'y': 0, 'width': 1920, 'height': 690},
                recortar=False)
         c.page.keyboard.press('Escape')
+        c.page.set_viewport_size(c.viewport)
 
         # 2. Ajustes ▸ Perú: contenedor de los ajustes de la localización
         c.abrir_accion('al_account_base.action_pe_settings', ms=2500)

@@ -121,11 +121,9 @@ with Captura('al_account_destinations') as c:
         c.abrir_registro('account.move', ROUNDING_DEST, ms=2000)
         c.foto('12-asiento-redondeo', selector='.o_form_view .o_form_sheet_bg')
 
-        # 13. Cuenta de la clase de origen sin destinos: no deja publicar
-        c.abrir_registro('account.move', NO_DEST, ms=2000)
-        c.clic('.o_form_statusbar button[name=action_post]', ms=2000)
-        c.foto('13-error-sin-destinos', selector='.modal-content')
-        c.clic('.modal-footer button', ms=600)
+        # (El antiguo paso 13, «sin destinos no deja publicar», ya no aplica:
+        # desde c0bed24 una cuenta sin reparto ni centros de costo con destino
+        # se publica sin asiento de destino.)
 
         # 14. Origen vuelto a borrador: el destino también
         c.abrir_registro('account.move', DRAFT_DEST, ms=2000)
