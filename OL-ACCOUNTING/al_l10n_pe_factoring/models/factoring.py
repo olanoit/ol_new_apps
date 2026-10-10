@@ -10,20 +10,40 @@ Sin recurso (el factor asume el riesgo; NIIF 9: baja de la cuenta por cobrar)
   haber 1214 (factor) por el adelanto. El saldo de la 1214 es el retenido.
 - Cobro del factor: debe banco / haber 1214 (factor) por el retenido.
 
-Con recurso (el riesgo sigue en la empresa; el adelanto es una obligación)
-- Cesión: debe 1214 (cliente) / haber 1212 (cliente), conciliado con la factura.
+- Pérdida del retenido (el cliente no pagó y el factor no libera el
+  retenido): debe 6741 / haber 1214 (factor).
+
+Con recurso (el riesgo sigue en la empresa; NIIF 9: la cuenta por cobrar no
+se da de baja y el adelanto es una obligación)
+- Cesión: sin asiento; la factura sigue pendiente en 1212 y se marca cedida.
 - Desembolso: debe banco (neto), 3731 (intereses por devengar) o 6734,
   6391 / haber 4512 (factor) por el adelanto.
 - Devengo: debe 6734 / haber 3731.
-- Cobro del factor al cliente: debe 4512 (adelanto) y banco (retenido) /
-  haber 1214 (cliente).
-- Recompra (el cliente no pagó): debe 4512 / haber banco (devolución del
-  adelanto) y debe 1212 / haber 1214: la factura vuelve a quedar pendiente.
+- Cobro del factor al cliente (total o parcial): debe 4512 (lo cobrado hasta
+  cubrir el adelanto, al tipo de cambio histórico) y banco (el resto) /
+  haber 1212 (cliente), conciliado con la factura.
+- Recompra (el cliente no pagó): debe 4512 / haber banco por el adelanto no
+  cubierto; la factura sigue pendiente.
+
+Lo que paga el cliente se aplica primero al adelanto y luego al retenido.
 """
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+from datetime import timedelta
+
 from .factoring_account_config import MODALITIES
+
+#: DU 013-2020 (art. 7): el adquirente tiene 8 días calendario desde que la
+#: factura electrónica se pone a su disposición para dar su conformidad; si no
+#: la objeta, se presume conforme (sin prueba en contrario).
+CONFORMITY_DAYS = 8
+CONFORMITY_STATES = [
+    ('pending', 'Pendiente'),
+    ('accepted', 'Conforme (expresa)'),
+    ('presumed', 'Conforme (presunta)'),
+    ('rejected', 'Disconforme'),
+]
 
 STATES = [
     ('draft', 'Borrador'),
@@ -38,10 +58,11 @@ LINE_STATES = [
     ('assigned', 'Cedida'),
     ('collected', 'Cobrada'),
     ('repurchased', 'Recomprada'),
+    ('lost', 'Retenido perdido'),
     ('cancelled', 'Cancelada'),
 ]
 #: Una factura en una línea con estos estados no se puede volver a ceder.
-ACTIVE_LINE_STATES = ('draft', 'assigned', 'collected')
+ACTIVE_LINE_STATES = ('draft', 'assigned', 'collected', 'lost')
 
 
 class L10nPeFactoring(models.Model):
@@ -102,6 +123,14 @@ class L10nPeFactoring(models.Model):
     interest_accrued_amount = fields.Monetary(string='Intereses devengados', readonly=True, copy=False)
     interest_pending_amount = fields.Monetary(
         string='Intereses pendientes de devengo', compute='_compute_interest_pending')
+    loss_amount = fields.Monetary(
+        string='Retenido perdido', readonly=True, copy=False,
+        help='Sin recurso: retenido que el factor no liberó porque el cliente no pagó.')
+    financial_cost = fields.Monetary(
+        string='Costo financiero', compute='_compute_financial_cost', store=True,
+        help='Intereses, comisión, gastos y retenido perdido de la operación.')
+    collected_amount = fields.Monetary(
+        string='Cobrado por el factor', compute='_compute_amounts', store=True)
 
     move_ids = fields.Many2many('account.move', string='Asientos', readonly=True, copy=False,
                                 check_company=True)
@@ -112,14 +141,22 @@ class L10nPeFactoring(models.Model):
         'CHECK(default_advance_percent >= 0 AND default_advance_percent <= 100)',
         'El porcentaje de adelanto debe estar entre 0 y 100.')
 
-    @api.depends('line_ids.nominal_amount', 'line_ids.advance_amount', 'line_ids.state')
+    @api.depends('line_ids.nominal_amount', 'line_ids.advance_amount', 'line_ids.state',
+                 'line_ids.collected_amount')
     def _compute_amounts(self):
         for operation in self:
             lines = operation.line_ids.filtered(lambda l: l.state != 'cancelled')
             operation.nominal_amount = sum(lines.mapped('nominal_amount'))
             operation.advance_amount = sum(lines.mapped('advance_amount'))
             operation.retained_amount = operation.nominal_amount - operation.advance_amount
+            operation.collected_amount = sum(lines.mapped('collected_amount'))
             operation.line_count = len(lines)
+
+    @api.depends('interest_amount', 'fee_amount', 'expense_amount', 'loss_amount')
+    def _compute_financial_cost(self):
+        for operation in self:
+            operation.financial_cost = (operation.interest_amount + operation.fee_amount
+                                        + operation.expense_amount + operation.loss_amount)
 
     @api.depends('interest_deferred_amount', 'interest_accrued_amount')
     def _compute_interest_pending(self):
@@ -215,6 +252,26 @@ class L10nPeFactoring(models.Model):
                 raise UserError(self.env._(
                     'El valor nominal de %(invoice)s supera su saldo pendiente (%(residual)s).',
                     invoice=invoice.display_name, residual=invoice.amount_residual))
+            if line.conformity_state == 'rejected':
+                raise UserError(self.env._(
+                    'El cliente dio su disconformidad con %s: no se puede ceder hasta que se subsane '
+                    '(nota de crédito o débito o nuevo comprobante).', invoice.display_name))
+
+    def _assignment_warnings(self):
+        """Avisos que no impiden ceder: factura al contado (la factura negociable
+        nace de una venta al crédito) y conformidad aún pendiente."""
+        self.ensure_one()
+        notes = []
+        cash = self.line_ids.filtered(lambda l: not l.is_credit)
+        if cash:
+            notes.append(self.env._('Facturas al contado (sin plazo de pago): %s.',
+                                    ', '.join(cash.move_id.mapped('name'))))
+        pending = self.line_ids.filtered(lambda l: l.conformity_state == 'pending')
+        if pending:
+            notes.append(self.env._('Conformidad del cliente pendiente: %s.', ', '.join(
+                '%s (presunta desde %s)' % (l.move_id.name, l.presumed_conformity_date or '—')
+                for l in pending)))
+        return notes
 
     def action_assign(self):
         """Cede las facturas. Sin recurso, la deuda pasa al factor (1212 →
@@ -227,6 +284,8 @@ class L10nPeFactoring(models.Model):
             operation._check_before_assign()
             config = operation._config()
             without_recourse = operation.modality == 'without_recourse'
+            for note in operation._assignment_warnings():
+                operation.message_post(body=note)
             if not without_recourse:
                 operation.line_ids.write({'state': 'assigned'})
                 operation.state = 'assigned'
@@ -299,6 +358,40 @@ class L10nPeFactoring(models.Model):
             operation._accrue_pending_interest(fields.Date.context_today(operation))
             operation.state = 'repurchased' if all(l.state == 'repurchased' for l in lines) else 'done'
 
+    def _obligation_vals(self, date, line, amount_currency, label):
+        """Con recurso: cancela ``amount_currency`` de la obligación con el factor
+        al contravalor histórico del adelanto (la 4512 no es conciliable, no
+        recibe diferencia de cambio). La diferencia con el cambio del día va a
+        las cuentas de diferencia de cambio de la compañía."""
+        config = self._config()
+        vals = self._line_vals(date, config.obligation_account_id, amount_currency, label,
+                               partner=self.factor_id, factoring_line=line)
+        company = self.company_id
+        if self.currency_id == company.currency_id:
+            return [vals]
+        origin = self.move_ids.filtered(lambda m: m.state == 'posted').line_ids.filtered(
+            lambda l: l.l10n_pe_factoring_line_id == line and l.account_id == config.obligation_account_id
+            and l.amount_currency < 0)
+        if not origin or self.currency_id.is_zero(sum(origin.mapped('amount_currency'))):
+            return [vals]
+        rate = abs(sum(origin.mapped('balance')) / sum(origin.mapped('amount_currency')))
+        historic = company.currency_id.round(amount_currency * rate)
+        difference = vals['balance'] - historic
+        vals['balance'] = historic
+        if company.currency_id.is_zero(difference):
+            return [vals]
+        # Diferencia al debe (el adelanto vale más hoy): pérdida; al haber: ganancia.
+        account = (company.expense_currency_exchange_account_id if difference > 0
+                   else company.income_currency_exchange_account_id)
+        return [vals, {
+            'name': self.env._('Diferencia de cambio %s', label),
+            'account_id': account.id,
+            'currency_id': company.currency_id.id,
+            'amount_currency': difference,
+            'balance': difference,
+            'l10n_pe_factoring_line_id': False,
+        }]
+
     def _accrue_pending_interest(self, date, amount=None):
         """Con recurso: pasa a gasto los intereses diferidos (todo lo pendiente
         si ``amount`` es None)."""
@@ -342,6 +435,9 @@ class L10nPeFactoring(models.Model):
 
     def action_repurchase(self):
         return self._open_wizard('repurchase')
+
+    def action_write_off(self):
+        return self._open_wizard('write_off')
 
     def action_open_moves(self):
         self.ensure_one()
@@ -392,6 +488,32 @@ class L10nPeFactoringLine(models.Model):
     cavali_number = fields.Char(
         string='Anotación CAVALI',
         help='Código de la anotación en cuenta de la factura negociable en CAVALI.')
+    cavali_date = fields.Date(
+        string='Fecha de anotación',
+        help='Fecha de la anotación en cuenta en CAVALI: desde ella la factura negociable '
+             'electrónica se puede transferir.')
+    is_credit = fields.Boolean(
+        string='Al crédito', compute='_compute_is_credit',
+        help='La factura tiene plazo de pago (forma de pago «crédito»): la factura negociable '
+             'nace de una venta al crédito.')
+    conformity_state = fields.Selection(
+        CONFORMITY_STATES, string='Conformidad', default='pending', required=True,
+        help='Conformidad del cliente con la factura (DU 013-2020, art. 7): expresa, presunta '
+             'a los 8 días calendario sin objeción, o disconformidad (impide ceder).')
+    conformity_date = fields.Date(string='Fecha de conformidad')
+    presumed_conformity_date = fields.Date(
+        string='Conformidad presunta', compute='_compute_presumed_conformity_date', store=True,
+        help='8 días calendario desde la emisión de la factura (la norma los cuenta desde que '
+             'se pone a disposición del cliente y de SUNAT, hasta 2 días después).')
+    collected_amount = fields.Monetary(
+        string='Cobrado', readonly=True, copy=False,
+        help='Lo que el cliente ya pagó al factor por esta factura.')
+    advance_applied_amount = fields.Monetary(
+        string='Aplicado al adelanto', readonly=True, copy=False,
+        help='Parte de lo cobrado que cubrió el adelanto (el resto libera el retenido).')
+    pending_amount = fields.Monetary(
+        string='Por cobrar', compute='_compute_pending_amount', store=True,
+        help='Valor nominal menos lo que el cliente ya pagó al factor.')
     state = fields.Selection(LINE_STATES, string='Estado', default='draft', required=True,
                              readonly=True, copy=False)
     assignment_line_id = fields.Many2one(
@@ -405,6 +527,32 @@ class L10nPeFactoringLine(models.Model):
         'CHECK(advance_percent >= 0 AND advance_percent <= 100)',
         'El porcentaje de adelanto debe estar entre 0 y 100.')
 
+    @api.depends('move_id.invoice_date', 'move_id.invoice_date_due')
+    def _compute_is_credit(self):
+        for line in self:
+            invoice = line.move_id
+            line.is_credit = bool(invoice.invoice_date_due and invoice.invoice_date
+                                  and invoice.invoice_date_due > invoice.invoice_date)
+
+    @api.depends('move_id.invoice_date')
+    def _compute_presumed_conformity_date(self):
+        for line in self:
+            date = line.move_id.invoice_date
+            line.presumed_conformity_date = date + timedelta(days=CONFORMITY_DAYS) if date else False
+
+    @api.depends('nominal_amount', 'collected_amount')
+    def _compute_pending_amount(self):
+        for line in self:
+            line.pending_amount = line.nominal_amount - line.collected_amount
+
+    @api.onchange('conformity_state')
+    def _onchange_conformity_state(self):
+        for line in self:
+            if line.conformity_state == 'presumed' and not line.conformity_date:
+                line.conformity_date = line.presumed_conformity_date
+            elif line.conformity_state == 'accepted' and not line.conformity_date:
+                line.conformity_date = fields.Date.context_today(line)
+
     @api.depends('nominal_amount', 'advance_percent', 'currency_id')
     def _compute_advance(self):
         for line in self:
@@ -416,7 +564,7 @@ class L10nPeFactoringLine(models.Model):
     def _onchange_move_id(self):
         for line in self:
             if line.move_id:
-                line.nominal_amount = line.move_id.amount_residual
+                line.nominal_amount = line.move_id._l10n_pe_factoring_net_pending()
                 line.due_date = line.move_id.invoice_date_due
                 line.advance_percent = line.factoring_id.default_advance_percent
 
@@ -428,7 +576,7 @@ class L10nPeFactoringLine(models.Model):
                 invoice = self.env['account.move'].browse(vals['move_id'])
                 vals.setdefault('due_date', invoice.invoice_date_due)
                 if not vals.get('nominal_amount'):
-                    vals['nominal_amount'] = invoice.amount_residual
+                    vals['nominal_amount'] = invoice._l10n_pe_factoring_net_pending()
         lines = super().create(vals_list)
         lines._check_unique_invoice()
         return lines

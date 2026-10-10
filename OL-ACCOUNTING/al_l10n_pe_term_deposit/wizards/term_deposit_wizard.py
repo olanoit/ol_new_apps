@@ -23,13 +23,22 @@ class L10nPeTermDepositWizard(models.TransientModel):
     interest_due = fields.Monetary(string='Intereses a la fecha', compute='_compute_interest_due',
                                    help='Intereses devengados hasta la fecha que aún no se cobran.')
     interest_received = fields.Monetary(
-        string='Intereses cobrados', compute='_compute_interest_due', store=True, readonly=False,
+        string='Intereses cobrados', compute='_compute_interest_received', store=True, readonly=False,
         help='Lo que abona el banco; si difiere de lo devengado (p. ej. por cancelación '
              'anticipada), la diferencia ajusta el ingreso por intereses.')
     amount = fields.Monetary(string='Importe a liberar')
     term_days = fields.Integer(string='Nuevo plazo (días)')
     rate = fields.Float(string='Nueva TEA (%)', digits=(6, 4))
     capitalize = fields.Boolean(string='Capitalizar intereses')
+    penalty_amount = fields.Monetary(
+        string='Penalidad',
+        help='Lo que descuenta el banco por cancelar antes del vencimiento. Va a la cuenta de '
+             'penalidad configurada o, si no hay, rebaja el ingreso por intereses.')
+    itf_applies = fields.Boolean(related='deposit_id.itf_applies')
+    itf_amount = fields.Monetary(
+        string='ITF', compute='_compute_itf_amount', store=True, readonly=False,
+        help='ITF del capital que vuelve al banco (los intereses están exonerados), propuesto '
+             'con la tasa de Ajustes; corríjalo si el banco cobró otro importe.')
 
     @api.model
     def default_get(self, fields_list):
@@ -56,7 +65,26 @@ class L10nPeTermDepositWizard(models.TransientModel):
                     max(deposit._l10n_pe_interest_until(wizard.date), deposit.interest_accrued)
                     - deposit.interest_collected)
             wizard.interest_due = due
-            wizard.interest_received = due
+
+    # Cálculo aparte: interest_received se guarda y es editable; interest_due no
+    # (un mismo método para los dos hace que Odoo avise de 'store' inconsistente).
+    @api.depends('deposit_id', 'date')
+    def _compute_interest_received(self):
+        for wizard in self:
+            wizard.interest_received = wizard.interest_due
+
+    @api.depends('deposit_id', 'operation', 'amount', 'interest_received', 'penalty_amount')
+    def _compute_itf_amount(self):
+        for wizard in self:
+            deposit = wizard.deposit_id
+            itf = 0.0
+            # Solo el capital paga ITF: el abono de intereses está exonerado
+            # (Informe SUNAT 025-2004-SUNAT/2B0000).
+            if deposit and wizard.operation == 'close':
+                itf = deposit._l10n_pe_itf(deposit.remaining_amount - wizard.penalty_amount)
+            elif deposit and wizard.operation == 'release':
+                itf = deposit._l10n_pe_itf(wizard.amount)
+            wizard.itf_amount = itf
 
     def action_apply(self):
         self.ensure_one()
@@ -66,11 +94,11 @@ class L10nPeTermDepositWizard(models.TransientModel):
         if self.date < deposit.date_start or self.date > fields.Date.context_today(self):
             raise UserError(self.env._('La fecha debe estar entre la apertura y hoy.'))
         if self.operation == 'close':
-            deposit._l10n_pe_close(self.date, self.interest_received)
+            deposit._l10n_pe_close(self.date, self.interest_received, self.penalty_amount, self.itf_amount)
         elif self.operation == 'renew':
             new = deposit._l10n_pe_renew(self.date, self.term_days, self.rate, self.capitalize)
             return {'type': 'ir.actions.act_window', 'res_model': deposit._name, 'res_id': new.id,
                     'view_mode': 'form', 'target': 'current'}
         else:
-            deposit._l10n_pe_release(self.date, self.amount)
+            deposit._l10n_pe_release(self.date, self.amount, self.itf_amount)
         return {'type': 'ir.actions.act_window_close'}

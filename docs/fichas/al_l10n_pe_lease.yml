@@ -1,10 +1,11 @@
 titulo: Arrendamientos NIIF 16
 subtitulo: >-
-  Alquileres de oficinas, almacenes y equipos según NIIF 16: pasivo a valor
-  presente, activo por derecho de uso con su depreciación y cuotas del
-  arrendador contra el pasivo, sobre los activos y préstamos de Odoo.
+  Alquileres de oficinas, almacenes y equipos según NIIF 16, de la firma al
+  cierre: pasivo a valor presente, derecho de uso con su depreciación, cuotas
+  del arrendador, remediciones, terminación anticipada, contratos en dólares e
+  impuesto diferido, sobre los activos y préstamos de Odoo.
 categoria: Localización Perú · Contabilidad
-etiquetas: [NIIF 16, Arrendamientos, Derecho de uso, Pasivo por arrendamiento, Alquileres, Enterprise]
+etiquetas: [NIIF 16, Arrendamientos, Derecho de uso, Pasivo por arrendamiento, Remedición, Moneda extranjera, Impuesto diferido, Enterprise]
 portada: screenshots/02-contrato.png
 ediciones: [enterprise]
 
@@ -37,6 +38,21 @@ destacados:
     texto: >-
       Contratos de 12 meses o menos y bienes de bajo valor: sin activo ni
       pasivo, la cuota va a gasto de alquiler.
+  - icono: "↻"
+    titulo: Remedición y terminación
+    texto: >-
+      Cambio de cuota, plazo o tasa con su ajuste del pasivo y del derecho de
+      uso; terminación anticipada con baja de ambos y resultado.
+  - icono: "$"
+    titulo: Contratos en dólares
+    texto: >-
+      El pasivo se ajusta por diferencia de cambio cada fin de mes; el derecho
+      de uso queda al tipo de cambio del inicio (NIC 21).
+  - icono: "≠"
+    titulo: Impuesto diferido
+    texto: >-
+      Gasto contable (depreciación + interés) frente al alquiler deducible por
+      contrato y ejercicio, con el impuesto diferido (NIC 12).
 
 contexto:
   titulo: Qué pide la NIIF 16
@@ -69,6 +85,13 @@ flujos:
         E --> G[Activo<br/>depreciación lineal 683 / 39]
         E --> H[Préstamo<br/>interés 673 y capital por cuota]
         H --> I[Registrar cuota<br/>factura del arrendador contra el pasivo]
+        I --> J{¿Cambia el contrato?}
+        J -- Cuota, plazo o tasa --> K[Remedir<br/>ajuste del pasivo y del derecho de uso]
+        J -- Termina antes --> L[Terminación anticipada<br/>baja del activo y del pasivo]
+        J -- En dólares --> M[Diferencia de cambio<br/>del pasivo a fin de mes]
+        J -- No --> N[Fin del plazo]
+        K --> I
+        M --> I
 
 pasos_intro: >-
   Ejemplo: oficina a 36 meses, cuota adelantada de S/ 4 500 sin IGV, tasa
@@ -97,6 +120,9 @@ pasos:
     texto: >-
       Cuentas del activo, del pasivo, de intereses y la transitoria, con las del
       PCGE por defecto; se pueden cambiar mientras el contrato esté en borrador.
+    puntos:
+      - "El plan de Odoo solo trae la 452: «Crear subcuentas del pasivo» crea 4521 (largo plazo) y 4522 (corto plazo), así la reclasificación separa ambos plazos en el balance."
+      - "«Producto de la cuota» (un servicio de alquiler) lleva el IGV y el tipo de detracción a cada factura del arrendador."
     imagen: screenshots/03-cuentas.png
   - titulo: El activo y el pasivo
     ruta: Contrato ▸ Derecho de uso / Pasivo
@@ -122,8 +148,57 @@ pasos:
   - titulo: Seguimiento
     ruta: Perú ▸ Arrendamientos ▸ Tabla de cuotas / Análisis
     texto: >-
-      Cuotas, intereses, capital y saldo por contrato y por año.
+      Cuotas, intereses, capital y saldo por contrato y por año. En el contrato,
+      «Saldos a hoy» compara el pasivo según la tabla con el del libro (en soles
+      la diferencia es cero) y muestra el valor en libros del derecho de uso.
     imagen: screenshots/09-analisis.png
+
+  - seccion: Cambios en el contrato
+  - titulo: Remedir
+    ruta: Contrato ▸ Remedir
+    texto: >-
+      Reajuste de la renta, prórroga o acortamiento del plazo, o nueva tasa: se
+      indica desde qué mes rige (primer día de un mes sin asientos
+      contabilizados). El pasivo se recalcula con las cuotas que faltan y la
+      diferencia aumenta o disminuye el derecho de uso, que se deprecia en el
+      plazo nuevo.
+    puntos:
+      - "Aumento: «Reevaluar» del activo crea el aumento bruto (32 / 45)."
+      - "Disminución: baja el derecho de uso contra el pasivo; lo que exceda su valor en libros va a resultados."
+      - "El préstamo anterior se cierra y uno nuevo lleva la tabla remedida; el historial guarda el antes y el después."
+    imagen: screenshots/11-asistente-remedicion.png
+  - titulo: Historial
+    ruta: Contrato ▸ Historial
+    texto: >-
+      Remediciones, terminación y diferencias de cambio con su fecha, motivo,
+      pasivo antes y después y sus asientos.
+    imagen: screenshots/10-remedicion.png
+  - titulo: Contrato en dólares
+    ruta: Contrato ▸ Diferencia de cambio
+    texto: >-
+      Con moneda extranjera el derecho de uso se registra al tipo de cambio del
+      inicio y no se ajusta; el pasivo se expresa al tipo de cambio de cada fin
+      de mes (un cron lo hace solo; el botón permite otra fecha). El arrendador
+      factura en dólares.
+    imagen: screenshots/12-moneda-extranjera.png
+  - titulo: Terminación anticipada
+    ruta: Contrato ▸ Terminación anticipada
+    texto: >-
+      Desde el primer día del mes sin contrato: el derecho de uso se da de baja a
+      su valor en libros (pérdida) y el pasivo pendiente (ganancia); el préstamo
+      se cierra y el contrato queda «Terminado». Las cuotas ya devengadas se
+      siguen facturando; una penalidad se registra con su factura, a gasto.
+
+  - seccion: Impuesto a la renta
+  - titulo: Diferencias temporales
+    ruta: Perú ▸ Arrendamientos ▸ Diferencias temporales
+    texto: >-
+      Por ejercicio y contrato: depreciación del derecho de uso + interés
+      (gasto contable) frente al alquiler de las facturas del arrendador (gasto
+      deducible), con la diferencia temporal y el impuesto diferido a la tasa
+      indicada. El derecho de uso no se deprecia para el impuesto a la renta
+      (Informe N.° 054-2021-SUNAT/7T0000).
+    imagen: screenshots/13-diferencias-temporales.png
 
 asientos_intro: >-
   Oficina del ejemplo: pasivo S/ 133 483,38 (valor presente de 35 cuotas) y
@@ -148,10 +223,29 @@ asientos:
       La factura del arrendador carga el corto plazo con la cuota (más IGV) y
       la abona al proveedor.
 
+  - titulo: Remedición (depósito, reajuste del 10 % desde octubre)
+    referencia: ARR/2026/0080 · Remedición
+    lineas:
+      - ["32331", "Derecho de uso (aumento bruto)", "7.858,79", ""]
+      - ["4521", "Pasivo por arrendamiento – largo plazo", "", "7.858,79"]
+    nota: >-
+      Pasivo antes S/ 71 160,39 y remedido S/ 79 019,18 (27 cuotas de S/ 3 300
+      al 12 % anual, la de octubre adelantada).
+  - titulo: Diferencia de cambio (local en dólares, al 30/09)
+    referencia: Diferencia de cambio del pasivo ARR/2026/0079
+    lineas:
+      - ["4521", "Pasivo por arrendamiento – largo plazo", "1.112,21", ""]
+      - ["776", "Diferencia de cambio (ganancia)", "", "1.112,21"]
+    nota: >-
+      El tipo de cambio bajó de 3,417 (inicio) a 3,40: el pasivo en dólares vale
+      menos en soles. El derecho de uso sigue en S/ 220 393,08.
+
 campos:
   - grupo: Contrato
     ruta: Perú ▸ Arrendamientos ▸ Contratos
     campos:
+      - [Moneda, Moneda del contrato, La de la compañía, En dólares el pasivo se ajusta por diferencia de cambio]
+      - [Producto de la cuota, Servicio de alquiler, —, IGV y detracción de las facturas del arrendador]
       - [Plazo (meses), Duración del contrato, 36, Define la depreciación y la tabla]
       - [Cuota mensual, Importe sin IGV, —, La factura agrega el IGV]
       - [Pago, Al inicio o al final del mes, Al inicio, Adelantada la primera cuota va al activo]
@@ -165,12 +259,18 @@ campos:
       - [Derecho de uso, Activo, 32331, —]
       - [Depreciación acumulada, Activo (contra), 39412, —]
       - [Gasto de depreciación, Gasto, 683111, —]
-      - [Pasivo largo y corto plazo, Pasivo, 452, Puede usar subcuentas]
+      - [Pasivo largo y corto plazo, Pasivo, 4521 / 4522 (o 452), «Crear subcuentas del pasivo» las crea]
       - [Gasto por intereses, Gasto, 6732, —]
       - [Cuenta transitoria, Cuota adelantada y costos, 183, Alquileres pagados por anticipado]
       - [Gasto de alquiler, Contratos exentos, 6352, —]
 
 novedades:
+  - version: 2.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Remedición (cuota, plazo o tasa) con ajuste del pasivo y del derecho de uso, y terminación anticipada con baja de ambos y su resultado; historial por contrato."
+      - "Contratos en moneda extranjera: derecho de uso al tipo de cambio del inicio y diferencia de cambio del pasivo a fin de mes (cron y botón)."
+      - "Subcuentas 4521/4522 del pasivo (largo y corto plazo), producto de la cuota para el IGV y la detracción, saldos del pasivo según la tabla y el libro, y reporte de diferencias temporales del impuesto a la renta (impuesto diferido)."
   - version: 1.20261010
     fecha: 10/10/2026
     cambios:

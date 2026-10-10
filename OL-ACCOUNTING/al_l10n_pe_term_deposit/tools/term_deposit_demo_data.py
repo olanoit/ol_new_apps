@@ -35,6 +35,7 @@ else:
               'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False}
     bank = Partner.create(dict(common, name='%s Banco Andino S.A.' % PREFIX, vat=ruc('2061112223')))
     landlord = Partner.create(dict(common, name='%s Inmuebles Lurín S.A.C.' % PREFIX, vat=ruc('2061445556')))
+    entity = Partner.create(dict(common, name='%s Proyecto Especial Vial' % PREFIX, vat=ruc('2061778889')))
     Journal = env['account.journal'].with_company(company)
     bank_journal = Journal.search([('type', '=', 'bank'), ('company_id', '=', company.id)], limit=1)
     misc = Journal.search([('type', '=', 'general'), ('company_id', '=', company.id)], limit=1)
@@ -55,12 +56,18 @@ else:
 
     d3 = Deposit.create(dict(base, deposit_type='guarantee_fund', partner_id=bank.id,
                              reference='Carta fianza CF-2026-031', amount=45000.0, rate=1.5,
-                             date_start=today - relativedelta(months=1), term_days=365))
+                             date_start=today - relativedelta(months=1), term_days=365,
+                             guarantee_purpose='bond', guarantee_beneficiary_id=entity.id,
+                             guarantee_reference='Licitación LP-014-2026 (fiel cumplimiento)',
+                             guarantee_date_end=today + relativedelta(months=11)))
     d3.action_open()
 
     d4 = Deposit.create(dict(base, deposit_type='guarantee_given', partner_id=landlord.id,
                              reference='Contrato de alquiler almacén Lurín', amount=18000.0, rate=0.0,
-                             date_start=today - relativedelta(months=8), term_days=0))
+                             date_start=today - relativedelta(months=8), term_days=0,
+                             guarantee_purpose='lease', guarantee_beneficiary_id=landlord.id,
+                             guarantee_reference='Contrato de arrendamiento ALQ-2026-003',
+                             guarantee_date_end=today + relativedelta(months=16)))
     d4.action_open()
     d4._l10n_pe_release(today - relativedelta(months=1), 6000.0)
 

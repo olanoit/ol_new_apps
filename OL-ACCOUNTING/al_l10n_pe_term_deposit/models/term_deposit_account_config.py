@@ -32,6 +32,10 @@ class L10nPeTermDepositAccountConfig(models.Model):
     income_account_id = fields.Many2one(
         'account.account', string='Ingreso por intereses', required=True, check_company=True,
         help='Rendimientos ganados (PCGE 7721).')
+    penalty_account_id = fields.Many2one(
+        'account.account', string='Penalidad por cancelación anticipada', check_company=True,
+        help='Gasto por la penalidad que cobra el banco al cancelar antes del vencimiento '
+             '(p. ej. 6391 gastos bancarios). Vacía: la penalidad rebaja el ingreso por intereses.')
 
     _unique_combination = models.Constraint(
         'unique(deposit_type, currency_id, company_id)',

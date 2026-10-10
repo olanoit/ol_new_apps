@@ -29,7 +29,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_stock_transfer](al_l10n_pe_stock_transfer/) | 1.20261010 | OPL-1 | Guía de remisión para traslados entre establecimientos (motivo 04) y control de los bienes de terceros en inventario y en la guía.
+[al_l10n_pe_stock_transfer](al_l10n_pe_stock_transfer/) | 2.20261010 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_stock_base](al_stock_base/) | 1.20261008 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
 [ol_stock_kardex_pe](ol_stock_kardex_pe/) | 12.20261009 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 [//]: # (end addons)

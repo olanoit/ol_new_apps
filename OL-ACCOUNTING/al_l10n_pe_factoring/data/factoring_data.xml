@@ -3,6 +3,7 @@
     <!-- Cuentas por defecto (PCGE) en las compañías peruanas; las que se creen
          después las reciben en su primera operación. -->
     <function model="l10n_pe.factoring.account.config" name="_l10n_pe_create_default_configs"/>
+    <function model="l10n_pe.factoring.account.config" name="_l10n_pe_fill_loss_account"/>
 
     <!-- «Ceder a factoring» desde la lista de facturas de cliente. -->
     <record id="action_server_factoring_create" model="ir.actions.server">

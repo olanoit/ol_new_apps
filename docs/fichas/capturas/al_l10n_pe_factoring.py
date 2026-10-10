@@ -48,3 +48,14 @@ with Captura(M) as c:
     c.foto('08-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
     c.abrir_accion(f'{M}.action_factoring_account_config', ms=2000)
     c.foto('09-cuentas', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 360})
+
+    # 10. Cobro del factor (asistente con una sola factura: cobro parcial)
+    c.abrir_registro('l10n_pe.factoring', OP_WITH, ms=2000)
+    c.texto('Cobro del factor', ms=1500)
+    c.foto('10-cobro-factor', selector='.modal-content')
+    c.page.keyboard.press('Escape')
+    c.esperar(600)
+
+    # 11. Costo financiero por factor y mes
+    c.abrir_accion(f'{M}.action_factoring_cost', ms=2500)
+    c.foto('11-costo-financiero', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})

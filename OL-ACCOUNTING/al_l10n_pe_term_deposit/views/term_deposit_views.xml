@@ -17,6 +17,7 @@
                 <field name="reference" optional="show"/>
                 <field name="date_start"/>
                 <field name="date_end"/>
+                <field name="guarantee_date_end" optional="hide"/>
                 <field name="rate" optional="show"/>
                 <field name="amount" sum="Capital"/>
                 <field name="remaining_amount" sum="Saldo" optional="show"/>
@@ -49,6 +50,9 @@
                             invisible="state not in ('open', 'expired') or deposit_type == 'term'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,open,expired,closed"/>
                 </header>
+                <div class="alert alert-warning mb-0" role="alert" invisible="not fx_warning">
+                    <field name="fx_warning" readonly="1"/>
+                </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
@@ -82,6 +86,16 @@
                             <field name="capitalize_interest" invisible="deposit_type != 'term'"/>
                         </group>
                     </group>
+                    <group invisible="deposit_type == 'term'">
+                        <group string="Garantía">
+                            <field name="guarantee_purpose"/>
+                            <field name="guarantee_beneficiary_id" options="{'no_quick_create': True}"/>
+                        </group>
+                        <group string="Obligación garantizada">
+                            <field name="guarantee_reference"/>
+                            <field name="guarantee_date_end"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Saldos" name="balances">
                             <group>
@@ -112,6 +126,12 @@
                                 </group>
                                 <group string="Diarios">
                                     <field name="misc_journal_id" options="{'no_create': True}" invisible="not rate"/>
+                                </group>
+                                <group string="ITF">
+                                    <field name="itf_applies" readonly="state != 'draft'"/>
+                                    <field name="itf_open_amount" invisible="not itf_applies"
+                                           readonly="state != 'draft'"/>
+                                    <field name="itf_amount" invisible="not itf_amount"/>
                                 </group>
                             </group>
                         </page>
@@ -147,6 +167,9 @@
                     <filter string="Entidad" name="group_partner" context="{'group_by': 'partner_id'}"/>
                     <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Vencimiento" name="group_date_end" context="{'group_by': 'date_end:month'}"/>
+                    <filter string="Moneda" name="group_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Finalidad de la garantía" name="group_purpose"
+                            context="{'group_by': 'guarantee_purpose'}"/>
                 </group>
             </search>
         </field>
@@ -201,5 +224,86 @@
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_term_deposit_list')})]"/>
         <field name="search_view_id" ref="view_term_deposit_search"/>
         <field name="context">{'search_default_active_deposits': 1}</field>
+    </record>
+
+    <!-- Cartera vigente: saldo por entidad, moneda y mes de vencimiento. -->
+    <record id="view_term_deposit_portfolio_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.portfolio.pivot</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <pivot string="Cartera vigente" sample="1">
+                <field name="partner_id" type="row"/>
+                <field name="currency_id" type="row"/>
+                <field name="date_end" interval="month" type="col"/>
+                <field name="remaining_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_term_deposit_portfolio" model="ir.actions.act_window">
+        <field name="name">Cartera vigente</field>
+        <field name="res_model">l10n_pe.term.deposit</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_term_deposit_portfolio_pivot')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_term_deposit_list')})]"/>
+        <field name="search_view_id" ref="view_term_deposit_search"/>
+        <field name="context">{'search_default_active_deposits': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin depósitos vigentes</p>
+            <p>Saldo de los depósitos y garantías vigentes o vencidos por entidad, moneda
+               y mes de vencimiento (importes en la moneda de cada depósito).</p>
+        </field>
+    </record>
+
+    <!-- Intereses devengados: apuntes de ingreso por intereses por mes y depósito. -->
+    <record id="view_term_deposit_interest_list" model="ir.ui.view">
+        <field name="name">account.move.line.term.deposit.interest.list</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Intereses de depósitos" create="false" edit="false">
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="move_id"/>
+                <field name="l10n_pe_term_deposit_id"/>
+                <field name="name"/>
+                <field name="account_id"/>
+                <field name="credit" string="Ingreso" sum="Ingreso"/>
+                <field name="debit" string="Ajuste" sum="Ajuste"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_term_deposit_interest_pivot" model="ir.ui.view">
+        <field name="name">account.move.line.term.deposit.interest.pivot</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <pivot string="Intereses de depósitos" sample="1">
+                <field name="l10n_pe_term_deposit_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="credit" string="Ingreso" type="measure"/>
+                <field name="debit" string="Ajuste" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_term_deposit_interest" model="ir.actions.act_window">
+        <field name="name">Intereses devengados</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_term_deposit_interest_pivot')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_term_deposit_interest_list')})]"/>
+        <field name="domain">[('l10n_pe_term_deposit_interest', '=', True), ('parent_state', '=', 'posted')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin intereses devengados</p>
+            <p>Ingreso por intereses de los depósitos en moneda de la compañía: el devengo
+               mensual («Ingreso») y los ajustes al cobrarlos o por penalidad («Ajuste»).</p>
+        </field>
     </record>
 </odoo>

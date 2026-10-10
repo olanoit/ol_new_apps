@@ -58,7 +58,10 @@ else:
             'currency_id': company.currency_id.id, 'default_advance_percent': percent,
             'contract_ref': contract,
             'line_ids': [(0, 0, {'move_id': inv.id, 'advance_percent': percent,
-                                 'cavali_number': 'CAV-%s' % inv.id}) for inv in invoices]})
+                                 'cavali_number': 'CAV-%s' % inv.id, 'cavali_date': today,
+                                 'conformity_state': 'presumed',
+                                 'conformity_date': inv.invoice_date + timedelta(days=8)})
+                         for inv in invoices]})
 
     def wizard(op, kind, **vals):
         wiz = env['l10n_pe.factoring.wizard'].create(dict({

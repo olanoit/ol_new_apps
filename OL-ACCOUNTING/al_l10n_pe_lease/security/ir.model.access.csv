@@ -3,3 +3,12 @@ access_lease_user,l10n_pe.lease contabilidad,model_l10n_pe_lease,account.group_a
 access_lease_line_user,l10n_pe.lease.line contabilidad,model_l10n_pe_lease_line,account.group_account_user,1,1,1,1
 access_lease_readonly,l10n_pe.lease auditor,model_l10n_pe_lease,account.group_account_readonly,1,0,0,0
 access_lease_line_readonly,l10n_pe.lease.line auditor,model_l10n_pe_lease_line,account.group_account_readonly,1,0,0,0
+access_lease_event_user,l10n_pe.lease.event contabilidad,model_l10n_pe_lease_event,account.group_account_user,1,1,1,1
+access_lease_event_readonly,l10n_pe.lease.event auditor,model_l10n_pe_lease_event,account.group_account_readonly,1,0,0,0
+access_lease_remeasure_user,l10n_pe.lease.remeasure contabilidad,model_l10n_pe_lease_remeasure,account.group_account_user,1,1,1,1
+access_lease_terminate_user,l10n_pe.lease.terminate contabilidad,model_l10n_pe_lease_terminate,account.group_account_user,1,1,1,1
+access_lease_exchange_user,l10n_pe.lease.exchange contabilidad,model_l10n_pe_lease_exchange,account.group_account_user,1,1,1,1
+access_lease_tax_report_user,l10n_pe.lease.tax.report contabilidad,model_l10n_pe_lease_tax_report,account.group_account_user,1,1,1,1
+access_lease_tax_report_line_user,l10n_pe.lease.tax.report.line contabilidad,model_l10n_pe_lease_tax_report_line,account.group_account_user,1,1,1,1
+access_lease_tax_report_readonly,l10n_pe.lease.tax.report auditor,model_l10n_pe_lease_tax_report,account.group_account_readonly,1,1,1,0
+access_lease_tax_report_line_readonly,l10n_pe.lease.tax.report.line auditor,model_l10n_pe_lease_tax_report_line,account.group_account_readonly,1,1,1,0

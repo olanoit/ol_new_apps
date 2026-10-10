@@ -1,109 +1,165 @@
 titulo: Traslados internos y bienes de terceros
 subtitulo: >-
-  Guía de remisión para mover bienes entre los establecimientos de la empresa
-  y control de los bienes de terceros en el almacén y en la guía.
+  La guía de remisión remitente para todos los traslados de la empresa: entre
+  sus establecimientos, compras que recoge, devoluciones, importación y
+  exportación, con el control de los bienes de terceros en el almacén y en la
+  guía.
 categoria: Localización Perú · Inventario
-etiquetas: [Guía de remisión, Motivo 04, Establecimiento anexo, Bienes de terceros, Consignación]
+etiquetas: [Guía de remisión, Catálogo 20, Motivo 04, Establecimiento anexo, Bienes de terceros, Consignación]
+portada: screenshots/01-traslado-establecimientos.png
 
 destacados_intro: >-
   Completa la guía de remisión electrónica del estándar, que solo se emite en
-  las salidas.
+  las salidas y con parte de los motivos de SUNAT.
 destacados:
   - icono: "04"
     titulo: Traslado entre establecimientos
     texto: >-
       Las transferencias internas entre almacenes de distinta dirección emiten
       su guía con motivo 04 y la empresa como destinataria.
+  - icono: "20"
+    titulo: Catálogo 20 completo
+    texto: >-
+      Se suman 02 Compra, 06 Devolución, 07 Recojo de bienes transformados,
+      08 Importación y 09 Exportación a los motivos del estándar.
+  - icono: "↙"
+    titulo: Ingresos que traslada la empresa
+    texto: >-
+      Una compra que la empresa recoge con su transporte lleva su guía desde
+      la recepción: parte del proveedor y llega al almacén.
+  - icono: "✓"
+    titulo: Motivo propuesto
+    texto: >-
+      04 entre establecimientos, 06 al devolver, 02 en recepciones o el que
+      fije cada tipo de operación (p. ej. 05 consignación).
   - icono: "#"
     titulo: Código de establecimiento
     texto: >-
-      Partida y llegada llevan el código de establecimiento anexo SUNAT de cada
-      dirección, con el RUC de la empresa.
-  - icono: "≠"
-    titulo: Solo cuando sale del local
-    texto: >-
-      Un movimiento dentro del mismo establecimiento no lleva guía: el botón no
-      aparece.
+      Partida y llegada propias llevan el código de establecimiento anexo
+      SUNAT con el RUC de la empresa, como valida SUNAT desde junio de 2026.
   - icono: "3°"
     titulo: Bienes de terceros a la vista
     texto: >-
-      Propietario en la transferencia y filtros «De terceros» en existencias,
-      movimientos y transferencias.
-  - icono: "✎"
-    titulo: Propietario en la guía
-    texto: >-
-      Va en las observaciones del XML y en un recuadro de la guía impresa.
-  - icono: "="
-    titulo: Valorización intacta
-    texto: >-
-      Los bienes de terceros siguen fuera de la valorización y del kardex
-      valorizado, como en el estándar.
+      Propietario en la transferencia, en las observaciones de la guía y en la
+      guía impresa; filtros «De terceros»; fuera de la valorización.
 
 contexto:
   titulo: El problema que resuelve
   texto: >-
-    Una constructora lleva materiales y equipos de su almacén central a sus
-    obras y recibe equipos alquilados a terceros. Odoo solo emite la guía de
-    remisión en las entregas a clientes: el traslado al almacén de una obra no
-    tenía guía, y los equipos ajenos no se distinguían en el almacén ni en la
-    guía.
+    Una constructora lleva materiales y equipos de su planta a sus obras,
+    recoge compras con su camión, devuelve equipos alquilados a su dueño e
+    importa insumos. Odoo solo emite la guía de remisión en las entregas a
+    clientes y con ocho motivos: el traslado a una obra, la compra recogida o
+    la importación no tenían guía, y los equipos ajenos no se distinguían en el
+    almacén ni en la guía.
   nota: >-
     **Configuración**: el almacén de cada establecimiento con su dirección
-    (calle, distrito y «Establecimiento anexo» SUNAT) y, para los bienes de
-    terceros, «Consignación» activo en Ajustes de Inventario.
+    (calle, distrito y «Establecimiento anexo» SUNAT); para los bienes de
+    terceros, «Consignación» activo en Ajustes de Inventario; y, si se quiere,
+    el motivo por defecto de cada tipo de operación.
+
+flujos_intro: >-
+  Qué motivo se propone y qué guía se emite según la operación.
+flujos:
+  - id: motivo
+    titulo: Motivo y guía según la operación
+    texto: >-
+      La guía se emite al validar la transferencia; el motivo se propone al
+      elegir la modalidad de transporte y se puede cambiar.
+    mermaid: |
+      flowchart TD
+        A[Transferencia hecha] --> B{"¿Tipo de operación con motivo por defecto?"}
+        B -- Sí --> M[Ese motivo<br/>p. ej. 05 consignación]
+        B -- No --> C{¿Tipo de operación?}
+        C -- Interna --> D{"¿Establecimientos distintos?"}
+        D -- Sí --> E[04 Traslado entre establecimientos<br/>destinatario = la empresa]
+        D -- No --> F[Sin guía]
+        C -- Salida --> G{"¿Devolución o al dueño de bienes de terceros?"}
+        G -- Sí --> H[06 Devolución]
+        G -- No --> I[01 Venta]
+        C -- Recepción --> J{¿La empresa trae los bienes?}
+        J -- Sí --> K[02 Compra / 07 Recojo / 08 Importación<br/>parte del proveedor, llega al almacén]
+        J -- No --> L[La guía la emite el proveedor]
 
 pasos:
   - seccion: Traslado entre establecimientos
   - titulo: Transferencia interna
-    ruta: Inventario ▸ Operaciones ▸ Transferencias ▸ Nuevo (tipo interno)
+    ruta: Inventario ▸ Operaciones ▸ Traslados ▸ Interno ▸ Nuevo
     texto: >-
       Origen en el almacén de un establecimiento y destino en el de otro. Al
-      validarla aparece «Generate Delivery Guide» si las direcciones son
+      validarla aparece «Generar guía de remisión» si las direcciones son
       distintas.
   - titulo: Datos de la guía
     ruta: Transferencia ▸ Logística PE ▸ Guía de remisión
     texto: >-
       Elija la modalidad: el motivo se propone en 04. Se muestran el punto de
-      partida y el de llegada (las direcciones de los almacenes).
-  - titulo: Enviar
-    ruta: Transferencia ▸ Generate Delivery Guide
+      partida y el de llegada (las direcciones de los almacenes) y, si hay
+      bienes de terceros, sus propietarios.
+    imagen: screenshots/01-traslado-establecimientos.png
+  - titulo: Guía impresa
+    ruta: Transferencia ▸ Guía de remisión (botón, con la guía aceptada por SUNAT)
     texto: >-
-      La guía sale con la empresa como destinataria y el código de
-      establecimiento de partida y llegada. El punto de llegada queda como
-      contacto de la transferencia.
+      La empresa es remitente y destinataria; partida y llegada son los dos
+      establecimientos y el propietario de los bienes de terceros va en su
+      recuadro.
+    imagen: screenshots/06-guia-impresa.png
+
+  - seccion: Ingresos y devoluciones
+  - titulo: Compra recogida por la empresa
+    ruta: Inventario ▸ Operaciones ▸ Traslados ▸ Recepciones ▸ Logística PE
+    texto: >-
+      Si la empresa recoge la compra con su transporte, la guía la emite ella:
+      motivo 02 (07 si recoge bienes que mandó a transformar, 08 si los trae
+      del puerto con su DAM). Parte del proveedor y llega al almacén.
+    imagen: screenshots/02-compra-recogida.png
+  - titulo: Devolución al propietario
+    ruta: Inventario ▸ Operaciones ▸ Traslados ▸ Entregas ▸ Logística PE
+    texto: >-
+      Al devolver los equipos alquilados a su dueño (o una compra al
+      proveedor) se propone 06 Devolución y el propietario se ve en Bienes de
+      terceros.
+    imagen: screenshots/03-devolucion-propietario.png
+  - titulo: Motivo por tipo de operación
+    ruta: Inventario ▸ Configuración ▸ Gestión del almacén ▸ Tipos de operaciones
+    texto: >-
+      «Motivo de traslado (guía)» fija el motivo que se propone en ese tipo
+      (p. ej. un tipo «Envío en consignación» con 05).
+    imagen: screenshots/04-tipo-operacion.png
 
   - seccion: Bienes de terceros
-  - titulo: Recibir con propietario
-    ruta: Transferencia ▸ Propietario (o por línea en las operaciones detalladas)
-    texto: >-
-      Indique el dueño de los bienes: no se valorizan y quedan identificados en
-      el almacén.
   - titulo: Ver y filtrar
-    ruta: Inventario ▸ Informes ▸ Existencias ▸ Filtros ▸ De terceros
+    ruta: Inventario ▸ Reportes ▸ Ubicaciones ▸ Filtros ▸ De terceros
     texto: >-
       También en movimientos («De terceros») y en transferencias («Con bienes
-      de terceros»). En la transferencia, Logística PE ▸ Bienes de terceros
-      muestra los propietarios.
-  - titulo: La guía
-    ruta: Transferencia ▸ Guía de remisión
-    texto: >-
-      El propietario va en las observaciones del XML («Bienes de propiedad de
-      …») y en la guía impresa. Use el motivo que corresponda: 04 entre
-      establecimientos propios, 05 consignación o 13 otros.
+      de terceros»). No se valorizan ni entran al kardex valorizado.
+    imagen: screenshots/05-existencias-terceros.png
 
 campos:
-  - grupo: Guía de remisión (traslado interno)
+  - grupo: Guía de remisión
     ruta: Transferencia ▸ Logística PE
     campos:
-      - [Punto de partida, Dirección del almacén de origen, Almacén de la ubicación de origen, Punto de partida del XML]
-      - [Punto de llegada, Dirección del almacén de destino, Almacén de la ubicación de destino, Punto de llegada del XML]
-      - [Motivo de traslado, Catálogo 20 de SUNAT, 04 en internas, Con 04 el destinatario es la empresa]
+      - [Punto de partida, Origen del traslado, Almacén de origen; en un ingreso el proveedor, Punto de partida del XML]
+      - [Punto de llegada, Destino de un traslado interno o de un ingreso, Almacén de destino, Punto de llegada del XML]
+      - [Motivo de traslado, Catálogo 20 de SUNAT, Propuesto según la operación, Con 04 y en ingresos el destinatario es la empresa]
+      - [Descripción del motivo, Detalle del motivo 13 «Otros», —, Obligatoria con 13; va en la guía]
+  - grupo: Tipo de operación
+    ruta: Inventario ▸ Configuración ▸ Gestión del almacén ▸ Tipos de operaciones
+    campos:
+      - [Motivo de traslado (guía), Motivo que se propone en las guías de ese tipo, Vacío (según la operación), Se aplica al elegir la modalidad]
   - grupo: Bienes de terceros
     ruta: Transferencia ▸ Logística PE
     campos:
       - [Propietarios de los bienes, Dueños distintos de la compañía, —, Observaciones de la guía y guía impresa]
 
 novedades:
+  - version: 2.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Catálogo 20 completo para la empresa: se añaden 02 Compra, 06 Devolución, 07 Recojo de bienes transformados, 08 Importación y 09 Exportación (anexo de la R.S. 240-2024/SUNAT); 13 «Otros» con descripción obligatoria que va en la guía; 08 y 09 exigen la DAM o DS."
+      - "Guía en recepciones que traslada la empresa (02, 07, 08): parte del proveedor, llega al almacén y la empresa es destinataria."
+      - "Motivo propuesto según la operación (04 entre establecimientos, 06 en devoluciones y al dueño de bienes de terceros, 02 en recepciones) o el que fije el tipo de operación."
+      - "Partida y llegada propias con el RUC de la empresa y el código de establecimiento anexo en todas las guías; la guía impresa usa el mismo destinatario, punto de llegada y motivo que el XML."
+      - "Datos de demostración «DEMO TRAS» (tools/stock_transfer_demo_data.py), capturas y guía funcional."
   - version: 1.20261010
     fecha: 10/10/2026
     cambios:

@@ -11,6 +11,8 @@
               parent="menu_factoring_root" action="action_factoring_lines" sequence="20"/>
     <menuitem id="menu_factoring_analysis" name="Análisis de factoring"
               parent="menu_factoring_root" action="action_factoring_analysis" sequence="30"/>
+    <menuitem id="menu_factoring_cost" name="Costo financiero"
+              parent="menu_factoring_root" action="action_factoring_cost" sequence="40"/>
 
     <menuitem id="menu_factoring_account_config" name="Factoring"
               parent="al_account_base.al_l10n_pe_config_accounts"

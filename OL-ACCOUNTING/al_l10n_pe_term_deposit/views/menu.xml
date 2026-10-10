@@ -9,6 +9,10 @@
               parent="menu_treasury_root" action="action_term_deposit" sequence="10"/>
     <menuitem id="menu_term_deposit_analysis" name="Análisis de depósitos"
               parent="menu_treasury_root" action="action_term_deposit_analysis" sequence="20"/>
+    <menuitem id="menu_term_deposit_portfolio" name="Cartera vigente"
+              parent="menu_treasury_root" action="action_term_deposit_portfolio" sequence="30"/>
+    <menuitem id="menu_term_deposit_interest" name="Intereses devengados"
+              parent="menu_treasury_root" action="action_term_deposit_interest" sequence="40"/>
 
     <menuitem id="menu_term_deposit_account_config" name="Depósitos y garantías"
               parent="al_account_base.al_l10n_pe_config_accounts"

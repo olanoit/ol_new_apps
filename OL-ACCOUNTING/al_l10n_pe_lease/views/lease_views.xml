@@ -41,8 +41,17 @@
                             confirm="Se registran el derecho de uso, el pasivo y sus asientos. ¿Continuar?"/>
                     <button name="action_register_installment" type="object" string="Registrar cuota"
                             class="btn-primary" invisible="state not in ('running', 'exempt')"/>
-                    <button name="action_close" type="object" string="Terminar"
-                            invisible="state not in ('running', 'exempt')"/>
+                    <button name="action_remeasure" type="object" string="Remedir"
+                            invisible="state != 'running'"/>
+                    <button name="action_exchange_difference" type="object" string="Diferencia de cambio"
+                            invisible="state != 'running' or not is_foreign_currency"/>
+                    <button name="action_terminate" type="object" string="Terminación anticipada"
+                            invisible="state != 'running'"/>
+                    <button name="action_create_liability_accounts" type="object" string="Crear subcuentas del pasivo"
+                            invisible="state != 'draft' or not same_liability_account or exemption != 'none'"/>
+                    <button name="action_close" type="object" string="Fin del plazo"
+                            invisible="state not in ('running', 'exempt')"
+                            confirm="Cierra el contrato al vencer el plazo (las cuotas ya están registradas). ¿Continuar?"/>
                     <button name="action_cancel" type="object" string="Cancelar" invisible="state != 'draft'"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state != 'cancelled'"/>
@@ -58,6 +67,8 @@
                                 string="Derecho de uso" invisible="not asset_id"/>
                         <button name="action_open_loan" type="object" class="oe_stat_button" icon="fa-bars"
                                 string="Pasivo" invisible="not loan_id"/>
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-book"
+                                string="Asientos" invisible="not initial_move_id"/>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
@@ -68,11 +79,21 @@
                         el gasto es depreciación más intereses, no alquiler. Los contratos de 12 meses o menos
                         y los de bienes de bajo valor pueden quedar exentos: la cuota va a gasto.
                     </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'draft' or not same_liability_account or exemption != 'none'">
+                        El pasivo de largo y de corto plazo usan la misma cuenta: el balance no separa la parte
+                        que vence en los próximos 12 meses. Use <strong>Crear subcuentas del pasivo</strong>
+                        (4521 largo plazo y 4522 corto plazo) o elija otras cuentas.
+                    </div>
+                    <field name="same_liability_account" invisible="1"/>
+                    <field name="is_foreign_currency" invisible="1"/>
+                    <field name="company_currency_id" invisible="1"/>
                     <group>
                         <group string="Contrato">
                             <field name="partner_id" readonly="state != 'draft'" options="{'no_quick_create': True}"/>
                             <field name="property_description" readonly="state != 'draft'"/>
                             <field name="contract_ref"/>
+                            <field name="product_id" options="{'no_create': True}"/>
                             <field name="exemption" readonly="state != 'draft'"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
@@ -80,6 +101,7 @@
                             <field name="date_start" readonly="state != 'draft'"/>
                             <field name="term_months" readonly="state != 'draft'"/>
                             <field name="date_end"/>
+                            <field name="currency_id" readonly="state != 'draft'" groups="base.group_multi_currency"/>
                             <field name="payment_amount" readonly="state != 'draft'"/>
                             <field name="payment_timing" readonly="state != 'draft'"/>
                             <field name="annual_rate" readonly="state != 'draft'" invisible="exemption != 'none'"/>
@@ -97,6 +119,20 @@
                             <field name="rou_amount"/>
                             <field name="total_payments"/>
                             <field name="total_interest"/>
+                            <field name="start_rate" invisible="not is_foreign_currency or not start_rate"/>
+                            <field name="rou_amount_company" invisible="not is_foreign_currency or not rou_amount_company"/>
+                        </group>
+                    </group>
+                    <group string="Saldos a hoy" invisible="state not in ('running', 'closed')">
+                        <group>
+                            <field name="liability_balance"/>
+                            <field name="liability_book_balance"/>
+                            <field name="liability_difference"
+                                   decoration-danger="liability_difference != 0 and not is_foreign_currency"/>
+                        </group>
+                        <group>
+                            <field name="rou_book_value"/>
+                            <field name="termination_date" invisible="not termination_date"/>
                         </group>
                     </group>
                     <notebook>
@@ -110,6 +146,28 @@
                                     <field name="interest" sum="Intereses"/>
                                     <field name="principal" sum="Capital"/>
                                     <field name="balance"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Historial" name="events" invisible="not event_ids">
+                            <field name="event_ids">
+                                <list>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                    <field name="date"/>
+                                    <field name="kind"/>
+                                    <field name="note"/>
+                                    <field name="old_liability" optional="show"/>
+                                    <field name="new_liability" optional="show"/>
+                                    <field name="difference"/>
+                                    <field name="amount_company" optional="show"/>
+                                    <field name="old_payment" optional="hide"/>
+                                    <field name="new_payment" optional="hide"/>
+                                    <field name="old_term" optional="hide"/>
+                                    <field name="new_term" optional="hide"/>
+                                    <field name="old_rate" optional="hide"/>
+                                    <field name="new_rate" optional="hide"/>
+                                    <field name="move_ids" widget="many2many_tags"/>
                                 </list>
                             </field>
                         </page>
@@ -172,6 +230,151 @@
             <p>Oficinas, almacenes o equipos tomados en arrendamiento: el pasivo y el derecho de uso
                según NIIF 16, o el gasto si el contrato es exento.</p>
         </field>
+    </record>
+
+    <!-- Asistentes -->
+    <record id="view_lease_remeasure_form" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.remeasure.form</field>
+        <field name="model">l10n_pe.lease.remeasure</field>
+        <field name="arch" type="xml">
+            <form string="Remedición del arrendamiento">
+                <div class="alert alert-info" role="alert">
+                    Cambio de cuota, de plazo o de tasa: el pasivo se recalcula con las cuotas que faltan desde
+                    la fecha y la diferencia aumenta o disminuye el derecho de uso, que se deprecia en el plazo
+                    nuevo. Rige desde el primer día de un mes.
+                </div>
+                <group>
+                    <group string="Cambio">
+                        <field name="lease_id" readonly="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="date"/>
+                        <field name="payment_amount"/>
+                        <field name="remaining_months"/>
+                        <field name="annual_rate"/>
+                        <field name="reason"/>
+                    </group>
+                    <group string="Resultado">
+                        <field name="carrying_amount"/>
+                        <field name="new_liability"/>
+                        <field name="difference"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Remedir" class="btn-primary"/>
+                    <button string="Descartar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lease_terminate_form" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.terminate.form</field>
+        <field name="model">l10n_pe.lease.terminate</field>
+        <field name="arch" type="xml">
+            <form string="Terminación anticipada">
+                <div class="alert alert-warning" role="alert">
+                    Se dan de baja el derecho de uso (a su valor en libros, contra la cuenta de pérdida) y el
+                    pasivo pendiente (contra la cuenta de ganancia). Las cuotas ya devengadas se siguen
+                    facturando; una penalidad del arrendador se registra con su factura, a gasto.
+                </div>
+                <group>
+                    <group>
+                        <field name="lease_id" readonly="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="date"/>
+                        <field name="reason"/>
+                    </group>
+                    <group>
+                        <field name="carrying_amount"/>
+                        <field name="gain_account_id"/>
+                        <field name="loss_account_id"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Terminar" class="btn-primary"
+                            confirm="La terminación no se puede deshacer. ¿Continuar?"/>
+                    <button string="Descartar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lease_exchange_form" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.exchange.form</field>
+        <field name="model">l10n_pe.lease.exchange</field>
+        <field name="arch" type="xml">
+            <form string="Diferencia de cambio">
+                <div class="alert alert-info" role="alert">
+                    El pasivo en moneda extranjera se expresa al tipo de cambio de la fecha (ganancia o pérdida
+                    por diferencia de cambio). El derecho de uso no se ajusta. Un cron lo hace cada fin de mes.
+                </div>
+                <group>
+                    <field name="lease_id" readonly="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Ajustar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Diferencias temporales del impuesto a la renta -->
+    <record id="view_lease_tax_report_form" model="ir.ui.view">
+        <field name="name">l10n_pe.lease.tax.report.form</field>
+        <field name="model">l10n_pe.lease.tax.report</field>
+        <field name="arch" type="xml">
+            <form string="Diferencias temporales de arrendamientos">
+                <header>
+                    <button name="action_compute" type="object" string="Calcular" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        Contablemente (NIIF 16) el gasto es la depreciación del derecho de uso más el interés del
+                        pasivo; para el impuesto a la renta se deduce el alquiler devengado (el derecho de uso no
+                        se deprecia tributariamente, Informe N.° 054-2021-SUNAT/7T0000). La diferencia se adiciona
+                        o se deduce en la declaración anual y origina impuesto diferido (NIC 12).
+                    </div>
+                    <group>
+                        <group>
+                            <field name="year" options="{'enable_formatting': false}"/>
+                            <field name="tax_rate"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_book"/>
+                            <field name="total_tax"/>
+                            <field name="total_difference"/>
+                            <field name="total_deferred"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="lease_id"/>
+                            <field name="depreciation" sum="Depreciación"/>
+                            <field name="interest" sum="Interés"/>
+                            <field name="book_expense" sum="Gasto contable"/>
+                            <field name="tax_expense" sum="Alquiler deducible"/>
+                            <field name="difference" sum="Diferencia"/>
+                            <field name="deferred_tax" sum="Impuesto diferido"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_lease_tax_report" model="ir.actions.act_window">
+        <field name="name">Diferencias temporales</field>
+        <field name="res_model">l10n_pe.lease.tax.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
     </record>
 
     <!-- Tabla de cuotas -->

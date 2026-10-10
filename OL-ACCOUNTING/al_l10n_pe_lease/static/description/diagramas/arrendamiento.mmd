@@ -7,3 +7,10 @@ flowchart TD
   E --> G[Activo<br/>depreciación lineal 683 / 39]
   E --> H[Préstamo<br/>interés 673 y capital por cuota]
   H --> I[Registrar cuota<br/>factura del arrendador contra el pasivo]
+  I --> J{¿Cambia el contrato?}
+  J -- Cuota, plazo o tasa --> K[Remedir<br/>ajuste del pasivo y del derecho de uso]
+  J -- Termina antes --> L[Terminación anticipada<br/>baja del activo y del pasivo]
+  J -- En dólares --> M[Diferencia de cambio<br/>del pasivo a fin de mes]
+  J -- No --> N[Fin del plazo]
+  K --> I
+  M --> I

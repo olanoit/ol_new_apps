@@ -195,3 +195,115 @@ class TestTermDeposit(TransactionCase):
                          'regla de registro por compañía')
         with self.assertRaises(UserError, msg='el banco debe ser de la misma compañía'):
             self._deposit(company_id=other.id)
+
+    # ------------------------------------------------------------------
+    # Proceso genérico: ITF, penalidad, garantías, moneda extranjera, reportes
+    # ------------------------------------------------------------------
+    def _itf_account(self):
+        return self.company._l10n_pe_term_deposit_itf_account()
+
+    def test_itf_on_open_and_close(self):
+        self.company.l10n_pe_term_deposit_itf = True
+        deposit = self._deposit()
+        self.assertTrue(deposit.itf_applies, 'toma el valor de Ajustes')
+        self.assertEqual(deposit.itf_open_amount, 5.0, '100 000 × 0,005 %')
+        deposit.action_open()
+        bank = self.bank_journal.default_account_id
+        self.assertEqual(self._balance(deposit, bank), -100005.0, 'sale el capital más el ITF')
+        self.assertEqual(self._balance(deposit, self._itf_account()), 5.0)
+        deposit._l10n_pe_close(date(2026, 6, 30))
+        # Vuelven 100 000 de capital (ITF 5,00) y 2 956,30 de intereses, que
+        # están exonerados (Informe SUNAT 025-2004-SUNAT/2B0000).
+        self.assertEqual(self._balance(deposit, self._itf_account()), 10.0)
+        self.assertAlmostEqual(self._balance(deposit, bank), 2956.30 - 10.0, places=2)
+        self.assertEqual(deposit.itf_amount, 10.0)
+        self._assert_balanced(deposit)
+
+    def test_itf_not_applied_when_deposit_is_exempt_or_renewed(self):
+        self.company.l10n_pe_term_deposit_itf = True
+        exempt = self._deposit(itf_applies=False)
+        exempt.action_open()
+        self.assertEqual(self._balance(exempt, self._itf_account()), 0.0, 'no afecto (exonerado)')
+        deposit = self._deposit()
+        deposit.action_open()
+        deposit._l10n_pe_renew(date(2026, 6, 30))
+        self.assertEqual(self._balance(deposit, self._itf_account()), 5.0,
+                         'solo el ITF de la apertura: la renovación sin dinero nuevo no lleva ITF')
+
+    def test_early_close_with_penalty(self):
+        config = self.env['l10n_pe.term.deposit.account.config']._l10n_pe_get(
+            self.company, 'term', self.company.currency_id)
+        deposit = self._deposit()
+        deposit.action_open()
+        deposit._l10n_pe_close(date(2026, 3, 31), interest_received=1000.0, penalty=150.0)
+        income = self._balance(deposit, deposit.income_account_id)
+        self.assertEqual(income, -850.0, 'sin cuenta de penalidad, rebaja el ingreso')
+        self.assertAlmostEqual(self._balance(deposit, self.bank_journal.default_account_id), 850.0, places=2)
+        self._assert_balanced(deposit)
+
+        penalty_account = self.env['account.account'].search([
+            ('company_ids', 'in', self.company.id), ('account_type', '=', 'expense')], limit=1)
+        config.penalty_account_id = penalty_account
+        other = self._deposit()
+        other.action_open()
+        other._l10n_pe_close(date(2026, 3, 31), interest_received=1000.0, penalty=150.0)
+        self.assertEqual(self._balance(other, other.income_account_id), -1000.0)
+        self.assertEqual(self._balance(other, penalty_account), 150.0, 'la penalidad va a su cuenta')
+        self._assert_balanced(other)
+        with self.assertRaises(UserError, msg='la penalidad no supera capital e intereses'):
+            third = self._deposit()
+            third.action_open()
+            third._l10n_pe_close(date(2026, 3, 31), interest_received=0.0, penalty=200000.0)
+
+    def test_guarantee_details_and_notice_by_validity(self):
+        guarantee = self._deposit(
+            deposit_type='guarantee_fund', term_days=0, date_end=False, rate=0.0,
+            guarantee_purpose='bond', guarantee_beneficiary_id=self.landlord.id,
+            guarantee_reference='CF-2026-0081', guarantee_date_end=date(2026, 9, 30))
+        guarantee.action_open()
+        self.assertEqual(guarantee._l10n_pe_notice_date(), date(2026, 9, 30), 'sin plazo, avisa por la vigencia')
+        with self._today(date(2026, 9, 25)):
+            self.env['l10n_pe.term.deposit']._cron_l10n_pe_term_deposits()
+        self.assertTrue(guarantee.notice_sent)
+        self.assertTrue(guarantee.activity_ids, 'actividad para el responsable')
+        self.assertEqual(guarantee.state, 'open', 'la garantía sin plazo no vence sola')
+
+    def test_moves_are_linked_and_interest_report(self):
+        deposit = self._deposit()
+        deposit.action_open()
+        deposit._l10n_pe_accrue(date(2026, 1, 31))
+        deposit._l10n_pe_accrue(date(2026, 2, 28))
+        self.assertTrue(all(move.l10n_pe_term_deposit_id == deposit for move in deposit.move_ids))
+        self.assertTrue(self.env.ref('al_l10n_pe_term_deposit.action_term_deposit_interest'))
+        lines = self.env['account.move.line'].search(
+            [('l10n_pe_term_deposit_interest', '=', True), ('parent_state', '=', 'posted')])
+        mine = lines.filtered(lambda l: l.l10n_pe_term_deposit_id == deposit)
+        self.assertEqual(len(mine), 2, 'un apunte de ingreso por devengo')
+        self.assertAlmostEqual(sum(mine.mapped('credit')), deposit.interest_accrued, places=2)
+
+    def test_foreign_currency_warning(self):
+        if 'l10n_pe_exchange_closing' not in self.env['account.account']._fields:
+            self.skipTest('Requiere al_l10n_pe_exchange_closure')
+        usd = self.env.ref('base.USD')
+        usd.active = True
+        deposit = self._deposit(currency_id=usd.id)
+        accounts = deposit.deposit_account_id | deposit.interest_account_id
+        accounts.write({'l10n_pe_exchange_closing': False})
+        deposit.invalidate_recordset(['fx_warning'])
+        self.assertIn(deposit.deposit_account_id.code, deposit.fx_warning or '')
+        accounts.write({'l10n_pe_exchange_closing': 'summary'})
+        deposit.invalidate_recordset(['fx_warning'])
+        self.assertFalse(deposit.fx_warning)
+        self.assertFalse(self._deposit().fx_warning, 'en soles no hay aviso')
+
+    def test_link_existing_moves(self):
+        """Migración a la versión 2: asientos previos enlazados y marcados."""
+        deposit = self._deposit()
+        deposit.action_open()
+        deposit._l10n_pe_accrue(date(2026, 1, 31))
+        deposit.move_ids.write({'l10n_pe_term_deposit_id': False})
+        deposit.move_ids.line_ids.write({'l10n_pe_term_deposit_interest': False})
+        deposit._l10n_pe_link_existing_moves()
+        self.assertTrue(all(move.l10n_pe_term_deposit_id == deposit for move in deposit.move_ids))
+        flagged = deposit.move_ids.line_ids.filtered('l10n_pe_term_deposit_interest')
+        self.assertEqual(flagged.account_id, deposit.income_account_id)

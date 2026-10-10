@@ -18,8 +18,17 @@ Lleva el dinero inmovilizado de la empresa con su contabilidad:
 * **Depósito en garantía entregado** (1643): p. ej. la garantía del alquiler
   de una oficina o un almacén, que se recupera al terminar el contrato.
 
-Aviso (actividad) unos días antes del vencimiento, renovación automática
-opcional y cuentas configurables por tipo y moneda.
+Aviso (actividad) unos días antes del vencimiento (o de la vigencia de la
+garantía), renovación automática opcional y cuentas configurables por tipo y
+moneda. Además:
+
+* **ITF** (Ley 28194) opcional en la apertura, la cancelación y la liberación.
+* **Penalidad** por cancelación anticipada (cuenta propia o menor ingreso).
+* **Garantías** con su finalidad (carta fianza, alquiler, contrato), el
+  beneficiario, el documento garantizado y su vigencia.
+* **Moneda extranjera**: aviso si las cuentas no están marcadas para el
+  cierre de tipo de cambio de la suite.
+* Reportes de **cartera vigente** e **intereses devengados** por mes.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -27,7 +36,7 @@ opcional y cuentas configurables por tipo y moneda.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '1.20261010',
+    'version': '2.20261010',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

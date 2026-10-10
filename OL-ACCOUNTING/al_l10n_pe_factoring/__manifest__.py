@@ -14,13 +14,17 @@ la factura ni el cobro:
   baja (1212 → 1214 a nombre del factor) y queda pagada; el desembolso
   registra intereses (6734) y comisiones (6391); el retenido se cobra al
   factor.
-* **Con recurso**: la factura se reclasifica a 1214 y el adelanto es una
-  obligación con el factor (4512); los intereses se devengan desde 3731; si
-  el cliente no paga, la recompra devuelve el adelanto y la factura vuelve a
-  quedar pendiente.
-* Cuentas por modalidad y moneda (PCGE por defecto), número de anotación
-  CAVALI, «Ceder a factoring» desde la lista de facturas, pestaña Factoring
-  en la factura y menú Perú ▸ Factoring con análisis.
+* **Con recurso**: la factura sigue pendiente a nombre del cliente (NIIF 9) y
+  el adelanto es una obligación con el factor (4512); los intereses se
+  devengan desde 3731; si el cliente no paga, la recompra devuelve el
+  adelanto y la factura sigue pendiente.
+* Factura negociable (DU 013-2020): conformidad expresa o presunta,
+  anotación en CAVALI, monto neto pendiente de pago sin detracción ni
+  retención; cobros parciales; comisión facturada por el factor; pérdida del
+  retenido (sin recurso); diferencia de cambio de la obligación (con recurso).
+* Cuentas por modalidad y moneda (PCGE por defecto), «Ceder a factoring»
+  desde la lista de facturas, pestaña Factoring en la factura y menú
+  Perú ▸ Factoring con análisis y costo financiero.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -28,7 +32,7 @@ la factura ni el cobro:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '3.20261010',
+    'version': '4.20261010',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

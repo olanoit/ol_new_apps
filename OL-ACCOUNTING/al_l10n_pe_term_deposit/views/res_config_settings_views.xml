@@ -18,6 +18,23 @@
                             </div>
                         </div>
                     </setting>
+                    <setting company_dependent="1" string="ITF"
+                             help="Impuesto a las Transacciones Financieras (Ley 28194) en la apertura, la cancelación y la liberación. Cada depósito puede marcarse como no afecto (operaciones exoneradas con declaración jurada ante el banco).">
+                        <field name="l10n_pe_term_deposit_itf"/>
+                        <div class="content-group" invisible="not l10n_pe_term_deposit_itf">
+                            <div class="row mt8">
+                                <label for="l10n_pe_term_deposit_itf_rate" string="Tasa (%)"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_term_deposit_itf_rate"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_term_deposit_itf_account_id" string="Cuenta"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_term_deposit_itf_account_id" options="{'no_create': True}"
+                                       placeholder="6412 del plan contable"/>
+                            </div>
+                        </div>
+                    </setting>
                 </block>
             </xpath>
         </field>

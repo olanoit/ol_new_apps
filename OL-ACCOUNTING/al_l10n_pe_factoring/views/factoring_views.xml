@@ -20,6 +20,7 @@
                 <field name="advance_amount" sum="Adelanto" optional="show"/>
                 <field name="net_amount" sum="Neto" optional="show"/>
                 <field name="interest_amount" sum="Intereses" optional="hide"/>
+                <field name="financial_cost" sum="Costo" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-success="state in ('done', 'disbursed')"
                        decoration-info="state == 'draft'"
@@ -46,6 +47,8 @@
                             invisible="state != 'disbursed' or modality != 'with_recourse' or not interest_pending_amount"/>
                     <button name="action_repurchase" type="object" string="Recompra"
                             invisible="state != 'disbursed' or modality != 'with_recourse'"/>
+                    <button name="action_write_off" type="object" string="Pérdida del retenido"
+                            invisible="state != 'disbursed' or modality != 'without_recourse' or not retained_amount"/>
                     <button name="action_cancel" type="object" string="Cancelar"
                             invisible="state not in ('draft', 'assigned')"
                             confirm="Se anula la cesión y las facturas vuelven a la cuenta del cliente. ¿Continuar?"/>
@@ -96,11 +99,20 @@
                                     <field name="partner_id"/>
                                     <field name="invoice_date" optional="hide"/>
                                     <field name="due_date"/>
+                                    <field name="is_credit" optional="hide" widget="boolean"/>
+                                    <field name="conformity_state" optional="show"
+                                           decoration-danger="conformity_state == 'rejected'"
+                                           decoration-success="conformity_state in ('accepted', 'presumed')"/>
+                                    <field name="presumed_conformity_date" optional="hide"/>
+                                    <field name="conformity_date" optional="hide"/>
                                     <field name="cavali_number" optional="show"/>
+                                    <field name="cavali_date" optional="hide"/>
                                     <field name="nominal_amount" sum="Nominal"/>
                                     <field name="advance_percent"/>
                                     <field name="advance_amount" sum="Adelanto"/>
                                     <field name="retained_amount" sum="Retenido" optional="show"/>
+                                    <field name="collected_amount" sum="Cobrado" optional="show"
+                                           column_invisible="parent.state in ('draft', 'assigned')"/>
                                     <field name="state" widget="badge"
                                            decoration-success="state == 'collected'"
                                            decoration-warning="state in ('assigned', 'repurchased')"/>
@@ -122,6 +134,11 @@
                                     <field name="fee_amount"/>
                                     <field name="expense_amount"/>
                                     <field name="net_amount"/>
+                                </group>
+                                <group string="Costo y cobranza">
+                                    <field name="collected_amount"/>
+                                    <field name="loss_amount" invisible="modality != 'without_recourse'"/>
+                                    <field name="financial_cost"/>
                                 </group>
                                 <group string="Intereses" invisible="modality != 'with_recourse'">
                                     <field name="interest_deferred_amount"/>
@@ -192,10 +209,16 @@
                 <field name="factor_id"/>
                 <field name="modality" optional="show"/>
                 <field name="due_date"/>
+                <field name="conformity_state" optional="show"
+                       decoration-danger="conformity_state == 'rejected'"
+                       decoration-success="conformity_state in ('accepted', 'presumed')"/>
                 <field name="cavali_number" optional="hide"/>
+                <field name="cavali_date" optional="hide"/>
                 <field name="nominal_amount" sum="Nominal"/>
                 <field name="advance_amount" sum="Adelanto" optional="show"/>
                 <field name="retained_amount" sum="Retenido" optional="show"/>
+                <field name="collected_amount" sum="Cobrado" optional="show"/>
+                <field name="pending_amount" sum="Por cobrar" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'collected'"
                        decoration-warning="state in ('assigned', 'repurchased')"/>
@@ -217,13 +240,17 @@
                 <filter name="overdue" string="Vencidas" domain="[('state', '=', 'assigned'), ('due_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter name="collected" string="Cobradas" domain="[('state', '=', 'collected')]"/>
                 <filter name="repurchased" string="Recompradas" domain="[('state', '=', 'repurchased')]"/>
+                <filter name="lost" string="Retenido perdido" domain="[('state', '=', 'lost')]"/>
+                <separator/>
+                <filter name="rejected" string="Disconformes" domain="[('conformity_state', '=', 'rejected')]"/>
+                <filter name="conformity_pending" string="Conformidad pendiente" domain="[('conformity_state', '=', 'pending')]"/>
                 <separator/>
                 <filter name="active_lines" string="Sin canceladas" domain="[('state', '!=', 'cancelled')]"/>
                 <group>
                     <filter name="group_factor" string="Factor" context="{'group_by': 'factor_id'}"/>
                     <filter name="group_partner" string="Cliente" context="{'group_by': 'partner_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
-                    <filter name="group_due" string="Vencimiento" context="{'group_by': 'due_date'}"/>
+                    <filter name="group_due" string="Vencimiento" context="{'group_by': 'due_date:month'}"/>
                 </group>
             </search>
         </field>
@@ -237,6 +264,7 @@
                 <field name="factor_id" type="row"/>
                 <field name="state" type="col"/>
                 <field name="nominal_amount" type="measure"/>
+                <field name="pending_amount" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -265,6 +293,32 @@
             <p class="o_view_nocontent_smiling_face">Sin facturas cedidas</p>
             <p>En rojo, las cedidas ya vencidas que el factor aún no cobra.</p>
         </field>
+    </record>
+
+    <record id="view_factoring_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.pivot</field>
+        <field name="model">l10n_pe.factoring</field>
+        <field name="arch" type="xml">
+            <pivot string="Costo financiero del factoring" sample="1">
+                <field name="factor_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="nominal_amount" type="measure"/>
+                <field name="advance_amount" type="measure"/>
+                <field name="financial_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_factoring_cost" model="ir.actions.act_window">
+        <field name="name">Costo financiero</field>
+        <field name="res_model">l10n_pe.factoring</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_factoring_pivot')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_factoring_list')})]"/>
+        <field name="search_view_id" ref="view_factoring_search"/>
+        <field name="domain">[('state', 'not in', ('draft', 'cancelled'))]</field>
+        <field name="context">{'create': False}</field>
     </record>
 
     <record id="action_factoring_analysis" model="ir.actions.act_window">

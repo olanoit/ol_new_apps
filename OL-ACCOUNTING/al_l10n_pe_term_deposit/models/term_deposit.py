@@ -17,6 +17,12 @@ STATES = [
 ]
 DAY_BASES = [('360', '360 días'), ('365', '365 días')]
 GUARANTEES = ('guarantee_fund', 'guarantee_given')
+GUARANTEE_PURPOSES = [
+    ('bond', 'Carta fianza'),
+    ('lease', 'Garantía de alquiler'),
+    ('contract', 'Garantía de contrato o licitación'),
+    ('other', 'Otra'),
+]
 
 
 class L10nPeTermDeposit(models.Model):
@@ -91,6 +97,32 @@ class L10nPeTermDeposit(models.Model):
     notice_sent = fields.Boolean(string='Aviso enviado', readonly=True, copy=False)
     due_soon = fields.Boolean(string='Por vencer', compute='_compute_due_soon')
     notes = fields.Html(string='Notas')
+    # Garantías: la obligación que respaldan (opcional).
+    guarantee_purpose = fields.Selection(
+        GUARANTEE_PURPOSES, string='Finalidad de la garantía', tracking=True,
+        help='Qué respalda el dinero: una carta fianza emitida por el banco, el alquiler de un '
+             'local, un contrato o una licitación.')
+    guarantee_beneficiary_id = fields.Many2one(
+        'res.partner', string='Beneficiario de la garantía', check_company=True, tracking=True,
+        help='A favor de quién está la garantía (p. ej. la entidad que recibe la carta fianza).')
+    guarantee_reference = fields.Char(
+        string='Documento garantizado', tracking=True,
+        help='N.º de la carta fianza, del contrato de alquiler o del proceso de licitación.')
+    guarantee_date_end = fields.Date(
+        string='Vigencia de la garantía', tracking=True,
+        help='Hasta cuándo debe mantenerse la garantía. Sin vencimiento del depósito, el '
+             'aviso se programa con esta fecha.')
+    # ITF (Ley 28194): opcional por depósito (hay exoneraciones con declaración jurada).
+    itf_applies = fields.Boolean(
+        string='Afecto al ITF', tracking=True,
+        default=lambda self: self.env.company.l10n_pe_term_deposit_itf,
+        help='Registra el ITF en la apertura, la cancelación y la liberación (no en la '
+             'renovación sin dinero nuevo, que está exonerada).')
+    itf_open_amount = fields.Monetary(
+        string='ITF de la apertura', compute='_compute_itf_open_amount', store=True, readonly=False,
+        help='Propuesto con la tasa de Ajustes; corríjalo si el banco cobró otro importe.')
+    itf_amount = fields.Monetary(string='ITF registrado', readonly=True, copy=False)
+    fx_warning = fields.Char(string='Aviso de diferencia de cambio', compute='_compute_fx_warning')
 
     _positive_amount = models.Constraint('CHECK(amount >= 0)', 'El capital no puede ser negativo.')
 
@@ -132,6 +164,38 @@ class L10nPeTermDeposit(models.Model):
         for deposit in self:
             deposit.remaining_amount = deposit.amount - deposit.released_amount
 
+    @api.depends('amount', 'itf_applies', 'company_id.l10n_pe_term_deposit_itf_rate')
+    def _compute_itf_open_amount(self):
+        for deposit in self:
+            if deposit.state in ('draft', False):
+                deposit.itf_open_amount = deposit._l10n_pe_itf(deposit.amount)
+
+    def _l10n_pe_itf(self, amount):
+        """ITF propuesto de un movimiento: importe × tasa de la compañía."""
+        self.ensure_one()
+        if not self.itf_applies or not amount:
+            return 0.0
+        return self.currency_id.round(abs(amount) * self.company_id.l10n_pe_term_deposit_itf_rate / 100.0)
+
+    @api.depends('currency_id', 'company_id', 'deposit_account_id', 'interest_account_id')
+    def _compute_fx_warning(self):
+        # La diferencia de cambio la calcula el cierre de T.C. de la suite
+        # (al_l10n_pe_exchange_closure) sobre las cuentas marcadas: aquí solo se
+        # avisa si las del depósito no lo están. Sin ese módulo no se avisa.
+        Account = self.env['account.account']
+        for deposit in self:
+            message = False
+            if deposit.currency_id and deposit.currency_id != deposit.company_id.currency_id \
+                    and 'l10n_pe_exchange_closing' in Account._fields:
+                unmarked = (deposit.deposit_account_id | deposit.interest_account_id).filtered(
+                    lambda a: not a.l10n_pe_exchange_closing)
+                if unmarked:
+                    message = self.env._(
+                        'Depósito en %(currency)s: marque %(accounts)s para el cierre de tipo de '
+                        'cambio (Contabilidad ▸ Plan contable) para ajustar su saldo al cierre de mes.',
+                        currency=deposit.currency_id.name, accounts=', '.join(unmarked.mapped('code')))
+            deposit.fx_warning = message
+
     def _compute_move_count(self):
         for deposit in self:
             deposit.move_count = len(deposit.move_ids)
@@ -170,8 +234,9 @@ class L10nPeTermDeposit(models.Model):
     # ------------------------------------------------------------------
     # Asientos
     # ------------------------------------------------------------------
-    def _line_vals(self, date, account, amount_currency, name, partner=False):
-        """Apunte en la moneda del depósito con su contravalor a la fecha."""
+    def _line_vals(self, date, account, amount_currency, name, partner=False, interest=False):
+        """Apunte en la moneda del depósito con su contravalor a la fecha.
+        ``interest`` marca los apuntes de ingreso por intereses (reporte)."""
         company = self.company_id
         return {
             'name': name,
@@ -180,7 +245,15 @@ class L10nPeTermDeposit(models.Model):
             'currency_id': self.currency_id.id,
             'amount_currency': amount_currency,
             'balance': self.currency_id._convert(amount_currency, company.currency_id, company, date),
+            'l10n_pe_term_deposit_interest': interest,
         }
+
+    def _l10n_pe_itf_line(self, date, amount, name):
+        """Gasto por el ITF (cuenta de la compañía o 6412)."""
+        account = self.company_id._l10n_pe_term_deposit_itf_account()
+        if not account:
+            raise UserError(self.env._('Indique la cuenta del ITF en Ajustes ▸ Perú ▸ Depósitos y garantías.'))
+        return self._line_vals(date, account, amount, self.env._('ITF %s', name))
 
     def _post_move(self, journal, date, ref, lines):
         """Crea y publica el asiento; el céntimo de conversión va al primer apunte."""
@@ -192,11 +265,22 @@ class L10nPeTermDeposit(models.Model):
             lines[0]['balance'] -= difference
         move = self.env['account.move'].create({
             'move_type': 'entry', 'journal_id': journal.id, 'date': date, 'ref': ref,
+            'l10n_pe_term_deposit_id': self.id,
             'line_ids': [(0, 0, vals) for vals in lines],
         })
         move.action_post()
         self.move_ids = [(4, move.id)]
         return move
+
+    def _l10n_pe_link_existing_moves(self):
+        """Enlaza los asientos ya creados con su depósito y marca sus apuntes
+        de ingreso por intereses (para bases anteriores a la versión 2)."""
+        for deposit in self:
+            moves = deposit.move_ids.filtered(lambda m: not m.l10n_pe_term_deposit_id)
+            moves.write({'l10n_pe_term_deposit_id': deposit.id})
+            deposit.move_ids.line_ids.filtered(
+                lambda l: l.account_id == deposit.income_account_id and not l.l10n_pe_term_deposit_interest
+            ).write({'l10n_pe_term_deposit_interest': True})
 
     def _bank_account(self):
         account = self.journal_id.default_account_id
@@ -231,12 +315,16 @@ class L10nPeTermDeposit(models.Model):
             deposit._check_accounts()
             label = self.env._('Apertura %(name)s %(type)s', name=deposit.name,
                                type=dict(DEPOSIT_TYPES)[deposit.deposit_type])
-            deposit._post_move(deposit.journal_id, deposit.date_start, label, [
+            itf = deposit.itf_open_amount if deposit.itf_applies else 0.0
+            lines = [
                 deposit._line_vals(deposit.date_start, deposit.deposit_account_id, deposit.amount, label,
                                    partner=deposit.partner_id),
-                deposit._line_vals(deposit.date_start, deposit._bank_account(), -deposit.amount, label),
-            ])
-            deposit.state = 'open'
+                deposit._line_vals(deposit.date_start, deposit._bank_account(), -(deposit.amount + itf), label),
+            ]
+            if itf:
+                lines.append(deposit._l10n_pe_itf_line(deposit.date_start, itf, label))
+            deposit._post_move(deposit.journal_id, deposit.date_start, label, lines)
+            deposit.write({'state': 'open', 'itf_amount': itf})
         return True
 
     def unlink(self):
@@ -263,7 +351,7 @@ class L10nPeTermDeposit(models.Model):
             moves |= deposit._post_move(deposit.misc_journal_id, date_move, label, [
                 deposit._line_vals(date_move, deposit.interest_account_id, pending, label,
                                    partner=deposit.partner_id),
-                deposit._line_vals(date_move, deposit.income_account_id, -pending, label),
+                deposit._line_vals(date_move, deposit.income_account_id, -pending, label, interest=True),
             ])
             deposit.interest_accrued += pending
         return moves
@@ -314,28 +402,50 @@ class L10nPeTermDeposit(models.Model):
     # ------------------------------------------------------------------
     # Operaciones (las usan el asistente y el cron)
     # ------------------------------------------------------------------
-    def _l10n_pe_close(self, date, interest_received=None):
+    def _l10n_pe_close(self, date, interest_received=None, penalty=0.0, itf=None):
         """Cancela el depósito: vuelve al banco el saldo de capital y los
-        intereses. La diferencia con lo devengado ajusta el ingreso."""
+        intereses, menos la penalidad (cancelación anticipada) y el ITF. La
+        diferencia entre lo devengado y lo cobrado ajusta el ingreso."""
         self.ensure_one()
         self._l10n_pe_accrue(date)
         pending = self._l10n_pe_interest_pending()
         received = pending if interest_received is None else interest_received
         capital = self.remaining_amount
+        cash = capital + received - (penalty or 0.0)
+        if self.currency_id.compare_amounts(penalty or 0.0, 0.0) < 0 or \
+                self.currency_id.compare_amounts(cash, 0.0) <= 0:
+            raise UserError(self.env._('La penalidad no puede ser negativa ni superar el capital y los intereses.'))
+        # El abono de intereses está exonerado del ITF (Informe SUNAT 025-2004):
+        # se calcula sobre el capital que vuelve a la cuenta.
+        itf = self._l10n_pe_itf(cash - received) if itf is None else itf
         label = self.env._('Cancelación %s', self.name)
+        income_adjustment = pending - received
         lines = [
-            self._line_vals(date, self._bank_account(), self.remaining_amount + received, label),
-            self._line_vals(date, self.deposit_account_id, -self.remaining_amount, label, partner=self.partner_id),
+            self._line_vals(date, self._bank_account(), cash - itf, label),
+            self._line_vals(date, self.deposit_account_id, -capital, label, partner=self.partner_id),
             self._line_vals(date, self.interest_account_id, -pending, label, partner=self.partner_id),
-            self._line_vals(date, self.income_account_id, pending - received,
-                            self.env._('Ajuste de intereses %s', self.name)),
         ]
+        if penalty:
+            penalty_account = self.env['l10n_pe.term.deposit.account.config']._l10n_pe_get(
+                self.company_id, self.deposit_type, self.currency_id).penalty_account_id
+            if penalty_account:
+                lines.append(self._line_vals(date, penalty_account, penalty,
+                                             self.env._('Penalidad por cancelación anticipada %s', self.name)))
+            else:
+                income_adjustment += penalty
+        lines.append(self._line_vals(date, self.income_account_id, income_adjustment,
+                                     self.env._('Ajuste de intereses %s', self.name), interest=True))
+        if itf:
+            lines.append(self._l10n_pe_itf_line(date, itf, label))
         self._post_move(self.journal_id, date, label, lines)
-        self.write({'interest_collected': self.interest_collected + pending,
+        self.write({'interest_collected': self.interest_collected + pending, 'itf_amount': self.itf_amount + itf,
                     'released_amount': self.amount, 'state': 'closed'})
         self.activity_ids.action_done()
-        self.message_post(body=self.env._('Depósito cancelado: capital %(capital)s e intereses %(interest)s.',
-                                          capital=capital, interest=received))
+        body = self.env._('Depósito cancelado: capital %(capital)s e intereses %(interest)s.',
+                          capital=capital, interest=received)
+        if penalty:
+            body += ' ' + self.env._('Penalidad: %s.', penalty)
+        self.message_post(body=body)
         return True
 
     def _l10n_pe_renew(self, date, term_days=None, rate=None, capitalize=None):
@@ -371,7 +481,7 @@ class L10nPeTermDeposit(models.Model):
         self.message_post(body=self.env._('Renovado en %s.', new._get_html_link()))
         return new
 
-    def _l10n_pe_release(self, date, amount):
+    def _l10n_pe_release(self, date, amount, itf=None):
         """Libera capital de una garantía (total o parcial); al liberar todo
         se cobran también los intereses devengados y se cierra."""
         self.ensure_one()
@@ -382,15 +492,25 @@ class L10nPeTermDeposit(models.Model):
             raise UserError(self.env._('El importe a liberar debe ser mayor que cero y no superar el saldo (%s).',
                                        self.remaining_amount))
         if self.currency_id.compare_amounts(amount, self.remaining_amount) == 0:
-            return self._l10n_pe_close(date)
+            return self._l10n_pe_close(date, itf=itf)
         label = self.env._('Liberación parcial %s', self.name)
         self._l10n_pe_accrue(date)
-        self._post_move(self.journal_id, date, label, [
-            self._line_vals(date, self._bank_account(), amount, label),
+        itf = self._l10n_pe_itf(amount) if itf is None else itf
+        lines = [
+            self._line_vals(date, self._bank_account(), amount - itf, label),
             self._line_vals(date, self.deposit_account_id, -amount, label, partner=self.partner_id),
-        ])
-        self.released_amount += amount
+        ]
+        if itf:
+            lines.append(self._l10n_pe_itf_line(date, itf, label))
+        self._post_move(self.journal_id, date, label, lines)
+        self.write({'released_amount': self.released_amount + amount, 'itf_amount': self.itf_amount + itf})
         return True
+
+    def _l10n_pe_notice_date(self):
+        """Fecha que dispara el aviso: el vencimiento del depósito o, en una
+        garantía sin plazo, la vigencia de la garantía."""
+        self.ensure_one()
+        return self.date_end or self.guarantee_date_end
 
     # ------------------------------------------------------------------
     # Cron
@@ -412,12 +532,14 @@ class L10nPeTermDeposit(models.Model):
                     deposit._l10n_pe_accrue(deposit.date_end)
                     deposit.state = 'expired'
             notice = company.l10n_pe_term_deposit_notice_days
-            for deposit in deposits.filtered(lambda d: d.state == 'open' and not d.notice_sent and d.date_end
-                                             and d.date_end - timedelta(days=notice) <= today):
+            for deposit in deposits.filtered(lambda d: d.state == 'open' and not d.notice_sent
+                                             and d._l10n_pe_notice_date()
+                                             and d._l10n_pe_notice_date() - timedelta(days=notice) <= today):
+                due = deposit._l10n_pe_notice_date()
                 deposit.activity_schedule(
-                    'mail.mail_activity_data_todo', date_deadline=deposit.date_end,
+                    'mail.mail_activity_data_todo', date_deadline=due,
                     summary=self.env._('Vence %s', deposit.name),
-                    note=self.env._('Vence el %(date)s: cancele, renueve o libere.', date=deposit.date_end),
+                    note=self.env._('Vence el %(date)s: cancele, renueve o libere.', date=due),
                     user_id=(deposit.user_id or self.env.user).id)
                 deposit.notice_sent = True
         return True

@@ -13,6 +13,12 @@
             <xpath expr="//header" position="inside">
                 <field name="l10n_pe_edi_guide_allowed" invisible="1"/>
             </xpath>
+            <xpath expr="//field[@name='l10n_pe_edi_reason_for_transfer']" position="after">
+                <field name="l10n_pe_edi_reason_description"
+                       invisible="l10n_pe_edi_reason_for_transfer != '13'"
+                       required="l10n_pe_edi_reason_for_transfer == '13'"
+                       readonly="l10n_pe_edi_status == 'sent'"/>
+            </xpath>
         </field>
     </record>
 
@@ -45,6 +51,18 @@
                         guía de remisión el propietario va en las observaciones.
                     </div>
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tipo de operación: motivo de traslado que se propone en su guía. -->
+    <record id="view_picking_type_form_reason" model="ir.ui.view">
+        <field name="name">stock.picking.type.form.reason.pe</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sequence_code']" position="after">
+                <field name="l10n_pe_edi_default_reason"/>
             </xpath>
         </field>
     </record>

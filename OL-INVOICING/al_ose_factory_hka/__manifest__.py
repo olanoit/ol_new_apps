@@ -17,6 +17,10 @@ peruana de Odoo (``l10n_pe_edi``), junto a IAP, SUNAT y Estela.
   de ``l10n_pe_edi``: el mismo flujo, mensajes y adjuntos que los demás
   operadores.
 * El nombre del archivo lleva el número con 8 dígitos, como exige HKA.
+* **Baja de boletas** y de sus notas con el resumen diario (RC, estado 3), que
+  es lo que exige SUNAT (la comunicación de baja RA solo admite facturas).
+* Aviso de **envío fuera de plazo** de facturas (R.S. 000003-2023/SUNAT) y
+  **observaciones del CDR** en el historial del comprobante.
 * **Comprobantes de retención (CRE)** de ``al_l10n_pe_retention`` por HKA
   (desactivable: entonces van directo a SUNAT con la clave SOL).
 * **Reversión del CRE** (resumen de reversiones RR) desde el pago:
@@ -31,13 +35,14 @@ Migrado de los módulos 17.0 ``al_ose_factory_hka`` y
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '1.20261009',
+    'version': '2.20261010',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['l10n_pe_edi', 'al_l10n_pe_retention'],
     'data': [
         'data/ir_sequence_data.xml',
         'data/cre_reversal_templates.xml',
+        'data/boleta_summary_templates.xml',
         'views/res_config_settings_views.xml',
         'views/account_payment_views.xml',
     ],

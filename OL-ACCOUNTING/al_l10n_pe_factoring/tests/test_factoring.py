@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
@@ -57,7 +59,7 @@ class TestFactoring(TransactionCase):
         wizard = self.env['l10n_pe.factoring.wizard'].create(dict({
             'factoring_id': operation.id, 'operation': kind, 'date': self.today,
             'bank_journal_id': self.bank_journal.id}, **vals))
-        if kind in ('settle', 'repurchase') and 'line_ids' not in vals:
+        if kind in ('settle', 'repurchase', 'write_off') and 'line_ids' not in vals:
             wizard.line_ids = operation.line_ids.filtered(lambda l: l.state == 'assigned')
         wizard.action_apply()
         return wizard
@@ -252,3 +254,162 @@ class TestFactoring(TransactionCase):
         self.assertEqual(operation.line_ids.nominal_amount, 450.0)
         self.assertEqual(operation.line_ids.advance_percent, 85.0)
         self.assertEqual(operation.line_ids.due_date, invoice.invoice_date_due)
+
+    # ------------------------------------------------------------------
+    # Factura negociable (DU 013-2020)
+    # ------------------------------------------------------------------
+    def test_conformity(self):
+        invoice = self._invoice()
+        operation = self._operation(invoice)
+        line = operation.line_ids
+        self.assertEqual(line.conformity_state, 'pending')
+        self.assertEqual((line.presumed_conformity_date - invoice.invoice_date).days, 8,
+                         'conformidad presunta a los 8 días calendario')
+        self.assertFalse(line.is_credit, 'sin plazo de pago la factura es al contado')
+        line.conformity_state = 'rejected'
+        with self.assertRaises(UserError, msg='la disconformidad impide ceder'):
+            operation.action_assign()
+        line.conformity_state = 'accepted'
+        operation.action_assign()
+        self.assertIn('al contado', ' '.join(operation.message_ids.mapped('body')),
+                      'aviso de factura al contado en el historial')
+
+    def test_net_pending_without_customer_retention(self):
+        if 'is_retention_agent' not in self.env['res.partner']._fields:
+            self.skipTest('requiere l10n_pe_vat_sunat (agente de retención)')
+        tax = self.env['account.tax'].search([
+            ('company_id', '=', self.company.id), ('type_tax_use', '=', 'sale'), ('amount', '=', 18.0),
+            ('amount_type', '=', 'percent')], limit=1)
+        if not tax:
+            self.skipTest('sin IGV de ventas al 18 %')
+        self.customer.is_retention_agent = True
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.customer.id,
+            'journal_id': self.sale_journal.id, 'invoice_date': self.today,
+            'invoice_line_ids': [(0, 0, {'name': 'Servicio', 'quantity': 1, 'price_unit': 1000.0,
+                                         'account_id': self.income.id, 'tax_ids': [(6, 0, tax.ids)]})],
+        })
+        invoice.action_post()
+        self.assertEqual(invoice.amount_total, 1180.0)
+        self.assertEqual(invoice._l10n_pe_factoring_net_pending(), 1144.6,
+                         'monto neto pendiente: total menos la retención del 3 % del cliente agente')
+        self.customer.is_retention_agent = False
+
+    # ------------------------------------------------------------------
+    # Cobro parcial
+    # ------------------------------------------------------------------
+    def test_partial_collection_with_recourse(self):
+        invoice = self._invoice(2000.0)
+        operation = self._operation(invoice, modality='with_recourse', percent=80.0)
+        config = operation._config()
+        operation.action_assign()
+        self._wizard(operation, 'disburse')
+        self._wizard(operation, 'settle', collect_amount=1000.0)
+        line = operation.line_ids
+        self.assertEqual(line.state, 'assigned', 'cobro parcial: sigue cedida')
+        self.assertEqual((line.collected_amount, line.advance_applied_amount, line.pending_amount),
+                         (1000.0, 1000.0, 1000.0), 'lo cobrado cubre primero el adelanto')
+        self.assertEqual(invoice.amount_residual, 1000.0)
+        self.assertEqual(self._balance(operation, config.obligation_account_id), -600.0)
+        self._wizard(operation, 'settle')
+        self.assertEqual(operation.state, 'done')
+        self.assertIn(invoice.payment_state, ('paid', 'in_payment'))
+        self.assertEqual(self._balance(operation, config.obligation_account_id), 0.0)
+        self.assertEqual(self._balance(operation, self.bank_journal.default_account_id), 2000.0,
+                         'adelanto 1600 + retenido 400')
+        self._assert_balanced(operation)
+
+    def test_partial_collection_without_recourse(self):
+        invoice = self._invoice(1000.0)
+        operation = self._operation(invoice, percent=90.0)
+        config = operation._config()
+        operation.action_assign()
+        self._wizard(operation, 'disburse')
+        self._wizard(operation, 'settle', collect_amount=950.0)
+        self.assertEqual(operation.line_ids.pending_amount, 50.0)
+        self.assertEqual(self._balance(operation, config.assigned_account_id, self.factor), 50.0,
+                         'liberó 50 del retenido; quedan 50')
+        self._wizard(operation, 'settle')
+        self.assertEqual(operation.state, 'done')
+        self.assertEqual(self._balance(operation, config.assigned_account_id), 0.0)
+        self._assert_balanced(operation)
+
+    def test_repurchase_after_partial_collection(self):
+        invoice = self._invoice(2000.0)
+        operation = self._operation(invoice, modality='with_recourse', percent=80.0)
+        operation.action_assign()
+        self._wizard(operation, 'disburse')
+        self._wizard(operation, 'settle', collect_amount=500.0)
+        self._wizard(operation, 'repurchase')
+        self.assertEqual(operation.state, 'repurchased')
+        self.assertEqual(self._balance(operation, operation._config().obligation_account_id), 0.0)
+        self.assertEqual(self._balance(operation, self.bank_journal.default_account_id), 500.0,
+                         'adelanto 1600 − devolución 1100')
+        self.assertEqual(invoice.amount_residual, 1500.0, 'la factura sigue pendiente por lo no cobrado')
+
+    # ------------------------------------------------------------------
+    # Comisión facturada y pérdida del retenido
+    # ------------------------------------------------------------------
+    def test_fee_invoiced_by_factor(self):
+        purchase_journal = self.env['account.journal'].create({
+            'name': 'Compras factoring test', 'code': 'CFTS', 'type': 'purchase',
+            'company_id': self.company.id, 'l10n_latam_use_documents': False})
+        bill = self.env['account.move'].create({
+            'move_type': 'in_invoice', 'partner_id': self.factor.id, 'invoice_date': self.today,
+            'journal_id': purchase_journal.id,
+            'invoice_line_ids': [(0, 0, {'name': 'Comisión de factoring', 'quantity': 1, 'price_unit': 118.0,
+                                         'account_id': self.income.id, 'tax_ids': [(6, 0, [])]})],
+        })
+        bill.action_post()
+        invoice = self._invoice(1000.0)
+        operation = self._operation(invoice, percent=90.0)
+        operation.action_assign()
+        self._wizard(operation, 'disburse', fee_bill_id=bill.id, fee_amount=118.0, interest_amount=12.0)
+        self.assertIn(bill.payment_state, ('paid', 'in_payment'), 'el descuento paga la factura del factor')
+        self.assertEqual(operation.net_amount, 770.0)
+        self.assertEqual(self._balance(operation, operation._config().fee_account_id), 0.0,
+                         'el gasto de la comisión está en la factura, no en 6391')
+        self._assert_balanced(operation)
+
+    def test_write_off_retained_without_recourse(self):
+        invoice = self._invoice(1000.0)
+        operation = self._operation(invoice, percent=90.0)
+        config = operation._config()
+        operation.action_assign()
+        self._wizard(operation, 'disburse', interest_amount=20.0)
+        with self.assertRaises(UserError, msg='con recurso se usa la recompra'):
+            self._wizard(operation, 'repurchase')
+        self._wizard(operation, 'write_off')
+        self.assertEqual(operation.state, 'done')
+        self.assertEqual(operation.line_ids.state, 'lost')
+        self.assertEqual(self._balance(operation, config.loss_account_id), 100.0)
+        self.assertEqual(self._balance(operation, config.assigned_account_id), 0.0)
+        self.assertEqual(operation.financial_cost, 120.0, 'intereses 20 + retenido perdido 100')
+
+    # ------------------------------------------------------------------
+    # Moneda extranjera: la obligación se cancela al cambio histórico
+    # ------------------------------------------------------------------
+    def test_foreign_currency_with_recourse_exchange_difference(self):
+        usd = self.env.ref('base.USD')
+        usd.active = True
+        yesterday = self.today - timedelta(days=1)
+        Rate = self.env['res.currency.rate']
+        Rate.search([('currency_id', '=', usd.id), ('company_id', '=', self.company.id),
+                     ('name', 'in', (yesterday, self.today))]).unlink()
+        Rate.create({'name': yesterday, 'currency_id': usd.id, 'company_id': self.company.id,
+                     'inverse_company_rate': 3.75})
+        Rate.create({'name': self.today, 'currency_id': usd.id, 'company_id': self.company.id,
+                     'inverse_company_rate': 3.80})
+        invoice = self._invoice(1000.0, currency=usd)
+        operation = self._operation(invoice, modality='with_recourse', percent=80.0, currency=usd)
+        config = operation._config()
+        operation.action_assign()
+        self._wizard(operation, 'disburse', date=yesterday)
+        self.assertAlmostEqual(self._balance(operation, config.obligation_account_id), -3000.0, places=2)
+        self._wizard(operation, 'settle')
+        self.assertEqual(self._balance(operation, config.obligation_account_id), 0.0,
+                         'la 4512 queda en cero en soles')
+        loss = self.company.expense_currency_exchange_account_id
+        self.assertAlmostEqual(self._balance(operation, loss), 40.0, places=2,
+                               msg='800 USD × (3,80 − 3,75)')
+        self._assert_balanced(operation)

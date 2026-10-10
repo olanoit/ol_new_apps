@@ -75,10 +75,15 @@ pasos:
       Con el CDR aceptado la factura queda **Enviada** y el CDR adjunto; si HKA
       o SUNAT la observan, el motivo aparece en la factura.
   - titulo: Dar de baja
-    ruta: Factura ▸ Solicitar anulación
+    ruta: Factura ▸ Motivo de cancelación ▸ Solicitar cancelación de EDI
     texto: >-
       Odoo arma la comunicación de baja, la envía a HKA (sendSummary) y
-      consulta el ticket (getStatus) hasta que SUNAT la acepta.
+      consulta el ticket (getStatus) hasta que SUNAT la acepta. Las notas
+      vinculadas a boletas van en un resumen diario (RC, estado 3); la boleta
+      misma se anula con nota de crédito.
+    puntos:
+      - "Facturas y sus notas: comunicación de baja hasta el sétimo día calendario siguiente a la recepción del CDR."
+      - "Notas de boleta no entregadas: resumen diario hasta el sétimo día calendario siguiente a su generación."
 
   - seccion: Comprobantes de retención
   - titulo: Enviar el CRE
@@ -116,6 +121,13 @@ campos:
       - [Ticket de la reversión, Ticket de SUNAT del resumen RR, —, Se consulta con «Consultar reversión»]
 
 novedades:
+  - version: 2.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Baja de las notas vinculadas a boletas con el resumen diario (RC 1.1, estado 3) que exige SUNAT, en lugar de la comunicación de baja (RA); una baja no mezcla facturas y documentos de boleta ni fechas de emisión distintas."
+      - "Aviso en el historial cuando una factura o su nota se envía fuera del plazo de SUNAT (tercer día calendario siguiente a la emisión, R.S. 000003-2023/SUNAT)."
+      - "Observaciones del CDR (comprobante aceptado con observaciones) listadas en el historial del comprobante."
+      - "Guía funcional del módulo (GUIA_FUNCIONAL.md)."
   - version: 1.20261009
     fecha: 09/10/2026
     cambios:

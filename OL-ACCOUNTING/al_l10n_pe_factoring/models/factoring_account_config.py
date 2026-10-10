@@ -41,6 +41,10 @@ class L10nPeFactoringAccountConfig(models.Model):
     fee_account_id = fields.Many2one(
         'account.account', string='Comisiones y gastos', required=True, check_company=True,
         help='Comisión del factor y gastos de la operación (PCGE 6391).')
+    loss_account_id = fields.Many2one(
+        'account.account', string='Pérdida del retenido', check_company=True,
+        help='Sin recurso: retenido que el factor no libera porque el cliente no pagó '
+             '(PCGE 6741, Gastos en operaciones de factoring – Gastos por menor valor).')
 
     _unique_combination = models.Constraint(
         'unique(modality, currency_id, company_id)',
@@ -51,6 +55,9 @@ class L10nPeFactoringAccountConfig(models.Model):
         'assigned_account_id': 'chart1214',
         'interest_account_id': 'chart6734',
         'fee_account_id': 'chart6391',
+    }
+    PCGE_WITHOUT_RECOURSE = {
+        'loss_account_id': 'chart6741',
     }
     PCGE_WITH_RECOURSE = {
         'obligation_account_id': 'chart4512',
@@ -69,8 +76,8 @@ class L10nPeFactoringAccountConfig(models.Model):
                                       ('company_id', '=', company.id)], limit=1):
                     continue
                 xmlids = dict(self.PCGE_DEFAULTS)
-                if modality == 'with_recourse':
-                    xmlids.update(self.PCGE_WITH_RECOURSE)
+                xmlids.update(self.PCGE_WITH_RECOURSE if modality == 'with_recourse'
+                              else self.PCGE_WITHOUT_RECOURSE)
                 vals = {'modality': modality, 'company_id': company.id}
                 for field, xmlid in xmlids.items():
                     account = self.env.ref('account.%s_%s' % (company.id, xmlid), raise_if_not_found=False)
@@ -79,6 +86,15 @@ class L10nPeFactoringAccountConfig(models.Model):
                 if all(vals.get(f) for f in ('assigned_account_id', 'interest_account_id', 'fee_account_id')):
                     created |= self.create(vals)
         return created
+
+    @api.model
+    def _l10n_pe_fill_loss_account(self):
+        """Versión 4: la cuenta de pérdida del retenido en las configuraciones
+        sin recurso que no la tienen."""
+        for config in self.search([('modality', '=', 'without_recourse'), ('loss_account_id', '=', False)]):
+            account = self.env.ref('account.%s_chart6741' % config.company_id.id, raise_if_not_found=False)
+            if account:
+                config.loss_account_id = account
 
     @api.model
     def _l10n_pe_get(self, company, modality, currency):

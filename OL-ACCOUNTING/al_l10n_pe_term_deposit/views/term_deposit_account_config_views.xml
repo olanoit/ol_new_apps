@@ -10,6 +10,7 @@
                 <field name="deposit_account_id" options="{'no_create': True}"/>
                 <field name="interest_account_id" options="{'no_create': True}"/>
                 <field name="income_account_id" options="{'no_create': True}"/>
+                <field name="penalty_account_id" options="{'no_create': True}" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
             </list>
         </field>
@@ -23,7 +24,8 @@
             <p class="o_view_nocontent_smiling_face">Sin cuentas configuradas</p>
             <p>Una fila por tipo (y moneda, si hace falta). Las compañías peruanas reciben las
                del PCGE: 1062, 1071 y 1643 para el depósito, 1631 para los intereses por
-               cobrar y 7721 para el ingreso.</p>
+               cobrar y 7721 para el ingreso. La penalidad por cancelación anticipada es
+               opcional (sin cuenta, rebaja el ingreso por intereses).</p>
         </field>
     </record>
 </odoo>

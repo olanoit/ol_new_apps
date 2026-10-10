@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Fin de mes: diferencia de cambio de los contratos en moneda extranjera. -->
+    <record id="ir_cron_lease_exchange_difference" model="ir.cron">
+        <field name="name">Arrendamientos: diferencia de cambio de fin de mes</field>
+        <field name="model_id" ref="model_l10n_pe_lease"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_exchange_difference()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="nextcall" eval="(DateTime.now().replace(day=1) + relativedelta(months=1)).strftime('%Y-%m-%d 06:00:00')"/>
+    </record>
+</odoo>

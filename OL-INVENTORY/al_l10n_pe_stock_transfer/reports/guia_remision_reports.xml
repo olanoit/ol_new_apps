@@ -5,6 +5,24 @@
          observaciones). -->
     <template id="report_guia_remision_page_third_party"
               inherit_id="al_l10n_pe_delivery_guide_report.report_guia_remision_page">
+        <!-- Destinatario, punto de llegada y motivo como en el XML: en un
+             ingreso o con motivo 04 el destinatario es la empresa y, en un
+             ingreso, la llegada es su almacén. -->
+        <xpath expr="//t[@t-set='receiver']" position="attributes">
+            <attribute name="t-value">o._l10n_pe_report_receiver()</attribute>
+        </xpath>
+        <xpath expr="//td[span[@t-field='o.partner_id.street']]" position="replace">
+            <td><span t-out="o._l10n_pe_report_address_line(o._l10n_pe_report_arrival_partner())"/></td>
+        </xpath>
+        <xpath expr="//span[@t-out='o._l10n_pe_report_address_line(o.partner_id)']" position="attributes">
+            <attribute name="t-out">o._l10n_pe_report_address_line(o._l10n_pe_report_arrival_partner())</attribute>
+        </xpath>
+        <xpath expr="//span[@t-out='o.partner_id.l10n_pe_district.code']" position="attributes">
+            <attribute name="t-out">o._l10n_pe_report_arrival_partner().l10n_pe_district.code</attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='o.l10n_pe_edi_reason_for_transfer']" position="replace">
+            <span t-out="o._l10n_pe_report_reason_label()"/>
+        </xpath>
         <xpath expr="//t[@t-set='departure']" position="before">
             <table class="pe-doc-table mb-2" t-if="o.l10n_pe_third_party_owner_ids">
                 <tr class="pe-doc-subheader">

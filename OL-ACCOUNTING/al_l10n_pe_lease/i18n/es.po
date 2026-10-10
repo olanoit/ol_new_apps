@@ -11,6 +11,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_l10n_pe_lease
+#: model:ir.model.fields,help:al_l10n_pe_lease.field_l10n_pe_lease_terminate__gain_account_id
+msgid ""
+"Account used to write the journal item in case of gain while selling an "
+"asset"
+msgstr ""
+"Cuenta que se utiliza para escribir el apunte contable en caso de tener "
+"alguna ganancia al vender un activo"
+
+#. module: al_l10n_pe_lease
+#: model:ir.model.fields,help:al_l10n_pe_lease.field_l10n_pe_lease_terminate__loss_account_id
+msgid ""
+"Account used to write the journal item in case of loss while selling an "
+"asset"
+msgstr ""
+"Cuenta que se utiliza para escribir el apunte contable en caso de tener "
+"alguna perdida al vender un activo"
+
+#. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__message_needaction
 msgid "Action Needed"
 msgstr "Se requiere una acción"
@@ -47,26 +65,45 @@ msgstr "Número de facturas"
 
 #. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_event__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_exchange__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_remeasure__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_terminate__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_event__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_exchange__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_remeasure__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_terminate__create_date
 msgid "Created on"
 msgstr "Creado el"
 
 #. module: al_l10n_pe_lease
-#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__currency_id
-#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__currency_id
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__currency_id
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__currency_id
 msgid "Currency"
 msgstr "Moneda"
 
 #. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_account_move__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_event__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_exchange__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_operation_mixin__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_remeasure__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_terminate__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -123,13 +160,25 @@ msgstr "Asiento contable"
 
 #. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_event__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_exchange__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_remeasure__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_terminate__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_event__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_exchange__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_line__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_remeasure__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_terminate__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 
@@ -194,6 +243,11 @@ msgid "Ratings"
 msgstr "Calificaciones"
 
 #. module: al_l10n_pe_lease
+#: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease_tax_report_line__report_id
+msgid "Report"
+msgstr "Reporte"
+
+#. module: al_l10n_pe_lease
 #: model:ir.model.fields,field_description:al_l10n_pe_lease.field_l10n_pe_lease__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario responsable"
@@ -232,16 +286,21 @@ msgid "Website communication history"
 msgstr "Historial de comunicación del sitio web"
 
 #. module: al_l10n_pe_lease
+#: code:addons/al_l10n_pe_lease/models/lease.py:0
+msgid "id"
+msgstr "ID"
+
+#. module: al_l10n_pe_lease
 #: model:ir.model.fields.selection,name:mail.selection__l10n_pe_lease__activity_state__overdue
 msgid "Overdue"
 msgstr "Vencidas"
 
 #. module: al_l10n_pe_lease
-#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_lease__activity_state__today
-msgid "Today"
-msgstr "Hoy"
-
-#. module: al_l10n_pe_lease
 #: model:ir.model.fields.selection,name:mail.selection__l10n_pe_lease__activity_state__planned
 msgid "Planned"
 msgstr "Planeado"
+
+#. module: al_l10n_pe_lease
+#: model:ir.model.fields.selection,name:mail.selection__l10n_pe_lease__activity_state__today
+msgid "Today"
+msgstr "Hoy"

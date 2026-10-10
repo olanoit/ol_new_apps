@@ -11,4 +11,6 @@
               parent="menu_lease_root" action="action_lease_lines" sequence="20"/>
     <menuitem id="menu_lease_analysis" name="Análisis de arrendamientos"
               parent="menu_lease_root" action="action_lease_analysis" sequence="30"/>
+    <menuitem id="menu_lease_tax_report" name="Diferencias temporales"
+              parent="menu_lease_root" action="action_lease_tax_report" sequence="40"/>
 </odoo>

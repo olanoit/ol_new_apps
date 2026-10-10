@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Resumen diario (RC, versión 1.1) para dar de baja boletas y sus notas.
+         SUNAT no admite boletas en la comunicación de baja (RA): se informan en
+         un resumen diario con estado 3 «Anulado» (catálogo 19), con la fecha de
+         emisión de los comprobantes como ReferenceDate y en el identificador
+         (Guía de elaboración del resumen diario de boletas, SUNAT 2018). -->
+    <template id="boleta_void_summary">
+        <SummaryDocuments
+            xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+            xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+            xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <t t-call="l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature"/>
+            <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+            <cbc:CustomizationID>1.1</cbc:CustomizationID>
+            <cbc:ID t-out="summary_number"/>
+            <cbc:ReferenceDate t-out="reference_date"/>
+            <cbc:IssueDate t-out="issue_date"/>
+            <cac:Signature>
+                <cbc:ID>IDSignKG</cbc:ID>
+                <cac:SignatoryParty>
+                    <cac:PartyIdentification>
+                        <cbc:ID t-out="company.vat"/>
+                    </cac:PartyIdentification>
+                    <cac:PartyName>
+                        <cbc:Name t-out="company.name.upper()"/>
+                    </cac:PartyName>
+                </cac:SignatoryParty>
+                <cac:DigitalSignatureAttachment>
+                    <cac:ExternalReference>
+                        <cbc:URI>#SignVX</cbc:URI>
+                    </cac:ExternalReference>
+                </cac:DigitalSignatureAttachment>
+            </cac:Signature>
+            <cac:AccountingSupplierParty>
+                <cbc:CustomerAssignedAccountID t-out="company.vat"/>
+                <cbc:AdditionalAccountID t-out="company.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '6'"/>
+                <cac:Party>
+                    <cac:PartyLegalEntity>
+                        <cbc:RegistrationName t-out="company.name.upper()"/>
+                    </cac:PartyLegalEntity>
+                </cac:Party>
+            </cac:AccountingSupplierParty>
+            <t t-foreach="lines" t-as="line">
+                <sac:SummaryDocumentsLine>
+                    <cbc:LineID t-out="line_index + 1"/>
+                    <cbc:DocumentTypeCode t-out="line['document_type']"/>
+                    <cbc:ID t-out="line['number']"/>
+                    <cac:AccountingCustomerParty>
+                        <cbc:CustomerAssignedAccountID t-out="line['customer_vat']"/>
+                        <cbc:AdditionalAccountID t-out="line['customer_vat_type']"/>
+                    </cac:AccountingCustomerParty>
+                    <cac:BillingReference t-if="line['reference_number']">
+                        <cac:InvoiceDocumentReference>
+                            <cbc:ID t-out="line['reference_number']"/>
+                            <cbc:DocumentTypeCode t-out="line['reference_type']"/>
+                        </cac:InvoiceDocumentReference>
+                    </cac:BillingReference>
+                    <cac:Status>
+                        <cbc:ConditionCode>3</cbc:ConditionCode>
+                    </cac:Status>
+                    <sac:TotalAmount t-att-currencyID="line['currency']" t-out="line['total']"/>
+                    <t t-foreach="line['payments']" t-as="payment">
+                        <sac:BillingPayment>
+                            <cbc:PaidAmount t-att-currencyID="line['currency']" t-out="payment[1]"/>
+                            <cbc:InstructionID t-out="payment[0]"/>
+                        </sac:BillingPayment>
+                    </t>
+                    <t t-foreach="line['taxes']" t-as="tax">
+                        <cac:TaxTotal>
+                            <cbc:TaxAmount t-att-currencyID="line['currency']" t-out="tax[3]"/>
+                            <cac:TaxSubtotal>
+                                <cbc:TaxAmount t-att-currencyID="line['currency']" t-out="tax[3]"/>
+                                <cac:TaxCategory>
+                                    <cac:TaxScheme>
+                                        <cbc:ID t-out="tax[0]"/>
+                                        <cbc:Name t-out="tax[1]"/>
+                                        <cbc:TaxTypeCode t-out="tax[2]"/>
+                                    </cac:TaxScheme>
+                                </cac:TaxCategory>
+                            </cac:TaxSubtotal>
+                        </cac:TaxTotal>
+                    </t>
+                </sac:SummaryDocumentsLine>
+            </t>
+        </SummaryDocuments>
+    </template>
+</odoo>

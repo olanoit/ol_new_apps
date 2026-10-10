@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261010 — 10/10/2026
+
+- Factura negociable (DU 013-2020): conformidad expresa o presunta (8 días calendario) o disconformidad, que impide ceder; fecha de anotación en CAVALI; aviso si la factura es al contado.
+- El valor nominal propuesto es el monto neto pendiente de pago: sin la detracción ni la retención del IGV del cliente agente.
+- Cobro parcial por factura: lo cobrado cubre primero el adelanto y luego libera el retenido.
+- Comisión facturada por el factor: se elige su factura de proveedor y el descuento la paga (el IGV queda como crédito fiscal en ella).
+- Sin recurso: pérdida del retenido no liberado (6741). Con recurso en moneda extranjera: la obligación se cancela al cambio histórico y la diferencia va a diferencia de cambio.
+- Costo financiero por operación y menú Perú ▸ Factoring ▸ Costo financiero.
+
 ## 3.20261010 — 10/10/2026
 
 - Una factura cedida que sigue pendiente no se puede pagar con «Pagar» (la cobra el factor): aviso en la factura y el cobro se registra desde la operación.

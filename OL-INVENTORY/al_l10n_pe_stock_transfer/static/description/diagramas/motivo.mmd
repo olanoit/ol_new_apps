@@ -1,0 +1,13 @@
+flowchart TD
+  A[Transferencia hecha] --> B{"¿Tipo de operación con motivo por defecto?"}
+  B -- Sí --> M[Ese motivo<br/>p. ej. 05 consignación]
+  B -- No --> C{¿Tipo de operación?}
+  C -- Interna --> D{"¿Establecimientos distintos?"}
+  D -- Sí --> E[04 Traslado entre establecimientos<br/>destinatario = la empresa]
+  D -- No --> F[Sin guía]
+  C -- Salida --> G{"¿Devolución o al dueño de bienes de terceros?"}
+  G -- Sí --> H[06 Devolución]
+  G -- No --> I[01 Venta]
+  C -- Recepción --> J{¿La empresa trae los bienes?}
+  J -- Sí --> K[02 Compra / 07 Recojo / 08 Importación<br/>parte del proveedor, llega al almacén]
+  J -- No --> L[La guía la emite el proveedor]

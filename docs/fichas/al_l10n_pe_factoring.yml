@@ -93,8 +93,13 @@ pasos:
   - titulo: Completar la operación
     ruta: Perú ▸ Factoring ▸ Operaciones
     texto: >-
-      Indique el factor, la modalidad, el contrato y el % de adelanto. En cada
-      factura puede ajustar el nominal, el vencimiento y la anotación CAVALI.
+      Indique el factor, la modalidad, el contrato y el % de adelanto. Cada
+      factura propone su monto neto pendiente de pago (sin la detracción ni la
+      retención del IGV) y su vencimiento; registre la conformidad del cliente
+      y la anotación en CAVALI (número y fecha).
+    puntos:
+      - "Conformidad: expresa, presunta (8 días calendario desde la emisión, DU 013-2020) o disconformidad, que impide ceder."
+      - Si la factura es al contado (sin plazo de pago), la cesión lo advierte en el historial.
     imagen: screenshots/02-borrador.png
   - titulo: Ceder
     ruta: Operación ▸ Ceder facturas
@@ -119,12 +124,23 @@ pasos:
       Solo con recurso y con la cuenta de intereses diferidos: pasa a gasto la
       parte del periodo. Al cerrar la operación se devenga lo que falte.
     imagen: screenshots/05-devengo.png
-  - titulo: Cobro del factor o recompra
-    ruta: Operación ▸ Cobro del factor / Recompra
+  - titulo: Cobro del factor (total o parcial)
+    ruta: Operación ▸ Cobro del factor
+    texto: >-
+      Lo que el cliente paga al factor cubre primero el adelanto y después
+      libera el retenido. Con una sola factura se puede indicar un importe
+      cobrado menor (cobro parcial); la factura sigue cedida por el saldo.
+      Si el factor factura su comisión, elija su factura de proveedor: el
+      descuento la paga y el IGV queda como crédito fiscal en ella.
+    imagen: screenshots/10-cobro-factor.png
+  - titulo: Recompra o pérdida del retenido
+    ruta: Operación ▸ Recompra / Pérdida del retenido
     texto: >-
       Cuando el cliente paga al factor se cancelan las facturas cedidas y entra
-      el retenido. Con recurso, si el cliente no paga, la recompra devuelve el
-      adelanto al factor y la factura sigue pendiente.
+      el retenido. Con recurso, si el cliente no paga, la recompra devuelve al
+      factor el adelanto no cubierto y la factura sigue pendiente. Sin recurso,
+      el impago es del factor, pero el retenido no liberado pasa a pérdida
+      (6741).
     imagen: screenshots/04-con-recurso.png
 
   - seccion: Seguimiento
@@ -137,8 +153,15 @@ pasos:
   - titulo: Análisis
     ruta: Perú ▸ Factoring ▸ Análisis
     texto: >-
-      Nominal, adelanto, retenido y costo por factor, modalidad y mes.
+      Cartera cedida por factor, estado y vencimiento: nominal y lo que falta
+      cobrar.
     imagen: screenshots/08-analisis.png
+  - titulo: Costo financiero
+    ruta: Perú ▸ Factoring ▸ Costo financiero
+    texto: >-
+      Intereses, comisión, gastos y retenido perdido por factor y mes: el costo
+      real de financiarse con factoring.
+    imagen: screenshots/11-costo-financiero.png
   - titulo: Cuentas
     ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Factoring
     texto: >-
@@ -161,9 +184,27 @@ campos:
       - [Obligación con el factor, Adelanto con recurso, 4512, Solo con recurso]
       - [Intereses, Gasto financiero, 6734, —]
       - [Intereses diferidos, Intereses por devengar, 3731, Solo con recurso; vacía va directo a gasto]
-      - [Comisiones y gastos, Comisión del factor y gastos, 6391, —]
+      - [Comisiones y gastos, Comisión del factor y gastos, 6391, Si la comisión viene facturada se usa la factura del factor]
+      - [Pérdida del retenido, Retenido que el factor no libera, 6741, Solo sin recurso]
+  - grupo: Factura cedida
+    ruta: Operación ▸ Facturas
+    campos:
+      - [Valor nominal, Monto neto pendiente de pago, Saldo sin detracción ni retención, Base del adelanto y del retenido]
+      - [Conformidad, Expresa / presunta / disconformidad, Pendiente, La disconformidad impide ceder]
+      - [Conformidad presunta, Fecha en que se presume la conformidad, Emisión + 8 días, Informativa]
+      - [Anotación CAVALI, Número y fecha de la anotación en cuenta, —, Desde la anotación la factura negociable se transfiere]
+      - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 4.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Factura negociable (DU 013-2020): conformidad expresa o presunta (8 días calendario) o disconformidad, que impide ceder; fecha de anotación en CAVALI; aviso si la factura es al contado."
+      - "El valor nominal propuesto es el monto neto pendiente de pago: sin la detracción ni la retención del IGV del cliente agente."
+      - "Cobro parcial por factura: lo cobrado cubre primero el adelanto y luego libera el retenido."
+      - "Comisión facturada por el factor: se elige su factura de proveedor y el descuento la paga (el IGV queda como crédito fiscal en ella)."
+      - "Sin recurso: pérdida del retenido no liberado (6741). Con recurso en moneda extranjera: la obligación se cancela al cambio histórico y la diferencia va a diferencia de cambio."
+      - "Costo financiero por operación y menú Perú ▸ Factoring ▸ Costo financiero."
   - version: 3.20261010
     fecha: 10/10/2026
     cambios:

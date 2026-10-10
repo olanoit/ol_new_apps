@@ -14,6 +14,8 @@
                 <field name="deferred_interest_account_id" options="{'no_create': True}"
                        readonly="modality != 'with_recourse'"/>
                 <field name="fee_account_id" options="{'no_create': True}"/>
+                <field name="loss_account_id" options="{'no_create': True}"
+                       readonly="modality != 'without_recourse'"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1"/>
             </list>
         </field>

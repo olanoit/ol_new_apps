@@ -19,9 +19,16 @@
                     <group invisible="operation == 'release'">
                         <field name="interest_due"/>
                         <field name="interest_received" invisible="operation != 'close'"/>
+                        <field name="penalty_amount" invisible="operation != 'close'"/>
                         <field name="term_days" invisible="operation != 'renew'"/>
                         <field name="rate" invisible="operation != 'renew'"/>
                         <field name="capitalize" invisible="operation != 'renew'"/>
+                    </group>
+                </group>
+                <group invisible="not itf_applies or operation == 'renew'">
+                    <group>
+                        <field name="itf_applies" invisible="1"/>
+                        <field name="itf_amount"/>
                     </group>
                 </group>
                 <div class="text-muted" invisible="operation != 'release'">
