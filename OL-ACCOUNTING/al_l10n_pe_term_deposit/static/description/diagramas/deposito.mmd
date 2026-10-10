@@ -1,0 +1,9 @@
+flowchart TD
+  A[Borrador<br/>banco, capital, TEA, plazo] --> B[Abrir<br/>Banco → 1062]
+  B --> C[Devengo mensual<br/>1631 / 7721]
+  C --> D{¿Venció?}
+  D -- No --> C
+  D -- Sí --> E{¿Renovación?}
+  E -- Cancelar --> F[Banco ← capital + intereses]
+  E -- Renovar --> G[Nuevo depósito<br/>con o sin capitalizar]
+  G --> C

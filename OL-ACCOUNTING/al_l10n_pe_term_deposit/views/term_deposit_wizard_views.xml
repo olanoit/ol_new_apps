@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_term_deposit_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.wizard.form</field>
+        <field name="model">l10n_pe.term.deposit.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="deposit_id" invisible="1"/>
+                <field name="operation" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="deposit_type" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="date"/>
+                        <field name="remaining_amount"/>
+                        <field name="amount" invisible="operation != 'release'"/>
+                    </group>
+                    <group invisible="operation == 'release'">
+                        <field name="interest_due"/>
+                        <field name="interest_received" invisible="operation != 'close'"/>
+                        <field name="term_days" invisible="operation != 'renew'"/>
+                        <field name="rate" invisible="operation != 'renew'"/>
+                        <field name="capitalize" invisible="operation != 'renew'"/>
+                    </group>
+                </group>
+                <div class="text-muted" invisible="operation != 'release'">
+                    Liberar todo el saldo cancela la garantía y cobra los intereses devengados.
+                </div>
+                <footer>
+                    <button name="action_apply" type="object" string="Registrar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

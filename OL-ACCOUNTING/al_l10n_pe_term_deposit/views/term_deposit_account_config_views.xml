@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_term_deposit_account_config_list" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.account.config.list</field>
+        <field name="model">l10n_pe.term.deposit.account.config</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas de depósitos y garantías" editable="bottom">
+                <field name="deposit_type"/>
+                <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                <field name="deposit_account_id" options="{'no_create': True}"/>
+                <field name="interest_account_id" options="{'no_create': True}"/>
+                <field name="income_account_id" options="{'no_create': True}"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_term_deposit_account_config" model="ir.actions.act_window">
+        <field name="name">Cuentas de depósitos y garantías</field>
+        <field name="res_model">l10n_pe.term.deposit.account.config</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin cuentas configuradas</p>
+            <p>Una fila por tipo (y moneda, si hace falta). Las compañías peruanas reciben las
+               del PCGE: 1062, 1071 y 1643 para el depósito, 1631 para los intereses por
+               cobrar y 7721 para el ingreso.</p>
+        </field>
+    </record>
+</odoo>

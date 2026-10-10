@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_term_deposit_user,l10n_pe.term.deposit contable,model_l10n_pe_term_deposit,account.group_account_user,1,1,1,1
+access_term_deposit_readonly,l10n_pe.term.deposit auditor,model_l10n_pe_term_deposit,account.group_account_readonly,1,0,0,0
+access_term_deposit_config_user,l10n_pe.term.deposit.account.config contable,model_l10n_pe_term_deposit_account_config,account.group_account_user,1,0,0,0
+access_term_deposit_config_manager,l10n_pe.term.deposit.account.config administrador,model_l10n_pe_term_deposit_account_config,account.group_account_manager,1,1,1,1
+access_term_deposit_wizard_user,l10n_pe.term.deposit.wizard contable,model_l10n_pe_term_deposit_wizard,account.group_account_user,1,1,1,1

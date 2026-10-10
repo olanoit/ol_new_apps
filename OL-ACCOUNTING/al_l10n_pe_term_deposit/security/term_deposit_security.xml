@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Multicompañía: cada depósito y sus cuentas solo se ven desde su compañía. -->
+        <record id="term_deposit_company_rule" model="ir.rule">
+            <field name="name">Depósitos y garantías: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_term_deposit"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="term_deposit_account_config_company_rule" model="ir.rule">
+            <field name="name">Depósitos y garantías, cuentas: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_term_deposit_account_config"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

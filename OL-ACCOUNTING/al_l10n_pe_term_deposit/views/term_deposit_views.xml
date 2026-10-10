@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_term_deposit_list" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.list</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="arch" type="xml">
+            <list string="Depósitos y garantías" sample="1"
+                  decoration-muted="state in ('closed', 'renewed')"
+                  decoration-info="state == 'draft'"
+                  decoration-danger="state == 'expired'"
+                  decoration-warning="due_soon">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="due_soon" column_invisible="1"/>
+                <field name="name"/>
+                <field name="deposit_type"/>
+                <field name="partner_id"/>
+                <field name="reference" optional="show"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="rate" optional="show"/>
+                <field name="amount" sum="Capital"/>
+                <field name="remaining_amount" sum="Saldo" optional="show"/>
+                <field name="interest_accrued" sum="Intereses devengados" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'open'"
+                       decoration-info="state == 'draft'"
+                       decoration-danger="state == 'expired'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_term_deposit_form" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.form</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="arch" type="xml">
+            <form string="Depósito o garantía">
+                <header>
+                    <button name="action_open" type="object" string="Abrir" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Se registra la salida del banco a la cuenta del depósito. ¿Continuar?"/>
+                    <button name="action_accrue" type="object" string="Devengar intereses"
+                            invisible="state not in ('open', 'expired') or not rate"/>
+                    <button name="action_close" type="object" string="Cancelar el depósito" class="btn-primary"
+                            invisible="state not in ('open', 'expired') or deposit_type != 'term'"/>
+                    <button name="action_renew" type="object" string="Renovar"
+                            invisible="state not in ('open', 'expired') or deposit_type != 'term'"/>
+                    <button name="action_release" type="object" string="Liberar" class="btn-primary"
+                            invisible="state not in ('open', 'expired') or deposit_type == 'term'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,expired,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
+                                invisible="not move_count">
+                            <field name="move_count" widget="statinfo" string="Asientos"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Depósito">
+                            <field name="deposit_type" readonly="state != 'draft'" widget="radio"/>
+                            <field name="partner_id" readonly="state != 'draft'" options="{'no_quick_create': True}"/>
+                            <field name="reference"/>
+                            <field name="journal_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="currency_id" readonly="state != 'draft'" options="{'no_create': True}"
+                                   groups="base.group_multi_currency"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group string="Plazo e intereses">
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="term_days" readonly="state != 'draft'"/>
+                            <field name="date_end" readonly="state != 'draft'" required="deposit_type == 'term'"/>
+                            <field name="rate" readonly="state != 'draft'"/>
+                            <field name="day_basis" readonly="state != 'draft'" invisible="not rate"/>
+                            <field name="expected_interest" invisible="not rate"/>
+                            <field name="auto_renew" invisible="deposit_type != 'term'"/>
+                            <field name="capitalize_interest" invisible="deposit_type != 'term'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Saldos" name="balances">
+                            <group>
+                                <group string="Capital">
+                                    <field name="amount" string="Capital inicial"/>
+                                    <field name="released_amount"/>
+                                    <field name="remaining_amount"/>
+                                </group>
+                                <group string="Intereses" invisible="not rate">
+                                    <field name="interest_accrued"/>
+                                    <field name="interest_collected"/>
+                                </group>
+                                <group string="Renovación" invisible="not renewed_from_id and not renewal_id">
+                                    <field name="renewed_from_id" invisible="not renewed_from_id"/>
+                                    <field name="renewal_id" invisible="not renewal_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Contabilidad" name="accounting">
+                            <group>
+                                <group string="Cuentas">
+                                    <field name="deposit_account_id" readonly="state != 'draft'"
+                                           options="{'no_create': True}"/>
+                                    <field name="interest_account_id" readonly="state != 'draft'"
+                                           options="{'no_create': True}" invisible="not rate"/>
+                                    <field name="income_account_id" readonly="state != 'draft'"
+                                           options="{'no_create': True}" invisible="not rate"/>
+                                </group>
+                                <group string="Diarios">
+                                    <field name="misc_journal_id" options="{'no_create': True}" invisible="not rate"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="notes" placeholder="Condiciones, contacto en el banco, contrato de alquiler…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_term_deposit_search" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.search</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="arch" type="xml">
+            <search string="Depósitos y garantías">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reference"/>
+                <filter string="Vigentes" name="open" domain="[('state', '=', 'open')]"/>
+                <filter string="Vencidos" name="expired" domain="[('state', '=', 'expired')]"/>
+                <filter string="Vigentes o vencidos" name="active_deposits" domain="[('state', 'in', ('open', 'expired'))]"/>
+                <separator/>
+                <filter string="Depósitos a plazo" name="term" domain="[('deposit_type', '=', 'term')]"/>
+                <filter string="Garantías" name="guarantees"
+                        domain="[('deposit_type', 'in', ('guarantee_fund', 'guarantee_given'))]"/>
+                <separator/>
+                <filter string="Vencen este mes" name="due_this_month" date="date_end" default_period="month"/>
+                <group>
+                    <filter string="Tipo" name="group_type" context="{'group_by': 'deposit_type'}"/>
+                    <filter string="Entidad" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Vencimiento" name="group_date_end" context="{'group_by': 'date_end:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_term_deposit_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.pivot</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de depósitos" sample="1">
+                <field name="deposit_type" type="row"/>
+                <field name="partner_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="remaining_amount" type="measure"/>
+                <field name="interest_accrued" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_term_deposit_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.term.deposit.graph</field>
+        <field name="model">l10n_pe.term.deposit</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de depósitos" type="bar" sample="1">
+                <field name="date_end" interval="month"/>
+                <field name="deposit_type"/>
+                <field name="remaining_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_term_deposit" model="ir.actions.act_window">
+        <field name="name">Depósitos y garantías</field>
+        <field name="res_model">l10n_pe.term.deposit</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_term_deposit_search"/>
+        <field name="context">{'search_default_active_deposits': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un depósito a plazo o una garantía</p>
+            <p>Depósitos a plazo, fondos en garantía (p. ej. de una carta fianza) y depósitos
+               en garantía entregados (p. ej. del alquiler), con sus intereses y vencimientos.</p>
+        </field>
+    </record>
+
+    <record id="action_term_deposit_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de depósitos</field>
+        <field name="res_model">l10n_pe.term.deposit</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_term_deposit_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_term_deposit_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_term_deposit_list')})]"/>
+        <field name="search_view_id" ref="view_term_deposit_search"/>
+        <field name="context">{'search_default_active_deposits': 1}</field>
+    </record>
+</odoo>

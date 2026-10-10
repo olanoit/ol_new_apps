@@ -1,0 +1,164 @@
+titulo: Depósitos a plazo y garantías
+subtitulo: >-
+  Depósitos a plazo, fondos en garantía y garantías de alquiler con su
+  contabilidad: apertura, intereses del mes, vencimiento, cancelación,
+  renovación y liberación.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Tesorería, Depósito a plazo, TEA, Fondo en garantía, Carta fianza, Garantía de alquiler, PCGE]
+portada: screenshots/01-depositos.png
+
+destacados_intro: >-
+  El dinero que la empresa inmoviliza deja de ser un asiento suelto: cada
+  depósito tiene su plazo, su tasa y sus asientos.
+destacados:
+  - icono: "%"
+    titulo: Intereses con TEA
+    texto: >-
+      Interés compuesto con la tasa efectiva anual y base de 360 o 365 días,
+      devengado cada fin de mes sin duplicar.
+  - icono: "⏰"
+    titulo: Aviso de vencimiento
+    texto: >-
+      Una actividad para el responsable unos días antes, y el depósito pasa a
+      Vencido en su fecha.
+  - icono: "↻"
+    titulo: Renovación
+    texto: >-
+      Manual o automática, capitalizando o cobrando los intereses, con nuevo
+      plazo y nueva tasa.
+  - icono: "🔒"
+    titulo: Garantías
+    texto: >-
+      Fondos retenidos por el banco (carta fianza) y garantías entregadas
+      (alquiler), con liberación total o parcial.
+  - icono: "▤"
+    titulo: Cuentas del PCGE
+    texto: >-
+      1062, 1071 y 1643 para el depósito, 1631 para los intereses por cobrar y
+      7721 para el ingreso, configurables por tipo y moneda.
+  - icono: "⇄"
+    titulo: Multicompañía
+    texto: >-
+      Cada compañía con sus depósitos, sus cuentas y su plazo de aviso.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La empresa abre depósitos a plazo con los excedentes, el banco le retiene
+    fondos como respaldo de cartas fianza y entrega garantías por el alquiler
+    de oficinas y almacenes. Llevado con asientos manuales, nadie recuerda
+    cuándo vence cada uno, los intereses se registran al final y las garantías
+    se pierden de vista. Aquí cada depósito tiene su plazo, su tasa y su
+    historial, y los intereses se devengan solos cada mes.
+  nota: >-
+    **Necesita** un diario de banco y un diario de operaciones varias; las
+    cuentas del PCGE se configuran solas en las compañías peruanas.
+
+flujos_intro: >-
+  Vida de un depósito a plazo y de una garantía.
+flujos:
+  - id: deposito
+    titulo: Depósito a plazo
+    texto: >-
+      Al abrir sale el dinero del banco; cada mes se devengan los intereses; al
+      vencer se cancela (capital e intereses al banco) o se renueva.
+    mermaid: |
+      flowchart TD
+        A[Borrador<br/>banco, capital, TEA, plazo] --> B[Abrir<br/>Banco → 1062]
+        B --> C[Devengo mensual<br/>1631 / 7721]
+        C --> D{¿Venció?}
+        D -- No --> C
+        D -- Sí --> E{¿Renovación?}
+        E -- Cancelar --> F[Banco ← capital + intereses]
+        E -- Renovar --> G[Nuevo depósito<br/>con o sin capitalizar]
+        G --> C
+  - id: garantia
+    titulo: Garantías
+    texto: >-
+      Fondo en garantía o garantía entregada: se abre y se libera en una o
+      varias partes; liberar todo la cierra.
+    mermaid: |
+      flowchart TD
+        A[Borrador<br/>entidad, importe] --> B[Abrir<br/>Banco → 1071 / 1643]
+        B --> C{¿Liberar?}
+        C -- Parcial --> D[Banco ← parte<br/>sigue vigente]
+        D --> C
+        C -- Todo --> E[Banco ← saldo<br/>Cancelado]
+
+pasos_intro: >-
+  Ejemplo: depósito de S/ 250 000 al 5,75 % TEA a 360 días, fondo en garantía
+  de una carta fianza y la garantía del alquiler de un almacén.
+pasos:
+  - seccion: Depósitos a plazo
+  - titulo: Lista de depósitos y garantías
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías
+    texto: >-
+      Vigentes y vencidos con su capital, saldo e intereses; en amarillo los
+      que vencen dentro del aviso y en rojo los vencidos.
+    imagen: screenshots/01-depositos.png
+  - titulo: El depósito
+    ruta: Depósitos y garantías ▸ abrir uno
+    texto: >-
+      Entidad, n.º de certificado, banco, capital, TEA, base de días, plazo y
+      vencimiento, con el interés que dará al vencimiento. Abrir registra la
+      salida del banco a la 1062.
+    imagen: screenshots/02-deposito.png
+  - titulo: Intereses y saldos
+    ruta: Depósito ▸ Saldos
+    texto: >-
+      Capital, intereses devengados (cada fin de mes por el cron o con el botón
+      Devengar intereses) y cobrados.
+    imagen: screenshots/03-saldos.png
+  - titulo: Cancelar o renovar
+    ruta: Depósito ▸ Cancelar el depósito / Renovar
+    texto: >-
+      Al cancelar vuelven al banco el capital y los intereses; si el banco paga
+      menos (cancelación anticipada), la diferencia ajusta el ingreso. Al
+      renovar se crea el nuevo depósito, con los intereses capitalizados o
+      cobrados.
+    imagen: screenshots/04-renovar.png
+
+  - seccion: Garantías
+  - titulo: Garantía de alquiler liberada en parte
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Garantías
+    texto: >-
+      La garantía entregada al arrendador queda en la 1643 a su nombre; al
+      recuperarla se libera en una o varias partes.
+    imagen: screenshots/05-garantia.png
+  - titulo: Análisis
+    ruta: Perú ▸ Tesorería ▸ Análisis de depósitos
+    texto: >-
+      Saldo e intereses por tipo, entidad y estado.
+    imagen: screenshots/06-analisis.png
+  - titulo: Cuentas y aviso
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Depósitos y garantías
+    texto: >-
+      Una fila por tipo (y moneda si hace falta). Los días de aviso se fijan en
+      Ajustes ▸ Perú ▸ Depósitos y garantías.
+    imagen: screenshots/07-cuentas.png
+
+campos:
+  - grupo: Depósito
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías
+    campos:
+      - [Tipo, Depósito a plazo / fondo en garantía / garantía entregada, Depósito a plazo, Decide la cuenta y las operaciones]
+      - [Entidad, Banco o quien recibe la garantía, —, Tercero de la cuenta del depósito]
+      - [TEA (%), Tasa efectiva anual, 0, "Sin tasa no hay intereses"]
+      - [Base de días, 360 o 365, 360, "interés = capital × ((1 + TEA)^(días/base) − 1)"]
+      - [Plazo (días) / Vencimiento, Uno calcula el otro, —, Obligatorio en el depósito a plazo]
+      - [Renovación automática, Renueva al vencer, "No", Solo depósitos a plazo]
+      - [Capitalizar intereses, Suma los intereses al nuevo capital, "No", Al renovar]
+  - grupo: Cuentas
+    ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Depósitos y garantías
+    campos:
+      - [Cuenta del depósito, Dinero inmovilizado, "1062 / 1071 / 1643", —]
+      - [Intereses por cobrar, Devengados no cobrados, 1631, —]
+      - [Ingreso por intereses, Rendimiento ganado, 7721, —]
+
+novedades:
+  - version: 1.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Primera versión: depósitos a plazo, fondos en garantía y depósitos en garantía entregados con apertura, devengo mensual de intereses (TEA, base 360/365), vencimiento con aviso, cancelación (también anticipada), renovación manual o automática con o sin capitalización y liberación parcial de garantías; menú Perú ▸ Tesorería."
+
+relacionados: [al_account_base, al_l10n_pe_factoring, al_l10n_pe_account_letter]

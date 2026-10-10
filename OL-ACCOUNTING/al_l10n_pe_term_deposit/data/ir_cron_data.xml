@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Diario e idempotente: devengo al cierre del mes anterior, vencimientos,
+         renovación automática y aviso antes del vencimiento. -->
+    <record id="ir_cron_term_deposits" model="ir.cron">
+        <field name="name">Perú: depósitos y garantías (intereses y vencimientos)</field>
+        <field name="model_id" ref="model_l10n_pe_term_deposit"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_l10n_pe_term_deposits()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

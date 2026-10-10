@@ -1,0 +1,6 @@
+flowchart TD
+  A[Borrador<br/>entidad, importe] --> B[Abrir<br/>Banco → 1071 / 1643]
+  B --> C{¿Liberar?}
+  C -- Parcial --> D[Banco ← parte<br/>sigue vigente]
+  D --> C
+  C -- Todo --> E[Banco ← saldo<br/>Cancelado]
