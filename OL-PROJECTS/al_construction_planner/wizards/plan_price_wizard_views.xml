@@ -20,6 +20,7 @@
                         <field name="price_last"/>
                         <field name="price_weighted_3m"/>
                         <field name="price_weighted_6m"/>
+                        <field name="price_moving_4w"/>
                         <field name="purchase_count"/>
                     </group>
                 </group>
@@ -44,6 +45,9 @@
                 <footer>
                     <button name="action_apply" type="object" string="Aplicar costo"
                             class="btn-primary" data-hotkey="q"/>
+                    <button name="action_open_purchase_prices" type="object"
+                            string="Precios de compra" icon="fa-line-chart"
+                            invisible="not product_id"/>
                     <button string="Descartar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>

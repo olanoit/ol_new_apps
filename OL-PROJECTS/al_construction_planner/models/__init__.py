@@ -24,3 +24,6 @@ from . import stock_move
 from . import account_analytic_line
 from . import construction_space_stage
 from . import gantt_data
+from . import product
+from . import construction_purchase_price_report
+from . import construction_supply_board

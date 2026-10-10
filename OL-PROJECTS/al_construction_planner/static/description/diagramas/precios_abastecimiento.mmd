@@ -1,0 +1,14 @@
+flowchart TD
+  A[Línea del plan] --> B{¿Existe el producto?}
+  B -- No --> C[Crear producto: familia, nombre, unidades, proveedor]
+  C --> C1[Productos parecidos] --> C2[Código de la familia al guardar]
+  C2 --> C3[Producto activo, marcado con el plan y en la línea]
+  C3 --> C4[Actividad a Logística]
+  B -- Sí --> D[Precios de compra: 6 meses en soles]
+  C3 --> D
+  D --> E[Aplicar costo con la base elegida]
+  E --> F[Plan aprobado]
+  F --> G[Abastecimiento de la obra: necesidad por semana de la etapa]
+  G --> H[A comprar = horizonte − stock − en OC]
+  H --> I[Marcar filas ▸ Compra masiva]
+  G --> J[Alertas: precio sobre el plan, sin OC a una semana, sin proveedor]

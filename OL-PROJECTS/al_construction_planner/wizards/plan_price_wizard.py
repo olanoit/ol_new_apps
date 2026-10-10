@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-from dateutil.relativedelta import relativedelta
-
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.misc import format_date, formatLang
 
 BASES = [
-    ('manual', 'Manual'),
-    ('last', 'Último precio de compra'),
-    ('weighted_3m', 'Ponderado de 3 meses'),
     ('weighted_6m', 'Ponderado de 6 meses'),
+    ('weighted_3m', 'Ponderado de 3 meses'),
+    ('moving_4w', 'Media móvil de 4 semanas'),
+    ('last', 'Último precio de compra'),
+    ('manual', 'Manual'),
 ]
 
 
@@ -41,6 +40,10 @@ class ConstructionPlanPriceWizard(models.TransientModel):
         string='Ponderado 3 meses', compute='_compute_suggestions', currency_field='currency_id')
     price_weighted_6m = fields.Monetary(
         string='Ponderado 6 meses', compute='_compute_suggestions', currency_field='currency_id')
+    price_moving_4w = fields.Monetary(
+        string='Media móvil 4 semanas', compute='_compute_suggestions',
+        currency_field='currency_id',
+        help='Ponderado de la semana de la base y las 3 anteriores (semanas de la obra).')
     purchase_count = fields.Integer(
         string='Compras en 6 meses', compute='_compute_suggestions')
     price_current = fields.Monetary(
@@ -67,61 +70,35 @@ class ConstructionPlanPriceWizard(models.TransientModel):
             wizard.line_ids = wizard.plan_id.line_ids.filtered(
                 lambda l: l.product_id == wizard.product_id)
 
-    def _get_purchase_prices(self, date_from):
-        """[(fecha, cantidad, precio)] de las compras confirmadas del producto
-        entre ``date_from`` y la fecha de la base, en la unidad del producto y
-        en la moneda de la compañía (al tipo de cambio de cada compra)."""
-        self.ensure_one()
-        company = self.plan_id.company_id
-        date_to = fields.Datetime.to_datetime(self.basis_date) + relativedelta(days=1)
-        domain = [
-            ('product_id', '=', self.product_id.id), ('state', '=', 'purchase'),
-            ('company_id', '=', company.id), ('display_type', '=', False),
-            ('order_id.date_approve', '<', date_to),
-        ]
-        if date_from:
-            domain.append(('order_id.date_approve', '>=', fields.Datetime.to_datetime(date_from)))
-        prices = []
-        for line in self.env['purchase.order.line'].search(domain, order='date_approve, id'):
-            date = line.order_id.date_approve.date()
-            qty = line.product_uom_id._compute_quantity(line.product_qty, line.product_id.uom_id)
-            price = line.product_uom_id._compute_price(
-                line.price_unit_discounted, line.product_id.uom_id)
-            price = line.currency_id._convert(price, company.currency_id, company, date)
-            prices.append((date, qty, price))
-        return prices
-
-    @staticmethod
-    def _weighted(prices):
-        qty = sum(q for _d, q, _p in prices)
-        return sum(q * p for _d, q, p in prices) / qty if qty else 0.0
-
     @api.depends('product_id', 'basis_date', 'line_ids')
     def _compute_suggestions(self):
+        Report = self.env['construction.purchase.price.report']
         for wizard in self:
             wizard.price_current = wizard.line_ids[:1].price_unit_planned
             if not wizard.product_id or not wizard.basis_date:
                 wizard.price_last = wizard.price_weighted_3m = wizard.price_weighted_6m = 0.0
+                wizard.price_moving_4w = 0.0
                 wizard.purchase_count = 0
                 continue
-            prices = wizard._get_purchase_prices(False)
-            last = prices[-1][2] if prices else 0.0
-            since_6m = wizard.basis_date - relativedelta(months=6)
-            since_3m = wizard.basis_date - relativedelta(months=3)
-            last_6m = [p for p in prices if p[0] >= since_6m]
-            wizard.price_last = last
-            wizard.price_weighted_6m = self._weighted(last_6m)
-            wizard.price_weighted_3m = self._weighted([p for p in prices if p[0] >= since_3m])
-            wizard.purchase_count = len(last_6m)
+            # Las mismas cifras que «Precios de compra del producto» (P-16).
+            prices = Report._get_basis_prices(
+                wizard.product_id, wizard.plan_id.company_id, wizard.basis_date,
+                wizard.plan_id.project_id.construction_week_start_day or '3')
+            wizard.price_last = prices['last']
+            wizard.price_weighted_6m = prices['weighted_6m']
+            wizard.price_weighted_3m = prices['weighted_3m']
+            wizard.price_moving_4w = prices['moving_4w']
+            wizard.purchase_count = prices['count_6m']
 
     @api.depends('basis', 'price_last', 'price_weighted_3m', 'price_weighted_6m',
-                 'price_current')
+                 'price_moving_4w', 'price_current')
     def _compute_price_unit(self):
         for wizard in self:
             suggestion = {
                 'last': wizard.price_last,
                 'weighted_3m': wizard.price_weighted_3m,
                 'weighted_6m': wizard.price_weighted_6m,
+                'moving_4w': wizard.price_moving_4w,
             }.get(wizard.basis)
             wizard.price_unit = suggestion if suggestion else (
                 wizard.price_unit or wizard.price_current)
@@ -151,3 +128,10 @@ class ConstructionPlanPriceWizard(models.TransientModel):
             product=self.product_id.display_name, basis=self._get_basis_text(),
             count=len(lines)))
         return {'type': 'ir.actions.act_window_close'}
+
+    def action_open_purchase_prices(self):
+        """P-16 del producto, con las mismas líneas destino para volver aquí
+        con la base elegida."""
+        self.ensure_one()
+        return self.env['construction.purchase.price.analysis']._action_open(
+            self.product_id, plan=self.plan_id, lines=self.line_ids)

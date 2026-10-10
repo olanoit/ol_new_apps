@@ -9,3 +9,4 @@ from . import test_supply
 from . import test_contracts
 from . import test_control
 from . import test_schedule
+from . import test_prices_supply

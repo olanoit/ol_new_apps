@@ -16,6 +16,8 @@
                         <field name="whole_project"/>
                         <field name="task_ids" widget="many2many_tags" invisible="whole_project"
                                options="{'no_create': True}"/>
+                        <field name="product_ids" widget="many2many_tags" invisible="not product_ids"
+                               options="{'no_create': True}"/>
                         <label for="stage_production" string="Etapas"/>
                         <div class="d-flex flex-wrap gap-3">
                             <span><field name="stage_production" class="oe_inline"/> Producción</span>

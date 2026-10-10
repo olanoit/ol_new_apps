@@ -1,0 +1,86 @@
+// Abastecimiento de la obra (P-18).
+.o_cp_supply {
+    background-color: $o-view-background-color;
+
+    .o_cp_supply_table {
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: $o-gray-100;
+            white-space: nowrap;
+        }
+        .o_cp_check {
+            width: 2rem;
+        }
+        .o_cp_week {
+            background-color: rgba($o-action, 0.04);
+        }
+        .o_cp_row_sel td {
+            background-color: rgba($o-action, 0.08);
+        }
+    }
+}
+
+// Precios de compra del producto (P-16): gráfico SVG semanal.
+.o_cp_price_chart {
+    svg {
+        width: 100%;
+        max-height: 260px;
+    }
+    .o_cp_grid {
+        stroke: $o-gray-300;
+        stroke-width: 1;
+    }
+    .o_cp_axis {
+        fill: $o-gray-600;
+        font-size: 11px;
+    }
+    .o_cp_weekly {
+        fill: none;
+        stroke: $o-action;
+        stroke-width: 2;
+    }
+    .o_cp_moving {
+        fill: none;
+        stroke: $o-gray-600;
+        stroke-width: 1.5;
+        stroke-dasharray: 5 4;
+    }
+    .o_cp_point {
+        fill: $o-action;
+        cursor: pointer;
+    }
+    .o_cp_outlier {
+        fill: $danger;
+        cursor: pointer;
+    }
+    .o_cp_chart_legend {
+        display: flex;
+        gap: 1rem;
+        i {
+            display: inline-block;
+            width: 14px;
+            height: 3px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .o_cp_legend_weekly {
+            background-color: $o-action;
+        }
+        .o_cp_legend_moving {
+            border-top: 2px dashed $o-gray-600;
+        }
+        .o_cp_legend_outlier {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: $danger;
+        }
+    }
+}
+
+.o_cp_price_table td,
+.o_cp_price_table th {
+    white-space: nowrap;
+}

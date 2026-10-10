@@ -123,6 +123,9 @@ msgstr "Crear una tarea"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
@@ -159,6 +162,9 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__create_date
 msgid "Created on"
 msgstr "Creado el"
 
@@ -211,6 +217,11 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_res_company__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_tier_definition__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_report__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_supply_board__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -354,6 +365,9 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
@@ -390,6 +404,9 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_purchase_price_analysis__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_product_create_wizard_similar__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 

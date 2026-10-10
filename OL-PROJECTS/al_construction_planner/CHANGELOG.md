@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261010 — 10/10/2026
+
+- Precios de compra del producto (fase 9, P-16): compras confirmadas de una ventana editable en soles al tipo de cambio de su fecha, con ponderado, mediana, desviación, medias móviles de 4 semanas y 3 meses, resumen por semana, mes y proveedor y gráfico semanal con las compras atípicas.
+- «Aplicar costo» (W-12) suma la media móvil de 4 semanas y se abre desde P-16 con la base elegida.
+- Crear producto desde el plan (W-11, P-17): código de familia más correlativo asignado al guardar, productos parecidos antes de crear, producto activo marcado con el plan y actividad a Logística.
+- Abastecimiento de la obra (P-18): necesidad por semana de la etapa, stock, OC abiertas, cantidad a comprar, costo del plan y último precio con alerta; la compra masiva sale con los productos marcados.
+- Alertas de abastecimiento (precio sobre el plan, necesidad sin OC a una semana, sin proveedor) y umbral de la alerta de precio en Ajustes.
+
 ## 7.20261010 — 10/10/2026
 
 - Cronograma con recursos (fase 8, P-15): el Gantt de proyectos con pisos, departamentos y ambientes y, debajo de cada ambiente, sus etapas (producción, armado, instalación, acabado) enlazadas; monto, avance y contrata en la rejilla y barra clara si la etapa no tiene contrata ni cuadrilla.

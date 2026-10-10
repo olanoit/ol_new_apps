@@ -27,6 +27,10 @@ class ResCompany(models.Model):
         help='Si se indica, la factura de cada liquidación lleva una línea negativa con la '
              'retención a esta cuenta y su total es el neto a pagar. Sin cuenta, la factura '
              'va por el bruto y la retención queda solo en la liquidación.')
+    construction_price_alert_pct = fields.Float(
+        string='Alerta de precio sobre el plan (%)', default=5.0,
+        help='El abastecimiento de la obra marca el producto cuyo último precio de compra '
+             'supera el costo del plan en este porcentaje o más.')
 
     def _construction_is_holiday(self, day):
         """Feriado de la compañía: un día cubierto por una ausencia global

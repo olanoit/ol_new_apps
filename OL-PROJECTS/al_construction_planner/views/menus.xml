@@ -58,6 +58,12 @@
 
     <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
               groups="group_planner_planner">
+        <menuitem id="menu_planner_supply_board" name="Abastecimiento de la obra"
+                  action="action_construction_supply_board" sequence="5"/>
+        <menuitem id="menu_planner_purchase_prices" name="Precios de compra del producto"
+                  action="action_construction_purchase_price_analysis" sequence="6"/>
+        <menuitem id="menu_planner_purchase_price_report" name="Compras por producto"
+                  action="action_construction_purchase_price_report" sequence="7"/>
         <menuitem id="menu_planner_material_requests" name="Requerimientos de obra"
                   action="al_construction_material_request.action_construction_material_request"
                   sequence="10"/>

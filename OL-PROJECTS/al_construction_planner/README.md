@@ -19,7 +19,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 6 | Liquidación semanal (P-08): acción programada, aprobación por niveles, recepción en la OC y factura con vencimiento el día de pago | hecha |
 | 7 | Control y personal propio: control de la OC con analítica contra el presupuesto, estado y montos de control guardados, análisis de control (P-13), cuadrillas (W-06), cambiar fechas (W-08), reversión del estado del módulo | hecha |
 | 8 | Cronograma con recursos (P-15): etapas del ambiente, herencia de `al.gantt.data`, pantalla «Cronograma» sobre el Gantt de la suite con selección, panel de recursos, acciones W-02 a W-08, arrastre de etapas con recálculo de la necesidad y aviso a Logística, carga semanal | hecha |
-| 9+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma valorizado | pendiente |
+| 9 | Productos, precios y abastecimiento: vista de precios de compra en soles, P-16 con estadísticos y gráfico, W-12 con media móvil de 4 semanas, crear producto desde el plan (W-11, P-17), abastecimiento de la obra (P-18) y alertas | hecha |
+| 10+ | Ingresos (entregas, valorizaciones, factura de la valorización), cronograma valorizado, inicio de la aplicación | pendiente |
 
 ## Modelos
 
@@ -62,6 +63,13 @@ Diseño técnico, equivalencias de nombres y plan de fases:
   y montos de control almacenados; `purchase.order`
   (`construction_exceed_state`, `construction_exceed_reason`); `project.task`
   (`construction_unit_state_base`).
+- Fase 9: `construction.purchase.price.report` (vista SQL de precios de
+  compra), `construction.purchase.price.analysis` (P-16),
+  `construction.product.create.wizard` (+ `.similar`, W-11),
+  `construction.supply.board` (P-18 y alertas, modelo abstracto);
+  `product.category` (`construction_family_code`), `product.template`
+  (`construction_created_from_plan_id`), `res.company`
+  (`construction_price_alert_pct`) y `product_ids` en W-02.
 
 ## Árbol de recursos (P-02)
 
@@ -441,6 +449,60 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
 - **Grupos.** El usuario de la planificación implica el usuario del Gantt;
   las etapas se leen con «Reporte de avance» y se mueven con «Planificador».
 
+## Productos, precios y abastecimiento (fase 9, P-16 a P-18)
+
+- **Vista de precios (`construction.purchase.price.report`).** Vista SQL
+  (`init()` con `odoo.tools.SQL`), una fila por línea de OC confirmada con
+  producto: cantidad en la unidad del producto (`product_uom_qty`), precio
+  con descuento convertido a esa unidad, tipo de cambio a la fecha de
+  aprobación (zona horaria de la compañía) y precio y monto en la moneda de
+  la compañía. El tipo de cambio reproduce `res.currency._get_rates`: la
+  tasa de la compañía raíz antes que la global, la última hasta la fecha, si
+  no la primera, si no 1; el factor es la tasa de la moneda de la compañía
+  entre la de la compra (`inverse_company_rate`). Semana (día de inicio de
+  la compañía) y mes para agrupar. Regla por compañía.
+- **Estadísticos (`_compute_price_stats`).** Ponderado (monto entre
+  cantidad), promedio simple, mediana, mínimo, máximo, desviación estándar
+  muestral, último precio; por semana y por mes con media móvil ponderada de
+  4 semanas (la semana y las 3 anteriores) y de 3 meses calendario; resumen
+  por proveedor; atípicas fuera de 1.5 veces el rango intercuartílico (con 4
+  compras o más). Lo usan P-16, W-12 (`_get_basis_prices`) y P-18
+  (`_get_last_prices`).
+- **P-16 (`construction.purchase.price.analysis`).** Transitorio con ventana
+  editable (6 meses), semana de la obra, estadísticos, gráfico SVG en el
+  servidor (punto por semana con `<title>` al pasar el cursor, media móvil
+  punteada y atípicas en rojo) y tablas por mes, proveedor y semana. Se abre
+  desde la línea del plan, W-12, el tablero y el menú; «Aplicar costo» abre
+  W-12 con la base y la fecha del fin de la ventana.
+- **W-12.** Bases: ponderado de 6 y 3 meses, media móvil de 4 semanas,
+  último precio y manual; las sugerencias salen de la vista.
+- **W-11 (`construction.product.create.wizard`).** Código = familia de 4
+  dígitos (`product.category.construction_family_code`) + correlativo de 3:
+  el mayor usado en todo el maestro (archivados y otras compañías) más uno,
+  con la categoría bloqueada (`SELECT … FOR UPDATE`) al crear. Parecidos:
+  candidatos por cada palabra de 3 letras o más y orden por la mayor
+  coincidencia de `difflib` entre los nombres y sus palabras ordenadas
+  (sin tildes ni signos), desde 40 %. Crea el producto con `sudo` (el
+  planificador no administra el maestro), activo, con el proveedor y la
+  unidad de compra en `seller_ids`, lo pone en la línea y agenda la
+  actividad a Logística en la plantilla.
+- **P-18 (`construction.supply.board`, acción de cliente
+  `static/src/supply_board/`).** Por producto de material del plan vigente:
+  necesidad (planificado − consumido) por semana de inicio de
+  `construction.space.stage` del ambiente y la etapa de la línea (sin etapa
+  del ambiente, la fecha de necesidad; lo atrasado, a la primera semana);
+  stock libre (`free_qty`) en la ubicación de la obra y el central; en OC =
+  pendiente de recibir en OC confirmadas con la analítica de la obra; a
+  comprar en la unidad del proveedor, redondeada hacia arriba si no es de
+  medida; costo del plan = monto / cantidad de sus líneas; alerta si el
+  último precio lo supera en `res.company.construction_price_alert_pct` o
+  más (comparando el porcentaje mostrado, a un decimal). «Compra masiva»
+  abre W-02 con `construction_selection_product_ids`, la etapa del filtro y
+  `date_to` = fin del horizonte.
+- **Alertas (`_get_supply_alerts(projects)`).** `price`, `no_po` (lo que
+  falta para la necesidad de los próximos 7 días sin stock ni OC) y
+  `no_supplier`; pensadas para el inicio de la aplicación (fase 11).
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -503,7 +565,21 @@ y 6 h registradas.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_control.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (72 tests, con el tour
+Fase 9 (después de los anteriores): 27 compras de la melamina blanca entre
+el 10/04 y el 10/10/2026 (24 en dólares y 3 en soles), una de melamina coñac
+sobre el costo del plan, 40 planchas en el central y la familia 3105.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_prices.py
+```
+
+Tests: `--test-tags /al_construction_planner` (99 tests;
+`test_prices_supply.py` cubre la fase 9: conversión de moneda y unidad,
+estadísticos exactos, criterio 13 adaptado con 27 compras, P-16 y W-12,
+criterio 15 con W-11, el ejemplo 192.13 − 40 − 96 → 57 de P-18, la alerta de
+precio, la compra masiva desde el tablero, el tour del tablero y la
+multicompañía. Antes: con el tour
 `al_construction_planner_plan_tree` del árbol; `test_supply.py` cubre la
 fase 4: compra masiva en los dos modos, el requerimiento con las tres
 políticas y la tolerancia, la OF con su BOM y el control al confirmar, el

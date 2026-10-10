@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner.SupplyBoard">
+        <div class="o_action o_cp_supply d-flex flex-column h-100">
+            <div class="o_cp_toolbar d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom">
+                <select class="form-select form-select-sm w-auto o_cp_supply_project" t-on-change="onProjectChange"
+                        aria-label="Obra">
+                    <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                        <option t-att-value="project.id" t-att-selected="project.id === state.projectId"
+                                t-esc="project.name"/>
+                    </t>
+                </select>
+                <label class="d-flex align-items-center gap-1 small text-muted">
+                    Horizonte
+                    <select class="form-select form-select-sm w-auto o_cp_supply_weeks" t-on-change="onWeeksChange">
+                        <t t-foreach="weekOptions" t-as="weeks" t-key="weeks">
+                            <option t-att-value="weeks" t-att-selected="weeks === state.weeks"
+                                    t-esc="weeks + ' semanas'"/>
+                        </t>
+                    </select>
+                </label>
+                <div class="btn-group btn-group-sm flex-wrap" role="group" aria-label="Etapas">
+                    <t t-foreach="state.data?.stages || []" t-as="stage" t-key="stage[0]">
+                        <button class="btn" t-att-class="state.stages.includes(stage[0]) ? 'btn-primary' : 'btn-secondary'"
+                                t-on-click="() => this.toggleStage(stage[0])" t-esc="stage[1]"/>
+                    </t>
+                </div>
+                <span t-if="state.data?.plan_name" class="small text-muted">
+                    Plan <t t-esc="state.data.plan_name"/>
+                </span>
+                <div class="ms-auto d-flex gap-2">
+                    <button class="btn btn-sm btn-secondary" t-on-click="selectToBuy"
+                            t-att-disabled="!rows.length">Marcar lo que falta</button>
+                    <button class="btn btn-sm btn-primary o_cp_supply_purchase" t-on-click="openPurchase"
+                            t-att-disabled="!selectedRows.length">
+                        <i class="fa fa-shopping-cart me-1"/>Compra masiva
+                    </button>
+                </div>
+            </div>
+            <div class="o_cp_supply_body flex-grow-1 overflow-auto px-3 py-2">
+                <t t-if="!state.projectId">
+                    <div class="o_view_nocontent">
+                        <div class="o_nocontent_help">
+                            <p class="o_view_nocontent_empty_folder">Ninguna obra tiene plan de recursos</p>
+                            <p>Genere el plan de la obra para ver qué hay que comprar.</p>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="state.data">
+                    <div t-if="state.data.alerts.length" class="o_cp_supply_alerts alert alert-warning py-2 mb-2">
+                        <div class="fw-bold small mb-1">Alertas de abastecimiento</div>
+                        <ul class="list-unstyled small mb-0">
+                            <t t-foreach="alertLines" t-as="alert" t-key="alert_index">
+                                <li><i t-att-class="'fa me-1 ' + alertIcon(alert.type)"/><t t-esc="alert.message"/></li>
+                            </t>
+                        </ul>
+                    </div>
+                    <table class="table table-sm table-hover o_cp_supply_table align-middle">
+                        <thead>
+                            <tr>
+                                <th class="o_cp_check">
+                                    <input type="checkbox" class="form-check-input" t-att-checked="allSelected"
+                                           t-on-change="toggleAll" aria-label="Marcar todos"/>
+                                </th>
+                                <th>Producto</th>
+                                <th>Und</th>
+                                <th class="text-end">Obra</th>
+                                <t t-foreach="state.data.weeks" t-as="week" t-key="week">
+                                    <th class="text-end o_cp_week" t-esc="formatWeek(week)"/>
+                                </t>
+                                <th class="text-end">Stock</th>
+                                <th class="text-end">En OC</th>
+                                <th class="text-end">A comprar</th>
+                                <th class="text-end">Costo plan</th>
+                                <th class="text-end">Último</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-if="!rows.length">
+                                <td t-att-colspan="10 + state.data.weeks.length" class="text-muted">
+                                    El plan no tiene materiales con estos filtros.
+                                </td>
+                            </tr>
+                            <t t-foreach="rows" t-as="row" t-key="row.product_id">
+                                <tr t-att-class="state.selected[row.product_id] ? 'o_cp_row_sel' : ''">
+                                    <td class="o_cp_check">
+                                        <input type="checkbox" class="form-check-input"
+                                               t-att-checked="state.selected[row.product_id]"
+                                               t-on-change="() => this.toggleRow(row)" aria-label="Marcar"/>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="o_cp_supply_product" t-on-click.prevent="() => this.openPrices(row)"
+                                           title="Precios de compra del producto" t-esc="row.product_name"/>
+                                        <i t-if="row.no_supplier_alert" class="fa fa-user-times text-muted ms-1"
+                                           title="Sin proveedor habitual"/>
+                                        <i t-if="row.no_po_alert" class="fa fa-clock-o text-warning ms-1"
+                                           title="Necesidad sin OC a menos de una semana"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="row.uom"/>
+                                        <span t-if="row.purchase_uom !== row.uom" class="text-muted small">
+                                            (compra: <t t-esc="row.purchase_uom"/>)
+                                        </span>
+                                    </td>
+                                    <td class="text-end" t-esc="formatQty(row.need_total)"/>
+                                    <t t-foreach="row.need_weeks" t-as="qty" t-key="qty_index">
+                                        <td class="text-end o_cp_week" t-att-class="qty ? '' : 'text-muted'"
+                                            t-esc="qty ? formatQty(qty) : '—'"/>
+                                    </t>
+                                    <td class="text-end" t-esc="formatQty(row.stock)"/>
+                                    <td class="text-end" t-esc="formatQty(row.on_order)"/>
+                                    <td class="text-end fw-bold" t-esc="formatQty(row.qty_to_buy)"/>
+                                    <td class="text-end" t-esc="formatQty(row.cost_plan)"/>
+                                    <td class="text-end">
+                                        <t t-if="row.price_last" t-esc="formatQty(row.price_last)"/>
+                                        <t t-else="">—</t>
+                                        <span t-if="row.price_alert" class="badge text-bg-danger ms-1 o_cp_price_alert"
+                                              t-esc="formatPct(row.price_pct)"/>
+                                    </td>
+                                    <td class="text-end" t-esc="formatQty(row.amount)"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot t-if="rows.length">
+                            <tr class="fw-bold">
+                                <td t-att-colspan="9 + state.data.weeks.length">
+                                    <t t-if="selectedRows.length">
+                                        Total de lo marcado (<t t-esc="selectedRows.length"/> productos)
+                                    </t>
+                                    <t t-else="">Total a comprar</t>
+                                </td>
+                                <td class="text-end o_cp_supply_total"
+                                    t-esc="formatQty(selectedRows.length ? selectedAmount : totalAmount)"/>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p class="text-muted small mb-0">
+                        Necesidad por semana de inicio de la etapa que consume el material (cronograma);
+                        lo atrasado entra en la primera semana. A comprar = necesidad del horizonte − stock − en
+                        OC, en la unidad de compra. Alerta cuando el último precio supera el costo del plan en
+                        <t t-esc="formatQty(state.data.threshold)"/> % o más.
+                    </p>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -122,6 +122,27 @@ Fase 8 (cronograma con recursos, P-15):
   Logística de los requerimientos y OC desfasados; «Cambiar fechas» (W-08)
   también mueve las etapas.
 
+Fase 9 (productos, precios y abastecimiento, P-16 a P-18):
+
+* «Precios de compra del producto» (P-16): las compras confirmadas de una
+  ventana editable (6 meses) en soles, cada una al tipo de cambio de Odoo de
+  su fecha de aprobación; ponderado, promedio simple, mediana, mínimo, máximo,
+  desviación, último precio, medias móviles de 4 semanas y 3 meses, resumen
+  por semana, mes y proveedor y gráfico semanal con las compras atípicas.
+  Abre «Aplicar costo» con la base elegida.
+* «Aplicar costo» (W-12) suma la media móvil de 4 semanas a sus bases.
+* «Crear producto desde el plan» (W-11, P-17): código de la familia más
+  correlativo asignado al guardar, productos de nombre parecido antes de
+  crear, producto activo marcado con el plan y asignado a la línea, y
+  actividad a Logística para completarlo.
+* «Abastecimiento de la obra» (P-18): necesidad por semana de la etapa que
+  consume el material, stock libre de la obra y del central, OC abiertas con
+  la analítica de la obra, cantidad a comprar en la unidad de compra, costo
+  del plan, último precio con alerta y compra masiva (W-02) con los
+  productos marcados.
+* Alertas de abastecimiento: precio sobre el plan (umbral en Ajustes),
+  necesidad sin OC a menos de una semana y producto sin proveedor habitual.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -131,7 +152,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '7.20261010',
+    'version': '8.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -174,6 +195,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_plan_tree_views.xml',
         'views/construction_schedule_views.xml',
         'views/construction_supply_views.xml',
+        'views/construction_price_views.xml',
         'views/menus.xml',
     ],
     'demo': [
@@ -183,6 +205,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'web.assets_backend': [
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
+            'al_construction_planner/static/src/supply_board/*',
         ],
         'web.assets_tests': [
             'al_construction_planner/static/tests/tours/*',

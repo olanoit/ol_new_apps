@@ -5,7 +5,7 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación, OC de servicio, Avance por driver, Liquidación semanal, Análisis de control, Personal propio, Cambiar fechas, Cronograma con recursos, Precios de compra, Crear producto, Abastecimiento de la obra]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
@@ -120,6 +120,24 @@ destacados:
       Una OC con la analítica de la obra se contrasta al confirmarla con el
       presupuesto analítico de su combinación: avisa, pide aprobación o
       bloquea según el plan.
+  - icono: "📈"
+    titulo: Precios de compra en soles
+    texto: >-
+      Seis meses de compras convertidas al tipo de cambio de cada fecha, con
+      ponderado, mediana, medias móviles, resumen por proveedor y las compras
+      atípicas a la vista antes de escribir el costo.
+  - icono: "＋"
+    titulo: Crear producto desde el plan
+    texto: >-
+      Código de la familia más correlativo asignado al guardar, productos de
+      nombre parecido antes de crear y una actividad a Logística para
+      completarlo.
+  - icono: "🚚"
+    titulo: Abastecimiento de la obra
+    texto: >-
+      Necesidad por semana, stock, OC abiertas y cantidad a comprar por
+      producto, con alerta de precio; la compra masiva sale de la misma
+      tabla.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -250,6 +268,28 @@ flujos:
         J -- Sí --> K[Aprobación de la jefatura]
         K --> L[Recepción en la OC y factura con vencimiento el sábado]
         L --> M[Pagada al quedar pagada la factura]
+
+  - id: precios_abastecimiento
+    titulo: Precio, producto y abastecimiento
+    texto: >-
+      El planificador fija el costo mirando las compras en soles; si el
+      producto no existe lo crea desde la línea. Logística compra desde el
+      tablero de la obra lo que falta para las próximas semanas.
+    mermaid: |
+      flowchart TD
+        A[Línea del plan] --> B{¿Existe el producto?}
+        B -- No --> C[Crear producto: familia, nombre, unidades, proveedor]
+        C --> C1[Productos parecidos] --> C2[Código de la familia al guardar]
+        C2 --> C3[Producto activo, marcado con el plan y en la línea]
+        C3 --> C4[Actividad a Logística]
+        B -- Sí --> D[Precios de compra: 6 meses en soles]
+        C3 --> D
+        D --> E[Aplicar costo con la base elegida]
+        E --> F[Plan aprobado]
+        F --> G[Abastecimiento de la obra: necesidad por semana de la etapa]
+        G --> H[A comprar = horizonte − stock − en OC]
+        H --> I[Marcar filas ▸ Compra masiva]
+        G --> J[Alertas: precio sobre el plan, sin OC a una semana, sin proveedor]
 
 pasos_intro: >-
   El árbol de recursos con el piso 05 de demostración («DEMO PLAN
@@ -523,6 +563,58 @@ pasos:
       - "Con «Encadenar» activo, las etapas siguientes del ambiente que quedan solapadas se empujan al lunes siguiente, con su duración."
       - "«Cambiar fechas» (W-08) también mueve las etapas de las etapas elegidas; «Etapas del cronograma» las lista para editarlas."
     imagen: screenshots/30-cronograma-etapa.png
+  - titulo: Precios de compra del producto
+    ruta: Abastecimiento ▸ Precios de compra del producto (o el ícono de gráfico de la línea del plan)
+    texto: >-
+      Las compras confirmadas de la ventana (6 meses por defecto) en soles,
+      cada compra en dólares al tipo de cambio de Odoo de su fecha de
+      aprobación. Ponderado, promedio simple, mediana, mínimo, máximo,
+      desviación, último precio y medias móviles de 4 semanas y 3 meses; el
+      gráfico tiene un punto por semana y las compras atípicas en rojo.
+    puntos:
+      - "Al pasar el cursor por un punto se ven las compras, la cantidad y la media móvil de la semana."
+      - "Las semanas empiezan el día configurado en la obra (jueves por defecto)."
+      - "Con un plan en borrador y la base elegida, «Aplicar costo» abre W-12 con esa base y la fecha del fin de la ventana."
+    imagen: screenshots/31-precios-compra.png
+  - titulo: Resumen por proveedor
+    ruta: Precios de compra del producto ▸ Por proveedor
+    texto: >-
+      Compras, cantidad, ponderado y último precio de cada proveedor con su
+      moneda. Por mes, la media de 3 meses; por semana, la de 4 semanas; en
+      «Compras», cada línea de OC con su tipo de cambio.
+    imagen: screenshots/32-precios-por-proveedor.png
+  - titulo: Aplicar costo con media móvil
+    ruta: Precios de compra ▸ Aplicar costo (o Plan ▸ Aplicar costo)
+    texto: >-
+      Las cinco bases: ponderado de 6 y 3 meses, media móvil de 4 semanas,
+      último precio y manual. El planificador escribe el costo; la base y su
+      fecha quedan en las líneas.
+    imagen: screenshots/33-aplicar-costo-media-movil.png
+  - titulo: Crear producto desde el plan
+    ruta: Línea del plan sin producto ▸ Crear producto (o Plan ▸ Crear producto)
+    texto: >-
+      Familia, nombre, unidades de consumo y de compra, proveedor y precio de
+      referencia. Antes de crear muestra los productos de nombre parecido
+      con su coincidencia y último precio; «Usar este» pone el existente en
+      la línea.
+    puntos:
+      - "El código es el de la familia (4 dígitos) más un correlativo de 3, asignado al crear: dos planificadores no toman el mismo."
+      - "El producto queda activo, marcado con el plan y en la línea; Logística recibe una actividad para completar marca, proveedor y cuentas."
+      - "La línea sigue sin costo hasta aplicar W-12, y sin costo el plan no se aprueba."
+    imagen: screenshots/34-crear-producto.png
+  - titulo: Abastecimiento de la obra
+    ruta: Abastecimiento ▸ Abastecimiento de la obra (o el botón del plan)
+    texto: >-
+      Por producto: necesidad total de la obra, necesidad por semana de
+      inicio de la etapa que lo consume, stock libre en la obra y el central,
+      lo pedido en OC con la analítica de la obra, cantidad a comprar en la
+      unidad de compra, costo del plan, último precio y monto.
+    puntos:
+      - "A comprar = necesidad del horizonte − stock − en OC, redondeado hacia arriba en unidades enteras: 192.13 − 40 − 96 = 56.13 → 57 planchas."
+      - "Horizonte de 2 a 12 semanas y filtro por etapa; lo atrasado entra en la primera semana."
+      - "El último precio en rojo supera el costo del plan en el umbral de Ajustes (5 %) o más."
+      - "«Marcar lo que falta» y «Compra masiva» abren W-02 con los productos marcados, la etapa del filtro y la necesidad hasta el fin del horizonte."
+    imagen: screenshots/35-abastecimiento-obra.png
 
 campos_intro: >-
   Los campos de los modelos nuevos y de los que el módulo amplía.
@@ -652,6 +744,22 @@ campos:
       - ["Contrata, cuadrilla", De las líneas de contrata y personal propio de la etapa., Vacías, "Calculadas; sin ninguna, la barra es clara"]
       - [Etapa anterior, Producción › armado › instalación › acabado., "—", Son los vínculos del cronograma]
       - ["Monto, avance", Monto planificado y avance valorizado de la etapa en el ambiente y sus módulos., "—", Calculados]
+  - grupo: Precios de compra (vista)
+    ruta: Abastecimiento ▸ Compras por producto · Precios de compra del producto
+    campos:
+      - [Línea de OC confirmada, Una fila por línea de OC confirmada con producto., "—", Vista SQL]
+      - ["Cantidad, precio en su moneda", En la unidad del producto y con el descuento., "—", La unidad de la OC se convierte]
+      - [Tipo de cambio, Soles por unidad de la moneda a la fecha de aprobación., 1 en soles, "res.currency.rate (inverse_company_rate), como Odoo"]
+      - ["Precio y monto en soles", Base de los estadísticos., "—", "Semana (día de la compañía) y mes"]
+  - grupo: Familia y producto
+    ruta: Inventario ▸ Categorías de producto · Producto
+    campos:
+      - [Código de familia, Cuatro dígitos con los que empieza el código de sus productos., Vacío, Necesario para crear productos desde el plan]
+      - [Creado desde el plan, Plan que creó el producto., Vacío, Solo lectura]
+  - grupo: Ajustes
+    ruta: Ajustes ▸ Planificación de obra ▸ Abastecimiento
+    campos:
+      - [Alerta de precio sobre el plan (%), El último precio supera el costo del plan en este porcentaje o más., "5", Por compañía]
   - grupo: Orden de compra
     ruta: Compras ▸ OC
     campos:
@@ -726,6 +834,14 @@ funcionalidades:
       - "Casillas con selección en cascada, panel con los recursos de la selección y botones de los asistentes W-02 a W-08."
       - "Arrastrar una etapa desplaza la necesidad de sus líneas y avisa a Logística, con un solo aviso por documento aunque se muevan varias etapas."
       - "Carga semanal por contrata y etapa debajo del diagrama, filtrable por etapa."
+  - grupo: Productos, precios y abastecimiento
+    items:
+      - "Vista de precios de compra: una fila por línea de OC confirmada en la unidad del producto y en soles al tipo de cambio de su fecha."
+      - "Precios de compra del producto (P-16) con ventana editable, estadísticos, medias móviles, resumen por semana, mes y proveedor y gráfico con atípicas."
+      - "«Aplicar costo» con media móvil de 4 semanas además de ponderados, último precio y manual."
+      - "Crear producto desde el plan (W-11) con código de familia sin colisiones, parecidos por nombre, marca del plan y actividad a Logística."
+      - "Abastecimiento de la obra (P-18) con necesidad semanal por etapa, stock, OC abiertas, cantidad a comprar, alerta de precio y compra masiva de lo marcado."
+      - "Alertas de abastecimiento reutilizables: precio sobre el plan, necesidad sin OC a menos de una semana y producto sin proveedor habitual."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -790,12 +906,25 @@ configuracion:
   - "`tools/planner_demo_contracts.py` asigna las contratas del demo, registra el avance del ejemplo y prepara la liquidación del 05/11."
   - "Personal propio: actividades en horas con su **rol** y empleados con **costo hora**; el capataz necesita permiso de hoja de horas sobre otros empleados. `tools/planner_demo_control.py` deja una cuadrilla demo."
   - "Las OC con la analítica de la obra se controlan contra el presupuesto del plan vigente; las OC de servicio de las contratas se controlan al asignar y al liquidar."
+  - "Ponga el **código de familia** (4 dígitos) en las categorías de producto donde los planificadores crearán productos, y el umbral de la **alerta de precio** en **Ajustes ▸ Planificación de obra**."
+  - "`tools/planner_demo_prices.py` carga 27 compras de la melamina blanca del demo (24 en dólares y 3 en soles) y la familia 3105."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
   LGPL-3 porque depende de `base_tier_validation` (AGPL-3).
 
 faq:
+  - pregunta: "¿Por qué el plan no toma el costo del producto?"
+    respuesta: >-
+      Porque puede estar mal cargado (en la especificación la melamina tiene
+      de costo el precio en dólares). El planificador mira «Precios de compra
+      del producto», en soles al tipo de cambio de cada compra, y escribe el
+      costo con su base.
+  - pregunta: "¿Qué es una compra atípica?"
+    respuesta: >-
+      Un precio fuera de 1.5 veces el rango intercuartílico de la ventana
+      (con 4 compras o más), como una compra chica a otro proveedor. Se ve en
+      rojo en el gráfico; el ponderado la diluye y el promedio simple no.
   - pregunta: "¿Por qué los materiales salen sin costo?"
     respuesta: >-
       La especificación pide que el costo lo escriba el planificador después
@@ -851,6 +980,14 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 8.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Precios de compra del producto (fase 9, P-16): compras confirmadas de una ventana editable en soles al tipo de cambio de su fecha, con ponderado, mediana, desviación, medias móviles de 4 semanas y 3 meses, resumen por semana, mes y proveedor y gráfico semanal con las compras atípicas."
+      - "«Aplicar costo» (W-12) suma la media móvil de 4 semanas y se abre desde P-16 con la base elegida."
+      - "Crear producto desde el plan (W-11, P-17): código de familia más correlativo asignado al guardar, productos parecidos antes de crear, producto activo marcado con el plan y actividad a Logística."
+      - "Abastecimiento de la obra (P-18): necesidad por semana de la etapa, stock, OC abiertas, cantidad a comprar, costo del plan y último precio con alerta; la compra masiva sale con los productos marcados."
+      - "Alertas de abastecimiento (precio sobre el plan, necesidad sin OC a una semana, sin proveedor) y umbral de la alerta de precio en Ajustes."
   - version: 7.20261010
     fecha: 10/10/2026
     cambios:

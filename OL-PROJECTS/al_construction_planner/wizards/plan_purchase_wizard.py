@@ -27,6 +27,11 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
         domain="[('code', '=', 'incoming'), ('company_id', '=', company_id)]",
         default=lambda self: self._default_picking_type(),
         help='Recepción del almacén central donde entra la compra.')
+    product_ids = fields.Many2many(
+        'product.product', 'construction_plan_purchase_wizard_product_rel', 'wizard_id',
+        'product_id', string='Productos', check_company=True,
+        help='Solo estos productos (los marcados en el abastecimiento de la obra). Vacío: '
+             'todos los de la selección.')
     date_from = fields.Date(string='Necesidad desde')
     date_to = fields.Date(string='Necesidad hasta')
     group_by = fields.Selection(
@@ -38,6 +43,14 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
     amount_need = fields.Monetary(
         string='Necesidad a costo del maestro', compute='_compute_amount_need',
         currency_field='currency_id')
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        product_ids = self.env.context.get('construction_selection_product_ids')
+        if product_ids and 'product_ids' in fields_list:
+            res['product_ids'] = [Command.set(product_ids)]
+        return res
 
     @api.model
     def _default_picking_type(self):
@@ -65,7 +78,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
         return sellers[:1].product_uom_id or product.uom_id
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'mode', 'picking_type_id',
-                 'date_from', 'date_to', 'group_by', 'stage_production', 'stage_assembly',
+                 'product_ids', 'date_from', 'date_to', 'group_by', 'stage_production', 'stage_assembly',
                  'stage_installation', 'stage_finishing')
     def _compute_line_ids(self):
         for wizard in self:
@@ -77,6 +90,8 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
     def _prepare_lines(self):
         self.ensure_one()
         domain = [('resource_type', '=', 'material'), ('product_id', '!=', False)]
+        if self.product_ids:
+            domain.append(('product_id', 'in', self.product_ids.ids))
         if self.date_from:
             domain.append(('date_needed', '>=', self.date_from))
         if self.date_to:

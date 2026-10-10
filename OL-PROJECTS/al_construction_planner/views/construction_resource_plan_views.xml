@@ -11,6 +11,8 @@
                 <header>
                     <button name="action_open_price_wizard" type="object" string="Aplicar costo"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_purchase_prices" type="object" string="Precios de compra"
+                            groups="al_construction_planner.group_planner_planner"/>
                 </header>
                 <field name="plan_id" column_invisible="context.get('default_plan_id')"
                        options="{'no_create': True}"/>
@@ -34,6 +36,13 @@
                 <field name="qty_planned"/>
                 <field name="product_uom_id" options="{'no_create': True}"/>
                 <field name="price_unit_planned"/>
+                <button name="action_open_purchase_prices" type="object" icon="fa-line-chart"
+                        title="Precios de compra del producto" invisible="not product_id"
+                        groups="al_construction_planner.group_planner_planner"/>
+                <button name="action_open_product_create" type="object" icon="fa-plus-square"
+                        title="Crear producto desde el plan"
+                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service')"
+                        groups="al_construction_planner.group_planner_planner"/>
                 <field name="amount_planned" sum="Total"/>
                 <field name="qty_requested" optional="hide"/>
                 <field name="qty_purchased" optional="hide"/>
@@ -93,6 +102,15 @@
         <field name="model">construction.resource.plan.line</field>
         <field name="arch" type="xml">
             <form string="Línea del plan">
+                <header>
+                    <button name="action_open_purchase_prices" type="object" string="Precios de compra"
+                            invisible="not product_id"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_product_create" type="object" string="Crear producto"
+                            invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service')"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <field name="plan_state" invisible="1"/>
+                </header>
                 <sheet>
                     <group>
                         <group string="Dónde">
@@ -310,6 +328,9 @@
                             string="Solicitar aprobación" class="btn-primary"
                             invisible="state != 'draft' or not line_count"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_product_create" type="object" string="Crear producto"
+                            invisible="state != 'draft'"
+                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_open_replan_wizard" type="object" string="Nueva versión"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_planner"/>
@@ -368,6 +389,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_tree" type="object"
                                 class="oe_stat_button" icon="fa-sitemap" string="Árbol de recursos"/>
+                        <button name="action_open_supply_board" type="object"
+                                class="oe_stat_button" icon="fa-truck" string="Abastecimiento"
+                                groups="al_construction_planner.group_planner_planner"/>
                         <button name="action_open_schedule" type="object"
                                 class="oe_stat_button" icon="fa-tasks" string="Cronograma"
                                 groups="al_project_gantt_base.group_gantt_user"/>

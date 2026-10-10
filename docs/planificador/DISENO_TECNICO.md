@@ -177,6 +177,7 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
 | 7 | OV por partida, valorizaciones e ingreso devengado, factura de la valorización con control de saldo, flujo | P-20, P-21, P-22 |
 | Cronograma con recursos (hecha; fase 8 de la especificación) | Etapas del ambiente; herencia de `al.gantt.data.get_data`; pantalla sobre el componente del Gantt con selección, panel, acciones y carga semanal OWL; arrastre con recálculo y aviso (ver §6.5) | P-15 |
+| Productos, precios y abastecimiento (hecha; fase 9 de la especificación) | Vista SQL de precios de compra en soles; P-16 con estadísticos y gráfico; W-12 con media móvil; W-11 crear producto con código de familia; tablero de abastecimiento y alertas (ver §6.6) | P-16, P-17, P-18 |
 
 ### 6.1 Línea base: presupuesto y ganchos
 
@@ -378,6 +379,48 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   repartidas en partes iguales entre los días hábiles de la etapa del
   ambiente y sumadas por semana calendario.
 
+### 6.6 Productos, precios y abastecimiento (fase 9)
+
+- **Vista de precios.** `construction.purchase.price.report` es una vista
+  SQL (`_auto = False`, `init()` con `odoo.tools.SQL`): una fila por línea de
+  OC confirmada (`state = 'purchase'`) con producto. Cantidad en la unidad
+  del producto (`product_uom_qty`), precio con descuento convertido con los
+  factores de `uom.uom`, fecha de aprobación en la zona horaria de la
+  compañía. El tipo de cambio repite `res.currency._get_rates` en SQL
+  (compañía raíz antes que global, última tasa hasta la fecha, si no la
+  primera, si no 1) y el factor es tasa de la moneda de la compañía / tasa
+  de la compra, es decir `inverse_company_rate`. La semana usa el día de la
+  compañía; P-16 reagrupa con el de la obra.
+- **Estadísticos en Python** (`_compute_price_stats`): una sola función
+  para P-16, W-12 y P-18, probada con datos sintéticos. Media móvil de 4
+  semanas = ponderado de la semana y las 3 anteriores (calendario de la
+  obra); de 3 meses = ponderado del mes y los 2 anteriores. Atípicas por
+  rango intercuartílico (1.5 IQR, con 4 compras o más): marca las compras
+  chicas en soles del ejemplo sin depender de la desviación, que ellas
+  mismas inflan.
+- **P-16** es un transitorio con gráfico SVG generado en el servidor
+  (campo Html sin sanear): no carga Chart.js y la ayuda al pasar el cursor
+  es el `<title>` de cada punto.
+- **W-11.** El correlativo es el mayor código usado de la familia más uno
+  (no una `ir.sequence`: el maestro ya trae códigos), con la categoría
+  bloqueada `FOR UPDATE` hasta el fin de la transacción. El producto se crea
+  con `sudo` porque el planificador no administra el maestro (decisión del
+  10-oct); la unidad de compra va en el proveedor (`seller_ids`), como la
+  lee W-02. La línea queda sin costo hasta W-12.
+- **P-18** es un modelo abstracto con acción de cliente OWL (las semanas son
+  columnas dinámicas). Necesidad = planificado − consumido, en la semana de
+  inicio de la etapa del ambiente (`construction.space.stage`) o, sin ella,
+  de la fecha de necesidad; lo atrasado cae en la primera semana. Stock =
+  `free_qty` en la ubicación de la obra y el central; en OC = pendiente de
+  OC confirmadas con la analítica de la obra. Las lecturas de compras e
+  inventario van con `sudo` (solo cantidades). La compra masiva recibe los
+  productos por contexto (`construction_selection_product_ids`, campo
+  `product_ids` en W-02).
+- **Alertas** (`construction.supply.board._get_supply_alerts`): lista de
+  dicts por obra para el inicio de la aplicación (fase 11). Confirmar una OC
+  registra al proveedor en el producto (estándar de compras): «sin proveedor
+  habitual» es el producto sin compras ni proveedor cargado.
+
 ## 7. Riesgos y pendientes
 
 - **Volumen.** MOMEN: 1,589 tareas y ~7,800 líneas. Los ancestros almacenados
@@ -398,7 +441,12 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
   módulo puente.
 - **Siguiente**: entregas, valorizaciones e ingresos (con la factura de la
   valorización y su control de saldo) y cronograma valorizado (P-22), que
-  reparte el plan con las fechas de `construction.space.stage`.
+  reparte el plan con las fechas de `construction.space.stage`; inicio de la
+  aplicación (P-01) con las alertas de abastecimiento.
+- **Precios (fase 9)**: el criterio 13 con las 27 compras reales de MOMEN
+  necesita la base limpia con sus OC y tipos de cambio; los tests lo
+  reproducen con 27 compras sintéticas. La semana de la vista SQL es la de
+  la compañía; si una obra cambia su día, P-16 reagrupa en Python.
 - **Cronograma**: los pisos y departamentos con fechas propias muestran en el
   modo «Etapas» el resumen de sus etapas, no sus fechas; para editar las
   tareas se usa el modo «Tareas» o el Gantt de proyectos. El arrastre de
@@ -411,4 +459,4 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 - **Secuencia**: los tests consumen números de la secuencia `PLR` en bases de
   desarrollo (comportamiento normal de `ir.sequence` estándar).
 - **Control multicompañía** de `al_base_module_info`: en verde (10/10/2026,
-  con la fase 7).
+  con la fase 9).

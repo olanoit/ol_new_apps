@@ -1,9 +1,10 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `6.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `8.20261010` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso de las fases 1 a 7 (plan, árbol, línea base, asignaciones y
-> compras, contratas, liquidación semanal, control y personal propio) con un
+> proceso de las fases 1 a 9 (plan, árbol, línea base, asignaciones y
+> compras, contratas, liquidación semanal, control y personal propio,
+> cronograma con recursos, y productos, precios y abastecimiento) con un
 > ejemplo que cuadra. Enlaces verificados el
 > 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
@@ -33,8 +34,14 @@ analítica de la obra se contrasta con el presupuesto al confirmarla, las
 cuadrillas de personal propio se asignan con turnos y sus horas son el real,
 y «Cambiar fechas» mueve la selección y avisa a Logística.
 
-Fuera del alcance de las fases 1 a 7: ingresos (entregas, valorizaciones y
-su factura) y cronograma con recursos (ver
+Desde la fase 9 el planificador fija el costo mirando los **precios de
+compra** del producto en soles (P-16), crea desde la línea el producto que
+no existe (P-17) y Logística compra desde el **abastecimiento de la obra**
+(P-18) lo que falta para las próximas semanas, con alertas de precio y de
+necesidad sin OC.
+
+Fuera del alcance de las fases 1 a 9: ingresos (entregas, valorizaciones y
+su factura) y el inicio de la aplicación (ver
 `docs/planificador/DISENO_TECNICO.md`).
 
 ## 2. Marco normativo y conceptual
@@ -151,7 +158,10 @@ flowchart TD
 | 28 | Registrar las horas | Hoja de horas de la tarea (o de sus módulos) | Capataz | Ejecutado y real de la línea de personal propio |
 | 29 | Cambiar fechas | Árbol de recursos o plan ▸ Cambiar fechas | Planificador | Tareas y fechas de necesidad movidas; actividad para Logística en los documentos desfasados |
 | 30 | Controlar | Plan ▸ Control; Obras ▸ Análisis de control | Jefatura, Finanzas | Planificado, comprometido, real, saldo y % ejecutado por etapa, tipo de recurso, contrata o producto |
-| 31 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
+| 31 | Revisar los precios de compra | Línea del plan ▸ ícono de gráfico, o Abastecimiento ▸ Precios de compra del producto | Planificador | Estadísticos en soles de la ventana; «Aplicar costo» con la base elegida |
+| 32 | Crear un producto que no existe | Línea del plan sin producto ▸ Crear producto (o Plan ▸ Crear producto) | Planificador | Producto activo con código de su familia, en la línea y marcado con el plan; actividad para Logística |
+| 33 | Abastecer la obra | Abastecimiento ▸ Abastecimiento de la obra (o botón del plan) | Logística, planificador | Cantidad a comprar por producto; «Compra masiva» con las filas marcadas |
+| 34 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos ni liquidaciones pendientes) |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -438,6 +448,47 @@ la nueva necesidad, recibe una sola actividad «Fechas del plan cambiadas»
 para Logística aunque se muevan las 8 barras. Con «Encadenar» activo, si la
 instalación pisa el acabado, el acabado se corre al lunes siguiente.
 
+### Precios, producto y abastecimiento (P-16 a P-18)
+
+**Precios de compra.** La melamina blanca tuvo 27 compras entre el 10/04 y
+el 10/10/2026: 24 a un proveedor en dólares y 3 compras chicas en soles a
+otros. Cada compra en dólares se pasa a soles con el tipo de cambio de Odoo
+de su fecha de aprobación (soles por dólar). Con el ejemplo de la
+especificación, el ponderado es S/ 122.39 y la media móvil de 4 semanas
+S/ 122.79 (semana de la base y las 3 anteriores, ponderadas por cantidad);
+el promedio simple sube a 127.34 porque las compras chicas pesan igual que
+las grandes. Esas compras (S/ 162 a 174.50) salen en rojo en el gráfico:
+están fuera de 1.5 veces el rango intercuartílico. El planificador elige la
+base «Media móvil de 4 semanas» y «Aplicar costo» deja en las líneas
+«Media móvil de 4 semanas al 10/10/2026: 122.79».
+
+En los tests, cinco compras dan un resultado que se comprueba a mano:
+
+| Fecha | Cant. | Precio en soles | Monto |
+|---|---|---|---|
+| 10/02 (S/) | 10 | 100.00 | 1,000.00 |
+| 03/03 (US$ 30.00 × 3.70) | 10 | 111.00 | 1,110.00 |
+| 10/03 (US$ 372 por docena = 31.00 × 3.80) | 24 | 117.80 | 2,827.20 |
+| 12/03 (S/, atípica) | 5 | 150.00 | 750.00 |
+| 20/03 (S/ 125 − 4 %) | 30 | 120.00 | 3,600.00 |
+
+Ponderado 9,287.20 / 79 = 117.56; mediana 117.80; media móvil de 4 semanas
+al 20/03 (semanas desde el jueves 27/02) 8,287.20 / 69 = 120.10.
+
+**Crear producto.** Una línea de bisagras sin producto: «Crear producto»
+con la familia 3105, el nombre y la unidad. El asistente muestra «Bisagra
+push open copa 35 mm» al 84 % y «Bisagra lateral Danco» al 45 % antes de
+crear. Si es nuevo, recibe el código 3105701 cuando el mayor usado de la
+familia es 3105700 (aunque esté archivado); un segundo planificador en la
+misma familia recibe 3105702.
+
+**Abastecimiento.** Melamina blanca con 330.82 planchas en la obra; por
+semana de inicio de la etapa que la consume: 36.07, 52.02, 52.02 y 52.02
+(horizonte de 4 semanas = 192.13). Hay 40 libres en el central y 96 en una
+OC con la analítica de la obra: a comprar 192.13 − 40 − 96 = 56.13 → 57
+planchas, a S/ 122.79 del plan = S/ 6,999.03. La melamina coñac (plan
+228.07) se compró a 239.42: +5.0 %, alerta con el umbral de 5 %.
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -484,6 +535,10 @@ instalación pisa el acabado, el acabado se corre al lunes siguiente.
 16. **Obra de la planilla de construcción civil:** póngale la cuenta
     analítica del proyecto; el planificador y la planilla no dependen uno
     del otro y se encuentran por esa cuenta.
+17. **Código de familia** (Inventario ▸ Configuración ▸ Categorías de
+    producto): cuatro dígitos en cada categoría donde se crearán productos
+    desde el plan. **Alerta de precio** en Ajustes ▸ Planificación de obra ▸
+    Abastecimiento (5 % por defecto).
 
 ## 6. Reportes y libros relacionados
 
@@ -512,6 +567,11 @@ instalación pisa el acabado, el acabado se corre al lunes siguiente.
   ejecutado por etapa y tipo de recurso, contrata o producto, en pivote y
   gráfico.
 - Turnos de las cuadrillas (Planificación) con la tarea y la línea del plan.
+- Precios de compra del producto (P-16) y Compras por producto
+  (Abastecimiento ▸ …): cada línea de OC confirmada con su tipo de cambio y
+  su precio en soles, en pivote, lista y gráfico.
+- Abastecimiento de la obra (P-18): necesidad por semana, stock, OC
+  abiertas, a comprar, costo del plan, último precio y alertas.
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -554,6 +614,13 @@ No alimenta libros PLE ni archivos SUNAT.
 | «Confirme la OC de servicio … antes de aprobar» | La OC está en borrador | Que Compras la confirme |
 | «Con esta liquidación se recibirían … de … ordenados» | La semana pasa lo ordenado en la OC | Ampliar la OC (asignar de nuevo con saldo o replanificar) o corregir los avances |
 | La liquidación no pasa a «Pagada» | La factura no está pagada del todo | Registrar y conciliar el pago |
+| P-16 sin compras | No hay OC confirmadas del producto en la ventana o son de otra compañía | Ampliar la ventana o fijar el costo a mano |
+| Precio en soles raro de una compra en dólares | Falta el tipo de cambio de esa fecha (se usa el anterior) | Cargar la tasa en Contabilidad ▸ Monedas |
+| «Elija el plan en borrador» en P-16 | «Aplicar costo» solo escribe en un plan en borrador | Elegir el plan o crear una versión nueva |
+| La familia no aparece en «Crear producto» | La categoría no tiene código de familia | Ponerle sus 4 dígitos |
+| «La unidad de compra se guarda en el proveedor» | Unidad de compra distinta sin proveedor | Indicar el proveedor o usar la unidad de consumo |
+| «Compra masiva» del tablero no abre | El plan no está aprobado o en ejecución | Aprobar el plan |
+| «Sin proveedor habitual» | El producto no tiene proveedor ni compras confirmadas | Que Logística complete el producto |
 | «Tiene liquidaciones de contrata pendientes» al cerrar el plan | Hay liquidaciones sin aprobar o avances validados sin liquidar | Aprobarlas o anularlas |
 
 ## 8. Preguntas frecuentes del consultor
@@ -602,6 +669,17 @@ No alimenta libros PLE ni archivos SUNAT.
   acción programada horaria o «Actualizar control».
 - **¿El costo del personal propio va por liquidación?** No: va por hoja de
   horas, al costo hora de cada empleado.
+- **¿Por qué no se usa el costo del producto?** Puede estar mal cargado (en
+  la especificación la melamina tiene 35.91, su precio en dólares). El plan
+  toma el costo que escribe el planificador con su base.
+- **¿Qué tipo de cambio usa P-16?** El de Odoo a la fecha de aprobación de
+  la OC (`res.currency.rate`, soles por unidad de moneda), el mismo que
+  usaría la factura de esa fecha.
+- **¿«Stock» del tablero incluye lo reservado?** No: es lo libre en el
+  almacén de la obra y en el central. «En OC» es lo pedido y no recibido en
+  OC confirmadas con la analítica de la obra.
+- **¿La necesidad del tablero descuenta lo consumido?** Sí: es lo
+  planificado menos lo consumido de cada línea.
 
 ## 9. Referencias
 
