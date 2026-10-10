@@ -1,0 +1,12 @@
+flowchart TD
+  A[Plan en borrador] --> B[Aplicar costo: manual, último precio, ponderado]
+  B --> C{¿Sin etapa, sin costo o contrata sin actividad?}
+  C -- Sí --> B
+  C -- No --> D[Solicitar aprobación]
+  D --> E[Revisiones por nivel]
+  E -- Rechazo --> A
+  E -- Última aprobación --> F[Aprobado: presupuesto analítico, líneas congeladas]
+  F --> G[Nueva versión con motivo]
+  G --> H[Aprobar la nueva]
+  H --> I[La anterior: Reemplazado y presupuesto revisado]
+  F --> J[Cerrar: solo lectura]

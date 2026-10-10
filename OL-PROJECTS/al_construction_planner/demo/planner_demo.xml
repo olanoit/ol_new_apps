@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Reglas de aprobación de ejemplo del plan de recursos (OCA
+         base_tier_validation). Las revisiones se piden en orden: primero el
+         nivel de mayor secuencia. -->
+    <record id="demo_tier_plan_manager" model="tier.definition">
+        <field name="name">[DEMO] Plan · Nivel 1: jefatura de proyectos</field>
+        <field name="model_id" ref="model_construction_resource_plan"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="group_planner_manager"/>
+        <field name="definition_domain">[]</field>
+        <field name="sequence">20</field>
+        <field name="approve_sequence" eval="True"/>
+        <field name="notify_on_create" eval="True"/>
+        <field name="has_comment" eval="True"/>
+    </record>
+    <record id="demo_tier_plan_operations" model="tier.definition">
+        <field name="name">[DEMO] Plan · Nivel 2: gerencia de operaciones (más de S/ 100 000)</field>
+        <field name="model_id" ref="model_construction_resource_plan"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="al_construction_material_request.group_construction_operations_manager"/>
+        <field name="definition_domain">[('amount_total', '>', 100000)]</field>
+        <field name="sequence">10</field>
+        <field name="approve_sequence" eval="True"/>
+        <field name="notify_on_create" eval="True"/>
+    </record>
+
+</odoo>

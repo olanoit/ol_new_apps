@@ -29,6 +29,21 @@ Fase 2 (árbol del plan, P-02):
 * Selección en cascada con barra de resumen, panel de recursos acumulados de
   la selección y filtros por etapa, tipo de recurso, estado y contrata.
 
+Fase 3 (línea base, P-03):
+
+* Flujo del plan: borrador › en aprobación › aprobado › en ejecución ›
+  cerrado, con reemplazado y cancelado. «Solicitar aprobación» se bloquea
+  con líneas sin etapa, sin costo o contratas sin actividad (y las lista).
+* Aprobación por niveles con base_tier_validation (reglas por monto).
+* Al aprobar: presupuesto analítico con una línea por combinación de cuentas
+  analíticas, montos congelados en las líneas y la versión anterior pasa a
+  «Reemplazado» con su presupuesto revisado.
+* «Nueva versión» (W-09): copia todo o solo saldos, con motivo obligatorio y
+  la línea anterior enlazada.
+* «Aplicar costo» (W-12): costo que escribe el planificador con su base
+  (manual, último precio, ponderado de 3 o 6 meses) y la fecha de la base.
+* Resumen por etapa (P-03), análisis en pivote y gráfico, cierre del plan.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -38,7 +53,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '2.20261010',
+    'version': '3.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -60,6 +75,8 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'wizards/plan_generate_wizard_views.xml',
+        'wizards/plan_replan_wizard_views.xml',
+        'wizards/plan_price_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_resource_plan_views.xml',
@@ -67,6 +84,9 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',
         'views/menus.xml',
+    ],
+    'demo': [
+        'demo/planner_demo.xml',
     ],
     'assets': {
         'web.assets_backend': [

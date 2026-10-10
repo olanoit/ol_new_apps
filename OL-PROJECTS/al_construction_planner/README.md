@@ -13,8 +13,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 |---|---|---|
 | 1 | Jerarquía de la obra, tipologías, actividades y tarifas, etapa de consumo, plan de recursos y «Generar plan» (P-01 básica, P-04, P-12, P-14) | hecha |
 | 2 | Árbol del plan OWL (P-02) | hecha |
-| 2 (resto) | Resumen por etapa (P-03), aplicar costo (W-12), aprobación con tier validation, replanificación | pendiente |
-| 3-8 | Requerimientos, contratas, avances y liquidaciones, producción, ingresos, cronograma con recursos | pendiente |
+| 3 | Línea base: aprobación por niveles, presupuesto analítico, resumen por etapa (P-03), aplicar costo (W-12), nueva versión (W-09), cierre | hecha |
+| 4-8 | Asignaciones y compras, contratas, avances y liquidaciones, producción, ingresos, cronograma con recursos | pendiente |
 
 ## Modelos
 
@@ -68,6 +68,58 @@ Rendimiento (`tools/planner_tree_benchmark.py`, 20 pisos, 153 departamentos,
 | `get_selection_summary` de 10 pisos | 64.6 |
 | `get_selection_summary` de la obra | 39.5 |
 
+## Línea base (fase 3, P-03)
+
+Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
+`closed`, más `replaced` y `cancel`.
+
+- **Solicitar aprobación** (`action_request_approval`): bloquea si hay
+  líneas sin etapa, sin costo, contratas sin actividad o, con la obra sin
+  cuenta analítica, líneas sin distribución (`_get_approval_issues`, mensaje
+  con hasta 10 líneas por motivo). Pide las revisiones de
+  `base_tier_validation` (`_state_from = draft, to_approve`, `_state_to =
+  approved`); sin reglas que apliquen, aprueba directamente. El rechazo
+  devuelve a borrador; «Volver a borrador» desde «En aprobación» reinicia las
+  revisiones. Reglas en **Configuración ▸ Reglas de aprobación**; ejemplo en
+  `demo/planner_demo.xml` (jefatura, y gerencia de operaciones sobre
+  S/ 100 000).
+- **Última aprobación** (`_write_approved`): crea el `budget.analytic`
+  (gasto, fechas del plan, `parent_id` = presupuesto de la versión anterior) y
+  lo confirma; congela `amount_budgeted` en las líneas; la versión vigente
+  anterior pasa a «Reemplazado» y su presupuesto a «Revisado» (archivado, el
+  mecanismo de revisiones de `account_budget`, que no tiene `active`). El
+  presupuesto se crea con `sudo()`: quien aprueba no suele tener permisos de
+  contabilidad.
+- **Mapeo analítico** (`_get_budget_line_values`): cada clave de la
+  distribución de la línea («id1,id2,…»; vacía = cuenta de la obra al 100 %)
+  se reparte en sus cuentas y cada cuenta va a la columna de su plan raíz
+  (`account.analytic.plan._column_name()`): `account_id` para el plan de
+  proyectos y `x_plan<N>_id` para los demás. Una línea de presupuesto por
+  combinación; el redondeo se ajusta en la combinación mayor para que el
+  total cuadre con el plan. En `ol_pe_v19`: `account_id` = Proyecto,
+  `x_plan6_id` DEMO TC Centros, `x_plan31_id` DEMO RQO Disciplina,
+  `x_plan32_id` DEMO RQO Partida, `x_plan141_id` DEMO Centros de costo.
+- **Ganchos** para las fases 4 a 6: `_transfer_to_new_version(new_plan)`
+  (asignaciones abiertas y avances no liquidados a las líneas nuevas por
+  `previous_line_id`), `line._get_line_execution()` (comprometido y real por
+  línea), `line._get_consumed_qty()` (base de «solo saldos») y
+  `_mark_in_progress()` (primer documento generado).
+- **Nueva versión** (`construction.plan.replan.wizard`, W-09): motivo
+  obligatorio, «Copiar todo» o «Solo saldos»; líneas con `source = replan` y
+  `previous_line_id`. La vigente sigue en uso hasta aprobar la nueva.
+- **Aplicar costo** (`construction.plan.price.wizard`, W-12): desde el plan o
+  desde la lista de líneas (un producto). Sugiere el último precio y el
+  ponderado de 3 y 6 meses de las compras confirmadas (unidad del producto,
+  moneda de la compañía al tipo de cambio de cada compra); escribe
+  `price_unit_planned`, `price_basis` y `price_basis_date` en las líneas en
+  borrador.
+- **Resumen por etapa** (pestaña del plan): material, contrata (incluye
+  personal propio), planificado, presupuesto (en una versión en preparación,
+  el de la vigente), diferencia, comprometido, real y saldo. «Sin etapa» en
+  rojo. **Análisis del plan**: pivote y gráfico de las líneas.
+- **Cerrar** (administrador): solo lectura y presupuesto «Hecho». Un plan
+  aprobado no se elimina.
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -91,7 +143,16 @@ Rendimiento (`tools/planner_tree_benchmark.py`, 20 pisos, 153 departamentos,
 Piso 05 (Dptos 501 a 508): 66 módulos, 41.33 ML, S/ 6,642.91 de material,
 S/ 2,301.53 de contrata, S/ 8,944.44 en total; el script lo comprueba.
 
-Tests: `--test-tags /al_construction_planner` (30 tests, con el tour
+Fase 3 (después del anterior): reglas de aprobación, tres compras de la
+melamina blanca, la versión 1 aprobada con su presupuesto y la versión 2 en
+borrador con el costo ponderado aplicado y una línea sin etapa ni costo.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_baseline.py
+```
+
+Tests: `--test-tags /al_construction_planner` (39 tests, con el tour
 `al_construction_planner_plan_tree` del árbol).
 
 Rendimiento del árbol con volumen tipo MOMEN (deshace todo al terminar):

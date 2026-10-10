@@ -58,6 +58,11 @@ msgid "Bill of Material Line"
 msgstr "Línea de lista de materiales"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__can_review
+msgid "Can Review"
+msgstr "Puede revisar"
+
+#. module: al_construction_planner
 #: model:ir.model,website_form_label:al_construction_planner.model_project_task
 msgid "Create a Task"
 msgstr "Crear una tarea"
@@ -66,6 +71,8 @@ msgstr "Crear una tarea"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_price_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_replan_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_uid
@@ -78,6 +85,8 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_price_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_replan_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_date
@@ -90,6 +99,8 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_price_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_replan_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__display_name
@@ -98,6 +109,7 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_mrp_bom_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_project_project__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_project_task__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_tier_definition__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -105,6 +117,11 @@ msgstr "Nombre en pantalla"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__distribution_analytic_account_ids
 msgid "Distribution Analytic Account"
 msgstr "Cuenta analítica de distribución"
+
+#. module: al_construction_planner
+#: code:addons/al_construction_planner/static/src/plan_tree/plan_tree.xml:0
+msgid "Driver"
+msgstr "Driver"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_follower_ids
@@ -124,10 +141,20 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__has_comment
+msgid "Has Comment"
+msgstr "Tiene comentario"
+
+#. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__has_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__has_message
 msgid "Has Message"
 msgstr "Tiene un mensaje"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__hide_reviews
+msgid "Hide Reviews"
+msgstr "Ocultar revisiones"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_exception_icon
@@ -154,6 +181,11 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__has_comment
+msgid "If set, Allow the reviewer to leave a comment on the review."
+msgstr "Si se marca, el revisor puede dejar un comentario en la revisión."
+
+#. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_is_follower
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_is_follower
 msgid "Is Follower"
@@ -163,6 +195,8 @@ msgstr "Es un seguidor"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_price_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_replan_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_uid
@@ -175,6 +209,8 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_generate_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_price_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_replan_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_date
@@ -201,6 +237,11 @@ msgid "My Activity Deadline"
 msgstr "Fecha límite de mi actividad"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__need_validation
+msgid "Need Validation"
+msgstr "Necesita validación"
+
+#. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
 msgstr "Siguiente evento en el calendario de actividades"
@@ -219,6 +260,11 @@ msgstr "Resumen de la siguiente actividad"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_type_id
 msgid "Next Activity Type"
 msgstr "Siguiente tipo de actividad"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__next_review
+msgid "Next Review"
+msgstr "Siguiente revisión"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_needaction_counter
@@ -256,15 +302,30 @@ msgid "Ratings"
 msgstr "Calificaciones"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__rejected_message
+msgid "Rejected Message"
+msgstr "Mensaje de rechazo"
+
+#. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario responsable"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__reviewer_ids
+msgid "Reviewers"
+msgstr "Revisores"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_has_sms_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Error en el envío del SMS"
+
+#. module: al_construction_planner
+#: code:addons/al_construction_planner/static/src/plan_tree/plan_tree.xml:0
+msgid "Soles"
+msgstr "Soles"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_state
@@ -283,6 +344,16 @@ msgstr ""
 #: model:ir.model,name:al_construction_planner.model_project_task
 msgid "Task"
 msgstr "Tarea"
+
+#. module: al_construction_planner
+#: model:ir.model,name:al_construction_planner.model_tier_definition
+msgid "Tier Definition"
+msgstr "Definición de nivel"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__to_validate_message
+msgid "To Validate Message"
+msgstr "Mensaje por validar"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_exception_decoration
@@ -313,6 +384,21 @@ msgstr ""
 "        !!! Define que la prioridad de la tarea es urgente\n"
 "\n"
 "        Asegúrate de utilizar el formato y el orden correcto, por ejemplo: Realizar mejoras a la pantalla de configuración 5h #función #v16 @Mitchell !"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__validated_message
+msgid "Validated Message"
+msgstr "Mensaje de validación"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__validation_status
+msgid "Validation Status"
+msgstr "Estado de validación"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__review_ids
+msgid "Validations"
+msgstr "Validaciones"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__website_message_ids

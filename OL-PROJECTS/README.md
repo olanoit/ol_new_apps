@@ -30,7 +30,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_material_request](al_construction_material_request/) | 9.20261009 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](al_construction_planner/) | 2.20261010 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
+[al_construction_planner](al_construction_planner/) | 3.20261010 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
 [al_project_gantt_ai](al_project_gantt_ai/) | 6.20261010 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](al_project_gantt_backend/) | 14.20261009 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](al_project_gantt_base/) | 16.20261008 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).

@@ -5,11 +5,12 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
-  la generación del plan y el árbol de recursos con selección en cascada.
+  la generación del plan, el árbol de recursos con selección en cascada y la
+  línea base aprobada con su presupuesto analítico.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -41,6 +42,22 @@ destacados:
     texto: >-
       Obra › piso › departamento › ambiente › módulo cargado por niveles.
       Marque un piso o unos módulos y vea al lado todo lo que consumen.
+  - icono: "✔"
+    titulo: Aprobación por niveles
+    texto: >-
+      «Solicitar aprobación» no deja pasar líneas sin etapa ni sin costo, y
+      las lista. Las revisiones por monto usan las reglas de aprobación de la
+      suite.
+  - icono: "▤"
+    titulo: Presupuesto al aprobar
+    texto: >-
+      La aprobación crea el presupuesto analítico, una línea por combinación
+      de cuentas de la obra, y congela los montos del plan.
+  - icono: "⎘"
+    titulo: Versiones con motivo
+    texto: >-
+      «Nueva versión» copia todo o solo saldos. La vigente sigue en uso hasta
+      aprobar la nueva; entonces pasa a «Reemplazado».
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -103,6 +120,25 @@ flujos:
         C --> D[Barra: módulos, ML, montos]
         C --> E[Panel: recursos por actividad, producto o rol]
         D --> F[Compra, requerimiento, contrata, avance…]
+  - id: linea_base
+    titulo: Línea base y versiones
+    texto: >-
+      El planificador aplica los costos con su base, pide la aprobación y,
+      con la última revisión, el plan queda aprobado con su presupuesto. Para
+      cambiarlo se crea una versión nueva.
+    mermaid: |
+      flowchart TD
+        A[Plan en borrador] --> B[Aplicar costo: manual, último precio, ponderado]
+        B --> C{¿Sin etapa, sin costo o contrata sin actividad?}
+        C -- Sí --> B
+        C -- No --> D[Solicitar aprobación]
+        D --> E[Revisiones por nivel]
+        E -- Rechazo --> A
+        E -- Última aprobación --> F[Aprobado: presupuesto analítico, líneas congeladas]
+        F --> G[Nueva versión con motivo]
+        G --> H[Aprobar la nueva]
+        H --> I[La anterior: Reemplazado y presupuesto revisado]
+        F --> J[Cerrar: solo lectura]
 
 pasos_intro: >-
   El árbol de recursos con el piso 05 de demostración («DEMO PLAN
@@ -131,6 +167,57 @@ pasos:
       Cambia los montos por las cantidades de driver: material, driver de
       las contratas y total. «Avance» muestra el estado de cada módulo.
     imagen: screenshots/03-medida-cantidad.png
+  - seccion: Línea base
+    texto: >-
+      La versión 1 del piso 05 aprobada y la versión 2 en preparación
+      (`tools/planner_demo_baseline.py`).
+  - titulo: Resumen por etapa
+    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos ▸ plan ▸ Resumen por etapa
+    texto: >-
+      Material, contrata, planificado, presupuesto, diferencia, comprometido,
+      real y saldo por etapa. En la versión aprobada el presupuesto es igual
+      a lo planificado: S/ 8,944.44.
+    puntos:
+      - "Botones «Presupuesto» y «Versiones» arriba; «Nueva versión» y «Cerrar» en la cabecera."
+      - "Comprometido y real se llenan con las asignaciones, contratas y producción."
+    imagen: screenshots/04-resumen-etapa.png
+  - titulo: Presupuesto analítico
+    ruta: Plan ▸ Presupuesto
+    texto: >-
+      Lo crea la aprobación: una línea por combinación de cuentas analíticas
+      de las líneas del plan (aquí, la cuenta de la obra).
+    imagen: screenshots/05-presupuesto.png
+  - titulo: Nueva versión
+    ruta: Plan aprobado ▸ Nueva versión
+    texto: >-
+      Motivo obligatorio; copia todo o solo saldos. La versión nueva queda en
+      borrador y la vigente se sigue usando.
+    imagen: screenshots/06-nueva-version.png
+  - titulo: Versión en preparación
+    ruta: Plan v2 ▸ Resumen por etapa
+    texto: >-
+      Compara contra el presupuesto vigente: la melamina blanca a costo
+      ponderado baja Producción en S/ 819.06. La rejilla de ventilación,
+      sin etapa, aparece en rojo.
+    imagen: screenshots/07-version-borrador.png
+  - titulo: Aprobación bloqueada
+    ruta: Plan v2 ▸ Solicitar aprobación
+    texto: >-
+      El mensaje lista las líneas sin etapa y sin costo para corregirlas.
+    imagen: screenshots/08-aprobacion-bloqueada.png
+  - titulo: Aplicar costo
+    ruta: Plan ▸ Aplicar costo
+    texto: >-
+      Sugiere el último precio y los ponderados de 3 y 6 meses de las compras
+      confirmadas; el planificador escribe el costo y la base queda en las
+      líneas.
+    imagen: screenshots/09-aplicar-costo.png
+  - titulo: Análisis del plan
+    ruta: Planificación de obra ▸ Obras ▸ Análisis del plan
+    texto: >-
+      Pivote y gráfico de las líneas de los planes vigentes por etapa y tipo
+      de recurso.
+    imagen: screenshots/10-analisis.png
 
 campos_intro: >-
   Los campos de la fase 1 en los modelos nuevos y en los que el módulo amplía.
@@ -167,6 +254,9 @@ campos:
       - [Política de exceso, "Avisar, pedir aprobación o bloquear.", Pedir aprobación, Se aplica en la fase de requerimientos]
       - [Anticipación, "Días antes del inicio de la tarea por tipo de recurso.", "7 / 3 / 7", Fecha de necesidad]
       - ["Montos por tipo", "Material, servicio, contrata, personal propio, producción.", Calculado, "—"]
+      - [Presupuesto analítico, Lo crea la aprobación., "—", "La versión anterior queda «Revisado»"]
+      - ["Presupuesto, comprometido, real, saldo", "Del plan aprobado y de la ejecución.", Calculado, Comprometido y real desde la fase 4]
+      - [Motivo de la versión, Por qué se replanifica., "—", Obligatorio en una versión nueva]
   - grupo: Línea del plan
     ruta: Plan ▸ Líneas
     campos:
@@ -174,6 +264,9 @@ campos:
       - ["Tipo de recurso y etapa", "—", "—", "Sin etapa no se aprueba"]
       - ["Producto / actividad", "—", "—", "La contrata y el personal propio necesitan actividad"]
       - ["Cantidad, costo unitario, monto", "—", "Contrata: tarifa vigente; material: vacío", "Editable solo en borrador"]
+      - ["Base del costo y su fecha", Lo que miró el planificador., "—", La escribe «Aplicar costo»]
+      - [Presupuesto, Monto congelado al aprobar., "—", Solo lectura]
+      - [Línea anterior, La de la versión previa., "—", La pone «Nueva versión»]
       - [Fecha de necesidad, Inicio de la tarea menos la anticipación., Calculado, Editable]
   - grupo: Lista de materiales
     ruta: Fabricación ▸ Lista de materiales ▸ Componentes
@@ -202,6 +295,14 @@ funcionalidades:
       - "Selección en cascada con estado parcial y barra de resumen."
       - "Panel de recursos acumulados de la selección con su contrata."
       - "Filtros por etapa, tipo de recurso, estado del módulo y contrata; medida en soles, cantidad o avance."
+  - grupo: Línea base
+    items:
+      - "«Solicitar aprobación» bloqueada con líneas sin etapa, sin costo o contratas sin actividad, con la lista."
+      - "Aprobación por niveles con reglas por monto (OCA base_tier_validation)."
+      - "Presupuesto analítico por combinación de cuentas al aprobar; líneas congeladas."
+      - "Nueva versión con motivo, copiando todo o solo saldos; la anterior pasa a «Reemplazado»."
+      - "Aplicar costo con último precio y ponderados de 3 y 6 meses de las compras."
+      - "Resumen por etapa, análisis en pivote y gráfico, y cierre del plan."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -243,6 +344,7 @@ configuracion:
   - "Cree las **tipologías** de la obra con sus módulos, actividades y lista de materiales, indicando la **etapa de consumo** de cada componente."
   - "Cree el árbol: pisos, departamentos y ambientes con su tipología."
   - "Cree el **plan de recursos** de la obra y pulse **Generar plan**."
+  - "Defina las **reglas de aprobación** del plan en **Planificación de obra ▸ Configuración ▸ Reglas de aprobación**."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
@@ -258,12 +360,23 @@ faq:
     respuesta: >-
       No se duplican: se usan los existentes por código. Los de la plantilla
       que no están en el ambiente se avisan y no se generan.
+  - pregunta: "¿Qué pasa con el presupuesto de la versión anterior?"
+    respuesta: >-
+      Al aprobar la versión nueva pasa a «Revisado» y queda como presupuesto
+      padre del nuevo: la historia de revisiones queda en Contabilidad.
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 3.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Línea base (fase 3, P-03): flujo del plan con «Solicitar aprobación», aprobación por niveles (reglas de aprobación), rechazo a borrador y cierre."
+      - "La aprobación crea el presupuesto analítico (una línea por combinación de cuentas), congela los montos y deja la versión anterior en «Reemplazado»."
+      - "Asistentes «Aplicar costo» (último precio, ponderado de 3 o 6 meses o manual, con su fecha) y «Nueva versión» (todo o solo saldos, con motivo)."
+      - "Pestaña «Resumen por etapa» y menú «Análisis del plan» con pivote y gráfico."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

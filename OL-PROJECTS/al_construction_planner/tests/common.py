@@ -20,6 +20,11 @@ class PlannerCommon(TransactionCase):
         cls.reporter = new_test_user(
             cls.env, 'plan_capataz', groups=f'{grp}progress', name='Capataz (test)')
 
+        # Sin reglas de aprobación del plan (p. ej. las demo): cada test que
+        # las necesita crea las suyas.
+        cls.env['tier.definition'].search(
+            [('model', '=', 'construction.resource.plan')]).active = False
+
         cls.project = cls.env['project.project'].create({
             'name': 'Obra MOMEN (test)', 'is_construction_site': True})
         cls.contractor = cls.env['res.partner'].create({'name': 'Armado Gonza (test)'})

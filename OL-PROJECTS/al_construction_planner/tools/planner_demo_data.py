@@ -206,15 +206,17 @@ for n, code in enumerate(TYPOLOGIES, 1):
 
 print('=== Plan y generación (W-01) ===')
 Plan = env['construction.resource.plan']
-plan = Plan.search([('project_id', '=', project.id), ('state', '=', 'draft')], limit=1) \
+# La versión 1: si ya se aprobó (planner_demo_baseline.py), no se regenera.
+plan = Plan.search([('project_id', '=', project.id), ('version', '=', 1)], limit=1) \
     or Plan.create({'project_id': project.id, 'date_start': '2026-10-12',
                     'date_end': '2027-01-29'})
-wizard = env['construction.plan.generate.wizard'].create({'plan_id': plan.id})
-wizard.action_generate()
-# W-12 (fase 2) simulado: el planificador aplica el costo del maestro.
-for line in plan.line_ids.filtered(lambda l: l.resource_type == 'material'):
-    key = next(k for k, p in prod.items() if p == line.product_id)
-    line.write({'price_unit_planned': cost[key], 'price_basis': 'Costo del maestro (demo)'})
+if plan.state == 'draft':
+    wizard = env['construction.plan.generate.wizard'].create({'plan_id': plan.id})
+    wizard.action_generate()
+    # W-12 simulado: el planificador aplica el costo del maestro.
+    for line in plan.line_ids.filtered(lambda l: l.resource_type == 'material'):
+        key = next(k for k, p in prod.items() if p == line.product_id)
+        line.write({'price_unit_planned': cost[key], 'price_basis': 'Costo del maestro (demo)'})
 
 env.flush_all()
 print('Plan', plan.display_name, 'líneas', plan.line_count)

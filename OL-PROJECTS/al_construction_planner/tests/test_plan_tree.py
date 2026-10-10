@@ -122,7 +122,9 @@ class TestPlanTree(TransactionCase):
             lambda l: l.apartment_task_id == self.apt501 and l.resource_type == 'contract'
             and l.stage == 'assembly')
         self.assertTrue(lines)
-        lines.write({'partner_id': self.gonza.id})
+        # La asignación de contrata (fase 5) escribe sobre el plan aprobado
+        # (el demo puede estarlo, planner_demo_baseline.py): proceso interno.
+        lines.with_context(construction_plan_force=True).write({'partner_id': self.gonza.id})
         assigned = round(sum(lines.mapped('amount_planned')), 2)
         self.assertIn([self.gonza.id, self.gonza.display_name], self.plan.get_tree_partners())
         floor = self._node('p', 'Piso 05', {'partner_ids': [self.gonza.id]})

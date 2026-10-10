@@ -167,13 +167,31 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | Fase | Contenido | Pantallas |
 |---|---|---|
 | **1 (hecha)** | Jerarquía, catálogo, plan y generación | P-01 básica, P-04, P-12, P-14 |
-| 2 (árbol hecho) | **Hecho:** árbol del plan OWL con selección en cascada y carga por niveles (P-02). **Pendiente:** resumen por etapa; W-12 aplicar costo (última compra, promedio ponderado, maestro); aprobación con tier validation y bloqueo por líneas sin etapa/costo; replanificación (copia a versión nueva, `previous_line_id`) | P-02, P-03, W-12 |
+| 2 (hecha) | Árbol del plan OWL con selección en cascada y carga por niveles | P-02 |
+| Línea base (hecha; fase 3 de la especificación) | Aprobación con tier validation y bloqueo por líneas sin etapa/costo/actividad; presupuesto analítico por combinación de cuentas (ver §6.1); resumen por etapa; W-12 aplicar costo (manual, último precio, ponderado 3 y 6 meses); W-09 nueva versión (todo o solo saldos, `previous_line_id`); cierre | P-03, W-09, W-12 |
 | 3 | Requerimientos desde la selección: columnas planificado/pedido/saldo y control de exceso en `_check_ready_to_submit` del requerimiento | P-07 |
 | 4 | Contratas: asignar contrata (OC de servicio por contrata y obra), avances por driver con foto, liquidación semanal con retención | P-05, P-06, P-08 |
 | 5 | Personal propio: turnos de planificación por rol, horas; enlace con la obra de planilla | P-09 |
 | 6 | Producción: OF por ambiente desde la BOM de la tipología, estados del módulo | P-10 |
 | 7 | Presupuesto analítico, OV por partida, valorizaciones e ingreso devengado, flujo | P-11, P-13 |
 | 8 | Cronograma con recursos: heredar `al.gantt.data.get_data`, panel y carga semanal OWL | P-15 |
+
+### 6.1 Línea base: presupuesto y ganchos
+
+- Presupuesto: `construction.resource.plan._get_budget_line_values()`. Cada
+  clave de `analytic_distribution` («id1,id2») se reparte en sus cuentas y
+  cada cuenta va a `account.analytic.plan._column_name()` de su plan raíz
+  (`account_id` = plan de proyectos; `x_plan<N>_id` los demás). Una
+  `budget.line` por combinación; distribución vacía = cuenta de la obra al
+  100 %. En `ol_pe_v19`: `x_plan6_id` DEMO TC Centros, `x_plan31_id` DEMO RQO
+  Disciplina, `x_plan32_id` DEMO RQO Partida, `x_plan141_id` DEMO Centros de
+  costo.
+- Versión anterior: su `budget.analytic` pasa a `revised` (padre del nuevo),
+  porque `budget.analytic` no tiene `active`.
+- Ganchos de las fases 4-6: `_transfer_to_new_version(new_plan)`,
+  `line._get_line_execution()` (comprometido, real),
+  `line._get_consumed_qty()` (solo saldos), `_mark_in_progress()` y
+  `action_close()` (control de asignaciones abiertas y liquidaciones).
 
 ## 7. Riesgos y pendientes
 

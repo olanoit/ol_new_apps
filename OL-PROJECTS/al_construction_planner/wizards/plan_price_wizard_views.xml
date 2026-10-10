@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-12 · Aplicar costo -->
+    <record id="construction_plan_price_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.price.wizard.form</field>
+        <field name="model">construction.plan.price.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Aplicar costo">
+                <field name="plan_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="allowed_product_ids" invisible="1"/>
+                <group>
+                    <group string="Producto">
+                        <field name="product_id" options="{'no_create': True}"/>
+                        <field name="price_current"/>
+                    </group>
+                    <group string="Compras confirmadas">
+                        <field name="price_last"/>
+                        <field name="price_weighted_3m"/>
+                        <field name="price_weighted_6m"/>
+                        <field name="purchase_count"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Costo del plan">
+                        <field name="basis" widget="radio"/>
+                        <field name="basis_date"/>
+                        <field name="price_unit" class="fw-bold"/>
+                    </group>
+                </group>
+                <field name="line_ids" options="{'no_create': True}">
+                    <list>
+                        <field name="task_id"/>
+                        <field name="stage"/>
+                        <field name="qty_planned"/>
+                        <field name="product_uom_id"/>
+                        <field name="price_unit_planned"/>
+                        <field name="price_basis"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar costo"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

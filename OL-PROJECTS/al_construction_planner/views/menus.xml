@@ -15,6 +15,9 @@
         <menuitem id="menu_planner_lines" name="Recursos planificados"
                   action="action_construction_resource_plan_line" sequence="30"
                   groups="group_planner_planner"/>
+        <menuitem id="menu_planner_analysis" name="Análisis del plan"
+                  action="action_construction_resource_plan_line_analysis" sequence="35"
+                  groups="group_planner_planner"/>
         <menuitem id="menu_planner_sites" name="Obras"
                   action="al_construction_material_request.action_construction_sites" sequence="40"
                   groups="group_planner_planner"/>
@@ -28,6 +31,9 @@
                   action="action_construction_labor_activity" sequence="20"/>
         <menuitem id="menu_planner_rates" name="Tarifas de contrata"
                   action="action_construction_labor_rate" sequence="30"
+                  groups="group_planner_manager"/>
+        <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"
+                  action="action_construction_plan_tier_definition" sequence="40"
                   groups="group_planner_manager"/>
     </menuitem>
 

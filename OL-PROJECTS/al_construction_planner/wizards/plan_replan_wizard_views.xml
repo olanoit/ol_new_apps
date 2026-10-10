@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-09 · Replanificar -->
+    <record id="construction_plan_replan_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.replan.wizard.form</field>
+        <field name="model">construction.plan.replan.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Nueva versión del plan">
+                <div class="alert alert-info" role="status">
+                    La versión nueva queda en borrador. La vigente se sigue usando hasta que se
+                    apruebe la nueva; entonces pasa a «Reemplazado» y su presupuesto se archiva.
+                </div>
+                <group>
+                    <field name="plan_id"/>
+                    <field name="mode" widget="radio"/>
+                    <field name="reason" placeholder="Por qué se replanifica (cambio de alcance, de precios, de tipologías…)"/>
+                </group>
+                <footer>
+                    <button name="action_create_version" type="object" string="Crear versión"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

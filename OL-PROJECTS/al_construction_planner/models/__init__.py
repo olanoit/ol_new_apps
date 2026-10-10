@@ -7,3 +7,4 @@ from . import project_project
 from . import project_task
 from . import mrp_bom_line
 from . import construction_plan_tree
+from . import tier_definition
