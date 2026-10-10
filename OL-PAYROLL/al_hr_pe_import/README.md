@@ -1,5 +1,7 @@
 # Planillas Perú — Importadores Excel
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Cargas masivas desde Excel con plantilla descargable, proceso por lotes,
 progreso en vivo y un informe de errores que dice fila por fila qué
 corregir.

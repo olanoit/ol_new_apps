@@ -1,5 +1,7 @@
 # al_project_gantt_website — Gantt de Proyectos (página del sitio web)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Publica el mismo diagrama en `/gantt`, dentro del sitio web, para consultarlo
 fuera del backend (pantallas de obra, enlaces internos, tableros).
 

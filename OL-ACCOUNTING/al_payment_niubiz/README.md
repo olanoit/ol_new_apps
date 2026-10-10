@@ -1,5 +1,7 @@
 # Pagos con Niubiz (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo técnico `al_payment_niubiz`. Integra el **Checkout All-In-One de
 Niubiz (VisaNet Perú)** como proveedor de pago de Odoo 19.
 

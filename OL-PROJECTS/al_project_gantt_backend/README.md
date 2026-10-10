@@ -1,5 +1,7 @@
 # al_project_gantt_backend — Gantt de Proyectos (interfaz de backend)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Aplicación propia dentro del webclient de Odoo: menú raíz **Gantt** →
 *Diagrama de Gantt*, que abre una `ir.actions.client` a pantalla completa con el
 diagrama interactivo.

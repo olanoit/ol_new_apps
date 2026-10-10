@@ -1,5 +1,7 @@
 # PE - Kardex SUNAT (Formato 13.1 / 12.1)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo para Odoo 19 Enterprise que genera el **Registro de Inventario
 Permanente** de la localización peruana en formato imprimible SUNAT:
 

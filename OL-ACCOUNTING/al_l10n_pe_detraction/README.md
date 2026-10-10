@@ -1,5 +1,7 @@
 # PE - Detracciones SPOT (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Capa funcional de **detracciones** (Sistema de Pago de Obligaciones
 Tributarias) sobre la localización peruana de Odoo 19.
 **Guía funcional para consultores:** [`docs/detracciones.md`](docs/detracciones.md). Complementa el

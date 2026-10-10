@@ -1,5 +1,7 @@
 # Requerimiento de materiales de obra (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 El personal de obra pide materiales para su obra. El requerimiento se aprueba
 por niveles (`base_tier_validation`, OCA). Logística lo procesa: lo disponible
 en el almacén central sale por transferencia interna a `OBRAS/<obra>` y el

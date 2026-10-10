@@ -1,5 +1,7 @@
 # Búsqueda RUC/DNI desde SUNAT — configurable por datos
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Consulta y autocompletado de datos de RUC/DNI peruanos en el contacto, con una
 arquitectura **config-driven**: las APIs se configuran como registros, no como
 código. Agregar un proveedor nuevo es cuestión de crear una conexión y su mapeo

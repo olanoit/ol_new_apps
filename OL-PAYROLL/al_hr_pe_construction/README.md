@@ -1,5 +1,7 @@
 # Planillas Perú — Construcción civil
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Régimen especial de construcción civil peruano para Odoo 19: jornal
 diario por convención colectiva, periodicidad semanal, beneficios
 sociales pagados en cada planilla y CONAFOVICER.

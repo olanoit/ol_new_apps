@@ -1,5 +1,7 @@
 # Pagos con Culqi (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo técnico `al_payment_culqi`. Agrega **Culqi** como proveedor de pago de
 Odoo 19, construido desde su documentación oficial: API v2, Checkout Custom y
 Culqi 3DS.

@@ -1,5 +1,7 @@
 # PE - Comprobantes Electrónicos (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Campos y detalle tributario del comprobante electrónico (IGV/ISC/IVAP/
 ICBPER, exoneradas/inafectas, vínculo con la orden de venta) y su
 representación impresa (A4 y ticket 80mm) reutilizando el core

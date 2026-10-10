@@ -1,5 +1,7 @@
 # al_project_gantt_base — Gantt de Proyectos (módulo base)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo **sin interfaz**: concentra la lógica, los datos y la seguridad que
 comparten las dos interfaces de la suite.
 

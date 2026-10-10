@@ -1,5 +1,7 @@
 # Planillas Perú — Asistencia y turnos
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Turnos peruanos sobre la planificación nativa, ciclos atípicos con
 validación legal, monitor de asistencia, fotocheck y el tareaje que
 convierte las marcaciones en conceptos de la boleta.

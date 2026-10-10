@@ -1,5 +1,7 @@
 # PE - Libros Electrónicos PLE (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Completa los libros electrónicos PLE de SUNAT que la localización oficial
 de Odoo 19 (CE + EE) no genera. Plan completo:
 [`docs/ple/PLAN_MODULO_al_l10n_pe_ple.md`](../../docs/ple/PLAN_MODULO_al_l10n_pe_ple.md) ·

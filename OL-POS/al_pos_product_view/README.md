@@ -1,5 +1,7 @@
 # TPV - Catálogo de productos: filtro por etiqueta y vista lista (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo `al_pos_product_view` para Odoo 19. Unifica en un solo módulo dos
 funcionalidades del catálogo de productos del TPV, originalmente entregadas
 como los módulos `mblz_pos_filter_products_by_active_ingredient` y

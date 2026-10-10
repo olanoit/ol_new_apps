@@ -1,5 +1,7 @@
 # Servidor MCP para Odoo — Guía del usuario
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 > **Versión:** 5.20261005 · **Licencia:** OPL-1 · **Autor:** CRISTÓBAL OCH &lt;olanoit@gmail.com&gt;
 
 Convierte Odoo en un servidor de herramientas listo para IA. Conecta Claude, ChatGPT, Gemini, Cursor, n8n, LangChain y cualquier cliente compatible con MCP a datos en vivo de Odoo — con gobernanza OAuth 2.0, registros de auditoría, herramientas de BI, páginas de portal, trabajos asíncronos y generación de módulos impulsada por IA.

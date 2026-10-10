@@ -1,9 +1,11 @@
 # PE - Reporte de Guía de Remisión Electrónica (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Representación impresa propia de la Guía de Remisión Electrónica
 Remitente (SUNAT) para `stock.picking`, independiente del módulo de
 reportes de factura.
-**Guía funcional:** [`docs/guia_remision.md`](docs/guia_remision.md).
+**Notas técnicas de la migración:** [`docs/guia_remision.md`](docs/guia_remision.md).
 
 ## Qué hace
 

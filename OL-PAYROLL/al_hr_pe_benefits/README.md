@@ -1,5 +1,7 @@
 # Planillas Perú — Beneficios sociales
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 CTS, gratificaciones, renta de 5ta, liquidación de cese, provisiones,
 subsidios, utilidades, vacaciones, préstamos y quincena, sobre un único
 motor de remuneración computable.

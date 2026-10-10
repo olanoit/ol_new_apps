@@ -1,5 +1,7 @@
 # PE - Medios de pago SUNAT (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Catálogo de medios de pago de SUNAT y datos de la operación bancaria en el
 pago, para sustentar la bancarización y alimentar el comprobante
 electrónico.

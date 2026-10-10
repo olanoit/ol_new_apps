@@ -1,5 +1,7 @@
 # Planillas Perú — Documentos y bancos
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 La boleta legal peruana con un solo botón de imprimir, los certificados,
 los contratos y los archivos de pago masivo de los cinco bancos.
 

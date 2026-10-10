@@ -1,5 +1,7 @@
 # al_l10n_pe_sire — SIRE (RVIE / RCE) SUNAT
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Conciliación con el **Sistema Integrado de Registros Electrónicos** de SUNAT:
 descarga la propuesta del **RVIE** (ventas) y del **RCE** (compras) por API o
 carga manual, la compara contra los comprobantes de Odoo y genera el TXT de

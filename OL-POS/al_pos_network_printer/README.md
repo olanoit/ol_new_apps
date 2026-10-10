@@ -1,5 +1,7 @@
 # TPV - Impresora de red ESC/POS (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo técnico `al_pos_network_printer`. 
 Impresión de tickets y comandas del **Punto de Venta de Odoo 19** en impresoras térmicas
 **ESC/POS genéricas conectadas por red** (Xprinter, Zjiang, Gainscha y similares), sin necesidad

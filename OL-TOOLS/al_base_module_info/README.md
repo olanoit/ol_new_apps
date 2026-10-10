@@ -1,5 +1,7 @@
 # Aplicaciones - Ficha completa del módulo (AL)
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo `al_base_module_info` para Odoo 19.
 
 En **Aplicaciones**, Odoo sanea la descripción de cada módulo y descarta sus

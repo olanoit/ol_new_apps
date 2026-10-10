@@ -1,5 +1,7 @@
 # PE - Base Inventario (AL) — Odoo 19
 
+Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+
 Módulo **base y liviano** para las transferencias de inventario de la
 localización peruana. Añade al formulario de la transferencia la página
 **Logística PE**, el único lugar donde la suite muestra los datos peruanos,
