@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Existencias: filtro de los bienes de terceros (propietario distinto de
+         una compañía de la base). -->
+    <record id="quant_search_view_third_party" model="ir.ui.view">
+        <field name="name">stock.quant.search.third.party.pe</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='negative']" position="after">
+                <separator/>
+                <filter name="l10n_pe_third_party" string="De terceros"
+                        domain="[('owner_id', '!=', False), ('owner_id.l10n_pe_is_company_partner', '=', False)]"/>
+                <filter name="l10n_pe_own" string="Propios"
+                        domain="['|', ('owner_id', '=', False), ('owner_id.l10n_pe_is_company_partner', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

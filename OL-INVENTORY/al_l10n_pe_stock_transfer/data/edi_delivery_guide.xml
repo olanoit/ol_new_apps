@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Motivo 04 (traslado entre establecimientos de la misma empresa): el
+         destinatario es el propio remitente y partida y llegada llevan el
+         código de establecimiento anexo con el RUC del remitente. Con los
+         demás motivos el XML queda como el nativo. -->
+    <template id="sunat_guiaremision_internal" inherit_id="l10n_pe_edi_stock.sunat_guiaremision">
+        <xpath expr="//*[local-name()='DeliveryCustomerParty']" position="replace">
+            <cac:DeliveryCustomerParty xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                                       xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+                <cac:Party>
+                    <cac:PartyIdentification>
+                        <cbc:ID t-att-schemeID="l10n_pe_delivery_customer.l10n_latam_identification_type_id.l10n_pe_vat_code"
+                            schemeName="Documento de Identidad"
+                            schemeAgencyName="PE:SUNAT"
+                            schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"><t t-out='l10n_pe_delivery_customer.vat'/></cbc:ID>
+                    </cac:PartyIdentification>
+                    <cac:PartyLegalEntity>
+                        <cbc:RegistrationName><t t-out='l10n_pe_delivery_customer.commercial_partner_id.name'/></cbc:RegistrationName>
+                    </cac:PartyLegalEntity>
+                </cac:Party>
+            </cac:DeliveryCustomerParty>
+        </xpath>
+        <xpath expr="//*[local-name()='DeliveryAddress']/*[local-name()='t']" position="replace">
+            <t t-if="l10n_pe_internal_transfer">
+                <cbc:AddressTypeCode xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                    t-att-listID="record.company_id.vat"
+                    listAgencyName="PE:SUNAT"
+                    listName="Establecimientos anexos"><t t-out="l10n_pe_destination_annex"/></cbc:AddressTypeCode>
+            </t>
+            <t t-elif="record.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'">
+                <cbc:AddressTypeCode xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                    t-att-listID="record.partner_id.vat"
+                    listAgencyName="PE:SUNAT"
+                    listName="Establecimientos anexos">0</cbc:AddressTypeCode>
+            </t>
+        </xpath>
+        <xpath expr="//*[local-name()='DespatchAddress']/*[local-name()='AddressTypeCode']" position="replace">
+            <cbc:AddressTypeCode xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                t-att-listID="record.company_id.vat if l10n_pe_internal_transfer else warehouse_address.vat"
+                listAgencyName="PE:SUNAT"
+                listName="Establecimientos anexos"><t t-out="l10n_pe_origin_annex if l10n_pe_internal_transfer else '0'"/></cbc:AddressTypeCode>
+        </xpath>
+    </template>
+</odoo>

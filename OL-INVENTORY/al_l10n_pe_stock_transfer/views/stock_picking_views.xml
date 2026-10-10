@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Botón de la guía: también en traslados internos entre establecimientos
+         (el nativo solo lo muestra en salidas). -->
+    <record id="view_picking_form_internal_guide" model="ir.ui.view">
+        <field name="name">stock.picking.form.internal.guide.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="l10n_pe_edi_stock.view_picking_edi_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header//button[@name='action_send_delivery_guide']" position="attributes">
+                <attribute name="invisible">state != 'done' or country_code != 'PE' or not l10n_pe_edi_guide_allowed or l10n_pe_edi_status</attribute>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <field name="l10n_pe_edi_guide_allowed" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Logística PE: puntos de partida y llegada del traslado interno en el
+         grupo de la guía, y los bienes de terceros en su propio grupo. -->
+    <record id="view_picking_form_pe_internal_guide" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe.internal.guide</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="al_l10n_pe_delivery_guide_report.view_picking_form_pe_guide"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='l10n_pe_stock_guide']" position="inside">
+                <field name="l10n_pe_edi_origin_address_id" invisible="picking_type_code != 'internal'"/>
+                <field name="l10n_pe_edi_destination_address_id" invisible="picking_type_code != 'internal'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_pe_third_party" model="ir.ui.view">
+        <field name="name">stock.picking.form.pe.third.party</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="al_stock_base.view_picking_form_pe"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='l10n_pe_stock_groups']" position="inside">
+                <group string="Bienes de terceros" name="l10n_pe_stock_third_party"
+                       invisible="not l10n_pe_has_third_party_goods">
+                    <field name="l10n_pe_has_third_party_goods" invisible="1"/>
+                    <field name="l10n_pe_third_party_owner_ids" widget="many2many_tags"/>
+                    <div class="text-muted" colspan="2">
+                        Son bienes de terceros: no se valorizan ni entran al kardex valorizado. En la
+                        guía de remisión el propietario va en las observaciones.
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_search_third_party" model="ir.ui.view">
+        <field name="name">stock.picking.search.third.party.pe</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='available']" position="after">
+                <separator/>
+                <filter name="l10n_pe_third_party" string="Con bienes de terceros"
+                        domain="[('l10n_pe_has_third_party_goods', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_line_search_third_party" model="ir.ui.view">
+        <field name="name">stock.move.line.search.third.party.pe</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='internal']" position="after">
+                <separator/>
+                <filter name="l10n_pe_third_party" string="De terceros"
+                        domain="[('owner_id', '!=', False), ('owner_id.l10n_pe_is_company_partner', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

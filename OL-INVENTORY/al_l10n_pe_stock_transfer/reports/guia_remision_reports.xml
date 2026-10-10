@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Representación impresa: el propietario de los bienes de terceros,
+         debajo del remitente y el destinatario (el XML lo lleva en las
+         observaciones). -->
+    <template id="report_guia_remision_page_third_party"
+              inherit_id="al_l10n_pe_delivery_guide_report.report_guia_remision_page">
+        <xpath expr="//t[@t-set='departure']" position="before">
+            <table class="pe-doc-table mb-2" t-if="o.l10n_pe_third_party_owner_ids">
+                <tr class="pe-doc-subheader">
+                    <td colspan="2">Propietario de los bienes (bienes de terceros)</td>
+                </tr>
+                <tr t-foreach="o.l10n_pe_third_party_owner_ids" t-as="owner">
+                    <td class="pe-doc-label" style="width: 14%;">Razón social</td>
+                    <td>
+                        <span t-out="owner.name"/>
+                        <t t-if="owner.vat"> · <span t-out="owner.l10n_latam_identification_type_id.name or 'Doc.'"/> <span t-out="owner.vat"/></t>
+                    </td>
+                </tr>
+            </table>
+        </xpath>
+    </template>
+</odoo>

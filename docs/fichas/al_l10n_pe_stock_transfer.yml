@@ -1,0 +1,112 @@
+titulo: Traslados internos y bienes de terceros
+subtitulo: >-
+  Guía de remisión para mover bienes entre los establecimientos de la empresa
+  y control de los bienes de terceros en el almacén y en la guía.
+categoria: Localización Perú · Inventario
+etiquetas: [Guía de remisión, Motivo 04, Establecimiento anexo, Bienes de terceros, Consignación]
+
+destacados_intro: >-
+  Completa la guía de remisión electrónica del estándar, que solo se emite en
+  las salidas.
+destacados:
+  - icono: "04"
+    titulo: Traslado entre establecimientos
+    texto: >-
+      Las transferencias internas entre almacenes de distinta dirección emiten
+      su guía con motivo 04 y la empresa como destinataria.
+  - icono: "#"
+    titulo: Código de establecimiento
+    texto: >-
+      Partida y llegada llevan el código de establecimiento anexo SUNAT de cada
+      dirección, con el RUC de la empresa.
+  - icono: "≠"
+    titulo: Solo cuando sale del local
+    texto: >-
+      Un movimiento dentro del mismo establecimiento no lleva guía: el botón no
+      aparece.
+  - icono: "3°"
+    titulo: Bienes de terceros a la vista
+    texto: >-
+      Propietario en la transferencia y filtros «De terceros» en existencias,
+      movimientos y transferencias.
+  - icono: "✎"
+    titulo: Propietario en la guía
+    texto: >-
+      Va en las observaciones del XML y en un recuadro de la guía impresa.
+  - icono: "="
+    titulo: Valorización intacta
+    texto: >-
+      Los bienes de terceros siguen fuera de la valorización y del kardex
+      valorizado, como en el estándar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Una constructora lleva materiales y equipos de su almacén central a sus
+    obras y recibe equipos alquilados a terceros. Odoo solo emite la guía de
+    remisión en las entregas a clientes: el traslado al almacén de una obra no
+    tenía guía, y los equipos ajenos no se distinguían en el almacén ni en la
+    guía.
+  nota: >-
+    **Configuración**: el almacén de cada establecimiento con su dirección
+    (calle, distrito y «Establecimiento anexo» SUNAT) y, para los bienes de
+    terceros, «Consignación» activo en Ajustes de Inventario.
+
+pasos:
+  - seccion: Traslado entre establecimientos
+  - titulo: Transferencia interna
+    ruta: Inventario ▸ Operaciones ▸ Transferencias ▸ Nuevo (tipo interno)
+    texto: >-
+      Origen en el almacén de un establecimiento y destino en el de otro. Al
+      validarla aparece «Generate Delivery Guide» si las direcciones son
+      distintas.
+  - titulo: Datos de la guía
+    ruta: Transferencia ▸ Logística PE ▸ Guía de remisión
+    texto: >-
+      Elija la modalidad: el motivo se propone en 04. Se muestran el punto de
+      partida y el de llegada (las direcciones de los almacenes).
+  - titulo: Enviar
+    ruta: Transferencia ▸ Generate Delivery Guide
+    texto: >-
+      La guía sale con la empresa como destinataria y el código de
+      establecimiento de partida y llegada. El punto de llegada queda como
+      contacto de la transferencia.
+
+  - seccion: Bienes de terceros
+  - titulo: Recibir con propietario
+    ruta: Transferencia ▸ Propietario (o por línea en las operaciones detalladas)
+    texto: >-
+      Indique el dueño de los bienes: no se valorizan y quedan identificados en
+      el almacén.
+  - titulo: Ver y filtrar
+    ruta: Inventario ▸ Informes ▸ Existencias ▸ Filtros ▸ De terceros
+    texto: >-
+      También en movimientos («De terceros») y en transferencias («Con bienes
+      de terceros»). En la transferencia, Logística PE ▸ Bienes de terceros
+      muestra los propietarios.
+  - titulo: La guía
+    ruta: Transferencia ▸ Guía de remisión
+    texto: >-
+      El propietario va en las observaciones del XML («Bienes de propiedad de
+      …») y en la guía impresa. Use el motivo que corresponda: 04 entre
+      establecimientos propios, 05 consignación o 13 otros.
+
+campos:
+  - grupo: Guía de remisión (traslado interno)
+    ruta: Transferencia ▸ Logística PE
+    campos:
+      - [Punto de partida, Dirección del almacén de origen, Almacén de la ubicación de origen, Punto de partida del XML]
+      - [Punto de llegada, Dirección del almacén de destino, Almacén de la ubicación de destino, Punto de llegada del XML]
+      - [Motivo de traslado, Catálogo 20 de SUNAT, 04 en internas, Con 04 el destinatario es la empresa]
+  - grupo: Bienes de terceros
+    ruta: Transferencia ▸ Logística PE
+    campos:
+      - [Propietarios de los bienes, Dueños distintos de la compañía, —, Observaciones de la guía y guía impresa]
+
+novedades:
+  - version: 1.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Primera versión: guía de remisión en transferencias internas entre establecimientos (motivo 04, destinatario = remitente, código de establecimiento anexo en partida y llegada) y bienes de terceros visibles en la transferencia, con filtros en existencias, movimientos y transferencias, y el propietario en las observaciones de la guía y en la guía impresa."
+
+relacionados: [al_stock_base, al_l10n_pe_delivery_guide_report, ol_stock_kardex_pe, al_account_base]
