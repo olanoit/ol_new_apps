@@ -29,15 +29,24 @@ HEADERS = {
 
 def check(url):
     url = url.rstrip('.,;:')
+    result = _check(url, timeout=25)
+    if result[1] == 'error' and result[2] in ('ReadTimeout', 'ConnectTimeout', 'ConnectionError'):
+        # Los PDF de SUNAT y El Peruano a veces tardan: un reintento con más
+        # margen antes de darlos por caídos.
+        result = _check(url, timeout=90)
+    return result
+
+
+def _check(url, timeout):
     note = ''
     try:
-        r = requests.get(url, headers=HEADERS, timeout=25, allow_redirects=True, stream=True)
+        r = requests.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True, stream=True)
     except requests.exceptions.SSLError:
         # Algunos sitios del Estado no envían la cadena intermedia del
         # certificado: los navegadores la completan, requests no. Se reintenta
         # sin validar el certificado solo para saber si la página responde.
         try:
-            r = requests.get(url, headers=HEADERS, timeout=25, allow_redirects=True, stream=True,
+            r = requests.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True, stream=True,
                              verify=False)
             note = ' (certificado incompleto: abre en el navegador)'
         except requests.RequestException as exc:
