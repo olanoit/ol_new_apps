@@ -83,6 +83,10 @@ class ConstructionResourcePlan(models.Model):
     line_ids = fields.One2many(
         'construction.resource.plan.line', 'plan_id', string='Líneas', copy=True)
     line_count = fields.Integer(string='Nº de líneas', compute='_compute_amounts', store=True)
+    allocation_ids = fields.One2many(
+        'construction.resource.plan.allocation', 'plan_id', string='Asignaciones')
+    allocation_count = fields.Integer(
+        string='Nº de asignaciones', compute='_compute_allocation_count')
     amount_material = fields.Monetary(
         string='Material', compute='_compute_amounts', store=True, currency_field='currency_id')
     amount_service = fields.Monetary(
@@ -118,6 +122,12 @@ class ConstructionResourcePlan(models.Model):
     version_count = fields.Integer(string='Versiones', compute='_compute_version_count')
     date_approved = fields.Datetime(string='Aprobado el', readonly=True, copy=False)
     date_closed = fields.Date(string='Cerrado el', readonly=True, copy=False)
+
+    def _compute_allocation_count(self):
+        counts = dict(self.env['construction.resource.plan.allocation']._read_group(
+            [('plan_id', 'in', self.ids)], ['plan_id'], ['__count']))
+        for plan in self:
+            plan.allocation_count = counts.get(plan, 0)
 
     @api.depends('project_id')
     def _compute_company_id(self):
@@ -427,15 +437,36 @@ class ConstructionResourcePlan(models.Model):
             ('id', '!=', self.id)], limit=1)
 
     def _transfer_to_new_version(self, new_plan):
-        """Gancho de la versión aprobada que reemplaza a ``self``.
-
-        La especificación pide mover a ``new_plan`` las asignaciones abiertas y
-        los avances no liquidados de la versión anterior, enlazando cada línea
-        nueva con su ``previous_line_id``. Esos documentos llegan en las fases
-        4 (asignaciones y compras), 5 (contratas) y 6 (liquidación): cada
-        fase extiende este método y reasigna sus registros de
-        ``line.previous_line_id`` a ``line``. Aquí no hay nada que mover."""
+        """Gancho de la versión aprobada que reemplaza a ``self``: las
+        asignaciones abiertas pasan a la línea nueva que la continúa
+        (``previous_line_id``). Las cerradas (documento hecho o cancelado) se
+        quedan en la versión anterior como historia. Los avances no
+        liquidados llegarán con las contratas (fase 5)."""
         self.ensure_one()
+        successors = {
+            line.previous_line_id: line
+            for line in new_plan.line_ids.filtered(lambda l: l.previous_line_id.plan_id == self)
+        }
+        # Quien da la última aprobación (un revisor de la regla) puede no
+        # tener permiso de escritura en las asignaciones: solo se cambia su
+        # línea del plan, sin tocar los documentos.
+        allocations_sudo = self.allocation_ids.sudo().filtered(lambda a: a.state == 'open')
+        moved = self.env['construction.resource.plan.allocation']
+        for line, allocations in allocations_sudo.grouped('plan_line_id').items():
+            successor = successors.get(line)
+            if successor:
+                allocations.write({'plan_line_id': successor.id})
+                moved |= allocations
+        left = allocations_sudo - moved
+        if moved or left:
+            body = self.env._('Asignaciones abiertas pasadas a %(plan)s: %(count)s.',
+                              plan=new_plan.display_name, count=len(moved))
+            if left:
+                body += ' ' + self.env._(
+                    'Se quedan en esta versión %(count)s cuyas líneas no continúan en la '
+                    'nueva (%(docs)s).', count=len(left),
+                    docs=', '.join(sorted(set(left.mapped('document_name')))[:10]))
+            new_plan.message_post(body=body)
 
     def _get_budget_line_values(self):
         """Una línea de presupuesto por combinación de cuentas analíticas.
@@ -527,11 +558,21 @@ class ConstructionResourcePlan(models.Model):
 
     def action_close(self):
         """Cierra el plan vigente: queda de solo lectura y su presupuesto
-        analítico pasa a «Hecho». Las fases 4 a 6 añadirán aquí el control de
-        asignaciones abiertas y liquidaciones pendientes."""
+        analítico pasa a «Hecho». No se cierra con documentos abiertos
+        (asignaciones de compras, requerimientos u OF sin terminar); las
+        liquidaciones pendientes se controlarán con las contratas (fase 5)."""
         if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
             raise UserError(self.env._('Solo el administrador del planificador cierra un plan.'))
         self._check_state(OPEN_STATES)
+        for plan in self:
+            open_allocations = plan.allocation_ids.filtered(lambda a: a.state == 'open')
+            if open_allocations:
+                docs = sorted(set(open_allocations.mapped('document_name')))
+                raise UserError(self.env._(
+                    'El plan %(plan)s tiene documentos abiertos: %(docs)s. Termínelos o '
+                    'cancélelos antes de cerrar el plan.',
+                    plan=plan.display_name,
+                    docs=', '.join(docs[:10]) + (' …' if len(docs) > 10 else '')))
         self.write({'state': 'closed', 'date_closed': fields.Date.context_today(self)})
         # sudo: mismo motivo que al crearlo (permisos de contabilidad).
         self.budget_analytic_id.sudo().filtered(
@@ -581,6 +622,26 @@ class ConstructionResourcePlan(models.Model):
             'domain': [('project_id', '=', self.project_id.id)],
             'context': {'active_test': False, 'create': False},
         }
+
+    def action_view_allocations(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Asignaciones de %s', self.display_name),
+            'res_model': 'construction.resource.plan.allocation',
+            'view_mode': 'list,pivot',
+            'domain': [('plan_id', '=', self.id)],
+            'context': {'create': False, 'search_default_group_kind': 1},
+        }
+
+    def _check_supply_wizard_state(self):
+        """Los asistentes de abastecimiento (W-02 a W-04) trabajan sobre el plan
+        vigente."""
+        for plan in self:
+            if plan.state not in OPEN_STATES:
+                raise UserError(self.env._(
+                    'El plan %s no está vigente: apruébelo antes de comprar, pedir o '
+                    'fabricar desde él.', plan.display_name))
 
     def action_view_lines(self):
         self.ensure_one()
@@ -708,10 +769,35 @@ class ConstructionResourcePlanLine(models.Model):
     previous_line_id = fields.Many2one(
         'construction.resource.plan.line', string='Línea anterior', readonly=True,
         check_company=True)
+    allocation_ids = fields.One2many(
+        'construction.resource.plan.allocation', 'plan_line_id', string='Asignaciones')
+    # Cantidades de ejecución (especificación, «Reglas de cálculo»), en la
+    # unidad de la línea. Se leen sin los permisos de compras, inventario y
+    # fabricación del usuario: solo se muestran.
+    qty_requested = fields.Float(
+        string='Pedido', compute='_compute_execution_qty', digits='Product Unit',
+        compute_sudo=True,
+        help='Material: requerimientos de obra y OF. Contrata: OC de servicio. Personal '
+             'propio: horas de turnos.')
+    qty_purchased = fields.Float(
+        string='Comprado', compute='_compute_execution_qty', digits='Product Unit',
+        compute_sudo=True,
+        help='Compra masiva y compras confirmadas del faltante de los requerimientos.')
+    qty_dispatched = fields.Float(
+        string='Despachado', compute='_compute_execution_qty', digits='Product Unit',
+        compute_sudo=True, help='Llegado a la obra y entregado a la planta para las OF.')
+    qty_consumed = fields.Float(
+        string='Consumido', compute='_compute_execution_qty', digits='Product Unit',
+        compute_sudo=True, help='Consumo en obra y componentes consumidos de las OF.')
+    qty_remaining = fields.Float(
+        string='Saldo por pedir', compute='_compute_execution_qty', digits='Product Unit',
+        compute_sudo=True, help='Planificado menos pedido.')
     line_state = fields.Selection(
         [('planned', 'Planificada'), ('partial', 'Parcial'), ('purchasing', 'En compra'),
          ('done', 'Completa'), ('exceeded', 'Excedida'), ('cancel', 'Cancelada')],
-        string='Estado', default='planned', readonly=True)
+        string='Estado', compute='_compute_line_state', compute_sudo=True,
+        help='En este orden: Excedida (pedido sobre lo planificado más la tolerancia), '
+             'Completa, En compra, Parcial y Planificada.')
 
     @api.depends('task_id', 'task_id.construction_level', 'task_id.construction_floor_task_id',
                  'task_id.construction_apartment_task_id', 'task_id.construction_space_task_id')
@@ -730,9 +816,87 @@ class ConstructionResourcePlanLine(models.Model):
                 if line.currency_id else line.qty_planned * line.price_unit_planned
 
     def _get_line_execution(self):
-        """{línea: (comprometido, real)}. Punto de extensión de las fases 4 a
-        6 (asignaciones y compras, contratas, producción); hoy todo es cero."""
-        return {line: (0.0, 0.0) for line in self}
+        """{línea: (comprometido, real)}.
+
+        Material, servicio y producción, al costo del plan: comprometido es lo
+        pedido o comprado aún no consumido; real, lo consumido. Contratas: lo
+        asignado a la OC de servicio no recibido y lo recibido, a la tarifa de
+        la OC. Las fases 5 y 6 lo completan con avances y turnos."""
+        result = {}
+        for line in self:
+            committed = actual = 0.0
+            if line.resource_type in ('material', 'service', 'production'):
+                price = line.price_unit_planned
+                covered = max(line.qty_requested, line.qty_purchased)
+                committed = max(covered - line.qty_consumed, 0.0) * price
+                actual = line.qty_consumed * price
+            else:
+                for allocation in line.allocation_ids.filtered(
+                        lambda a: a.kind == 'service_order' and a.state != 'cancel'):
+                    # La tarifa de la OC se lee aunque el usuario del plan no
+                    # tenga acceso a compras: solo para valorizar.
+                    po_line_sudo = allocation.sudo().purchase_line_id
+                    price = po_line_sudo.price_unit
+                    committed += max(allocation.qty_allocated - allocation.qty_done, 0.0) * price
+                    actual += allocation.qty_done * price
+            currency = line.currency_id
+            result[line] = (currency.round(committed) if currency else committed,
+                            currency.round(actual) if currency else actual)
+        return result
+
+    @api.depends('qty_planned', 'allocation_ids.qty_allocated', 'allocation_ids.state',
+                 'allocation_ids.qty_purchased', 'allocation_ids.qty_dispatched',
+                 'allocation_ids.qty_consumed')
+    def _compute_execution_qty(self):
+        for line in self:
+            allocations = line.allocation_ids
+            line.qty_requested = sum(a._get_requested_qty() for a in allocations)
+            line.qty_purchased = sum(allocations.mapped('qty_purchased'))
+            line.qty_dispatched = sum(allocations.mapped('qty_dispatched'))
+            line.qty_consumed = sum(allocations.mapped('qty_consumed'))
+            line.qty_remaining = line.qty_planned - line.qty_requested
+
+    def _get_tolerance_qty(self):
+        self.ensure_one()
+        return self.qty_planned * (self.plan_id.exceed_tolerance or 0.0) / 100.0
+
+    @api.depends('qty_planned', 'plan_id.state', 'plan_id.exceed_tolerance', 'resource_type',
+                 'allocation_ids.state', 'allocation_ids.qty_allocated',
+                 'allocation_ids.qty_dispatched')
+    def _compute_line_state(self):
+        for line in self:
+            line.line_state = line._get_line_state()
+
+    def _get_line_state(self):
+        self.ensure_one()
+        if self.plan_id.state == 'cancel':
+            return 'cancel'
+        uom = self.product_uom_id
+        if not uom:
+            return 'planned'
+        planned = self.qty_planned
+        allocations = self.allocation_ids
+        if uom.compare(self.qty_requested, planned + self._get_tolerance_qty()) > 0:
+            return 'exceeded'
+        if self.resource_type in ('contract', 'labor'):
+            # «Completa» de contrata: todo asignado y sus documentos cerrados
+            # (los avances y liquidaciones llegan en la fase 5).
+            if not uom.is_zero(planned) and uom.compare(self.qty_requested, planned) >= 0 \
+                    and not allocations.filtered(lambda a: a.state == 'open'):
+                return 'done'
+        elif not uom.is_zero(planned) and uom.compare(self.qty_dispatched, planned) >= 0:
+            return 'done'
+        purchasing = allocations.filtered(
+            lambda a: a.state == 'open' and (
+                a.kind == 'purchase_request'
+                or (a.kind == 'material_request'
+                    and a.material_request_line_id.line_state == 'purchasing')))
+        if purchasing:
+            return 'purchasing'
+        if any(not uom.is_zero(qty) for qty in (
+                self.qty_requested, self.qty_purchased, self.qty_dispatched)):
+            return 'partial'
+        return 'planned'
 
     def _get_execution_amounts(self):
         """Comprometido y real acumulados por etapa: {etapa: (comp., real)}."""
@@ -752,10 +916,13 @@ class ConstructionResourcePlanLine(models.Model):
             line.amount_remaining = line.amount_planned - committed - actual
 
     def _get_consumed_qty(self):
-        """Cantidad ya pedida o ejecutada de la línea: la base de «copiar solo
-        saldos» al replanificar. Las fases 4 a 6 la extienden; hoy es cero."""
+        """Cantidad ya pedida o ejecutada de la línea que se queda en esta
+        versión: la base de «copiar solo saldos» al replanificar. Son las
+        asignaciones cerradas; las abiertas pasan a la versión nueva al
+        aprobarla (``_transfer_to_new_version``) y siguen contando allí."""
         self.ensure_one()
-        return 0.0
+        return sum(a._get_requested_qty()
+                   for a in self.allocation_ids.filtered(lambda a: a.state != 'open'))
 
     def _get_issue_label(self):
         """Texto corto de cada línea para los avisos de aprobación."""

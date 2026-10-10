@@ -23,6 +23,20 @@
                   groups="group_planner_planner"/>
     </menuitem>
 
+    <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
+              groups="group_planner_planner">
+        <menuitem id="menu_planner_material_requests" name="Requerimientos de obra"
+                  action="al_construction_material_request.action_construction_material_request"
+                  sequence="10"/>
+        <menuitem id="menu_planner_purchase_requests" name="Requerimientos de compra"
+                  action="purchase_request.purchase_request_form_action" sequence="20"
+                  groups="purchase_request.group_purchase_request_user"/>
+        <menuitem id="menu_planner_productions" name="Órdenes de fabricación"
+                  action="mrp.mrp_production_action" sequence="30" groups="mrp.group_mrp_user"/>
+        <menuitem id="menu_planner_allocations" name="Asignaciones del plan"
+                  action="action_construction_resource_plan_allocation" sequence="40"/>
+    </menuitem>
+
     <menuitem id="menu_planner_config" name="Configuración" parent="menu_planner_root" sequence="90"
               groups="group_planner_planner">
         <menuitem id="menu_planner_typologies" name="Tipologías"

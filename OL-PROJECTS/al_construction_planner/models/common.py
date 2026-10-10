@@ -56,3 +56,10 @@ TYPOLOGY_FAMILIES = [
     ('laundry', 'Lavandería'),
     ('other', 'Otro'),
 ]
+
+# Control del saldo del plan en requerimientos de obra y OF (P-11, W-10).
+EXCEED_STATES = [
+    ('ok', 'En plan'),
+    ('exceeded', 'Excede el plan'),
+    ('approved', 'Exceso aprobado'),
+]

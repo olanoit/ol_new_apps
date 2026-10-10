@@ -35,6 +35,11 @@
                 <field name="product_uom_id" options="{'no_create': True}"/>
                 <field name="price_unit_planned"/>
                 <field name="amount_planned" sum="Total"/>
+                <field name="qty_requested" optional="hide"/>
+                <field name="qty_purchased" optional="hide"/>
+                <field name="qty_dispatched" optional="hide"/>
+                <field name="qty_consumed" optional="hide"/>
+                <field name="qty_remaining" optional="hide"/>
                 <field name="amount_budgeted" sum="Total" optional="hide"/>
                 <field name="amount_committed" optional="hide"/>
                 <field name="amount_actual" optional="hide"/>
@@ -97,6 +102,13 @@
                             <field name="price_basis"/>
                             <field name="price_basis_date"/>
                         </group>
+                        <group string="Ejecución">
+                            <field name="qty_requested"/>
+                            <field name="qty_purchased"/>
+                            <field name="qty_dispatched"/>
+                            <field name="qty_consumed"/>
+                            <field name="qty_remaining"/>
+                        </group>
                         <group string="Cuándo y estado">
                             <field name="date_needed"/>
                             <field name="line_state"/>
@@ -108,6 +120,8 @@
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
                     </group>
+                    <field name="allocation_ids" readonly="1" invisible="not allocation_ids"
+                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_allocation_view_list'}"/>
                 </sheet>
             </form>
         </field>
@@ -213,6 +227,20 @@
                     <button name="action_open_replan_wizard" type="object" string="Nueva versión"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_purchase_wizard)d" type="action" string="Compra masiva"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_request_wizard)d" type="action"
+                            string="Requerimiento de obra"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="%(action_plan_production_wizard)d" type="action"
+                            string="Orden de fabricación"
+                            invisible="state not in ('approved', 'in_progress')"
+                            context="{'default_plan_id': id}"
+                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_close" type="object" string="Cerrar"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_manager"
@@ -233,6 +261,10 @@
                         <button name="action_view_lines" type="object"
                                 class="oe_stat_button" icon="fa-list">
                             <field name="line_count" widget="statinfo" string="Líneas"/>
+                        </button>
+                        <button name="action_view_allocations" type="object"
+                                class="oe_stat_button" icon="fa-link" invisible="not allocation_count">
+                            <field name="allocation_count" widget="statinfo" string="Asignaciones"/>
                         </button>
                         <button name="action_view_budget" type="object"
                                 class="oe_stat_button" icon="fa-money" string="Presupuesto"

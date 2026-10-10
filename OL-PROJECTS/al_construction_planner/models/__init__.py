@@ -3,8 +3,15 @@ from . import common
 from . import construction_labor
 from . import construction_typology
 from . import construction_resource_plan
+from . import construction_resource_plan_allocation
+from . import construction_plan_supply
 from . import project_project
 from . import project_task
 from . import mrp_bom_line
 from . import construction_plan_tree
 from . import tier_definition
+from . import construction_material_request
+from . import mrp_production
+from . import purchase_request
+from . import purchase_order
+from . import planning_slot

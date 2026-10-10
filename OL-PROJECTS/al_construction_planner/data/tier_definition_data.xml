@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- W-10: revisión adicional del requerimiento de obra que excede el plan
+         con la política «pedir aprobación». Editable en Configuración ›
+         Reglas de aprobación del requerimiento. -->
+    <data noupdate="1">
+        <record id="tier_material_request_exceed" model="tier.definition">
+            <field name="name">Exceso sobre el plan: jefatura del planificador</field>
+            <field name="model_id" ref="al_construction_material_request.model_construction_material_request"/>
+            <field name="review_type">group</field>
+            <field name="reviewer_group_id" ref="group_planner_manager"/>
+            <field name="definition_domain">[('construction_exceed_state', '=', 'exceeded'), ('construction_plan_id.exceed_policy', '=', 'approval')]</field>
+            <field name="sequence">5</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
+    </data>
+</odoo>

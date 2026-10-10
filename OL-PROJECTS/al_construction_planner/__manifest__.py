@@ -44,6 +44,25 @@ Fase 3 (línea base, P-03):
   (manual, último precio, ponderado de 3 o 6 meses) y la fecha de la base.
 * Resumen por etapa (P-03), análisis en pivote y gráfico, cierre del plan.
 
+Fase 4 (asignaciones y compras, P-10 y P-11):
+
+* Asignaciones del plan: qué parte de cada documento (compra masiva,
+  requerimiento de obra, OF, OC de servicio, turno) corresponde a cada línea;
+  lo hecho se reparte por fecha de necesidad y su estado sigue al documento.
+* Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado
+  de cada línea (excedida, completa, en compra, parcial, planificada).
+* Compra masiva (W-02) en dos modos: con analítica de la obra o stock general
+  (descuenta lo libre en el central y lo que ya viene en compras), redondeada
+  a la unidad de compra.
+* Requerimiento de obra (W-03) agrupado por ambiente, departamento o piso, con
+  saldo del plan y control por línea; control de exceso al solicitar la
+  aprobación según la política del plan (avisar, pedir aprobación, bloquear)
+  y justificación con revisión adicional (W-10).
+* Orden de fabricación (W-04) por piso o selección desde la BOM de la
+  tipología, con control del saldo de producción y armado al confirmarla.
+* Las asignaciones abiertas pasan a la versión nueva al aprobarla y el plan no
+  se cierra con documentos abiertos.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -53,7 +72,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '3.20261010',
+    'version': '4.20261010',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -74,15 +93,18 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
+        'data/tier_definition_data.xml',
         'wizards/plan_generate_wizard_views.xml',
         'wizards/plan_replan_wizard_views.xml',
         'wizards/plan_price_wizard_views.xml',
+        'wizards/plan_supply_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_resource_plan_views.xml',
         'views/project_views.xml',
         'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',
+        'views/construction_supply_views.xml',
         'views/menus.xml',
     ],
     'demo': [

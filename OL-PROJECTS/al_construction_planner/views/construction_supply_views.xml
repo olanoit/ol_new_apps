@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Asignaciones del plan -->
+    <record id="construction_resource_plan_allocation_view_list" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.list</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <list string="Asignaciones" create="0" edit="0"
+                  decoration-muted="state == 'cancel'" decoration-success="state == 'done'">
+                <field name="plan_id" optional="hide"/>
+                <field name="kind"/>
+                <field name="document_name"/>
+                <field name="task_id"/>
+                <field name="stage" optional="show"/>
+                <field name="product_id"/>
+                <field name="activity_id" optional="hide"/>
+                <field name="date_needed" optional="show"/>
+                <field name="qty_allocated" sum="Total"/>
+                <field name="qty_done"/>
+                <field name="qty_purchased" optional="hide"/>
+                <field name="qty_dispatched" optional="hide"/>
+                <field name="qty_consumed" optional="hide"/>
+                <field name="product_uom_id" groups="uom.group_uom"/>
+                <field name="state" widget="badge" decoration-info="state == 'open'"
+                       decoration-success="state == 'done'"/>
+                <field name="company_id" column_invisible="1"/>
+                <button name="action_open_document" type="object" icon="fa-external-link"
+                        title="Abrir el documento"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_allocation_view_pivot" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.pivot</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <pivot string="Asignaciones" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="kind" type="col"/>
+                <field name="qty_allocated" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_allocation_view_search" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.search</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <search string="Asignaciones">
+                <field name="product_id"/>
+                <field name="task_id"/>
+                <field name="plan_id"/>
+                <filter string="Compra masiva" name="purchase_request"
+                        domain="[('kind', '=', 'purchase_request')]"/>
+                <filter string="Requerimiento de obra" name="material_request"
+                        domain="[('kind', '=', 'material_request')]"/>
+                <filter string="Orden de fabricación" name="production"
+                        domain="[('kind', '=', 'production')]"/>
+                <group>
+                    <filter string="Documento" name="group_kind" context="{'group_by': 'kind'}"/>
+                    <filter string="Producto" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Plan" name="group_plan" context="{'group_by': 'plan_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_resource_plan_allocation" model="ir.actions.act_window">
+        <field name="name">Asignaciones</field>
+        <field name="res_model">construction.resource.plan.allocation</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'create': False, 'search_default_group_kind': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay documentos generados desde el plan</p>
+            <p>La compra masiva, los requerimientos de obra y las órdenes de fabricación que
+               nacen del árbol de recursos dejan aquí qué parte corresponde a cada línea.</p>
+        </field>
+    </record>
+
+    <!-- Requerimiento de obra con control de plan (P-11) -->
+    <record id="construction_material_request_view_form_planner" model="ir.ui.view">
+        <field name="name">construction.material.request.form.planner</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="construction_plan_id" readonly="1"
+                       groups="al_construction_planner.group_planner_progress"/>
+                <field name="construction_exceed_state" widget="badge"
+                       invisible="not construction_plan_id"
+                       decoration-success="construction_exceed_state == 'ok'"
+                       decoration-danger="construction_exceed_state == 'exceeded'"
+                       decoration-info="construction_exceed_state == 'approved'"/>
+            </xpath>
+            <xpath expr="//group[@name='dates']/.." position="after">
+                <group invisible="construction_exceed_state == 'ok' and not construction_exceed_reason">
+                    <field name="construction_exceed_reason" readonly="state != 'draft'"
+                           placeholder="Por qué se pide más de lo que queda en el plan"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='product_uom_id']" position="after">
+                <field name="construction_plan_remaining" optional="show"
+                       column_invisible="not parent.construction_plan_id"/>
+                <field name="construction_plan_exceeded" column_invisible="1"/>
+                <field name="construction_plan_control" optional="show"
+                       column_invisible="not parent.construction_plan_id"
+                       decoration-danger="construction_plan_exceeded"
+                       decoration-success="not construction_plan_exceeded"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Compra masiva en el requerimiento de compra (OCA) -->
+    <record id="view_purchase_request_form_planner" model="ir.ui.view">
+        <field name="name">purchase.request.form.planner</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/list/field[@name='date_required']" position="after">
+                <field name="construction_plan_mode" optional="show"
+                       column_invisible="not parent.construction_plan_id"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_plan_id" invisible="not construction_plan_id"
+                       groups="al_construction_planner.group_planner_progress"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Orden de fabricación desde el plan (W-04) -->
+    <record id="mrp_production_form_view_planner" model="ir.ui.view">
+        <field name="name">mrp.production.form.planner</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='miscellaneous']" position="before">
+                <page string="Plan de obra" name="construction_plan" invisible="not construction_plan_id">
+                    <group>
+                        <group>
+                            <field name="construction_plan_id"
+                                   groups="al_construction_planner.group_planner_progress"/>
+                            <field name="construction_space_task_ids" widget="many2many_tags"
+                                   readonly="state != 'draft'" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="construction_exceed_state" widget="badge"
+                                   decoration-success="construction_exceed_state == 'ok'"
+                                   decoration-danger="construction_exceed_state == 'exceeded'"
+                                   decoration-info="construction_exceed_state == 'approved'"/>
+                            <field name="construction_exceed_reason"
+                                   invisible="construction_exceed_state == 'ok'"/>
+                        </group>
+                    </group>
+                    <field name="construction_allocation_ids" readonly="1"
+                           groups="al_construction_planner.group_planner_progress"
+                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_allocation_view_list'}"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

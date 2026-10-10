@@ -14,7 +14,8 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 1 | Jerarquía de la obra, tipologías, actividades y tarifas, etapa de consumo, plan de recursos y «Generar plan» (P-01 básica, P-04, P-12, P-14) | hecha |
 | 2 | Árbol del plan OWL (P-02) | hecha |
 | 3 | Línea base: aprobación por niveles, presupuesto analítico, resumen por etapa (P-03), aplicar costo (W-12), nueva versión (W-09), cierre | hecha |
-| 4-8 | Asignaciones y compras, contratas, avances y liquidaciones, producción, ingresos, cronograma con recursos | pendiente |
+| 4 | Asignaciones y compras: asignaciones del plan, ejecución por línea, compra masiva (W-02, P-10), requerimiento de obra con control de plan (W-03, W-10, P-11), OF desde la BOM (W-04) | hecha |
+| 5-8 | Contratas, avances y liquidaciones, personal propio, ingresos, cronograma con recursos | pendiente |
 
 ## Modelos
 
@@ -28,6 +29,17 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 - `project.task`: `construction_level` y ancestros `construction_*_task_id`
   (calculados y almacenados), datos del módulo y `construction_unit_state`.
 - `mrp.bom.line`: `construction_consumption_stage`.
+- `construction.resource.plan.allocation`: qué parte de un documento corresponde
+  a cada línea del plan (fase 4).
+- Herencias de la fase 4: `construction.material.request` (`construction_plan_id`,
+  `construction_exceed_state`, `construction_exceed_reason`) y su línea
+  (`construction_allocation_ids`, saldo, fuera de plan, control);
+  `purchase.request` (`construction_plan_id`) y su línea
+  (`construction_allocation_ids`, `construction_plan_mode`); `mrp.production`
+  (`construction_plan_id`, `construction_space_task_ids`, asignaciones, control
+  de exceso); `purchase.order` (`construction_plan_id`) y su línea
+  (asignaciones); `planning.slot` (`construction_task_id`,
+  `construction_plan_line_id`, asignaciones).
 
 ## Árbol de recursos (P-02)
 
@@ -120,6 +132,84 @@ Estados del plan: `draft` › `to_approve` › `approved` › `in_progress` ›
 - **Cerrar** (administrador): solo lectura y presupuesto «Hecho». Un plan
   aprobado no se elimina.
 
+## Asignaciones y compras (fase 4, P-10 y P-11)
+
+- **Asignación** (`construction.resource.plan.allocation`): `kind` y
+  exactamente un documento (`purchase_request_line_id`,
+  `material_request_line_id`, `production_id`, `purchase_line_id`, `slot_id`;
+  `CHECK num_nonnulls(...) = 1` y control de tipo). Lo hecho del documento se
+  reparte entre sus asignaciones por `date_needed` (cada una hasta lo
+  asignado; el sobrante a la última): comprado (compra masiva: lo asignado
+  mientras no se cancele; faltante del requerimiento: `qty_purchased` de su
+  línea), despachado (`qty_received_on_site` del requerimiento; consumo de la
+  OF), consumido (movimientos hechos de la ubicación de la obra a una ubicación
+  de consumo, por obra y producto; componentes consumidos de la OF). `state`
+  sigue al documento (abierta / hecha / cancelada). No almacenados, con
+  `compute_sudo`: el usuario del plan no necesita permisos de compras,
+  inventario ni fabricación para verlos.
+- **Línea del plan**: `qty_requested` (requerimientos de obra y OF; OC de
+  servicio y turnos para contratas y personal; un documento cancelado cuenta
+  solo lo hecho), `qty_purchased`, `qty_dispatched`, `qty_consumed`,
+  `qty_remaining` (planificado − pedido) y `line_state` calculado: Excedida
+  (pedido > planificado + tolerancia), Completa (despachado ≥ planificado; en
+  contratas, todo asignado y cerrado), En compra, Parcial, Planificada; Cancelada
+  si el plan se canceló. `_get_line_execution`: comprometido = (máx(pedido,
+  comprado) − consumido) × costo del plan; real = consumido × costo (contratas:
+  tarifa de la OC de servicio).
+- **Ganchos de la fase 3 completados**: `_transfer_to_new_version` mueve las
+  asignaciones abiertas a la línea nueva (`previous_line_id`) y deja nota de
+  las que no continúan; `_get_consumed_qty` = pedido con documentos cerrados
+  (base de «solo saldos»); `_mark_in_progress` al crear el primer documento;
+  `action_close` se niega con asignaciones abiertas.
+- **Saldo** (`models/construction_plan_supply.py`): `_supply_balance`,
+  `_supply_split` y `_supply_check` sobre un grupo de líneas, en la unidad del
+  producto y sin contar las asignaciones del propio documento.
+- **Asistentes** (base `construction.plan.supply.mixin`: lee del contexto la
+  selección del árbol `construction_selection_task_ids` /
+  `construction_selection_project`, la expande con `child_of`, filtra por
+  etapa; exige el plan vigente):
+  - `construction.plan.purchase.wizard` (W-02, `action_plan_purchase_wizard`):
+    modo con analítica (necesidad completa, distribución de las líneas o la
+    cuenta de la obra al 100 %) o stock general (necesidad − libre en el
+    destino − entrante); destino, rango de necesidad, agrupar por producto o
+    producto y fecha; unidad de compra del proveedor y redondeo hacia arriba
+    salvo unidades de medida (m, kg, l, m², m³, h). Crea el `purchase.request`
+    en borrador con `construction_plan_mode` y las asignaciones.
+  - `construction.plan.request.wizard` (W-03, `action_plan_request_wizard`):
+    agrupa por ambiente, departamento o piso (la línea por encima de ese nivel,
+    en su propio nivel); planificado, pedido, saldo, disponible en el origen y a
+    pedir. Crea el `construction.material.request` en borrador con la tarea del
+    grupo en cada línea y asignaciones a las líneas de cada nivel.
+  - `construction.plan.production.wizard` (W-04, `action_plan_production_wizard`):
+    una OF por piso (o por la selección) y tipología: producto de la tipología ×
+    ambientes, BOM de la tipología, planta y fecha; omite los ambientes que ya
+    están en una OF del plan. Asigna los componentes de producción y armado
+    (por la etapa de la línea de BOM) a las líneas de esas etapas de sus
+    ambientes.
+  - `construction.plan.exceed.wizard` (W-10): documento, política,
+    justificación y tabla saldo / pedido / exceso.
+- **Control del requerimiento de obra**: sin tocar
+  `al_construction_material_request`, se hereda `action_request_approval`:
+  refresca el plan vigente, calcula el exceso por línea (saldo bajo la tarea de
+  la línea, tolerancia del plan; sin líneas = fuera de plan), y según
+  `exceed_policy` bloquea, abre W-10 (avisar: confirmar; pedir aprobación:
+  justificación obligatoria) o sigue; antes de las revisiones reparte cada
+  línea entre las líneas del plan (asignaciones). La regla
+  `tier_material_request_exceed` (datos, `noupdate`) agrega la revisión del
+  grupo administrador del planificador cuando `construction_exceed_state =
+  exceeded` y la política es «pedir aprobación»; `_write_approved` lo pasa a
+  «Exceso aprobado».
+- **Control de la OF**: `mrp.production.action_confirm` sincroniza las
+  asignaciones y controla el saldo de producción y armado con la misma
+  política; con «pedir aprobación» la confirma el administrador del
+  planificador desde W-10.
+- Vistas: botones de la cabecera del plan y del árbol (los xmlid de
+  `TREE_ACTIONS`), «Asignaciones» en el plan y en la línea, columnas de
+  ejecución, menú **Abastecimiento** (requerimientos de obra, requerimientos de
+  compra, órdenes de fabricación, asignaciones), columnas «Saldo del plan» y
+  «Control» y cabecera de control en el requerimiento de obra, modo de compra
+  masiva en el requerimiento de compra y pestaña «Plan de obra» en la OF.
+
 ## Generar plan (`construction.plan.generate.wizard`)
 
 1. Ambientes elegidos (vacío = todos los de la obra).
@@ -152,8 +242,21 @@ borrador con el costo ponderado aplicado y una línea sin etapa ni costo.
   < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_baseline.py
 ```
 
-Tests: `--test-tags /al_construction_planner` (39 tests, con el tour
-`al_construction_planner_plan_tree` del árbol).
+Fase 4 (después de los anteriores): compra masiva con analítica de la
+producción del piso 05, requerimiento de obra del piso (instalación y
+acabado), un requerimiento del Dpto 501 que excede el plan con su
+justificación y una OF del Dpto 502 en borrador.
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http \
+  < myodoo/ol_new_apps/OL-PROJECTS/al_construction_planner/tools/planner_demo_supply.py
+```
+
+Tests: `--test-tags /al_construction_planner` (49 tests, con el tour
+`al_construction_planner_plan_tree` del árbol; `test_supply.py` cubre la
+fase 4: compra masiva en los dos modos, el requerimiento con las tres
+políticas y la tolerancia, la OF con su BOM y el control al confirmar, el
+estado de la línea, el traspaso al replanificar y la multicompañía).
 
 Rendimiento del árbol con volumen tipo MOMEN (deshace todo al terminar):
 

@@ -1,9 +1,9 @@
 # Guía funcional — Planificación de obra (AL)
 
-> Módulo técnico `al_construction_planner` · versión `3.20261010` · área `OL-PROJECTS`.
+> Módulo técnico `al_construction_planner` · versión `4.20261010` · área `OL-PROJECTS`.
 > Para consultores funcionales: qué resuelve, los conceptos que usa y el
-> proceso de las fases 1 a 3 (plan, árbol y línea base) con un ejemplo que
-> cuadra. Enlaces verificados el
+> proceso de las fases 1 a 4 (plan, árbol, línea base, asignaciones y
+> compras) con un ejemplo que cuadra. Enlaces verificados el
 > 10/10/2026 con `docs/validacion/verificar_enlaces.py`.
 
 ## 1. Para qué sirve
@@ -15,8 +15,12 @@ obra sobre su propio árbol de tareas (piso › departamento › ambiente ›
 módulo), con el monto planificado de cada nivel. Lo usan Oficina Técnica
 (planificador) y Jefatura de Proyectos.
 
-Fuera del alcance de las fases 1 a 3: requerimientos, asignación de
-contratas, avances, liquidaciones, producción e ingresos (fases 4 a 8, ver
+Desde la fase 4 el plan también abastece: la compra masiva, los
+requerimientos de obra y las órdenes de fabricación nacen de la selección
+del árbol y descuentan el saldo de cada línea, con control de exceso.
+
+Fuera del alcance de las fases 1 a 4: asignación de contratas, avances,
+liquidaciones, cuadrillas, ingresos y cronograma (fases 5 a 8, ver
 `docs/planificador/DISENO_TECNICO.md`).
 
 ## 2. Marco normativo y conceptual
@@ -34,6 +38,11 @@ No hay norma que obligue el proceso: es planificación de gestión. Conceptos:
 | Línea base | Versión aprobada del plan: sus montos quedan congelados como presupuesto | Plan aprobado y su presupuesto analítico |
 | Base del costo | Qué miró el planificador al fijar el costo (manual, último precio, ponderado de 3 o 6 meses) y su fecha | Línea del plan |
 | Versión | Copia del plan para replanificar; la vigente sigue en uso hasta aprobar la nueva | Plan ▸ Nueva versión |
+| Asignación | Parte de un documento (compra masiva, requerimiento, OF, OC de servicio, turno) que corresponde a una línea del plan | Plan ▸ Asignaciones |
+| Fecha de necesidad | Inicio de la tarea menos la anticipación del tipo de recurso; ordena el reparto de lo hecho | Línea del plan |
+| Saldo del plan | Planificado menos lo ya pedido (requerimientos de obra y OF) | Línea del plan; columna del requerimiento de obra |
+| Política de exceso | Qué pasa al pedir más que el saldo más la tolerancia: avisar, pedir aprobación o bloquear | Plan ▸ Políticas |
+| Compra masiva con analítica / stock general | Compra para la obra con su cuenta analítica, o para el almacén central descontando lo libre | Plan ▸ Compra masiva |
 
 Prioridad de la tarifa: obra y contrata › solo obra › solo contrata › tarifa
 base › precio de la actividad.
@@ -58,7 +67,13 @@ flowchart TD
   L -- Última aprobación --> M[Aprobado: presupuesto analítico y líneas congeladas]
   M --> N[Nueva versión con motivo]
   N --> O[Al aprobarla, la anterior pasa a Reemplazado]
-  M --> P[Cerrar: solo lectura]
+  M --> Q[Compra masiva, requerimiento de obra, OF desde la selección]
+  Q --> R{¿Excede el saldo del plan?}
+  R -- No o avisar --> S[Documento con asignaciones a las líneas]
+  R -- Pedir aprobación --> T[Justificación y revisión de la jefatura] --> S
+  R -- Bloquear --> Q
+  S --> U[Comprado, despachado, consumido y estado de la línea]
+  U --> P[Cerrar: sin documentos abiertos, solo lectura]
 ```
 
 | # | Paso | Dónde en Odoo | Quién | Resultado |
@@ -76,7 +91,11 @@ flowchart TD
 | 11 | Solicitar aprobación | Plan ▸ Solicitar aprobación | Planificador | En aprobación, con sus revisiones |
 | 12 | Aprobar o rechazar | Plan ▸ Validar / Rechazar (bloque de revisiones) | Jefatura; gerencia sobre S/ 100 000 (reglas de ejemplo) | Aprobado con presupuesto, o de vuelta a borrador |
 | 13 | Replanificar | Plan aprobado ▸ Nueva versión | Planificador | Versión nueva en borrador |
-| 14 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» |
+| 14 | Comprar en bloque | Árbol de recursos (selección) o plan ▸ Compra masiva | Planificador con requerimientos de compra | Requerimiento de compra (OCA) en borrador; sube el comprado |
+| 15 | Pedir a la obra | Árbol de recursos o plan ▸ Requerimiento de obra | Planificador / residente | Requerimiento de obra en borrador con saldo y control por línea |
+| 16 | Solicitar la aprobación del requerimiento | Requerimiento ▸ Solicitar aprobación | Residente | Según la política: sigue, pide justificación y revisión de la jefatura, o se bloquea |
+| 17 | Fabricar | Árbol de recursos o plan ▸ Orden de fabricación; OF ▸ Confirmar | Planificador / planta | OF por piso con la BOM; al confirmar se controla el saldo; al cerrar sube lo consumido |
+| 18 | Cerrar | Plan ▸ Cerrar | Administrador | Plan de solo lectura y presupuesto «Hecho» (no con documentos abiertos) |
 
 Caminos alternativos: **volver a generar** (modo «Reemplazar lo generado»)
 borra solo las líneas generadas de esos ambientes, conserva las manuales y
@@ -182,6 +201,56 @@ costo. Su resumen compara contra el presupuesto vigente (diferencia
 listando la rejilla en «Líneas sin etapa» y «Líneas sin costo». Al aprobarla,
 la v1 pasará a «Reemplazado» y su presupuesto a «Revisado».
 
+### Asignaciones y compras (P-10, P-11)
+
+Con `tools/planner_demo_supply.py`, sobre la versión 1 vigente del piso 05:
+
+**Compra masiva con analítica (W-02)**, solo Producción del piso 05. La
+necesidad es lo planificado menos lo ya comprado o pedido; las planchas se
+redondean a entero hacia arriba:
+
+| Material | Necesidad | A comprar |
+|---|---|---|
+| Melamina MDP blanco fantasía | 17.66 | 18 planchas |
+| Melamina coñac | 8.22 | 9 planchas |
+| Melamina blanco RH fantasía | 2.26 | 3 planchas |
+
+El requerimiento de compra PR lleva la cuenta de la obra en cada línea
+(modo «Con analítica de la obra») y 24 asignaciones (una por cocina y
+material, 30 planchas en total): la primera cocina que se necesita recibe
+su parte y el redondeo va a la última. En **stock general** la necesidad se
+descuenta de lo libre en el central y de lo que ya viene en compras, sin
+analítica de obra.
+
+**Requerimiento de obra del piso (W-03)**, instalación y acabado, agrupado
+por piso: 1,100 tornillos 4×50 y 700 tapatornillos, cada línea con la tarea
+«Piso 05» y 8 asignaciones (una por cocina). Control «En plan»; queda en
+aprobación con las reglas del requerimiento.
+
+**Exceso (W-10).** Un segundo requerimiento del Dpto 501 pide 20 tornillos
+más: su saldo ya es 0 (los 121 del plan los pidió el requerimiento del
+piso) y la columna «Control» dice «Excede 20». Con la política del plan
+**pedir aprobación**, «Solicitar aprobación» abre el asistente de exceso; la
+justificación es obligatoria («Reposición por piezas dañadas en el
+traslado») y el requerimiento recibe la revisión adicional «Exceso sobre el
+plan: jefatura del planificador». Con **avisar** basta confirmar; con
+**bloquear** no se envía. La tolerancia del plan (p. ej. 10 %) deja pasar
+pedidos hasta lo planificado más ese porcentaje.
+
+**Orden de fabricación (W-04)** del Dpto 502: 1 «Cocina tipo 02» con la BOM
+de la tipología; asignaciones a las líneas de producción y armado de esa
+cocina (melamina blanca 2.15, coñac 1.00, RH 0.28, bisagras 12 y un
+herraje). Los tornillos y tapatornillos de la BOM (instalación y acabado) no
+se asignan: van a la obra con el requerimiento. Al confirmar se controla el
+saldo de esas líneas con la misma política (el exceso de una OF lo confirma
+la jefatura); al cerrarla, sus consumos suben lo consumido y la línea pasa a
+«Completa».
+
+Estado de la línea (en este orden): **Excedida** (pedido mayor que lo
+planificado más la tolerancia), **Completa** (llegó a la obra lo
+planificado), **En compra** (compra masiva abierta o faltante en compra),
+**Parcial** y **Planificada**.
+
 ## 5. Configuración inicial
 
 1. Instalar el módulo desde Aplicaciones.
@@ -195,6 +264,14 @@ la v1 pasará a «Reemplazado» y su presupuesto a «Revisado».
    `amount_total`). Sin reglas, el plan se aprueba al solicitarlo.
 6. La obra necesita su cuenta analítica (o cada línea su distribución) para
    crear el presupuesto.
+7. Política de exceso y tolerancia en **Plan ▸ Políticas** (en borrador).
+8. Para comprar y pedir desde el plan, el planificador necesita también los
+   grupos de **requerimientos de compra** y de **requerimientos de obra**
+   (y de **fabricación** para las OF).
+9. La regla «Exceso sobre el plan: jefatura del planificador» del
+   requerimiento de obra viene con el módulo (Requerimientos de obra ▸
+   Configuración ▸ Reglas de aprobación). Sus revisores deben poder ver los
+   requerimientos: déles también el grupo de aprobador del requerimiento.
 
 ## 6. Reportes y libros relacionados
 
@@ -207,6 +284,11 @@ la v1 pasará a «Reemplazado» y su presupuesto a «Revisado».
   Presupuestos), con lo alcanzado por los apuntes analíticos.
 - Árbol de recursos (P-02): árbol por niveles con la selección y sus recursos.
 - Tareas de la obra (lista de niveles con su monto planificado).
+- Asignaciones del plan (Abastecimiento ▸ Asignaciones del plan, o el botón
+  del plan): por documento y producto, con lo asignado, lo ejecutado y su
+  estado; pivote.
+- Columnas de ejecución de las líneas: pedido, comprado, despachado,
+  consumido y saldo por pedir.
 
 No alimenta libros PLE ni archivos SUNAT.
 
@@ -226,7 +308,14 @@ No alimenta libros PLE ni archivos SUNAT.
 | «No se puede enviar a aprobación» | Hay líneas sin etapa, sin costo o contratas sin actividad (el mensaje las lista) | Corregir la etapa, aplicar el costo o asignar la actividad |
 | «Ya tiene la versión … en preparación» | Solo una versión en preparación por obra | Terminarla o cancelarla |
 | El revisor no ve el botón Validar | No pertenece al grupo de la regla o falta un nivel previo | Revisar la regla y el orden de los niveles |
-| Comprometido y real en cero | Se llenan con asignaciones, contratas y producción (fases 4 a 6) | — |
+| Comprometido y real en cero | Se llenan con las asignaciones (compra, requerimiento, OF); contratas y personal desde la fase 5 | Generar los documentos desde el plan |
+| «El plan … no está vigente» al abrir una compra masiva, requerimiento u OF | Los asistentes trabajan sobre el plan aprobado o en ejecución | Aprobar el plan |
+| El asistente no propone un material | Ya no tiene saldo (comprado o pedido) o su etapa no está marcada | Revisar las etapas y las asignaciones de la línea |
+| «Pide más de lo que queda en el plan … bloquear» | La política del plan es bloquear | Reducir la cantidad o replanificar |
+| «Fuera de plan» en el requerimiento | El material no está en el plan bajo el nivel de la línea | Pedirlo en el nivel correcto o justificarlo |
+| «El exceso de una OF lo aprueba la jefatura» | Política «pedir aprobación» en una OF | Que el administrador del planificador confirme la OF |
+| «Tiene documentos abiertos» al cerrar el plan | Hay compras, requerimientos u OF sin terminar | Terminarlos o cancelarlos |
+| Consumido en cero en material de obra | Se cuenta lo que sale de la ubicación de la obra a una ubicación de consumo | Registrar el consumo en obra |
 | Eliminar un plan aprobado | No se permite: queda como historia de la obra | Cerrarlo o reemplazarlo con una versión nueva |
 
 ## 8. Preguntas frecuentes del consultor
@@ -241,9 +330,17 @@ No alimenta libros PLE ni archivos SUNAT.
 - **¿Qué pasa con el presupuesto de la versión anterior?** Pasa a
   «Revisado» y la nueva lo tiene como presupuesto padre: queda la historia
   de revisiones en Contabilidad ▸ Presupuestos.
-- **¿«Solo saldos» copia menos líneas?** Copia lo que falta pedir o ejecutar
-  de cada línea; hasta que lleguen las fases de requerimientos, contratas y
-  producción no hay consumos y copia todo.
+- **¿«Solo saldos» copia menos líneas?** Copia lo planificado menos lo
+  pedido con documentos ya cerrados; los abiertos pasan a la versión nueva
+  al aprobarla y siguen contando allí. Las líneas totalmente cubiertas no se
+  copian.
+- **¿La compra masiva cuenta como pedido de la obra?** No: sube el
+  comprado. El pedido es de los requerimientos de obra y las OF.
+- **¿Cómo se reparte una compra entre varias cocinas?** Por fecha de
+  necesidad: primero la que se necesita antes, hasta su saldo; lo que sobra
+  (redondeo o exceso), a la última.
+- **¿El residente ve el plan?** No: ve el saldo y el control en su
+  requerimiento; el plan solo lo ven los usuarios del planificador.
 - **¿El costo sugerido incluye descuentos y otra moneda?** Sí: usa el precio
   neto de descuento, en la unidad del producto y convertido a la moneda de la
   compañía al tipo de cambio de la fecha de cada compra.

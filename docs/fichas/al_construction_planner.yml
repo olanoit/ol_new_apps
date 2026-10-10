@@ -5,12 +5,13 @@ subtitulo: >-
   desde las tipologías y el monto planificado de cada nivel a la vista.
 categoria: Construcción · Proyectos
 portada: screenshots/02-seleccion-parcial.png
-etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan]
+etiquetas: [Plan de recursos, Tipologías, Árbol de recursos, Selección en cascada, Contratas por driver, Tarifas por obra, Etapa de consumo, Aprobación por niveles, Presupuesto analítico, Versiones del plan, Compra masiva, Control de exceso, Orden de fabricación]
 
 destacados_intro: >-
   La jerarquía de la obra, el catálogo de tipologías, actividades y tarifas,
-  la generación del plan, el árbol de recursos con selección en cascada y la
-  línea base aprobada con su presupuesto analítico.
+  la generación del plan, el árbol de recursos con selección en cascada, la
+  línea base aprobada con su presupuesto analítico y las compras,
+  requerimientos y órdenes de fabricación que nacen del plan y lo descuentan.
 destacados:
   - icono: "🏢"
     titulo: La obra como árbol
@@ -58,6 +59,23 @@ destacados:
     texto: >-
       «Nueva versión» copia todo o solo saldos. La vigente sigue en uso hasta
       aprobar la nueva; entonces pasa a «Reemplazado».
+  - icono: "🛒"
+    titulo: Compra masiva en dos modos
+    texto: >-
+      Desde el árbol: con la analítica de la obra o como stock general,
+      descontando lo libre en el central. Las planchas se redondean a entero.
+  - icono: "⚖"
+    titulo: Pedir contra el saldo
+    texto: >-
+      El requerimiento de obra muestra el saldo del plan por material. Al
+      pedir más, la política del plan avisa, pide una revisión más con
+      justificación o bloquea.
+  - icono: "🏭"
+    titulo: OF desde la tipología
+    texto: >-
+      Una orden de fabricación por piso con el producto de la tipología por
+      sus ambientes y los componentes de la BOM; al cerrarla sube lo
+      consumido.
   - icono: "!"
     titulo: Advertencias que no bloquean
     texto: >-
@@ -139,6 +157,33 @@ flujos:
         G --> H[Aprobar la nueva]
         H --> I[La anterior: Reemplazado y presupuesto revisado]
         F --> J[Cerrar: solo lectura]
+  - id: abastecimiento
+    titulo: Asignaciones y compras
+    texto: >-
+      Cada documento que nace del plan guarda qué parte corresponde a cada
+      línea (asignación). Lo comprado, lo llegado a obra y lo consumido se
+      reparten por fecha de necesidad y mueven el estado de la línea.
+    mermaid: |
+      flowchart TD
+        A[Árbol: selección de pisos, departamentos o ambientes] --> B[Compra masiva]
+        A --> C[Requerimiento de obra]
+        A --> D[Orden de fabricación]
+        B --> B1[Requerimiento de compra: con analítica o stock general]
+        B1 --> X[Asignaciones a las líneas del plan]
+        C --> C1{Solicitar aprobación: ¿excede el saldo?}
+        C1 -- No --> C2[Revisiones normales]
+        C1 -- Sí, avisar --> C2
+        C1 -- Sí, pedir aprobación --> C3[Justificación y revisión de la jefatura]
+        C1 -- Sí, bloquear --> C4[No se envía]
+        C3 --> C2
+        C2 --> X
+        D --> D1{Confirmar: ¿excede producción o armado?}
+        D1 -- No --> D2[OF confirmada]
+        D1 -- Sí --> D3[Justificación; la jefatura confirma si pide aprobación]
+        D3 --> D2
+        D2 --> X
+        X --> Y[Pedido, comprado, despachado, consumido, saldo y estado de la línea]
+        Y --> Z[Nueva versión: las abiertas pasan a la línea nueva]
 
 pasos_intro: >-
   El árbol de recursos con el piso 05 de demostración («DEMO PLAN
@@ -218,6 +263,58 @@ pasos:
       Pivote y gráfico de las líneas de los planes vigentes por etapa y tipo
       de recurso.
     imagen: screenshots/10-analisis.png
+  - seccion: Asignaciones y compras
+    texto: >-
+      Compra masiva, requerimientos y una OF generados desde la versión
+      vigente del piso 05 (`tools/planner_demo_supply.py`).
+  - titulo: Plan en ejecución
+    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos ▸ plan vigente
+    texto: >-
+      El primer documento generado pasa el plan a «En ejecución». En la
+      cabecera, «Compra masiva», «Requerimiento de obra» y «Orden de
+      fabricación»; arriba, el botón «Asignaciones».
+    puntos:
+      - "Los mismos asistentes salen de la barra del árbol de recursos con la selección marcada."
+      - "El resumen por etapa ya muestra comprometido y real."
+    imagen: screenshots/11-plan-en-ejecucion.png
+  - titulo: Compra masiva
+    ruta: Plan ▸ Compra masiva (o Árbol de recursos ▸ Compra masiva)
+    texto: >-
+      Necesidad, libre en el central, lo que ya viene en compras y a comprar
+      por producto. Con analítica compra toda la necesidad con la cuenta de
+      la obra; en stock general descuenta lo libre y lo que ya viene.
+    puntos:
+      - "Necesidad: lo planificado menos lo ya comprado o pedido por la obra."
+      - "Planchas y demás unidades se redondean a entero hacia arriba: 17.66 planchas de melamina blanca → 18."
+    imagen: screenshots/12-compra-masiva.png
+  - titulo: Requerimiento de obra desde el plan
+    ruta: Plan ▸ Requerimiento de obra
+    texto: >-
+      Planificado, pedido, saldo, disponible en el central y a pedir por
+      material, agrupado por ambiente, departamento o piso. Crea el
+      requerimiento en borrador con una asignación por cada línea del plan.
+    imagen: screenshots/13-requerimiento-desde-plan.png
+  - titulo: Asignaciones del plan
+    ruta: Plan ▸ Asignaciones
+    texto: >-
+      Qué parte de cada documento corresponde a cada línea, lo ejecutado y
+      el estado, que sigue al documento.
+    imagen: screenshots/14-asignaciones.png
+  - titulo: Control de plan en el requerimiento
+    ruta: Planificación de obra ▸ Abastecimiento ▸ Requerimientos de obra
+    texto: >-
+      Columnas «Saldo del plan» y «Control» en las líneas. Aquí se piden 20
+      tornillos del Dpto 501 que ya se pidieron con el requerimiento del
+      piso: excede 20, con la política «pedir aprobación» se justificó y el
+      requerimiento espera también la revisión de la jefatura.
+    imagen: screenshots/15-control-de-plan.png
+  - titulo: Orden de fabricación desde el plan
+    ruta: Plan ▸ Orden de fabricación ▸ OF ▸ Plan de obra
+    texto: >-
+      El producto de la tipología por los ambientes incluidos, con los
+      componentes de la BOM. Las asignaciones van a las líneas de producción
+      y armado de esos ambientes; al confirmar se controla su saldo.
+    imagen: screenshots/16-of-desde-plan.png
 
 campos_intro: >-
   Los campos de la fase 1 en los modelos nuevos y en los que el módulo amplía.
@@ -251,7 +348,8 @@ campos:
     campos:
       - [Número y versión, "PLR/año/##### · vN.", Automático, Una versión vigente y una en preparación por obra]
       - ["Inicio y fin", Fechas del plan., De la obra, "—"]
-      - [Política de exceso, "Avisar, pedir aprobación o bloquear.", Pedir aprobación, Se aplica en la fase de requerimientos]
+      - [Política de exceso, "Avisar, pedir aprobación o bloquear.", Pedir aprobación, En requerimientos de obra y OF]
+      - [Tolerancia, Porcentaje sobre lo planificado antes de exceder., "0", "—"]
       - [Anticipación, "Días antes del inicio de la tarea por tipo de recurso.", "7 / 3 / 7", Fecha de necesidad]
       - ["Montos por tipo", "Material, servicio, contrata, personal propio, producción.", Calculado, "—"]
       - [Presupuesto analítico, Lo crea la aprobación., "—", "La versión anterior queda «Revisado»"]
@@ -268,6 +366,35 @@ campos:
       - [Presupuesto, Monto congelado al aprobar., "—", Solo lectura]
       - [Línea anterior, La de la versión previa., "—", La pone «Nueva versión»]
       - [Fecha de necesidad, Inicio de la tarea menos la anticipación., Calculado, Editable]
+  - grupo: Ejecución de la línea
+    ruta: Plan ▸ Líneas (columnas opcionales) y ficha de la línea
+    campos:
+      - [Pedido, "Requerimientos de obra y OF (material), OC de servicio (contrata), turnos (personal propio).", Calculado, Cancelado cuenta solo lo hecho]
+      - [Comprado, Compra masiva y compras confirmadas del faltante de los requerimientos., Calculado, "—"]
+      - ["Despachado y consumido", "Llegado a la obra y entregado a la planta; consumo en obra y componentes de las OF.", Calculado, Repartidos por fecha de necesidad]
+      - [Saldo por pedir, Planificado menos pedido., Calculado, "—"]
+      - ["Comprometido y real", "Pedido o comprado no consumido y lo consumido, al costo del plan.", Calculado, "—"]
+      - [Estado, "Excedida, completa, en compra, parcial, planificada (en ese orden).", Calculado, Excedida = pedido sobre planificado más la tolerancia]
+  - grupo: Asignación del plan
+    ruta: Plan ▸ Asignaciones
+    campos:
+      - [Documento, "Compra masiva, requerimiento de obra, orden de fabricación, OC de servicio o turno.", "—", Exactamente un documento enlazado]
+      - [Asignado, Parte del documento para esa línea., "—", "—"]
+      - [Ejecutado, Lo hecho del documento repartido por fecha de necesidad., Calculado, "—"]
+      - [Estado, "Abierta, hecha o cancelada.", Calculado, Sigue al documento]
+  - grupo: Requerimiento de obra (control de plan)
+    ruta: Abastecimiento ▸ Requerimientos de obra
+    campos:
+      - [Plan de recursos, Plan vigente de la obra., Al pedir la aprobación, Solo lo ven los usuarios del planificador]
+      - [Control de plan, "En plan, excede el plan, exceso aprobado.", En plan, "—"]
+      - [Justificación del exceso, Por qué se pide más., "—", Obligatoria con «pedir aprobación»]
+      - ["Saldo del plan y control (líneas)", "Lo que queda por pedir del material bajo el nivel de la línea; «Excede N» o «Fuera de plan».", Calculado, Sin contar el propio requerimiento]
+  - grupo: Compra masiva y orden de fabricación
+    ruta: Requerimiento de compra · Fabricación ▸ Orden ▸ Plan de obra
+    campos:
+      - [Modo de compra masiva, Con analítica de la obra o stock general., "—", En la línea del requerimiento de compra]
+      - ["Plan, ambientes incluidos", Plan y ambientes de la OF., "—", Los pone «Orden de fabricación»]
+      - ["Control de plan y justificación", Como en el requerimiento., En plan, "—"]
   - grupo: Lista de materiales
     ruta: Fabricación ▸ Lista de materiales ▸ Componentes
     campos:
@@ -303,6 +430,15 @@ funcionalidades:
       - "Nueva versión con motivo, copiando todo o solo saldos; la anterior pasa a «Reemplazado»."
       - "Aplicar costo con último precio y ponderados de 3 y 6 meses de las compras."
       - "Resumen por etapa, análisis en pivote y gráfico, y cierre del plan."
+  - grupo: Asignaciones y compras
+    items:
+      - "Asignaciones de cada documento a las líneas del plan, con lo hecho repartido por fecha de necesidad y el estado del documento."
+      - "Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado de cada línea."
+      - "Compra masiva desde la selección, con analítica de la obra o como stock general, redondeada a la unidad de compra."
+      - "Requerimiento de obra desde la selección, agrupado por ambiente, departamento o piso."
+      - "Saldo del plan y control por línea en el requerimiento de obra; política de exceso al solicitar la aprobación con justificación y revisión adicional."
+      - "Orden de fabricación por piso o selección desde la BOM de la tipología, con control al confirmar y consumo al cerrar."
+      - "Las asignaciones abiertas pasan a la versión nueva al aprobarla; el plan no se cierra con documentos abiertos."
   - grupo: Seguridad
     items:
       - "Grupos Reporte de avance, Usuario, Planificador y Administrador, y el grupo aparte de ingresos."
@@ -345,6 +481,8 @@ configuracion:
   - "Cree el árbol: pisos, departamentos y ambientes con su tipología."
   - "Cree el **plan de recursos** de la obra y pulse **Generar plan**."
   - "Defina las **reglas de aprobación** del plan en **Planificación de obra ▸ Configuración ▸ Reglas de aprobación**."
+  - "La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento de obra viene con el módulo; sus revisores necesitan ver los requerimientos (grupo de aprobador del requerimiento)."
+  - "Para la compra masiva y los requerimientos, el planificador necesita también los grupos de requerimientos de compra y de requerimientos de obra."
 requisitos_nota: >-
   Requiere Enterprise (planificación y previsión de proyectos) y los módulos
   OCA de requerimientos de compra y de aprobación por niveles. Licencia
@@ -364,12 +502,29 @@ faq:
     respuesta: >-
       Al aprobar la versión nueva pasa a «Revisado» y queda como presupuesto
       padre del nuevo: la historia de revisiones queda en Contabilidad.
+  - pregunta: "¿La compra masiva cuenta como pedido de la obra?"
+    respuesta: >-
+      No: sube el comprado. El pedido es de los requerimientos de obra y las
+      OF; la necesidad de una compra masiva nueva descuenta ambos.
+  - pregunta: "¿Qué pasa con los documentos abiertos al replanificar?"
+    respuesta: >-
+      Al aprobar la versión nueva, las asignaciones abiertas pasan a la línea
+      que continúa a la suya; las cerradas quedan en la anterior. «Solo
+      saldos» copia lo planificado menos lo pedido con documentos cerrados.
   - pregunta: "¿Cuándo la instalación por ML va al módulo?"
     respuesta: >-
       Cuando la tipología tiene anchos por módulo. Sin anchos queda en el
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 4.20261010
+    fecha: 10/10/2026
+    cambios:
+      - "Asignaciones y compras (fase 4, P-10 y P-11): cada documento generado desde el plan guarda qué parte corresponde a cada línea; lo comprado, despachado y consumido se reparte por fecha de necesidad."
+      - "Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado calculado de cada línea (excedida, completa, en compra, parcial, planificada)."
+      - "Asistentes «Compra masiva» (con analítica de la obra o stock general), «Requerimiento de obra» (por ambiente, departamento o piso) y «Orden de fabricación» (por piso o selección desde la BOM), en la barra del árbol y en el plan."
+      - "Control de exceso al solicitar la aprobación del requerimiento de obra y al confirmar la OF, según la política del plan, con justificación y revisión adicional de la jefatura (W-10)."
+      - "Menú «Abastecimiento»; las asignaciones abiertas pasan a la versión nueva y el plan no se cierra con documentos abiertos."
   - version: 3.20261010
     fecha: 10/10/2026
     cambios:

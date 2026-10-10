@@ -169,10 +169,11 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 | **1 (hecha)** | Jerarquía, catálogo, plan y generación | P-01 básica, P-04, P-12, P-14 |
 | 2 (hecha) | Árbol del plan OWL con selección en cascada y carga por niveles | P-02 |
 | Línea base (hecha; fase 3 de la especificación) | Aprobación con tier validation y bloqueo por líneas sin etapa/costo/actividad; presupuesto analítico por combinación de cuentas (ver §6.1); resumen por etapa; W-12 aplicar costo (manual, último precio, ponderado 3 y 6 meses); W-09 nueva versión (todo o solo saldos, `previous_line_id`); cierre | P-03, W-09, W-12 |
-| 3 | Requerimientos desde la selección: columnas planificado/pedido/saldo y control de exceso en `_check_ready_to_submit` del requerimiento | P-07 |
+| Asignaciones y compras (hecha; fase 4 de la especificación) | Modelo de asignación; pedido/comprado/despachado/consumido/saldo y estado de la línea; W-02 compra masiva en dos modos; W-03 requerimiento de obra con saldo y control de exceso (W-10, revisión adicional); W-04 OF desde la BOM con control al confirmar (ver §6.2) | P-10, P-11 |
+| 3 | ~~Requerimientos desde la selección~~: hecho en la fase 4 (el control va en `action_request_approval`, no en `_check_ready_to_submit`, que también corre al procesar) | P-07 |
 | 4 | Contratas: asignar contrata (OC de servicio por contrata y obra), avances por driver con foto, liquidación semanal con retención | P-05, P-06, P-08 |
 | 5 | Personal propio: turnos de planificación por rol, horas; enlace con la obra de planilla | P-09 |
-| 6 | Producción: OF por ambiente desde la BOM de la tipología, estados del módulo | P-10 |
+| 6 | Producción: estados del módulo (la OF por piso desde la BOM ya está en la fase 4) | P-10 |
 | 7 | Presupuesto analítico, OV por partida, valorizaciones e ingreso devengado, flujo | P-11, P-13 |
 | 8 | Cronograma con recursos: heredar `al.gantt.data.get_data`, panel y carga semanal OWL | P-15 |
 
@@ -191,7 +192,43 @@ Control `al_base_module_info` (TestMulticompany) en verde para este módulo.
 - Ganchos de las fases 4-6: `_transfer_to_new_version(new_plan)`,
   `line._get_line_execution()` (comprometido, real),
   `line._get_consumed_qty()` (solo saldos), `_mark_in_progress()` y
-  `action_close()` (control de asignaciones abiertas y liquidaciones).
+  `action_close()` (control de asignaciones abiertas y liquidaciones). La
+  fase 4 los llena para las asignaciones (§6.2); las contratas (fase 5)
+  agregan avances y liquidaciones.
+
+### 6.2 Asignaciones y compras (fase 4)
+
+- `construction.resource.plan.allocation`: `kind` + un solo documento
+  (`CHECK num_nonnulls(...) = 1`); `qty_allocated` en la unidad de la línea.
+  `qty_done`, comprado, despachado y consumido no se almacenan: se reparten
+  por `date_needed` entre las asignaciones del mismo documento (la OF, por
+  componente); el sobrante va a la última. `state` sigue al documento.
+- Fuentes: compra masiva → comprado = lo asignado mientras el PR no se
+  cancele (la especificación pide que suba al crearla, P-10), ejecutado = OC
+  confirmadas; requerimiento → comprado = `qty_purchased` de su línea,
+  despachado = `qty_received_on_site` (incluye la entrega directa); OF →
+  despachado = consumido = componentes hechos; consumo en obra =
+  movimientos hechos de la ubicación de la obra (y sus hijas) a una ubicación
+  de uso `production` menos las devoluciones, por obra y producto. En
+  `ol_pe_v19` no hay tipo de operación «CON»: se mide por ubicación.
+- Línea: `qty_requested` excluye la compra masiva (comprar no es pedir a la
+  obra); `line_state` deja de ser un campo almacenado y se calcula.
+- Requerimiento de obra: sin cambios en `al_construction_material_request`.
+  El control se hereda en `action_request_approval` (el estado `draft` se
+  comprueba antes; `_check_ready_to_submit` también corre al procesar). Las
+  asignaciones se reparten antes de pedir las revisiones; la regla de
+  aprobación por exceso es un `tier.definition` de datos con dominio sobre
+  `construction_exceed_state` y la política del plan.
+- OF: `action_confirm` sincroniza y controla con `sudo` (la planta no ve el
+  plan). Solo los componentes de producción y armado (por la etapa de la
+  línea de BOM) se asignan; instalación y acabado van por requerimiento.
+- Nombres: `x_resource_plan_id` → `construction_plan_id`; `x_exceed_state` /
+  `x_exceed_reason` → `construction_exceed_state` / `construction_exceed_reason`;
+  `x_allocation_ids` → `construction_allocation_ids`; `x_plan_remaining` /
+  `x_out_of_plan` → `construction_plan_remaining` / `construction_out_of_plan`;
+  `x_plan_mode` → `construction_plan_mode`; `x_space_task_ids` →
+  `construction_space_task_ids`; `x_task_id` / `x_plan_line_id` (turno) →
+  `construction_task_id` / `construction_plan_line_id`.
 
 ## 7. Riesgos y pendientes
 

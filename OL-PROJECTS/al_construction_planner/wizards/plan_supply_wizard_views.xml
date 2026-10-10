@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-02 · Compra masiva (P-10) -->
+    <record id="construction_plan_purchase_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.purchase.wizard.form</field>
+        <field name="model">construction.plan.purchase.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Compra masiva">
+                <field name="plan_id" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <label for="stage_production" string="Etapas"/>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span><field name="stage_production" class="oe_inline"/> Producción</span>
+                            <span><field name="stage_assembly" class="oe_inline"/> Armado</span>
+                            <span><field name="stage_installation" class="oe_inline"/> Instalación</span>
+                            <span><field name="stage_finishing" class="oe_inline"/> Acabado y entrega</span>
+                        </div>
+                        <label for="date_from" string="Necesidad"/>
+                        <div class="o_row">
+                            <field name="date_from" placeholder="Desde"/>
+                            <span>—</span>
+                            <field name="date_to" placeholder="Hasta"/>
+                        </div>
+                    </group>
+                    <group string="Compra">
+                        <field name="mode" widget="radio"/>
+                        <field name="picking_type_id" options="{'no_create': True}"/>
+                        <field name="group_by" widget="radio"/>
+                        <field name="amount_need" widget="monetary"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list editable="bottom" create="0">
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="product_uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="qty_need" readonly="1" force_save="1"/>
+                        <field name="qty_free" readonly="1" force_save="1"/>
+                        <field name="qty_incoming" readonly="1" force_save="1"
+                               column_invisible="parent.mode != 'general'"/>
+                        <field name="qty_to_buy"/>
+                        <field name="purchase_uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="date_required"/>
+                        <field name="plan_line_ids" column_invisible="1"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Necesidad: lo planificado menos lo ya comprado o pedido por la obra.
+                    Con analítica se compra toda la necesidad; en stock general, la necesidad
+                    menos lo libre en el central y lo que ya viene en compras. Las planchas y
+                    demás unidades se redondean a entero.
+                </p>
+                <footer>
+                    <button name="action_create" type="object" string="Crear requerimiento de compra"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_purchase_wizard" model="ir.actions.act_window">
+        <field name="name">Compra masiva</field>
+        <field name="res_model">construction.plan.purchase.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    <!-- W-03 · Requerimiento de obra (P-11) -->
+    <record id="construction_plan_request_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.request.wizard.form</field>
+        <field name="model">construction.plan.request.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Requerimiento de obra">
+                <field name="plan_id" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <label for="stage_production" string="Etapas"/>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span><field name="stage_production" class="oe_inline"/> Producción</span>
+                            <span><field name="stage_assembly" class="oe_inline"/> Armado</span>
+                            <span><field name="stage_installation" class="oe_inline"/> Instalación</span>
+                            <span><field name="stage_finishing" class="oe_inline"/> Acabado y entrega</span>
+                        </div>
+                    </group>
+                    <group string="Requerimiento">
+                        <field name="group_by" widget="radio"/>
+                        <field name="location_src_id" options="{'no_create': True}"
+                               groups="stock.group_stock_multi_locations"/>
+                        <field name="date_required"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list editable="bottom" create="0">
+                        <field name="group_task_id" readonly="1" force_save="1"/>
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="product_uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="qty_planned" readonly="1" force_save="1"/>
+                        <field name="qty_requested" readonly="1" force_save="1"/>
+                        <field name="qty_remaining" readonly="1" force_save="1"/>
+                        <field name="qty_available" readonly="1" force_save="1"/>
+                        <field name="qty_to_request" decoration-danger="qty_to_request &gt; qty_remaining"/>
+                        <field name="date_needed" readonly="1" force_save="1" optional="hide"/>
+                        <field name="plan_line_ids" column_invisible="1"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    El requerimiento queda en borrador. Al solicitar su aprobación se controla
+                    el saldo del plan según su política de exceso.
+                </p>
+                <footer>
+                    <button name="action_create" type="object" string="Crear requerimiento de obra"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_request_wizard" model="ir.actions.act_window">
+        <field name="name">Requerimiento de obra</field>
+        <field name="res_model">construction.plan.request.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    <!-- W-04 · Orden de fabricación -->
+    <record id="construction_plan_production_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.production.wizard.form</field>
+        <field name="model">construction.plan.production.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Orden de fabricación">
+                <field name="plan_id" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project"
+                               options="{'no_create': True}"/>
+                        <field name="group_by" widget="radio"/>
+                    </group>
+                    <group string="Fabricación">
+                        <field name="picking_type_id" options="{'no_create': True}"/>
+                        <field name="date_start"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list create="0">
+                        <field name="group_task_id"/>
+                        <field name="typology_id"/>
+                        <field name="product_id"/>
+                        <field name="bom_id" optional="hide"/>
+                        <field name="space_count" sum="Total"/>
+                        <field name="space_task_ids" widget="many2many_tags" optional="show"/>
+                    </list>
+                </field>
+                <div class="alert alert-warning" role="alert" invisible="not note">
+                    <field name="note" nolabel="1"/>
+                </div>
+                <p class="text-muted small">
+                    Las OF quedan en borrador con los componentes de la BOM. Al confirmarlas se
+                    controla el saldo de las líneas de producción y armado de sus ambientes.
+                </p>
+                <footer>
+                    <button name="action_create" type="object" string="Crear órdenes de fabricación"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_production_wizard" model="ir.actions.act_window">
+        <field name="name">Orden de fabricación</field>
+        <field name="res_model">construction.plan.production.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    <!-- W-10 · Exceso sobre plan -->
+    <record id="construction_plan_exceed_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.exceed.wizard.form</field>
+        <field name="model">construction.plan.exceed.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Exceso sobre el plan">
+                <div class="alert alert-warning" role="alert" invisible="policy != 'warn'">
+                    Se pide más de lo que queda en el plan. Puede continuar; el exceso queda
+                    registrado en el documento.
+                </div>
+                <div class="alert alert-danger" role="alert" invisible="policy != 'approval'">
+                    Se pide más de lo que queda en el plan. Justifique el exceso: el
+                    requerimiento recibirá una revisión adicional de la jefatura del planificador
+                    (la OF la confirma esa jefatura).
+                </div>
+                <group>
+                    <field name="material_request_id" invisible="not material_request_id"/>
+                    <field name="production_id" invisible="not production_id"/>
+                    <field name="policy"/>
+                </group>
+                <field name="line_ids" nolabel="1" readonly="1">
+                    <list>
+                        <field name="product_id"/>
+                        <field name="product_uom_id" groups="uom.group_uom"/>
+                        <field name="qty_remaining"/>
+                        <field name="qty_requested"/>
+                        <field name="qty_excess" decoration-danger="1"/>
+                    </list>
+                </field>
+                <group>
+                    <field name="reason" required="policy == 'approval'"
+                           placeholder="Por qué se necesita más de lo planificado"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Continuar"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
