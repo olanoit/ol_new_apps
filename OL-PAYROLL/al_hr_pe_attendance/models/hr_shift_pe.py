@@ -202,7 +202,9 @@ class L10nPeHrShiftCycleAssignment(models.Model):
         check_company=True)
     template_id = fields.Many2one(
         'planning.slot.template', string='Plantilla de turno',
-        required=True, check_company=True,
+        # Sin check_company: la plantilla solo tiene compañía con
+        # project_forecast instalado y el dominio rompería la vista sin él.
+        required=True,
         help='Plantilla nativa que define el horario de los días de '
              'trabajo (hora de inicio, hora de fin y rol/turno).')
     date_start = fields.Date(string='Inicio del ciclo', required=True)

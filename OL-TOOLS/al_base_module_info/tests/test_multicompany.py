@@ -25,8 +25,11 @@ SHARED_COMODELS = ('res.company', 'res.users', 'res.partner', 'res.currency')
 # Excepciones justificadas: el periodo SIRE es de la compañía raíz (el RUC) y
 # recoge comprobantes de sus sucursales; check_company solo admite la misma
 # compañía o una superior, así que rechazaría los de las sucursales.
+# La plantilla de turno solo tiene compañía si está instalado project_forecast
+# (no es dependencia): con check_company la vista no valida sin él.
 EXEMPT_FIELDS = ('l10n_pe.sire.rce.line.move_id', 'l10n_pe.sire.rvie.line.move_id',
-                 'l10n_pe.sire.rce.nd.line.move_id', 'l10n_pe.sire.action.wizard.move_ids')
+                 'l10n_pe.sire.rce.nd.line.move_id', 'l10n_pe.sire.action.wizard.move_ids',
+                 'l10n_pe.hr.shift.cycle.assignment.template_id')
 
 
 @tagged('post_install', '-at_install')
