@@ -367,7 +367,9 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             if not vals.get('task_id') and space and template:
                 vals['task_id'] = module_map[(space.id, template.id)].id
             vals_list.append(vals)
-        lines = self.env['construction.resource.plan.line'].create(vals_list)
+        # Validación de compañía por lotes (todas las relaciones salen de la obra).
+        lines = self.env['construction.resource.plan.line'].with_context(
+            construction_plan_generating=True).create(vals_list)
         # Las barras del cronograma (P-15): una por ambiente y etapa con líneas.
         stages = self.env['construction.space.stage']._sync_from_plan(plan)
         plan.message_post(body=self.env._(

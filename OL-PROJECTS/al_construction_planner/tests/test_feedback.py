@@ -3,6 +3,7 @@
 import base64
 from datetime import date
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools.misc import file_open
 
@@ -115,3 +116,14 @@ class TestFeedback(PlannerCommon):
     def test_sites_menu_stays_in_the_app(self):
         menu = self.env.ref('al_construction_planner.menu_planner_sites')
         self.assertEqual(menu.action, self.env.ref('al_construction_planner.action_planner_construction_sites'))
+
+    def test_batched_company_check_rejects_other_company(self):
+        other = self.env['res.company'].create({'name': 'Otra compañía (test)'})
+        foreign = self.env['product.product'].create({
+            'name': 'Producto ajeno (test)', 'type': 'consu', 'company_id': other.id})
+        Line = self.env['construction.resource.plan.line'].with_context(
+            construction_plan_generating=True)
+        with self.assertRaises(UserError):
+            Line.create({'plan_id': self.plan.id, 'task_id': self.space_501.id,
+                         'resource_type': 'material', 'product_id': foreign.id,
+                         'product_uom_id': self.unit.id, 'qty_planned': 1.0})

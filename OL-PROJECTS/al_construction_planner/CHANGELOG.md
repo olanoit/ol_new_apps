@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261011 — 11/10/2026
+
+- Generar el plan valida la compañía de las líneas por lotes: en una obra de 7.800 líneas ahorra cerca de 20 segundos.
+
 ## 16.20261011 — 11/10/2026
 
 - Generar el plan crea las actividades por metro lineal de la obra con el ML bajo y alto de la tipología cuando los módulos no traen ancho (con ETO siguen bajando al módulo).

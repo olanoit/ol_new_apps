@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 17.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Generar el plan valida la compañía de las líneas por lotes: en una obra de 7.800 líneas ahorra cerca de 20 segundos."
   - version: 16.20261011
     fecha: 11/10/2026
     cambios:

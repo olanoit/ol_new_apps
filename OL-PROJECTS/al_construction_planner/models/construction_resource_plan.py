@@ -1380,6 +1380,32 @@ class ConstructionResourcePlanLine(models.Model):
         lines._refresh_control()
         return lines
 
+    def _check_company(self, fnames=None):
+        """Al generar el plan se crean miles de líneas cuyas relaciones
+        salen del mismo plan y de la misma obra: la validación de Odoo evalúa
+        el dominio de cada relación línea por línea (19 s en una obra de
+        7.800 líneas). Con ``construction_plan_generating`` se valida igual,
+        pero por lotes: cada registro relacionado debe ser compartido o de la
+        compañía de la línea o de una superior."""
+        if not self.env.context.get('construction_plan_generating'):
+            return super()._check_company(fnames)
+        names = [name for name in (fnames or self._fields)
+                 if self._fields[name].relational and self._fields[name].check_company]
+        for company, lines in self.grouped('company_id').items():
+            allowed = company.parent_ids | company
+            for name in names:
+                records = lines[name]
+                if 'company_id' not in records._fields:
+                    continue
+                wrong = records.filtered(lambda r: r.company_id and r.company_id not in allowed)
+                if wrong:
+                    raise UserError(self.env._(
+                        'Las líneas del plan son de %(company)s y %(field)s es de otra compañía: '
+                        '%(records)s.', company=company.display_name,
+                        field=self._fields[name].string,
+                        records=', '.join(wrong[:5].mapped('display_name'))))
+        return None
+
     def write(self, vals):
         self._check_plan_editable(vals)
         res = super().write(vals)
