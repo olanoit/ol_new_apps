@@ -181,12 +181,18 @@ class ProjectProject(models.Model):
                 order=self.construction_sale_order_id.name, count=len(catch_all)))
         by_family = {line.construction_family: line for line in partidas
                      if line.construction_family}
+        # Ids por partida y un solo browse al final: unir las líneas de una en
+        # una (``|=``) crecía de forma cuadrática (2,5 s con 7.200 líneas).
+        ids = defaultdict(list)
         for plan_line in plan.line_ids:
             family = (plan_line.space_task_id.construction_typology_id.family
                       or plan_line.typology_id.family)
             sale_line = by_family.get(family) or catch_all
             if sale_line:
-                result[sale_line] |= plan_line
+                ids[sale_line].append(plan_line.id)
+        PlanLine = self.env['construction.resource.plan.line']
+        for sale_line, line_ids in ids.items():
+            result[sale_line] = PlanLine.browse(line_ids)
         return result
 
     # ------------------------------------------------------------------

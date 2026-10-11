@@ -1241,7 +1241,7 @@ class ConstructionResourcePlanLine(models.Model):
             ['state', 'qty_done', 'qty_purchased', 'qty_dispatched', 'qty_consumed'])
         lines_sudo.invalidate_recordset(list(self._CONTROL_SOURCE_FIELDS))
         execution = lines_sudo._get_line_execution()
-        updates = defaultdict(lambda: lines_sudo.browse())
+        updates = defaultdict(list)
         for line in lines_sudo:
             committed, actual = execution.get(line, (0.0, 0.0))
             currency = line.currency_id
@@ -1255,9 +1255,11 @@ class ConstructionResourcePlanLine(models.Model):
                 'executed_pct': round(pct, 6),
             }
             if any(line[key] != value for key, value in vals.items()):
-                updates[tuple(sorted(vals.items()))] |= line
-        for vals, lines in updates.items():
-            lines.with_context(construction_plan_force=True).write(dict(vals))
+                # Ids y un solo browse por grupo: unir de una en una (``|=``)
+                # es cuadrático y al generar miles de líneas caen en el mismo.
+                updates[tuple(sorted(vals.items()))].append(line.id)
+        for vals, line_ids in updates.items():
+            lines_sudo.browse(line_ids).with_context(construction_plan_force=True).write(dict(vals))
 
     @api.model
     def _cron_refresh_control(self):

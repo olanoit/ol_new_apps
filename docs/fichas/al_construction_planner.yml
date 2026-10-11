@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 18.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Más rápido con obras grandes: la tabla de valorizaciones previstas de la obra y el control de las líneas al generar ya no reúnen las líneas de una en una."
   - version: 17.20261011
     fecha: 11/10/2026
     cambios:
