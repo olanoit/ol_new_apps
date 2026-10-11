@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{#- Aviso al leer una versión anterior publicada con mike (p. ej. 19.0 cuando
+    «latest» ya es 20.0). -#}
+{% block outdated %}
+  Está viendo la documentación de una versión anterior de la suite.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Ir a la versión más reciente.</strong>
+  </a>
+{% endblock %}

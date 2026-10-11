@@ -1,0 +1,3 @@
+# Salida de «mkdocs build»: se genera, no se versiona.
+site/
+.cache/

@@ -1,0 +1,11 @@
+# Documentación unificada (mkdocs/). Instalar en el venv del proyecto:
+#   /home/och/odoo/ce19/.venv/bin/python -m pip install -r mkdocs/requirements.txt
+# MkDocs queda fijo en 1.6.x: la 2.0 anunciada rompe temas y plugins.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+mkdocs-gen-files==0.6.1
+mkdocs-literate-nav==0.6.3
+mkdocs-glightbox==0.5.2
+mike==2.2.0
+pymdown-extensions==12.2
+PyYAML>=6.0

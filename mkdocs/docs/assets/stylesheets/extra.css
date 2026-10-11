@@ -1,0 +1,67 @@
+/* Identidad de la suite: los mismos colores que las fichas de los módulos
+   (docs/fichas/generar_fichas.py: BRAND #b45309 y ACCENT #0f766e). */
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #b45309;
+  --md-primary-fg-color--light: #d97706;
+  --md-primary-fg-color--dark: #92400e;
+  --md-accent-fg-color: #0f766e;
+  --md-accent-fg-color--transparent: rgba(15, 118, 110, 0.1);
+  --ol-lead: #5b6570;
+  --ol-icon-bg: #fef6ec;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #9a4a10;
+  --md-primary-fg-color--light: #b45309;
+  --md-primary-fg-color--dark: #7c2d12;
+  --md-accent-fg-color: #2dd4bf;
+  --md-accent-fg-color--transparent: rgba(45, 212, 191, 0.12);
+  --md-typeset-a-color: #5eead4;
+  --ol-lead: #a8b3bd;
+  --ol-icon-bg: rgba(180, 83, 9, 0.22);
+}
+
+/* Subtítulo de las fichas y de las áreas. */
+.md-typeset .ol-lead {
+  font-size: 1.05rem;
+  color: var(--ol-lead);
+  margin-top: -0.4rem;
+}
+
+/* Ícono de los destacados de la ficha (los del YAML son caracteres). */
+.md-typeset .ol-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9em;
+  height: 1.9em;
+  margin-right: 0.35em;
+  padding: 0 0.3em;
+  border-radius: 0.4em;
+  background: var(--ol-icon-bg);
+  color: var(--md-primary-fg-color);
+  font-weight: 700;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .ol-icon {
+  color: #fbbf24;
+}
+
+/* Tabla de datos de la ficha: columna de etiquetas compacta. */
+.md-typeset .ol-ficha table:not([class]) th:first-child,
+.md-typeset .ol-ficha table:not([class]) td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* Capturas: borde suave para separarlas del fondo en ambos modos. */
+.md-typeset img:not(.twemoji):not([class*="logo"]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 6px;
+}
+
+/* Tablas anchas: desplazamiento horizontal en lugar de desbordar. */
+.md-typeset__table {
+  max-width: 100%;
+}

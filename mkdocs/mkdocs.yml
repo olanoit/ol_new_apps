@@ -1,0 +1,149 @@
+# Documentación unificada de ol_new_apps (MkDocs + Material for MkDocs).
+#
+# Las páginas no se escriben aquí: scripts/gen_pages.py las genera en cada
+# build desde los README, guías funcionales, fichas, CHANGELOG y docs/ del
+# repositorio. Uso y versionado (19.0 → 20.0): mkdocs/README.md.
+#
+# Al pasar a otra versión de Odoo (rama 20.0) solo cambian los dos valores
+# por defecto marcados con «VERSIÓN»; ODOO_VERSION los sobrescribe sin
+# editar el archivo.
+
+site_name: Suite OL para Odoo
+site_description: >-
+  Documentación funcional y técnica de los módulos ol_new_apps: localización
+  peruana, planillas, punto de venta, inventario, proyectos y herramientas.
+site_author: CRISTÓBAL OCH
+copyright: Copyright &copy; ALTA Latam · altabpo.com
+# Raíz donde se publica el sitio (la de mike, sin la versión). Material la
+# necesita para el aviso de versión anterior; en local, la de «mike serve».
+site_url: !ENV [DOCS_SITE_URL, "http://127.0.0.1:8000/"]
+
+repo_url: https://github.com/olanoit/ol_new_apps
+repo_name: olanoit/ol_new_apps
+# VERSIÓN: rama del repositorio para «Editar en GitHub».
+edit_uri: !ENV [DOCS_EDIT_URI, "edit/19.0/"]
+
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+strict: true
+
+validation:
+  omitted_files: warn
+  absolute_links: info
+  unrecognized_links: warn
+  anchors: info
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: es
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Cambiar a modo claro
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar al modo del sistema
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.follow
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+    - content.tooltips
+
+extra:
+  # VERSIÓN: versión de Odoo de esta rama (portada, fichas, enlaces a la
+  # documentación oficial y rama de los enlaces a GitHub).
+  odoo_version: !ENV [ODOO_VERSION, "19.0"]
+  git_branch: !ENV [DOCS_BRANCH, ""]
+  version:
+    provider: mike
+    default: latest
+    alias: true
+  generator: false
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+plugins:
+  - search:
+      lang: es
+  - gen-files:
+      scripts:
+        - scripts/gen_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - tags
+  - glightbox:
+      touchNavigation: true
+      zoomable: true
+      skip_classes:
+        - twemoji
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Enlace a esta sección
+      # Anclas como las de GitHub: los enlaces #sección de los .md del
+      # repositorio funcionan igual en el sitio.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.betterem
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true

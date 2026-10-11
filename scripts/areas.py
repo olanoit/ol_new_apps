@@ -25,4 +25,4 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
-NO_AREAS = {'docs', 'scripts'}
+NO_AREAS = {'docs', 'scripts', 'mkdocs'}

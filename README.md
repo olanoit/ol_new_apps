@@ -27,6 +27,20 @@ tabla de los módulos que contiene.
 [OL-TOOLS](OL-TOOLS/) | Utilidades transversales: información de módulos, servidor MCP, licencia.
 [OL-THIRD-PARTY](OL-THIRD-PARTY/) | Módulos de otros autores que usa el proyecto, con su autoría y licencia; los cambios locales, anotados en su CHANGELOG.
 
+Documentación
+-------------
+
+Toda la documentación se canaliza en un **sitio MkDocs (Material for MkDocs)**
+generado desde el repositorio: fichas y guías funcionales de cada módulo por
+área, novedades, documentación técnica de `docs/` y este README, con búsqueda
+en español, modo claro/oscuro y una versión por rama de Odoo (19.0, 20.0…)
+publicada con mike. Las páginas no se copian: se editan los archivos de
+origen. Uso, versionado y publicación: [`mkdocs/README.md`](mkdocs/README.md).
+
+```bash
+/home/och/odoo/ce19/.venv/bin/mkdocs serve -f mkdocs/mkdocs.yml   # http://127.0.0.1:8000
+```
+
 Instalación: addons_path
 ------------------------
 
@@ -63,6 +77,8 @@ Estructura
 OL-ACCOUNTING/ … OL-THIRD-PARTY/   módulos, agrupados por área
 docs/                       planes de desarrollo, guías, fichas (generador y
                             capturas), validaciones y datos de prueba
+mkdocs/                     sitio de documentación unificada (MkDocs + Material,
+                            versiones con mike); se genera desde lo anterior
 scripts/                    utilidades del repositorio (ver abajo)
 ```
 
