@@ -16,4 +16,48 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Documentación unificada de la suite (sitio MkDocs de mkdocs/), siempre
+         al final de la página Perú: prioridad mayor que la de los bloques que
+         agregan los demás módulos (60-65). -->
+    <record id="res_config_settings_view_form_docs" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.base.docs</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="1000"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Documentación" name="pe_docs_block">
+                    <setting string="Sitio de documentación" id="al_docs_setting"
+                             help="Guías funcionales, fichas, novedades y documentación técnica de todos los módulos de la suite, por área y versión de Odoo.">
+                        <field name="al_docs_url" placeholder="https://docs.ejemplo.pe/19.0/"/>
+                        <div class="mt8" invisible="not al_docs_url">
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Abrir documentación" class="btn-link p-0"/>
+                        </div>
+                    </setting>
+                    <setting string="Accesos directos" id="al_docs_links" invisible="not al_docs_url"
+                             help="Secciones más consultadas del sitio.">
+                        <div class="d-flex flex-column align-items-start gap-1 mt8">
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Guías funcionales" class="btn-link p-0"
+                                    context="{'al_docs_page': 'guides'}"/>
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Novedades de la suite" class="btn-link p-0"
+                                    context="{'al_docs_page': 'news'}"/>
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Contabilidad" class="btn-link p-0"
+                                    context="{'al_docs_page': 'accounting'}"/>
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Planillas" class="btn-link p-0"
+                                    context="{'al_docs_page': 'payroll'}"/>
+                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                                    string="Documentación técnica" class="btn-link p-0"
+                                    context="{'al_docs_page': 'technical'}"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
 </odoo>

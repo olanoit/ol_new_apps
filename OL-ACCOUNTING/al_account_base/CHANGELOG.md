@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261011 — 11/10/2026
+
+- Sección «Documentación» al final de Ajustes ▸ Perú: URL del sitio de documentación de la suite (MkDocs) y accesos a guías funcionales, novedades, contabilidad, planillas y documentación técnica.
+
 ## 9.20261009 — 09/10/2026
 
 - Etiqueta más corta en el diario: «Excluir del PLE» (el detalle pasa a la ayuda).

@@ -105,6 +105,11 @@ Validación de los códigos SUNAT:
    compañía antes de generar el Libro Caja y Bancos.
 5. Registre el **Establecimiento anexo** de los contactos con varios
    establecimientos.
+6. Al final de **Ajustes ▸ Perú**, en **Documentación**, escriba la URL del
+   sitio de documentación de la suite (por ejemplo
+   `https://docs.ejemplo.pe/19.0/`) y guarde. Aparecen **Abrir documentación**
+   y los accesos directos a guías funcionales, novedades, contabilidad,
+   planillas y documentación técnica; cada uno se abre en una pestaña nueva.
 
 ## 6. Reportes y libros relacionados
 

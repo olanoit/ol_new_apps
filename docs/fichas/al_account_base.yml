@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 10.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Sección «Documentación» al final de Ajustes ▸ Perú: URL del sitio de documentación de la suite (MkDocs) y accesos a guías funcionales, novedades, contabilidad, planillas y documentación técnica."
   - version: 9.20261009
     fecha: 09/10/2026
     cambios:

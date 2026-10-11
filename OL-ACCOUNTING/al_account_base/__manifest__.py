@@ -13,6 +13,8 @@ localización peruana. Provee:
 * Glosa (`l10n_pe_gloss`) en asientos contables y sus líneas.
 * Menú raíz "Perú" y su rama de Configuración.
 * Utilidad `account.move.l10n_pe_is_pe()`.
+* Sección «Documentación» al final de Ajustes ▸ Perú: URL del sitio de
+  documentación de la suite (MkDocs) y accesos a sus secciones.
 
 Sin código muerto: reemplaza a la versión previa que arrastraba placeholders y
 campos sin uso.
@@ -24,7 +26,7 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '9.20261009',
+    'version': '10.20261011',
     'license': 'OPL-1',
     'depends': ['account'],
     'assets': {

@@ -22,9 +22,11 @@
   --ol-icon-bg: rgba(180, 83, 9, 0.22);
 }
 
-/* Subtítulo de las fichas y de las áreas. */
+/* Subtítulo de las fichas y de las áreas: un punto sobre el texto (em, no
+   rem, para que siga la escala del contenido). */
 .md-typeset .ol-lead {
-  font-size: 1.05rem;
+  font-size: 1.1em;
+  line-height: 1.6;
   color: var(--ol-lead);
   margin-top: -0.4rem;
 }
@@ -64,4 +66,124 @@
 /* Tablas anchas: desplazamiento horizontal en lugar de desbordar. */
 .md-typeset__table {
   max-width: 100%;
+}
+
+/* ------------------------------------------------------------------
+   Escala tipográfica única. Material mezcla tamaños (texto 0.8rem,
+   tablas y avisos 0.64rem, títulos finos y grises); aquí todo deriva de
+   un solo tamaño base y los títulos ganan peso y contraste en ambos modos.
+   ------------------------------------------------------------------ */
+:root {
+  --ol-text: 0.75rem;        /* 15 px: texto, listas y avisos */
+  --ol-small: 0.7rem;        /* 14 px: tablas, navegación, código */
+  --ol-line: 1.65;
+}
+
+.md-typeset {
+  font-size: var(--ol-text);
+  line-height: var(--ol-line);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  color: var(--md-default-fg-color);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.md-typeset h1 { font-size: 1.85em; font-weight: 700; margin: 0 0 0.9em; }
+.md-typeset h2 { font-size: 1.4em;  font-weight: 650; margin: 1.8em 0 0.6em; }
+.md-typeset h3 { font-size: 1.15em; font-weight: 600; margin: 1.5em 0 0.5em; }
+.md-typeset h4 { font-size: 1em;    font-weight: 600; margin: 1.2em 0 0.4em; }
+
+/* Tablas, avisos y desplegables con el mismo tamaño legible. */
+.md-typeset table:not([class]),
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: var(--ol-small);
+}
+
+.md-typeset table:not([class]) th {
+  font-weight: 600;
+  background: var(--md-default-fg-color--lightest);
+}
+
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th {
+  padding: 0.6em 0.9em;
+  vertical-align: top;
+}
+
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-size: 0.86em;
+}
+
+/* Navegación y tabla de contenidos: mismo tamaño y aire entre entradas. */
+.md-nav {
+  font-size: var(--ol-small);
+  line-height: 1.45;
+}
+
+.md-nav__title {
+  font-weight: 700;
+}
+
+.md-tabs__link {
+  font-size: var(--ol-small);
+}
+
+/* Más ancho útil en pantallas grandes; el texto mantiene una medida
+   cómoda de lectura. */
+.md-grid {
+  max-width: 76rem;
+}
+
+.md-content__inner > p,
+.md-content__inner > ul,
+.md-content__inner > ol {
+  max-width: 48rem;
+}
+
+/* Etiquetas de la página: compactas, para que no empujen el título. */
+.md-typeset .md-tags {
+  margin-bottom: 0.6em;
+}
+
+.md-typeset .md-tag {
+  font-size: 0.62rem;
+  padding: 0.15em 0.65em;
+  margin: 0 0.3em 0.35em 0;
+  font-weight: 500;
+}
+
+/* Botones de editar/ver alineados con el título. */
+.md-content__button {
+  margin-top: 0.3em;
+}
+
+/* Tarjetas de la portada (grid cards): borde y realce al pasar. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.6em 0;
+}
+
+/* Móvil: un punto menos en los títulos. */
+@media screen and (max-width: 44.984375em) {
+  .md-typeset h1 { font-size: 1.6em; }
+  .md-typeset h2 { font-size: 1.3em; }
 }
