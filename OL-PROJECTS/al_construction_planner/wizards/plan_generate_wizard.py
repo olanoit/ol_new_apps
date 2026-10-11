@@ -112,6 +112,18 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             counter[0] += 1
             counter[1] += vals['qty_planned'] * vals['price_unit_planned']
 
+        # Actividades por metro lineal (instalación, limpieza…) de la obra:
+        # las que tienen tarifa en ella o, si no hay ninguna, las de la
+        # compañía. Se aplican a la tipología que no lista ninguna actividad
+        # por ML (se apoya en su ML bajo y alto: especificación v1.4, hoja
+        # TIPOLOGIAS del maestro, decisión de diseño 5).
+        ml_activities = self.env['construction.labor.activity'].search([
+            ('ml_based', '=', True), ('ml_group', 'in', ('low', 'high')),
+            ('company_id', 'in', (plan.company_id.id, False))], order='code, id')
+        project_ml = ml_activities.filtered(
+            lambda a: any(rate.project_id == project for rate in a.rate_ids))
+        ml_activities = project_ml or ml_activities
+
         for space in spaces:
             typology = space.construction_typology_id
             if not typology:
@@ -166,11 +178,21 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         product_id=activity.product_id.id, product_uom_id=activity.uom_id.id,
                         qty_planned=1.0, price_unit_planned=price, price_basis=basis,
                         price_basis_date=basis_date, _space=space, _template=template))
-                # Contratas: actividades por ambiente (o por módulo si van por ML con ancho).
-                for activity_line in typology.activity_line_ids:
-                    activity = activity_line.activity_id
+                # Contratas: actividades por ambiente (o por módulo si van por
+                # ML con ancho). Las por ML que la tipología no lista entran
+                # con su ML bajo o alto (cantidad None → la de la tipología).
+                items = [(line.activity_id, line.qty) for line in typology.activity_line_ids]
+                listed = typology.activity_line_ids.activity_id
+                if not listed.filtered('ml_based'):
+                    items += [(activity, None) for activity in ml_activities]
+                for activity, listed_qty in items:
                     if activity.stage not in stages:
                         continue
+                    if listed_qty is None:
+                        listed_qty = typology.ml_low if activity.ml_group == 'low' \
+                            else typology.ml_high
+                        if not listed_qty and not has_widths:
+                            continue
                     price, basis, basis_date = rate(activity)
                     base = dict(common, resource_type='contract', stage=activity.stage,
                                 activity_id=activity.id, product_id=activity.product_id.id,
@@ -188,7 +210,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         if activity.ml_based:
                             result['warnings']['ml_on_space'].append(typology.display_name)
                         add('contract_space', dict(base, task_id=space.id,
-                                                   qty_planned=activity_line.qty))
+                                                   qty_planned=listed_qty))
             # Materiales: BOM de los módulos si existen; si no, la de la tipología.
             if self.include_material:
                 module_boms = [(task, template) for task, template in modules if template.bom_id]

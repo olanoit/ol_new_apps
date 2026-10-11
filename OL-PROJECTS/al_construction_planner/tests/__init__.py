@@ -14,3 +14,4 @@ from . import test_income
 from . import test_schedule_report
 from . import test_import
 from . import test_menus
+from . import test_feedback

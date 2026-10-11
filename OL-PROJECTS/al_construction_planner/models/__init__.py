@@ -34,3 +34,4 @@ from . import construction_valuation
 from . import construction_schedule_report
 from . import construction_planner_home
 from . import ir_ui_menu
+from . import resource_calendar_leaves

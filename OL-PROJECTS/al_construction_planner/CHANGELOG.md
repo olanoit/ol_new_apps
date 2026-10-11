@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261011 — 11/10/2026
+
+- Generar el plan crea las actividades por metro lineal de la obra con el ML bajo y alto de la tipología cuando los módulos no traen ancho (con ETO siguen bajando al módulo).
+- Las fechas del calendario de ingresos y de las liquidaciones también evitan los feriados nacionales de Perú (pe.public.holiday); los feriados se leen una vez por transacción.
+- Servicio con «Crea una obra»: al confirmar la venta, el proyecto queda marcado como obra y con su orden de venta del contrato; una obra marcada después toma su venta de origen.
+- Obras ▸ Obras se abre dentro de Planificación de obra.
+- «Solicitar aprobación» resume cada producto o actividad una vez, con sus líneas y departamentos; la importación ya no muestra un instante «no es un libro Excel válido».
+
 ## 15.20261011 — 11/10/2026
 
 - Con el planificador instalado, la aplicación Gantt deja de mostrarse en el menú: el Gantt de todos los proyectos está en Cronograma ▸ Gantt de proyectos y sus colores por estado en Configuración ▸ Colores del Gantt. Al desinstalar el planificador, la aplicación Gantt vuelve a aparecer.

@@ -50,6 +50,25 @@ class ProjectProject(models.Model):
         domain="[('state', '!=', 'cancel')]",
         help='Una línea por partida (cantidad 1). Las entregas semanales devengan el precio de '
              'cada partida y la factura de la valorización sale de esta orden.')
+    @api.model_create_multi
+    def create(self, vals_list):
+        projects = super().create(vals_list)
+        projects._construction_link_sale_order()
+        return projects
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get('is_construction_site') or 'sale_line_id' in vals:
+            self._construction_link_sale_order()
+        return res
+
+    def _construction_link_sale_order(self):
+        """Una obra nacida de una venta toma esa venta como orden de venta
+        del contrato si aún no tiene una."""
+        for project in self.filtered(lambda p: p.is_construction_site
+                                     and not p.construction_sale_order_id and p.sale_line_id):
+            project.construction_sale_order_id = project.sale_line_id.order_id
+
     construction_valuation_every = fields.Integer(
         string='Valorizar cada', compute='_compute_construction_income_config', store=True,
         readonly=False)

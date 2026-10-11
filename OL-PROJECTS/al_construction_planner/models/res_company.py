@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 import pytz
 
@@ -81,23 +81,53 @@ class ResCompany(models.Model):
     def _construction_is_holiday(self, day):
         """Feriado de la compañía: un día cubierto por una ausencia global
         (sin recurso) de la compañía, en cualquiera de sus calendarios (la
-        localización suele cargar los feriados en un calendario aparte). Los
-        días sin horario (p. ej. el sábado en un calendario de lunes a
-        viernes) no son feriados: el pago del sábado no se mueve por eso."""
+        localización suele cargar los feriados en un calendario aparte), o un
+        feriado nacional de Perú (``pe.public.holiday``). Los días sin horario
+        (p. ej. el sábado en un calendario de lunes a viernes) no son
+        feriados: el pago del sábado no se mueve por eso."""
         self.ensure_one()
+        return day in self._construction_holidays(day.year)
+
+    def _construction_holidays(self, year):
+        """Fechas feriadas del año, leídas una sola vez por transacción (el
+        calendario de ingresos y el cronograma preguntan día por día)."""
+        self.ensure_one()
+        cache = self.env.cr.cache.setdefault('al_construction_holidays', {})
+        key = (self.id, year)
+        if key in cache:
+            return cache[key]
         calendar = self.resource_calendar_id
         tz = pytz.timezone(calendar.tz or self.partner_id.tz or 'UTC')
-        start = tz.localize(datetime.combine(day, time.min)).astimezone(pytz.utc)
-        end = tz.localize(datetime.combine(day, time.max)).astimezone(pytz.utc)
+        first, last = date(year, 1, 1), date(year, 12, 31)
+        start = tz.localize(datetime.combine(first, time.min)).astimezone(pytz.utc)
+        end = tz.localize(datetime.combine(last, time.max)).astimezone(pytz.utc)
+        days = set()
         # sudo: el calendario de feriados lo lee cualquiera que liquide o
         # reporte, aunque no tenga acceso a las ausencias de RR. HH.
-        leaves_sudo = self.env['resource.calendar.leaves'].sudo()
-        return bool(leaves_sudo.search_count([
+        leaves_sudo = self.env['resource.calendar.leaves'].sudo().search([
             ('resource_id', '=', False),
             ('company_id', 'in', [self.id, False]),
             ('date_from', '<=', end.replace(tzinfo=None)),
             ('date_to', '>=', start.replace(tzinfo=None)),
-        ], limit=1))
+        ])
+        for leave in leaves_sudo:
+            day = pytz.utc.localize(leave.date_from).astimezone(tz).date()
+            stop = pytz.utc.localize(leave.date_to).astimezone(tz).date()
+            while day <= stop:
+                if first <= day <= last:
+                    days.add(day)
+                day += timedelta(days=1)
+        # Feriados de Perú (al_hr_pe_public_holidays, si está instalado): los
+        # nacionales de día completo para todos, aunque aún no se hayan
+        # sincronizado con los calendarios. Los de un solo régimen laboral
+        # (25 de octubre, construcción civil) no mueven fechas de la obra.
+        if 'pe.public.holiday' in self.env:
+            # sudo: catálogo de feriados de RR. HH., de solo lectura aquí.
+            days.update(self.env['pe.public.holiday'].sudo().search([
+                ('date', '>=', first), ('date', '<=', last), ('is_full_day', '=', True),
+                ('labor_regime', '=', False)]).mapped('date'))
+        cache[key] = days
+        return days
 
     def _construction_previous_working_day(self, day):
         """``day`` o, si es feriado, el día anterior que no lo sea

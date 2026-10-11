@@ -26,3 +26,12 @@ class SaleOrderLine(models.Model):
         return order.currency_id._convert(
             self.price_subtotal, company.currency_id, company,
             day or fields.Date.context_today(self))
+
+    def _timesheet_create_project_prepare_values(self):
+        """Servicio que crea una obra: el proyecto nace marcado como obra y
+        con esta venta como orden de venta del contrato."""
+        values = super()._timesheet_create_project_prepare_values()
+        if self.product_id.construction_creates_site:
+            values.update(is_construction_site=True,
+                          construction_sale_order_id=self.order_id.id)
+        return values

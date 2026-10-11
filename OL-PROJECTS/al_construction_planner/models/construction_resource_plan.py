@@ -481,11 +481,7 @@ class ConstructionResourcePlan(models.Model):
                                       'cuenta analítica)')))
         for faulty, title in checks:
             if faulty:
-                sample = '\n'.join('   · %s' % label for label in faulty[:10]._get_issue_label())
-                more = len(faulty) - 10
-                issues.append('%s: %s\n%s%s' % (
-                    title, len(faulty), sample,
-                    self.env._('\n   · y %s más', more) if more > 0 else ''))
+                issues.append('%s: %s\n%s' % (title, len(faulty), faulty._get_issue_summary()))
         return issues
 
     def action_request_approval(self):
@@ -1279,6 +1275,28 @@ class ConstructionResourcePlanLine(models.Model):
         self.ensure_one()
         return sum(a._get_requested_qty()
                    for a in self.allocation_ids.filtered(lambda a: a.state != 'open'))
+
+    def _get_issue_summary(self, limit=10, places=6):
+        """Resumen de las líneas con un problema: cada producto o actividad
+        una sola vez, con cuántas líneas y en qué departamentos (antes salía
+        una fila por cocina, sin el departamento)."""
+        groups = defaultdict(lambda: self.browse())
+        for line in self:
+            groups[line.product_id or line.activity_id or line.task_id] |= line
+        rows = []
+        for resource, lines in sorted(groups.items(), key=lambda item: -len(item[1]))[:limit]:
+            names = sorted({(l.apartment_task_id or l.floor_task_id or l.task_id).name or '—'
+                            for l in lines})
+            where = ', '.join(names[:places])
+            if len(names) > places:
+                where += self.env._(' y %s más', len(names) - places)
+            rows.append(self.env._('   · %(resource)s: %(count)s líneas (%(where)s)',
+                                   resource=resource.display_name or '—', count=len(lines),
+                                   where=where))
+        more = len(groups) - limit
+        if more > 0:
+            rows.append(self.env._('   · y %s productos o actividades más', more))
+        return '\n'.join(rows)
 
     def _get_issue_label(self):
         """Texto corto de cada línea para los avisos de aprobación."""

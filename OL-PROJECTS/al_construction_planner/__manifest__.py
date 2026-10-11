@@ -206,7 +206,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '15.20261011',
+    'version': '16.20261011',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -226,6 +226,9 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         # base del control de la OC con analítica de la obra (fase 7).
         'account_budget_purchase',
         'sale_management',
+        # Obra creada al confirmar la venta de un servicio (sale.order.line
+        # _timesheet_create_project_prepare_values).
+        'sale_project',
     ],
     'data': [
         'security/planner_groups.xml',
