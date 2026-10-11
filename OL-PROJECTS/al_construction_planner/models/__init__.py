@@ -33,3 +33,4 @@ from . import construction_weekly_delivery
 from . import construction_valuation
 from . import construction_schedule_report
 from . import construction_planner_home
+from . import ir_ui_menu

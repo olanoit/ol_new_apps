@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261011 — 11/10/2026
+
+- Mapa de pantallas actualizado con las secciones de la documentación del Gantt y del cronograma de la obra.
+
 ## 1.20261011 — 11/10/2026
 
 - Botón ? en la barra superior y en la cabecera de los asistentes que abre la página de la documentación de la pantalla, en su sección.

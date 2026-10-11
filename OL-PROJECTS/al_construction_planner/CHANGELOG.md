@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261011 — 11/10/2026
+
+- Con el planificador instalado, la aplicación Gantt deja de mostrarse en el menú: el Gantt de todos los proyectos está en Cronograma ▸ Gantt de proyectos y sus colores por estado en Configuración ▸ Colores del Gantt. Al desinstalar el planificador, la aplicación Gantt vuelve a aparecer.
+
 ## 14.20261011 — 11/10/2026
 
 - La valorización impresa usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, datos de obra y contrato, partidas con los totales al pie (entregado, confirmado, por valorizar, amortización, fondo de garantía y neto a cobrar), conformidad del cliente y firmas.

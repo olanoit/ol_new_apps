@@ -26,9 +26,17 @@ de Enterprise.
 3. Revise que las tareas tengan **Fecha límite**; con Enterprise, también la
    fecha de inicio planificada. Una tarea sin fecha de fin no se dibuja.
 4. Opcional: en **Gantt ‣ Configuración ‣ Colores por estado**, elija el color
-   de las barras para cada estado de tarea.
+   de las barras para cada estado de tarea. Con la planificación de obra
+   instalada, la opción está en **Planificación de obra ‣ Configuración ‣
+   Colores del Gantt**.
 
 ![Colores de las barras por estado de la tarea](gantt/state-colors.png)
+
+!!! note "Nota"
+    Con la [planificación de obra](construction/planning.md) instalada, la
+    aplicación **Gantt** no aparece en el menú principal: sus opciones pasan a
+    **Planificación de obra**, para no tener dos accesos al mismo diagrama. Si
+    se desinstala la planificación, la aplicación vuelve a aparecer.
 
 ### Parámetros del sistema
 
@@ -57,7 +65,9 @@ En **Ajustes ‣ Técnico ‣ Parámetros del sistema** (modo desarrollador):
 
 ## Abrir el diagrama
 
-1. Vaya a **Gantt ‣ Diagrama de Gantt**, o abra un proyecto en **Proyecto** y
+1. Vaya a **Gantt ‣ Diagrama de Gantt** (con la planificación de obra
+   instalada, **Planificación de obra ‣ Cronograma ‣ Gantt de proyectos**), o
+   abra un proyecto en **Proyecto** y
    haga clic en el botón **Gantt**, que muestra cuántas tareas tiene
    planificadas y abre el diagrama acotado a ese proyecto.
 2. Elija los proyectos con los botones de la barra, o **Todos**.

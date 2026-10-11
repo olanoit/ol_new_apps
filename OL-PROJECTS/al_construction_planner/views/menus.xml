@@ -30,9 +30,18 @@
                   groups="group_planner_planner"/>
     </menuitem>
 
-    <menuitem id="menu_planner_schedule" name="Cronograma" parent="menu_planner_root"
-              action="action_construction_schedule" sequence="20"
-              groups="group_planner_user"/>
+    <!-- Cronograma de la obra y el Gantt de todos los proyectos: con el
+         planificador instalado, la aplicación «Gantt» se oculta
+         (models/ir_ui_menu.py) y se llega a él desde aquí. -->
+    <menuitem id="menu_planner_schedule_root" name="Cronograma" parent="menu_planner_root" sequence="20"
+              groups="group_planner_user,al_project_gantt_base.group_gantt_user">
+        <menuitem id="menu_planner_schedule" name="Cronograma de la obra"
+                  action="action_construction_schedule" sequence="10"
+                  groups="group_planner_user"/>
+        <menuitem id="menu_planner_gantt" name="Gantt de proyectos"
+                  action="al_project_gantt_backend.action_gantt_backend" sequence="20"
+                  groups="al_project_gantt_base.group_gantt_user"/>
+    </menuitem>
 
     <menuitem id="menu_planner_progress" name="Avance" parent="menu_planner_root" sequence="30">
         <menuitem id="menu_planner_progress_register" name="Registrar avance"
@@ -123,6 +132,9 @@
         <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"
                   action="action_construction_plan_tier_definition" sequence="40"
                   groups="group_planner_manager"/>
+        <menuitem id="menu_planner_gantt_colors" name="Colores del Gantt"
+                  action="al_project_gantt_base.al_gantt_state_color_action" sequence="50"
+                  groups="al_project_gantt_base.group_gantt_manager"/>
     </menuitem>
 
 </odoo>

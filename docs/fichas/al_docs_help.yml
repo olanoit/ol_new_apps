@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 2.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Mapa de pantallas actualizado con las secciones de la documentación del Gantt y del cronograma de la obra."
   - version: 1.20261011
     fecha: 11/10/2026
     cambios:

@@ -208,8 +208,8 @@
         <field name="kind">tag</field>
         <field name="name">Gantt de Proyectos</field>
         <field name="module">al_project_gantt_backend</field>
-        <field name="path">applications/services/project/gantt/</field>
-        <field name="section">Diagrama de Gantt</field>
+        <field name="path">applications/services/project/gantt/#abrir-el-diagrama</field>
+        <field name="section">Abrir el diagrama</field>
     </record>
     <record id="help_construction_contract_settlement" model="al.docs.help">
         <field name="key">construction.contract.settlement</field>

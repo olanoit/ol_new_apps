@@ -115,7 +115,7 @@ flowchart TD
 | P-13 | Control de saldo | Plan ‣ pestaña **Control**; **Reportes ‣ Control de saldo** | [Control y personal propio](planning/control.md) |
 | P-14 | Actividades y tarifas | **Configuración ‣ Actividades de obra / Tarifas de contrata** | [Catálogo y árbol de la obra](planning/catalog.md) |
 | W-15 | Importar maestro y ETO | **Configuración ‣ Importar maestro y ETO**; obra | [Importar maestro y ETO](planning/import_master.md) |
-| P-15 | Cronograma con recursos | **Cronograma** | [Cronograma con recursos](planning/schedule.md) |
+| P-15 | Cronograma con recursos | **Cronograma ‣ Cronograma de la obra** | [Cronograma con recursos](planning/schedule.md) |
 | P-16 | Precios de compra del producto | **Abastecimiento ‣ Precios de compra del producto** | [Precios y abastecimiento](planning/prices_supply.md) |
 | P-17 / W-11 | Crear producto desde el plan | Línea sin producto ‣ **Crear producto** | [Precios y abastecimiento](planning/prices_supply.md) |
 | P-18 | Abastecimiento de la obra | **Abastecimiento ‣ Abastecimiento de la obra** | [Precios y abastecimiento](planning/prices_supply.md) |

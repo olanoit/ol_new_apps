@@ -214,7 +214,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 10.20261011 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 14.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
+[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 15.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
 [al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 7.20261011 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 16.20261011 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
@@ -225,7 +225,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_docs_help](OL-TOOLS/al_docs_help/) | 1.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
+[al_docs_help](OL-TOOLS/al_docs_help/) | 2.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 8.20261009 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [al_report_base](OL-TOOLS/al_report_base/) | 1.20261011 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes

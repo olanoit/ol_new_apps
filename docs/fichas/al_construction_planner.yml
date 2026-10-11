@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 15.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Con el planificador instalado, la aplicación Gantt deja de mostrarse en el menú: el Gantt de todos los proyectos está en Cronograma ▸ Gantt de proyectos y sus colores por estado en Configuración ▸ Colores del Gantt. Al desinstalar el planificador, la aplicación Gantt vuelve a aparecer."
   - version: 14.20261011
     fecha: 11/10/2026
     cambios:

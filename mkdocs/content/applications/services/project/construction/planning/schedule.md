@@ -4,7 +4,7 @@ modulos: [al_construction_planner]
 
 # Cronograma con recursos
 
-El **Cronograma** es el [diagrama de Gantt](../../gantt.md) de la obra con una
+El **Cronograma de la obra** es el [diagrama de Gantt](../../gantt.md) de la obra con una
 barra por etapa de cada ambiente (producción, armado, instalación, acabado y
 entrega), con su contrata o cuadrilla, su monto y su avance. Desde él se
 asignan recursos a una selección, se mueven etapas arrastrándolas y se ve la
@@ -14,7 +14,7 @@ carga semanal de cada contrata.
 
 ## Abrir el cronograma
 
-1. Vaya a **Planificación de obra ‣ Cronograma**, o haga clic en **Cronograma**
+1. Vaya a **Planificación de obra ‣ Cronograma ‣ Cronograma de la obra**, o haga clic en **Cronograma**
    en el plan.
 2. Al generar el plan, cada ambiente recibe sus etapas con líneas, una semana
    por etapa desde el inicio del plan. Contrata, cuadrilla, monto y avance salen
