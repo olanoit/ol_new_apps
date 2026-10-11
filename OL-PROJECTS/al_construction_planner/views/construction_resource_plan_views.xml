@@ -563,7 +563,8 @@
         <field name="res_model">tier.definition</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('model', 'in', ('construction.resource.plan', 'construction.contract.settlement'))]</field>
-        <field name="context">{'default_model_id': ref('al_construction_planner.model_construction_resource_plan')}</field>
+        <!-- eval: ref() se resuelve al cargar; el cliente web no conoce ref() -->
+        <field name="context" eval="{'default_model_id': ref('al_construction_planner.model_construction_resource_plan')}"/>
     </record>
 
 </odoo>
