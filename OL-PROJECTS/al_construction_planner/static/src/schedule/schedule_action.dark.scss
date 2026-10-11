@@ -1,0 +1,7 @@
+// = Cronograma con recursos en modo oscuro
+// Solo en `web.assets_web_dark` (variables oscuras de Odoo). El
+// `var(--o-view-background-color, #fff)` de schedule_action.scss cae en su
+// respaldo blanco.
+.o_algantt_action .o_cp_schedule_panel {
+    background-color: $o-view-background-color;
+}

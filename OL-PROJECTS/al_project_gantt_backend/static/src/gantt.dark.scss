@@ -1,0 +1,153 @@
+// = Gantt de proyectos en modo oscuro
+// ============================================================================
+// Solo en `web.assets_web_dark`: el bundle se compila con las variables
+// oscuras de Odoo, así que los `$o-*` ya traen los tonos del tema. El modo
+// claro no cambia.
+
+// dhtmlxGantt calcula sus colores derivados en `:root` a partir de los base
+// (`--dhx-gantt-base-colors-*`): se redefinen ahí, con más especificidad que
+// su `:root` (`html:root`), porque su hoja carga después (perezosa).
+html:root {
+    --dhx-gantt-base-colors-background: #{$o-view-background-color};
+    --dhx-gantt-base-colors-background-alt: #{$o-gray-100};
+    --dhx-gantt-base-colors-border: #{$o-gray-300};
+    --dhx-gantt-base-colors-border-light: #{$o-gray-300};
+    --dhx-gantt-base-colors-text-base: #{$o-main-text-color};
+    --dhx-gantt-base-colors-text-light: #{$o-gray-700};
+    --dhx-gantt-base-colors-select: #{mix($o-action, $o-view-background-color, 18%)};
+    --dhx-gantt-base-colors-hover-color: #{$o-gray-300};
+    --dhx-gantt-base-colors-icons: #{$o-gray-600};
+    --dhx-gantt-base-colors-disabled: #{$o-gray-300};
+    --dhx-gantt-base-colors-white: #{$o-view-background-color};
+
+    --dhx-gantt-container-background: var(--dhx-gantt-base-colors-background);
+    --dhx-gantt-container-color: var(--dhx-gantt-base-colors-text-base);
+    --dhx-gantt-offtime-background: var(--dhx-gantt-base-colors-background-alt);
+    --dhx-gantt-scale-background: var(--dhx-gantt-container-background);
+    --dhx-gantt-scale-color: var(--dhx-gantt-base-colors-text-light);
+    --dhx-gantt-scale-border-vertical: 1px solid var(--dhx-gantt-base-colors-border-light);
+    --dhx-gantt-scale-border-horizontal: 1px solid var(--dhx-gantt-base-colors-border);
+    --dhx-gantt-grid-scale-background: var(--dhx-gantt-scale-background);
+    --dhx-gantt-grid-scale-color: var(--dhx-gantt-scale-color);
+    --dhx-gantt-grid-scale-border-vertical: var(--dhx-gantt-scale-border-vertical);
+    --dhx-gantt-timeline-scale-background: var(--dhx-gantt-scale-background);
+    --dhx-gantt-timeline-scale-color: var(--dhx-gantt-scale-color);
+    --dhx-gantt-timeline-scale-border-vertical: var(--dhx-gantt-scale-border-vertical);
+    --dhx-gantt-grid-row-border: var(--dhx-gantt-scale-border-horizontal);
+    --dhx-gantt-default-border: 1px solid var(--dhx-gantt-base-colors-border);
+    --dhx-gantt-header-border: var(--dhx-gantt-default-border);
+    --dhx-gantt-task-line-text: var(--dhx-gantt-container-color);
+    --dhx-gantt-task-row-border: 1px solid var(--dhx-gantt-base-colors-border);
+    --dhx-gantt-task-row-background: var(--dhx-gantt-container-background);
+    --dhx-gantt-task-row-background--odd: var(--dhx-gantt-container-background);
+    --dhx-gantt-popup-background: #{$o-view-background-color};
+    --dhx-gantt-popup-border: 1px solid #{$o-gray-300};
+    --dhx-gantt-popup-color: var(--dhx-gantt-container-color);
+    --dhx-gantt-lightbox-background: #{$o-view-background-color};
+    --dhx-gantt-lightbox-color: var(--dhx-gantt-container-color);
+    --dhx-gantt-link-handle-background: var(--dhx-gantt-base-colors-background);
+    --dhx-gantt-link-handle-border: var(--dhx-gantt-base-colors-border);
+}
+
+// Maquetación de la acción: los `var(--o-*, #claro)` de gantt_action.scss
+// caen en su respaldo claro.
+.o_algantt_action.o_algantt_action {
+    .algantt-wrapper {
+        background-color: $o-view-background-color;
+    }
+
+    .algantt-toolbar {
+        background-color: $o-gray-100;
+    }
+}
+
+.algantt-check {
+    color: $o-gray-500;
+
+    &.algantt-check-on,
+    &.algantt-check-part {
+        color: $o-action;
+    }
+}
+
+.gantt_row.algantt-row-selected {
+    background-color: rgba($o-action, 0.18);
+}
+
+// Estilos comunes (gantt_common.scss) con colores pensados para fondo blanco.
+.gantt_task_cell.algantt-nonworking {
+    background-color: rgba($o-black, 0.04);
+}
+
+.gantt_scale_cell.algantt-nonworking-scale {
+    color: $o-gray-500;
+}
+
+.algantt-baseline-bar {
+    background-color: rgba($o-black, 0.45);
+}
+
+.algantt-late {
+    color: #ff6b5b;
+}
+
+.algantt-early {
+    color: #4fd17f;
+}
+
+.algantt-activity {
+    &.algantt-activity-overdue { color: #ff6b5b; }
+    &.algantt-activity-planned { color: #4fd17f; }
+}
+
+.algantt-context-menu {
+    border-color: $o-gray-300;
+    background-color: $o-view-background-color;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.algantt-context-item {
+    color: $o-main-text-color;
+
+    &:hover:not(:disabled) {
+        background-color: $o-gray-300;
+    }
+
+    &:disabled {
+        color: $o-gray-500;
+    }
+}
+
+.gantt_cal_light {
+    select,
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        border-color: $o-gray-300;
+        background-color: $o-gray-100;
+        color: $o-main-text-color;
+    }
+
+    .gantt_cal_lsection {
+        color: $o-main-text-color;
+    }
+
+    .algantt-lb-date {
+        color: $o-gray-700;
+    }
+
+    .algantt-token {
+        background-color: mix($o-brand-primary, $o-view-background-color, 35%);
+        color: $o-main-text-color;
+    }
+
+    .algantt-token-remove {
+        color: $o-gray-700;
+
+        &:hover { color: $o-main-text-color; }
+    }
+
+    .algantt-token-empty {
+        color: $o-gray-500;
+    }
+}

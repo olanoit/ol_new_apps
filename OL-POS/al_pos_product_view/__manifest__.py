@@ -48,7 +48,7 @@ sin dependencias externas.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '6.20261009',
+    'version': '7.20261011',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque
@@ -94,6 +94,10 @@ sin dependencias externas.
         ],
         # Los tours se cargan con `start_tour()` en HttpCase; viven en el
         # bundle genérico `web.assets_tests`, NO en el bundle del TPV.
+        # Modo oscuro del TPV (cookie pos_color_scheme=dark).
+        'point_of_sale.assets_prod_dark': [
+            'al_pos_product_view/static/src/switch_view/scss/product_view.dark.scss',
+        ],
         'web.assets_tests': [
             'al_pos_product_view/static/tests/tours/**/*',
         ],

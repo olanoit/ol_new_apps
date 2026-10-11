@@ -32,7 +32,7 @@ Principios de diseño
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '6.20261010',
+    'version': '7.20261011',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',
@@ -46,6 +46,11 @@ Principios de diseño
             'al_project_gantt_ai/static/src/js/**/*',
             'al_project_gantt_ai/static/src/xml/**/*',
             'al_project_gantt_ai/static/src/scss/**/*',
+            ('remove', 'al_project_gantt_ai/static/src/scss/**/*.dark.scss'),
+        ],
+        # Modo oscuro: se compila con las variables oscuras de Odoo.
+        'web.assets_web_dark': [
+            'al_project_gantt_ai/static/src/scss/**/*.dark.scss',
         ],
     },
     'installable': True,

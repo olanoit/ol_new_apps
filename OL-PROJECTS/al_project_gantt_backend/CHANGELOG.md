@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261011 — 11/10/2026
+
+- Modo oscuro: el diagrama (dhtmlxGantt), la barra de herramientas, el formulario de tarea, el menú contextual y las marcas de la ruta crítica, la línea base y los días no laborables toman los colores del tema oscuro de Odoo; el modo claro no cambia.
+
 ## 15.20261010 — 10/10/2026
 
 - Puntos de extensión para pantallas que reutilizan el diagrama heredando su componente (como el cronograma de la planificación de obra): opciones extra para los datos, filas y columnas propias, casillas de selección en cascada con barra de selección y botones propios, y paneles a la derecha y debajo del diagrama. Sin heredarlo, el Gantt se ve y funciona igual.

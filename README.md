@@ -177,7 +177,7 @@ módulo | versión | licencia | resumen
 [al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 21.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 22.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
 [al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 22.20261010 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
-[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 9.20261008 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
+[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 10.20261011 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
 [al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 10.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
 [al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 21.20261009 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
@@ -187,9 +187,9 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 12.20261008 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
 [al_pos_network_printer](OL-POS/al_pos_network_printer/) | 4.20261009 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
-[al_pos_product_view](OL-POS/al_pos_product_view/) | 6.20261009 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
+[al_pos_product_view](OL-POS/al_pos_product_view/) | 7.20261011 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
 [al_pos_theme](OL-POS/al_pos_theme/) | 2.20261008 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
-[al_pos_vendedor](OL-POS/al_pos_vendedor/) | 3.20261008 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
+[al_pos_vendedor](OL-POS/al_pos_vendedor/) | 4.20261011 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
 
 ### OL-INVENTORY
 
@@ -204,9 +204,9 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 9.20261009 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 11.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
-[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 6.20261010 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
-[al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 15.20261010 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
+[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 13.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
+[al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 7.20261011 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
+[al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 16.20261011 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 17.20261010 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 12.20261008 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
 

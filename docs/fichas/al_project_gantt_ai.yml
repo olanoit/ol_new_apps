@@ -178,6 +178,10 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: 7.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Modo oscuro: el panel del asistente, sus mensajes y las propuestas toman los colores del tema oscuro de Odoo (antes quedaban sobre fondo blanco)."
   - version: 6.20261010
     fecha: 10/10/2026
     cambios:

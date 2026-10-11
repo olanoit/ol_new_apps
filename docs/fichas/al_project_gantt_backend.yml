@@ -230,6 +230,10 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: 16.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Modo oscuro: el diagrama (dhtmlxGantt), la barra de herramientas, el formulario de tarea, el menú contextual y las marcas de la ruta crítica, la línea base y los días no laborables toman los colores del tema oscuro de Odoo; el modo claro no cambia."
   - version: 15.20261010
     fecha: 10/10/2026
     cambios:

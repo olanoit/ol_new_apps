@@ -1,0 +1,33 @@
+// = Panel del asistente en modo oscuro
+// Solo en `web.assets_web_dark` (variables oscuras de Odoo). Los
+// `var(--bs-*, #claro)` de gantt_ai.scss caen en su respaldo claro en el
+// cliente web.
+.algantt-ai-panel {
+    background: $o-view-background-color;
+    border-left-color: $o-gray-300;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+    color: $o-main-text-color;
+
+    .algantt-ai-user .algantt-ai-bubble {
+        background: $o-brand-primary;
+        color: $o-black;
+    }
+
+    .algantt-ai-assistant .algantt-ai-bubble {
+        background: $o-gray-300;
+    }
+
+    .algantt-ai-bubble.algantt-ai-error {
+        background: mix($danger, $o-view-background-color, 25%);
+        color: $o-main-text-color;
+    }
+
+    .algantt-ai-proposal {
+        background: $o-gray-100;
+
+        &.algantt-ai-picked {
+            border-color: $o-brand-primary !important;
+            background: mix($o-brand-primary, $o-view-background-color, 25%);
+        }
+    }
+}

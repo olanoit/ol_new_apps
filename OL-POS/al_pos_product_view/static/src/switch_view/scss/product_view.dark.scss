@@ -1,0 +1,13 @@
+// = Vista de productos del TPV en modo oscuro
+// Solo en `point_of_sale.assets_prod_dark` (cookie pos_color_scheme=dark).
+// El botón de información era una pastilla blanca: en oscuro su icono claro
+// no se veía.
+.pos-card-info-btn {
+    background-color: color-mix(in srgb, var(--bs-body-bg) 90%, transparent);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.pos-product-list-row:hover {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}

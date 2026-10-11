@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261011 — 11/10/2026
+
+- Modo oscuro: el panel de recursos del cronograma (P-15) toma el fondo del tema; el diagrama y su barra lo heredan del Gantt de proyectos.
+
 ## 11.20261011 — 11/10/2026
 
 - Importar maestro y ETO (fase 12, W-15): libro Excel con catálogo de actividades, tipologías, plantilla de módulos, actividades por ambiente, BOM con etapa y árbol de la obra, o solo con el ETO (código y ancho real de cada módulo).

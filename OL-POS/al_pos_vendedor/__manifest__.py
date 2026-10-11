@@ -34,7 +34,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '3.20261008',
+    'version': '4.20261011',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',
@@ -56,6 +56,10 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
             'al_pos_vendedor/static/src/xml/order_receipt.xml',
             'al_pos_vendedor/static/src/xml/selection_popup_custom.xml',
             'al_pos_vendedor/static/src/xml/cashier_selection_popup.xml',
+        ],
+        # Modo oscuro del TPV (cookie pos_color_scheme=dark).
+        'point_of_sale.assets_prod_dark': [
+            'al_pos_vendedor/static/src/css/vendedor_pos.dark.scss',
         ],
     },
     'installable': True,

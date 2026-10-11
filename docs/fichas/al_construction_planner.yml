@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 13.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Modo oscuro: el panel de recursos del cronograma (P-15) toma el fondo del tema; el diagrama y su barra lo heredan del Gantt de proyectos."
   - version: 11.20261011
     fecha: 11/10/2026
     cambios:

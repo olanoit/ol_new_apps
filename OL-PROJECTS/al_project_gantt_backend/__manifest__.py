@@ -27,7 +27,7 @@ ruta crítica, líneas base y exportación a Excel y PDF.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '15.20261010',
+    'version': '16.20261011',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',
@@ -49,6 +49,11 @@ ruta crítica, líneas base y exportación a Excel y PDF.
             'al_project_gantt_base/static/src/js/gantt_lightbox.js',
             'al_project_gantt_base/static/src/scss/gantt_common.scss',
             'al_project_gantt_backend/static/src/**/*',
+            ('remove', 'al_project_gantt_backend/static/src/**/*.dark.scss'),
+        ],
+        # Modo oscuro: se compila con las variables oscuras de Odoo.
+        'web.assets_web_dark': [
+            'al_project_gantt_backend/static/src/**/*.dark.scss',
         ],
     },
     'installable': True,

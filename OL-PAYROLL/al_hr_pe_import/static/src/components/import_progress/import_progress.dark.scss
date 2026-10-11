@@ -1,0 +1,23 @@
+// = Progreso de la importación en modo oscuro
+// Solo en `web.assets_web_dark` (variables oscuras de Odoo): tarjetas con el
+// tono de su estado mezclado con el fondo de la vista.
+.o_hpi_progress {
+    background: $o-gray-300;
+}
+
+@mixin o-hpi-card($color) {
+    background: mix($color, $o-view-background-color, 18%);
+    border-color: mix($color, $o-view-background-color, 45%);
+}
+
+.o_hpi_card_total { background: $o-gray-100; border-color: $o-gray-300; }
+.o_hpi_card_current { @include o-hpi-card($primary); }
+.o_hpi_card_created { @include o-hpi-card($success); }
+.o_hpi_card_updated { @include o-hpi-card($info); }
+.o_hpi_card_skipped { @include o-hpi-card($warning); }
+.o_hpi_card_errors { @include o-hpi-card($danger); }
+
+// El total usa `text-secondary`, casi invisible sobre el fondo oscuro.
+.o_hpi_card_total .text-secondary {
+    color: $o-gray-700 !important;
+}

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_ai.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261011 — 11/10/2026
+
+- Modo oscuro: el panel del asistente, sus mensajes y las propuestas toman los colores del tema oscuro de Odoo (antes quedaban sobre fondo blanco).
+
 ## 6.20261010 — 10/10/2026
 
 - Modelo por defecto de Anthropic actualizado a claude-opus-5-5 (el más reciente).

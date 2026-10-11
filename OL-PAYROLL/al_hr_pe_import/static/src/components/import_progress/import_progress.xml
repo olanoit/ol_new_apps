@@ -44,7 +44,7 @@
                             <span class="ms-1 text-muted fw-normal">(<t t-out="state.percent"/>%)</span>
                         </small>
                     </div>
-                    <div class="progress w-100" style="height: 12px; border-radius: 6px; background:#e9ecef;">
+                    <div class="progress w-100 o_hpi_progress" style="height: 12px; border-radius: 6px;">
                         <div class="progress-bar"
                              t-att-class="{
                                  'progress-bar-striped progress-bar-animated': state.status === 'running',
@@ -64,43 +64,37 @@
                 <!-- ── Tarjetas de estadísticas (2 filas de 3) ── -->
                 <div class="row g-2 mb-4">
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#f8f9fa; border:1px solid #dee2e6;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_total">
                             <div class="fs-3 fw-bold text-secondary lh-1 mb-1" t-out="state.total"/>
                             <small class="text-uppercase text-muted" style="font-size:.68rem; letter-spacing:.05em;">Total</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#e8f0fe; border:1px solid #c2d4fb;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_current">
                             <div class="fs-3 fw-bold text-primary lh-1 mb-1" t-out="state.current"/>
                             <small class="text-uppercase text-primary" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Procesados</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#e6f4ea; border:1px solid #a8d5b0;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_created">
                             <div class="fs-3 fw-bold text-success lh-1 mb-1" t-out="state.created"/>
                             <small class="text-uppercase text-success" style="font-size:.68rem; letter-spacing:.05em; opacity:.75;">Creados</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#e3f2fd; border:1px solid #90caf9;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_updated">
                             <div class="fs-3 fw-bold text-info lh-1 mb-1" t-out="state.updated"/>
                             <small class="text-uppercase text-info" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Actualizados</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#fff8e1; border:1px solid #ffe082;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_skipped">
                             <div class="fs-3 fw-bold text-warning lh-1 mb-1" t-out="state.skipped"/>
                             <small class="text-uppercase text-warning" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Omitidos</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="text-center rounded-3 py-3 h-100"
-                             style="background:#ffebee; border:1px solid #ef9a9a;">
+                        <div class="text-center rounded-3 py-3 h-100 o_hpi_card o_hpi_card_errors">
                             <div class="fs-3 fw-bold text-danger lh-1 mb-1" t-out="state.errors"/>
                             <small class="text-uppercase text-danger" style="font-size:.68rem; letter-spacing:.05em; opacity:.85;">Errores</small>
                         </div>

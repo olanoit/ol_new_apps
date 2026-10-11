@@ -206,6 +206,10 @@ faq:
       vendedor en el buscador.
 
 novedades:
+  - version: 4.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Modo oscuro del TPV: la ventana «Seleccionar vendedor» (buscador, tarjetas, estrella, ayuda y pie) se adapta al tema oscuro de la caja."
   - version: 3.20261008
     fecha: 08/10/2026
     cambios:

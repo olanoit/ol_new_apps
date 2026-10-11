@@ -1,0 +1,99 @@
+// = Vendedor POS en modo oscuro
+// Solo en `point_of_sale.assets_prod_dark` (cookie pos_color_scheme=dark):
+// el bundle se compila con las variables oscuras, así que las de Bootstrap
+// (`--bs-*`) ya traen los tonos del tema. El modo claro no cambia.
+$alv-accent: #c79bbd; // el morado de la marca, aclarado para fondo oscuro
+
+.alv-search-wrap {
+    background: var(--bs-tertiary-bg);
+    border-color: var(--bs-border-color);
+
+    &:focus-within {
+        border-color: $alv-accent;
+        background: var(--bs-body-bg);
+    }
+}
+.alv-search-input {
+    color: var(--bs-body-color);
+}
+.alv-search-icon,
+.alv-search-clear,
+.alv-search-input::placeholder,
+.alv-empty,
+.alv-count {
+    color: var(--bs-secondary-color);
+}
+.alv-search-clear:hover {
+    color: var(--bs-body-color);
+}
+
+.alv-card {
+    border-color: var(--bs-border-color);
+    background: var(--bs-tertiary-bg);
+
+    &:hover {
+        border-color: $alv-accent;
+        background: rgba($alv-accent, 0.12);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    }
+}
+.alv-card--selected,
+.alv-card--selected:hover,
+.alv-current-banner {
+    border-color: $alv-accent;
+    background: rgba($alv-accent, 0.20);
+    box-shadow: none;
+}
+.alv-card-name {
+    color: var(--bs-body-color);
+}
+.alv-card--selected .alv-card-name,
+.alv-current-name,
+.alv-current-label {
+    color: $alv-accent;
+}
+.alv-avatar-check {
+    border-color: var(--bs-body-bg);
+}
+
+.alv-star {
+    background: var(--bs-secondary-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-secondary-color);
+
+    &:hover {
+        background: rgba(#f0c14b, 0.18);
+        border-color: #f0c14b;
+        color: #f0c14b;
+    }
+}
+
+.alv-deselect-btn {
+    background: transparent;
+    border-color: $alv-accent;
+    color: $alv-accent;
+
+    &:hover {
+        background: $alv-accent;
+        border-color: $alv-accent;
+        color: #1b1d26;
+    }
+}
+
+.alv-default-hint {
+    background: rgba(#f0a500, 0.12);
+    border-color: rgba(#f0a500, 0.35);
+    color: #f3c97a;
+}
+
+.alv-footer {
+    border-top-color: var(--bs-border-color);
+}
+.alv-cancel {
+    color: var(--bs-secondary-color);
+
+    &:hover {
+        background: var(--bs-tertiary-bg);
+        color: var(--bs-body-color);
+    }
+}

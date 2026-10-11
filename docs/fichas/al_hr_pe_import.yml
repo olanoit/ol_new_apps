@@ -522,6 +522,10 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
+  - version: 10.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Modo oscuro: la barra y las tarjetas de conteo del progreso de importación toman los tonos del tema oscuro de Odoo; el modo claro no cambia."
   - version: 9.20261008
     fecha: 08/10/2026
     cambios:

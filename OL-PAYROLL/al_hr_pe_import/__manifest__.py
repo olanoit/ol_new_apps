@@ -47,7 +47,7 @@ y regla de registro por compañía en el historial.
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '9.20261008',
+    'version': '10.20261011',
     'license': 'OPL-1',
     'depends': [
         'al_hr_pe',
@@ -82,6 +82,11 @@ y regla de registro por compañía en el historial.
             'al_hr_pe_import/static/src/xml/hr_salary_rule_list_buttons.xml',
             'al_hr_pe_import/static/src/components/import_progress/import_progress.js',
             'al_hr_pe_import/static/src/components/import_progress/import_progress.xml',
+            'al_hr_pe_import/static/src/components/import_progress/import_progress.scss',
+        ],
+        # Modo oscuro: se compila con las variables oscuras de Odoo.
+        'web.assets_web_dark': [
+            'al_hr_pe_import/static/src/components/import_progress/import_progress.dark.scss',
         ],
     },
     'installable': True,

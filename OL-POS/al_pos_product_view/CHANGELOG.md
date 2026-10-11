@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_product_view.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261011 — 11/10/2026
+
+- Modo oscuro del TPV: el botón de información de las tarjetas y la sombra de las filas de la lista se adaptan al tema oscuro.
+
 ## 6.20261009 — 09/10/2026
 
 - Etiqueta más corta en la etiqueta de producto: «Filtro del TPV».
