@@ -4,18 +4,33 @@
 #   ./build.sh            → rama 19.0, versión 19.0 y alias latest
 #   ./build.sh 20.0       → rama 20.0, versión 20.0 y alias latest
 #   ./build.sh 19.0 nolatest → reconstruye 19.0 sin moverle el alias
+#   ./build.sh --if-changed [versión] [latest|nolatest]
+#                         → solo si origin/<versión> tiene un commit nuevo
+#                           (lo usa cron cada 5 minutos: /etc/cron.d/ol-docs)
 # No toca el árbol de addons que usan los contenedores de Odoo: exporta el
 # commit con git archive a un directorio temporal.
 set -euo pipefail
 umask 022   # el nginx del contenedor (usuario nginx) debe poder leer www/
 cd "$(dirname "$0")"
+IF_CHANGED=0
+if [ "${1:-}" = --if-changed ]; then IF_CHANGED=1; shift; fi
 VERSION="${1:-19.0}"
 LATEST="${2:-latest}"
+# Una sola construcción a la vez (cron y manual).
+exec 9>.build.lock
+if ! flock -n 9; then
+  [ "$IF_CHANGED" = 1 ] && exit 0
+  echo "Otra construcción en curso; esperando…"; flock 9
+fi
 REPO=/opt/odoo-infra/shared-addons/19/ol_new_apps
 SITE_URL=https://docs.altalatam.com/
 
 git -C "$REPO" fetch -q origin "$VERSION"
 COMMIT=$(git -C "$REPO" rev-parse FETCH_HEAD)
+if [ "$IF_CHANGED" = 1 ] && [ "$(cat "www/${VERSION}/.commit" 2>/dev/null)" = "$COMMIT" ]; then
+  exit 0
+fi
+echo "$(date '+%F %T') construyendo ${VERSION} (${COMMIT:0:7})"
 SRC=$(mktemp -d /tmp/ol-docs-src.XXXXXX)
 trap 'rm -rf "$SRC"' EXIT
 git -C "$REPO" archive "$COMMIT" | tar -x -C "$SRC"
@@ -30,6 +45,7 @@ docker run --rm \
   -v "$SRC":/src:ro -v "$PWD/www":/www \
   -e DOCS_SITE_URL="$SITE_URL" -e ODOO_VERSION="$VERSION" \
   -e DOCS_EDIT_URI="edit/${VERSION}/" -e DOCS_BRANCH="$VERSION" \
+  -e DOCS_LOGOUT_URL=/_login/logout \
   ol-docs-builder mkdocs build --strict -q -f /src/mkdocs/mkdocs.yml -d "/www/.${VERSION}.new"
 
 # Cambio atómico de la versión publicada.
@@ -58,4 +74,4 @@ with open(os.path.join(www, 'versions.json'), 'w') as f:
     json.dump(data, f)
 print('versions.json:', data)
 PY
-echo "Publicada ${VERSION} (${COMMIT:0:7}) en ${SITE_URL}${VERSION}/"
+echo "$(date '+%F %T') publicada ${VERSION} (${COMMIT:0:7}) en ${SITE_URL}${VERSION}/"

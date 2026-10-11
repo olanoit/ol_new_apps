@@ -131,9 +131,13 @@ Este procedimiento está probado en un clon desechable: 19.0 y 20.0 desplegadas,
 
 ## Publicación en docs.altalatam.com
 
-El sitio se publica en el servidor io-altaexperts, en Docker, con usuario y
-contraseña: https://docs.altalatam.com (`/` lleva a `/latest/`). La
-configuración está en [`deploy/`](deploy/README.md). Tras un push a 19.0:
+El sitio se publica en el servidor io-altaexperts, en Docker, con página de
+inicio de sesión: https://docs.altalatam.com (`/` lleva a `/latest/`). La
+configuración está en [`deploy/`](deploy/README.md).
+
+Se reconstruye solo: cada 5 minutos el servidor mira si `origin/19.0` tiene
+un commit nuevo y, si lo hay, publica la versión nueva (unos 2 minutos).
+Para forzarlo:
 
 ```bash
 ssh io-altaexperts 'cd /opt/odoo-infra/docs-site && ./build.sh'

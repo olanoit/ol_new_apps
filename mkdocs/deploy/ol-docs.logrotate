@@ -1,0 +1,8 @@
+# Instalar en /etc/logrotate.d/ol-docs.
+/opt/odoo-infra/docs-site/build.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+}

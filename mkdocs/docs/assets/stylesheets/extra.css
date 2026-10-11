@@ -187,3 +187,13 @@
   .md-typeset h1 { font-size: 1.6em; }
   .md-typeset h2 { font-size: 1.3em; }
 }
+
+/* «Cerrar sesión» (sitio publicado con acceso, assets/javascripts/logout.js). */
+.md-header__button.ol-logout {
+  margin-left: 0.2rem;
+  opacity: 0.85;
+}
+
+.md-header__button.ol-logout:hover {
+  opacity: 1;
+}

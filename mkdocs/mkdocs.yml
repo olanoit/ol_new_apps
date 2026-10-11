@@ -93,9 +93,14 @@ extra:
     default: latest
     alias: true
   generator: false
+  # Botón «Cerrar sesión» del sitio publicado con acceso (deploy/build.sh).
+  logout_url: !ENV [DOCS_LOGOUT_URL, ""]
 
 extra_css:
   - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/logout.js
 
 plugins:
   - search:

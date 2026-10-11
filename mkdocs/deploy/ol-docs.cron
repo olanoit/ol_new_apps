@@ -1,0 +1,3 @@
+# Documentación de ol_new_apps (docs.altalatam.com): reconstruye cuando
+# origin/19.0 tiene un commit nuevo. Instalar en /etc/cron.d/ol-docs.
+*/5 * * * * root /opt/odoo-infra/docs-site/build.sh --if-changed >> /opt/odoo-infra/docs-site/build.log 2>&1

@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
+{#- «Cerrar sesión» en la cabecera solo en el sitio publicado con acceso
+    (DOCS_LOGOUT_URL, ver deploy/); docs/assets/javascripts/logout.js lo pinta. -#}
+{% block extrahead %}
+  {{ super() }}
+  {% if config.extra.logout_url %}
+    <meta name="ol-logout-url" content="{{ config.extra.logout_url }}">
+  {% endif %}
+{% endblock %}
+
 {#- Aviso al leer una versión anterior publicada con mike (p. ej. 19.0 cuando
     «latest» ya es 20.0). -#}
 {% block outdated %}
