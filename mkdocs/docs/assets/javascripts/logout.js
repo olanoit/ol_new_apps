@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   var link = document.createElement('a');
   link.href = meta.content;
-  link.className = 'md-header__button ol-logout';
+  link.className = 'md-header__button md-icon ol-logout';
   link.title = 'Cerrar sesión';
   link.setAttribute('aria-label', 'Cerrar sesión');
   link.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">' +
