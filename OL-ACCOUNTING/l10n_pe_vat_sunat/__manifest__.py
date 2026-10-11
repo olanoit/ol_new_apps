@@ -23,6 +23,16 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
   en BD y sincronización diaria vía ``ir.cron``.
 * Resolución de ubigeo / distrito / ciudad / departamento configurable
   por conexión.
+* Ficha RUC completa en la pestaña «SUNAT» del contacto: tipo de
+  contribuyente, fechas de inscripción, inicio y baja, sistemas de emisión y
+  de contabilidad, comercio exterior, emisión electrónica, PLE y padrones.
+* Actividades económicas (principal y secundarias) con el catálogo CIIU
+  Rev. 4 oficial; las que SUNAT publique y no estén se agregan solas.
+* Representantes legales con su documento y fecha desde, y locales anexos
+  con su código de establecimiento, tipo y actividad, sin duplicarse al
+  volver a consultar.
+* Contacto nuevo con RUC y empresa por defecto en compañías peruanas; DNI
+  lo pasa a persona.
 """,
     'author': "OLANOIT",
     'maintainer': "CRISTÓBAL OCH <olanoit@gmail.com>",
@@ -31,7 +41,7 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
     'countries': ['pe'],
-    'version': '18.20261010',
+    'version': '19.20261011',
     'license': 'OPL-1',
     'depends': [
         'base',
@@ -48,10 +58,12 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
         'security/ir.model.access.csv',
         'security/l10n_pe_vat_sunat_security.xml',
         'data/ir_cron.xml',
+        'data/l10n_pe.economic.activity.csv',
         'views/l10n_pe_api_connection_views.xml',
         'views/l10n_pe_sunat_padron_views.xml',
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',
+        'views/l10n_pe_economic_activity_views.xml',
         'views/res_partner_view.xml',
     ],
     'post_init_hook': 'post_init_hook',

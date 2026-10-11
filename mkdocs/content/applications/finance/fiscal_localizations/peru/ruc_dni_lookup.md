@@ -58,7 +58,9 @@ campo del contacto). No hace falta programar.
 
 ## Crear un contacto con su RUC o DNI
 
-1. Vaya a **Contactos** y haga clic en **Nuevo**.
+1. Vaya a **Contactos** y haga clic en **Nuevo**. En una compañía peruana, el
+   tipo de identificación es **RUC** por defecto; si elige **DNI**, el
+   contacto pasa a persona.
 2. Escriba el RUC (11 dígitos) o el DNI (8 dígitos) en el **Número de
    identificación**. Un número con otra longitud se rechaza antes de consultar.
 3. El contacto toma el nombre, la dirección fiscal con su distrito, provincia y
@@ -88,6 +90,71 @@ siguiente consulta correcta.
     Un RUC con estado **BAJA** o condición **No habido** se muestra en el
     contacto. Evalúelo con el contador antes de facturarle o deducir el crédito
     fiscal de sus comprobantes.
+
+## Ficha RUC del contribuyente
+
+La pestaña **SUNAT** de una empresa muestra la ficha que SUNAT publica en la
+consulta RUC, de solo lectura porque la llena la consulta:
+
+- **Contribuyente**: tipo de contribuyente, fecha de inscripción, condición,
+  inicio de actividades, fecha de baja (si la tiene) y actividad de comercio
+  exterior. El estado se ve en la barra del encabezado y el nombre comercial
+  bajo el nombre.
+- **Sistemas y comprobantes**: sistema de emisión de comprobantes, sistema de
+  contabilidad, comprobantes con autorización de impresión, sistemas de emisión
+  electrónica, emisor electrónico desde, comprobantes electrónicos y afiliado
+  al PLE desde.
+- **Padrones** en los que figura, con su fecha.
+
+![Pestaña SUNAT con la ficha RUC, actividades económicas y locales anexos](ruc_dni_lookup/sunat-tab.png)
+
+### De dónde sale la ficha
+
+Las API básicas (apis.net.pe, apiperu.dev, Decolecta `ruc`) solo traen nombre,
+dirección, estado y condición. La ficha completa la traen:
+
+| Fuente | Qué trae | Requisito |
+|---|---|---|
+| **SUNAT (oficial)** | Toda la ficha, actividades, locales y representantes | El portal de SUNAT solo responde a direcciones de internet del Perú: desde un servidor en el extranjero responde «403» |
+| **Decolecta** con `ruc/full` | Tipo de contribuyente, sistemas de emisión y contabilidad, comercio exterior y actividad principal | Un plan que incluya la consulta completa y el endpoint `/v1/sunat/ruc/full?numero={doc}` en la conexión |
+
+Al hacer clic en **Actualizar desde API**, si la primera conexión que responde
+no trae la ficha, la consulta sigue con las demás conexiones activas y
+completa solo lo que falta: lo que trajo la primera se conserva.
+
+!!! warning "Importante"
+    Si ninguna conexión trae la ficha, los datos básicos se guardan igual y
+    aparece el aviso **Ficha RUC incompleta** con el motivo de cada conexión.
+    Active una fuente de la tabla anterior para llenarla.
+
+### Actividades económicas
+
+La lista muestra la actividad **principal** y las **secundarias** con su código
+CIIU, en el orden en que las publica SUNAT. El catálogo es la CIIU Rev. 4
+oficial (**Perú ‣ Configuración ‣ Consultas RUC / DNI ‣ Actividades
+económicas**); si SUNAT publica un código que no está, como los de cinco dígitos
+de fichas antiguas (CIIU Rev. 3), se agrega al consultar. En la lista de
+contactos se puede buscar y agrupar por **Actividad principal**.
+
+### Locales anexos
+
+Cada local anexo es una dirección de entrega de la empresa con su **código de
+establecimiento** (el de cuatro dígitos que usan los libros y las guías de
+remisión), el tipo (sucursal, depósito, oficina…), la actividad y la dirección.
+Para traerlos, active **Importar locales anexos** en la conexión **SUNAT
+(oficial)**; también se pueden agregar a mano en la misma lista.
+
+### Representantes legales
+
+Con **Importar representantes** activo en la conexión **SUNAT (oficial)**, los
+gerentes, apoderados y titulares quedan como contactos de la empresa con su
+cargo, tipo y número de documento y la fecha desde la que figuran. El filtro
+**Representantes legales** de Contactos los lista.
+
+![Representante legal con su documento y la fecha desde](ruc_dni_lookup/legal-representative.png)
+
+Volver a consultar actualiza actividades, locales y representantes sin
+duplicarlos.
 
 ## Padrón SUNAT
 

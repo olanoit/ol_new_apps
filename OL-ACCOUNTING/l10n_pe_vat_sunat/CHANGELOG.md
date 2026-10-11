@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261011 — 11/10/2026
+
+- «Actualizar desde API» completa la ficha RUC con las demás conexiones cuando la primera que responde solo trae los datos básicos, y avisa con el motivo si ninguna la trae (por ejemplo, el portal SUNAT responde 403 fuera del Perú).
+- Pestaña SUNAT en el contacto con la ficha RUC completa: tipo de contribuyente, fechas de inscripción, inicio y baja, sistemas de emisión y contabilidad, comercio exterior, comprobantes físicos y electrónicos, emisor electrónico, PLE y padrones.
+- Actividades económicas (principal y secundarias) con el catálogo CIIU Rev. 4 oficial; las que SUNAT publique y no estén se agregan solas.
+- Representantes legales con tipo y número de documento y fecha desde; locales anexos con código de establecimiento, tipo y actividad; sin duplicarse al reconsultar.
+- El parser del portal SUNAT lee cada dato por su etiqueta; Decolecta (endpoint ruc/full) y el mapeo admiten fechas.
+- Contacto nuevo con RUC por defecto en compañías peruanas; DNI lo pasa a persona y RUC a empresa.
+
 ## 18.20261010 — 10/10/2026
 
 - El método de la conexión se muestra como «Método HTTP» (antes salía «Http Method»); ficha con las etiquetas en español.

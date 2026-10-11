@@ -166,7 +166,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 2.20261010 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 18.20261010 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
+[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 19.20261011 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 
 ### OL-INVOICING
 
@@ -225,7 +225,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_docs_help](OL-TOOLS/al_docs_help/) | 2.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
+[al_docs_help](OL-TOOLS/al_docs_help/) | 3.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 8.20261009 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [al_report_base](OL-TOOLS/al_report_base/) | 1.20261011 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes

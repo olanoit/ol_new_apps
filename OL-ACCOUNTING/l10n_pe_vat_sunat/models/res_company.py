@@ -40,11 +40,13 @@ class ResCompany(models.Model):
         self.l10n_pe_ruc_validation = is_pe
         self.l10n_pe_dni_validation = is_pe
 
-    def _get_pe_api_connections(self, doc_type):
+    def _get_pe_api_connections(self, doc_type, all_connections=False):
         """Conexiones activas para el tipo de documento, por prioridad.
 
         Con fallback desactivado devuelve **solo la primera** (la principal);
         con fallback activado devuelve todas para consulta en cascada.
+        ``all_connections`` las devuelve todas igualmente (para completar la
+        ficha RUC con otra fuente).
         """
         self.ensure_one()
         # Una sucursal sin conexiones propias usa las de su compañía
@@ -55,7 +57,7 @@ class ResCompany(models.Model):
             lambda c: c.enabled and c.document_type in (doc_type, 'both')
             and c._is_usable()
         ).sorted(lambda c: (c.sequence, c.id))
-        if not self.l10n_pe_api_use_fallback:
+        if not self.l10n_pe_api_use_fallback and not all_connections:
             return connections[:1]
         return connections
 
@@ -100,6 +102,26 @@ class ResCompany(models.Model):
                 lambda c: c.name == name)
             if not existing:
                 company._l10n_pe_create_connection(spec)
+
+    def _l10n_pe_sync_default_mappings(self, name):
+        """Agrega a la conexión por defecto ``name`` de cada compañía los
+        mapeos del spec que aún no tenga (mismo atributo y campo). No toca ni
+        borra los mapeos que el usuario haya cambiado. Para migraciones."""
+        spec = next((s for s in DEFAULT_CONNECTIONS if s['name'] == name), None)
+        if not spec:
+            return
+        Field = self.env['ir.model.fields']
+        for connection in self.l10n_pe_api_connection_ids.filtered(lambda c: c.name == name):
+            current = {(m.source_path, m.field_name) for m in connection.mapping_ids}
+            commands = []
+            for mapping in spec.get('mapping_ids', []):
+                if (mapping['source_path'], mapping['field']) in current:
+                    continue
+                values = {k: v for k, v in mapping.items() if k != 'field'}
+                values['field_id'] = Field._get('res.partner', mapping['field']).id
+                commands.append((0, 0, values))
+            if commands:
+                connection.mapping_ids = commands
 
 
 # Definición declarativa de las conexiones por defecto. Cada mapping usa
@@ -214,6 +236,16 @@ DEFAULT_CONNECTIONS = [
              'field': 'is_good_taxpayer'},
             {'for_document': 'ruc', 'sequence': 60, 'source_path': 'es_agente_retencion',
              'field': 'is_retention_agent'},
+            # Ficha completa: solo la trae el endpoint «ruc/full» (con el
+            # básico estos atributos no vienen y no se escribe nada).
+            {'for_document': 'ruc', 'sequence': 62, 'source_path': 'tipo',
+             'field': 'l10n_pe_taxpayer_type'},
+            {'for_document': 'ruc', 'sequence': 63, 'source_path': 'tipo_facturacion',
+             'field': 'l10n_pe_invoice_system'},
+            {'for_document': 'ruc', 'sequence': 64, 'source_path': 'tipo_contabilidad',
+             'field': 'l10n_pe_accounting_system'},
+            {'for_document': 'ruc', 'sequence': 65, 'source_path': 'comercio_exterior',
+             'field': 'l10n_pe_foreign_trade'},
             # RENIEC devuelve el nombre partido; se recompone con los
             # apellidos delante, que es el orden que usa SUNAT.
             {'for_document': 'dni', 'sequence': 70,
@@ -237,6 +269,34 @@ DEFAULT_CONNECTIONS = [
             {'for_document': 'ruc', 'sequence': 30, 'source_path': 'state', 'field': 'state'},
             {'for_document': 'ruc', 'sequence': 40, 'source_path': 'condition', 'field': 'sunat_condition'},
             {'for_document': 'ruc', 'sequence': 50, 'source_path': 'address', 'field': 'street'},
+            # Ficha RUC completa (las actividades económicas, los
+            # representantes y los locales anexos se procesan aparte).
+            {'for_document': 'ruc', 'sequence': 60, 'source_path': 'taxpayer_type',
+             'field': 'l10n_pe_taxpayer_type'},
+            {'for_document': 'ruc', 'sequence': 61, 'source_path': 'registration_date',
+             'field': 'l10n_pe_registration_date'},
+            {'for_document': 'ruc', 'sequence': 62, 'source_path': 'activity_start_date',
+             'field': 'l10n_pe_activity_start_date'},
+            {'for_document': 'ruc', 'sequence': 63, 'source_path': 'deregistration_date',
+             'field': 'l10n_pe_deregistration_date'},
+            {'for_document': 'ruc', 'sequence': 64, 'source_path': 'invoice_system',
+             'field': 'l10n_pe_invoice_system'},
+            {'for_document': 'ruc', 'sequence': 65, 'source_path': 'foreign_trade',
+             'field': 'l10n_pe_foreign_trade'},
+            {'for_document': 'ruc', 'sequence': 66, 'source_path': 'accounting_system',
+             'field': 'l10n_pe_accounting_system'},
+            {'for_document': 'ruc', 'sequence': 67, 'source_path': 'printed_documents',
+             'field': 'l10n_pe_printed_documents'},
+            {'for_document': 'ruc', 'sequence': 68, 'source_path': 'einvoice_systems',
+             'field': 'l10n_pe_einvoice_systems'},
+            {'for_document': 'ruc', 'sequence': 69, 'source_path': 'einvoice_since',
+             'field': 'l10n_pe_einvoice_since'},
+            {'for_document': 'ruc', 'sequence': 70, 'source_path': 'electronic_documents',
+             'field': 'l10n_pe_electronic_documents'},
+            {'for_document': 'ruc', 'sequence': 71, 'source_path': 'ple_since',
+             'field': 'l10n_pe_ple_since'},
+            {'for_document': 'ruc', 'sequence': 72, 'source_path': 'padrones',
+             'field': 'l10n_pe_padrones'},
         ],
     },
 ]

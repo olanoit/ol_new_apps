@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261011 — 11/10/2026
+
+- Ayuda en el catálogo de actividades económicas y en la ficha RUC del contacto.
+
 ## 2.20261011 — 11/10/2026
 
 - Mapa de pantallas actualizado con las secciones de la documentación del Gantt y del cronograma de la obra.

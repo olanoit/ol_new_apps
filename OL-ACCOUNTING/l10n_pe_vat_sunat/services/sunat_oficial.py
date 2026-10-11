@@ -16,6 +16,8 @@ Hay dos endpoints distintos en SUNAT:
 Ambos se exponen como funciones puras que devuelven ``RucResult``.
 """
 import logging
+import re
+import unicodedata
 from io import BytesIO
 from zipfile import BadZipFile, ZipFile
 
@@ -157,8 +159,89 @@ def _extract_num_rnd(html):
     return inp.get('value', '').strip() if inp else ''
 
 
+# Etiqueta del portal (sin tildes, minúsculas, sin «:») → atributo de
+# RucResult. Se buscan por inicio de texto: SUNAT cambia a veces el final
+# («(F. 806 u 816)»).
+_LABELS = [
+    ('numero de ruc', 'header'),
+    ('tipo contribuyente', 'taxpayer_type'),
+    ('tipo de documento', 'skip'),
+    ('nombre comercial', 'commercial_name'),
+    ('fecha de inscripcion', 'registration_date'),
+    ('fecha de inicio de actividades', 'activity_start_date'),
+    ('estado del contribuyente', 'state'),
+    ('fecha de baja', 'deregistration_date'),
+    ('condicion del contribuyente', 'condition'),
+    ('domicilio fiscal', 'address'),
+    ('sistema emision de comprobante', 'invoice_system'),
+    ('sistema de emision de comprobante', 'invoice_system'),
+    ('actividad comercio exterior', 'foreign_trade'),
+    ('actividad de comercio exterior', 'foreign_trade'),
+    ('sistema contabilidad', 'accounting_system'),
+    ('sistema de contabilidad', 'accounting_system'),
+    ('actividad(es) economica', 'economic_activities'),
+    ('actividades economicas', 'economic_activities'),
+    ('comprobantes de pago c/aut', 'printed_documents'),
+    ('sistema de emision electronica', 'einvoice_systems'),
+    ('emisor electronico desde', 'einvoice_since'),
+    ('comprobantes electronicos', 'electronic_documents'),
+    ('afiliado al ple desde', 'ple_since'),
+    ('padrones', 'padrones'),
+]
+
+
+def _norm(text):
+    text = unicodedata.normalize('NFKD', text or '')
+    text = ''.join(c for c in text if not unicodedata.combining(c))
+    return ' '.join(text.lower().replace(':', ' ').split())
+
+
+def _label_key(text):
+    """Atributo de una etiqueta del portal, o None si el texto no es una."""
+    if not (text or '').strip().endswith(':'):
+        return None
+    norm = _norm(text)
+    for prefix, key in _LABELS:
+        if norm.startswith(prefix):
+            return key
+    return 'unknown'
+
+
+def _labelled_values(soup):
+    """Pares etiqueta → valor de la ficha, en el orden del documento.
+
+    El portal pone cada etiqueta en un ``h4`` terminado en «:» y su valor en
+    el ``p``/``h4``/tabla siguiente (en la misma fila o, en maquetaciones
+    planas, más adelante). Se recorre el documento en orden y cada valor se
+    asigna a la etiqueta pendiente más antigua; las tablas dan una lista con
+    el texto de cada fila."""
+    pending, values = [], {}
+    for el in soup.find_all(['h4', 'p', 'table']):
+        if el.find_parent('table') is not None:
+            continue
+        if el.name == 'table':
+            rows = [' '.join(tr.get_text(' ', strip=True).split()) for tr in el.find_all('tr')]
+            value = [row for row in rows if row and row != '-']
+        elif el.name == 'p' and 'list-group-item-text' not in (el.get('class') or []):
+            continue
+        else:
+            text = ' '.join(el.get_text(' ', strip=True).split())
+            key = _label_key(text) if el.name == 'h4' else None
+            if key:
+                pending.append(key)
+                continue
+            value = text
+        if pending:
+            key = pending.pop(0)
+            if key not in ('skip', 'unknown') and key not in values:
+                values[key] = value
+    return values
+
+
 def _parse_ruc_html(html, ruc):
-    """Convierte el HTML del detalle de RUC en un ``RucResult``."""
+    """Convierte el HTML del detalle de RUC en un ``RucResult``: cada dato se
+    toma por su etiqueta; los que no tengan etiqueta reconocible (fichas
+    antiguas o maquetación plana) se toman por posición, como antes."""
     from .results import RucResult
 
     soup = BeautifulSoup(html, 'html.parser')
@@ -171,7 +254,6 @@ def _parse_ruc_html(html, ruc):
             status_code=200, body=html, service='SUNAT',
         )
 
-    # Cabecera "20XXXXXXXXX - RAZON SOCIAL"
     headers = soup.select('div.list-group h4.list-group-item-heading')
     items = soup.select('div.list-group p.list-group-item-text')
     if not headers:
@@ -180,13 +262,8 @@ def _parse_ruc_html(html, ruc):
             status_code=200, body=html, service='SUNAT',
         )
 
-    # La cabecera "20XXXXXXXXX - RAZON SOCIAL" es uno de los h4, pero su
-    # posición NO es fija (SUNAT intercala etiquetas como "Número de RUC:").
-    # Se localiza por su patrón: "<dígitos> - <razón social>". Los <p> texto
-    # vienen en orden:
-    #   0 Tipo Contribuyente   1 Nombre Comercial   2 Fecha Inscripción
-    #   3 Fecha Inicio Act.     4 Estado             5 Condición
-    #   6 Domicilio Fiscal      ...
+    # Cabecera "20XXXXXXXXX - RAZON SOCIAL": su posición NO es fija (SUNAT
+    # intercala etiquetas como "Número de RUC:"); se localiza por patrón.
     header_text = ''
     for h in headers:
         txt = h.get_text(strip=True)
@@ -203,34 +280,72 @@ def _parse_ruc_html(html, ruc):
     else:
         ruc_field, name_field = ruc, header_text or ruc
 
+    labelled = _labelled_values(soup)
+
     def _at(idx):
         return items[idx].get_text(strip=True) if idx < len(items) else ''
 
-    state = _at(4)
-    condition = _at(5)
-    address = _at(6)
-    commercial_name = _at(1).strip('-').strip()
-
-    # Si el estado es "BAJA DE OFICIO" SUNAT inserta una línea extra
-    # arriba; se detecta porque hay 15+ items en lugar de 14.
+    # Respaldo por posición (maquetación plana sin etiquetas en cada dato):
+    #   0 Tipo Contribuyente   1 Nombre Comercial   2 Fecha Inscripción
+    #   3 Fecha Inicio Act.     4 Estado             5 Condición
+    #   6 Domicilio Fiscal
+    positional = {
+        'taxpayer_type': _at(0), 'commercial_name': _at(1), 'registration_date': _at(2),
+        'activity_start_date': _at(3), 'state': _at(4), 'condition': _at(5), 'address': _at(6),
+    }
+    # Con «BAJA DE OFICIO» SUNAT inserta una línea extra (15+ ítems).
     if len(items) > 14 and 'BAJA' in _at(0).upper():
-        state = _at(5)
-        condition = _at(6)
-        address = _at(7)
-        commercial_name = _at(2).strip('-').strip()
+        positional.update(state=_at(5), condition=_at(6), address=_at(7),
+                          commercial_name=_at(2))
 
+    def _text(key):
+        value = labelled.get(key)
+        if value is None:
+            value = positional.get(key, '')
+        if isinstance(value, list):
+            value = '\n'.join(value)
+        value = (value or '').strip()
+        return '' if value == '-' else value
+
+    state = _text('state')
+    deregistration = _text('deregistration_date')
+    # Algunas fichas dan la fecha de baja dentro del estado:
+    # «BAJA DE OFICIO Fecha de Baja: 31/03/2017».
+    match = re.search(r'fecha de baja\s*:?\s*(\d{2}/\d{2}/\d{4})', state, re.I)
+    if match:
+        deregistration = deregistration or match.group(1)
+        state = state[:match.start()].strip()
+
+    address = _text('address')
     district, province, department = _split_address(address)
+    activities = labelled.get('economic_activities') or []
+    if isinstance(activities, str):
+        activities = [activities] if activities.strip() not in ('', '-') else []
 
     return RucResult(
         ruc=ruc_field.strip(),
         name=name_field.strip(),
-        commercial_name=commercial_name,
+        commercial_name=_text('commercial_name').strip('-').strip(),
         state=state,
-        condition=condition,
+        condition=_text('condition'),
         address=_address_street(address),
         district=district,
         province=province,
         department=department,
+        taxpayer_type=_text('taxpayer_type'),
+        registration_date=_text('registration_date'),
+        activity_start_date=_text('activity_start_date'),
+        deregistration_date=deregistration,
+        invoice_system=_text('invoice_system'),
+        foreign_trade=_text('foreign_trade'),
+        accounting_system=_text('accounting_system'),
+        printed_documents=_text('printed_documents'),
+        einvoice_systems=_text('einvoice_systems'),
+        einvoice_since=_text('einvoice_since'),
+        electronic_documents=_text('electronic_documents'),
+        ple_since=_text('ple_since'),
+        padrones=_text('padrones'),
+        economic_activities=activities,
     )
 
 

@@ -91,3 +91,18 @@ def truthy(value):
     if isinstance(value, str):
         return value.strip().lower() not in ('', 'false', '0', 'no', 'null')
     return bool(value)
+
+
+def parse_date(value):
+    """Fecha de una respuesta: ``dd/mm/aaaa`` (SUNAT), ``aaaa-mm-dd`` (APIs)
+    o un ``date``; vacío, «-» o inválida → ``None``."""
+    import datetime
+    if isinstance(value, datetime.date):
+        return value
+    text = str(value or '').strip()
+    for fmt in ('%d/%m/%Y', '%Y-%m-%d', '%Y-%m-%dT%H:%M:%S'):
+        try:
+            return datetime.datetime.strptime(text[:19] if 'T' in fmt else text[:10], fmt).date()
+        except ValueError:
+            continue
+    return None

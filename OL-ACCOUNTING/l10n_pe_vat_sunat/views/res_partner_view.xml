@@ -65,6 +65,98 @@
                 </div>
             </xpath>
 
+            <!-- Ficha RUC: lo que SUNAT publica en la consulta RUC. El estado
+                 (barra del encabezado) y el nombre comercial (bajo el nombre)
+                 ya se muestran arriba: aquí no se repiten. -->
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page name="l10n_pe_sunat" string="SUNAT" invisible="not is_company">
+                    <group>
+                        <group>
+                            <field name="l10n_pe_taxpayer_type" readonly="1"/>
+                            <field name="l10n_pe_registration_date" readonly="1"/>
+                            <field name="sunat_condition" readonly="1" string="Condición"/>
+                            <field name="l10n_pe_activity_start_date" readonly="1"/>
+                            <field name="l10n_pe_deregistration_date" readonly="1"
+                                   invisible="not l10n_pe_deregistration_date"/>
+                            <field name="l10n_pe_foreign_trade" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="l10n_pe_invoice_system" readonly="1"/>
+                            <field name="l10n_pe_accounting_system" readonly="1"/>
+                            <field name="l10n_pe_printed_documents" readonly="1"/>
+                            <field name="l10n_pe_einvoice_systems" readonly="1"/>
+                            <field name="l10n_pe_einvoice_since" readonly="1"/>
+                            <field name="l10n_pe_electronic_documents" readonly="1"/>
+                            <field name="l10n_pe_ple_since" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Actividades económicas">
+                        <field name="l10n_pe_economic_activity_ids" nolabel="1" colspan="2"
+                               context="{'l10n_pe_activity_name_only': True}">
+                            <list editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="kind"/>
+                                <field name="code"/>
+                                <field name="activity_id" string="Nombre"
+                                       context="{'l10n_pe_activity_name_only': True}"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Locales anexos">
+                        <field name="l10n_pe_annex_ids" nolabel="1" colspan="2"
+                               context="{'default_type': 'delivery', 'default_parent_id': id}">
+                            <list editable="bottom">
+                                <field name="l10n_pe_annex_code" string="Código" required="1"/>
+                                <field name="l10n_pe_annex_type" string="Tipo"/>
+                                <field name="l10n_pe_annex_activity" string="Actividad"/>
+                                <field name="street" string="Dirección"/>
+                                <field name="type" column_invisible="1"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Padrones" invisible="not l10n_pe_padrones">
+                        <field name="l10n_pe_padrones" readonly="1" nolabel="1" colspan="2"/>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Contacto hijo: representante legal y local anexo -->
+            <xpath expr="//field[@name='child_ids']//form//group[@name='other_info']" position="after">
+                <group name="l10n_pe_legal_rep" string="Representante legal"
+                       invisible="not l10n_pe_is_legal_rep">
+                    <field name="l10n_pe_is_legal_rep" invisible="1"/>
+                    <field name="l10n_pe_legal_rep_doc_type"/>
+                    <field name="l10n_pe_legal_rep_doc_number"/>
+                    <field name="l10n_pe_legal_rep_since"/>
+                </group>
+                <group name="l10n_pe_annex" string="Local anexo"
+                       invisible="type == 'contact' or (not l10n_pe_annex_code and not l10n_pe_annex_type)">
+                    <field name="l10n_pe_annex_code"/>
+                    <field name="l10n_pe_annex_type"/>
+                    <field name="l10n_pe_annex_activity"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Búsqueda por actividad principal y representantes legales -->
+    <record id="view_res_partner_filter_l10n_pe_activity" model="ir.ui.view">
+        <field name="name">res.partner.search.l10n.pe.activity</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="l10n_pe_main_activity_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='type_company']" position="after">
+                <filter name="l10n_pe_legal_reps" string="Representantes legales"
+                        domain="[('l10n_pe_is_legal_rep', '=', True)]"/>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter name="group_l10n_pe_main_activity" string="Actividad principal"
+                        context="{'group_by': 'l10n_pe_main_activity_id'}"/>
+            </xpath>
         </field>
     </record>
 

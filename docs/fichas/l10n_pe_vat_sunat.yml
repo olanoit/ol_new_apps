@@ -213,6 +213,29 @@ pasos:
     imagen: screenshots/08-contacto.png
     pie: "NOR AUTOS CHICLAYO S.A.C.: activo, habido y agente de retención (segunda casilla)."
 
+  - titulo: Ficha RUC en la pestaña SUNAT
+    ruta: Contactos ▸ (empresa) ▸ SUNAT
+    texto: >-
+      La consulta llena la ficha que publica SUNAT: tipo de contribuyente,
+      fechas de inscripción, inicio y baja, condición, sistemas de emisión y de
+      contabilidad, comercio exterior, comprobantes físicos y electrónicos,
+      emisor electrónico y PLE. Debajo, las actividades económicas (CIIU), los
+      locales anexos con su código de establecimiento y los padrones.
+    puntos:
+      - "La actividad principal se puede buscar y agrupar en la lista de contactos."
+      - "Una actividad que SUNAT publique y no esté en el catálogo (por ejemplo CIIU Rev. 3 de fichas antiguas) se agrega sola."
+      - "Volver a consultar actualiza actividades, locales y representantes sin duplicarlos."
+    imagen: screenshots/14-ficha-sunat.png
+
+  - titulo: Representante legal
+    ruta: Contactos ▸ (empresa) ▸ Contactos ▸ (representante)
+    texto: >-
+      Los representantes (gerentes, apoderados, titulares) quedan como
+      contactos de la empresa con su cargo, tipo y número de documento y la
+      fecha desde la que figuran en SUNAT. El filtro **Representantes legales**
+      los lista.
+    imagen: screenshots/15-representante.png
+
   - titulo: Aviso cuando la consulta falla
     ruta: Contactos ▸ (contacto con Alerta API)
     texto: >-
@@ -417,6 +440,15 @@ faq:
       anterior.
 
 novedades:
+  - version: 19.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "«Actualizar desde API» completa la ficha RUC con las demás conexiones cuando la primera que responde solo trae los datos básicos, y avisa con el motivo si ninguna la trae (por ejemplo, el portal SUNAT responde 403 fuera del Perú)."
+      - "Pestaña SUNAT en el contacto con la ficha RUC completa: tipo de contribuyente, fechas de inscripción, inicio y baja, sistemas de emisión y contabilidad, comercio exterior, comprobantes físicos y electrónicos, emisor electrónico, PLE y padrones."
+      - "Actividades económicas (principal y secundarias) con el catálogo CIIU Rev. 4 oficial; las que SUNAT publique y no estén se agregan solas."
+      - "Representantes legales con tipo y número de documento y fecha desde; locales anexos con código de establecimiento, tipo y actividad; sin duplicarse al reconsultar."
+      - "El parser del portal SUNAT lee cada dato por su etiqueta; Decolecta (endpoint ruc/full) y el mapeo admiten fechas."
+      - "Contacto nuevo con RUC por defecto en compañías peruanas; DNI lo pasa a persona y RUC a empresa."
   - version: 18.20261010
     fecha: 10/10/2026
     cambios:

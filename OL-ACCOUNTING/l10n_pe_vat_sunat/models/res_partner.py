@@ -17,12 +17,23 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from ..services import (
+    engine,
     http as http_service,
     sunat_padron,
 )
+from .l10n_pe_economic_activity import activity_commands
 
 _logger = logging.getLogger(__name__)
 
+
+# Datos de la ficha RUC que solo traen algunas fuentes (portal SUNAT, planes
+# completos de las API): si la primera conexión que responde no los trae, el
+# botón «Actualizar» los completa con las siguientes.
+FICHA_FIELDS = (
+    'l10n_pe_taxpayer_type', 'l10n_pe_registration_date', 'l10n_pe_activity_start_date',
+    'l10n_pe_invoice_system', 'l10n_pe_accounting_system', 'l10n_pe_einvoice_systems',
+    'l10n_pe_electronic_documents',
+)
 
 REGEX_RUC = re.compile(r'^(10|15|17|20)\d{9}$')
 REGEX_DNI = re.compile(r'^\d{8}$')
@@ -108,10 +119,81 @@ class ResPartner(models.Model):
              'SUNAT): la actualización diaria no los cambia. Se desmarca solo '
              'cuando el valor vuelve a coincidir con el padrón.')
 
+    # === Ficha RUC (consulta SUNAT) ================================ #
+    # Datos informativos que SUNAT publica en la consulta RUC; se llenan al
+    # consultar y se muestran en la pestaña «SUNAT» del contacto.
+    l10n_pe_taxpayer_type = fields.Char(string='Tipo de contribuyente')
+    l10n_pe_registration_date = fields.Date(string='Fecha de inscripción')
+    l10n_pe_activity_start_date = fields.Date(string='Inicio de actividades')
+    l10n_pe_deregistration_date = fields.Date(string='Fecha de baja')
+    l10n_pe_invoice_system = fields.Char(string='Sistema de emisión de comprobantes')
+    l10n_pe_foreign_trade = fields.Char(string='Actividad de comercio exterior')
+    l10n_pe_accounting_system = fields.Char(string='Sistema de contabilidad')
+    l10n_pe_printed_documents = fields.Text(
+        string='Comprobantes con autorización de impresión',
+        help='Comprobantes de pago físicos autorizados (formularios 806 u 816).')
+    l10n_pe_einvoice_systems = fields.Text(string='Sistemas de emisión electrónica')
+    l10n_pe_einvoice_since = fields.Date(string='Emisor electrónico desde')
+    l10n_pe_electronic_documents = fields.Text(string='Comprobantes electrónicos')
+    l10n_pe_ple_since = fields.Date(string='Afiliado al PLE desde')
+    l10n_pe_padrones = fields.Text(
+        string='Padrones', help='Padrones de SUNAT en los que figura (agentes de retención, '
+                                'percepción, buenos contribuyentes…) con su fecha.')
+    l10n_pe_economic_activity_ids = fields.One2many(
+        'l10n_pe.partner.economic.activity', 'partner_id', string='Actividades económicas')
+    l10n_pe_main_activity_id = fields.Many2one(
+        'l10n_pe.economic.activity', string='Actividad principal',
+        compute='_compute_l10n_pe_main_activity', store=True, index='btree_not_null')
+
+    # Representante legal (contacto hijo creado desde la consulta RUC).
+    l10n_pe_is_legal_rep = fields.Boolean(string='Representante legal')
+    l10n_pe_legal_rep_doc_type = fields.Char(string='Tipo de documento')
+    l10n_pe_legal_rep_doc_number = fields.Char(string='Número de documento')
+    l10n_pe_legal_rep_since = fields.Date(string='Fecha desde')
+    # Local anexo (contacto hijo; el código va en l10n_pe_annex_code).
+    l10n_pe_annex_type = fields.Char(string='Tipo de establecimiento')
+    l10n_pe_annex_activity = fields.Char(string='Actividad del establecimiento')
+    # Los locales anexos son direcciones hijas con código de establecimiento:
+    # la pestaña «SUNAT» los lista aparte de los demás contactos.
+    l10n_pe_annex_ids = fields.One2many(
+        'res.partner', 'parent_id', string='Locales anexos',
+        domain=[('l10n_pe_annex_code', '!=', False)])
+
     # `country_id` con default de la compañía.
     country_id = fields.Many2one(
         default=lambda self: self.env.company.country_id.id,
     )
+
+    @api.depends('l10n_pe_economic_activity_ids.kind', 'l10n_pe_economic_activity_ids.activity_id')
+    def _compute_l10n_pe_main_activity(self):
+        for partner in self:
+            main = partner.l10n_pe_economic_activity_ids.filtered(lambda l: l.kind == 'principal')[:1]
+            partner.l10n_pe_main_activity_id = main.activity_id
+
+    @api.model
+    def default_get(self, fields_list):
+        """En compañías peruanas, un contacto nuevo nace con RUC como tipo de
+        identificación (el más usado al registrar proveedores y clientes)."""
+        res = super().default_get(fields_list)
+        if ('l10n_latam_identification_type_id' in fields_list
+                and not self.env.context.get('default_l10n_latam_identification_type_id')
+                and self.env.company.country_id.code == 'PE'):
+            ruc = self.env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
+            if ruc and not (res.get('company_type') == 'person' or self.env.context.get('default_parent_id')):
+                res['l10n_latam_identification_type_id'] = ruc.id
+        return res
+
+    @api.onchange('l10n_latam_identification_type_id')
+    def _onchange_identification_type_company_type(self):
+        """Contacto nuevo: RUC → empresa, DNI → persona. En un contacto ya
+        guardado no se cambia lo que el usuario eligió."""
+        if self._origin.id or self.parent_id:
+            return
+        code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
+        if code == '6' and not (self.vat or '').startswith('10'):
+            self.company_type = 'company'
+        elif code == '1':
+            self.company_type = 'person'
 
     # ============================================================ #
     # Onchange / entry point                                        #
@@ -162,10 +244,11 @@ class ResPartner(models.Model):
         vat_code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
         if vat_code == '1' and company.l10n_pe_dni_validation:
             self._validate_dni(vat)
-            self._fetch_document('dni', raise_on_fail=raise_on_fail)
-        elif vat_code == '6' and company.l10n_pe_ruc_validation:
+            return self._fetch_document('dni', raise_on_fail=raise_on_fail)
+        if vat_code == '6' and company.l10n_pe_ruc_validation:
             self._validate_ruc(vat)
-            self._fetch_document('ruc', raise_on_fail=raise_on_fail)
+            return self._fetch_document('ruc', raise_on_fail=raise_on_fail)
+        return None
 
     def write(self, vals):
         """Una casilla del padrón escrita a mano que contradice al padrón
@@ -188,9 +271,35 @@ class ResPartner(models.Model):
         return True
 
     def action_update_document(self):
-        """Botón "Actualizar RUC/DNI": si falla, muestra el motivo real."""
+        """Botón "Actualizar RUC/DNI": si falla, muestra el motivo real; si
+        los datos básicos llegaron pero ninguna fuente trajo la ficha RUC
+        completa, lo avisa sin cancelar la actualización."""
+        incomplete = {}
         for partner in self:
-            partner._run_document_lookup(raise_on_fail=True)
+            result = partner._run_document_lookup(raise_on_fail=True) or {}
+            if result.get('ficha_missing'):
+                incomplete[partner] = result.get('errors') or '—'
+        if not incomplete:
+            return True
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'warning',
+                'sticky': True,
+                'title': self.env._('Ficha RUC incompleta'),
+                'message': self.env._(
+                    'Se actualizaron los datos básicos de %(partners)s, pero ninguna conexión '
+                    'devolvió la ficha RUC (tipo de contribuyente, actividades, sistemas de '
+                    'emisión…). El portal SUNAT solo responde a direcciones del Perú y las '
+                    'API básicas no traen esos datos: active una conexión con la consulta '
+                    'completa (por ejemplo Decolecta «ruc/full») en Ajustes ▸ Conexiones '
+                    'RUC/DNI.\n\nDetalle: %(detail)s',
+                    partners=', '.join(p.display_name for p in incomplete),
+                    detail='; '.join(incomplete.values())),
+                'next': {'type': 'ir.actions.act_window_close'},
+            },
+        }
 
     # ============================================================ #
     # Validación de formato                                         #
@@ -241,7 +350,8 @@ class ResPartner(models.Model):
             return
         document = (self.vat or '').strip()
         last_exc = None
-        for connection in connections:
+        result = {}
+        for index, connection in enumerate(connections):
             try:
                 vals, extra = connection.run(
                     document, doc_type, quick=not raise_on_fail)
@@ -250,8 +360,11 @@ class ResPartner(models.Model):
                 _logger.warning('[%s] Consulta %s %s falló: %s',
                                 connection.name, doc_type.upper(), document, exc)
                 continue
+            if doc_type == 'ruc' and raise_on_fail:
+                vals, extra, result = self._l10n_pe_complete_ficha(
+                    document, vals, extra, company, after=connections[:index + 1])
             self._apply_api_result(doc_type, vals, extra)
-            return
+            return result
         # Todas las conexiones fallaron.
         self.alert_warning_vat = True
         _logger.warning('Todas las conexiones de %s fallaron para %s.',
@@ -260,6 +373,36 @@ class ResPartner(models.Model):
             raise UserError(self.env._(
                 'No se pudo consultar el %(doc)s %(num)s:\n\n%(err)s',
                 doc=doc_type.upper(), num=document, err=str(last_exc)))
+
+    def _l10n_pe_complete_ficha(self, document, vals, extra, company, after):
+        """Si la conexión que respondió no trajo la ficha RUC, la completa con
+        las demás conexiones activas (aunque el fallback esté apagado: no es
+        un reintento, es otra fuente de datos). Solo agrega lo que falta: lo
+        que trajo la primera conexión manda. Devuelve ``(vals, extra,
+        resultado)``; ``resultado['ficha_missing']`` si ninguna la trajo."""
+        def missing():
+            return not any(vals.get(name) for name in FICHA_FIELDS)
+
+        if not missing():
+            return vals, extra, {}
+        others = company._get_pe_api_connections('ruc', all_connections=True) - after
+        errors = []
+        for connection in others:
+            try:
+                more_vals, more_extra = connection.run(document, 'ruc', quick=False)
+            except (http_service.HttpError, UserError, ValueError) as exc:
+                errors.append('%s: %s' % (connection.name, exc))
+                _logger.info('[%s] Ficha RUC %s no disponible: %s', connection.name, document, exc)
+                continue
+            for key, value in (more_vals or {}).items():
+                if value not in (False, None, '') and not vals.get(key):
+                    vals[key] = value
+            for key, value in (more_extra or {}).items():
+                if value and not extra.get(key):
+                    extra[key] = value
+            if not missing():
+                break
+        return vals, extra, {'ficha_missing': missing(), 'errors': '; '.join(errors)}
 
     # ============================================================ #
     # Aplicar resultado de la API al partner                        #
@@ -285,6 +428,9 @@ class ResPartner(models.Model):
                 # lo corregido a mano manda sobre la API y el padrón
                 for field_name in sunat_padron.PARTNER_FIELDS:
                     vals.pop(field_name, None)
+        if doc_type == 'ruc' and extra.get('economic_activities'):
+            vals['l10n_pe_economic_activity_ids'] = activity_commands(
+                self.env, extra['economic_activities'])
         self.with_context(l10n_pe_padron_auto=True).write(vals)
 
         # Los contactos hijos solo se crean en un contacto ya guardado (botón):
@@ -295,40 +441,60 @@ class ResPartner(models.Model):
             if extra.get('annexed_locals'):
                 self._sync_annexed_locals(extra['annexed_locals'])
 
+    # Cargos que se registran como contacto: los que representan a la empresa.
+    _LEGAL_REP_POSITIONS = ('GERENTE', 'APODERADO', 'REPRESENTANTE', 'TITULAR', 'PRESIDENTE')
+
     def _sync_legal_representatives(self, reps):
-        """Crea como child_ids los representantes con cargos relevantes."""
-        relevant = {'GERENTE GENERAL', 'TITULAR-GERENTE', 'GERENTE', 'APODERADO'}
-        existing_names = set(self.child_ids.mapped('name'))
-        creates = []
+        """Representantes legales como contactos hijos, con su documento y la
+        fecha desde la que figuran. Al reconsultar se actualizan (por número
+        de documento o, si no lo hay, por nombre) en lugar de duplicarse."""
+        children = self.with_context(active_test=False).child_ids
         for rep in reps:
-            position = (rep.get('position') or '').upper()
-            name = (rep.get('name') or '').strip()
-            if not name or position not in relevant or name in existing_names:
+            position = ' '.join((rep.get('position') or '').upper().split())
+            name = ' '.join((rep.get('name') or '').split())
+            if not name or not position.startswith(self._LEGAL_REP_POSITIONS):
                 continue
-            creates.append({
+            doc_number = (rep.get('doc_number') or '').strip()
+            values = {
                 'name': name,
                 'function': position,
-                'type': 'contact',
-                'parent_id': self.id,
-                'is_company': False,
-            })
-        if creates:
-            self.env['res.partner'].create(creates)
+                'l10n_pe_is_legal_rep': True,
+                'l10n_pe_legal_rep_doc_type': (rep.get('doc_type') or '').strip(),
+                'l10n_pe_legal_rep_doc_number': doc_number,
+                'l10n_pe_legal_rep_since': engine.parse_date(rep.get('from_date')),
+            }
+            existing = children.filtered(
+                lambda c: (doc_number and c.l10n_pe_legal_rep_doc_number == doc_number)
+                or (c.name or '').strip().upper() == name.upper())[:1]
+            if existing:
+                existing.write(values)
+            else:
+                children |= self.env['res.partner'].create(dict(
+                    values, type='contact', parent_id=self.id, is_company=False))
 
     def _sync_annexed_locals(self, locals_):
-        """Crea como child_ids los locales anexos."""
-        existing_names = set(self.child_ids.mapped('name'))
-        creates = []
+        """Locales anexos como direcciones hijas con su código de
+        establecimiento (``l10n_pe_annex_code``, el que usan los libros y las
+        guías), tipo y actividad. Al reconsultar se actualizan por código."""
+        children = self.with_context(active_test=False).child_ids
         for local in locals_:
-            label = '%s - %s' % (local.get('code', ''), local.get('type', ''))
-            if label in existing_names:
+            code = (local.get('code') or '').strip()
+            kind = ' '.join((local.get('type') or '').split())
+            label = ('%s - %s' % (code, kind)).strip(' -')
+            if not label:
                 continue
-            creates.append({
+            values = {
                 'name': label,
-                'street': local.get('address', ''),
-                'type': 'delivery',
-                'parent_id': self.id,
-                'is_company': False,
-            })
-        if creates:
-            self.env['res.partner'].create(creates)
+                'street': (local.get('address') or '').strip(),
+                'l10n_pe_annex_type': kind,
+                'l10n_pe_annex_activity': ' '.join((local.get('activity') or '').split()),
+            }
+            if code.isdigit() and len(code) == 4:
+                values['l10n_pe_annex_code'] = code
+            existing = children.filtered(
+                lambda c: (code and c.l10n_pe_annex_code == code) or c.name == label)[:1]
+            if existing:
+                existing.write(values)
+            else:
+                children |= self.env['res.partner'].create(dict(
+                    values, type='delivery', parent_id=self.id, is_company=False))

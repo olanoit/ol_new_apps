@@ -87,6 +87,24 @@ devuelven JSON). Se modelan como un `engine` especial: obtienen los datos con su
 parser incorporado y luego pasan por el **mismo** mapeo (las claves del
 resultado —`name`, `address`, `condition`, `ubigeo`…— son las rutas del mapeo).
 
+## Ficha RUC, actividades, representantes y locales
+
+- `sunat_oficial._parse_ruc_html` lee cada dato del portal **por su etiqueta**
+  (h4 «…:» → p/h4/tabla siguiente, en orden), con respaldo por posición para
+  maquetaciones planas. `RucResult` trae la ficha completa y las actividades.
+- Campos `l10n_pe_*` del contacto (pestaña «SUNAT»), mapeados por defecto en
+  «SUNAT (oficial)» y «Decolecta» (este último con el endpoint `ruc/full`).
+  El mapeo admite campos fecha (`dd/mm/aaaa` o ISO, `engine.parse_date`).
+- Actividades: catálogo `l10n_pe.economic.activity` (CIIU Rev. 4 de la ONU,
+  generado por `docs/ciiu/generar_actividades_ciiu.py`) y líneas
+  `l10n_pe.partner.economic.activity`; `services/activities.py` interpreta
+  «Principal - 4711 - …» y «CIIU 52110»; los códigos que falten se crean.
+- Representantes (`l10n_pe_is_legal_rep`, documento y fecha desde) y locales
+  anexos (`l10n_pe_annex_code` de `al_account_base`, tipo y actividad) como
+  contactos hijos, actualizados por documento o código al reconsultar.
+- Migración 19.0.19: `_l10n_pe_sync_default_mappings` agrega los mapeos que
+  falten a las conexiones por defecto existentes.
+
 ## Padrón SUNAT
 
 Buenos contribuyentes y agentes de retención se verifican contra el padrón
@@ -101,6 +119,7 @@ Lógica pura sin ORM, testeable de forma aislada:
 - `http.py` — HTTP con timeouts y reintentos.
 - `sunat_oficial.py` — scrapers del portal SUNAT.
 - `results.py` — dataclasses de resultado de los scrapers.
+- `activities.py` — interpretación de las actividades económicas de SUNAT.
 - `sunat_padron.py` — sincronización y consulta del padrón.
 - `ubigeo.py` — resolución de ubigeo → distrito/ciudad/departamento.
 

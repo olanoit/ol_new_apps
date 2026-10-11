@@ -167,8 +167,24 @@ class L10nPeApiConnection(models.Model):
         extra = {
             'legal_representatives': data.get('legal_representatives') or [],
             'annexed_locals': data.get('annexed_locals') or [],
+            'economic_activities': self._activity_texts(data),
         }
         return vals, extra
+
+    @staticmethod
+    def _activity_texts(data):
+        """Textos de las actividades económicas de la respuesta: lista del
+        scraper SUNAT (``economic_activities``) o, en APIs REST como Decolecta,
+        ``actividad_economica`` (texto o lista)."""
+        for key in ('economic_activities', 'actividad_economica', 'actividades_economicas'):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip() not in ('', '-'):
+                return [value]
+            if isinstance(value, (list, tuple)) and value:
+                return [v if isinstance(v, str) else ' - '.join(
+                    str(x) for x in (v.get('codigo') or v.get('code'), v.get('descripcion') or v.get('name'))
+                    if x) for v in value if v]
+        return []
 
     # ------------------------------------------------------------------ #
     # 1. Obtener la respuesta como dict (según engine)                   #
@@ -309,6 +325,8 @@ class L10nPeApiConnection(models.Model):
             return _SKIP
         if field.type in ('char', 'text'):
             return '' if value is None else str(value)
+        if field.type == 'date':
+            return engine.parse_date(value) or _SKIP
         return value
 
     # ------------------------------------------------------------------ #

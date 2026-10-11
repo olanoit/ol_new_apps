@@ -70,6 +70,8 @@ msgstr "País"
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_connection__create_uid
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_field_mapping__create_uid
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_sunat_padron__create_uid
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_economic_activity__create_uid
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_partner_economic_activity__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
@@ -77,6 +79,8 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_connection__create_date
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_field_mapping__create_date
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_sunat_padron__create_date
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_economic_activity__create_date
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_partner_economic_activity__create_date
 msgid "Created on"
 msgstr "Creado el"
 
@@ -89,6 +93,8 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_res_company__display_name
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_res_partner__display_name
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_economic_activity__display_name
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_partner_economic_activity__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
@@ -152,6 +158,8 @@ msgstr "Es un seguidor"
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_connection__write_uid
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_field_mapping__write_uid
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_sunat_padron__write_uid
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_economic_activity__write_uid
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_partner_economic_activity__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
@@ -159,6 +167,8 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_connection__write_date
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_api_field_mapping__write_date
 #: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_sunat_padron__write_date
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_economic_activity__write_date
+#: model:ir.model.fields,field_description:l10n_pe_vat_sunat.field_l10n_pe_partner_economic_activity__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 

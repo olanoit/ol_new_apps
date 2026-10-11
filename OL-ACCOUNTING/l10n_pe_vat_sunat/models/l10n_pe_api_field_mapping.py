@@ -45,7 +45,7 @@ class L10nPeApiFieldMapping(models.Model):
         'ir.model.fields', string='Campo de Odoo', required=True,
         ondelete='cascade',
         domain="[('model', '=', 'res.partner'), ('store', '=', True), "
-               "('ttype', 'in', ['char', 'text', 'boolean', 'selection'])]",
+               "('ttype', 'in', ['char', 'text', 'boolean', 'selection', 'date'])]",
         help="Campo de res.partner donde se escribe el valor.")
     field_name = fields.Char(related='field_id.name', store=True, string='Nombre técnico')
     transform = fields.Selection(

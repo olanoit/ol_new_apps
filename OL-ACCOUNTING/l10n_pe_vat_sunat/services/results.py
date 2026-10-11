@@ -22,6 +22,21 @@ class RucResult:
     district: str = ''
     province: str = ''
     department: str = ''
+    # Ficha RUC completa (lo que el portal muestra debajo del domicilio).
+    taxpayer_type: str = ''
+    registration_date: str = ''        # dd/mm/aaaa
+    activity_start_date: str = ''
+    deregistration_date: str = ''
+    invoice_system: str = ''           # Sistema emisión de comprobante
+    foreign_trade: str = ''            # Actividad comercio exterior
+    accounting_system: str = ''
+    printed_documents: str = ''        # Comprobantes c/aut. de impresión
+    einvoice_systems: str = ''         # Sistema de emisión electrónica
+    einvoice_since: str = ''
+    electronic_documents: str = ''
+    ple_since: str = ''
+    padrones: str = ''
+    economic_activities: list = field(default_factory=list)
     legal_representatives: list = field(default_factory=list)
     annexed_locals: list = field(default_factory=list)
 

@@ -1307,6 +1307,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/detractions/</field>
         <field name="section">Detracciones (SPOT)</field>
     </record>
+    <record id="help_l10n_pe_economic_activity" model="al.docs.help">
+        <field name="key">l10n_pe.economic.activity</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad económica (CIIU)</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/#actividades-económicas</field>
+        <field name="section">Actividades económicas</field>
+    </record>
     <record id="help_l10n_pe_exchange_closure" model="al.docs.help">
         <field name="key">l10n_pe.exchange.closure</field>
         <field name="kind">model</field>
@@ -1826,6 +1834,14 @@
         <field name="module">al_l10n_pe_account_letter</field>
         <field name="path">applications/finance/accounting/bills_of_exchange/#enviar-las-letras-al-banco</field>
         <field name="section">Enviar las letras al banco</field>
+    </record>
+    <record id="help_l10n_pe_partner_economic_activity" model="al.docs.help">
+        <field name="key">l10n_pe.partner.economic.activity</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad económica del contribuyente</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/#actividades-económicas</field>
+        <field name="section">Actividades económicas</field>
     </record>
     <record id="help_l10n_pe_ple_asset_book" model="al.docs.help">
         <field name="key">l10n_pe.ple.asset.book</field>
