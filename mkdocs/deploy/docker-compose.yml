@@ -1,0 +1,22 @@
+# Documentación unificada de ol_new_apps: https://docs.altalatam.com
+# El nginx principal (odoo_nginx) termina TLS y reenvía aquí; este nginx sirve
+# el sitio estático ya construido (www/) con autenticación básica.
+services:
+  docs:
+    image: nginx:1.27-alpine
+    container_name: odoo_docs
+    restart: unless-stopped
+    volumes:
+      - ./www:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
+    networks:
+      - odoo_net
+    logging:
+      driver: "json-file"
+      options: { max-size: "20m", max-file: "3" }
+
+networks:
+  odoo_net:
+    external: true
+    name: odoo_internal_net

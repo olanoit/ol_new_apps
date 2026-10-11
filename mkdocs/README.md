@@ -128,3 +128,15 @@ Este procedimiento está probado en un clon desechable: 19.0 y 20.0 desplegadas,
 - **MkDocs 2.0.** Su autor anunció una versión que no admite los temas ni los plugins actuales. Por eso `requirements.txt` fija `mkdocs==1.6.1`. Si hiciera falta, [ProperDocs](https://properdocs.org/) es la continuación compatible de la 1.x.
 - **Diagramas.** Los de las fichas (`flujos` del YAML) se dibujan con Mermaid en el navegador, en modo claro y oscuro. El navegador necesita acceso a unpkg.com.
 - **Ficha HTML en Odoo.** La de Aplicaciones (`static/description/index.html`) sigue generándose con `docs/fichas/generar_fichas.py` desde el mismo YAML.
+
+## Publicación en docs.altalatam.com
+
+El sitio se publica en el servidor io-altaexperts, en Docker, con usuario y
+contraseña: https://docs.altalatam.com (`/` lleva a `/latest/`). La
+configuración está en [`deploy/`](deploy/README.md). Tras un push a 19.0:
+
+```bash
+ssh io-altaexperts 'cd /opt/odoo-infra/docs-site && ./build.sh'
+```
+
+Desde Odoo se llega por **Ajustes ▸ Perú ▸ Documentación**.
