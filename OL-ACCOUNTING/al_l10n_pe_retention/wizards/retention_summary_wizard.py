@@ -57,7 +57,14 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
             ('payment_id.company_id', '=', self.company_id.id),
             ('tax_id', '=', tax.id),
         ])
-        if not lines:
+        # CRE sin pago de Odoo (letras, compensaciones…) del periodo
+        documents_without_payment = self.env['l10n_pe.retention.document'].search([
+            ('state', '=', 'posted'),
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
+            ('company_id', '=', self.company_id.id),
+        ])
+        if not lines and not documents_without_payment:
             raise UserError(_(
                 'No hay retenciones efectuadas en %(month)s/%(year)s para '
                 '%(company)s: no hay nada que declarar en ese periodo. '
@@ -96,6 +103,19 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
                     str(payment.date),
                     '%.2f' % doc['bill_paid_pen'],
                     ', '.join(name for name in names if name),
+                    '%.2f' % doc['bill_retention_pen'],
+                ]))
+                total += doc['bill_retention_pen']
+        for cre in documents_without_payment:
+            for doc in cre._l10n_pe_edi_get_retention_breakdown():
+                invoice = doc['bill']
+                rows.append('|'.join([
+                    cre.partner_id.vat or '',
+                    (cre.partner_id.name or '')[:100],
+                    invoice.ref or invoice.name or '',
+                    str(cre.date),
+                    '%.2f' % doc['bill_paid_pen'],
+                    cre.l10n_pe_edi_retention_number or '',
                     '%.2f' % doc['bill_retention_pen'],
                 ]))
                 total += doc['bill_retention_pen']

@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261011 — 11/10/2026
+
+- Reversión del CRE (resumen de reversiones RR, R.S. 274-2015/SUNAT) con todos los operadores: SUNAT directo, IAP y Digiflow (y The Factory HKA con su módulo); un CRE aceptado bloquea el pago hasta revertirlo y, revertido, el pago vuelve a borrador y retiene con un número nuevo.
+- CRE sin pago de Odoo (Perú ▸ Retenciones IGV ▸ CRE sin pago, o «Emitir CRE sin pago» desde las facturas de proveedor) para letras, compensaciones y pagos fuera de Odoo: mismas validaciones que el pago, la serie del CRE y un asiento que rebaja la cuenta por pagar de la factura o de la letra; entra en el resumen 626.
+- Opción «Descontar notas de crédito» (desactivada por defecto): la retención de una nota de crédito sobre una factura ya retenida se descuenta del siguiente CRE al proveedor (art. 2 de la R.S. 037-2002/SUNAT), con el registro de cada descuento en la nota y en el CRE.
+
 ## 19.20261011 — 11/10/2026
 
 - Retenciones sufridas con el comprobante del cliente: serie, número y fecha, y una o varias facturas por comprobante; un asiento que abona y concilia cada factura.

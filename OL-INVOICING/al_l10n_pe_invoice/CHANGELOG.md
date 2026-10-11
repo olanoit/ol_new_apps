@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261011 — 11/10/2026
+
+- El XML de la factura informa la retención del IGV del cliente agente como cargo/descuento global con el código 62 del catálogo 53 (MultiplierFactorNumeric, importe y base), el mismo importe que rebaja el neto pendiente.
+
 ## 19.20261011 — 11/10/2026
 
 - El «Monto neto pendiente de pago» y las cuotas (XML y PDF A4 y ticket) ya no incluyen la retención del IGV cuando el cliente es agente de retención (R.S. 193-2020/SUNAT, numeral 2.1).

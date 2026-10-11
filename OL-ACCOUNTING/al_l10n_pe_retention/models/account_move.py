@@ -53,6 +53,31 @@ class AccountMove(models.Model):
         help='Estimación informativa (tasa sobre el total): la retención '
              'efectiva se calcula en cada pago.')
 
+    def _l10n_pe_retention_cre_history(self):
+        """CRE no anulados que citan este comprobante, como ``(fecha, modelo,
+        id)`` ordenados: desde pagos y sin pago de Odoo. Sirve para numerar
+        el pago a ese comprobante en el XML (1, 2…)."""
+        self.ensure_one()
+        history = []
+        payments = self.env['account.payment'].search([
+            ('company_id', '=', self.company_id.id),
+            ('partner_id', 'child_of', self.commercial_partner_id.id),
+            ('l10n_pe_edi_retention_number', '!=', False),
+            ('state', 'in', ('in_process', 'paid')),
+            ('l10n_pe_edi_status', '!=', 'cancelled'),
+        ])
+        for payment in payments:
+            if self in payment._l10n_pe_retention_bills():
+                history.append((payment.date, payment._name, payment.id))
+        documents = self.env['l10n_pe.retention.document'].search([
+            ('company_id', '=', self.company_id.id),
+            ('state', '=', 'posted'),
+            ('l10n_pe_edi_status', '!=', 'cancelled'),
+            ('line_ids.bill_id', '=', self.id),
+        ])
+        history += [(document.date, document._name, document.id) for document in documents]
+        return sorted(history)
+
     def _l10n_pe_retention_has_igv(self):
         """La retención solo alcanza operaciones gravadas con IGV.
 

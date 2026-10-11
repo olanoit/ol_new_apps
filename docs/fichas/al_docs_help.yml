@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 5.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Ayuda contextual para los CRE sin pago y las notas de crédito descontadas en un CRE."
   - version: 4.20261011
     fecha: 11/10/2026
     cambios:

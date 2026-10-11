@@ -38,3 +38,30 @@ class AccountEdiXmlUblPe(models.AbstractModel):
             amounts[-1] = currency.round(amounts[-1] + net - sum(amounts))
         for term, amount in zip(cuotas, amounts):
             term['cbc:Amount']['_text'] = self.format_float(amount, digits)
+
+    def _add_document_allowance_charge_nodes(self, document_node, vals):
+        """Retención del IGV del cliente agente (catálogo 53, código 62
+        «Retención del IGV»; R.S. 193-2020/SUNAT): el oficial solo la informa
+        si la factura lleva un impuesto de retención; aquí también cuando la
+        retención se estima por el padrón (``_l10n_pe_customer_retention``),
+        con el mismo importe que rebaja el neto pendiente. Nunca dos nodos 62."""
+        super()._add_document_allowance_charge_nodes(document_node, vals)
+        invoice = vals['invoice']
+        retention = invoice._l10n_pe_customer_retention()
+        if not retention:
+            return
+        charges = document_node.setdefault('cac:AllowanceCharge', [])
+        if any(str((charge or {}).get('cbc:AllowanceChargeReasonCode', {}).get('_text')) == '62'
+               for charge in charges):
+            return
+        currency = invoice.currency_id
+        base = abs(invoice.amount_total)
+        charges.append({
+            'cbc:ChargeIndicator': {'_text': 'false'},
+            'cbc:AllowanceChargeReasonCode': {'_text': '62'},
+            'cbc:MultiplierFactorNumeric': {'_text': self.format_float(retention / base, 5)},
+            'cbc:Amount': {'_text': self.format_float(retention, currency.decimal_places),
+                           'currencyID': currency.name},
+            'cbc:BaseAmount': {'_text': self.format_float(base, currency.decimal_places),
+                               'currencyID': currency.name},
+        })

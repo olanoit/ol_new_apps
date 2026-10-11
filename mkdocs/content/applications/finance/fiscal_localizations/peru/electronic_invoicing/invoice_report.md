@@ -143,6 +143,10 @@ proporción a cada una, igual en el PDF y en el XML.
 Por ejemplo, una factura de S/ 1 180,00 en dos cuotas iguales: retención
 35,40, neto pendiente **S/ 1 144,60** y cuotas de **572,30** cada una.
 
+El XML informa además la retención como descuento global con el código **62
+«Retención del IGV»** del catálogo 53: factor 0,03, importe 35,40 y base
+1 180,00.
+
 ### Orden de compra del cliente
 
 En **Ventas ‣ Pedidos**, el campo **OC. externa** guarda el número de la orden

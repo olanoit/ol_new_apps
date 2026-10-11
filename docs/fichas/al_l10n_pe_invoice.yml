@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 20.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "El XML de la factura informa la retención del IGV del cliente agente como cargo/descuento global con el código 62 del catálogo 53 (MultiplierFactorNumeric, importe y base), el mismo importe que rebaja el neto pendiente."
   - version: 19.20261011
     fecha: 11/10/2026
     cambios:

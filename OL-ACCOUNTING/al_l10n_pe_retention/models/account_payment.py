@@ -15,23 +15,20 @@ el 3 % de la base sin IGV.
 """
 from datetime import timedelta
 
-from lxml import etree, objectify
-
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-# Servicio de SUNAT para retenciones y percepciones (no es el de facturas).
 # R.S. 274-2015/SUNAT: el CRE se envía a SUNAT u OSE dentro de los 7 días
 # calendario siguientes a su emisión; fuera de plazo no vale como CRE.
 SEND_DEADLINE_DAYS = 7
-SUNAT_RETENTION_WSDL = {
-    'test': 'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService?wsdl',
-    'prod': 'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService?wsdl',
-}
+# Estados del CRE (los comparte el CRE sin pago de Odoo).
+CRE_STATES = [('to_send', 'Por enviar'), ('sent', 'Enviado'),
+              ('reversing', 'Reversión en proceso'), ('cancelled', 'Anulado')]
 
 
 class AccountPayment(models.Model):
-    _inherit = 'account.payment'
+    _name = 'account.payment'
+    _inherit = ['account.payment', 'l10n_pe.retention.edi.mixin']
 
     # Etiqueta en español del marco nativo
     withholding_line_ids = fields.One2many(string='Retenciones')
@@ -40,8 +37,7 @@ class AccountPayment(models.Model):
         string='Nº comprobante de retención',
         compute='_compute_l10n_pe_edi_retention_number', store=True)
     l10n_pe_edi_status = fields.Selection(
-        selection=[('to_send', 'Por enviar'), ('sent', 'Enviado'), ('cancelled', 'Anulado')],
-        string='Estado del CRE', copy=False, tracking=True)
+        selection=CRE_STATES, string='Estado del CRE', copy=False, tracking=True)
     l10n_pe_edi_warnings = fields.Json(string='Avisos del CRE', readonly=True, copy=False)
     l10n_pe_edi_attachment_file = fields.Binary(
         string='CRE firmado y CDR', attachment=True, copy=False)
@@ -61,6 +57,11 @@ class AccountPayment(models.Model):
         string='Importe retenido', currency_field='currency_id',
         compute='_compute_l10n_pe_retention_amount', store=True,
         help='Suma de las líneas de retención del IGV del pago.')
+    l10n_pe_retention_deduction_ids = fields.One2many(
+        'l10n_pe.retention.credit.deduction', 'payment_id',
+        string='Notas de crédito descontadas', readonly=True,
+        help='Retención de notas de crédito del proveedor descontada en este CRE (art. 2 de '
+             'la R.S. 037-2002/SUNAT).')
 
     def _l10n_pe_retention_lines(self):
         return self.withholding_line_ids.filtered(
@@ -86,7 +87,7 @@ class AccountPayment(models.Model):
                 payment.state in ('in_process', 'paid')
                 and payment.l10n_pe_edi_retention_number
                 and payment.country_code == 'PE'
-                and payment.l10n_pe_edi_status not in ('sent', 'cancelled'))
+                and payment.l10n_pe_edi_status not in ('sent', 'reversing', 'cancelled'))
 
     @api.depends('date', 'l10n_pe_edi_retention_number')
     def _compute_l10n_pe_edi_deadline(self):
@@ -127,7 +128,40 @@ class AccountPayment(models.Model):
                 line.name = line.withholding_sequence_id.next_by_id()
             if lines and not payment.l10n_pe_edi_status:
                 payment.l10n_pe_edi_status = 'to_send'
+            if lines:
+                payment._l10n_pe_retention_record_deductions()
         return res
+
+    def _l10n_pe_retention_record_deductions(self):
+        """Si se retuvo menos del 3 % de lo pagado (el asistente descuenta la
+        retención pendiente de las notas de crédito del proveedor), la
+        diferencia se imputa a esas notas, de la más antigua a la más
+        reciente, y queda registrada con este CRE."""
+        self.ensure_one()
+        company = self.company_id
+        currency = company.currency_id
+        self.l10n_pe_retention_deduction_ids.unlink()
+        if not company.l10n_pe_retention_deduct_credit_notes:
+            return
+        # Al confirmar, el pago aún no está conciliado con sus facturas: se
+        # compara cada línea de retención con el 3 % de su base.
+        lines = self._l10n_pe_retention_lines()
+
+        def to_pen(amount):
+            return self.currency_id._convert(amount, currency, company, self.date)
+
+        expected = sum(currency.round(to_pen(line.base_amount) * company.l10n_pe_retention_rate
+                                      / 100.0) for line in lines)
+        retained = sum(to_pen(abs(line.amount)) for line in lines)
+        # el redondeo de cada línea puede dejar céntimos sueltos
+        shortfall = currency.round(expected - retained)
+        if currency.compare_amounts(shortfall, 0.01 * len(lines)) <= 0:
+            return
+        for note, amount in self.env['account.move']._l10n_pe_retention_plan_deductions(
+                company, self.partner_id, shortfall):
+            self.env['l10n_pe.retention.credit.deduction'].create({
+                'company_id': company.id, 'credit_note_id': note.id,
+                'amount': amount, 'payment_id': self.id})
 
     # ------------------------------------------------------------------
     # Reparto por comprobante (misma salida que el oficial)
@@ -184,9 +218,12 @@ class AccountPayment(models.Model):
             paid_per_bill = {
                 bill.id: bill.currency_id.round(gross_pen * weights[bill] / total_weight / rates[bill])
                 for bill in bills}
+        # Con notas de crédito descontadas, cada comprobante informa su 3 %
+        # completo y las notas restan (ver _l10n_pe_retention_deduction_entries).
+        deductions = self.l10n_pe_retention_deduction_ids
         retention_pen = company_currency.round(sum(
             self.currency_id._convert(abs(line.amount), company_currency, company, self.date)
-            for line in self._l10n_pe_retention_lines()))
+            for line in self._l10n_pe_retention_lines()) + sum(deductions.mapped('amount')))
 
         paid_pen = {bill: company_currency.round(paid_per_bill.get(bill.id, 0.0) * rates[bill])
                     for bill in bills}
@@ -207,148 +244,53 @@ class AccountPayment(models.Model):
                 'net_total_paid_pen': paid_pen[bill] - retained,
                 'exchange_rate': rates[bill],
             })
-        return breakdown
+        return breakdown + self._l10n_pe_retention_deduction_entries(deductions)
 
-    @api.model
-    def _l10n_pe_edi_retention_payment_index(self, bill):
-        """Número de pago a ``bill`` que informa este CRE (``cac:Payment/
-        cbc:ID``): 1 para el primer pago parcial al comprobante, 2 para el
-        segundo… según los CRE anteriores del mismo comprobante (R.S.
-        274-2015/SUNAT). Antes se informaba la posición del comprobante dentro
-        del CRE, que no dice cuántas veces se le pagó."""
+    # ------------------------------------------------------------------
+    # Lo que el pago aporta al CRE (l10n_pe.retention.edi.mixin)
+    # ------------------------------------------------------------------
+    def _l10n_pe_retention_bills(self):
         self.ensure_one()
-        previous = self.search([
-            ('company_id', '=', self.company_id.id),
-            ('l10n_pe_edi_retention_number', '!=', False),
-            ('state', 'in', ('in_process', 'paid')),
-            ('l10n_pe_edi_status', '!=', 'cancelled'),
-            ('id', '!=', self.id),
-            '|', ('date', '<', self.date), '&', ('date', '=', self.date), ('id', '<', self.id),
-        ]).filtered(lambda p: bill in (p.invoice_ids | p.reconciled_bill_ids))
-        return len(previous) + 1
+        return self.invoice_ids | self.reconciled_bill_ids
 
-    def _l10n_pe_edi_retention_bill_number(self, bill):
-        """Serie-número del comprobante del proveedor (``F001-00000123``)."""
-        if bill.l10n_latam_use_documents and bill.l10n_latam_document_number:
-            number = bill.l10n_latam_document_number
-        else:
-            # sin documentos LATAM, el número del proveedor está en la referencia
-            number = bill.ref or bill.name or ''
-        return number.replace(' ', '')
+    def _l10n_pe_retention_note(self):
+        self.ensure_one()
+        return self.memo
 
-    # ------------------------------------------------------------------
-    # XML
-    # ------------------------------------------------------------------
-    def _l10n_pe_edi_generate_retention_bstr(self):
-        """XML del CRE con el hueco de la firma, en ISO-8859-1."""
+    def _l10n_pe_retention_check_ready(self):
         self.ensure_one()
         if not self._l10n_pe_retention_lines():
             raise UserError(self.env._('El pago no tiene líneas de retención de IGV.'))
-        if not (self.invoice_ids or self.reconciled_bill_ids):
-            raise UserError(self.env._(
-                'El pago %(payment)s no está vinculado a ninguna factura: el comprobante de '
-                'retención debe citar los comprobantes pagados.', payment=self.display_name))
-        xml_content = self.env['account.edi.xml.ubl_pe_withholding']._export_retention(self)
-        edi_tree = objectify.fromstring(xml_content)
-        ubl_version = edi_tree.find('.//{*}UBLVersionID')
-        ubl_version.addprevious(objectify.fromstring(self.env['ir.qweb']._render(
-            'l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature')))
-        return etree.tostring(edi_tree, xml_declaration=True, encoding='ISO-8859-1',
-                              pretty_print=True)
-
-    def _l10n_pe_edi_generate_retention_filename(self):
-        """``RUC-20-R001-00000001``, como pide SUNAT para el ZIP y el XML."""
-        self.ensure_one()
-        return '%s-20-%s' % (self.company_id.vat,
-                             (self.l10n_pe_edi_retention_number or self.name).replace('/', '-'))
-
-    def action_l10n_pe_generate_cre_xml(self):
-        """Descarga el XML del CRE sin firmar (para revisión)."""
-        self.ensure_one()
-        attachment = self.env['ir.attachment'].create({
-            'name': '%s.xml' % self._l10n_pe_edi_generate_retention_filename(),
-            'res_model': self._name, 'res_id': self.id,
-            'raw': self._l10n_pe_edi_generate_retention_bstr(), 'mimetype': 'application/xml'})
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/%d?download=true' % attachment.id,
-            'target': 'self',
-        }
 
     # ------------------------------------------------------------------
-    # Envío
+    # Un CRE aceptado ata al pago hasta revertirlo en SUNAT
     # ------------------------------------------------------------------
-    def action_l10n_pe_edi_send_retention(self):
-        """Firma el CRE y lo envía con el proveedor electrónico de la compañía."""
-        ready = self.filtered('l10n_pe_edi_is_required')
-        if self - ready:
+    def _l10n_pe_retention_check_unlocked(self):
+        locked = self.filtered(lambda p: p.l10n_pe_edi_status in ('sent', 'reversing'))
+        if locked:
             raise UserError(self.env._(
-                'Estos pagos no tienen un comprobante de retención por enviar: %s',
-                ', '.join((self - ready).mapped('display_name'))))
-        for payment in ready:
-            if not (payment.invoice_ids or payment.reconciled_bill_ids):
-                payment.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': {
-                    'edi_error': {'level': 'danger', 'message': self.env._(
-                        'El pago no está vinculado a ninguna factura: el comprobante de '
-                        'retención debe citar al menos un comprobante.')}}})
-                continue
-            result = payment._l10n_pe_edi_post_retention(
-                payment._l10n_pe_edi_generate_retention_bstr())
-            if result.get('success'):
-                filename = payment._l10n_pe_edi_generate_retention_filename()
-                attachment = self.env['ir.attachment'].create({
-                    'name': '%s.zip' % filename,
-                    'res_model': payment._name, 'res_id': payment.id,
-                    'res_field': 'l10n_pe_edi_attachment_file',
-                    'type': 'binary', 'raw': result['zip_document'],
-                })
-                payment.invalidate_recordset(['l10n_pe_edi_attachment_file'])
-                payment.write({'l10n_pe_edi_status': 'sent', 'l10n_pe_edi_warnings': False})
-                payment.message_post(
-                    body=self.env._('Comprobante de retención %(number)s aceptado por SUNAT.',
-                                    number=payment.l10n_pe_edi_retention_number),
-                    attachment_ids=attachment.ids)
-            else:
-                payment.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': {
-                    'edi_error': {'level': result.get('level', 'danger'),
-                                  'message': result.get('message')
-                                  or self.env._('Error desconocido')}}})
-        return True
+                'Estos pagos tienen un comprobante de retención aceptado por SUNAT: %s. '
+                'Reviértalo primero (botón «Revertir CRE») y, cuando SUNAT acepte la '
+                'reversión, el pago se podrá restablecer o cancelar.',
+                ', '.join(locked.mapped('display_name'))))
 
-    def _l10n_pe_edi_post_retention(self, edi_str):
-        """Firma y envía con el proveedor de la compañía. Devuelve, como el
-        oficial, ``{'success': True, 'zip_document': …}`` o
-        ``{'message': …, 'level': …}``."""
-        self.ensure_one()
-        # el formato UBL peruano: sus métodos de credenciales piden un registro
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
-        filename = self._l10n_pe_edi_generate_retention_filename()
-        result = self._l10n_pe_edi_sign_retention(edi_format, filename, edi_str)
-        if not result.get('success'):
-            return {'message': result.get('error') or self.env._('Error desconocido'),
-                    'level': 'warning' if result.get('blocking_level') == 'warning' else 'danger'}
-        zip_document = edi_format._l10n_pe_edi_zip_edi_document([
-            ('%s.xml' % filename, result['xml_document']),
-            ('R-%s.xml' % filename, result['cdr']),
-        ])
-        return {'success': True, 'zip_document': zip_document}
+    def action_draft(self):
+        self._l10n_pe_retention_check_unlocked()
+        reversed_cre = self.filtered(lambda p: p.l10n_pe_edi_status == 'cancelled')
+        res = super().action_draft()
+        # al confirmar de nuevo se vuelven a imputar las notas de crédito
+        self.l10n_pe_retention_deduction_ids.unlink()
+        if reversed_cre:
+            # El número revertido no se reutiliza: al confirmar de nuevo, la
+            # retención toma un número nuevo y vuelve a quedar por enviar.
+            reversed_cre._l10n_pe_retention_lines().write({'name': False})
+            reversed_cre.write({
+                'l10n_pe_edi_status': False, 'l10n_pe_edi_warnings': False,
+                'l10n_pe_edi_reversal_filename': False, 'l10n_pe_edi_reversal_ticket': False,
+                'l10n_pe_edi_reversal_message': False,
+            })
+        return res
 
-    def _l10n_pe_edi_sign_retention(self, edi_format, filename, edi_str):
-        """Firma y envía el CRE (tipo 20) por el operador de la compañía.
-        Devuelve el resultado de los servicios de ``l10n_pe_edi``; los
-        módulos de otros operadores (p. ej. Factory HKA) lo extienden."""
-        self.ensure_one()
-        company = self.company_id
-        if company.l10n_pe_edi_provider == 'iap':
-            return edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, '20')
-        if company.l10n_pe_edi_provider == 'digiflow':
-            credentials = edi_format._l10n_pe_edi_get_digiflow_credentials(company)
-        else:
-            credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
-            credentials['wsdl'] = self._l10n_pe_edi_get_retention_sunat_wsdl()
-        return edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
-            company, filename, edi_str, credentials, '20')
-
-    def _l10n_pe_edi_get_retention_sunat_wsdl(self):
-        self.ensure_one()
-        return SUNAT_RETENTION_WSDL['test' if self.company_id.l10n_pe_edi_test_env else 'prod']
+    def action_cancel(self):
+        self._l10n_pe_retention_check_unlocked()
+        return super().action_cancel()

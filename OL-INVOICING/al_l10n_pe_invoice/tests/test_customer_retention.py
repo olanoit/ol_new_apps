@@ -4,6 +4,8 @@ cuotas no incluyen la retención del IGV (R.S. 193-2020/SUNAT, numeral 2.1),
 en el XML y en el comprobante impreso, con el mismo reparto."""
 from datetime import date
 
+from lxml import etree
+
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
@@ -115,3 +117,28 @@ class TestCustomerRetention(AccountTestInvoicingCommon):
         invoice = self._invoice()
         refund = self._invoice(move_type='out_refund', reversed_entry_id=invoice.id)
         self.assertEqual(refund._l10n_pe_customer_retention(), 0.0)
+
+    # ------------------------------------------------------------------
+    # Catálogo 53, código 62 «Retención del IGV» en el XML de la factura
+    # ------------------------------------------------------------------
+    def _retention_charges(self, move):
+        xml = self.env['account.edi.xml.ubl_pe']._export_invoice(move)[0]
+        tree = etree.fromstring(xml)
+        return [charge for charge in tree.findall('{*}AllowanceCharge')
+                if charge.findtext('{*}AllowanceChargeReasonCode') == '62']
+
+    def test_xml_retention_code_62(self):
+        move = self._invoice()
+        charges = self._retention_charges(move)
+        self.assertEqual(len(charges), 1)
+        charge = charges[0]
+        self.assertEqual(charge.findtext('{*}ChargeIndicator'), 'false')
+        self.assertEqual(charge.findtext('{*}MultiplierFactorNumeric'), '0.03000')
+        self.assertEqual(charge.findtext('{*}Amount'), '35.40')
+        self.assertEqual(charge.findtext('{*}BaseAmount'), '1180.00')
+
+    def test_xml_without_retention_has_no_code_62(self):
+        self.assertFalse(self._retention_charges(self._invoice(price=500.0)))
+        self.partner_a.is_retention_agent = False
+        self.assertFalse(self._retention_charges(self._invoice()))
+        self.partner_a.is_retention_agent = True

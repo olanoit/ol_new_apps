@@ -134,28 +134,66 @@ línea por cobrar del CRE (documento 20).
    *Base:* R.S. 274-2015/SUNAT (CRE electrónico) y la guía del XML de
    retención.
    *Esfuerzo:* 0,5 día.
-4. **Media — Reversión del CRE con los demás operadores.** Extender el
+4. **Hecha (11/10/2026) — Media — Reversión del CRE con los demás operadores.**
+   *Implementación:* el CRE vive en `l10n_pe.retention.edi.mixin`
+   (`al_l10n_pe_retention`), común al pago y al CRE sin pago: resumen RR
+   (plantilla y correlativo movidos desde `al_ose_factory_hka`, con migración
+   del número), envío por los servicios de baja de `l10n_pe_edi` (SUNAT directo
+   con el WSDL de retenciones, IAP y Digiflow) y consulta del ticket.
+   `al_ose_factory_hka` solo decide si va por HKA (si el CRE fue por HKA). Un
+   CRE aceptado o en reversión bloquea pasar el pago a borrador o cancelarlo;
+   revertido, el pago vuelve a borrador y retiene con un número nuevo. Sin
+   probar contra los servicios reales: el ruteo del RR por IAP depende del
+   servidor IAP de Odoo.
+   Texto original: extender el
    resumen de reversiones (RR) de `al_ose_factory_hka` al envío directo a SUNAT
    y a IAP/Digiflow, y bloquear la cancelación del pago si el CRE fue aceptado
    y no se revirtió.
    *Base:* R.S. 274-2015/SUNAT (reversión del comprobante de retención
    electrónico).
    *Esfuerzo:* 1–2 días.
-5. **Media — CRE sin pago de Odoo.** Emitir el CRE desde letras,
+5. **Hecha (11/10/2026) — Media — CRE sin pago de Odoo.**
+   *Implementación:* `l10n_pe.retention.document` (Perú ▸ Retenciones IGV ▸
+   CRE sin pago, y la acción «Emitir CRE sin pago» en las facturas): proveedor,
+   facturas y lo pagado de cada una, forma de pago (letras, compensación, otro);
+   mismas validaciones que el pago (mínimo, excepciones, comprobantes 01/08/12,
+   T.C. venta de la fecha de pago); número de la serie del CRE; asiento que
+   carga la partida por pagar de la factura o de la letra y abona la cuenta de
+   retenciones, conciliado. Entra en el número de pago de cada factura, en el
+   resumen 626 y en el PDF; la reversión anula su asiento. No se integra con
+   `al_l10n_pe_account_letter` de forma automática: la letra se elige como
+   partida por pagar. El PLE y el SIRE no cambian: leen la factura (su marca
+   de retención), no el pago ni el CRE.
+   Texto original: emitir el CRE desde letras,
    compensaciones o de forma manual, como la retención manual de v16, pero con
    el mismo desglose y XML del pago.
    *Base:* art. 7 (la retención se efectúa en el momento del pago, cualquiera
    que sea su forma).
    *Esfuerzo:* 2 días.
-6. **Baja — Nota de crédito posterior.** Proponer el descuento de la nota de
+6. **Hecha (11/10/2026), opcional — Baja — Nota de crédito posterior.**
+   *Implementación:* opción de la compañía «Descontar notas de crédito»
+   (desactivada por defecto). La nota de crédito de proveedor sobre una factura
+   con CRE tiene una retención del 3 % por descontar; el asistente de pago (y el
+   CRE sin pago) la rebaja de la retención, y al emitir queda registrada en
+   `l10n_pe.retention.credit.deduction` (nota, importe y CRE; se libera si el
+   CRE se anula o se revierte). En el XML, cada factura va con su 3 % y la nota
+   como documento 07 con la retención en negativo y ese importe sumado al neto.
+   La guía del XML no detalla los importes de una nota de crédito: validar en
+   beta antes de activarla.
+   Texto original: proponer el descuento de la nota de
    crédito en la siguiente retención al mismo proveedor.
    *Base:* art. 2 («podrá deducirse de la retención que corresponda a
    operaciones con el mismo proveedor»).
    *Esfuerzo:* 1 día.
-7. **Baja — Retención en el XML de la factura de venta (cargo/descuento
+7. **Hecha (11/10/2026) — Baja — Retención en el XML de la factura de venta (cargo/descuento
    código 62).** Implementarla solo si el Anexo 8 vigente confirma el código y
    un OSE lo valida; la mejora 1 ya cumple la R.S. 193-2020.
    *Esfuerzo:* 0,5 día tras confirmar.
+   *Implementación:* el catálogo 53 vigente trae el código 62 «Retención del
+   IGV» y `l10n_pe_edi` (Enterprise 19) ya lo emite cuando la factura lleva un
+   impuesto de retención. `al_l10n_pe_invoice` añade el mismo nodo
+   (`ChargeIndicator` false, factor, importe y base) cuando la retención se
+   estima por el padrón, sin duplicarlo. No se envió aún a un OSE real.
 
 ## 4. Lo que v16 hace mal (no copiar)
 

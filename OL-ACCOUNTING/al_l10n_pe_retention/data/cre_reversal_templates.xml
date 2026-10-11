@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Resumen de reversiones (RR) de un comprobante de retención (tipo 20).
-         SUNAT no acepta el tipo 20 en VoidedDocuments (RA, error 2308): se
-         revierte con SummaryDocuments, estado 3 e importe 0. Misma estructura
-         y firma que la comunicación de baja de l10n_pe_edi. -->
+    <!-- Resumen de reversiones (RR) de un comprobante de retención (tipo 20),
+         común a todos los operadores. SUNAT no acepta el tipo 20 en
+         VoidedDocuments (RA, error 2308): se revierte con SummaryDocuments,
+         estado 3 e importe 0. Misma estructura y firma que la comunicación de
+         baja de l10n_pe_edi. -->
     <template id="cre_reversal_summary">
         <SummaryDocuments
             xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"

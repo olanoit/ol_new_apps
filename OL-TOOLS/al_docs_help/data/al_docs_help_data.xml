@@ -1947,6 +1947,38 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
         <field name="section">Libros electrónicos (PLE)</field>
     </record>
+    <record id="help_l10n_pe_retention_credit_deduction" model="al.docs.help">
+        <field name="key">l10n_pe.retention.credit.deduction</field>
+        <field name="kind">model</field>
+        <field name="name">Nota de crédito descontada en un CRE</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_retention_document" model="al.docs.help">
+        <field name="key">l10n_pe.retention.document</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de retención sin pago</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_retention_document_line" model="al.docs.help">
+        <field name="key">l10n_pe.retention.document.line</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante pagado en un CRE sin pago</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_retention_edi_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.retention.edi.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de retención electrónico</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
     <record id="help_l10n_pe_retention_received" model="al.docs.help">
         <field name="key">l10n_pe.retention.received</field>
         <field name="kind">model</field>

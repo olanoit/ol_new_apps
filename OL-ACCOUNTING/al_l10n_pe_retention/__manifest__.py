@@ -29,7 +29,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '19.20261011',
+    'version': '20.20261011',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -44,11 +44,14 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'l10n_pe_vat_sunat',
     ],
     'data': [
+        'data/ir_sequence_data.xml',
+        'data/cre_reversal_templates.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',
         'views/retention_menu_views.xml',
+        'views/retention_document_views.xml',
         'views/retention_views.xml',
         'reports/retention_report.xml',
     ],

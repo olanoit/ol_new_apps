@@ -44,6 +44,15 @@ class ResCompany(models.Model):
              'registrar pagos con retención cuando el método de pago no '
              'tiene cuenta propia (el campo es obligatorio en el pago).')
 
+    l10n_pe_retention_deduct_credit_notes = fields.Boolean(
+        string='Descontar notas de crédito en el siguiente CRE',
+        help='Art. 2 de la R.S. 037-2002/SUNAT: la retención que corresponde a una nota '
+             'de crédito de una operación ya retenida puede deducirse de la retención de '
+             'operaciones con el mismo proveedor que aún no se han retenido. El siguiente '
+             'CRE al proveedor retiene menos y cita la nota de crédito (documento 07). La '
+             'guía XML del CRE admite el tipo 07 pero no detalla sus importes: valide en el '
+             'entorno de prueba de su operador antes de activarlo en producción.')
+
     def _get_company_root_delegated_field_names(self):
         # SUNAT designa agente de retención al RUC: las sucursales llevan la
         # configuración de su raíz (Odoo la copia y la muestra de solo lectura).
@@ -53,6 +62,7 @@ class ResCompany(models.Model):
             'l10n_pe_retention_min_amount',
             'l10n_pe_retention_tax_id',
             'l10n_pe_retention_outstanding_account_id',
+            'l10n_pe_retention_deduct_credit_notes',
         ]
 
     @api.constrains('l10n_pe_retention_rate', 'l10n_pe_retention_tax_id')
@@ -92,3 +102,5 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_retention_outstanding_account_id = fields.Many2one(
         related='company_id.l10n_pe_retention_outstanding_account_id',
         readonly=False)
+    l10n_pe_retention_deduct_credit_notes = fields.Boolean(
+        related='company_id.l10n_pe_retention_deduct_credit_notes', readonly=False)

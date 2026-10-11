@@ -236,8 +236,18 @@
                 <button name="action_l10n_pe_generate_cre_xml" type="object"
                         string="XML CRE"
                         invisible="not l10n_pe_edi_retention_number"/>
+                <button name="action_l10n_pe_edi_reverse_retention" type="object" string="Revertir CRE"
+                        confirm="¿Revertir en SUNAT el comprobante de retención? Una vez aceptada, la reversión no se puede deshacer."
+                        invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status != 'sent'"/>
+                <button name="action_l10n_pe_edi_check_reversal" type="object" string="Consultar reversión"
+                        class="btn-primary" invisible="l10n_pe_edi_status != 'reversing'"/>
             </xpath>
             <xpath expr="//sheet" position="before">
+                <div class="alert alert-info mb-0" role="alert"
+                     invisible="not l10n_pe_edi_reversal_message">
+                    <strong>Reversión del CRE:</strong>
+                    <field name="l10n_pe_edi_reversal_message" readonly="1"/>
+                </div>
                 <div class="alert alert-warning mb-0" role="alert"
                      invisible="not l10n_pe_edi_overdue">
                     El comprobante de retención debía enviarse a SUNAT hasta el
@@ -255,10 +265,24 @@
             <xpath expr="//group[@name='group2']" position="inside">
                 <field name="l10n_pe_edi_retention_number" invisible="not l10n_pe_edi_retention_number"/>
                 <field name="l10n_pe_edi_status" invisible="not l10n_pe_edi_retention_number"/>
+                <field name="l10n_pe_edi_reversal_available" invisible="1"/>
+                <field name="l10n_pe_edi_reversal_reason"
+                       invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status not in ('sent', 'reversing', 'cancelled')"
+                       readonly="l10n_pe_edi_status != 'sent'"/>
+                <field name="l10n_pe_edi_reversal_ticket" invisible="not l10n_pe_edi_reversal_ticket"/>
                 <field name="l10n_pe_edi_deadline" invisible="l10n_pe_edi_status != 'to_send'"/>
                 <field name="l10n_pe_edi_attachment_file" filename="l10n_pe_edi_retention_number"
                        invisible="not l10n_pe_edi_attachment_file"/>
                 <field name="l10n_pe_edi_is_required" invisible="1"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <field name="l10n_pe_retention_deduction_ids" invisible="not l10n_pe_retention_deduction_ids">
+                    <list string="Notas de crédito descontadas">
+                        <field name="credit_note_id"/>
+                        <field name="amount" sum="Descontado"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
             </xpath>
         </field>
     </record>
@@ -274,6 +298,9 @@
     <menuitem id="menu_retention_payments" name="Retenciones efectuadas"
               parent="menu_retention_root" action="action_retention_payments"
               sequence="20"/>
+    <menuitem id="menu_retention_documents" name="CRE sin pago"
+              parent="menu_retention_root" action="action_retention_document"
+              sequence="25"/>
     <menuitem id="menu_retention_received" name="Retenciones sufridas"
               parent="menu_retention_root" action="action_retention_received"
               sequence="30"/>

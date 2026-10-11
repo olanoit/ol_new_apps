@@ -31,6 +31,28 @@ class AccountPaymentRegister(models.TransientModel):
             total = sum(bill._l10n_pe_retention_base(wizard.payment_date) for bill in bills)
             if total <= wizard.company_id.l10n_pe_retention_min_amount:
                 wizard.withholding_line_ids = wizard.withholding_line_ids - lines
+                continue
+            wizard._l10n_pe_retention_deduct_credit_notes(lines[:1])
+
+    def _l10n_pe_retention_deduct_credit_notes(self, line):
+        """Art. 2 de la R.S. 037-2002/SUNAT: la retención de las notas de
+        crédito del proveedor sobre facturas ya retenidas se descuenta de
+        esta retención (opción de la compañía). Al emitir el pago, la
+        diferencia queda imputada a cada nota."""
+        self.ensure_one()
+        company = self.company_id
+        if not company.l10n_pe_retention_deduct_credit_notes:
+            return
+        partner = self.batches[0]['lines'].move_id.commercial_partner_id[:1]
+        company_currency = company.currency_id
+        available = self.currency_id._convert(
+            line.amount, company_currency, company, self.payment_date)
+        plan = self.env['account.move']._l10n_pe_retention_plan_deductions(
+            company, partner, available)
+        deducted = sum(amount for _note, amount in plan)
+        if deducted:
+            line.amount = self.currency_id.round(line.amount - company_currency._convert(
+                deducted, self.currency_id, company, self.payment_date))
 
     @api.depends('withholding_payment_account_id', 'should_withhold_tax')
     def _compute_withholding_outstanding_account_id(self):

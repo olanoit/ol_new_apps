@@ -35,6 +35,11 @@
                                        class="col-lg-5 o_light_label"/>
                                 <field name="l10n_pe_retention_outstanding_account_id" readonly="not is_root_company"/>
                             </div>
+                            <div class="row mt8">
+                                <label for="l10n_pe_retention_deduct_credit_notes"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_retention_deduct_credit_notes" readonly="not is_root_company"/>
+                            </div>
                         </div>
                     </setting>
                     <setting company_dependent="1" string="Retenciones sufridas (clientes agentes)"

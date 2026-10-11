@@ -127,3 +127,21 @@ class TestFactoryHkaRetention(TestPeEdiCommon):
         payment.l10n_pe_edi_reversal_reason = 'Duplicado'
         with self.assertRaises(UserError):
             payment.action_l10n_pe_edi_reverse_retention()
+
+    def test_reversal_goes_to_sunat_when_cre_did(self):
+        """CRE enviado directo a SUNAT (función de CRE apagada): la reversión
+        también va a SUNAT, aunque la función de reversión siga activa."""
+        self.company.l10n_pe_edi_factory_hka_retention = False
+        payment = self._sent_cre()
+        payment.invalidate_recordset(['l10n_pe_edi_reversal_available'])
+        self.assertTrue(payment.l10n_pe_edi_reversal_available)
+        payment.l10n_pe_edi_reversal_reason = 'Duplicado'
+        edi = type(self.env['account.edi.format'])
+        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common', autospec=True,
+                          return_value={'xml_document': b'<x/>', 'cdr_number': '202610110009'}) as sunat, \
+                patch.object(edi, '_l10n_pe_edi_get_sunat_credentials', lambda s, c: {}):
+            payment.action_l10n_pe_edi_reverse_retention()
+        self.assertTrue(sunat.called)
+        self.assertIn('otroscpe', sunat.call_args.args[-1]['wsdl'])
+        self.assertFalse(FakeHkaClient.calls, 'nada pasa por HKA')
+        self.assertEqual(payment.l10n_pe_edi_reversal_ticket, '202610110009')

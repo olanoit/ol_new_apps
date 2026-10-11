@@ -38,7 +38,9 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
     _description = 'Comprobante de retención UBL (SUNAT)'
 
     def _export_retention(self, payment):
-        """XML del CRE sin el bloque de firma, en UTF-8 (bytes)."""
+        """XML del CRE sin el bloque de firma, en UTF-8 (bytes). ``payment`` es
+        cualquier documento ``l10n_pe.retention.edi.mixin``: un pago o un CRE
+        sin pago de Odoo."""
         company = payment.company_id
         company_partner = company.partner_id.commercial_partner_id
         currency = company.currency_id.name
@@ -61,8 +63,9 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
         self._l10n_pe_retention_party(root, 'cac:ReceiverParty', payment.partner_id)
         _el(root, 'sac:SUNATRetentionSystemCode', '01')
         _el(root, 'sac:SUNATRetentionPercent', _amount(company.l10n_pe_retention_rate))
-        if payment.memo:
-            _el(root, 'cbc:Note', payment.memo)
+        note = payment._l10n_pe_retention_note()
+        if note:
+            _el(root, 'cbc:Note', note)
         # Totales en soles: importe retenido y pagado neto de la retención.
         _el(root, 'cbc:TotalInvoiceAmount',
             _amount(sum(entry['bill_retention_pen'] for entry in breakdown)), currencyID=currency)
@@ -72,7 +75,8 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
             bill = entry['bill']
             reference = _el(root, 'sac:SUNATRetentionDocumentReference')
             _el(reference, 'cbc:ID', payment._l10n_pe_edi_retention_bill_number(bill),
-                schemeID=bill.l10n_latam_document_type_id.code or '01')
+                schemeID=bill.l10n_latam_document_type_id.code
+                or ('07' if bill.move_type == 'in_refund' else '01'))
             _el(reference, 'cbc:IssueDate', bill.invoice_date or bill.date)
             _el(reference, 'cbc:TotalInvoiceAmount', _amount(bill.amount_total),
                 currencyID=bill.currency_id.name)

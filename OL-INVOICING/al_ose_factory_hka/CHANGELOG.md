@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_ose_factory_hka.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261011 — 11/10/2026
+
+- La reversión del CRE, su plantilla RR y su correlativo pasan a al_l10n_pe_retention (comunes a todos los operadores); este módulo solo decide si la firma, el envío y la reversión van por The Factory HKA. El correlativo RR sigue donde estaba.
+
 ## 2.20261010 — 10/10/2026
 
 - Baja de las notas vinculadas a boletas con el resumen diario (RC 1.1, estado 3) que exige SUNAT, en lugar de la comunicación de baja (RA); una baja no mezcla facturas y documentos de boleta ni fechas de emisión distintas.

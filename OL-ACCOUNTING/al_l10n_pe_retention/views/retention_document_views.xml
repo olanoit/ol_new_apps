@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CRE sin pago de Odoo: letras, compensaciones y pagos fuera de Odoo -->
+    <record id="view_retention_document_list" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.document.list</field>
+        <field name="model">l10n_pe.retention.document</field>
+        <field name="arch" type="xml">
+            <list sample="1" decoration-muted="state == 'cancel'"
+                  decoration-danger="l10n_pe_edi_error_message">
+                <field name="l10n_pe_edi_error_message" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="name" string="Comprobante de retención"/>
+                <field name="partner_id"/>
+                <field name="origin" optional="show"/>
+                <field name="reference" optional="show"/>
+                <field name="amount_paid" sum="Pagado"/>
+                <field name="amount_retention" sum="Retenido"/>
+                <field name="l10n_pe_edi_deadline" optional="hide"/>
+                <field name="l10n_pe_edi_status" widget="badge"
+                       decoration-success="l10n_pe_edi_status == 'sent'"
+                       decoration-warning="l10n_pe_edi_status in ('to_send', 'reversing')"
+                       decoration-muted="l10n_pe_edi_status == 'cancelled'"/>
+                <field name="state" widget="badge" optional="show"
+                       decoration-success="state == 'posted'" decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_retention_document_form" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.document.form</field>
+        <field name="model">l10n_pe.retention.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_post" type="object" string="Emitir"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_l10n_pe_edi_send_retention" type="object"
+                            string="Enviar CRE a SUNAT" class="btn-primary"
+                            invisible="not l10n_pe_edi_is_required"/>
+                    <button name="action_l10n_pe_generate_cre_xml" type="object"
+                            string="XML CRE" invisible="not l10n_pe_edi_retention_number"/>
+                    <button name="action_l10n_pe_edi_reverse_retention" type="object" string="Revertir CRE"
+                            confirm="¿Revertir en SUNAT el comprobante de retención? Una vez aceptada, la reversión no se puede deshacer."
+                            invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status != 'sent'"/>
+                    <button name="action_l10n_pe_edi_check_reversal" type="object"
+                            string="Consultar reversión" class="btn-primary"
+                            invisible="l10n_pe_edi_status != 'reversing'"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state != 'posted' or l10n_pe_edi_status in ('sent', 'reversing')"/>
+                    <button name="action_draft" type="object" string="Pasar a borrador"
+                            invisible="state != 'cancel' or l10n_pe_edi_retention_number"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <div class="alert alert-info mb-0" role="alert"
+                     invisible="not l10n_pe_edi_reversal_message">
+                    <strong>Reversión del CRE:</strong>
+                    <field name="l10n_pe_edi_reversal_message" readonly="1"/>
+                </div>
+                <div class="alert alert-danger mb-0" role="alert"
+                     invisible="not l10n_pe_edi_error_message">
+                    <strong>El comprobante de retención no fue aceptado:</strong>
+                    <field name="l10n_pe_edi_error_message" readonly="1"/>
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object" class="oe_stat_button"
+                                icon="fa-book" string="Asiento" invisible="not move_id"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="origin" readonly="state != 'draft'"/>
+                            <field name="reference" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="not move_id"/>
+                            <field name="l10n_pe_edi_retention_number" invisible="not l10n_pe_edi_retention_number"/>
+                            <field name="l10n_pe_edi_status" invisible="not l10n_pe_edi_retention_number"/>
+                            <field name="l10n_pe_edi_deadline" invisible="l10n_pe_edi_status != 'to_send'"/>
+                            <field name="l10n_pe_edi_reversal_available" invisible="1"/>
+                            <field name="l10n_pe_edi_reversal_reason"
+                                   invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status not in ('sent', 'reversing', 'cancelled')"
+                                   readonly="l10n_pe_edi_status != 'sent'"/>
+                            <field name="l10n_pe_edi_reversal_ticket" invisible="not l10n_pe_edi_reversal_ticket"/>
+                            <field name="l10n_pe_edi_attachment_file" filename="l10n_pe_edi_retention_number"
+                                   invisible="not l10n_pe_edi_attachment_file"/>
+                            <field name="l10n_pe_edi_is_required" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comprobantes pagados" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="company_id" column_invisible="1"/>
+                                    <field name="bill_currency_id" column_invisible="1"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                    <field name="bill_id" domain="[('move_type', '=', 'in_invoice'), ('state', '=', 'posted'), ('l10n_pe_retention_eligible', '=', True), ('commercial_partner_id', '=', parent.partner_id)]"/>
+                                    <field name="bill_total" optional="show"/>
+                                    <field name="paid_amount"/>
+                                    <field name="counterpart_line_id" optional="show"/>
+                                    <field name="exchange_rate" optional="hide"/>
+                                    <field name="paid_pen" sum="Pagado"/>
+                                    <field name="retention_pen" sum="Retención"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_paid"/>
+                                <field name="amount_retention"/>
+                            </group>
+                        </page>
+                        <page string="Notas de crédito descontadas" name="deductions"
+                              invisible="not deduction_ids">
+                            <field name="deduction_ids">
+                                <list>
+                                    <field name="credit_note_id"/>
+                                    <field name="amount" sum="Descontado"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Nota" name="note">
+                            <field name="note" readonly="state != 'draft'"
+                                   placeholder="Se informa en el comprobante de retención."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_retention_document_search" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.document.search</field>
+        <field name="model">l10n_pe.retention.document</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reference"/>
+                <filter name="filter_to_send" string="CRE por enviar"
+                        domain="[('l10n_pe_edi_status', '=', 'to_send')]"/>
+                <filter name="filter_draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="group_origin" string="Forma de pago" context="{'group_by': 'origin'}"/>
+                <filter name="group_date" string="Fecha" context="{'group_by': 'date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_retention_document" model="ir.actions.act_window">
+        <field name="name">CRE sin pago</field>
+        <field name="res_model">l10n_pe.retention.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_retention_document_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Emita un comprobante de retención sin pago de Odoo</p>
+            <p>Para el pago de letras de cambio, las compensaciones o los pagos registrados
+               fuera de Odoo: elija el proveedor, las facturas y lo pagado de cada una. Al
+               emitirlo se numera con la serie del CRE y se genera el asiento que rebaja la
+               cuenta por pagar contra la cuenta de retenciones del IGV.</p>
+        </field>
+    </record>
+
+    <!-- Desde la lista de facturas de proveedor -->
+    <record id="action_server_retention_document_from_bills" model="ir.actions.server">
+        <field name="name">Emitir CRE sin pago</field>
+        <field name="model_id" ref="model_l10n_pe_retention_document"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_create_from_bills()</field>
+    </record>
+</odoo>

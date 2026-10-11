@@ -19,6 +19,25 @@
                         </list>
                     </field>
                 </page>
+                <page string="Retención de la nota de crédito" name="l10n_pe_retention_credit"
+                      invisible="move_type != 'in_refund' or not l10n_pe_retention_credit_amount">
+                    <group>
+                        <group>
+                            <field name="l10n_pe_retention_credit_amount"/>
+                            <field name="l10n_pe_retention_credit_pending"/>
+                        </group>
+                    </group>
+                    <field name="l10n_pe_retention_credit_deduction_ids">
+                        <list>
+                            <field name="retention_number"/>
+                            <field name="payment_id" optional="show"/>
+                            <field name="document_id" optional="show"/>
+                            <field name="amount" sum="Descontado"/>
+                            <field name="active_deduction"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                </page>
                 <page string="Retención IGV" name="l10n_pe_retention"
                       invisible="not l10n_pe_retention_eligible">
                     <group>

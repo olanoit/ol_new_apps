@@ -41,6 +41,7 @@ Percepciones. La reversión de un CRE aceptado la hace
 | Excepciones | Proveedor agente de retención, buen contribuyente o agente de percepción; boletas; operaciones con detracción; sin IGV | Casillas del contacto (padrón SUNAT) y tipo de documento |
 | Monto mínimo | No se retiene si los comprobantes pagados juntos suman S/ 700 o menos | Asistente de pago |
 | CRE | Comprobante de Retención Electrónico, serie R001 | Pago: número de comprobante y botón **Enviar CRE a SUNAT** |
+| CRE sin pago | CRE de letras, compensaciones o pagos fuera de Odoo | **Perú ‣ Retenciones IGV ‣ CRE sin pago** |
 | Retención sufrida | Lo que un cliente agente retuvo; crédito contra el IGV | **Perú ‣ Retenciones IGV ‣ Retenciones sufridas** |
 | PDT 626 | Declaración mensual de las retenciones efectuadas | **Perú ‣ Retenciones IGV ‣ Resumen 626** |
 
@@ -142,10 +143,80 @@ Cada factura del CRE lleva el número de pago a ese comprobante
 (`cac:Payment/cbc:ID`): 1 en el primer pago parcial, 2 en el segundo, y así,
 según los CRE anteriores de la misma factura (R.S. 274-2015/SUNAT).
 
-Si el pago se registró por error, anúlelo y el CRE no se envía. Un CRE ya
-aceptado necesita la reversión: use la de
-[OSE Factory HKA](electronic_invoicing/ose_factory_hka.md) o hágala en el
-portal del operador; este módulo solo lo marca **Anulado**.
+Si el pago se registró por error antes de enviar el CRE, anúlelo y el CRE no
+se envía.
+
+### Revertir un CRE aceptado
+
+Un CRE aceptado por SUNAT bloquea el pago: no se puede pasar a borrador ni
+cancelar hasta revertirlo con el resumen de reversiones (RR, R.S.
+274-2015/SUNAT). Funciona con SUNAT directo, IAP y Digiflow, y con
+[OSE Factory HKA](electronic_invoicing/ose_factory_hka.md).
+
+1. En el pago (o en el CRE sin pago), escriba el **Motivo de la reversión** y
+   haga clic en **Revertir CRE**: se envía el resumen RR y se guarda el ticket;
+   el CRE pasa a **Reversión en proceso**.
+2. Haga clic en **Consultar reversión** hasta que SUNAT la acepte: el CRE
+   pasa a **Anulado**.
+3. Pase el pago a borrador para corregirlo o cancelarlo. Al confirmarlo de
+   nuevo, la retención toma un número nuevo y queda por enviar. En un CRE sin
+   pago, el asiento se anula al aceptarse la reversión.
+
+!!! note "Nota"
+    El correlativo del resumen (RUC-RR-AAAAMMDD-N) no cambia en los
+    reintentos: SUNAT rechaza con el error 2220 un correlativo distinto para
+    la misma reversión.
+
+## Emitir un CRE sin pago de Odoo
+
+La retención se hace al pagar, cualquiera que sea la forma de pago. Para el
+pago de letras de cambio, una compensación o un pago registrado fuera de Odoo,
+emita el CRE sin pago:
+
+1. Vaya a **Perú ‣ Retenciones IGV ‣ CRE sin pago** y haga clic en **Nuevo**.
+   También puede seleccionar las facturas en **Contabilidad ‣ Proveedores ‣
+   Facturas** y usar **Acciones ‣ Emitir CRE sin pago**.
+2. Elija el proveedor, la **Fecha de pago**, la **Forma de pago** (letras,
+   compensación u otro) y la **Referencia del pago**.
+3. En **Comprobantes pagados**, agregue cada factura con lo **Pagado** en su
+   moneda. Si la factura se canjeó por letras, elija la partida de la letra en
+   **Partida por pagar**.
+4. Haga clic en **Emitir**: se validan el mínimo de S/ 700, las excepciones y
+   el tipo de cambio de la fecha de pago, se asigna el número R001 y se crea el
+   asiento. Luego haga clic en **Enviar CRE a SUNAT**.
+
+| Cuenta | Descripción | Debe | Haber |
+|---|---|---|---|
+| 4212 | Facturas por pagar (o 4232 Letras por pagar) | 177,00 | |
+| 40114 | IGV — retenciones por pagar (R001-00000002) | | 177,00 |
+| **Totales** | | **177,00** | **177,00** |
+
+El CRE sin pago cuenta para el número de pago de cada factura, sale en el
+resumen 626 y se imprime desde el propio documento.
+
+## Descontar notas de crédito
+
+Las notas de crédito no cambian lo ya retenido ni dan lugar a devolución; su
+retención se puede descontar de la siguiente retención al mismo proveedor
+(art. 2 de la R.S. 037-2002/SUNAT).
+
+1. Active **Descontar notas de crédito** en **Perú ‣ Configuración ‣
+   Ajustes**, bloque **Retenciones del IGV** (desactivada por defecto).
+2. Una nota de crédito de proveedor sobre una factura que ya tuvo CRE muestra
+   en **Facturación PE ‣ Retención de la nota de crédito** el 3 % que se puede
+   descontar y lo pendiente.
+3. En el siguiente pago al proveedor (o CRE sin pago), la retención propuesta
+   ya viene rebajada. El CRE informa cada factura con su 3 % completo y la
+   nota de crédito (tipo 07) con la retención descontada en negativo.
+
+Por ejemplo, la nota de crédito de S/ 118 sobre una factura ya retenida deja
+S/ 3,54 por descontar; la siguiente factura de S/ 1 180 retiene
+35,40 − 3,54 = **S/ 31,86**.
+
+!!! warning "Importante"
+    La guía del XML del CRE no detalla los importes de una nota de crédito.
+    Pruebe la opción en el entorno de pruebas de SUNAT o del operador antes de
+    usarla en producción.
 
 ## Registrar retenciones sufridas
 
@@ -187,9 +258,10 @@ borrador**: deshace el asiento y la conciliación.
   importe que se aplica contra el IGV del mes en el formulario 621.
 - **Retenciones efectuadas**: un CRE por pago, con el plazo de envío y el
   estado.
+- **CRE sin pago**: los CRE de letras, compensaciones y pagos fuera de Odoo.
 - **Análisis de retenciones**: retenido por proveedor y mes.
-- **Resumen 626**: TXT del mes con una línea por retención (soporte del
-  PDT 626).
+- **Resumen 626**: TXT del mes con una línea por retención, de pagos y de
+  CRE sin pago (soporte del PDT 626).
 - **PLE 8.3**: marca de retención en el campo 26 del Registro de Compras
   Simplificado ([Libros electrónicos (PLE)](ple.md)).
 
@@ -200,6 +272,8 @@ borrador**: deshace el asiento y la conciliación.
 | Proveedor agente o buen contribuyente | No retiene | Si el padrón está desactualizado, corrija la casilla del contacto |
 | El asistente no propone la retención | La factura se publicó antes de configurar | Pásela a borrador y vuelva a publicarla |
 | CRE fuera de plazo | Alerta en el pago | Evalúe emitir uno nuevo con el asesor tributario |
+| Pago con CRE aceptado que hay que corregir | El pago no pasa a borrador | Revierta el CRE y, aceptada la reversión, páselo a borrador |
+| Letra de cambio pagada en el banco | No hay pago de Odoo con retención | Emita el CRE sin pago con la partida de la letra |
 
 !!! info "Ver también"
     - [R.S. 037-2002/SUNAT — Régimen de Retenciones del IGV](https://www.sunat.gob.pe/legislacion/superin/2002/037.htm)

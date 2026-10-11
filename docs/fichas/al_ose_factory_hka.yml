@@ -121,6 +121,10 @@ campos:
       - [Ticket de la reversión, Ticket de SUNAT del resumen RR, —, Se consulta con «Consultar reversión»]
 
 novedades:
+  - version: 3.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "La reversión del CRE, su plantilla RR y su correlativo pasan a al_l10n_pe_retention (comunes a todos los operadores); este módulo solo decide si la firma, el envío y la reversión van por The Factory HKA. El correlativo RR sigue donde estaba."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

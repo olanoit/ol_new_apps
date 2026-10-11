@@ -170,6 +170,7 @@ class TestRetentionApplies(TransactionCase):
             self.env.ref(x) for x in (
                 'al_l10n_pe_retention.action_retention_bills',
                 'al_l10n_pe_retention.action_retention_payments',
+                'al_l10n_pe_retention.action_retention_document',
                 'al_l10n_pe_retention.action_retention_received',
                 'al_l10n_pe_retention.action_retention_received_line',
                 'al_l10n_pe_retention.action_retention_summary',
