@@ -12,7 +12,7 @@ Generado desde `docs/fichas/al_ose_factory_hka.yml` (sección `novedades`) con
 - Baja de las notas vinculadas a boletas con el resumen diario (RC 1.1, estado 3) que exige SUNAT, en lugar de la comunicación de baja (RA); una baja no mezcla facturas y documentos de boleta ni fechas de emisión distintas.
 - Aviso en el historial cuando una factura o su nota se envía fuera del plazo de SUNAT (tercer día calendario siguiente a la emisión, R.S. 000003-2023/SUNAT).
 - Observaciones del CDR (comprobante aceptado con observaciones) listadas en el historial del comprobante.
-- Guía funcional del módulo (GUIA_FUNCIONAL.md).
+- Documentación funcional del módulo (página «OSE Factory HKA» del sitio de documentación).
 
 ## 1.20261009 — 09/10/2026
 

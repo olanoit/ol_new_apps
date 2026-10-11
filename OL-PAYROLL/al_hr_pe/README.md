@@ -1,6 +1,6 @@
 # Planillas Perú — Núcleo de la localización
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Nómina: Perú](../../mkdocs/content/applications/hr/payroll/peru.md)
 
 La ficha laboral peruana, los catálogos de SUNAT, las reglas salariales y
 los envíos al Estado. Es la base sobre la que se apoya el resto de la

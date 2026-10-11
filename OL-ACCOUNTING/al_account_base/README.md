@@ -1,6 +1,6 @@
 # PE - Base Contabilidad (AL) — Odoo 19
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Configuración contable básica](../../mkdocs/content/applications/finance/fiscal_localizations/peru/accounting_base.md)
 
 Módulo **base y liviano** del que dependen las demás personalizaciones AL de la
 localización contable peruana. Contiene únicamente lo **genérico y compartido**;

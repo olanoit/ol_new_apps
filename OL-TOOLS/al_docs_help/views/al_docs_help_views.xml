@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="al_docs_help_view_list" model="ir.ui.view">
+        <field name="name">al.docs.help.list</field>
+        <field name="model">al.docs.help</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="module"/>
+                <field name="key"/>
+                <field name="kind" optional="hide"/>
+                <field name="name"/>
+                <field name="section"/>
+                <field name="path" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+                <button name="action_open" type="object" icon="fa-external-link"
+                        title="Abrir la página"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="al_docs_help_view_search" model="ir.ui.view">
+        <field name="name">al.docs.help.search</field>
+        <field name="model">al.docs.help</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="key"/>
+                <field name="module"/>
+                <field name="name"/>
+                <filter name="with_section" string="Con sección" domain="[('path', 'like', '#')]"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_module" string="Módulo" context="{'group_by': 'module'}"/>
+                    <filter name="group_kind" string="Tipo" context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_al_docs_help" model="ir.actions.act_window">
+        <field name="name">Ayuda contextual</field>
+        <field name="res_model">al.docs.help</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin pantallas con ayuda</p>
+            <p>Cada pantalla de la suite abre con su botón «?» la página de la
+               documentación que la explica. La lista la genera scripts/gen_docs_help.py.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_al_docs_help" name="Ayuda contextual"
+              parent="base.menu_custom" action="action_al_docs_help" sequence="90"
+              groups="base.group_system"/>
+</odoo>

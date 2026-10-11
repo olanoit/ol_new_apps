@@ -1,0 +1,2214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generado por scripts/gen_docs_help.py: no editar a mano. Para
+     llevar una pantalla a otra guía o sección, use
+     docs/ayuda/ayuda_contextual.yml y vuelva a generar. -->
+<odoo>
+    <record id="help_account_edi_xml_ubl_pe_withholding" model="al.docs.help">
+        <field name="key">account.edi.xml.ubl_pe_withholding</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de retención UBL (SUNAT)</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_account_move" model="al.docs.help">
+        <field name="key">account.move</field>
+        <field name="kind">model</field>
+        <field name="name">Asientos y comprobantes (localización peruana)</field>
+        <field name="module">al_account_base</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/accounting_base/</field>
+        <field name="section">Configuración contable básica</field>
+    </record>
+    <record id="help_account_payment" model="al.docs.help">
+        <field name="key">account.payment</field>
+        <field name="kind">model</field>
+        <field name="name">Pagos (medio de pago SUNAT)</field>
+        <field name="module">al_account_payments</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/payment_methods/</field>
+        <field name="section">Medios de pago SUNAT</field>
+    </record>
+    <record id="help_account_report" model="al.docs.help">
+        <field name="key">account_report</field>
+        <field name="kind">tag</field>
+        <field name="name">Registro de Activos Fijos (PLE 7.1)</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_al_docs_help" model="al.docs.help">
+        <field name="key">al.docs.help</field>
+        <field name="kind">model</field>
+        <field name="name">Ayuda contextual</field>
+        <field name="module">al_docs_help</field>
+        <field name="path">applications/general/contextual_help/</field>
+        <field name="section">Ayuda contextual</field>
+    </record>
+    <record id="help_al_gantt_ai" model="al.docs.help">
+        <field name="key">al.gantt.ai</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — asistente de IA</field>
+        <field name="module">al_project_gantt_ai</field>
+        <field name="path">applications/services/project/gantt_ai/</field>
+        <field name="section">Asistente de IA del Gantt</field>
+    </record>
+    <record id="help_al_gantt_baseline" model="al.docs.help">
+        <field name="key">al.gantt.baseline</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — línea base</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_al_gantt_baseline_line" model="al.docs.help">
+        <field name="key">al.gantt.baseline.line</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — línea base (tarea)</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_al_gantt_data" model="al.docs.help">
+        <field name="key">al.gantt.data</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — servicio de datos</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_al_gantt_field_map" model="al.docs.help">
+        <field name="key">al.gantt.field.map</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — mapeo de campos</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_al_gantt_state_color" model="al.docs.help">
+        <field name="key">al.gantt.state.color</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — color por estado de tarea</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_al_import_hr_advance_wizard" model="al.docs.help">
+        <field name="key">al.import.hr.advance.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar adelantos desde Excel</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_hr_attendance_wizard" model="al.docs.help">
+        <field name="key">al.import.hr.attendance.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar asistencias desde Excel</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_hr_salary_rule_wizard" model="al.docs.help">
+        <field name="key">al.import.hr.salary.rule.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar reglas salariales desde Excel</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_hr_version_wizard" model="al.docs.help">
+        <field name="key">al.import.hr.version.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar datos PE de la versión del empleado</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_payroll_mixin" model="al.docs.help">
+        <field name="key">al.import.payroll.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Mixin común para asistentes de importación de planillas</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_payroll_progress" model="al.docs.help">
+        <field name="key">al.import.payroll.progress</field>
+        <field name="kind">model</field>
+        <field name="name">Progreso de importación de planillas</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_payroll_sheet" model="al.docs.help">
+        <field name="key">al.import.payroll.sheet</field>
+        <field name="kind">model</field>
+        <field name="name">Hoja candidata para asistentes de importación</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_payslip_input_wizard" model="al.docs.help">
+        <field name="key">al.import.payslip.input.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar inputs de boletas desde Excel</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_import_vacation_rest_wizard" model="al.docs.help">
+        <field name="key">al.import.vacation.rest.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar saldos de récord vacacional desde Excel</field>
+        <field name="module">al_hr_pe_import</field>
+        <field name="path">applications/hr/payroll/peru/import/</field>
+        <field name="section">Importación de novedades</field>
+    </record>
+    <record id="help_al_construction_planner_home" model="al.docs.help">
+        <field name="key">al_construction_planner.home</field>
+        <field name="kind">tag</field>
+        <field name="name">Inicio</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/valued_schedule/#inicio</field>
+        <field name="section">Inicio</field>
+    </record>
+    <record id="help_al_construction_planner_plan_tree" model="al.docs.help">
+        <field name="key">al_construction_planner.plan_tree</field>
+        <field name="kind">tag</field>
+        <field name="name">Árbol de recursos</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/resource_tree/</field>
+        <field name="section">Árbol de recursos</field>
+    </record>
+    <record id="help_al_construction_planner_schedule" model="al.docs.help">
+        <field name="key">al_construction_planner.schedule</field>
+        <field name="kind">tag</field>
+        <field name="name">Cronograma</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/schedule/#abrir-el-cronograma</field>
+        <field name="section">Abrir el cronograma</field>
+    </record>
+    <record id="help_al_construction_planner_schedule_report" model="al.docs.help">
+        <field name="key">al_construction_planner.schedule_report</field>
+        <field name="kind">tag</field>
+        <field name="name">Cronograma valorizado</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/valued_schedule/#cronograma-valorizado</field>
+        <field name="section">Cronograma valorizado</field>
+    </record>
+    <record id="help_al_construction_planner_supply_board" model="al.docs.help">
+        <field name="key">al_construction_planner.supply_board</field>
+        <field name="kind">tag</field>
+        <field name="name">Abastecimiento de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/#abastecimiento-de-la-obra</field>
+        <field name="section">Abastecimiento de la obra</field>
+    </record>
+    <record id="help_al_project_gantt_backend" model="al.docs.help">
+        <field name="key">al_project_gantt.backend</field>
+        <field name="kind">tag</field>
+        <field name="name">Gantt de Proyectos</field>
+        <field name="module">al_project_gantt_backend</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_construction_contract_settlement" model="al.docs.help">
+        <field name="key">construction.contract.settlement</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación semanal de contrata</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/contractors/</field>
+        <field name="section">Contratas y liquidación semanal</field>
+    </record>
+    <record id="help_construction_contract_settlement_line" model="al.docs.help">
+        <field name="key">construction.contract.settlement.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de liquidación de contrata</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/contractors/</field>
+        <field name="section">Contratas y liquidación semanal</field>
+    </record>
+    <record id="help_construction_labor_activity" model="al.docs.help">
+        <field name="key">construction.labor.activity</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad de obra (driver de pago)</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_labor_rate" model="al.docs.help">
+        <field name="key">construction.labor.rate</field>
+        <field name="kind">model</field>
+        <field name="name">Tarifa de contrata</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_master_import_wizard" model="al.docs.help">
+        <field name="key">construction.master.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar maestro y ETO</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/import_master/</field>
+        <field name="section">Importar maestro y ETO</field>
+    </record>
+    <record id="help_construction_material_request" model="al.docs.help">
+        <field name="key">construction.material.request</field>
+        <field name="kind">model</field>
+        <field name="name">Requerimiento de materiales de obra</field>
+        <field name="module">al_construction_material_request</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
+    <record id="help_construction_material_request_line" model="al.docs.help">
+        <field name="key">construction.material.request.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de requerimiento de materiales de obra</field>
+        <field name="module">al_construction_material_request</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
+    <record id="help_construction_plan_contract_wizard" model="al.docs.help">
+        <field name="key">construction.plan.contract.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asignar contrata desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_contract_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.contract.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad de la asignación de contrata</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/contractors/#asignar-la-contrata</field>
+        <field name="section">Asignar la contrata</field>
+    </record>
+    <record id="help_construction_plan_crew_wizard" model="al.docs.help">
+        <field name="key">construction.plan.crew.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asignar cuadrilla desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_crew_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.crew.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Turno de la cuadrilla</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_exceed_wizard" model="al.docs.help">
+        <field name="key">construction.plan.exceed.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Exceso sobre el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/supply/#requerimiento-de-obra</field>
+        <field name="section">Requerimiento de obra</field>
+    </record>
+    <record id="help_construction_plan_exceed_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.exceed.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Material que excede el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_generate_wizard" model="al.docs.help">
+        <field name="key">construction.plan.generate.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Generar plan de recursos</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/generate_plan/</field>
+        <field name="section">Generar el plan</field>
+    </record>
+    <record id="help_construction_plan_price_wizard" model="al.docs.help">
+        <field name="key">construction.plan.price.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Aplicar costo a las líneas del plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/generate_plan/#aplicar-costo</field>
+        <field name="section">Aplicar costo</field>
+    </record>
+    <record id="help_construction_plan_production_wizard" model="al.docs.help">
+        <field name="key">construction.plan.production.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Orden de fabricación desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_production_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.production.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">OF propuesta desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_progress_wizard" model="al.docs.help">
+        <field name="key">construction.plan.progress.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Registrar avance desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_progress_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.progress.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Fila del registro de avance</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/contractors/#registrar-y-validar-el-avance</field>
+        <field name="section">Registrar y validar el avance</field>
+    </record>
+    <record id="help_construction_plan_purchase_wizard" model="al.docs.help">
+        <field name="key">construction.plan.purchase.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Compra masiva desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_purchase_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.purchase.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de la compra masiva</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/supply/#compra-masiva</field>
+        <field name="section">Compra masiva</field>
+    </record>
+    <record id="help_construction_plan_replan_wizard" model="al.docs.help">
+        <field name="key">construction.plan.replan.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Nueva versión del plan de recursos</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_request_wizard" model="al.docs.help">
+        <field name="key">construction.plan.request.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Requerimiento de obra desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_request_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.request.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea del requerimiento de obra desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_reschedule_wizard" model="al.docs.help">
+        <field name="key">construction.plan.reschedule.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Cambiar fechas desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_plan_reschedule_wizard_line" model="al.docs.help">
+        <field name="key">construction.plan.reschedule.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea afectada por el cambio de fechas</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/control/#cambiar-fechas</field>
+        <field name="section">Cambiar fechas</field>
+    </record>
+    <record id="help_construction_plan_supply_mixin" model="al.docs.help">
+        <field name="key">construction.plan.supply.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Selección del plan para los asistentes de abastecimiento</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_planner_home" model="al.docs.help">
+        <field name="key">construction.planner.home</field>
+        <field name="kind">model</field>
+        <field name="name">Inicio de la planificación de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/</field>
+        <field name="section">Planificación de obra</field>
+    </record>
+    <record id="help_construction_product_create_wizard" model="al.docs.help">
+        <field name="key">construction.product.create.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Crear producto desde el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/#crear-un-producto-desde-el-plan</field>
+        <field name="section">Crear un producto desde el plan</field>
+    </record>
+    <record id="help_construction_product_create_wizard_similar" model="al.docs.help">
+        <field name="key">construction.product.create.wizard.similar</field>
+        <field name="kind">model</field>
+        <field name="name">Producto parecido</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_purchase_price_analysis" model="al.docs.help">
+        <field name="key">construction.purchase.price.analysis</field>
+        <field name="kind">model</field>
+        <field name="name">Precios de compra del producto</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/#precios-de-compra-del-producto</field>
+        <field name="section">Precios de compra del producto</field>
+    </record>
+    <record id="help_construction_purchase_price_report" model="al.docs.help">
+        <field name="key">construction.purchase.price.report</field>
+        <field name="kind">model</field>
+        <field name="name">Precios de compra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/#precios-de-compra-del-producto</field>
+        <field name="section">Precios de compra del producto</field>
+    </record>
+    <record id="help_construction_reason_wizard" model="al.docs.help">
+        <field name="key">construction.reason.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo del rechazo o la devolución</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_resource_plan" model="al.docs.help">
+        <field name="key">construction.resource.plan</field>
+        <field name="kind">model</field>
+        <field name="name">Plan de recursos de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_resource_plan_allocation" model="al.docs.help">
+        <field name="key">construction.resource.plan.allocation</field>
+        <field name="kind">model</field>
+        <field name="name">Asignación del plan de recursos</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/schedule/#asignar-recursos-desde-el-cronograma</field>
+        <field name="section">Asignar recursos desde el cronograma</field>
+    </record>
+    <record id="help_construction_resource_plan_line" model="al.docs.help">
+        <field name="key">construction.resource.plan.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea del plan de recursos</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_schedule_report" model="al.docs.help">
+        <field name="key">construction.schedule.report</field>
+        <field name="kind">model</field>
+        <field name="name">Cronograma valorizado de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/valued_schedule/#cronograma-valorizado</field>
+        <field name="section">Cronograma valorizado</field>
+    </record>
+    <record id="help_construction_space_stage" model="al.docs.help">
+        <field name="key">construction.space.stage</field>
+        <field name="kind">model</field>
+        <field name="name">Etapa del ambiente</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_supply_board" model="al.docs.help">
+        <field name="key">construction.supply.board</field>
+        <field name="kind">model</field>
+        <field name="name">Abastecimiento de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/#abastecimiento-de-la-obra</field>
+        <field name="section">Abastecimiento de la obra</field>
+    </record>
+    <record id="help_construction_task_progress" model="al.docs.help">
+        <field name="key">construction.task.progress</field>
+        <field name="kind">model</field>
+        <field name="name">Avance reportado</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_typology" model="al.docs.help">
+        <field name="key">construction.typology</field>
+        <field name="kind">model</field>
+        <field name="name">Tipología de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/#pantallas-y-asistentes</field>
+        <field name="section">Pantallas y asistentes</field>
+    </record>
+    <record id="help_construction_typology_activity" model="al.docs.help">
+        <field name="key">construction.typology.activity</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad por ambiente de la tipología</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_typology_module" model="al.docs.help">
+        <field name="key">construction.typology.module</field>
+        <field name="kind">model</field>
+        <field name="name">Módulo de la tipología</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_valuation" model="al.docs.help">
+        <field name="key">construction.valuation</field>
+        <field name="kind">model</field>
+        <field name="name">Valorización de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_valuation_confirm_wizard" model="al.docs.help">
+        <field name="key">construction.valuation.confirm.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Confirmar valorización</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/#pantallas-y-asistentes</field>
+        <field name="section">Pantallas y asistentes</field>
+    </record>
+    <record id="help_construction_valuation_confirm_wizard_line" model="al.docs.help">
+        <field name="key">construction.valuation.confirm.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Monto confirmado por partida</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_valuation_cutoff" model="al.docs.help">
+        <field name="key">construction.valuation.cutoff</field>
+        <field name="kind">model</field>
+        <field name="name">Corte de valorización de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_valuation_line" model="al.docs.help">
+        <field name="key">construction.valuation.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de la valorización (partida)</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_valuation_prepare_wizard" model="al.docs.help">
+        <field name="key">construction.valuation.prepare.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Preparar valorización</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/income/#valorización-con-el-cliente</field>
+        <field name="section">Valorización con el cliente</field>
+    </record>
+    <record id="help_construction_valuation_prepare_wizard_line" model="al.docs.help">
+        <field name="key">construction.valuation.prepare.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Partida de la valorización por preparar</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="section">Línea base y versiones</field>
+    </record>
+    <record id="help_construction_weekly_delivery" model="al.docs.help">
+        <field name="key">construction.weekly.delivery</field>
+        <field name="kind">model</field>
+        <field name="name">Entrega semanal de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/income/#entrega-semanal</field>
+        <field name="section">Entrega semanal</field>
+    </record>
+    <record id="help_construction_weekly_delivery_line" model="al.docs.help">
+        <field name="key">construction.weekly.delivery.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de la entrega semanal (partida)</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/income/#entrega-semanal</field>
+        <field name="section">Entrega semanal</field>
+    </record>
+    <record id="help_edi_invoice_series" model="al.docs.help">
+        <field name="key">edi.invoice.series</field>
+        <field name="kind">model</field>
+        <field name="name">Serie de comprobante electrónico</field>
+        <field name="module">al_account_move_name_sequence</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/entry_numbering/</field>
+        <field name="section">Numeración de asientos y series</field>
+    </record>
+    <record id="help_hr_accrual_vacation" model="al.docs.help">
+        <field name="key">hr.accrual.vacation</field>
+        <field name="kind">model</field>
+        <field name="name">Vacaciones acumuladas</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_advance" model="al.docs.help">
+        <field name="key">hr.advance</field>
+        <field name="kind">model</field>
+        <field name="name">Adelanto</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#adelantos-préstamos-y-quincena</field>
+        <field name="section">Adelantos, préstamos y quincena</field>
+    </record>
+    <record id="help_hr_advance_type" model="al.docs.help">
+        <field name="key">hr.advance.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de adelanto</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_attendance" model="al.docs.help">
+        <field name="key">hr.attendance</field>
+        <field name="kind">model</field>
+        <field name="name">Asistencias</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/</field>
+        <field name="section">Asistencia y turnos</field>
+    </record>
+    <record id="help_hr_automate_multipayment" model="al.docs.help">
+        <field name="key">hr.automate.multipayment</field>
+        <field name="kind">model</field>
+        <field name="name">Pago masivo bancario (TXT)</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/#pago-masivo-bancario</field>
+        <field name="section">Pago masivo bancario</field>
+    </record>
+    <record id="help_hr_automate_multipayment_line" model="al.docs.help">
+        <field name="key">hr.automate.multipayment.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de pago masivo bancario</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/#pago-masivo-bancario</field>
+        <field name="section">Pago masivo bancario</field>
+    </record>
+    <record id="help_hr_benefits_line_mixin" model="al.docs.help">
+        <field name="key">hr.benefits.line.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Chatter de las líneas de beneficios</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_benefits_move_mixin" model="al.docs.help">
+        <field name="key">hr.benefits.move.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Mixin de asiento contable de BBSS</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/</field>
+        <field name="section">Contabilización de planillas</field>
+    </record>
+    <record id="help_hr_benefits_move_wizard" model="al.docs.help">
+        <field name="key">hr.benefits.move.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Generación de asiento contable de BBSS</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/</field>
+        <field name="section">Contabilización de planillas</field>
+    </record>
+    <record id="help_hr_certificate_wizard" model="al.docs.help">
+        <field name="key">hr.certificate.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de certificado de trabajo</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/</field>
+        <field name="section">Reportes y documentos</field>
+    </record>
+    <record id="help_hr_contributions" model="al.docs.help">
+        <field name="key">hr.contributions</field>
+        <field name="kind">model</field>
+        <field name="name">Aporte/Contribución</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_cts" model="al.docs.help">
+        <field name="key">hr.cts</field>
+        <field name="kind">model</field>
+        <field name="name">CTS (depósito semestral)</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_cts_line" model="al.docs.help">
+        <field name="key">hr.cts.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de CTS</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#cts</field>
+        <field name="section">CTS</field>
+    </record>
+    <record id="help_hr_cts_line_detalle" model="al.docs.help">
+        <field name="key">hr.cts.line.detalle</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle de línea de CTS</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_employee" model="al.docs.help">
+        <field name="key">hr.employee</field>
+        <field name="kind">model</field>
+        <field name="name">Empleados (planilla peruana)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_employee_excluidos_wizard" model="al.docs.help">
+        <field name="key">hr.employee.excluidos.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de empleados excluidos de quinta</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_extra_concept_line" model="al.docs.help">
+        <field name="key">hr.extra.concept.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de concepto adicional</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_fifth_category" model="al.docs.help">
+        <field name="key">hr.fifth.category</field>
+        <field name="kind">model</field>
+        <field name="name">Renta de 5ta categoría</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#renta-de-5ª-categoría</field>
+        <field name="section">Renta de 5.ª categoría</field>
+    </record>
+    <record id="help_hr_fifth_category_line" model="al.docs.help">
+        <field name="key">hr.fifth.category.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de renta de 5ta categoría</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#renta-de-5ª-categoría</field>
+        <field name="section">Renta de 5.ª categoría</field>
+    </record>
+    <record id="help_hr_fifth_category_line_excluidos" model="al.docs.help">
+        <field name="key">hr.fifth.category.line.excluidos</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de renta de 5ta categoría - Excluidos</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_fifth_certificate_wizard" model="al.docs.help">
+        <field name="key">hr.fifth.certificate.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de certificado de renta de 5ta categoría</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/</field>
+        <field name="section">Reportes y documentos</field>
+    </record>
+    <record id="help_hr_fortnightly" model="al.docs.help">
+        <field name="key">hr.fortnightly</field>
+        <field name="kind">model</field>
+        <field name="name">Adelanto quincenal</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#adelantos-préstamos-y-quincena</field>
+        <field name="section">Adelantos, préstamos y quincena</field>
+    </record>
+    <record id="help_hr_fotocheck_config" model="al.docs.help">
+        <field name="key">hr.fotocheck.config</field>
+        <field name="kind">model</field>
+        <field name="name">Configuración de fotocheck</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/#fotocheck</field>
+        <field name="section">Fotocheck</field>
+    </record>
+    <record id="help_hr_gratification" model="al.docs.help">
+        <field name="key">hr.gratification</field>
+        <field name="kind">model</field>
+        <field name="name">Gratificación legal</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_gratification_line" model="al.docs.help">
+        <field name="key">hr.gratification.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de gratificación</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#gratificaciones</field>
+        <field name="section">Gratificaciones</field>
+    </record>
+    <record id="help_hr_gratification_line_detalle" model="al.docs.help">
+        <field name="key">hr.gratification.line.detalle</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle de línea de gratificación</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_leave_vacation_line" model="al.docs.help">
+        <field name="key">hr.leave.vacation.line</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle de periodo de vacaciones</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_letter_wizard" model="al.docs.help">
+        <field name="key">hr.letter.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de carta de retiro CTS</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/#certificados-y-carta-de-cts</field>
+        <field name="section">Certificados y carta de CTS</field>
+    </record>
+    <record id="help_hr_liquidation" model="al.docs.help">
+        <field name="key">hr.liquidation</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación de cese</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#liquidación-de-cese</field>
+        <field name="section">Liquidación de cese</field>
+    </record>
+    <record id="help_hr_liquidation_extra_concepts" model="al.docs.help">
+        <field name="key">hr.liquidation.extra_concepts</field>
+        <field name="kind">model</field>
+        <field name="name">Conceptos adicionales de liquidación</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_liquidation_move" model="al.docs.help">
+        <field name="key">hr.liquidation.move</field>
+        <field name="kind">model</field>
+        <field name="name">Asiento contable de liquidación por cesado</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/</field>
+        <field name="section">Contabilización de planillas</field>
+    </record>
+    <record id="help_hr_liquidation_vacation_line" model="al.docs.help">
+        <field name="key">hr.liquidation.vacation.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de vacaciones truncas en liquidación</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_loan" model="al.docs.help">
+        <field name="key">hr.loan</field>
+        <field name="kind">model</field>
+        <field name="name">Préstamo</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#adelantos-préstamos-y-quincena</field>
+        <field name="section">Adelantos, préstamos y quincena</field>
+    </record>
+    <record id="help_hr_loan_line" model="al.docs.help">
+        <field name="key">hr.loan.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cuota de préstamo</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_loan_type" model="al.docs.help">
+        <field name="key">hr.loan.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de préstamo</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_main_parameter" model="al.docs.help">
+        <field name="key">hr.main.parameter</field>
+        <field name="kind">model</field>
+        <field name="name">Parámetros Principales de Nómina</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_membership" model="al.docs.help">
+        <field name="key">hr.membership</field>
+        <field name="kind">model</field>
+        <field name="name">Afiliación (AFP/ONP)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_payslip" model="al.docs.help">
+        <field name="key">hr.payslip</field>
+        <field name="kind">model</field>
+        <field name="name">Boletas de pago</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_payslip_run" model="al.docs.help">
+        <field name="key">hr.payslip.run</field>
+        <field name="kind">model</field>
+        <field name="name">Planillas (lotes de boletas)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_payslip_run_move_wizard" model="al.docs.help">
+        <field name="key">hr.payslip.run.move.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de asiento de planilla por lote</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/#asiento-de-la-planilla-por-lote</field>
+        <field name="section">Asiento de la planilla por lote</field>
+    </record>
+    <record id="help_hr_payslip_run_move_wizard_line" model="al.docs.help">
+        <field name="key">hr.payslip.run.move.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de previsualización del asiento de lote</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/#asiento-de-la-planilla-por-lote</field>
+        <field name="section">Asiento de la planilla por lote</field>
+    </record>
+    <record id="help_hr_period" model="al.docs.help">
+        <field name="key">hr.period</field>
+        <field name="kind">model</field>
+        <field name="name">Periodo de Nómina</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_period_generator" model="al.docs.help">
+        <field name="key">hr.period.generator</field>
+        <field name="kind">model</field>
+        <field name="name">Generador de Periodos</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_provisiones" model="al.docs.help">
+        <field name="key">hr.provisiones</field>
+        <field name="kind">model</field>
+        <field name="name">Provisión mensual de beneficios sociales</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_provisiones_concepto" model="al.docs.help">
+        <field name="key">hr.provisiones.concepto</field>
+        <field name="kind">model</field>
+        <field name="name">Concepto adicional de provisión</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_provisiones_cts_line" model="al.docs.help">
+        <field name="key">hr.provisiones.cts.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de provisión CTS</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_provisiones_grati_line" model="al.docs.help">
+        <field name="key">hr.provisiones.grati.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de provisión gratificación</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_provisiones_line_mixin" model="al.docs.help">
+        <field name="key">hr.provisiones.line.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Base de línea de provisión</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_provisiones_vaca_line" model="al.docs.help">
+        <field name="key">hr.provisiones.vaca.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de provisión vacaciones</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_rate_limit" model="al.docs.help">
+        <field name="key">hr.rate.limit</field>
+        <field name="kind">model</field>
+        <field name="name">Tramo de tasa de renta de 5ta categoría</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_reasons_leave" model="al.docs.help">
+        <field name="key">hr.reasons.leave</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo de Baja (T17)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_situation" model="al.docs.help">
+        <field name="key">hr.situation</field>
+        <field name="kind">model</field>
+        <field name="name">Situación del Trabajador (T15)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_social_insurance" model="al.docs.help">
+        <field name="key">hr.social.insurance</field>
+        <field name="kind">model</field>
+        <field name="name">Seguro Social</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/#ficha-del-trabajador</field>
+        <field name="section">Ficha del trabajador</field>
+    </record>
+    <record id="help_hr_subsidies" model="al.docs.help">
+        <field name="key">hr.subsidies</field>
+        <field name="kind">model</field>
+        <field name="name">Subsidio</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#subsidios</field>
+        <field name="section">Subsidios</field>
+    </record>
+    <record id="help_hr_subsidies_line" model="al.docs.help">
+        <field name="key">hr.subsidies.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de subsidio</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#subsidios</field>
+        <field name="section">Subsidios</field>
+    </record>
+    <record id="help_hr_subsidies_lot" model="al.docs.help">
+        <field name="key">hr.subsidies.lot</field>
+        <field name="kind">model</field>
+        <field name="name">Lote de subsidios</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_subsidies_periodo" model="al.docs.help">
+        <field name="key">hr.subsidies.periodo</field>
+        <field name="kind">model</field>
+        <field name="name">Subsidio por periodo</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_subsidies_total" model="al.docs.help">
+        <field name="key">hr.subsidies.total</field>
+        <field name="kind">model</field>
+        <field name="name">Total de subsidio</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_suspension_type" model="al.docs.help">
+        <field name="key">hr.suspension.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de Suspensión (T21)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_tareaje_manager" model="al.docs.help">
+        <field name="key">hr.tareaje.manager</field>
+        <field name="kind">model</field>
+        <field name="name">Gestión de tareaje</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/</field>
+        <field name="section">Asistencia y turnos</field>
+    </record>
+    <record id="help_hr_tareaje_manager_line" model="al.docs.help">
+        <field name="key">hr.tareaje.manager.line</field>
+        <field name="kind">model</field>
+        <field name="name">Tareaje por empleado</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/</field>
+        <field name="section">Asistencia y turnos</field>
+    </record>
+    <record id="help_hr_tareaje_manager_line_attendance" model="al.docs.help">
+        <field name="key">hr.tareaje.manager.line.attendance</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle diario del tareaje</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/#reparto-del-costo-por-obra</field>
+        <field name="section">Reparto del costo por obra</field>
+    </record>
+    <record id="help_hr_utilities" model="al.docs.help">
+        <field name="key">hr.utilities</field>
+        <field name="kind">model</field>
+        <field name="name">Utilidades (D.L. 892)</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_utilities_line" model="al.docs.help">
+        <field name="key">hr.utilities.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de utilidad</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#utilidades</field>
+        <field name="section">Utilidades</field>
+    </record>
+    <record id="help_hr_vacation" model="al.docs.help">
+        <field name="key">hr.vacation</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación vacacional</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/#vacaciones</field>
+        <field name="section">Vacaciones</field>
+    </record>
+    <record id="help_hr_vacation_line" model="al.docs.help">
+        <field name="key">hr.vacation.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de liquidación vacacional</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_vacation_rest" model="al.docs.help">
+        <field name="key">hr.vacation.rest</field>
+        <field name="kind">model</field>
+        <field name="name">Saldos de vacaciones</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_vacation_rest_wizard" model="al.docs.help">
+        <field name="key">hr.vacation.rest.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de récord vacacional</field>
+        <field name="module">al_hr_pe_benefits</field>
+        <field name="path">applications/hr/payroll/peru/benefits/</field>
+        <field name="section">Beneficios sociales</field>
+    </record>
+    <record id="help_hr_version" model="al.docs.help">
+        <field name="key">hr.version</field>
+        <field name="kind">model</field>
+        <field name="name">Contratos (planilla peruana)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_hr_work_suspension" model="al.docs.help">
+        <field name="key">hr.work.suspension</field>
+        <field name="kind">model</field>
+        <field name="name">Suspensión de labores (T21)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/#suspensiones-de-labores</field>
+        <field name="section">Suspensiones de labores</field>
+    </record>
+    <record id="help_hr_worker_type" model="al.docs.help">
+        <field name="key">hr.worker.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de Trabajador (T08)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_account_destiny" model="al.docs.help">
+        <field name="key">l10n_pe.account.destiny</field>
+        <field name="kind">model</field>
+        <field name="name">Cuenta destino (dinámica PCGE)</field>
+        <field name="module">al_account_destinations</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/destination_entries/</field>
+        <field name="section">Asientos de destino</field>
+    </record>
+    <record id="help_l10n_pe_api_connection" model="al.docs.help">
+        <field name="key">l10n_pe.api.connection</field>
+        <field name="kind">model</field>
+        <field name="name">Conexión de consulta RUC/DNI</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
+        <field name="section">Consulta de RUC y DNI</field>
+    </record>
+    <record id="help_l10n_pe_api_field_mapping" model="al.docs.help">
+        <field name="key">l10n_pe.api.field.mapping</field>
+        <field name="kind">model</field>
+        <field name="name">Mapeo de atributo de API a campo de Odoo</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
+        <field name="section">Consulta de RUC y DNI</field>
+    </record>
+    <record id="help_l10n_pe_complaint" model="al.docs.help">
+        <field name="key">l10n_pe.complaint</field>
+        <field name="kind">model</field>
+        <field name="name">Hoja de reclamación</field>
+        <field name="module">al_l10n_pe_complaints_book</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/complaints_book/#registrar-una-hoja</field>
+        <field name="section">Registrar una hoja</field>
+    </record>
+    <record id="help_l10n_pe_complaint_book" model="al.docs.help">
+        <field name="key">l10n_pe.complaint.book</field>
+        <field name="kind">model</field>
+        <field name="name">Libro de reclamaciones</field>
+        <field name="module">al_l10n_pe_complaints_book</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/complaints_book/</field>
+        <field name="section">Libro de reclamaciones</field>
+    </record>
+    <record id="help_l10n_pe_complaint_settlement_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.complaint.settlement.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Oferta de solución de un reclamo</field>
+        <field name="module">al_l10n_pe_complaints_book</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/complaints_book/</field>
+        <field name="section">Libro de reclamaciones</field>
+    </record>
+    <record id="help_l10n_pe_complaint_sirec_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.complaint.sirec.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Exportación al SIREC</field>
+        <field name="module">al_l10n_pe_complaints_book</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/complaints_book/</field>
+        <field name="section">Libro de reclamaciones</field>
+    </record>
+    <record id="help_l10n_pe_destination_period_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.destination.period.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Destinos del periodo</field>
+        <field name="module">al_account_destinations</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/destination_entries/#cuadrar-el-periodo</field>
+        <field name="section">Cuadrar el periodo</field>
+    </record>
+    <record id="help_l10n_pe_detraction_check" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.check</field>
+        <field name="kind">model</field>
+        <field name="name">Contraste de detracciones con SUNAT</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/#seguimiento-y-contraste-con-sunat</field>
+        <field name="section">Seguimiento y contraste con SUNAT</field>
+    </record>
+    <record id="help_l10n_pe_detraction_check_line" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.check.line</field>
+        <field name="kind">model</field>
+        <field name="name">Código contrastado con SUNAT</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/#seguimiento-y-contraste-con-sunat</field>
+        <field name="section">Seguimiento y contraste con SUNAT</field>
+    </record>
+    <record id="help_l10n_pe_detraction_deposit_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.deposit.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Depósito de detracción SPOT</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/</field>
+        <field name="section">Detracciones (SPOT)</field>
+    </record>
+    <record id="help_l10n_pe_detraction_txt_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.txt.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Depósito masivo de detracciones (Banco de la Nación)</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/</field>
+        <field name="section">Detracciones (SPOT)</field>
+    </record>
+    <record id="help_l10n_pe_detraction_type" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de detracción SPOT (catálogo 54 SUNAT)</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/</field>
+        <field name="section">Detracciones (SPOT)</field>
+    </record>
+    <record id="help_l10n_pe_exchange_closure" model="al.docs.help">
+        <field name="key">l10n_pe.exchange.closure</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre de tipo de cambio</field>
+        <field name="module">al_l10n_pe_exchange_closure</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/exchange_differences/#cierre-de-tipo-de-cambio</field>
+        <field name="section">Cierre de tipo de cambio</field>
+    </record>
+    <record id="help_l10n_pe_exchange_closure_line" model="al.docs.help">
+        <field name="key">l10n_pe.exchange.closure.line</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle del cierre de tipo de cambio</field>
+        <field name="module">al_l10n_pe_exchange_closure</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/exchange_differences/#cierre-de-tipo-de-cambio</field>
+        <field name="section">Cierre de tipo de cambio</field>
+    </record>
+    <record id="help_l10n_pe_exchange_rate_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.exchange.rate.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Actualizar tipo de cambio SUNAT</field>
+        <field name="module">al_l10n_pe_currency</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/exchange_rates/</field>
+        <field name="section">Tipo de cambio</field>
+    </record>
+    <record id="help_l10n_pe_factoring" model="al.docs.help">
+        <field name="key">l10n_pe.factoring</field>
+        <field name="kind">model</field>
+        <field name="name">Operación de factoring</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#crear-la-operación</field>
+        <field name="section">Crear la operación</field>
+    </record>
+    <record id="help_l10n_pe_factoring_account_config" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.account.config</field>
+        <field name="kind">model</field>
+        <field name="name">Cuentas del factoring</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_factoring_line" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.line</field>
+        <field name="kind">model</field>
+        <field name="name">Factura cedida</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_factoring_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Operación con el factor</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_hr_attendance_monitor" model="al.docs.help">
+        <field name="key">l10n_pe.hr.attendance.monitor</field>
+        <field name="kind">model</field>
+        <field name="name">Monitor de asistencia (Perú)</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/#monitor-de-asistencia</field>
+        <field name="section">Monitor de asistencia</field>
+    </record>
+    <record id="help_l10n_pe_hr_attendance_register_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.hr.attendance.register.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Registro de control de asistencia (D.S. 004-2006-TR)</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/</field>
+        <field name="section">Asistencia y turnos</field>
+    </record>
+    <record id="help_l10n_pe_hr_catalog_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.hr.catalog.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Catálogo SUNAT (mixin)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_conafovicer" model="al.docs.help">
+        <field name="key">l10n_pe.hr.conafovicer</field>
+        <field name="kind">model</field>
+        <field name="name">Resumen mensual de CONAFOVICER</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_conafovicer_line" model="al.docs.help">
+        <field name="key">l10n_pe.hr.conafovicer.line</field>
+        <field name="kind">model</field>
+        <field name="name">Detalle de CONAFOVICER</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_bonus" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.bonus</field>
+        <field name="kind">model</field>
+        <field name="name">Bonificación de construcción civil</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_category" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.category</field>
+        <field name="kind">model</field>
+        <field name="name">Categoría de construcción civil</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_site" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.site</field>
+        <field name="kind">model</field>
+        <field name="name">Obra de construcción</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_wage_import" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.wage.import</field>
+        <field name="kind">model</field>
+        <field name="name">Importar tabla salarial del convenio</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/#importar-la-tabla-del-convenio</field>
+        <field name="section">Importar la tabla del convenio</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_wage_line" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.wage.line</field>
+        <field name="kind">model</field>
+        <field name="name">Jornal por categoría</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_wage_table" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.wage.table</field>
+        <field name="kind">model</field>
+        <field name="name">Tabla salarial de construcción civil</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
+    <record id="help_l10n_pe_hr_contract_template" model="al.docs.help">
+        <field name="key">l10n_pe.hr.contract.template</field>
+        <field name="kind">model</field>
+        <field name="name">Plantilla de contrato de trabajo (PE)</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/#contratos-desde-plantilla</field>
+        <field name="section">Contratos desde plantilla</field>
+    </record>
+    <record id="help_l10n_pe_hr_contract_type" model="al.docs.help">
+        <field name="key">l10n_pe.hr.contract.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de contrato (T12)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_dependent" model="al.docs.help">
+        <field name="key">l10n_pe.hr.dependent</field>
+        <field name="kind">model</field>
+        <field name="name">Derechohabiente</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/#derechohabientes</field>
+        <field name="section">Derechohabientes</field>
+    </record>
+    <record id="help_l10n_pe_hr_dependent_end_reason" model="al.docs.help">
+        <field name="key">l10n_pe.hr.dependent.end.reason</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo de baja de derechohabiente (T20)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_dependent_proof" model="al.docs.help">
+        <field name="key">l10n_pe.hr.dependent.proof</field>
+        <field name="kind">model</field>
+        <field name="name">Documento que sustenta el vínculo (T27)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_dependent_type" model="al.docs.help">
+        <field name="key">l10n_pe.hr.dependent.type</field>
+        <field name="kind">model</field>
+        <field name="name">Vínculo familiar (T19)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_doc_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.hr.doc.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Mixin de documentos laborales PE</field>
+        <field name="module">al_hr_pe_reports</field>
+        <field name="path">applications/hr/payroll/peru/reports/</field>
+        <field name="section">Reportes y documentos</field>
+    </record>
+    <record id="help_l10n_pe_hr_education_career" model="al.docs.help">
+        <field name="key">l10n_pe.hr.education.career</field>
+        <field name="kind">model</field>
+        <field name="name">Carrera (T34)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_education_institution" model="al.docs.help">
+        <field name="key">l10n_pe.hr.education.institution</field>
+        <field name="kind">model</field>
+        <field name="name">Institución educativa (T34)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_education_level" model="al.docs.help">
+        <field name="key">l10n_pe.hr.education.level</field>
+        <field name="kind">model</field>
+        <field name="name">Situación educativa (T09)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_employee_education" model="al.docs.help">
+        <field name="key">l10n_pe.hr.employee.education</field>
+        <field name="kind">model</field>
+        <field name="name">Estudios concluidos (T-Registro E29)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_financial_entity" model="al.docs.help">
+        <field name="key">l10n_pe.hr.financial.entity</field>
+        <field name="kind">model</field>
+        <field name="name">Entidad financiera (T36)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_labor_regime" model="al.docs.help">
+        <field name="key">l10n_pe.hr.labor.regime</field>
+        <field name="kind">model</field>
+        <field name="name">Régimen laboral (T33)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_occupation" model="al.docs.help">
+        <field name="key">l10n_pe.hr.occupation</field>
+        <field name="kind">model</field>
+        <field name="name">Ocupación (T30)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_occupational_category" model="al.docs.help">
+        <field name="key">l10n_pe.hr.occupational.category</field>
+        <field name="kind">model</field>
+        <field name="name">Categoría ocupacional (T24)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_rmv" model="al.docs.help">
+        <field name="key">l10n_pe.hr.rmv</field>
+        <field name="kind">model</field>
+        <field name="name">Remuneración Mínima Vital</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_road_type" model="al.docs.help">
+        <field name="key">l10n_pe.hr.road.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de vía (T05)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_salary_rule_account" model="al.docs.help">
+        <field name="key">l10n_pe.hr.salary.rule.account</field>
+        <field name="kind">model</field>
+        <field name="name">Cuenta de la regla salarial por condición</field>
+        <field name="module">al_hr_pe_account</field>
+        <field name="path">applications/hr/payroll/peru/accounting/</field>
+        <field name="section">Contabilización de planillas</field>
+    </record>
+    <record id="help_l10n_pe_hr_shift_cycle" model="al.docs.help">
+        <field name="key">l10n_pe.hr.shift.cycle</field>
+        <field name="kind">model</field>
+        <field name="name">Ciclo de jornada atípica (Perú)</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/#ciclos-atípicos-y-turnos</field>
+        <field name="section">Ciclos atípicos y turnos</field>
+    </record>
+    <record id="help_l10n_pe_hr_shift_cycle_assignment" model="al.docs.help">
+        <field name="key">l10n_pe.hr.shift.cycle.assignment</field>
+        <field name="kind">model</field>
+        <field name="name">Asignación de ciclo atípico (Perú)</field>
+        <field name="module">al_hr_pe_attendance</field>
+        <field name="path">applications/hr/payroll/peru/attendance/#ciclos-atípicos-y-turnos</field>
+        <field name="section">Ciclos atípicos y turnos</field>
+    </record>
+    <record id="help_l10n_pe_hr_uit" model="al.docs.help">
+        <field name="key">l10n_pe.hr.uit</field>
+        <field name="kind">model</field>
+        <field name="name">UIT por año</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_hr_zone_type" model="al.docs.help">
+        <field name="key">l10n_pe.hr.zone.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de zona (T06)</field>
+        <field name="module">al_hr_pe</field>
+        <field name="path">applications/hr/payroll/peru/</field>
+        <field name="section">Perú</field>
+    </record>
+    <record id="help_l10n_pe_kardex_document_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.kardex.document.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Documento del kardex SUNAT</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/</field>
+        <field name="section">Kárdex valorizado (SUNAT)</field>
+    </record>
+    <record id="help_l10n_pe_kardex_line" model="al.docs.help">
+        <field name="key">l10n_pe.kardex.line</field>
+        <field name="kind">model</field>
+        <field name="name">Kardex SUNAT (línea)</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/</field>
+        <field name="section">Kárdex valorizado (SUNAT)</field>
+    </record>
+    <record id="help_l10n_pe_kardex_report" model="al.docs.help">
+        <field name="key">l10n_pe.kardex.report</field>
+        <field name="kind">model</field>
+        <field name="name">Kardex SUNAT generado</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/#generar-el-kárdex</field>
+        <field name="section">Generar el kárdex</field>
+    </record>
+    <record id="help_l10n_pe_kardex_report_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.kardex.report.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Kardex SUNAT (Formato 13.1 / 12.1)</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/</field>
+        <field name="section">Kárdex valorizado (SUNAT)</field>
+    </record>
+    <record id="help_l10n_pe_lease" model="al.docs.help">
+        <field name="key">l10n_pe.lease</field>
+        <field name="kind">model</field>
+        <field name="name">Arrendamiento (NIIF 16)</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_event" model="al.docs.help">
+        <field name="key">l10n_pe.lease.event</field>
+        <field name="kind">model</field>
+        <field name="name">Evento del arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_exchange" model="al.docs.help">
+        <field name="key">l10n_pe.lease.exchange</field>
+        <field name="kind">model</field>
+        <field name="name">Diferencia de cambio del arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_line" model="al.docs.help">
+        <field name="key">l10n_pe.lease.line</field>
+        <field name="kind">model</field>
+        <field name="name">Tabla del pasivo por arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_operation_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.lease.operation.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Operación sobre un arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_remeasure" model="al.docs.help">
+        <field name="key">l10n_pe.lease.remeasure</field>
+        <field name="kind">model</field>
+        <field name="name">Remedición del arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_lease_tax_report" model="al.docs.help">
+        <field name="key">l10n_pe.lease.tax.report</field>
+        <field name="kind">model</field>
+        <field name="name">Diferencias temporales de arrendamientos</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/#diferencia-temporal-del-ejercicio</field>
+        <field name="section">Diferencia temporal del ejercicio</field>
+    </record>
+    <record id="help_l10n_pe_lease_tax_report_line" model="al.docs.help">
+        <field name="key">l10n_pe.lease.tax.report.line</field>
+        <field name="kind">model</field>
+        <field name="name">Diferencia temporal por contrato</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/#diferencia-temporal-del-ejercicio</field>
+        <field name="section">Diferencia temporal del ejercicio</field>
+    </record>
+    <record id="help_l10n_pe_lease_terminate" model="al.docs.help">
+        <field name="key">l10n_pe.lease.terminate</field>
+        <field name="kind">model</field>
+        <field name="name">Terminación anticipada del arrendamiento</field>
+        <field name="module">al_l10n_pe_lease</field>
+        <field name="path">applications/finance/accounting/leases/</field>
+        <field name="section">Arrendamientos (NIIF 16)</field>
+    </record>
+    <record id="help_l10n_pe_letter" model="al.docs.help">
+        <field name="key">l10n_pe.letter</field>
+        <field name="kind">model</field>
+        <field name="name">Gestión de letras</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_account_config" model="al.docs.help">
+        <field name="key">l10n_pe.letter.account.config</field>
+        <field name="kind">model</field>
+        <field name="name">Configuración de cuentas de letras</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_bank_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.letter.bank.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Operación del banco con letras</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/#enviar-las-letras-al-banco</field>
+        <field name="section">Enviar las letras al banco</field>
+    </record>
+    <record id="help_l10n_pe_letter_canje_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.letter.canje.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Asistente de canje de letras</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/#canjear-facturas-por-letras</field>
+        <field name="section">Canjear facturas por letras</field>
+    </record>
+    <record id="help_l10n_pe_letter_invoice_line" model="al.docs.help">
+        <field name="key">l10n_pe.letter.invoice.line</field>
+        <field name="kind">model</field>
+        <field name="name">Facturas por cobrar</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_line" model="al.docs.help">
+        <field name="key">l10n_pe.letter.line</field>
+        <field name="kind">model</field>
+        <field name="name">Letras por cobrar</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_link_summary" model="al.docs.help">
+        <field name="key">l10n_pe.letter.link.summary</field>
+        <field name="kind">model</field>
+        <field name="name">Resumen de vinculación de asientos</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_massive" model="al.docs.help">
+        <field name="key">l10n_pe.letter.massive</field>
+        <field name="kind">model</field>
+        <field name="name">Gestión de letras masivas</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_refinance_massive_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.letter.refinance.massive.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Refinanciación masiva de canjes de letras</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_refinance_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.letter.refinance.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Factura refinanciada</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_residual" model="al.docs.help">
+        <field name="key">l10n_pe.letter.residual</field>
+        <field name="kind">model</field>
+        <field name="name">redondeo</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
+        <field name="section">Letras de cambio</field>
+    </record>
+    <record id="help_l10n_pe_letter_type_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.letter.type.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de letra</field>
+        <field name="module">al_l10n_pe_account_letter</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/#enviar-las-letras-al-banco</field>
+        <field name="section">Enviar las letras al banco</field>
+    </record>
+    <record id="help_l10n_pe_ple_asset_book" model="al.docs.help">
+        <field name="key">l10n_pe.ple.asset.book</field>
+        <field name="kind">model</field>
+        <field name="name">PLE SUNAT - Registro de Activos Fijos (Libro 7)</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_asset_report_handler" model="al.docs.help">
+        <field name="key">l10n_pe.ple.asset.report.handler</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 7.1 - Registro de Activos Fijos</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_cost_center" model="al.docs.help">
+        <field name="key">l10n_pe.ple.cost.center</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 10.4 - Centro de costos</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_cost_element" model="al.docs.help">
+        <field name="key">l10n_pe.ple.cost.element</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 10.2 - Elementos del costo mensual</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_cost_production" model="al.docs.help">
+        <field name="key">l10n_pe.ple.cost.production</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 10.3 - Costo de producción valorizado anual</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_cost_sales" model="al.docs.help">
+        <field name="key">l10n_pe.ple.cost.sales</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 10.1 - Costo de ventas anual</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_equity" model="al.docs.help">
+        <field name="key">l10n_pe.ple.equity</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 3.19 - Cambios en el patrimonio neto</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_export_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.ple.export.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Exportar Libros Electrónicos PLE</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_investment" model="al.docs.help">
+        <field name="key">l10n_pe.ple.investment</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 3.8 - Inversión mobiliaria (cta. 30)</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.ple.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">PLE SUNAT - motor común</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_ple_withholding" model="al.docs.help">
+        <field name="key">l10n_pe.ple.withholding</field>
+        <field name="kind">model</field>
+        <field name="name">PLE 4.1 - Retención Art. 34 LIR</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/#retenciones-41-art-34-lir</field>
+        <field name="section">Retenciones 4.1 (art. 34 LIR)</field>
+    </record>
+    <record id="help_l10n_pe_rce_common" model="al.docs.help">
+        <field name="key">l10n_pe.rce.common</field>
+        <field name="kind">model</field>
+        <field name="name">RCE — utilidades comunes de serialización</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_rce_extractor" model="al.docs.help">
+        <field name="key">l10n_pe.rce.extractor</field>
+        <field name="kind">model</field>
+        <field name="name">RCE — extracción de comprobantes e importes</field>
+        <field name="module">al_l10n_pe_ple</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
+        <field name="section">Libros electrónicos (PLE)</field>
+    </record>
+    <record id="help_l10n_pe_retention_received" model="al.docs.help">
+        <field name="key">l10n_pe.retention.received</field>
+        <field name="kind">model</field>
+        <field name="name">PE - Retención de IGV sufrida (cliente agente)</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_retention_summary_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.retention.summary.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Resumen de retenciones IGV (F. 626)</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
+        <field name="section">Retenciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_sire_action_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.sire.action.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Acción SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_api" model="al.docs.help">
+        <field name="key">l10n_pe.sire.api</field>
+        <field name="kind">model</field>
+        <field name="name">Cliente API SIRE SUNAT</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_compare_field" model="al.docs.help">
+        <field name="key">l10n_pe.sire.compare.field</field>
+        <field name="kind">model</field>
+        <field name="name">Campo de comparación SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_line_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.sire.line.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Línea SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_mixin" model="al.docs.help">
+        <field name="key">l10n_pe.sire.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Periodo SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_operation" model="al.docs.help">
+        <field name="key">l10n_pe.sire.operation</field>
+        <field name="kind">model</field>
+        <field name="name">Operación SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_rce" model="al.docs.help">
+        <field name="key">l10n_pe.sire.rce</field>
+        <field name="kind">model</field>
+        <field name="name">SIRE — Registro de Compras Electrónico</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_rce_line" model="al.docs.help">
+        <field name="key">l10n_pe.sire.rce.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea SIRE RCE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_rce_nd_line" model="al.docs.help">
+        <field name="key">l10n_pe.sire.rce.nd.line</field>
+        <field name="kind">model</field>
+        <field name="name">SIRE — Línea de no domiciliados</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_rvie" model="al.docs.help">
+        <field name="key">l10n_pe.sire.rvie</field>
+        <field name="kind">model</field>
+        <field name="name">SIRE — Registro de Ventas e Ingresos Electrónico</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_rvie_line" model="al.docs.help">
+        <field name="key">l10n_pe.sire.rvie.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea SIRE RVIE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sunat_padron" model="al.docs.help">
+        <field name="key">l10n_pe.sunat.padron</field>
+        <field name="kind">model</field>
+        <field name="name">Padrón SUNAT (buenos contribuyentes y agentes de retención)</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
+        <field name="section">Consulta de RUC y DNI</field>
+    </record>
+    <record id="help_l10n_pe_term_deposit" model="al.docs.help">
+        <field name="key">l10n_pe.term.deposit</field>
+        <field name="kind">model</field>
+        <field name="name">Depósito a plazo o garantía</field>
+        <field name="module">al_l10n_pe_term_deposit</field>
+        <field name="path">applications/finance/accounting/term_deposits/</field>
+        <field name="section">Depósitos a plazo y garantías</field>
+    </record>
+    <record id="help_l10n_pe_term_deposit_account_config" model="al.docs.help">
+        <field name="key">l10n_pe.term.deposit.account.config</field>
+        <field name="kind">model</field>
+        <field name="name">Cuentas de depósitos y garantías</field>
+        <field name="module">al_l10n_pe_term_deposit</field>
+        <field name="path">applications/finance/accounting/term_deposits/</field>
+        <field name="section">Depósitos a plazo y garantías</field>
+    </record>
+    <record id="help_l10n_pe_term_deposit_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.term.deposit.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Operación sobre un depósito o garantía</field>
+        <field name="module">al_l10n_pe_term_deposit</field>
+        <field name="path">applications/finance/accounting/term_deposits/</field>
+        <field name="section">Depósitos a plazo y garantías</field>
+    </record>
+    <record id="help_mcp_auth_code" model="al.docs.help">
+        <field name="key">mcp.auth.code</field>
+        <field name="kind">model</field>
+        <field name="name">Código de autorización OAuth MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_generated_module" model="al.docs.help">
+        <field name="key">mcp.generated.module</field>
+        <field name="kind">model</field>
+        <field name="name">Módulo generado MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_html_artifact" model="al.docs.help">
+        <field name="key">mcp.html.artifact</field>
+        <field name="kind">model</field>
+        <field name="name">Artefacto HTML MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_job" model="al.docs.help">
+        <field name="key">mcp.job</field>
+        <field name="kind">model</field>
+        <field name="name">Trabajo asíncrono MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_oauth_client" model="al.docs.help">
+        <field name="key">mcp.oauth.client</field>
+        <field name="kind">model</field>
+        <field name="name">Cliente OAuth MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_pat_wizard" model="al.docs.help">
+        <field name="key">mcp.pat.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">PAT MCP: visualización única</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_portal_page" model="al.docs.help">
+        <field name="key">mcp.portal.page</field>
+        <field name="kind">model</field>
+        <field name="name">Página de portal MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_session" model="al.docs.help">
+        <field name="key">mcp.session</field>
+        <field name="kind">model</field>
+        <field name="name">Sesión MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_session_log" model="al.docs.help">
+        <field name="key">mcp.session.log</field>
+        <field name="kind">model</field>
+        <field name="name">Registro de llamadas a herramientas MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_token" model="al.docs.help">
+        <field name="key">mcp.token</field>
+        <field name="kind">model</field>
+        <field name="name">Token bearer MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mcp_tool_registry" model="al.docs.help">
+        <field name="key">mcp.tool.registry</field>
+        <field name="kind">model</field>
+        <field name="name">Registro de herramientas MCP</field>
+        <field name="module">al_mcp_server</field>
+        <field name="path">applications/general/mcp_server/</field>
+        <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_pe_catalog_payment" model="al.docs.help">
+        <field name="key">pe.catalog.payment</field>
+        <field name="kind">model</field>
+        <field name="name">PE: Catálogo de medios de pago</field>
+        <field name="module">al_account_payments</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/payment_methods/</field>
+        <field name="section">Medios de pago SUNAT</field>
+    </record>
+    <record id="help_pe_public_holiday" model="al.docs.help">
+        <field name="key">pe.public.holiday</field>
+        <field name="kind">model</field>
+        <field name="name">Feriado de Perú</field>
+        <field name="module">al_hr_pe_public_holidays</field>
+        <field name="path">applications/hr/payroll/peru/public_holidays/</field>
+        <field name="section">Feriados</field>
+    </record>
+    <record id="help_report_al_project_gantt_base_report_gantt" model="al.docs.help">
+        <field name="key">report.al_project_gantt_base.report_gantt</field>
+        <field name="kind">model</field>
+        <field name="name">Gantt — informe PDF</field>
+        <field name="module">al_project_gantt_base</field>
+        <field name="path">applications/services/project/gantt/</field>
+        <field name="section">Diagrama de Gantt</field>
+    </record>
+    <record id="help_report_ol_stock_kardex_pe_report_kardex" model="al.docs.help">
+        <field name="key">report.ol_stock_kardex_pe.report_kardex</field>
+        <field name="kind">model</field>
+        <field name="name">Kardex SUNAT (PDF)</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/</field>
+        <field name="section">Kárdex valorizado (SUNAT)</field>
+    </record>
+    <record id="help_res_currency_rate" model="al.docs.help">
+        <field name="key">res.currency.rate</field>
+        <field name="kind">model</field>
+        <field name="name">Tipos de cambio</field>
+        <field name="module">al_l10n_pe_currency</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/exchange_rates/</field>
+        <field name="section">Tipo de cambio</field>
+    </record>
+    <record id="help_res_partner" model="al.docs.help">
+        <field name="key">res.partner</field>
+        <field name="kind">model</field>
+        <field name="name">Contactos (consulta RUC y DNI)</field>
+        <field name="module">l10n_pe_vat_sunat</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
+        <field name="section">Consulta de RUC y DNI</field>
+    </record>
+    <record id="help_stock_picking" model="al.docs.help">
+        <field name="key">stock.picking</field>
+        <field name="kind">model</field>
+        <field name="name">Transferencias de inventario</field>
+        <field name="module">al_stock_base</field>
+        <field name="path">applications/inventory_and_mrp/inventory/stock_base/</field>
+        <field name="section">Datos peruanos en transferencias</field>
+    </record>
+</odoo>

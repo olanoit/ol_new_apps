@@ -6,11 +6,11 @@ from odoo.exceptions import UserError, ValidationError
 #: llevan los accesos de Ajustes ▸ Perú ▸ Documentación.
 DOCS_PAGES = {
     'home': '',
-    'guides': 'guias-funcionales/',
-    'news': 'novedades/',
-    'accounting': 'contabilidad/',
-    'payroll': 'planillas/',
-    'technical': 'tecnica/',
+    'guides': 'applications/',
+    'news': 'applications/novedades/',
+    'accounting': 'applications/finance/fiscal_localizations/peru/',
+    'payroll': 'applications/hr/payroll/peru/',
+    'technical': 'developer/',
 }
 
 

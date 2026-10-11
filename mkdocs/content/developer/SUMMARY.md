@@ -1,0 +1,7 @@
+* [Desarrollador](index.md)
+* [Repositorio y áreas](repository.md)
+* [Convenciones de Odoo 19](conventions.md)
+* [Herramientas del repositorio](tools.md)
+* [Pruebas](testing.md)
+* [Referencia de módulos](reference/)
+* [Especificaciones y diseño](specs/)

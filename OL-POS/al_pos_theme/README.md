@@ -1,6 +1,6 @@
 # TPV - Tema y marca blanca (AL) (`al_pos_theme`)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Tema del TPV](../../mkdocs/content/applications/sales/point_of_sale/theme.md)
 
 > Tema integral y marca blanca del Punto de Venta de Odoo 19: el cajero y el
 > cliente no ven ninguna marca, logo, color ni icono del sistema base. La

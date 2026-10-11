@@ -1,6 +1,6 @@
 # Búsqueda RUC/DNI desde SUNAT — configurable por datos
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Consulta de RUC y DNI](../../mkdocs/content/applications/finance/fiscal_localizations/peru/ruc_dni_lookup.md)
 
 Consulta y autocompletado de datos de RUC/DNI peruanos en el contacto, con una
 arquitectura **config-driven**: las APIs se configuran como registros, no como

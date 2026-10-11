@@ -1,6 +1,6 @@
 # al_l10n_pe_sire — SIRE (RVIE / RCE) SUNAT
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Registros SIRE](../../mkdocs/content/applications/finance/fiscal_localizations/peru/sire.md)
 
 Conciliación con el **Sistema Integrado de Registros Electrónicos** de SUNAT:
 descarga la propuesta del **RVIE** (ventas) y del **RCE** (compras) por API o
@@ -104,7 +104,7 @@ Fuentes: manuales API SIRE v22 y anexos de las R.S. 112-2021, 040-2022 y
 
 ## Documentación
 
-- Guía funcional: [`docs/README.md`](docs/README.md)
+- Anexo detallado (referencia): [`docs/README.md`](docs/README.md)
 - Plan técnico: `../docs/sire/PLAN_MODULO_al_l10n_pe_sire.md`
 - Demo/validación: `docs/sire/pruebas/sire_demo_data.py` (en la raíz del repositorio) (ejecutar vía `odoo-bin shell`)
 

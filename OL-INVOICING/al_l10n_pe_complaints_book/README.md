@@ -1,6 +1,6 @@
 # Perú - Libro de Reclamaciones (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Libro de reclamaciones](../../mkdocs/content/applications/finance/fiscal_localizations/peru/complaints_book.md)
 
 Módulo técnico `al_l10n_pe_complaints_book`. El Libro de Reclamaciones físico y
 virtual conforme a las normas vigentes a octubre de 2026. Los requisitos, con

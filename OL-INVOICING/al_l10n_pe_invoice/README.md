@@ -1,12 +1,12 @@
 # PE - Comprobantes Electrónicos (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Comprobante impreso](../../mkdocs/content/applications/finance/fiscal_localizations/peru/electronic_invoicing/invoice_report.md)
 
 Campos y detalle tributario del comprobante electrónico (IGV/ISC/IVAP/
 ICBPER, exoneradas/inafectas, vínculo con la orden de venta) y su
 representación impresa (A4 y ticket 80mm) reutilizando el core
 `l10n_pe_edi` para el QR oficial y el monto en letras.
-**Guía funcional:** [`docs/reportes_factura.md`](docs/reportes_factura.md).
+**Anexo de reportes (referencia):** [`docs/reportes_factura.md`](docs/reportes_factura.md).
 
 ## Qué hace
 

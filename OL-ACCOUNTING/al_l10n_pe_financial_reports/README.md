@@ -1,6 +1,6 @@
 # PE - Reportes financieros (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Estados financieros](../../mkdocs/content/applications/finance/fiscal_localizations/peru/financial_statements.md)
 
 Módulo que reúne los **estados financieros peruanos** de la suite, definidos
 como informes contables de Odoo (`account.report`). Cada informe nuevo va aquí.

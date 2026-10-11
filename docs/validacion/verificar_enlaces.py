@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Verifica los enlaces http(s) de uno o varios Markdown (guías funcionales).
+"""Verifica los enlaces http(s) de uno o varios Markdown (páginas de la
+documentación).
 
-Uso: python3 docs/validacion/verificar_enlaces.py OL-*/*/GUIA_FUNCIONAL.md
+Uso: python3 docs/validacion/verificar_enlaces.py mkdocs/content/applications/**/*.md
 
 Un enlace pasa si responde 2xx/3xx (se sigue la redirección). Algunos sitios
 del Estado bloquean clientes automáticos: se prueba con cabeceras de

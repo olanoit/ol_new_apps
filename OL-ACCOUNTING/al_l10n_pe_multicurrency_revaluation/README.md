@@ -1,6 +1,6 @@
 # PE - T.C. compra/venta en ganancias y pérdidas no realizadas
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Diferencia de cambio](../../mkdocs/content/applications/finance/fiscal_localizations/peru/exchange_differences.md)
 
 Extiende el informe de Enterprise **Contabilidad ▸ Informes ▸ Monedas no realizadas (Ganancias/pérdidas
 de moneda no realizadas)** para compañías peruanas. Migración a Odoo 19 de

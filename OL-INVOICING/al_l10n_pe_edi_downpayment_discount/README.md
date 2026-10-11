@@ -1,6 +1,6 @@
 # PE - Anticipos y descuentos globales en el CPE (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Anticipos y descuentos](../../mkdocs/content/applications/finance/fiscal_localizations/peru/electronic_invoicing/down_payments_discounts.md)
 
 Módulo técnico `al_l10n_pe_edi_downpayment_discount`. Corrige el XML UBL 2.1
 que Odoo 19 envía a SUNAT cuando la factura lleva anticipos o descuentos

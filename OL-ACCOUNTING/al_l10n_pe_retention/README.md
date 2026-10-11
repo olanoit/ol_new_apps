@@ -1,6 +1,6 @@
 # PE - Retenciones de IGV (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Retenciones del IGV](../../mkdocs/content/applications/finance/fiscal_localizations/peru/withholdings.md)
 
 Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT) sobre el marco
 nativo de Odoo 19 (`l10n_account_withholding_tax`).

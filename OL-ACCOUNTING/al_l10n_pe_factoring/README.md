@@ -1,6 +1,6 @@
 # PE - Factoring de facturas (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Factoring](../../mkdocs/content/applications/finance/accounting/factoring.md)
 
 Módulo `al_l10n_pe_factoring`. Registra la cesión de facturas de cliente a un
 factor (banco o empresa de factoring), con y sin recurso, sobre las facturas

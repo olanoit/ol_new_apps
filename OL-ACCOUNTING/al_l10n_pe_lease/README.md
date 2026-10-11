@@ -1,6 +1,6 @@
 # PE - Arrendamientos NIIF 16 (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Arrendamientos (NIIF 16)](../../mkdocs/content/applications/finance/accounting/leases.md)
 
 Módulo `al_l10n_pe_lease`. Alquileres de oficinas, almacenes y equipos como
 **arrendatario** según NIIF 16, sobre los motores de Odoo Enterprise de activos

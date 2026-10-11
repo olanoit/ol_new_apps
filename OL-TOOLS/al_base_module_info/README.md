@@ -1,6 +1,6 @@
 # Aplicaciones - Ficha completa del módulo (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Ficha completa del módulo](../../mkdocs/content/applications/general/module_info.md)
 
 Módulo `al_base_module_info` para Odoo 19.
 

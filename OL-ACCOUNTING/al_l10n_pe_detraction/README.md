@@ -1,10 +1,10 @@
 # PE - Detracciones SPOT (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Detracciones (SPOT)](../../mkdocs/content/applications/finance/fiscal_localizations/peru/detractions.md)
 
 Capa funcional de **detracciones** (Sistema de Pago de Obligaciones
 Tributarias) sobre la localización peruana de Odoo 19.
-**Guía funcional para consultores:** [`docs/detracciones.md`](docs/detracciones.md). Complementa el
+**Anexo detallado (referencia):** [`docs/detracciones.md`](docs/detracciones.md). Complementa el
 soporte nativo de `l10n_pe_edi` — que ya emite el bloque «Detraccion» en el
 XML UBL a partir del % del producto — con lo que falta para operar el SPOT
 de punta a punta.

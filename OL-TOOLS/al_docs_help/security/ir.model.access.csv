@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_al_docs_help_user,al.docs.help.user,model_al_docs_help,base.group_user,1,0,0,0
+access_al_docs_help_system,al.docs.help.system,model_al_docs_help,base.group_system,1,1,1,1

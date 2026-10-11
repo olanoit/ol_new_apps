@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 11.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Los accesos de Ajustes ▸ Perú ▸ Documentación llevan a la nueva organización del sitio: documentación para usuarios, novedades, localización y nómina peruanas y sección del desarrollador."
   - version: 10.20261011
     fecha: 11/10/2026
     cambios:

@@ -1,8 +1,10 @@
-# Documentación unificada de ol_new_apps (MkDocs + Material for MkDocs).
+# Documentación de ol_new_apps (MkDocs + Material for MkDocs), con el modelo
+# de la documentación de Odoo (github.com/odoo/documentation).
 #
-# Las páginas no se escriben aquí: scripts/gen_pages.py las genera en cada
-# build desde los README, guías funcionales, fichas, CHANGELOG y docs/ del
-# repositorio. Uso y versionado (19.0 → 20.0): mkdocs/README.md.
+# El contenido se escribe en content/ (applications, administration,
+# developer, contributing; menú en los SUMMARY.md de cada carpeta). La
+# referencia de módulos, las especificaciones de docs/ y las novedades las
+# genera scripts/gen_pages.py en cada build. Uso y versionado: mkdocs/README.md.
 #
 # Al pasar a otra versión de Odoo (rama 20.0) solo cambian los dos valores
 # por defecto marcados con «VERSIÓN»; ODOO_VERSION los sobrescribe sin
@@ -23,7 +25,7 @@ repo_name: olanoit/ol_new_apps
 # VERSIÓN: rama del repositorio para «Editar en GitHub».
 edit_uri: !ENV [DOCS_EDIT_URI, "edit/19.0/"]
 
-docs_dir: docs
+docs_dir: content
 site_dir: site
 use_directory_urls: true
 strict: true
@@ -31,7 +33,9 @@ strict: true
 validation:
   omitted_files: warn
   absolute_links: info
-  unrecognized_links: warn
+  # Los SUMMARY.md (menú de mkdocs-literate-nav) enlazan carpetas («developer/»);
+  # los enlaces a páginas .md inexistentes siguen siendo advertencias.
+  unrecognized_links: info
   anchors: info
 
 theme:

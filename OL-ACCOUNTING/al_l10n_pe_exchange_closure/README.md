@@ -1,6 +1,6 @@
 # PE - Cierre de tipo de cambio (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Diferencia de cambio](../../mkdocs/content/applications/finance/fiscal_localizations/peru/exchange_differences.md)
 
 Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda
 extranjera, para la localización peruana en Odoo 19 CE.

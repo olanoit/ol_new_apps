@@ -1,49 +1,67 @@
-# Documentación unificada (MkDocs + Material)
+# Documentación de la suite (MkDocs + Material, modelo de Odoo)
 
-Sitio único con toda la documentación de `ol_new_apps`:
-- las fichas y guías funcionales de cada módulo, agrupadas por área;
-- las novedades;
-- la documentación técnica de `docs/`;
-- el README del repositorio.
+Sitio con toda la documentación de `ol_new_apps`, organizado como la
+[documentación de Odoo](https://www.odoo.com/documentation/19.0/es_419/)
+([odoo/documentation](https://github.com/odoo/documentation)):
 
-Las páginas **no se escriben aquí**. `scripts/gen_pages.py` las genera en cada
-construcción desde los archivos del repositorio, que siguen siendo la única
-fuente de verdad. Para cambiar el contenido de una página, edite su archivo de
-origen; cada página tiene el botón «Editar» que lleva a ese archivo.
+| Sección | Carpeta | Se escribe |
+|---|---|---|
+| Documentación para usuarios | `content/applications/` | A mano, por área de negocio y funcionalidad |
+| Instalación y mantenimiento | `content/administration/` | A mano |
+| Desarrollador | `content/developer/` | A mano; la referencia de módulos y las especificaciones se generan |
+| Aportando | `content/contributing/` | A mano: organización, pautas de contenido y de Markdown, plantilla |
+
+Las pautas para escribir una página están en
+[`content/contributing/`](content/contributing/index.md).
 
 ## Estructura
 
 ```
 mkdocs/
-├── mkdocs.yml           configuración (tema, plugins, versión de Odoo)
-├── requirements.txt     dependencias con versiones fijas
-├── scripts/gen_pages.py genera páginas, navegación y enlaces (mkdocs-gen-files)
-├── plantillas/          portada, versiones y etiquetas, con marcadores
-├── docs/assets/         estilos propios (la identidad de las fichas)
-├── overrides/           ajustes de plantilla de Material (aviso de versión)
-└── site/                salida de la construcción (no se versiona)
+├── mkdocs.yml              configuración (tema, plugins, versión de Odoo)
+├── requirements.txt        dependencias con versiones fijas
+├── content/                el contenido (docs_dir), como content/ de Odoo
+│   ├── SUMMARY.md          menú raíz; cada carpeta tiene el suyo (mkdocs-literate-nav)
+│   ├── applications/       documentación para usuarios, por área
+│   ├── administration/     instalación y mantenimiento
+│   ├── developer/          desarrollador
+│   ├── contributing/       pautas de la documentación
+│   └── assets/             estilos y scripts propios
+├── scripts/gen_pages.py    genera lo que sale del código (mkdocs-gen-files)
+├── scripts/preparar_imagen.py  captura a 933 px con paleta, como pide Odoo
+├── plantillas/             portada, versiones y etiquetas, con marcadores
+├── overrides/              ajustes de plantilla de Material
+├── deploy/                 publicación en docs.altalatam.com
+└── site/                   salida de la construcción (no se versiona)
 ```
 
-| En el sitio | Origen |
+| Generado en el sitio | Origen |
 |---|---|
-| Portada, versiones, etiquetas | `mkdocs/plantillas/*.md` (`{{ odoo_version }}`, `{{ areas }}`, `{{ cifras }}`…) |
-| Página de un área | `OL-<ÁREA>/README.md`; la tabla de módulos, desde los manifiestos |
-| Ficha de un módulo | `__manifest__.py` y `docs/fichas/<módulo>.yml` (destacados, flujos Mermaid, paso a paso con capturas, campos, asientos, preguntas frecuentes) |
-| Guía funcional, Novedades, Descripción técnica | `GUIA_FUNCIONAL.md`, `CHANGELOG.md`, `README.md` del módulo |
-| Anexos del módulo | `<módulo>/docs/**/*.md` |
-| Documentación del autor (OCA) | `<módulo>/readme/*.md` |
-| Documentación técnica | `docs/<carpeta>/**/*.md` y `README.md` raíz |
-| Novedades de la suite | las `novedades` de todas las fichas, por fecha |
+| Portada, versiones, etiquetas | `plantillas/*.md` (`{{ odoo_version }}`, `{{ cifras }}`…) |
+| Desarrollador ▸ Referencia de módulos | Por área: `OL-<ÁREA>/README.md` y los manifiestos. Por módulo: ficha desde `__manifest__.py` y `docs/fichas/<módulo>.yml`, `README.md`, `CHANGELOG.md`, `docs/**/*.md` y `readme/*.md` (OCA), con enlaces a las páginas que lo documentan |
+| Desarrollador ▸ Especificaciones y diseño | `docs/<carpeta>/**/*.md` |
+| Desarrollador ▸ Repositorio y áreas | `README.md` raíz |
+| Novedades de la suite | Las `novedades` de todas las fichas, por fecha |
 
-**Cómo se generan los enlaces:**
-- Los enlaces relativos entre archivos del repositorio (`../../docs/…`, `GUIA_FUNCIONAL.md`, `OL-ACCOUNTING/`) se reescriben a la página del sitio que los contiene.
-- Las imágenes y adjuntos (xlsx, pdf, csv…) se copian a `_media/`.
-- El resto (código, carpetas sin página) apunta al archivo en GitHub, en la rama de la versión.
-- Un enlace a un archivo que no existe se avisa en la construcción y, con `--strict`, la detiene.
+**Módulos y páginas.** Cada página de usuarios declara los módulos que
+documenta en su encabezado (`modulos: [al_l10n_pe_detraction]`). Con eso, la
+referencia del módulo enlaza a su página, el `README.md` del módulo también, y
+`scripts/gen_docs_help.py` arma el botón **?** de Odoo (`al_docs_help`).
+
+**Cómo se resuelven los enlaces:**
+- En las páginas generadas, los enlaces entre archivos del repositorio se
+  reescriben a la página del sitio que los contiene.
+- En las páginas de `content/`, los enlaces a archivos del repositorio (por
+  ejemplo los Excel de ejemplo) se copian a `_media/` o apuntan a GitHub.
+- Un enlace a un archivo que no existe se avisa y, con `--strict`, detiene la
+  construcción.
 
 **Nuevos documentos:**
-- Un módulo nuevo, una guía nueva o un `.md` nuevo en `docs/` aparecen solos en el sitio.
-- Un área nueva necesita su línea en `AREA_SITE` de `scripts/gen_pages.py`, además de `scripts/areas.py`.
+- Una página nueva va en la carpeta de su área, con su línea en el `SUMMARY.md`
+  de esa carpeta.
+- Un módulo nuevo aparece solo en la referencia.
+- Un área nueva del repositorio necesita su línea en `AREA_SITE` de
+  `scripts/gen_pages.py`, además de `scripts/areas.py`.
 
 ## Construir y ver en local
 

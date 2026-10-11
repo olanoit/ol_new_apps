@@ -1,0 +1,76 @@
+titulo: Ayuda contextual de la suite
+subtitulo: >-
+  Un botón ? en cada pantalla y asistente de la suite que abre la página de la
+  documentación que la explica, en la sección que corresponde.
+categoria: Herramientas · Documentación
+etiquetas: [Ayuda contextual, Documentación, Sin configuración]
+portada: screenshots/01-boton-barra.png
+
+destacados_intro: >-
+  La documentación de cada funcionalidad, a un clic desde la pantalla en la
+  que se trabaja.
+destacados:
+  - icono: "?"
+    titulo: En la barra superior
+    texto: >-
+      Las vistas y pantallas de la suite muestran un botón **?** junto a los
+      iconos de la barra; al pasar el ratón dice a qué sección lleva.
+  - icono: "▣"
+    titulo: En los asistentes
+    texto: >-
+      El mismo botón aparece en la cabecera de los asistentes, junto a la
+      **X** de cerrar.
+  - icono: "§"
+    titulo: La sección exacta
+    texto: >-
+      Cada pantalla abre la página de su funcionalidad y, si existe, la
+      sección que la explica.
+  - icono: "0"
+    titulo: Sin configuración
+    texto: >-
+      Usa la dirección de **Ajustes ▸ Perú ▸ Documentación** o el sitio
+      publicado de la suite. Solo depende de `web`.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Cada funcionalidad de la suite tiene su página en la documentación, pero
+    el usuario tenía que saber dónde buscarla. Con este módulo, la pantalla en
+    la que trabaja lo lleva a la explicación.
+  nota: >-
+    **De dónde sale la lista.** La genera `scripts/gen_docs_help.py` desde el
+    código de cada módulo y las páginas de la documentación que lo declaran;
+    las pantallas oficiales que la suite amplía se asignan en
+    `docs/ayuda/ayuda_contextual.yml`.
+
+pasos_intro: >-
+  Basta con tener el módulo instalado; la ayuda aparece solo en las pantallas
+  cuyo módulo está instalado.
+pasos:
+  - titulo: El botón en la barra superior
+    ruta: Cualquier pantalla de la suite
+    texto: >-
+      Por ejemplo, en el inicio de la planificación de obra, el botón **?**
+      abre la sección «Inicio» de su página.
+    imagen: screenshots/01-boton-barra.png
+
+  - titulo: El botón en un asistente
+    ruta: Planificación de obra ▸ Configuración ▸ Importar maestro y ETO
+    texto: >-
+      En el asistente, el **?** de la cabecera abre la página «Importar el
+      maestro y el ETO».
+    imagen: screenshots/02-boton-asistente.png
+
+  - titulo: La lista de pantallas
+    ruta: Ajustes ▸ Técnico ▸ Ayuda contextual
+    texto: >-
+      Los administradores ven cada pantalla con su módulo y su sección, la
+      filtran y abren la página; también pueden agregar filas a mano.
+    imagen: screenshots/03-lista.png
+
+novedades:
+  - version: 1.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Botón ? en la barra superior y en la cabecera de los asistentes que abre la página de la documentación de la pantalla, en su sección."
+      - "Lista de pantallas en Ajustes ▸ Técnico ▸ Ayuda contextual, generada desde el código y las páginas de la documentación."

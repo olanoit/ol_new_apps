@@ -30,12 +30,22 @@ tabla de los módulos que contiene.
 Documentación
 -------------
 
-Toda la documentación se canaliza en un **sitio MkDocs (Material for MkDocs)**
-generado desde el repositorio: fichas y guías funcionales de cada módulo por
-área, novedades, documentación técnica de `docs/` y este README, con búsqueda
-en español, modo claro/oscuro y una versión por rama de Odoo (19.0, 20.0…)
-publicada con mike. Las páginas no se copian: se editan los archivos de
-origen. Uso, versionado y publicación: [`mkdocs/README.md`](mkdocs/README.md).
+La documentación sigue el modelo de la de Odoo
+([odoo/documentation](https://github.com/odoo/documentation)) y se publica en
+[docs.altalatam.com](https://docs.altalatam.com):
+
+- **Documentación para usuarios** (`mkdocs/content/applications/`): cómo
+  configurar y usar cada funcionalidad, por área de negocio (Finanzas, Ventas,
+  Cadena de suministro, Recursos humanos, Servicios, Ajustes generales).
+- **Instalación y mantenimiento**, **Desarrollador** y **Aportando** (pautas
+  para escribir una página).
+- La referencia técnica de cada módulo, las especificaciones de `docs/` y las
+  novedades se generan solas desde el repositorio.
+
+Los módulos no guardan su documentación funcional: su `README.md` enlaza a su
+página. Cada página declara los módulos que documenta (`modulos:`), y de ahí
+salen la referencia técnica y el botón **?** de Odoo (`al_docs_help`). Uso,
+versionado y publicación: [`mkdocs/README.md`](mkdocs/README.md).
 
 ```bash
 /home/och/odoo/ce19/.venv/bin/mkdocs serve -f mkdocs/mkdocs.yml   # http://127.0.0.1:8000
@@ -75,10 +85,10 @@ Estructura
 
 ```
 OL-ACCOUNTING/ … OL-THIRD-PARTY/   módulos, agrupados por área
-docs/                       planes de desarrollo, guías, fichas (generador y
-                            capturas), validaciones y datos de prueba
-mkdocs/                     sitio de documentación unificada (MkDocs + Material,
-                            versiones con mike); se genera desde lo anterior
+docs/                       especificaciones y planes de desarrollo, fichas
+                            (generador y capturas), validaciones y datos de prueba
+mkdocs/                     documentación (MkDocs + Material, modelo de Odoo):
+                            content/ escrito a mano y lo generado desde lo anterior
 scripts/                    utilidades del repositorio (ver abajo)
 ```
 
@@ -138,7 +148,7 @@ python3 scripts/gen_addons_table.py
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](OL-ACCOUNTING/al_account_base/) | 10.20261011 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_base](OL-ACCOUNTING/al_account_base/) | 11.20261011 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 11.20261009 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 13.20261008 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](OL-ACCOUNTING/al_account_payments/) | 7.20261008 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
@@ -215,6 +225,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
+[al_docs_help](OL-TOOLS/al_docs_help/) | 1.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 8.20261009 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
 

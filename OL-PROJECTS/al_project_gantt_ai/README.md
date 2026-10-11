@@ -1,6 +1,6 @@
 # al_project_gantt_ai — Asistente de IA para el Gantt
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Asistente de IA del Gantt](../../mkdocs/content/applications/services/project/gantt_ai.md)
 
 Panel de chat opcional dentro del diagrama de Gantt del backend. Permite
 **preguntar** sobre el cronograma que se está viendo y recibir **propuestas de

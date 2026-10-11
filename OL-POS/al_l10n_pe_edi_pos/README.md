@@ -1,6 +1,6 @@
 # PE - Comprobantes Electrónicos en el TPV (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Comprobantes electrónicos en el TPV](../../mkdocs/content/applications/sales/point_of_sale/electronic_invoicing.md)
 
 Facturación electrónica peruana desde el punto de venta de Odoo 19.
 

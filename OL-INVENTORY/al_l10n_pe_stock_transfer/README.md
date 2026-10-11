@@ -1,6 +1,6 @@
 # PE - Traslados internos y bienes de terceros (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Traslados y bienes de terceros](../../mkdocs/content/applications/inventory_and_mrp/inventory/stock_transfers.md)
 
 Módulo `al_l10n_pe_stock_transfer`. Completa la guía de remisión electrónica
 remitente de Odoo 19 (`l10n_pe_edi_stock`) para todos los traslados que hace la

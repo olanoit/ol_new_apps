@@ -1,6 +1,6 @@
 # Planificación de obra (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Planificación de obra](../../mkdocs/content/applications/services/project/construction/planning.md)
 
 Planificador de recursos de obra según la especificación v1.4
 ([`docs/planificador/ESPECIFICACION_v1.4.md`](../../docs/planificador/ESPECIFICACION_v1.4.md)).

@@ -1,6 +1,6 @@
 # PE - Base Inventario (AL) — Odoo 19
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Datos peruanos en transferencias](../../mkdocs/content/applications/inventory_and_mrp/inventory/stock_base.md)
 
 Módulo **base y liviano** para las transferencias de inventario de la
 localización peruana. Añade al formulario de la transferencia la página

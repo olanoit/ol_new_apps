@@ -1,6 +1,6 @@
 # Requerimiento de materiales de obra (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Requerimientos de materiales](../../mkdocs/content/applications/services/project/construction/material_requests.md)
 
 El personal de obra pide materiales para su obra. El requerimiento se aprueba
 por niveles (`base_tier_validation`, OCA). Logística lo procesa: lo disponible

@@ -1,6 +1,6 @@
 # PE - Letras de cambio y canje (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Letras de cambio](../../mkdocs/content/applications/finance/accounting/bills_of_exchange.md)
 
 Gestión de **letras de cambio y canje** para la localización peruana:
 canje de comprobantes pendientes, generación masiva de letras, tipos de

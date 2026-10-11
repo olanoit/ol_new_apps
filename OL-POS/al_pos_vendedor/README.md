@@ -1,6 +1,6 @@
 # TPV - Vendedor por orden (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Vendedor por venta](../../mkdocs/content/applications/sales/point_of_sale/salesperson.md)
 
 Módulo `al_pos_vendedor` para Odoo 19. Permite asignar un **vendedor**
 (empleado de `hr.employee`) a cada orden del Punto de Venta, restringiendo la

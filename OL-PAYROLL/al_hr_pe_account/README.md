@@ -1,6 +1,6 @@
 # Planillas Perú — Contabilización
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Contabilización de planillas](../../mkdocs/content/applications/hr/payroll/peru/accounting.md)
 
 El asiento de la planilla y el de cada beneficio social, con
 previsualización, ajuste por redondeo y distribución analítica opcional.

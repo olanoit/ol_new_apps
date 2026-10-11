@@ -1,6 +1,6 @@
 # Servidor MCP para Odoo — Guía del usuario
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Servidor MCP](../../mkdocs/content/applications/general/mcp_server.md)
 
 > **Versión:** 8.20261009 · **Licencia:** OPL-1 · **Autor:** CRISTÓBAL OCH &lt;olanoit@gmail.com&gt;
 

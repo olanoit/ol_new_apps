@@ -1,6 +1,6 @@
 # PE - Depósitos a plazo y garantías (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Depósitos a plazo y garantías](../../mkdocs/content/applications/finance/accounting/term_deposits.md)
 
 Módulo `al_l10n_pe_term_deposit`. Lleva el dinero inmovilizado de la empresa con
 su contabilidad: depósitos a plazo, fondos en garantía y depósitos en garantía

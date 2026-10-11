@@ -1,0 +1,135 @@
+---
+modulos: [al_construction_planner]
+---
+
+# Asignaciones y compras
+
+Con el plan aprobado, la compra masiva, los requerimientos de obra y las
+órdenes de fabricación nacen de la selección del [árbol de recursos](resource_tree.md)
+y descuentan el saldo de cada línea. Cada documento queda **asignado** a las
+líneas del plan que cubre, así el plan sabe en todo momento qué está pedido,
+comprado, despachado y consumido, y el control de exceso impide pedir más de
+lo planificado sin una justificación.
+
+![Asignaciones del plan por documento y producto](supply/plan-allocations.png)
+
+## Configuración
+
+- El plan debe estar **Aprobado** o **En ejecución**: los asistentes trabajan
+  sobre el plan vigente.
+- El planificador necesita los grupos de **requerimientos de compra**, de
+  **requerimientos de obra** y, para las órdenes de fabricación, de
+  **fabricación**.
+- La política de exceso y la tolerancia se eligen en el plan (pestaña
+  **Políticas**).
+- La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento
+  de obra viene con el módulo (**Requerimientos de obra ‣ Configuración ‣
+  Reglas de aprobación**). Sus revisores necesitan también el grupo de
+  aprobador del requerimiento para verlo.
+
+## Conceptos
+
+- **Necesidad**: lo planificado menos lo ya comprado o pedido.
+- **Saldo del plan**: lo planificado menos lo pedido por requerimientos de obra
+  y órdenes de fabricación. La compra masiva sube lo comprado, no lo pedido.
+- **Reparto**: una compra para varias cocinas se reparte por fecha de
+  necesidad: primero la que se necesita antes, hasta su saldo; el redondeo o el
+  exceso va a la última.
+- **Estado de la línea**, en este orden: **Excedida** (pedido mayor que lo
+  planificado más la tolerancia), **Completa** (llegó a la obra lo
+  planificado), **En compra** (compra masiva abierta o faltante en compra),
+  **Parcial** y **Planificada**.
+
+## Compra masiva
+
+1. Seleccione en el árbol (o en el plan, el cronograma o el
+   [abastecimiento de la obra](prices_supply.md)) y haga clic en **Compra
+   masiva**.
+2. Elija el modo:
+    - **Con analítica de la obra**: cada línea del requerimiento de compra lleva
+      la cuenta de la obra;
+    - **Stock general**: compra para el almacén central, descontando lo libre en
+      el central y lo que ya viene en compras, sin analítica de obra.
+3. Revise las cantidades, redondeadas a la unidad de compra, y confirme. Se crea
+   un requerimiento de compra (OCA) en borrador con sus asignaciones.
+
+![Asistente de compra masiva con la necesidad y lo que se compra](supply/bulk-purchase.png)
+
+Ejemplo, solo la etapa de Producción del piso 05:
+
+| Material | Necesidad | A comprar |
+|---|---|---|
+| Melamina MDP blanco fantasía | 17.66 | 18 planchas |
+| Melamina coñac | 8.22 | 9 planchas |
+| Melamina blanco RH fantasía | 2.26 | 3 planchas |
+
+El requerimiento de compra lleva 24 asignaciones (una por cocina y material, 30
+planchas): la primera cocina que se necesita recibe su parte y el redondeo va a
+la última.
+
+## Requerimiento de obra
+
+1. Seleccione en el árbol o el plan y haga clic en **Requerimiento de obra**.
+2. Agrupe por ambiente, departamento o piso. Cada línea muestra el saldo del
+   plan y su control.
+3. Confirme: se crea un [requerimiento de materiales](../material_requests.md) en
+   borrador, con la tarea del nivel en cada línea.
+4. Al **Solicitar aprobación**, el requerimiento compara lo pedido con el saldo
+   del plan más la tolerancia y aplica la política del plan:
+    - **Avisar**: basta confirmar el aviso;
+    - **Pedir aprobación**: se abre el asistente de exceso, la justificación es
+      obligatoria y el requerimiento recibe la revisión adicional «Exceso sobre
+      el plan: jefatura del planificador»;
+    - **Bloquear**: no se envía.
+
+![Requerimiento de obra creado desde el plan con el saldo y el control por línea](supply/material-request-from-plan.png)
+
+El residente no ve el plan: ve el saldo y el control en su requerimiento.
+
+Ejemplo: el requerimiento del piso 05 para instalación y acabado pide 1,100
+tornillos 4×50 y 700 tapatornillos, cada línea con la tarea «Piso 05» y 8
+asignaciones (una por cocina): control **En plan**. Un segundo requerimiento
+del Dpto 501 pide 20 tornillos más; su saldo ya es 0 y la columna **Control**
+dice «Excede 20». Con la política **pedir aprobación**, la justificación
+«Reposición por piezas dañadas en el traslado» pasa a la jefatura.
+
+## Orden de fabricación
+
+1. Seleccione en el árbol o el plan y haga clic en **Orden de fabricación**.
+2. Agrupe por piso o por la selección y elija la planta y la fecha. La orden
+   lleva el producto de la tipología, la cantidad de ambientes y los
+   componentes de su lista de materiales.
+3. Al **Confirmar** la orden se controla el saldo de sus líneas de producción y
+   armado con la misma política; el exceso de una orden de fabricación lo
+   confirma la jefatura del planificador.
+4. Al cerrarla, sus consumos suben lo consumido y la línea pasa a **Completa**.
+
+Ejemplo: la orden del Dpto 502 fabrica 1 «Cocina tipo 02» y se asigna a las
+líneas de producción y armado de esa cocina (melamina blanca 2.15, coñac 1.00,
+RH 0.28, bisagras 12 y un herraje). Los tornillos y tapatornillos de la lista
+(instalación y acabado) no se asignan: van a la obra con el requerimiento.
+
+## Seguimiento
+
+**Planificación de obra ‣ Abastecimiento ‣ Asignaciones del plan** (o el botón
+del plan) lista lo asignado por documento y producto, con lo ejecutado y su
+estado, también en pivote. Las líneas del plan muestran pedido, comprado,
+despachado, consumido, saldo por pedir y su estado. Lo consumido cuenta lo que
+sale de la ubicación de la obra a una ubicación de consumo.
+
+## Casos especiales
+
+| Situación | Qué pasa | Qué hacer |
+|---|---|---|
+| «El plan … no está vigente» | Los asistentes trabajan sobre el plan aprobado o en ejecución | Aprobar el plan |
+| El asistente no propone un material | Ya no tiene saldo o su etapa no está marcada | Revisar las etapas y las asignaciones de la línea |
+| «Pide más de lo que queda en el plan … bloquear» | La política del plan es bloquear | Reducir la cantidad o replanificar |
+| «Fuera de plan» en el requerimiento | El material no está en el plan bajo el nivel de la línea | Pedirlo en el nivel correcto o justificarlo |
+| «El exceso de una OF lo aprueba la jefatura» | Política «pedir aprobación» en una OF | Que el administrador del planificador confirme la OF |
+| Consumido en cero en material de obra | No hay salidas de la ubicación de la obra a consumo | Registrar el consumo en obra |
+
+!!! info "Ver también"
+    - [Requerimientos de materiales](../material_requests.md)
+    - [Precios y abastecimiento](prices_supply.md)
+    - [Control y personal propio](control.md)
+    - [Fabricación en Odoo 19](https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing.html)

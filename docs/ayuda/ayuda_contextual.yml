@@ -1,0 +1,41 @@
+# Ayuda contextual (botón «?» de al_docs_help) para pantallas de modelos
+# OFICIALES que la suite amplía. Los modelos y asistentes propios de cada
+# módulo se mapean solos a su guía (scripts/gen_docs_help.py).
+#
+#   <modelo o tag>:
+#     modulo: <módulo con página en la documentación (modulos: en su encabezado)>
+#     seccion: <encabezado exacto de la página>   # opcional; sin él, el inicio
+#     nombre: <texto para la lista de Ajustes>   # opcional
+#     tipo: model | tag                          # opcional (model)
+#
+# Después de editar: python3 scripts/gen_docs_help.py
+account.move:
+  modulo: al_account_base
+  nombre: Asientos y comprobantes (localización peruana)
+account.payment:
+  modulo: al_account_payments
+  nombre: Pagos (medio de pago SUNAT)
+res.currency.rate:
+  modulo: al_l10n_pe_currency
+  nombre: Tipos de cambio
+res.partner:
+  modulo: l10n_pe_vat_sunat
+  nombre: Contactos (consulta RUC y DNI)
+hr.employee:
+  modulo: al_hr_pe
+  nombre: Empleados (planilla peruana)
+hr.version:
+  modulo: al_hr_pe
+  nombre: Contratos (planilla peruana)
+hr.payslip:
+  modulo: al_hr_pe
+  nombre: Boletas de pago
+hr.payslip.run:
+  modulo: al_hr_pe
+  nombre: Planillas (lotes de boletas)
+hr.attendance:
+  modulo: al_hr_pe_attendance
+  nombre: Asistencias
+stock.picking:
+  modulo: al_stock_base
+  nombre: Transferencias de inventario

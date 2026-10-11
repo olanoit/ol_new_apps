@@ -1,0 +1,10 @@
+* [Recursos humanos](index.md)
+* Nómina
+    * [Perú](payroll/peru.md)
+        * [Asistencia y turnos](payroll/peru/attendance.md)
+        * [Feriados](payroll/peru/public_holidays.md)
+        * [Beneficios sociales](payroll/peru/benefits.md)
+        * [Construcción civil](payroll/peru/construction.md)
+        * [Importación de novedades](payroll/peru/import.md)
+        * [Contabilización de planillas](payroll/peru/accounting.md)
+        * [Reportes y documentos](payroll/peru/reports.md)

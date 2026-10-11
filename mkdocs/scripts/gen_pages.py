@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Genera las páginas del sitio de documentación desde el repositorio.
+"""Genera las partes del sitio que salen del código del repositorio.
 
-Lo ejecuta el plugin ``mkdocs-gen-files`` en cada ``mkdocs build`` o
-``mkdocs serve``: nada de lo que produce se guarda en git. Una sola fuente de
-verdad, que este script ordena así:
+El contenido se escribe a mano en ``mkdocs/content/``, organizado como la
+documentación de Odoo (``applications/``, ``administration/``,
+``developer/``, ``contributing/``). Este script, que corre con el plugin
+``mkdocs-gen-files`` en cada construcción (nada de lo que produce se guarda en
+git), agrega lo que sale de los módulos:
 
-* ``OL-<ÁREA>/README.md``: la página de cada área, con la tabla de módulos
-  regenerada desde los manifiestos.
-* Cada módulo:
-  - una ficha (``index.md``) desde su manifiesto y, si existe,
-    ``docs/fichas/<módulo>.yml``;
-  - ``GUIA_FUNCIONAL.md``, ``CHANGELOG.md``, ``README.md``, ``docs/**/*.md``
-    y los fragmentos ``readme/*.md`` de los módulos OCA.
-* ``docs/<carpeta>/**/*.md``: la documentación técnica, por carpeta.
-* ``docs/GUIAS_FUNCIONALES.md`` y el ``README.md`` raíz.
+* ``developer/reference/``: la referencia de cada módulo (ficha desde el
+  manifiesto y ``docs/fichas/<módulo>.yml``, ``README.md``, ``CHANGELOG.md``,
+  ``docs/**/*.md`` y los fragmentos ``readme/*.md`` de OCA), con enlaces a
+  las páginas funcionales que lo documentan (``modulos:`` en su encabezado),
+  y una página por área desde ``OL-<ÁREA>/README.md``.
+* ``developer/specs/``: las especificaciones de ``docs/<carpeta>/``.
+* ``developer/repository.md``: el ``README.md`` raíz.
+* ``applications/novedades.md``: las novedades de todas las fichas.
 * ``mkdocs/plantillas/*.md``: portada, versiones y etiquetas, con los
   marcadores ``{{ odoo_version }}``, ``{{ areas }}`` y ``{{ cifras }}``.
 
@@ -41,7 +42,7 @@ EXTRA = CONFIG.extra
 ODOO_VERSION = str(EXTRA.get('odoo_version') or '19.0')
 BRANCH = str(EXTRA.get('git_branch') or ODOO_VERSION)
 REPO_URL = (CONFIG.repo_url or '').rstrip('/')
-ODOO_DOCS = 'https://www.odoo.com/documentation/%s/es/' % ODOO_VERSION
+ODOO_DOCS = 'https://www.odoo.com/documentation/%s/es_419/' % ODOO_VERSION
 
 # Áreas del repositorio: la lista y su orden salen de scripts/areas.py; aquí
 # solo su presentación (ruta en el sitio, título e ícono de Material).
@@ -55,7 +56,17 @@ AREA_SITE = {
     'OL-TOOLS': ('herramientas', 'Herramientas', 'material/tools'),
     'OL-THIRD-PARTY': ('terceros', 'Terceros', 'material/puzzle'),
 }
-TECH = 'tecnica'
+CONTENT = ROOT / 'mkdocs' / 'content'
+DEV = 'developer'
+REF = 'developer/reference'
+TECH = 'developer/specs'
+NEWS = 'applications/novedades.md'
+# Plantillas y su lugar en el sitio.
+TEMPLATES = {
+    'index.md': 'index.md',
+    'versiones.md': 'administration/versions.md',
+    'etiquetas.md': 'developer/reference/tags.md',
+}
 IMAGE_EXT = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'}
 ATTACH_EXT = {'.xlsx', '.xls', '.csv', '.pdf', '.txt', '.zip', '.json', '.xml'}
 SKIP_DIRS = {'static', 'i18n', 'tests', 'node_modules', '__pycache__', '.git'}
@@ -85,7 +96,7 @@ class Module:
         ficha = ROOT / 'docs' / 'fichas' / ('%s.yml' % self.name)
         self.ficha_path = ficha if ficha.exists() else None
         self.ficha = yaml.safe_load(ficha.read_text(encoding='utf-8')) if self.ficha_path else {}
-        self.vdir = '%s/%s' % (AREA_SITE[area][0], self.name)
+        self.vdir = '%s/modules/%s' % (REF, self.name)
 
     @property
     def title(self):
@@ -114,7 +125,7 @@ BY_NAME = {module.name: module for module in MODULES}
 # Página del sitio de cada archivo Markdown del repositorio: {ruta absoluta: ruta virtual}.
 PAGES = {}
 # Página índice de cada carpeta enlazable: {carpeta absoluta: ruta virtual}.
-DIRS = {ROOT: '%s/repositorio.md' % TECH}
+DIRS = {ROOT: '%s/repository.md' % DEV}
 # Contenido de las páginas que no salen de un solo archivo: {ruta virtual: texto}.
 GENERATED = {}
 # Archivo de origen de cada página (para «Editar en GitHub»).
@@ -142,14 +153,31 @@ def md_files(folder):
 
 for _area in AREAS:
     slug = AREA_SITE[_area][0]
-    PAGES[ROOT / _area / 'README.md'] = '%s/index.md' % slug
-    DIRS[ROOT / _area] = '%s/index.md' % slug
+    PAGES[ROOT / _area / 'README.md'] = '%s/%s/index.md' % (REF, slug)
+    DIRS[ROOT / _area] = '%s/%s/index.md' % (REF, slug)
+
+
+def front_matter(path):
+    text = path.read_text(encoding='utf-8')
+    match = re.match(r'---\n(.*?)\n---\n', text, re.S)
+    return (yaml.safe_load(match.group(1)) or {}) if match else {}
+
+
+# Páginas escritas a mano (mkdocs/content/): su ruta en el sitio es la misma,
+# y las que declaran ``modulos:`` documentan esos módulos.
+FUNCTIONAL = defaultdict(list)  # módulo → [(título, ruta virtual)]
+CONTENT_PAGES = []
+for _path in sorted(CONTENT.rglob('*.md')):
+    _rel = _path.relative_to(CONTENT).as_posix()
+    PAGES[_path] = _rel
+    CONTENT_PAGES.append(_path)
+    for _name in front_matter(_path).get('modulos') or []:
+        FUNCTIONAL[_name].append((first_heading(_path), _rel))
 
 MODULE_PAGES = defaultdict(list)  # módulo → [(título, ruta virtual)]
 for module in MODULES:
     DIRS[module.path] = '%s/index.md' % module.vdir
     special = {
-        'GUIA_FUNCIONAL.md': ('Guía funcional', 'guia-funcional.md'),
         'CHANGELOG.md': ('Novedades', 'novedades.md'),
         'README.md': ('Descripción técnica', 'descripcion-tecnica.md'),
     }
@@ -174,14 +202,14 @@ for module in MODULES:
         for fragment in fragments:
             PAGES[fragment] = '%s/autor.md' % module.vdir
 
-order = {'Guía funcional': 0, 'Descripción técnica': 1, 'Documentación del autor': 2, 'Novedades': 9}
+order = {'Descripción técnica': 1, 'Documentación del autor': 2, 'Novedades': 9}
 for pages in MODULE_PAGES.values():
     pages.sort(key=lambda item: (order.get(item[0], 5), item[1]))
 
-# Documentación técnica: docs/<carpeta>/**/*.md, más el README raíz.
-PAGES[ROOT / 'README.md'] = '%s/repositorio.md' % TECH
-PAGES[ROOT / 'docs' / 'GUIAS_FUNCIONALES.md'] = 'guias-funcionales.md'
+# Especificaciones: docs/<carpeta>/**/*.md, más el README raíz.
+PAGES[ROOT / 'README.md'] = '%s/repository.md' % DEV
 DIRS[ROOT / 'docs'] = '%s/index.md' % TECH
+DIRS[CONTENT] = 'index.md'
 TECH_FOLDERS = []
 for folder in sorted(p for p in (ROOT / 'docs').iterdir() if p.is_dir()):
     files = list(md_files(folder))
@@ -243,6 +271,12 @@ def resolve(url, source, current):
         return relative(PAGES[target], current) + anchor
     if target in DIRS:
         return relative(DIRS[target], current) + anchor
+    try:
+        # Imágenes y carpetas de mkdocs/content/: ya están en el sitio.
+        slash = '/' if path_part.endswith('/') else ''
+        return relative(target.relative_to(CONTENT).as_posix(), current) + slash + anchor
+    except ValueError:
+        pass
     try:
         target.relative_to(ROOT)
     except ValueError:
@@ -373,16 +407,17 @@ def strip_addons_block(text, marker):
 def module_table(modules, current):
     rows = []
     for module in modules:
-        guide = next((v for t, v in MODULE_PAGES[module.name] if t == 'Guía funcional'), None)
+        docs = FUNCTIONAL.get(module.name)
         rows.append([
             '[%s](%s)' % (module.title, relative('%s/index.md' % module.vdir, current)),
             '`%s`' % module.name,
             module.version,
             module.manifest.get('license', ''),
-            '[:material-book-open-variant:](%s "Guía funcional")' % relative(guide, current) if guide else '',
+            '[:material-book-open-variant:](%s "%s")' % (relative(docs[0][1], current), docs[0][0].replace('"', ''))
+            if docs else '',
             module.summary,
         ])
-    return md_table(rows, ['Módulo', 'Nombre técnico', 'Versión', 'Licencia', 'Guía', 'Resumen'])
+    return md_table(rows, ['Módulo', 'Nombre técnico', 'Versión', 'Licencia', 'Documentación', 'Resumen'])
 
 
 def ficha_page(module):
@@ -405,7 +440,7 @@ def ficha_page(module):
         ['Versión', '`%s` (Odoo %s)' % (module.version, ODOO_VERSION)],
         ['Licencia', manifest.get('license', '')],
         ['Autor', manifest.get('author', '')],
-        ['Área', '[%s](%s)' % (AREA_SITE[module.area][1], relative('%s/index.md' % AREA_SITE[module.area][0], current))],
+        ['Área', '[%s](%s)' % (AREA_SITE[module.area][1], relative('%s/%s/index.md' % (REF, AREA_SITE[module.area][0]), current))],
         ['Categoría', data.get('categoria') or manifest.get('category', '')],
         ['Depende de', ', '.join(module_link(d, current) for d in depends) or '—'],
         ['Código', '[%s](%s)' % (module.path.relative_to(ROOT).as_posix(), github(module.path))],
@@ -413,9 +448,14 @@ def ficha_page(module):
     if data.get('ediciones'):
         info.insert(6, ['Ediciones', ', '.join(data['ediciones'])])
     out += ['<div class="ol-ficha" markdown>', '', md_table(info, ['Dato', 'Valor']), '</div>', '']
+    docs = FUNCTIONAL.get(module.name)
+    if docs:
+        out.append(admonition('tip', 'Cómo se configura y se usa: ' + ' · '.join(
+            '[%s](%s)' % (title, relative(vpath, current)) for title, vpath in docs) + '.',
+            'Documentación funcional'))
     pages = MODULE_PAGES.get(module.name)
     if pages:
-        out.append('**En esta sección:** ' + ' · '.join(
+        out.append('**Referencia técnica:** ' + ' · '.join(
             '[%s](%s)' % (title, relative(vpath, current)) for title, vpath in pages) + '\n')
     if data.get('portada'):
         out += ['![%s](%s)' % (module.title, image(module, data['portada'], current)), '']
@@ -589,7 +629,7 @@ def author_page(module):
 def area_pages():
     for area in AREAS:
         slug, title, icon = AREA_SITE[area]
-        current = '%s/index.md' % slug
+        current = '%s/%s/index.md' % (REF, slug)
         source = ROOT / area / 'README.md'
         modules = [m for m in MODULES if m.area == area]
         body = strip_addons_block(strip_title(source.read_text(encoding='utf-8')), 'addons')
@@ -602,6 +642,20 @@ def area_pages():
         head = '---\nicon: %s\n---\n\n# %s\n\n<p class="ol-lead">Carpeta <code>%s/</code> · %d módulos.</p>\n' % (
             icon, title, area, len(modules))
         write(current, head + body, source)
+    rows = []
+    for area in AREAS:
+        slug, title, _icon = AREA_SITE[area]
+        count = sum(1 for m in MODULES if m.area == area)
+        rows.append(['[%s](%s/index.md)' % (title, slug), '`%s/`' % area, str(count),
+                     first_paragraph(ROOT / area / 'README.md')])
+    write('%s/index.md' % REF, '\n'.join([
+        '# Referencia de módulos', '',
+        'La ficha técnica de cada módulo (manifiesto, dependencias, destacados, flujos, '
+        'campos y asientos), su descripción técnica y sus novedades, por carpeta del '
+        'repositorio. Cómo se usa cada funcionalidad está en la '
+        '[documentación para usuarios](../../applications/index.md).', '',
+        md_table(rows, ['Área', 'Carpeta', 'Módulos', 'Contenido']),
+    ]) + '\n', ROOT / 'README.md')
 
 
 def module_pages():
@@ -629,15 +683,12 @@ def tech_pages():
                     lines.append('- [%s](%s)' % (first_heading(path), relative(vpath, index)))
             write(index, '\n'.join(lines) + '\n', folder)
     root = ROOT / 'README.md'
-    page_from_file(root, '%s/repositorio.md' % TECH,
+    page_from_file(root, '%s/repository.md' % DEV,
                    transform=lambda t: strip_addons_block(t, 'addons-all').replace(
-                       '{{ modulos }}', 'Ver la tabla de cada área en este sitio.'))
-    guides = ROOT / 'docs' / 'GUIAS_FUNCIONALES.md'
-    page_from_file(guides, 'guias-funcionales.md')
-    lines = ['# Documentación técnica', '',
+                       '{{ modulos }}', 'Ver la tabla de cada área en la referencia de módulos.'))
+    lines = ['# Especificaciones y diseño', '',
              'Planes de desarrollo, especificaciones, análisis normativos, validaciones y '
-             'herramientas del repositorio (carpeta `docs/`).', '',
-             '- [Repositorio, instalación y convenciones](repositorio.md)']
+             'herramientas del repositorio (carpeta `docs/`).', '']
     for folder in TECH_FOLDERS:
         lines.append('- [%s](%s/index.md)' % (tech_title(folder), folder.name))
     write('%s/index.md' % TECH, '\n'.join(lines) + '\n', ROOT / 'docs')
@@ -667,10 +718,12 @@ def news_page():
             lines += ['', '## %s' % item['fecha'], '']
             last_day = key
         changes = ' '.join(clean(c) for c in item.get('cambios') or [])
-        lines.append('- **%s** `%s`: %s' % (
-            module_link(module.name, 'novedades.md'), item.get('version', ''), changes))
+        docs = FUNCTIONAL.get(module.name)
+        name = ('[%s](%s)' % (docs[0][0], relative(docs[0][1], NEWS)) if docs
+                else module_link(module.name, NEWS))
+        lines.append('- **%s** `%s`: %s' % (name, item.get('version', ''), changes))
         shown += 1
-    write('novedades.md', '\n'.join(lines) + '\n', None)
+    write(NEWS, '\n'.join(lines) + '\n', None)
 
 
 def template_pages():
@@ -680,12 +733,13 @@ def template_pages():
         slug, title, icon = AREA_SITE[area]
         modules = [m for m in MODULES if m.area == area]
         summary = first_paragraph(ROOT / area / 'README.md')
-        cards += ['-   :%s:{ .lg .middle } **[%s](%s/index.md)**' % (icon.replace('/', '-'), title, slug),
+        cards += ['-   :%s:{ .lg .middle } **[%s](%s/%s/index.md)**' % (icon.replace('/', '-'), title, REF, slug),
                   '', '    ---', '', '    %s' % summary, '',
                   '    *%d módulos*' % len(modules), '']
-    guides = sum(1 for pages in MODULE_PAGES.values() for t, _ in pages if t == 'Guía funcional')
-    numbers = ('**%d módulos** en %d áreas · **%d guías funcionales** · **%d fichas** con '
-               'capturas · Odoo **%s**') % (len(MODULES), len(AREAS), guides,
+    functional = sum(1 for path in CONTENT_PAGES
+                     if path.relative_to(CONTENT).parts[0] == 'applications')
+    numbers = ('**%d módulos** en %d áreas · **%d páginas** para usuarios · **%d fichas** con '
+               'capturas · Odoo **%s**') % (len(MODULES), len(AREAS), functional,
                                            sum(1 for m in MODULES if m.ficha_path), ODOO_VERSION)
     values = {
         '{{ odoo_version }}': ODOO_VERSION,
@@ -699,7 +753,7 @@ def template_pages():
         text = path.read_text(encoding='utf-8')
         for key, value in values.items():
             text = text.replace(key, value)
-        write(path.name, text, path)
+        write(TEMPLATES.get(path.name, path.name), text, path)
 
 
 def first_paragraph(readme):
@@ -714,29 +768,47 @@ def first_paragraph(readme):
 
 
 def nav():
-    lines = ['* [Inicio](index.md)',
-             '    * [Portada](index.md)',
-             '    * [Guías funcionales](guias-funcionales.md)',
-             '    * [Novedades](novedades.md)',
-             '    * [Etiquetas](etiquetas.md)',
-             '    * [Versiones de la documentación](versiones.md)']
+    """Menú de las partes generadas; el resto está en los SUMMARY.md de
+    mkdocs/content/."""
+    def label(text):
+        return text.replace('[', '(').replace(']', ')')
+
+    lines = ['* [Referencia de módulos](index.md)']
     for area in AREAS:
         slug, title, _icon = AREA_SITE[area]
         lines.append('* [%s](%s/index.md)' % (title, slug))
         for module in (m for m in MODULES if m.area == area):
-            lines.append('    * [%s](%s/index.md)' % (module.title.replace('[', '(').replace(']', ')'), module.vdir))
+            vdir = module.vdir[len(REF) + 1:]
+            lines.append('    * [%s](%s/index.md)' % (label(module.title), vdir))
             for title_page, vpath in MODULE_PAGES[module.name]:
-                lines.append('        * [%s](%s)' % (title_page.replace('[', '(').replace(']', ')'), vpath))
-    lines.append('* [Técnica](%s/index.md)' % TECH)
-    lines.append('    * [Repositorio](%s/repositorio.md)' % TECH)
-    for folder in TECH_FOLDERS:
-        index = '%s/%s/index.md' % (TECH, folder.name)
-        lines.append('    * [%s](%s)' % (tech_title(folder), index))
-        for path, vpath in sorted(PAGES.items(), key=lambda kv: kv[1]):
-            if vpath.startswith('%s/%s/' % (TECH, folder.name)) and vpath != index:
-                lines.append('        * [%s](%s)' % (first_heading(path).replace('[', '(').replace(']', ')'), vpath))
-    with mkdocs_gen_files.open('SUMMARY.md', 'w') as handle:
+                lines.append('        * [%s](%s)' % (label(title_page), vpath[len(REF) + 1:]))
+    lines.append('* [Etiquetas](tags.md)')
+    with mkdocs_gen_files.open('%s/SUMMARY.md' % REF, 'w') as handle:
         handle.write('\n'.join(lines) + '\n')
+
+    lines = ['* [Especificaciones y diseño](index.md)']
+    for folder in TECH_FOLDERS:
+        index = '%s/index.md' % folder.name
+        lines.append('* [%s](%s)' % (label(tech_title(folder)), index))
+        for path, vpath in sorted(PAGES.items(), key=lambda kv: kv[1]):
+            if vpath.startswith('%s/%s/' % (TECH, folder.name)) and vpath != '%s/%s' % (TECH, index):
+                lines.append('    * [%s](%s)' % (label(first_heading(path)), vpath[len(TECH) + 1:]))
+    with mkdocs_gen_files.open('%s/SUMMARY.md' % TECH, 'w') as handle:
+        handle.write('\n'.join(lines) + '\n')
+
+
+def content_pages():
+    """Enlaces de las páginas escritas a mano hacia archivos del repositorio
+    (ejemplos descargables, código): a _media/ o a GitHub, como en las
+    páginas generadas."""
+    for path in CONTENT_PAGES:
+        if path.name == 'SUMMARY.md':
+            continue  # menú de mkdocs-literate-nav: lo lee tal cual
+        current = PAGES[path]
+        text = path.read_text(encoding='utf-8')
+        new = rewrite(text, path, current)
+        if new != text:
+            write(current, new, path)
 
 
 def copy_media():
@@ -753,6 +825,7 @@ area_pages()
 module_pages()
 tech_pages()
 news_page()
+content_pages()
 nav()
 copy_media()
 

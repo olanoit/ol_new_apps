@@ -1,0 +1,36 @@
+# Traducción al español de al_docs_help.
+# Los textos propios ya están en español; aquí se traducen los campos
+# heredados de los mixins. Generado con docs/validacion/generar_es_po.py.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: al_docs_help
+#: model:ir.model.fields,field_description:al_docs_help.field_al_docs_help__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: al_docs_help
+#: model:ir.model.fields,field_description:al_docs_help.field_al_docs_help__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: al_docs_help
+#: model:ir.model.fields,field_description:al_docs_help.field_al_docs_help__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_docs_help
+#: model:ir.model.fields,field_description:al_docs_help.field_al_docs_help__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: al_docs_help
+#: model:ir.model.fields,field_description:al_docs_help.field_al_docs_help__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"

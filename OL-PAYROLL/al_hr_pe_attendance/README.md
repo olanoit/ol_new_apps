@@ -1,6 +1,6 @@
 # Planillas Perú — Asistencia y turnos
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Asistencia y turnos](../../mkdocs/content/applications/hr/payroll/peru/attendance.md)
 
 Turnos peruanos sobre la planificación nativa, ciclos atípicos con
 validación legal, monitor de asistencia, fotocheck y el tareaje que

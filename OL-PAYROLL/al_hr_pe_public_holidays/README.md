@@ -1,6 +1,6 @@
 # Feriados peruanos
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Feriados](../../mkdocs/content/applications/hr/payroll/peru/public_holidays.md)
 
 Diez años de feriados oficiales —2026 a 2035— aplicados a los calendarios
 laborales con un clic, y renovados solos cada año.

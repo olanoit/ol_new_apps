@@ -1,4 +1,4 @@
-# Guía funcional — SIRE (RVIE / RCE)
+# Anexo funcional — SIRE (RVIE / RCE)
 
 > Para el **consultor funcional**. Explica cómo conciliar los registros de
 > ventas (RVIE) y compras (RCE) del SIRE de SUNAT con los comprobantes de Odoo.

@@ -21,7 +21,7 @@ class TestDocsSettings(TransactionCase):
         self.assertEqual(action['target'], 'new')
         self.assertEqual(action['url'], 'https://docs.ejemplo.pe/19.0/')
         action = settings.with_context(al_docs_page='guides').action_al_docs_open()
-        self.assertEqual(action['url'], 'https://docs.ejemplo.pe/19.0/guias-funcionales/')
+        self.assertEqual(action['url'], 'https://docs.ejemplo.pe/19.0/applications/')
         action = settings.with_context(al_docs_page='desconocida').action_al_docs_open()
         self.assertEqual(action['url'], 'https://docs.ejemplo.pe/19.0/')
 

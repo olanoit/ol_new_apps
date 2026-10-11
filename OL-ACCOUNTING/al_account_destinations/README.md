@@ -1,6 +1,6 @@
 # PE - Cuentas Destino (dinámica 6↔9) — Odoo 19
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Asientos de destino](../../mkdocs/content/applications/finance/fiscal_localizations/peru/destination_entries.md)
 
 Automatiza el **asiento de destino** de la dinámica de cuentas peruana: al
 contabilizar un comprobante, las cuentas de **gasto por naturaleza (clase 6)**

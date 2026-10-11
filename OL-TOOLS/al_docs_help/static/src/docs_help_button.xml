@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_docs_help.DocsHelpSystray">
+        <button t-if="state.help" type="button"
+                class="o_al_docs_help_systray o_nav_entry btn d-flex align-items-center border-0 rounded-0 px-2 px-md-3"
+                t-att-title="title" t-att-aria-label="title" t-on-click="onClick">
+            <i class="fa fa-lg fa-question-circle-o" role="img"/>
+        </button>
+    </t>
+
+    <t t-name="al_docs_help.DocsHelpButton">
+        <button t-if="state.help" type="button"
+                class="btn o_al_docs_help_dialog opacity-75 opacity-100-hover"
+                t-att-title="title" t-att-aria-label="title" t-on-click="onClick" tabindex="-1">
+            <i class="fa fa-question-circle-o" role="img"/>
+        </button>
+    </t>
+
+    <!-- Asistentes (acciones en ventana): «?» junto al botón de cerrar. -->
+    <t t-inherit="web.ActionDialog.header" t-inherit-mode="extension">
+        <xpath expr="//h4[contains(concat(' ',normalize-space(@class),' '),' modal-title ')]" position="after">
+            <DocsHelpButton helpKey="props.actionProps and props.actionProps.resModel"/>
+        </xpath>
+    </t>
+
+</templates>

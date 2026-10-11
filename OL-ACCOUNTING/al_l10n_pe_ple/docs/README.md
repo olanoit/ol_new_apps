@@ -1,4 +1,4 @@
-# Guía funcional — Libros Electrónicos PLE (app Perú)
+# Anexo funcional — Libros Electrónicos PLE (app Perú)
 
 Documentación para el **consultor funcional**: qué es cada reporte, cómo se
 configura y cómo se genera. La referencia técnica campo a campo está en

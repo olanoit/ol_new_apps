@@ -1,6 +1,6 @@
 # Tipo de cambio Perú (SUNAT) — Odoo 19
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Tipo de cambio](../../mkdocs/content/applications/finance/fiscal_localizations/peru/exchange_rates.md)
 
 Gestiona el **tipo de cambio SUNAT (compra y venta)** para USD/PEN, con
 actualización automática cada hora, y muestra el **tipo de cambio aplicado y su

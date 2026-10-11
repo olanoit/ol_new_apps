@@ -1,6 +1,6 @@
 # Numeración de asientos por secuencia (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Numeración de asientos y series](../../mkdocs/content/applications/finance/fiscal_localizations/peru/entry_numbering.md)
 
 Adaptación a Odoo 19 del módulo OCA `account_move_name_sequence`
 (Akretion/Vauxoo), rediseñada como **opt-in por diario**.

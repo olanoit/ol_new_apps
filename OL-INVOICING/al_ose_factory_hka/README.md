@@ -1,6 +1,6 @@
 # PE - OSE The Factory HKA (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [OSE Factory HKA](../../mkdocs/content/applications/finance/fiscal_localizations/peru/electronic_invoicing/ose_factory_hka.md)
 
 Módulo técnico `al_ose_factory_hka`. Añade **The Factory HKA** a los operadores
 de la facturación electrónica peruana de Odoo 19 (`l10n_pe_edi`), junto a IAP,

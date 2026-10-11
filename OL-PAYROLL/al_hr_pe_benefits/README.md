@@ -1,6 +1,6 @@
 # Planillas Perú — Beneficios sociales
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Beneficios sociales](../../mkdocs/content/applications/hr/payroll/peru/benefits.md)
 
 CTS, gratificaciones, renta de 5ta, liquidación de cese, provisiones,
 subsidios, utilidades, vacaciones, préstamos y quincena, sobre un único

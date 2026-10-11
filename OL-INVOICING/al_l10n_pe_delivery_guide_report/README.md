@@ -1,6 +1,6 @@
 # PE - Reporte de Guía de Remisión Electrónica (AL)
 
-Guía funcional: [GUIA_FUNCIONAL.md](GUIA_FUNCIONAL.md)
+Documentación funcional: [Guía de remisión impresa](../../mkdocs/content/applications/finance/fiscal_localizations/peru/electronic_invoicing/delivery_guide.md)
 
 Representación impresa propia de la Guía de Remisión Electrónica
 Remitente (SUNAT) para `stock.picking`, independiente del módulo de

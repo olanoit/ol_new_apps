@@ -96,5 +96,5 @@ tests `test_multicompany` de cada fase.
 - Etiquetas en español (auditoría `docs/validacion/etiquetas_espanol.py` en
   0) y `i18n/es.po` regenerado.
 - Sin advertencias del ORM al actualizar el módulo en `ol_pe_v19`.
-- Guía funcional con todas las pantallas (P-01 a P-22) y asistentes (W-01 a
+- Documentación para usuarios con todas las pantallas (P-01 a P-22) y asistentes (W-01 a
   W-14), ficha con capturas y novedades en `CHANGELOG.md`.

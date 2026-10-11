@@ -13,8 +13,8 @@ la cabecera cambia entre ellas; `latest` apunta siempre a la más reciente.
 
 !!! info "Cuando exista una versión nueva"
     Al publicar la documentación de la 20.0, la 19.0 sigue disponible en el
-    selector y muestra un aviso con el enlace a la más reciente. El
-    procedimiento está en `mkdocs/README.md` del repositorio.
+    selector y muestra un aviso con el enlace a la más reciente. Se publica con
+    `./build.sh 20.0` en el servidor (ver [Sitio de documentación](documentation_site.md)).
 
 Documentación oficial de Odoo para esta versión:
 [odoo.com/documentation/{{ odoo_version }}]({{ odoo_docs }}).
