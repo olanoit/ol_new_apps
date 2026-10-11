@@ -137,7 +137,7 @@ exportación del fabricante de la librería de dibujo.
     - hoja **Tareas**: EDT, fechas, días, responsables, etapa, avance, horas,
       holgura y desvío;
     - hoja **Diagrama**: una columna por periodo.
-- **PDF A3 apaisado**: rejilla con EDT, barras por periodo, marca de ruta
+- **PDF A4 horizontal**, con el formato común de los documentos impresos: rejilla con EDT, barras por periodo, marca de ruta
   crítica y leyenda. La escala se agranda sola si el plan no cabe.
 
 ## Ejemplo

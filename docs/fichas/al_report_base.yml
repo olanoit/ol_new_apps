@@ -1,0 +1,47 @@
+titulo: Formato común de documentos impresos
+subtitulo: >-
+  El formato del comprobante electrónico A4 para todos los documentos PDF de la
+  suite: encabezado, pie, estilos y papel en un solo lugar.
+categoria: Herramientas · Reportes
+etiquetas: [Reportes, PDF, Formato A4, Sin configuración]
+portada: screenshots/01-factura-a4.png
+
+destacados_intro: >-
+  Comprobantes, boletas de pago, certificados, requerimientos, valorizaciones,
+  kárdex y libro de reclamaciones se imprimen con el mismo diseño.
+destacados:
+  - icono: "▤"
+    titulo: Encabezado común
+    texto: >-
+      Logo, datos de la compañía y recuadro con R.U.C., tipo de documento y
+      número.
+  - icono: "▭"
+    titulo: Pie en cada página
+    texto: >-
+      Compañía, contacto, fecha de impresión y «Página X de Y».
+  - icono: "■"
+    titulo: Blanco y negro
+    texto: >-
+      Tablas con borde redondeado, cabecera gris oscuro y totales al pie, como
+      la factura A4.
+  - icono: "0"
+    titulo: Sin configuración
+    texto: >-
+      Solo depende de `web`; lo instalan los módulos que imprimen documentos.
+
+pasos_intro: >-
+  No tiene pantallas: los documentos de la suite lo usan al imprimirse.
+pasos:
+  - titulo: La factura A4, modelo del formato
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ Imprimir
+    texto: >-
+      Encabezado con el recuadro del comprobante, datos del adquirente,
+      detalle con cabecera gris oscuro, totales y pie con la numeración.
+    imagen: screenshots/01-factura-a4.png
+
+novedades:
+  - version: 1.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Formato común de los documentos impresos de la suite, tomado del comprobante A4: encabezado, pie, hoja de estilos pe-doc- y papel A4 vertical y horizontal."
+      - "Plantilla report_pe_page: página completa en una sola llamada."

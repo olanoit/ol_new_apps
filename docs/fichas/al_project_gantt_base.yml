@@ -95,7 +95,7 @@ pasos:
   - titulo: Informe PDF del diagrama
     ruta: Gantt ▸ Diagrama de Gantt ▸ botón PDF
     texto: >-
-      El informe **Diagrama de Gantt** (A3 apaisado) dibuja EDT, tarea indentada,
+      El informe **Diagrama de Gantt** (A4 horizontal, con el formato común de los documentos) dibuja EDT, tarea indentada,
       fechas y una barra por periodo con el color del estado, más la leyenda y
       la marca de ruta crítica. El Excel sale de la misma tabla, con las hojas
       **Tareas** y **Diagrama**.
@@ -182,6 +182,10 @@ faq:
       bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
 
 novedades:
+  - version: 18.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Diagrama de Gantt en PDF con el formato común de los documentos impresos (al_report_base), en A4 horizontal: encabezado con el recuadro R.U.C./tipo, tabla con cabecera gris oscuro y pie con la numeración."
   - version: 17.20261010
     fecha: 10/10/2026
     cambios:

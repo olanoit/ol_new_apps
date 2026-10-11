@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261011 — 11/10/2026
+
+- Boleta de pago, certificado de trabajo, carta de retiro CTS, certificado de rentas de 5.ª categoría y contrato de trabajo con el formato del comprobante A4 de la suite (al_report_base): encabezado con logo, datos de la compañía y recuadro del documento, tablas en blanco y negro con cabecera gris y pie con la compañía y «Página X de Y».
+- La boleta conserva todos sus datos (trabajador, días y horas, suspensiones, ingresos y descuentos enfrentados, neto en letras, aportes del empleador, firmas y nota del D.S. 001-98-TR); el neto va en un recuadro destacado y el periodo en el recuadro del documento.
+- Las tablas del cuerpo del contrato (p. ej. la de firmas) ya no salen con bordes fantasma.
+
 ## 21.20261009 — 09/10/2026
 
 - Chatter en el pago masivo bancario (TXT): historial de diario, fecha de pago y estado.

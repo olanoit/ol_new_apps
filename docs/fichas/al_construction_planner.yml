@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 14.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "La valorización impresa usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, datos de obra y contrato, partidas con los totales al pie (entregado, confirmado, por valorizar, amortización, fondo de garantía y neto a cobrar), conformidad del cliente y firmas."
   - version: 13.20261011
     fecha: 11/10/2026
     cambios:

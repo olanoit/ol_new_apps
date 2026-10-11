@@ -521,6 +521,12 @@ faq:
       regularizar o lo retenido en exceso.
 
 novedades:
+  - version: 22.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Boleta de pago, certificado de trabajo, carta de retiro CTS, certificado de rentas de 5.ª categoría y contrato de trabajo con el formato del comprobante A4 de la suite (al_report_base): encabezado con logo, datos de la compañía y recuadro del documento, tablas en blanco y negro con cabecera gris y pie con la compañía y «Página X de Y»."
+      - "La boleta conserva todos sus datos (trabajador, días y horas, suspensiones, ingresos y descuentos enfrentados, neto en letras, aportes del empleador, firmas y nota del D.S. 001-98-TR); el neto va en un recuadro destacado y el periodo en el recuadro del documento."
+      - "Las tablas del cuerpo del contrato (p. ej. la de firmas) ya no salen con bordes fantasma."
   - version: 21.20261009
     fecha: 09/10/2026
     cambios:

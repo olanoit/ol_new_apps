@@ -206,7 +206,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '13.20261011',
+    'version': '14.20261011',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -214,6 +214,8 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'al_project_gantt_base',
         'al_project_gantt_backend',
         'al_construction_material_request',
+        # Formato común de los documentos impresos (el del comprobante A4).
+        'al_report_base',
         'purchase_request',
         'base_tier_validation',
         'project_mrp',

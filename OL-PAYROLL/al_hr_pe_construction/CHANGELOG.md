@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261011 — 11/10/2026
+
+- La boleta de construcción civil hereda el nuevo formato A4 de la boleta (al_report_base): jornal básico, categoría, obra y especialidad en la tabla del trabajador.
+
 ## 22.20261010 — 10/10/2026
 
 - Centro de costo de la obra y obra del día en la marcación y en el detalle del tareaje: fija el centro de costo con el que la planilla reparte el costo del obrero entre sus obras; los días sin obra van a la obra de la ficha.

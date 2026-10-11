@@ -28,17 +28,11 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '11.20261011',
+    'version': '12.20261011',
     'license': 'OPL-1',
-    'depends': ['account'],
-    'assets': {
-        'web.report_assets_common': [
-            'al_account_base/static/src/css/report_pe_document.css',
-        ],
-        'web.report_assets_pdf': [
-            'al_account_base/static/src/css/report_pe_document.css',
-        ],
-    },
+    # El formato de los documentos impresos (encabezado, pie y estilos del
+    # comprobante A4) vive en al_report_base, común a toda la suite.
+    'depends': ['account', 'al_report_base'],
     'data': [
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',

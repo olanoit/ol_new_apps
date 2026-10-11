@@ -268,7 +268,7 @@ dicen exactamente lo mismo y respetan los filtros que estén aplicados.
 | Formato | Cómo | Contenido |
 |---|---|---|
 | Excel | `al.gantt.data.export_xlsx()`, servido por `/al_project_gantt/export/xlsx` | Hoja **Tareas** (EDT, nombre, proyecto, fechas, días, responsables, etapa, avance, horas, holgura y desvío) y hoja **Diagrama** (una columna por periodo con la barra pintada del color del estado) |
-| PDF | Informe `al_project_gantt_base.report_gantt` (QWeb + wkhtmltopdf), A3 apaisado | Rejilla con EDT, tarea indentada, fechas, barras por periodo, marca de ruta crítica y leyenda de colores |
+| PDF | Informe `al_project_gantt_base.report_gantt` (QWeb + wkhtmltopdf), A4 horizontal con el formato común de los documentos (al_report_base) | Rejilla con EDT, tarea indentada, fechas, barras por periodo, marca de ruta crítica y leyenda de colores |
 
 **Por qué en el servidor y no con la librería**: dhtmlxGantt sí trae
 `exportToPDF`/`exportToExcel`, pero funcionan contra

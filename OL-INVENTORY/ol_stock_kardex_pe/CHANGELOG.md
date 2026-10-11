@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261011 — 11/10/2026
+
+- Kárdex en PDF con el formato común de los documentos impresos (al_report_base): encabezado con el recuadro R.U.C./formato/periodo, datos de cada existencia y detalle con cabecera gris oscuro y totales; columnas de los formatos 12.1 y 13.1 sin cambios.
+
 ## 12.20261009 — 09/10/2026
 
 - Kardex generado con chatter: historial del estado de cada corrida.

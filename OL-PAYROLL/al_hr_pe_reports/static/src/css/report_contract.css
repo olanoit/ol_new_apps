@@ -1,0 +1,12 @@
+/* Contrato de trabajo: el cuerpo es el HTML de la plantilla
+   (l10n_pe.hr.contract.template), que el usuario edita. Bootstrap 5 deja
+   tr/td/th con border-style: solid y el WebKit de wkhtmltopdf dibuja con eso
+   líneas fantasma en sus tablas (p. ej. la de firmas): se neutralizan. */
+.pe-contract-body table,
+.pe-contract-body thead,
+.pe-contract-body tbody,
+.pe-contract-body tr,
+.pe-contract-body td,
+.pe-contract-body th {
+    border: none;
+}

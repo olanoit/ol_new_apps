@@ -1,6 +1,7 @@
 * [Desarrollador](index.md)
 * [Repositorio y áreas](repository.md)
 * [Convenciones de Odoo 19](conventions.md)
+* [Formato de los documentos impresos](report_layout.md)
 * [Herramientas del repositorio](tools.md)
 * [Pruebas](testing.md)
 * [Referencia de módulos](reference/)

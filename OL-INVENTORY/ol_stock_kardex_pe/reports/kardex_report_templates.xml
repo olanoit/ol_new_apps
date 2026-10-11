@@ -5,188 +5,161 @@
             <t t-foreach="docs" t-as="o">
                 <t t-set="header" t-value="o._get_report_header()"/>
                 <t t-set="valued" t-value="header['valued']"/>
-                <!-- El div.article hace que _prepare_html re-renderice el cuerpo
-                     por web.minimal_layout (añade <head><meta charset=utf-8>),
-                     evitando el mojibake de acentos en wkhtmltopdf. -->
-                <div class="article" t-att-data-oe-model="o and o._name"
-                     t-att-data-oe-id="o and o.id"
-                     t-att-data-oe-lang="o and o.env.context.get('lang')">
-                    <style>
-                        .o_kardex { font-family: Arial, sans-serif; color: #000; }
-                        .o_kardex .k-title { font-size: 10px; font-weight: bold;
-                            text-align: center; margin-bottom: 6px; }
-                        .o_kardex table.k-head { width: 100%; font-size: 8.5px;
-                            border-collapse: collapse; margin-bottom: 6px; }
-                        .o_kardex table.k-head td { padding: 1px 4px; vertical-align: top; }
-                        .o_kardex table.k-head td.k-lbl { font-weight: bold;
-                            white-space: nowrap; width: 1%; }
-                        .o_kardex table.k-mov { width: 100%; font-size: 8px;
-                            border-collapse: collapse; table-layout: fixed; }
-                        .o_kardex table.k-mov th, .o_kardex table.k-mov td {
-                            border: 0.5px solid #000; padding: 2px 3px;
-                            overflow: hidden; text-overflow: ellipsis; }
-                        .o_kardex table.k-mov thead th { background-color: #D9D9D9;
-                            text-align: center; vertical-align: middle;
-                            font-weight: bold; line-height: 1.1; }
-                        .o_kardex table.k-mov td.num { text-align: right; }
-                        .o_kardex table.k-mov td.ctr { text-align: center; }
-                        .o_kardex tr.k-total td { background-color: #F2F2F2;
-                            font-weight: bold; }
-                        .o_kardex .k-foot { font-size: 7.5px; margin-top: 4px;
-                            color: #333; }
-                    </style>
-                    <div class="o_kardex">
-                        <t t-foreach="o._get_report_data()" t-as="scope">
-                            <t t-foreach="scope['products']" t-as="block">
-                                <div t-attf-style="page-break-inside: avoid; margin-bottom: 12px;#{' page-break-before: always;' if scope['warehouse'] and block_first and not scope_first else ''}">
-                                    <div class="k-title" t-out="header['title']"/>
-                                    <table class="k-head">
-                                        <tr>
-                                            <td class="k-lbl">PERÍODO:</td>
-                                            <td>
-                                                <span t-out="header['date_from']" t-options='{"widget": "date"}'/> -
-                                                <span t-out="header['date_to']" t-options='{"widget": "date"}'/>
-                                            </td>
-                                            <td class="k-lbl">CÓDIGO DE LA EXISTENCIA:</td>
-                                            <td t-out="block['code']"/>
-                                        </tr>
-                                        <tr>
-                                            <td class="k-lbl">RUC:</td>
-                                            <td t-out="header['ruc']"/>
-                                            <td class="k-lbl">TIPO (TABLA 5):</td>
-                                            <td t-out="block['existence_type']"/>
-                                        </tr>
-                                        <tr>
-                                            <td class="k-lbl">RAZÓN SOCIAL:</td>
-                                            <td t-out="header['company_name']"/>
-                                            <td class="k-lbl">DESCRIPCIÓN:</td>
-                                            <td t-out="block['description']"/>
-                                        </tr>
-                                        <tr>
-                                            <td class="k-lbl">ESTABLECIMIENTO:</td>
-                                            <td t-out="scope['establishment']"/>
-                                            <td class="k-lbl">UNIDAD DE MEDIDA (TABLA 6):</td>
-                                            <td><t t-out="block['uom_code']"/> - <t t-out="block['uom_name']"/></td>
-                                        </tr>
-                                        <tr t-if="valued">
-                                            <td class="k-lbl">MÉTODO DE VALUACIÓN:</td>
-                                            <td colspan="3" t-out="block['valuation_method']"/>
-                                        </tr>
-                                    </table>
+                <!-- Formato común de los documentos de la suite (al_report_base):
+                     el div.article lo pone report_pe_page, con el encabezado
+                     (recuadro R.U.C./formato/periodo) y el pie con la numeración. -->
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="doc_title" t-value="'Inventario permanente'"/>
+                    <t t-set="doc_number" t-value="'Formato %s' % ('13.1' if valued else '12.1')"/>
+                    <t t-set="doc_extra" t-value="'Período %s' % header['period']"/>
+                    <t t-foreach="o._get_report_data()" t-as="scope">
+                        <t t-foreach="scope['products']" t-as="block">
+                            <div t-attf-class="pe-doc-keep pe-doc-fs-11"
+                                 t-attf-style="margin-bottom: 16px;#{' page-break-before: always;' if scope['warehouse'] and block_first and not scope_first else ''}">
+                                <div class="text-center mb-1"><strong t-out="header['title']"/></div>
+                                <table class="pe-doc-table mb-1">
+                                    <tr>
+                                        <td class="pe-doc-label" style="width: 11%;">PERÍODO:</td>
+                                        <td class="pe-doc-value" style="width: 20%;">
+                                            <span t-out="header['date_from']" t-options='{"widget": "date"}'/> -
+                                            <span t-out="header['date_to']" t-options='{"widget": "date"}'/>
+                                        </td>
+                                        <td class="pe-doc-label" style="width: 15%;">CÓDIGO DE LA EXISTENCIA:</td>
+                                        <td class="pe-doc-value" style="width: 14%;" t-out="block['code']"/>
+                                        <td class="pe-doc-label" style="width: 17%;">TIPO (TABLA 5):</td>
+                                        <td class="pe-doc-value" t-out="block['existence_type']"/>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-doc-label">RUC:</td>
+                                        <td class="pe-doc-value" t-out="header['ruc']"/>
+                                        <td class="pe-doc-label">DESCRIPCIÓN:</td>
+                                        <td class="pe-doc-value" t-out="block['description']"/>
+                                        <td class="pe-doc-label">UNIDAD DE MEDIDA (TABLA 6):</td>
+                                        <td class="pe-doc-value"><t t-out="block['uom_code']"/> - <t t-out="block['uom_name']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-doc-label">RAZÓN SOCIAL:</td>
+                                        <td class="pe-doc-value" t-out="header['company_name']"/>
+                                        <td class="pe-doc-label">ESTABLECIMIENTO:</td>
+                                        <td class="pe-doc-value" t-att-colspan="1 if valued else 3" t-out="scope['establishment']"/>
+                                        <t t-if="valued">
+                                            <td class="pe-doc-label">MÉTODO DE VALUACIÓN:</td>
+                                            <td class="pe-doc-value" t-out="block['valuation_method']"/>
+                                        </t>
+                                    </tr>
+                                </table>
 
-                                    <table class="k-mov">
-                                        <colgroup>
-                                            <col style="width: 7%;"/>
-                                            <col style="width: 5%;"/>
-                                            <col style="width: 6%;"/>
-                                            <col style="width: 9%;"/>
-                                            <col style="width: 6%;"/>
+                                <table class="pe-doc-table pe-doc-lines" style="table-layout: fixed;">
+                                    <colgroup>
+                                        <col style="width: 7%;"/>
+                                        <col style="width: 5%;"/>
+                                        <col style="width: 5%;"/>
+                                        <col style="width: 9%;"/>
+                                        <col style="width: 7%;"/>
+                                        <t t-if="valued">
+                                            <col t-foreach="9" t-as="c" style="width: 7.44%;"/>
+                                        </t>
+                                        <t t-else="">
+                                            <col style="width: 22.3%;"/>
+                                            <col style="width: 22.3%;"/>
+                                            <col style="width: 22.4%;"/>
+                                        </t>
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="pe-doc-thead text-center">
+                                            <td colspan="4">DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR</td>
+                                            <td rowspan="2" class="align-middle">TIPO DE OPERACIÓN (TABLA 12)</td>
                                             <t t-if="valued">
-                                                <col t-foreach="9" t-as="c" style="width: 7.33%;"/>
+                                                <td colspan="3">ENTRADAS</td>
+                                                <td colspan="3">SALIDAS</td>
+                                                <td colspan="3">SALDO FINAL</td>
                                             </t>
                                             <t t-else="">
-                                                <col style="width: 22.3%;"/>
-                                                <col style="width: 22.3%;"/>
-                                                <col style="width: 22.4%;"/>
+                                                <td>ENTRADAS</td>
+                                                <td>SALIDAS</td>
+                                                <td>SALDO FINAL</td>
                                             </t>
-                                        </colgroup>
-                                        <thead>
-                                            <tr>
-                                                <th colspan="4">DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR</th>
-                                                <th rowspan="2">TIPO DE OPERACIÓN (TABLA 12)</th>
-                                                <t t-if="valued">
-                                                    <th colspan="3">ENTRADAS</th>
-                                                    <th colspan="3">SALIDAS</th>
-                                                    <th colspan="3">SALDO FINAL</th>
+                                        </tr>
+                                        <tr class="pe-doc-thead text-center">
+                                            <td>FECHA</td>
+                                            <td>TIPO (TABLA 10)</td>
+                                            <td>SERIE</td>
+                                            <td>NÚMERO</td>
+                                            <t t-if="valued">
+                                                <t t-foreach="3" t-as="g">
+                                                    <td>CANTIDAD</td>
+                                                    <td>COSTO UNITARIO</td>
+                                                    <td>COSTO TOTAL</td>
                                                 </t>
-                                                <t t-else="">
-                                                    <th>ENTRADAS</th>
-                                                    <th>SALIDAS</th>
-                                                    <th>SALDO FINAL</th>
-                                                </t>
-                                            </tr>
-                                            <tr>
-                                                <th>FECHA</th>
-                                                <th>TIPO (TABLA 10)</th>
-                                                <th>SERIE</th>
-                                                <th>NÚMERO</th>
-                                                <t t-if="valued">
-                                                    <th>CANTIDAD</th>
-                                                    <th>COSTO UNITARIO</th>
-                                                    <th>COSTO TOTAL</th>
-                                                    <th>CANTIDAD</th>
-                                                    <th>COSTO UNITARIO</th>
-                                                    <th>COSTO TOTAL</th>
-                                                    <th>CANTIDAD</th>
-                                                    <th>COSTO UNITARIO</th>
-                                                    <th>COSTO TOTAL</th>
-                                                </t>
-                                                <t t-else="">
-                                                    <th>CANTIDAD</th>
-                                                    <th>CANTIDAD</th>
-                                                    <th>CANTIDAD</th>
-                                                </t>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr t-foreach="block['lines']" t-as="line">
-                                                <td class="ctr">
-                                                    <span t-out="line.date" t-options='{"widget": "date"}'/>
-                                                </td>
-                                                <td class="ctr" t-out="line.document_type_code"/>
-                                                <td class="ctr"
-                                                    t-out="line.line_type == 'opening' and '-' or line.serie"/>
-                                                <td class="ctr"
-                                                    t-out="line.line_type == 'opening' and 'SALDO INICIAL' or line.folio"/>
-                                                <td class="ctr" t-out="line.operation_type"/>
-                                                <t t-if="valued">
-                                                    <td class="num" t-out="'%.2f' % line.qty_in"/>
-                                                    <td class="num" t-out="'%.4f' % line.cost_unit_in"/>
-                                                    <td class="num" t-out="'%.2f' % line.cost_total_in"/>
-                                                    <td class="num" t-out="'%.2f' % line.qty_out"/>
-                                                    <td class="num" t-out="'%.4f' % line.cost_unit_out"/>
-                                                    <td class="num" t-out="'%.2f' % line.cost_total_out"/>
-                                                    <td class="num" t-out="'%.2f' % line.balance_qty"/>
-                                                    <td class="num" t-out="'%.4f' % line.balance_unit_cost"/>
-                                                    <td class="num" t-out="'%.2f' % line.balance_value"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <td class="num" t-out="'%.2f' % line.qty_in"/>
-                                                    <td class="num" t-out="'%.2f' % line.qty_out"/>
-                                                    <td class="num" t-out="'%.2f' % line.balance_qty"/>
-                                                </t>
-                                            </tr>
-                                            <tr t-if="block['total_line']" class="k-total">
-                                                <t t-set="total" t-value="block['total_line']"/>
-                                                <td colspan="5" class="ctr">TOTALES</td>
-                                                <t t-if="valued">
-                                                    <td class="num" t-out="'%.2f' % total.qty_in"/>
-                                                    <td/>
-                                                    <td class="num" t-out="'%.2f' % total.cost_total_in"/>
-                                                    <td class="num" t-out="'%.2f' % total.qty_out"/>
-                                                    <td/>
-                                                    <td class="num" t-out="'%.2f' % total.cost_total_out"/>
-                                                    <td class="num" t-out="'%.2f' % total.balance_qty"/>
-                                                    <td class="num" t-out="'%.4f' % total.balance_unit_cost"/>
-                                                    <td class="num" t-out="'%.2f' % total.balance_value"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <td class="num" t-out="'%.2f' % total.qty_in"/>
-                                                    <td class="num" t-out="'%.2f' % total.qty_out"/>
-                                                    <td class="num" t-out="'%.2f' % total.balance_qty"/>
-                                                </t>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="k-foot">
-                                        (1) Dirección del establecimiento o código según el Registro Único de Contribuyentes.
-                                        <t t-if="scope['warehouse']"> — Almacén: <t t-out="scope['name']"/></t>
-                                    </div>
+                                            </t>
+                                            <t t-else="">
+                                                <td>CANTIDAD</td>
+                                                <td>CANTIDAD</td>
+                                                <td>CANTIDAD</td>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="block['lines']" t-as="line">
+                                            <td class="text-center">
+                                                <span t-out="line.date" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td class="text-center" t-out="line.document_type_code"/>
+                                            <td class="text-center"
+                                                t-out="line.line_type == 'opening' and '-' or line.serie"/>
+                                            <td class="text-center"
+                                                t-out="line.line_type == 'opening' and 'SALDO INICIAL' or line.folio"/>
+                                            <td class="text-center" t-out="line.operation_type"/>
+                                            <t t-if="valued">
+                                                <td class="text-end" t-out="'%.2f' % line.qty_in"/>
+                                                <td class="text-end" t-out="'%.4f' % line.cost_unit_in"/>
+                                                <td class="text-end" t-out="'%.2f' % line.cost_total_in"/>
+                                                <td class="text-end" t-out="'%.2f' % line.qty_out"/>
+                                                <td class="text-end" t-out="'%.4f' % line.cost_unit_out"/>
+                                                <td class="text-end" t-out="'%.2f' % line.cost_total_out"/>
+                                                <td class="text-end" t-out="'%.2f' % line.balance_qty"/>
+                                                <td class="text-end" t-out="'%.4f' % line.balance_unit_cost"/>
+                                                <td class="text-end" t-out="'%.2f' % line.balance_value"/>
+                                            </t>
+                                            <t t-else="">
+                                                <td class="text-end" t-out="'%.2f' % line.qty_in"/>
+                                                <td class="text-end" t-out="'%.2f' % line.qty_out"/>
+                                                <td class="text-end" t-out="'%.2f' % line.balance_qty"/>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot t-if="block['total_line']">
+                                        <t t-set="total" t-value="block['total_line']"/>
+                                        <tr class="pe-doc-total">
+                                            <td colspan="5" class="text-center">TOTALES</td>
+                                            <t t-if="valued">
+                                                <td class="text-end" t-out="'%.2f' % total.qty_in"/>
+                                                <td/>
+                                                <td class="text-end" t-out="'%.2f' % total.cost_total_in"/>
+                                                <td class="text-end" t-out="'%.2f' % total.qty_out"/>
+                                                <td/>
+                                                <td class="text-end" t-out="'%.2f' % total.cost_total_out"/>
+                                                <td class="text-end" t-out="'%.2f' % total.balance_qty"/>
+                                                <td class="text-end" t-out="'%.4f' % total.balance_unit_cost"/>
+                                                <td class="text-end" t-out="'%.2f' % total.balance_value"/>
+                                            </t>
+                                            <t t-else="">
+                                                <td class="text-end" t-out="'%.2f' % total.qty_in"/>
+                                                <td class="text-end" t-out="'%.2f' % total.qty_out"/>
+                                                <td class="text-end" t-out="'%.2f' % total.balance_qty"/>
+                                            </t>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="mt-1" style="color: #595959;">
+                                    (1) Dirección del establecimiento o código según el Registro Único de Contribuyentes.
+                                    <t t-if="scope['warehouse']"> — Almacén: <t t-out="scope['name']"/></t>
                                 </div>
-                            </t>
+                            </div>
                         </t>
-                    </div>
-                </div>
+                    </t>
+                </t>
             </t>
         </t>
     </template>

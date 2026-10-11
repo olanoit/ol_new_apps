@@ -148,7 +148,7 @@ python3 scripts/gen_addons_table.py
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](OL-ACCOUNTING/al_account_base/) | 11.20261011 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_base](OL-ACCOUNTING/al_account_base/) | 12.20261011 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 11.20261009 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 13.20261008 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](OL-ACCOUNTING/al_account_payments/) | 7.20261008 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
@@ -172,7 +172,7 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 7.20261009 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
+[al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 8.20261011 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
 [al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 11.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 18.20261008 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
@@ -186,10 +186,10 @@ módulo | versión | licencia | resumen
 [al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 11.20261010 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
 [al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 21.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 22.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 22.20261010 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 23.20261011 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 10.20261011 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
 [al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 10.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 21.20261009 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 22.20261011 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 
@@ -207,17 +207,17 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_stock_transfer](OL-INVENTORY/al_l10n_pe_stock_transfer/) | 2.20261010 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_stock_base](OL-INVENTORY/al_stock_base/) | 1.20261008 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
-[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 12.20261009 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
+[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 13.20261011 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 
 ### OL-PROJECTS
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 9.20261009 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 13.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
+[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 10.20261011 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 14.20261011 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
 [al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 7.20261011 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 16.20261011 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
-[al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 17.20261010 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
+[al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 12.20261008 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
 
 ### OL-TOOLS
@@ -227,6 +227,7 @@ módulo | versión | licencia | resumen
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
 [al_docs_help](OL-TOOLS/al_docs_help/) | 1.20261011 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 8.20261009 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
+[al_report_base](OL-TOOLS/al_report_base/) | 1.20261011 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
 
 ### OL-THIRD-PARTY

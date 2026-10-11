@@ -24,7 +24,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/purchase/static/description/icon.png',
-    'version': '9.20261009',
+    'version': '10.20261011',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [
@@ -35,6 +35,8 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
         'purchase_request',
         'base_tier_validation',
         'al_stock_base',
+        # Formato común de los documentos impresos (el del comprobante A4).
+        'al_report_base',
     ],
     'data': [
         'security/construction_groups.xml',
@@ -50,11 +52,6 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
         'views/res_config_settings_views.xml',
         'views/menus.xml',
     ],
-    'assets': {
-        'web.report_assets_common': [
-            'al_construction_material_request/static/src/css/report_material_request.css',
-        ],
-    },
     'demo': [
         'demo/construction_demo.xml',
     ],

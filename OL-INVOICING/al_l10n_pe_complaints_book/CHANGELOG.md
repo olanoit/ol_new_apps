@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_complaints_book.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261011 — 11/10/2026
+
+- Hoja de reclamación y aviso del libro con el formato común de los documentos impresos (al_report_base): encabezado con el recuadro R.U.C./hoja/número, secciones en tablas con borde redondeado y pie con la numeración; textos y secciones legales sin cambios.
+
 ## 7.20261009 — 09/10/2026
 
 - Ícono propio en el menú principal (libro abierto con un signo de admiración), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Soporte; en Aplicaciones sigue el ícono nativo.

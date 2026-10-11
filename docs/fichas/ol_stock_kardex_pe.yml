@@ -211,6 +211,10 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: 13.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Kárdex en PDF con el formato común de los documentos impresos (al_report_base): encabezado con el recuadro R.U.C./formato/periodo, datos de cada existencia y detalle con cabecera gris oscuro y totales; columnas de los formatos 12.1 y 13.1 sin cambios."
   - version: 12.20261009
     fecha: 09/10/2026
     cambios:

@@ -1,8 +1,9 @@
-/* Comprobantes impresos de la localización peruana (factura, boleta, notas,
-   guía de remisión, comprobante de retención): un solo lenguaje visual en
-   blanco y negro. Encabezado con logo, datos de la compañía y recuadro del
-   documento; datos del adquirente en una tabla con borde redondeado; detalle
-   con cabecera gris oscuro y, al pie de la MISMA tabla, totales y leyenda. */
+/* Documentos impresos de la suite (comprobantes electrónicos, boletas de
+   pago, certificados, requerimientos, valorizaciones, kárdex…): un solo
+   lenguaje visual en blanco y negro, el del comprobante A4. Encabezado con
+   logo, datos de la compañía y recuadro del documento; datos en tablas con
+   borde redondeado; detalle con cabecera gris oscuro y, al pie de la MISMA
+   tabla, totales y leyenda; pie común con la numeración de páginas. */
 
 .pe-doc-table {
     border: 1px solid #000;
@@ -128,6 +129,7 @@
 .pe-doc-footer {
     border-top: 1px solid #000;
     color: #000;
+    font-family: 'Arial', 'Helvetica', sans-serif;
     font-size: 9px;
     padding-top: 4px;
     text-align: center;
@@ -141,4 +143,84 @@
 
 .pe-doc-footer-page {
     float: right;
+}
+
+/* ------------------------------------------------------------------
+   Documentos de texto (certificados, cartas, contratos) y secciones.
+   ------------------------------------------------------------------ */
+
+/* Página base: la tipografía del comprobante A4 (Arial) y el color de
+   todos los documentos. */
+.pe-doc-page {
+    color: #000;
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Título centrado del documento de texto (debajo del encabezado). */
+.pe-doc-title {
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin: 6px 0 18px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* Cuerpo de texto justificado. */
+.pe-doc-text p {
+    margin: 0 0 12px;
+    text-align: justify;
+}
+
+/* Barra de sección: el mismo gris oscuro de la cabecera del detalle. */
+.pe-doc-section {
+    background-color: #595959;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    margin: 14px 0 6px;
+    padding: 3px 8px;
+}
+
+/* Importe destacado (neto a pagar, total valorizado): recuadro como el del
+   número del comprobante. */
+.pe-doc-highlight {
+    border: 2px solid #000;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 8px;
+    padding: 6px 10px;
+}
+
+/* Firmas al pie: las columnas se reparten a partes iguales (2, 3 o 4). */
+.pe-doc-signatures {
+    margin-top: 70px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.pe-doc-signatures td {
+    padding: 0 18px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.pe-doc-sign-img {
+    max-height: 110px;
+    max-width: 300px;
+}
+
+.pe-doc-sign-line {
+    border-top: 1px solid #000;
+    margin: 4px auto 0;
+    padding-top: 4px;
+    width: 75%;
+}
+
+/* Tablas que no deben partirse entre páginas (bloques cortos). */
+.pe-doc-keep {
+    page-break-inside: avoid;
 }

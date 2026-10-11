@@ -19,9 +19,9 @@
                   primary="True">
 
             <!-- El sueldo mensual no aplica; manda el jornal. -->
-            <xpath expr="//td[hasclass('bpe-k')][text()='Remuneración básica']"
+            <xpath expr="//td[hasclass('pe-doc-label')][text()='Remuneración básica']"
                    position="replace">
-                <td class="bpe-k">Jornal básico</td>
+                <td class="pe-doc-label">Jornal básico</td>
             </xpath>
             <xpath expr="//span[@t-esc=&quot;'{:,.2f}'.format(v.wage or 0.0)&quot;]"
                    position="replace">
@@ -31,18 +31,17 @@
             <!-- Categoría y obra: son los datos que identifican el puesto
                  en este régimen, y la obra determina qué bonificaciones
                  por condiciones de trabajo se pagan. -->
-            <xpath expr="(//div[hasclass('bpe-sec')])[1]//table[hasclass('bpe-grid')]"
-                   position="inside">
+            <xpath expr="//table[hasclass('pe-boleta-worker')]" position="inside">
                 <tr>
-                    <td class="bpe-k">Categoría</td>
-                    <td><span t-esc="o.l10n_pe_construction_category_id.name or '—'"/></td>
-                    <td class="bpe-k">Obra</td>
-                    <td><span t-esc="v.l10n_pe_construction_site_id.name or '—'"/></td>
+                    <td class="pe-doc-label">Categoría</td>
+                    <td class="pe-doc-value"><span t-out="o.l10n_pe_construction_category_id.name or '—'"/></td>
+                    <td class="pe-doc-label">Obra</td>
+                    <td class="pe-doc-value"><span t-out="v.l10n_pe_construction_site_id.name or '—'"/></td>
                 </tr>
                 <tr t-if="v.l10n_pe_construction_bae_id">
-                    <td class="bpe-k">Especialidad</td>
-                    <td colspan="3">
-                        <span t-esc="v.l10n_pe_construction_bae_id.name"/>
+                    <td class="pe-doc-label">Especialidad</td>
+                    <td class="pe-doc-value" colspan="3">
+                        <span t-out="v.l10n_pe_construction_bae_id.name"/>
                     </td>
                 </tr>
             </xpath>
@@ -66,8 +65,7 @@
             <field name="report_file">al_hr_pe_construction.report_l10n_pe_boleta_construccion_document</field>
             <field name="print_report_name">'Boleta construcción - %s - %s' % (
                 object.employee_id.name or '', object.date_from)</field>
-            <field name="paperformat_id"
-                   ref="al_hr_pe_reports.paperformat_boleta_pago"/>
+            <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
             <field name="binding_model_id" eval="False"/>
         </record>
 

@@ -112,7 +112,9 @@ class TestGanttExport(GanttCommon):
             self.assertTrue(content.startswith(b'%PDF'))
         else:
             html = content.decode()
-            self.assertIn('algantt-grid', html)
+            # Formato común de los documentos impresos (al_report_base).
+            self.assertIn('pe-doc-table', html)
+            self.assertIn('Diagrama de Gantt', html)
             self.assertIn('A — expediente', html)
 
     def test_report_values_include_groups_and_legend(self):

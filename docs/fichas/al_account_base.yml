@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 12.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "El encabezado, el pie y la hoja de estilos de los comprobantes impresos pasan a al_report_base, común a todos los documentos de la suite; las plantillas de este módulo quedan como alias."
   - version: 11.20261011
     fecha: 11/10/2026
     cambios:

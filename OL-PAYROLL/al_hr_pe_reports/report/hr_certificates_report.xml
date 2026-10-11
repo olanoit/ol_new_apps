@@ -3,55 +3,60 @@
 
     <!-- =============================================================
          Certificado de trabajo (D.S. 001-96-TR Art. 42) y carta de
-         retiro CTS (D.S. 001-97-TR). B/N. La clase "article" en el div
-         raíz es obligatoria: _prepare_html() solo envuelve en
-         web.minimal_layout (charset UTF-8 + CSS) los divs .article.
-         El <style> incluye el reset anti-bordes fantasma de
-         wkhtmltopdf/BS5 (tr/td/th heredan border-style: solid).
+         retiro CTS (D.S. 001-97-TR), con el formato común de los
+         documentos de la suite (al_report_base: encabezado, pie y
+         estilos del comprobante A4).
          ============================================================= -->
+
+    <!-- Firma del representante legal: imagen escaneada y raya con su
+         nombre y documento. -->
+    <template id="report_pe_legal_signature">
+        <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+            <tr>
+                <td style="width: 25%;"/>
+                <td>
+                    <img t-if="doc.main_parameter_id.signature" class="pe-doc-sign-img"
+                         t-att-src="image_data_uri(doc.main_parameter_id.signature)"
+                         alt="Firma"/>
+                    <div class="pe-doc-sign-line">
+                        <strong t-out="doc.main_parameter_id.reprentante_legal_id.name"/><br/>
+                        <t t-out="doc.main_parameter_id.reprentante_legal_id.l10n_latam_identification_type_id.name"/>
+                        N° <t t-out="doc.main_parameter_id.reprentante_legal_id.vat"/><br/>
+                        Representante legal
+                    </div>
+                </td>
+                <td style="width: 25%;"/>
+            </tr>
+        </table>
+    </template>
 
     <template id="report_certificate">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <div class="article pe-doc"
-                     t-att-data-oe-model="doc and doc._name"
-                     t-att-data-oe-id="doc and doc.id"
-                     t-att-data-oe-lang="doc and doc.env.context.get('lang')">
-                    <style>
-                        .pe-doc { font-size: 13px; color: #000; }
-                        .pe-doc table, .pe-doc td, .pe-doc th { border: none; }
-                        .pe-doc p { text-align: justify; margin: 0 0 14px 0; }
-                        .pe-doc .pe-title { text-align: center; font-weight: bold;
-                            text-decoration: underline; font-size: 15px;
-                            margin: 30px 0; }
-                        .pe-doc .pe-logo { max-height: 90px; max-width: 220px; }
-                        .pe-doc .pe-sign { text-align: center; margin-top: 90px; }
-                        .pe-doc .pe-sign img { max-width: 320px; max-height: 120px; }
-                        .pe-doc .pe-sign-line { border-top: 1px solid #000;
-                            width: 300px; margin: 0 auto; padding-top: 4px;
-                            font-size: 12px; }
-                    </style>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="o" t-value="doc"/>
+                    <t t-set="company" t-value="doc.company_id"/>
+                    <t t-set="doc_title" t-value="'Certificado de trabajo'"/>
+                    <t t-set="doc_extra" t-value="'D.S. N° 001-96-TR, art. 42'"/>
+                    <t t-set="page_class" t-value="'pe-doc-text'"/>
 
-                    <img t-if="doc.company_id.logo" class="pe-logo"
-                         t-att-src="image_data_uri(doc.company_id.logo)" alt="Logo"/>
-
-                    <div class="pe-title">CERTIFICADO DE TRABAJO</div>
+                    <div class="pe-doc-title">Certificado de trabajo</div>
 
                     <p>El que suscribe, en representación de
-                        <span t-field="doc.company_id.name"/>:</p>
+                        <strong t-field="doc.company_id.name"/>:</p>
 
                     <p><strong>CERTIFICA:</strong></p>
 
                     <p>
-                        Que, <t t-esc="doc.des_empl"/>
-                        <span t-field="doc.employee_id.name"/>, identificado con
-                        <t t-esc="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
-                        N° <t t-esc="doc.employee_id.identification_id or ''"/>,
+                        Que, <t t-out="doc.des_empl"/>
+                        <strong t-field="doc.employee_id.name"/>, identificado con
+                        <t t-out="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
+                        N° <t t-out="doc.employee_id.identification_id or ''"/>,
                         laboró en esta empresa desde el
-                        <t t-esc="doc.format_date_letters(doc.date_ini)"/> hasta el
-                        <t t-esc="doc.format_date_letters(doc.date_fin)"/>,
+                        <t t-out="doc.format_date_letters(doc.date_ini)"/> hasta el
+                        <t t-out="doc.format_date_letters(doc.date_fin)"/>,
                         ocupando el cargo de
-                        <t t-esc="doc.employee_id.job_id.name or doc.employee_id.job_title or ''"/>, demostrando
+                        <t t-out="doc.employee_id.job_id.name or doc.employee_id.job_title or ''"/>, demostrando
                         durante su permanencia responsabilidad, honestidad y
                         dedicación en las labores que le fueron encomendadas.
                     </p>
@@ -61,23 +66,13 @@
                         fines que el interesado crea conveniente.
                     </p>
 
-                    <p style="margin-top: 30px;">
-                        <t t-esc="doc.city"/>,
-                        <t t-esc="doc.format_date_letters(doc.date_fin)"/>
+                    <p style="margin-top: 24px;">
+                        <t t-out="doc.city"/>,
+                        <t t-out="doc.format_date_letters(doc.date_fin)"/>
                     </p>
 
-                    <div class="pe-sign">
-                        <img t-if="doc.main_parameter_id.signature"
-                             t-att-src="image_data_uri(doc.main_parameter_id.signature)"
-                             alt="Firma"/>
-                        <div class="pe-sign-line">
-                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.name"/>
-                            <br/>
-                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.l10n_latam_identification_type_id.name"/>
-                            N° <t t-esc="doc.main_parameter_id.reprentante_legal_id.vat"/>
-                        </div>
-                    </div>
-                </div>
+                    <t t-call="al_hr_pe_reports.report_pe_legal_signature"/>
+                </t>
             </t>
         </t>
     </template>
@@ -85,85 +80,48 @@
     <template id="report_letter">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <div class="article pe-doc"
-                     t-att-data-oe-model="doc and doc._name"
-                     t-att-data-oe-id="doc and doc.id"
-                     t-att-data-oe-lang="doc and doc.env.context.get('lang')">
-                    <style>
-                        .pe-doc { font-size: 13px; color: #000; }
-                        .pe-doc table, .pe-doc td, .pe-doc th { border: none; }
-                        .pe-doc p { text-align: justify; margin: 0 0 14px 0; }
-                        .pe-doc .pe-logo { max-height: 90px; max-width: 220px; }
-                        .pe-doc .pe-dest { font-weight: bold; margin: 24px 0; }
-                        .pe-doc .pe-sign { text-align: center; margin-top: 90px; }
-                        .pe-doc .pe-sign img { max-width: 320px; max-height: 120px; }
-                        .pe-doc .pe-sign-line { border-top: 1px solid #000;
-                            width: 300px; margin: 0 auto; padding-top: 4px;
-                            font-size: 12px; }
-                    </style>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="o" t-value="doc"/>
+                    <t t-set="company" t-value="doc.company_id"/>
+                    <t t-set="doc_title" t-value="'Carta de retiro CTS'"/>
+                    <t t-set="doc_extra" t-value="'D.S. N° 001-97-TR'"/>
+                    <t t-set="page_class" t-value="'pe-doc-text'"/>
 
-                    <img t-if="doc.company_id.logo" class="pe-logo"
-                         t-att-src="image_data_uri(doc.company_id.logo)" alt="Logo"/>
-
-                    <p style="margin-top: 30px;">
-                        <t t-esc="doc.city"/>,
-                        <t t-esc="doc.format_date_letters(doc.date_fin)"/>
+                    <p class="text-end">
+                        <t t-out="doc.city"/>,
+                        <t t-out="doc.format_date_letters(doc.date_fin)"/>
                     </p>
 
-                    <div class="pe-dest">
-                        Señores<br/>
-                        <t t-esc="doc.employee_id.cts_bank_account_id.bank_id.name or ''"/><br/>
-                        Presente.-
-                    </div>
+                    <p style="margin: 18px 0;">
+                        <strong>Señores<br/>
+                        <t t-out="doc.employee_id.cts_bank_account_id.bank_id.name or ''"/><br/>
+                        Presente.-</strong>
+                    </p>
 
                     <p>De nuestra consideración:</p>
 
                     <p>
-                        Por la presente comunicamos que <t t-esc="doc.des_empl"/>
-                        <span t-field="doc.employee_id.name"/>, identificado con
-                        <t t-esc="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
-                        N° <t t-esc="doc.employee_id.identification_id or ''"/>,
+                        Por la presente comunicamos que <t t-out="doc.des_empl"/>
+                        <strong t-field="doc.employee_id.name"/>, identificado con
+                        <t t-out="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
+                        N° <t t-out="doc.employee_id.identification_id or ''"/>,
                         ha dejado de laborar en nuestra empresa a partir del
-                        <t t-esc="doc.format_date_letters(doc.date_fin)"/>, por lo
+                        <t t-out="doc.format_date_letters(doc.date_fin)"/>, por lo
                         que solicitamos se le haga entrega del total de la
                         Compensación por Tiempo de Servicios depositada en la
                         cuenta CTS N°
-                        <t t-esc="doc.employee_id.cts_bank_account_id.acc_number or ''"/>
+                        <t t-out="doc.employee_id.cts_bank_account_id.acc_number or ''"/>
                         de vuestra entidad.
                     </p>
 
                     <p>Sin otro particular, quedamos de ustedes.</p>
                     <p>Atentamente,</p>
 
-                    <div class="pe-sign">
-                        <img t-if="doc.main_parameter_id.signature"
-                             t-att-src="image_data_uri(doc.main_parameter_id.signature)"
-                             alt="Firma"/>
-                        <div class="pe-sign-line">
-                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.name"/>
-                            <br/>
-                            <t t-esc="doc.main_parameter_id.reprentante_legal_id.l10n_latam_identification_type_id.name"/>
-                            N° <t t-esc="doc.main_parameter_id.reprentante_legal_id.vat"/>
-                        </div>
-                    </div>
-                </div>
+                    <t t-call="al_hr_pe_reports.report_pe_legal_signature"/>
+                </t>
             </t>
         </t>
     </template>
-
-    <!-- A4 con márgenes laterales anchos (33 mm), paridad v18. -->
-    <record id="paperformat_certificate" model="report.paperformat">
-        <field name="name">Certificado de trabajo / carta CTS (A4)</field>
-        <field name="format">A4</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">25</field>
-        <field name="margin_bottom">20</field>
-        <field name="margin_left">33</field>
-        <field name="margin_right">33</field>
-        <field name="header_line" eval="False"/>
-        <field name="header_spacing">0</field>
-        <field name="dpi">90</field>
-    </record>
 
     <record id="action_report_certificate" model="ir.actions.report">
         <field name="name">Certificado de trabajo</field>
@@ -172,7 +130,7 @@
         <field name="report_name">al_hr_pe_reports.report_certificate</field>
         <field name="report_file">al_hr_pe_reports.report_certificate</field>
         <field name="print_report_name">'Certificado de trabajo - %s' % (object.employee_id.name)</field>
-        <field name="paperformat_id" ref="paperformat_certificate"/>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
 
     <record id="action_report_letter" model="ir.actions.report">
@@ -182,7 +140,7 @@
         <field name="report_name">al_hr_pe_reports.report_letter</field>
         <field name="report_file">al_hr_pe_reports.report_letter</field>
         <field name="print_report_name">'Carta de retiro CTS - %s' % (object.employee_id.name)</field>
-        <field name="paperformat_id" ref="paperformat_certificate"/>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
 
 </odoo>

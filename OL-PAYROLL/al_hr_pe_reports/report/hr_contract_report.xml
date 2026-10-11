@@ -2,78 +2,28 @@
 <odoo>
 
     <!-- =============================================================
-         Contrato de trabajo desde plantilla (docs = hr.version).
+         Contrato de trabajo desde plantilla (docs = hr.version), con el
+         formato común de los documentos de la suite (al_report_base).
          El cuerpo lo renderiza l10n_pe.hr.contract.template._render_body
          (sustitución por diccionario controlado, sin eval); t-out con
-         Markup lo inserta sin re-escapar. Div raíz .article obligatorio
-         + reset anti-bordes fantasma (gotchas QWeb-PDF v19).
+         Markup lo inserta sin re-escapar.
          ============================================================= -->
 
     <template id="report_contract">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <div class="article pe-contract"
-                     t-att-data-oe-model="doc and doc._name"
-                     t-att-data-oe-id="doc and doc.id"
-                     t-att-data-oe-lang="doc and doc.env.context.get('lang')"
-                     t-att-style="'page-break-after: always;' if not doc_last else ''">
-                    <style>
-                        .pe-contract { font-size: 12px; color: #000; }
-                        .pe-contract table, .pe-contract td,
-                        .pe-contract th { border: none; }
-                        .pe-contract .pe-header { width: 100%;
-                            border-collapse: collapse; margin-bottom: 6px; }
-                        .pe-contract .pe-header td { padding: 0 4px;
-                            vertical-align: middle; }
-                        .pe-contract .pe-header img { max-height: 80px;
-                            max-width: 160px; }
-                        .pe-contract .pe-header-rule { border-bottom: 2px solid #000;
-                            margin-bottom: 18px; }
-                        .pe-contract .pe-company-name { font-weight: bold;
-                            font-size: 14px; }
-                        .pe-contract .pe-company-info { font-size: 11px; }
-                        .pe-contract .pe-body p { text-align: justify; }
-                    </style>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="o" t-value="doc"/>
+                    <t t-set="company" t-value="doc.company_id"/>
+                    <t t-set="doc_title" t-value="'Contrato de trabajo'"/>
+                    <t t-set="doc_extra" t-value="doc.employee_id.name"/>
+                    <t t-set="page_class" t-value="'pe-doc-text'"/>
 
-                    <table class="pe-header">
-                        <tr>
-                            <td style="width: 25%;">
-                                <img t-if="doc.company_id.logo"
-                                     t-att-src="image_data_uri(doc.company_id.logo)"
-                                     alt="Logo"/>
-                            </td>
-                            <td style="width: 75%;">
-                                <div class="pe-company-name">
-                                    <span t-field="doc.company_id.name"/>
-                                </div>
-                                <div class="pe-company-info">
-                                    <span t-field="doc.company_id.street"/><br/>
-                                    RUC: <span t-field="doc.company_id.vat"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="pe-header-rule"/>
-
-                    <div class="pe-body"
-                         t-out="doc.l10n_pe_contract_template_id._render_body(doc)"/>
-                </div>
+                    <div class="pe-contract-body" t-out="doc.l10n_pe_contract_template_id._render_body(doc)"/>
+                </t>
             </t>
         </t>
     </template>
-
-    <record id="paperformat_contract" model="report.paperformat">
-        <field name="name">Contrato de trabajo (A4)</field>
-        <field name="format">A4</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">15</field>
-        <field name="margin_bottom">15</field>
-        <field name="margin_left">18</field>
-        <field name="margin_right">18</field>
-        <field name="header_line" eval="False"/>
-        <field name="header_spacing">0</field>
-        <field name="dpi">90</field>
-    </record>
 
     <record id="action_report_contract" model="ir.actions.report">
         <field name="name">Contrato de trabajo</field>
@@ -82,7 +32,7 @@
         <field name="report_name">al_hr_pe_reports.report_contract</field>
         <field name="report_file">al_hr_pe_reports.report_contract</field>
         <field name="print_report_name">'Contrato - %s' % (object.employee_id.name)</field>
-        <field name="paperformat_id" ref="paperformat_contract"/>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <!-- Sin binding en «Imprimir»: se imprime solo desde el botón de
              la ficha, que valida plantilla y datos mínimos antes. -->
         <field name="binding_model_id" eval="False"/>

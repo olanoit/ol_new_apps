@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261011 — 11/10/2026
+
+- El encabezado, el pie y la hoja de estilos de los comprobantes impresos pasan a al_report_base, común a todos los documentos de la suite; las plantillas de este módulo quedan como alias.
+
 ## 11.20261011 — 11/10/2026
 
 - Los accesos de Ajustes ▸ Perú ▸ Documentación llevan a la nueva organización del sitio: documentación para usuarios, novedades, localización y nómina peruanas y sección del desarrollador.

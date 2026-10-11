@@ -2,69 +2,39 @@
 <odoo>
 
     <!-- =============================================================
-         Diagrama de Gantt en PDF. El div raíz lleva la clase "article":
-         `_prepare_html()` solo envuelve en `web.minimal_layout` los divs
-         con esa clase. El <style> incluye el reset de bordes, porque
-         wkhtmltopdf + BS5 pintan bordes fantasma en tablas.
+         Diagrama de Gantt en PDF con el formato común de los documentos de
+         la suite (al_report_base): encabezado con el recuadro
+         R.U.C./tipo, tabla con cabecera gris oscuro y pie con la
+         numeración. report_pe_page pone el div.article que
+         `_prepare_html()` necesita. Las barras conservan el color del
+         estado de cada tarea (la leyenda lo explica).
          ============================================================= -->
 
     <template id="report_gantt">
         <t t-call="web.html_container">
-            <div class="article algantt-pdf">
-                <style>
-                    .algantt-pdf { font-size: 9px; color: #1c2024;
-                        font-family: Helvetica, Arial, sans-serif; }
-                    .algantt-pdf table, .algantt-pdf td, .algantt-pdf th {
-                        border-style: solid; border-color: #d7dade; }
-                    .algantt-pdf h1 { font-size: 15px; margin: 0 0 2px; }
-                    .algantt-pdf .algantt-meta { font-size: 8px; color: #5b6570;
-                        margin: 0 0 8px; }
-                    .algantt-pdf table.algantt-grid { width: 100%;
-                        border-collapse: collapse; table-layout: fixed; }
-                    .algantt-pdf table.algantt-grid th,
-                    .algantt-pdf table.algantt-grid td {
-                        border-width: 0.5px; padding: 1px 3px; overflow: hidden; }
-                    .algantt-pdf thead th { background-color: #f1f3f5;
-                        font-size: 8px; text-align: center; font-weight: bold; }
-                    .algantt-pdf td.algantt-name { text-align: left;
-                        white-space: nowrap; text-overflow: ellipsis; }
-                    .algantt-pdf td.algantt-code,
-                    .algantt-pdf td.algantt-dates { text-align: center;
-                        font-size: 8px; color: #5b6570; white-space: nowrap; }
-                    .algantt-pdf tr.algantt-project td { background-color: #eceef0;
-                        font-weight: bold; }
-                    .algantt-pdf td.algantt-cell { padding: 0; height: 12px; }
-                    .algantt-pdf .algantt-bar { display: block; height: 10px;
-                        border-radius: 2px; }
-                    .algantt-pdf .algantt-critical-mark { color: #c0392b;
-                        font-weight: bold; }
-                    .algantt-pdf .algantt-legend { margin-top: 10px; font-size: 8px;
-                        color: #5b6570; }
-                    .algantt-pdf .algantt-legend span { margin-right: 14px; }
-                    .algantt-pdf .algantt-swatch { display: inline-block;
-                        width: 9px; height: 9px; border-radius: 2px;
-                        vertical-align: -1px; margin-right: 3px; }
-                </style>
+            <t t-set="o" t-value="docs[:1]"/>
+            <t t-set="company" t-value="o.company_id or docs.env.company"/>
+            <t t-call="al_report_base.report_pe_page">
+                <t t-set="doc_title" t-value="'Diagrama de Gantt'"/>
+                <t t-set="doc_extra" t-value="'Escala %s · %s' % (matrix['scale'], generated_on.strftime('%d/%m/%Y'))"/>
 
-                <h1 t-esc="title"/>
-                <p class="algantt-meta">
-                    <span t-esc="generated_on.strftime('%d/%m/%Y %H:%M')"/> ·
-                    <t t-esc="len(rows)"/> fila(s) ·
-                    escala <t t-esc="matrix['scale']"/>
+                <div class="pe-doc-title" t-esc="title"/>
+                <p class="pe-doc-fs-11 text-center" style="color: #595959; margin: -12px 0 8px;">
+                    <t t-esc="len(rows)"/> fila(s)
                     <t t-if="payload['meta'].get('truncated')">
-                        · <span class="algantt-critical-mark">
+                        · <strong style="color: #c0392b;">
                             se muestran <t t-esc="payload['meta']['count']"/>
                             de <t t-esc="payload['meta']['total']"/> tareas
-                        </span>
+                        </strong>
                     </t>
                     <t t-if="payload['meta'].get('critical_path', {}).get('computed')">
-                        · <span class="algantt-critical-mark">
+                        · <strong style="color: #c0392b;">
                             <t t-esc="payload['meta']['critical_path']['critical_count']"/> en ruta crítica
-                        </span>
+                        </strong>
                     </t>
                 </p>
 
-                <table class="algantt-grid">
+                <table class="pe-doc-table pe-doc-lines pe-doc-fs-11" style="table-layout: fixed;">
                     <colgroup>
                         <col style="width: 5%"/>
                         <col style="width: 21%"/>
@@ -76,40 +46,38 @@
                         </t>
                     </colgroup>
                     <thead>
-                        <tr>
-                            <th rowspan="2">EDT</th>
-                            <th rowspan="2">Tarea</th>
-                            <th rowspan="2">Inicio / Fin</th>
+                        <tr class="pe-doc-thead text-center">
+                            <td rowspan="2" class="align-middle">EDT</td>
+                            <td rowspan="2" class="align-middle">Tarea</td>
+                            <td rowspan="2" class="align-middle">Inicio / Fin</td>
                             <t t-foreach="period_groups" t-as="group">
-                                <th t-att-colspan="group['count']" t-esc="group['label']"/>
+                                <td t-att-colspan="group['count']" style="padding: 2px; font-size: 9px; white-space: nowrap; overflow: hidden;" t-esc="group['label']"/>
                             </t>
                         </tr>
-                        <tr>
+                        <tr class="pe-doc-thead text-center">
                             <t t-foreach="periods" t-as="period">
-                                <th t-esc="period['label']"/>
+                                <td style="padding: 2px; font-size: 9px;" t-esc="period['label']"/>
                             </t>
                         </tr>
                     </thead>
                     <tbody>
                         <t t-foreach="rows" t-as="row">
-                            <tr t-att-class="'algantt-project' if row['is_project'] else ''">
-                                <td class="algantt-code" t-esc="row['code']"/>
-                                <td class="algantt-name"
-                                    t-att-style="'padding-left: %spx' % (3 + row['level'] * 9)">
+                            <tr t-att-style="'font-weight: bold;' if row['is_project'] else None">
+                                <td class="text-center" style="padding: 2px 4px; color: #595959;" t-esc="row['code']"/>
+                                <td t-att-style="'padding: 2px 4px 2px %spx; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' % (4 + row['level'] * 9)">
                                     <t t-esc="row['name']"/>
                                     <t t-if="row['critical']">
-                                        <span class="algantt-critical-mark"> ▲</span>
+                                        <strong style="color: #c0392b;"> ▲</strong>
                                     </t>
                                 </td>
-                                <td class="algantt-dates">
+                                <td class="text-center" style="padding: 2px 4px; white-space: nowrap; color: #595959;">
                                     <!-- Días ya pasados a la zona del usuario en build_matrix. -->
                                     <t t-esc="row['dates_label']"/>
                                 </td>
                                 <t t-foreach="row['cells']" t-as="cell">
-                                    <td class="algantt-cell">
+                                    <td style="padding: 3px 1px; vertical-align: middle;">
                                         <t t-if="cell">
-                                            <span class="algantt-bar"
-                                                  t-att-style="'background-color: %s' % (row['color'] or '#714b67')"/>
+                                            <span t-att-style="'display: block; height: 9px; border-radius: 2px; background-color: %s' % (row['color'] or '#595959')"/>
                                         </t>
                                     </td>
                                 </t>
@@ -118,17 +86,16 @@
                     </tbody>
                 </table>
 
-                <div class="algantt-legend">
+                <div class="pe-doc-fs-11 mt-2" style="color: #595959;">
                     <t t-foreach="legend" t-as="entry">
-                        <span>
-                            <span class="algantt-swatch"
-                                  t-att-style="'background-color: %s' % entry['color']"/>
+                        <span style="margin-right: 14px;">
+                            <span t-att-style="'display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: -1px; margin-right: 3px; background-color: %s' % entry['color']"/>
                             <t t-esc="entry['label']"/>
                         </span>
                     </t>
-                    <span><span class="algantt-critical-mark">▲</span> ruta crítica</span>
+                    <span><strong style="color: #c0392b;">▲</strong> ruta crítica</span>
                 </div>
-            </div>
+            </t>
         </t>
     </template>
 

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261011 — 11/10/2026
+
+- El vale de requerimiento de obra usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, tablas con borde redondeado, materiales con el valor estimado al pie, aprobaciones, firmas y pie con la numeración de páginas.
+
 ## 9.20261009 — 09/10/2026
 
 - Ícono propio en el menú principal (casco de obra sobre una lista de verificación), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Compras; en Aplicaciones sigue el ícono nativo.

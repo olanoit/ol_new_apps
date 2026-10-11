@@ -42,6 +42,12 @@ Reglas que siguen todos los módulos de la suite, además de las
 - Textos de origen en español, con solo la primera letra en mayúscula.
   Comentarios en español.
 
+## Documentos impresos
+
+Todo reporte PDF usa el formato común de `al_report_base` (el del comprobante
+A4): `report_pe_page`, las clases `pe-doc-` y el papel `paperformat_pe_a4`.
+Ver [Formato de los documentos impresos](report_layout.md).
+
 ## Documentación
 
 Todo módulo nuevo documenta su funcionalidad en una página de

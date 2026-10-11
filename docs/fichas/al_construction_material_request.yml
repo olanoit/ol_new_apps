@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 10.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "El vale de requerimiento de obra usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, tablas con borde redondeado, materiales con el valor estimado al pie, aprobaciones, firmas y pie con la numeración de páginas."
   - version: 9.20261009
     fecha: 09/10/2026
     cambios:

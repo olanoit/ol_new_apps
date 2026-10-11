@@ -39,10 +39,12 @@ y PDF.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/project/static/description/icon.png',
-    'version': '17.20261010',
+    'version': '18.20261011',
     'license': 'OPL-1',
     'depends': [
         'project',
+        # Formato común de los documentos impresos (encabezado, pie y estilos).
+        'al_report_base',
     ],
     'data': [
         'security/gantt_groups.xml',

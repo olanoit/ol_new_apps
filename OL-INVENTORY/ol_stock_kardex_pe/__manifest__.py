@@ -15,7 +15,7 @@ Kardex SUNAT para la localización peruana
   reutiliza sus campos SUNAT (Tabla 5, Tabla 12, establecimiento anexo).
     """,
     'countries': ['pe'],
-    'version': '12.20261009',
+    'version': '13.20261011',
     'category': 'OL-INVENTORY/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/stock/static/description/icon.png',
@@ -25,6 +25,8 @@ Kardex SUNAT para la localización peruana
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
+        # Formato común de los documentos impresos (encabezado, pie y estilos).
+        'al_report_base',
         'l10n_pe_reports_stock',
         'purchase_stock',
         'sale_stock',

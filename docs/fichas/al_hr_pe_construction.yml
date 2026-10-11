@@ -607,6 +607,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 23.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "La boleta de construcción civil hereda el nuevo formato A4 de la boleta (al_report_base): jornal básico, categoría, obra y especialidad en la tabla del trabajador."
   - version: 22.20261010
     fecha: 10/10/2026
     cambios:

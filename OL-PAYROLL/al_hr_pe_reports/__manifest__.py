@@ -36,9 +36,10 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/hr_payroll/static/description/icon.png',
-    'version': '21.20261009',
+    'version': '22.20261011',
     'license': 'OPL-1',
-    'depends': ['al_hr_pe_benefits'],
+    # Formato común de los documentos impresos (el del comprobante A4).
+    'depends': ['al_hr_pe_benefits', 'al_report_base'],
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
@@ -56,6 +57,14 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
         'views/res_config_settings_views.xml',
         'data/contract_template_data.xml',
     ],
+    'assets': {
+        'web.report_assets_common': [
+            'al_hr_pe_reports/static/src/css/report_contract.css',
+        ],
+        'web.report_assets_pdf': [
+            'al_hr_pe_reports/static/src/css/report_contract.css',
+        ],
+    },
     'installable': True,
     'application': False,
 }
