@@ -14,6 +14,24 @@ IGV_TAX_CODE = '1000'
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
+    # Retenciones sufridas (ventas): lo que el cliente agente retuvo a la factura.
+    l10n_pe_retention_received_line_ids = fields.One2many(
+        'l10n_pe.retention.received.line', 'move_id', string='Retenciones sufridas',
+        readonly=True)
+    l10n_pe_retention_received_amount = fields.Monetary(
+        string='IGV retenido por el cliente', currency_field='company_currency_id',
+        compute='_compute_l10n_pe_retention_received_amount',
+        help='Suma de los comprobantes de retención registrados del cliente para esta '
+             'factura, en soles.')
+
+    @api.depends('l10n_pe_retention_received_line_ids.amount',
+                 'l10n_pe_retention_received_line_ids.state')
+    def _compute_l10n_pe_retention_received_amount(self):
+        for move in self:
+            move.l10n_pe_retention_received_amount = sum(
+                move.l10n_pe_retention_received_line_ids.filtered(
+                    lambda l: l.state == 'posted').mapped('amount'))
+
     l10n_pe_retention_eligible = fields.Boolean(
         string='En régimen de retención',
         compute='_compute_l10n_pe_retention', store=True,

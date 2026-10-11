@@ -58,7 +58,9 @@ calendario** para dar su conformidad o disconformidad y, si no se pronuncia, se
 **anotación en cuenta** en CAVALI. Según la **R.S. 193-2020/SUNAT**, el monto
 neto pendiente **excluye** la detracción y la retención del IGV (3 % de las
 facturas de más de S/ 700 de un cliente agente de retención, R.S.
-037-2002/SUNAT).
+037-2002/SUNAT). El valor nominal propuesto usa la misma regla que el
+[comprobante impreso](../fiscal_localizations/peru/electronic_invoicing/invoice_report.md#cliente-agente-de-retención):
+entre agentes de retención no se retiene.
 
 La cesión de créditos no es una venta gravada: no se emite comprobante por la
 cesión. Los intereses y las comisiones del factor siguen las reglas de los

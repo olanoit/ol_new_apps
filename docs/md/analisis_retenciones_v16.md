@@ -87,7 +87,12 @@ línea por cobrar del CRE (documento 20).
 
 ## 3. Mejoras recomendadas
 
-1. **Alta — Neto pendiente y cuotas de la factura de venta sin la retención.**
+1. **Hecha (11/10/2026) — Alta — Neto pendiente y cuotas de la factura de venta sin la retención.**
+   *Implementación:* `al_account_base._l10n_pe_customer_retention` (regla
+   única: cliente agente, comprobante 01/08 de más de S/ 700, con IGV, sin
+   detracción, compañía que no es agente ni buen contribuyente) y
+   `_l10n_pe_retention_split` (reparto proporcional entre cuotas). Lo usan el
+   PDF A4 y ticket y el XML (`al_l10n_pe_invoice`) y el factoring.
    Si el cliente es agente de retención, la compañía no lo es y la operación
    está sujeta (con IGV, sin SPOT y con total o comprobante por encima de
    S/ 700), el «Monto neto pendiente de pago» y las cuotas del XML
@@ -101,8 +106,18 @@ línea por cobrar del CRE (documento 20).
    no incluye las retenciones del IGV, el monto del depósito […] SPOT […] y
    otras deducciones».
    *Esfuerzo:* 1–1,5 días.
-2. **Media — Retenciones sufridas con el CRE del agente y, si sigue vigente,
-   TXT del PDT 621.** Agregar al registro la serie, el número y la fecha del
+2. **Hecha en parte (11/10/2026) — Media — Retenciones sufridas con el CRE del agente y, si sigue vigente,
+   TXT del PDT 621.**
+   *Implementación:* `l10n_pe.retention.received` con serie, número y fecha,
+   líneas `l10n_pe.retention.received.line` (una o varias facturas), un
+   asiento que abona y concilia cada factura, migración de los registros
+   anteriores y la lista «Retenciones sufridas por factura» agrupable por
+   periodo para el formulario 621. *Pendiente:* el TXT del PDT 621 no se
+   hizo: SUNAT indica que la declaración va por el formulario virtual Declara
+   Fácil 621 y el PDT 621 solo en casos excepcionales
+   ([Mis Declaraciones y Pagos](https://orientacion.sunat.gob.pe/node/118),
+   [R.S. 074-2020/SUNAT](https://www.sunat.gob.pe/legislacion/superin/2020/074-2020.pdf));
+   no se encontró una fuente oficial vigente del formato de importación. Agregar al registro la serie, el número y la fecha del
    CRE del agente y permitir varias facturas por CRE (líneas). Exportar el TXT
    de 10 campos de v16 por periodo de la retención, no por la fecha de hoy.
    Antes, confirmar si el formulario virtual 621 todavía importa ese archivo o
@@ -110,7 +125,9 @@ línea por cobrar del CRE (documento 20).
    *Base:* R.S. 037-2002/SUNAT, art. 8 (comprobante de retención) y el
    formulario 621.
    *Esfuerzo:* 1–2 días.
-3. **Media — Correlativo del pago parcial en el CRE.** `cac:Payment/cbc:ID`
+3. **Hecha (11/10/2026) — Media — Correlativo del pago parcial en el CRE.**
+   *Implementación:* `account.payment._l10n_pe_edi_retention_payment_index`
+   cuenta los CRE anteriores (no anulados) que incluyen la factura. `cac:Payment/cbc:ID`
    debe ser el número de pago a ese comprobante (1, 2, 3… según los CRE
    anteriores del mismo comprobante), no la posición en el CRE. Calcularlo con
    las líneas de retención publicadas de cada factura.

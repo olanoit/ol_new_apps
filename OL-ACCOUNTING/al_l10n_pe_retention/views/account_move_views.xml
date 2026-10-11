@@ -7,6 +7,18 @@
         <field name="arch" type="xml">
             <!-- Pestaña interna de «Facturación PE» (al_account_base). -->
             <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Retenciones sufridas" name="l10n_pe_retention_received"
+                      invisible="move_type != 'out_invoice' or not l10n_pe_retention_received_line_ids">
+                    <field name="l10n_pe_retention_received_line_ids" readonly="1">
+                        <list>
+                            <field name="date"/>
+                            <field name="retention_id" string="Comprobante de retención"/>
+                            <field name="amount" sum="Total retenido"/>
+                            <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                </page>
                 <page string="Retención IGV" name="l10n_pe_retention"
                       invisible="not l10n_pe_retention_eligible">
                     <group>

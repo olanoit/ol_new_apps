@@ -283,6 +283,11 @@ class TestFactoring(TransactionCase):
         if not tax:
             self.skipTest('sin IGV de ventas al 18 %')
         self.customer.is_retention_agent = True
+        # Entre agentes de retención no se retiene (R.S. 037-2002, art. 5):
+        # la compañía de la prueba no debe serlo.
+        if 'l10n_pe_retention_agent' in self.company._fields:
+            self.company.l10n_pe_retention_agent = False
+        self.company.partner_id.write({'is_retention_agent': False, 'is_good_taxpayer': False})
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice', 'partner_id': self.customer.id,
             'journal_id': self.sale_journal.id, 'invoice_date': self.today,
@@ -293,6 +298,9 @@ class TestFactoring(TransactionCase):
         self.assertEqual(invoice.amount_total, 1180.0)
         self.assertEqual(invoice._l10n_pe_factoring_net_pending(), 1144.6,
                          'monto neto pendiente: total menos la retención del 3 % del cliente agente')
+        self.company.partner_id.is_retention_agent = True
+        self.assertEqual(invoice._l10n_pe_factoring_net_pending(), 1180.0,
+                         'una compañía agente de retención no sufre retención')
         self.customer.is_retention_agent = False
 
     # ------------------------------------------------------------------

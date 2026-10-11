@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261011 — 11/10/2026
+
+- Retenciones sufridas con el comprobante del cliente: serie, número y fecha, y una o varias facturas por comprobante; un asiento que abona y concilia cada factura.
+- Nueva lista «Retenciones sufridas por factura», agrupable por periodo y cliente para aplicar el IGV retenido en el formulario 621; pestaña «Retenciones sufridas» en la factura.
+- En el XML del CRE, cac:Payment/cbc:ID es el número de pago a ese comprobante (1, 2…), no su posición dentro del CRE (R.S. 274-2015/SUNAT).
+
 ## 18.20261009 — 09/10/2026
 
 - La firma y el envío del CRE pasan a un método propio (`_l10n_pe_edi_sign_retention`) que extienden los módulos de otros operadores, como The Factory HKA.

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261011 — 11/10/2026
+
+- El «Monto neto pendiente de pago» y las cuotas (XML y PDF A4 y ticket) ya no incluyen la retención del IGV cuando el cliente es agente de retención (R.S. 193-2020/SUNAT, numeral 2.1).
+
 ## 18.20261008 — 08/10/2026
 
 - Ticket: datos de la compañía al final (nombre, R.U.C., domicilio fiscal, teléfono, correo y web).

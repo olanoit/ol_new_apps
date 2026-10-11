@@ -42,7 +42,7 @@ ver ``al_l10n_pe_delivery_guide_report``.
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '18.20261008',
+    'version': '19.20261011',
     'license': 'OPL-1',
     'depends': [
         'account',

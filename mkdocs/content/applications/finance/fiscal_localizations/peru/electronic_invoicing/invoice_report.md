@@ -131,6 +131,18 @@ imprime **Información del crédito** con cada cuota.
 
 ![Factura al crédito con el cuadro de cuotas](invoice_report/a4-invoice-credit-installments.png)
 
+#### Cliente agente de retención
+
+Si el cliente es agente de retención, el **Monto neto pendiente de pago** y las
+cuotas no incluyen la retención del IGV (R.S. 193-2020/SUNAT, numeral 2.1). La
+retención es el 3 % del total cuando el comprobante supera S/ 700; no se
+aplica si la operación tiene detracción, si no tiene IGV, o si su compañía es
+agente de retención o buen contribuyente. Se reparte entre las cuotas en
+proporción a cada una, igual en el PDF y en el XML.
+
+Por ejemplo, una factura de S/ 1 180,00 en dos cuotas iguales: retención
+35,40, neto pendiente **S/ 1 144,60** y cuotas de **572,30** cada una.
+
 ### Orden de compra del cliente
 
 En **Ventas ‣ Pedidos**, el campo **OC. externa** guarda el número de la orden

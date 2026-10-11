@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 19.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "El «Monto neto pendiente de pago» y las cuotas (XML y PDF A4 y ticket) ya no incluyen la retención del IGV cuando el cliente es agente de retención (R.S. 193-2020/SUNAT, numeral 2.1)."
   - version: 18.20261008
     fecha: 08/10/2026
     cambios:

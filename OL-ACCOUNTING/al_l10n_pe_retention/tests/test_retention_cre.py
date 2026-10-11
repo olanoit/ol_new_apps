@@ -198,3 +198,15 @@ class TestRetentionCre(TestRetentionApplies):
 for _name in dir(TestRetentionApplies):
     if _name.startswith('test_') and _name not in TestRetentionCre.__dict__:
         setattr(TestRetentionCre, _name, None)
+
+    def test_payment_id_is_the_payment_number_to_the_bill(self):
+        """Dos pagos parciales a la misma factura, en CRE distintos: el
+        segundo informa el pago n.º 2 a ese comprobante (R.S. 274-2015)."""
+        self._setup_retention_tax()
+        bill = self._bill(1000.0)
+        bill.action_post()
+        first = self._register_payment(bill, amount=590.0)._create_payments()
+        second = self._register_payment(bill, amount=590.0)._create_payments()
+        path = '//cac:Payment/cbc:ID'
+        self.assertEqual(self._tree(first).xpath(path, namespaces=NS)[0].text, '1')
+        self.assertEqual(self._tree(second).xpath(path, namespaces=NS)[0].text, '2')

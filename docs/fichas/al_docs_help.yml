@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 4.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Ayuda contextual para la lista de retenciones sufridas por factura."
   - version: 3.20261011
     fecha: 11/10/2026
     cambios:

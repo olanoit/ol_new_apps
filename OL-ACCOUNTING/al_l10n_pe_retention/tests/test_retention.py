@@ -171,6 +171,7 @@ class TestRetentionApplies(TransactionCase):
                 'al_l10n_pe_retention.action_retention_bills',
                 'al_l10n_pe_retention.action_retention_payments',
                 'al_l10n_pe_retention.action_retention_received',
+                'al_l10n_pe_retention.action_retention_received_line',
                 'al_l10n_pe_retention.action_retention_summary',
                 'al_l10n_pe_retention.action_retention_analysis')])
 
@@ -314,7 +315,7 @@ class TestRetentionApplies(TransactionCase):
         self.test_retention_received()
         received = self.env['l10n_pe.retention.received'].search(
             [('name', '=', 'R002-00000077')], limit=1)
-        invoice = received.move_id
+        invoice = received.line_ids.move_id
         received.action_draft()
         self.assertEqual(received.state, 'draft')
         self.assertFalse(received.entry_id)
@@ -352,8 +353,10 @@ class TestRetentionApplies(TransactionCase):
         residual_before = invoice.amount_residual
         received = self.env['l10n_pe.retention.received'].create({
             'name': 'R002-00000077', 'date': date(2025, 6, 20),
-            'partner_id': self.partner.id, 'move_id': invoice.id,
-            'amount': 70.80})
+            'partner_id': self.partner.id,
+            'line_ids': [(0, 0, {'move_id': invoice.id, 'amount': 70.80})]})
+        self.assertEqual((received.l10n_pe_series, received.l10n_pe_number),
+                         ('R002', '00000077'))
         received.action_post()
         self.assertEqual(received.state, 'posted')
         self.assertTrue(received.entry_id)
@@ -541,8 +544,8 @@ class TestRetentionApplies(TransactionCase):
         invoice.action_post()
         return self.env['l10n_pe.retention.received'].create({
             'name': name, 'date': date(2025, 6, 20),
-            'partner_id': self.partner.id, 'move_id': invoice.id,
-            'amount': amount})
+            'partner_id': self.partner.id,
+            'line_ids': [(0, 0, {'move_id': invoice.id, 'amount': amount})]})
 
     def test_retention_received_requires_positive_amount(self):
         received = self._received(amount=0.0)
@@ -553,7 +556,7 @@ class TestRetentionApplies(TransactionCase):
         received = self._received()
         bill = self._bill(1000.0)
         bill.action_post()
-        received.move_id = bill
+        received.line_ids.move_id = bill
         with self.assertRaises(UserError):
             received.action_post()
 
@@ -570,6 +573,29 @@ class TestRetentionApplies(TransactionCase):
         received.action_post()
         with self.assertRaises(UserError):
             received.unlink()
+
+    def test_retention_received_several_invoices(self):
+        """Un CRE del cliente que cubre dos facturas: un asiento, un cargo al
+        IGV retenido por el total y cada factura rebajada en lo suyo."""
+        first = self._received(amount=70.80, name='R002-00000200')
+        second = self._received(amount=35.40, name='R002-00000201')
+        invoice_2 = second.line_ids.move_id
+        second.unlink()
+        first.write({'l10n_pe_series': 'E001', 'l10n_pe_number': '00000055',
+                     'line_ids': [(0, 0, {'move_id': invoice_2.id, 'amount': 35.40})]})
+        self.assertEqual(first.name, 'E001-00000055')
+        self.assertAlmostEqual(first.amount, 106.20, 2)
+        invoice_1 = first.line_ids.move_id - invoice_2
+        before = (invoice_1.amount_residual, invoice_2.amount_residual)
+        first.action_post()
+        debit = first.entry_id.line_ids.filtered(lambda l: l.debit > 0)
+        self.assertAlmostEqual(debit.debit, 106.20, 2)
+        self.assertAlmostEqual(invoice_1.amount_residual, before[0] - 70.80, 2)
+        self.assertAlmostEqual(invoice_2.amount_residual, before[1] - 35.40, 2)
+        self.assertAlmostEqual(invoice_2.l10n_pe_retention_received_amount, 35.40, 2)
+        lines = self.env['l10n_pe.retention.received.line'].search(
+            [('retention_id', '=', first.id)])
+        self.assertEqual(lines.move_id, first.line_ids.move_id)
 
     def test_retention_received_multicompany_rule(self):
         rule = self.env.ref(

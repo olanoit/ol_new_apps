@@ -210,6 +210,23 @@ class AccountPayment(models.Model):
         return breakdown
 
     @api.model
+    def _l10n_pe_edi_retention_payment_index(self, bill):
+        """Número de pago a ``bill`` que informa este CRE (``cac:Payment/
+        cbc:ID``): 1 para el primer pago parcial al comprobante, 2 para el
+        segundo… según los CRE anteriores del mismo comprobante (R.S.
+        274-2015/SUNAT). Antes se informaba la posición del comprobante dentro
+        del CRE, que no dice cuántas veces se le pagó."""
+        self.ensure_one()
+        previous = self.search([
+            ('company_id', '=', self.company_id.id),
+            ('l10n_pe_edi_retention_number', '!=', False),
+            ('state', 'in', ('in_process', 'paid')),
+            ('l10n_pe_edi_status', '!=', 'cancelled'),
+            ('id', '!=', self.id),
+            '|', ('date', '<', self.date), '&', ('date', '=', self.date), ('id', '<', self.id),
+        ]).filtered(lambda p: bill in (p.invoice_ids | p.reconciled_bill_ids))
+        return len(previous) + 1
+
     def _l10n_pe_edi_retention_bill_number(self, bill):
         """Serie-número del comprobante del proveedor (``F001-00000123``)."""
         if bill.l10n_latam_use_documents and bill.l10n_latam_document_number:

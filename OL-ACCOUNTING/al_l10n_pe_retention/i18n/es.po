@@ -62,12 +62,14 @@ msgstr "Contacto"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received_line__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_summary_wizard__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received_line__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_summary_wizard__create_date
 msgid "Created on"
 msgstr "Creado el"
@@ -80,6 +82,7 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_account_payment_register__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_account_tax__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received_line__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_summary_wizard__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_res_company__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_res_config_settings__display_name
@@ -149,12 +152,14 @@ msgstr "Asiento contable"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received_line__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_summary_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_l10n_pe_retention
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_received_line__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_retention.field_l10n_pe_retention_summary_wizard__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"

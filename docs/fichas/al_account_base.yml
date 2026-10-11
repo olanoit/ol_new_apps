@@ -324,6 +324,11 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 13.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Retención del IGV del cliente agente (_l10n_pe_customer_retention): 3 % del comprobante de más de S/ 700, sin detracción, con IGV y si la compañía no es agente ni buen contribuyente; la usan el comprobante impreso, el XML y el factoring."
+      - "Reparto de esa retención entre las cuotas (_l10n_pe_retention_split), el mismo en el PDF y en el XML."
   - version: 12.20261011
     fecha: 11/10/2026
     cambios:

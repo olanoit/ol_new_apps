@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Retenciones sufridas -->
+    <!-- Retenciones sufridas: comprobante del cliente (cabecera) -->
     <record id="view_retention_received_list" model="ir.ui.view">
         <field name="name">l10n_pe.retention.received.list</field>
         <field name="model">l10n_pe.retention.received</field>
@@ -9,7 +9,6 @@
                 <field name="date"/>
                 <field name="name"/>
                 <field name="partner_id"/>
-                <field name="move_id"/>
                 <field name="amount" sum="Total retenido"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'posted'"/>
@@ -34,23 +33,35 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1" placeholder="Serie-número"/></h1>
+                    </div>
                     <group>
                         <group>
                             <field name="partner_id"
                                    readonly="state != 'draft'"/>
-                            <field name="move_id"
-                                   readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
                             <field name="entry_id"/>
                         </group>
                         <group>
-                            <field name="name" readonly="state != 'draft'"/>
-                            <field name="date" readonly="state != 'draft'"/>
-                            <field name="amount"
-                                   readonly="state != 'draft'"/>
+                            <field name="l10n_pe_series" readonly="state != 'draft'"
+                                   required="state == 'draft' and not name"/>
+                            <field name="l10n_pe_number" readonly="state != 'draft'"
+                                   required="state == 'draft' and not name"/>
+                            <field name="amount"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                         </group>
                     </group>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <list editable="bottom">
+                            <field name="move_id"/>
+                            <field name="invoice_amount"/>
+                            <field name="amount" sum="Total retenido"/>
+                            <field name="partner_id" column_invisible="1"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
                 </sheet>
                 <chatter/>
             </form>
@@ -65,8 +76,71 @@
             <p class="o_view_nocontent_smiling_face">
                 Registre los comprobantes de retención de sus clientes
             </p>
-            <p>Cada registro genera el asiento a la cuenta 40114 y lo
-               concilia con la factura de venta.</p>
+            <p>Cada comprobante, con una o varias facturas, genera el asiento a la
+               cuenta de IGV retenido y lo concilia con cada factura de venta.</p>
+        </field>
+    </record>
+
+    <!-- Retenciones sufridas por factura y periodo (para el formulario 621) -->
+    <record id="view_retention_received_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.received.line.list</field>
+        <field name="model">l10n_pe.retention.received.line</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="date"/>
+                <field name="retention_id" string="Comprobante de retención"/>
+                <field name="partner_id"/>
+                <field name="move_id"/>
+                <field name="invoice_amount"/>
+                <field name="amount" sum="Total retenido"/>
+                <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_retention_received_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.received.line.pivot</field>
+        <field name="model">l10n_pe.retention.received.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Retenciones sufridas">
+                <field name="date" interval="month" type="row"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_retention_received_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.retention.received.line.search</field>
+        <field name="model">l10n_pe.retention.received.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="retention_id"/>
+                <field name="partner_id"/>
+                <field name="move_id"/>
+                <filter name="posted" string="Registradas" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_month" string="Periodo" context="{'group_by': 'date:month'}"/>
+                    <filter name="group_partner" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_retention" string="Comprobante de retención"
+                            context="{'group_by': 'retention_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_retention_received_line" model="ir.actions.act_window">
+        <field name="name">Retenciones sufridas por factura</field>
+        <field name="res_model">l10n_pe.retention.received.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_posted': 1, 'search_default_group_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin retenciones sufridas registradas</p>
+            <p>El IGV que le retuvieron sus clientes, por periodo: se aplica contra el IGV
+               del mes en el formulario 621.</p>
         </field>
     </record>
 
@@ -203,6 +277,9 @@
     <menuitem id="menu_retention_received" name="Retenciones sufridas"
               parent="menu_retention_root" action="action_retention_received"
               sequence="30"/>
+    <menuitem id="menu_retention_received_line" name="Retenciones sufridas por factura"
+              parent="menu_retention_root" action="action_retention_received_line"
+              sequence="31"/>
     <menuitem id="menu_retention_summary" name="Resumen PDT 626"
               parent="menu_retention_root" action="action_retention_summary"
               sequence="40"/>

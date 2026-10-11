@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261011 — 11/10/2026
+
+- Retención del IGV del cliente agente (_l10n_pe_customer_retention): 3 % del comprobante de más de S/ 700, sin detracción, con IGV y si la compañía no es agente ni buen contribuyente; la usan el comprobante impreso, el XML y el factoring.
+- Reparto de esa retención entre las cuotas (_l10n_pe_retention_split), el mismo en el PDF y en el XML.
+
 ## 12.20261011 — 11/10/2026
 
 - El encabezado, el pie y la hoja de estilos de los comprobantes impresos pasan a al_report_base, común a todos los documentos de la suite; las plantillas de este módulo quedan como alias.

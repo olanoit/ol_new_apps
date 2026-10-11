@@ -1955,6 +1955,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
         <field name="section">Retenciones del IGV</field>
     </record>
+    <record id="help_l10n_pe_retention_received_line" model="al.docs.help">
+        <field name="key">l10n_pe.retention.received.line</field>
+        <field name="kind">model</field>
+        <field name="name">PE - Factura de una retención sufrida</field>
+        <field name="module">al_l10n_pe_retention</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/#registrar-retenciones-sufridas</field>
+        <field name="section">Registrar retenciones sufridas</field>
+    </record>
     <record id="help_l10n_pe_retention_summary_wizard" model="al.docs.help">
         <field name="key">l10n_pe.retention.summary.wizard</field>
         <field name="kind">model</field>

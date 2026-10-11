@@ -138,6 +138,10 @@ retienen.
     El CRE debe enviarse dentro de los 7 días. Si vence el plazo, el pago
     muestra una alerta: evalúe emitir uno nuevo con el asesor tributario.
 
+Cada factura del CRE lleva el número de pago a ese comprobante
+(`cac:Payment/cbc:ID`): 1 en el primer pago parcial, 2 en el segundo, y así,
+según los CRE anteriores de la misma factura (R.S. 274-2015/SUNAT).
+
 Si el pago se registró por error, anúlelo y el CRE no se envía. Un CRE ya
 aceptado necesita la reversión: use la de
 [OSE Factory HKA](electronic_invoicing/ose_factory_hka.md) o hágala en el
@@ -145,13 +149,20 @@ portal del operador; este módulo solo lo marca **Anulado**.
 
 ## Registrar retenciones sufridas
 
-Cuando un cliente agente paga el neto de una factura de venta:
+Cuando un cliente agente paga el neto de sus facturas de venta, entrega su
+comprobante de retención, que puede cubrir una o varias facturas:
 
 1. Vaya a **Perú ‣ Retenciones IGV ‣ Retenciones sufridas** y haga clic en
    **Nuevo**.
-2. Elija la factura, el número del comprobante de retención del cliente y el
-   importe retenido. Al confirmar, se crea el asiento contra la cuenta por
-   cobrar, ya conciliado con la factura.
+2. Elija el cliente y escriba la **Serie**, el **Número** y la fecha del
+   comprobante de retención.
+3. En las líneas, agregue cada factura con el **Monto retenido** que indica el
+   comprobante (al elegir la factura se propone el 3 % de su total).
+4. Haga clic en **Registrar**: se crea un asiento con el IGV retenido por el
+   total y un abono a la cuenta por cobrar de cada factura, ya conciliado.
+
+La factura muestra lo retenido en la pestaña **Retenciones sufridas** de
+**Facturación PE**.
 
 ![Retención sufrida registrada contra la factura de venta](withholdings/withholding-suffered.png)
 
@@ -171,6 +182,9 @@ borrador**: deshace el asiento y la conciliación.
 
 - **Perú ‣ Retenciones IGV ‣ Comprobantes de proveedor**: facturas sujetas,
   con lo pendiente de pago.
+- **Retenciones sufridas por factura**: el IGV que le retuvieron sus clientes,
+  agrupado por periodo, cliente o comprobante (lista y tabla dinámica). Es el
+  importe que se aplica contra el IGV del mes en el formulario 621.
 - **Retenciones efectuadas**: un CRE por pago, con el plazo de envío y el
   estado.
 - **Análisis de retenciones**: retenido por proveedor y mes.

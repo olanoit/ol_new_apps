@@ -32,7 +32,7 @@ la factura ni el cobro:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '4.20261010',
+    'version': '5.20261011',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

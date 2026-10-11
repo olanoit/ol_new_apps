@@ -4,11 +4,6 @@ from odoo.exceptions import UserError
 
 from .factoring import LINE_STATES
 
-#: Retención del IGV que aplica un cliente agente de retención (R.S. 037-2002/SUNAT)
-#: sobre comprobantes de más de S/ 700.
-RETENTION_RATE = 0.03
-RETENTION_MIN_AMOUNT = 700.0
-
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -39,8 +34,10 @@ class AccountMove(models.Model):
         """Monto neto pendiente de pago (DU 013-2020, art. 6; R.S. 193-2020/SUNAT):
         el saldo de la factura sin la detracción, que el cliente deposita en el
         Banco de la Nación, ni la retención del IGV si el cliente es agente de
-        retención. Usa los datos de los módulos de detracciones y de consulta
-        RUC de la suite cuando están instalados; es una propuesta editable."""
+        retención (la misma regla que el comprobante impreso y el XML:
+        ``_l10n_pe_customer_retention`` de al_account_base). Usa los datos de
+        los módulos de detracciones y de consulta RUC de la suite cuando están
+        instalados; es una propuesta editable."""
         self.ensure_one()
         company = self.company_id
         to_invoice = lambda amount: company.currency_id._convert(
@@ -48,10 +45,8 @@ class AccountMove(models.Model):
         deduction = 0.0
         if 'l10n_pe_detraction_applies' in self._fields and self.l10n_pe_detraction_applies:
             deduction += to_invoice(self.l10n_pe_detraction_amount)
-        elif (getattr(self.commercial_partner_id, 'is_retention_agent', False)
-              and not self.currency_id.is_zero(self.amount_tax)
-              and company.currency_id.compare_amounts(abs(self.amount_total_signed), RETENTION_MIN_AMOUNT) > 0):
-            deduction += self.currency_id.round(self.amount_total * RETENTION_RATE)
+        else:
+            deduction += self._l10n_pe_customer_retention()
         net = self.amount_total - deduction
         return max(0.0, min(self.amount_residual, self.currency_id.round(net)))
 

@@ -126,12 +126,14 @@ class AccountMove(models.Model):
         return 'CRÉDITO' if self.is_credit else 'CONTADO'
 
     def _l10n_pe_report_net_pending(self):
-        """Monto neto pendiente de pago (R.S. 193-2020/SUNAT): el total menos
-        la detracción, el mismo importe que la forma de pago «Credito» del XML."""
+        """Monto neto pendiente de pago (R.S. 193-2020/SUNAT, numeral 2.1): el
+        total menos la detracción y menos la retención del IGV del cliente
+        agente, el mismo importe que la forma de pago «Credito» del XML."""
         self.ensure_one()
         spot = self._l10n_pe_edi_get_spot() if self.is_sale_document() else {}
         return self.currency_id.round(
-            abs(self.amount_total) - ((spot or {}).get('spot_amount') or 0.0))
+            abs(self.amount_total) - ((spot or {}).get('spot_amount') or 0.0)
+            - self._l10n_pe_customer_retention())
 
     def get_data_dues(self):
         """Cuotas de crédito a mostrar en el reporte, con el mismo criterio
@@ -149,10 +151,16 @@ class AccountMove(models.Model):
         dues = []
         term_lines = self.line_ids.filtered(
             lambda l: l.display_type == 'payment_term').sorted('date_maturity')
+        amounts = []
         for idx, line in enumerate(term_lines):
             amount = abs(line.amount_currency)
             if idx == 0:
                 amount -= spot_amount
+            amounts.append(amount)
+        # La retención del cliente agente se descuenta de las cuotas, con el
+        # mismo reparto que el XML (al_account_base).
+        amounts = self._l10n_pe_retention_split(amounts)
+        for idx, (line, amount) in enumerate(zip(term_lines, amounts)):
             dues.append({
                 'nro': idx + 1,
                 'amount': amount,

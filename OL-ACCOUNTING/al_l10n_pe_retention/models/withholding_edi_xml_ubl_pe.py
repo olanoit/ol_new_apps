@@ -68,7 +68,7 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
             _amount(sum(entry['bill_retention_pen'] for entry in breakdown)), currencyID=currency)
         _el(root, 'sac:SUNATTotalPaid',
             _amount(sum(entry['net_total_paid_pen'] for entry in breakdown)), currencyID=currency)
-        for index, entry in enumerate(breakdown, start=1):
+        for entry in breakdown:
             bill = entry['bill']
             reference = _el(root, 'sac:SUNATRetentionDocumentReference')
             _el(reference, 'cbc:ID', payment._l10n_pe_edi_retention_bill_number(bill),
@@ -77,7 +77,8 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
             _el(reference, 'cbc:TotalInvoiceAmount', _amount(bill.amount_total),
                 currencyID=bill.currency_id.name)
             payment_node = _el(reference, 'cac:Payment')
-            _el(payment_node, 'cbc:ID', index)
+            # Número del pago a ESTE comprobante (1, 2…), no su posición en el CRE.
+            _el(payment_node, 'cbc:ID', payment._l10n_pe_edi_retention_payment_index(bill))
             _el(payment_node, 'cbc:PaidAmount', _amount(entry['bill_paid_currency']),
                 currencyID=bill.currency_id.name)
             _el(payment_node, 'cbc:PaidDate', payment.date)
