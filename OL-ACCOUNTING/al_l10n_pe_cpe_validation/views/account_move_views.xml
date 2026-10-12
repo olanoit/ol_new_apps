@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_cpe_validation" model="ir.ui.view">
+        <field name="name">account.move.form.cpe.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_cpe_validate" type="object" string="Validar en SUNAT"
+                        invisible="not l10n_pe_cpe_applicable or state == 'cancel'"
+                        groups="account.group_account_invoice"/>
+            </xpath>
+            <xpath expr="//page[@id='other_tab']/group[@id='other_tab_group']" position="after">
+                <field name="l10n_pe_cpe_applicable" invisible="1"/>
+                <group string="Validez en SUNAT" name="l10n_pe_cpe_group"
+                       invisible="not l10n_pe_cpe_applicable">
+                    <group>
+                        <field name="l10n_pe_cpe_result" widget="badge"
+                               decoration-success="l10n_pe_cpe_result == 'valid'"
+                               decoration-warning="l10n_pe_cpe_result == 'observed'"
+                               decoration-danger="l10n_pe_cpe_result == 'invalid'"/>
+                        <field name="l10n_pe_cpe_checked_on"/>
+                    </group>
+                    <group>
+                        <field name="l10n_pe_cpe_doc_state"/>
+                        <field name="l10n_pe_cpe_ruc_state"/>
+                        <field name="l10n_pe_cpe_domicile"/>
+                    </group>
+                    <field name="l10n_pe_cpe_message" colspan="2" invisible="not l10n_pe_cpe_message"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_in_invoice_bill_tree_cpe_validation" model="ir.ui.view">
+        <field name="name">account.move.list.bill.cpe.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="l10n_pe_cpe_result" optional="show" widget="badge" string="SUNAT"
+                       decoration-success="l10n_pe_cpe_result == 'valid'"
+                       decoration-warning="l10n_pe_cpe_result == 'observed'"
+                       decoration-danger="l10n_pe_cpe_result == 'invalid'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter_cpe_validation" model="ir.ui.view">
+        <field name="name">account.move.search.cpe.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="l10n_pe_cpe_valid" string="Válidos en SUNAT"
+                        domain="[('l10n_pe_cpe_result', '=', 'valid')]"/>
+                <filter name="l10n_pe_cpe_not_valid" string="No válidos o con observaciones en SUNAT"
+                        domain="[('l10n_pe_cpe_result', 'in', ('observed', 'invalid'))]"/>
+                <filter name="l10n_pe_cpe_unchecked" string="Sin consultar en SUNAT"
+                        domain="[('l10n_pe_cpe_result', '=', False), ('move_type', 'in', ('in_invoice', 'in_refund'))]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Consulta en lote desde la lista de facturas de proveedor. -->
+    <record id="action_server_cpe_validate" model="ir.actions.server">
+        <field name="name">Validar en SUNAT</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="group_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_l10n_pe_cpe_validate()</field>
+    </record>
+</odoo>

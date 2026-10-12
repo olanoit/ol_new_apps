@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_dua" model="ir.ui.view">
+        <field name="name">res.config.settings.form.dua</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="66"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Importaciones (DUA)" name="pe_dua_block">
+                    <setting string="DUA de importación" id="al_dua_setting" company_dependent="1"
+                             help="Aduana, diario y cuenta puente de la base imponible del IGV de las DUA.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_dua_partner_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_dua_partner_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_dua_journal_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_dua_journal_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_dua_offset_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_dua_offset_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

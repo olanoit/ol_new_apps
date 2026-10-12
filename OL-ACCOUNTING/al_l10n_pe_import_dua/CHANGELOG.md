@@ -1,0 +1,15 @@
+Historial de cambios — PE - DUA de importación y costos en destino (AL)
+=======================================================================
+
+Una entrada por versión publicada, la más reciente arriba; el número es
+el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+
+Generado desde `docs/fichas/al_l10n_pe_import_dua.yml` (sección `novedades`) con
+`python3 scripts/gen_changelog.py`: no editar a mano.
+
+## 1.20261012 — 12/10/2026
+
+- DUA (tipo 50 y 52) como documento de compra con el número de la DAM (aduana-año-régimen-número) que leen el PLE y el SIRE.
+- Liquidación de la DUA: derechos como costo en destino y base imponible con el IGV de importación (crédito fiscal).
+- Percepción aduanera registrada al publicar (con al_l10n_pe_perception).
+- Facturas del exterior y recepciones vinculadas; costos en destino con los derechos y los gastos de aduana.

@@ -182,6 +182,9 @@ class L10nPeRce84(models.AbstractModel):
             extractor._rce_total(move) - informed, 2)
         is_customs = doc_code in RCE_CUSTOMS_DOC_TYPES
         customs_code = _leading_digits(serie, 3)
+        customs_parts = extractor._rce_customs_parts(move) if is_customs else ()
+        customs_year = customs_parts[1] if customs_parts else (
+            str(move.invoice_date.year) if move.invoice_date else '')
         currency = move.currency_id.name or ''
         cancelled = move.state == 'cancel'
 
@@ -205,7 +208,9 @@ class L10nPeRce84(models.AbstractModel):
             # 7-11 · comprobante
             doc_code,
             customs_code if is_customs else serie,
-            str(move.invoice_date.year) if (is_customs and move.invoice_date) else '',
+            # 9: año de la DAM o DSI, el de su número (aduana-año-régimen-
+            # número); sin él, el de la fecha de emisión.
+            customs_year if is_customs else '',
             folio.lstrip('0') or folio,
             '',                                    # 11 nº final del rango
             # 12-14 · proveedor

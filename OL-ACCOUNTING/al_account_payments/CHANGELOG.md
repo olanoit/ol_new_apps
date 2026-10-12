@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_payments.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261012 — 12/10/2026
+
+- Aviso (no bloqueo) de pago con fecha futura en el asistente de registro y en el pago; al publicarlo queda anotado en su historial.
+
 ## 8.20261011 — 11/10/2026
 
 - Diarios que exigen el número de operación del banco para confirmar pagos.

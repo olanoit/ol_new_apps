@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261012 — 12/10/2026
+
+- El documento modificado de las notas cuyo original no está en Odoo sale de los datos escritos en la nota, también para decidir si va como descuento.
+- Total de la DAM y la DSI (tipos 50-54) en el RCE: base + IGV + otros derechos, sin la cuenta puente del valor en aduana.
+
 ## 19.20261011 — 11/10/2026
 
 - RCE: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV.

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_monthly_tax" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.monthly.tax</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="66"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Declaración mensual (621)" name="pe_monthly_tax_block">
+                    <setting string="Pago a cuenta del impuesto a la renta" id="pe_income_advance"
+                             company_dependent="1"
+                             help="Coeficiente de la declaración anual (art. 85 de la Ley del Impuesto a la Renta) y suspensión aprobada por SUNAT. El régimen se registra con su fecha en Régimen tributario.">
+                        <div class="row mt8">
+                            <label for="l10n_pe_income_coefficient" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_income_coefficient"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_income_coefficient_jan_feb" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_income_coefficient_jan_feb"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_income_suspended" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_income_suspended"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_tax_uit_amount" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_tax_uit_amount"/>
+                        </div>
+                        <div class="mt8">
+                            <button name="%(action_l10n_pe_tax_regime)d" type="action" icon="oi-arrow-right"
+                                    string="Régimen tributario" class="btn-link p-0"/>
+                        </div>
+                    </setting>
+                    <setting string="Asiento del pago a cuenta" id="pe_income_advance_move" company_dependent="1"
+                             help="Diario y cuentas del asiento opcional del pago a cuenta.">
+                        <div class="row mt8">
+                            <label for="l10n_pe_monthly_tax_journal_id" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_monthly_tax_journal_id"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_income_advance_account_id" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_income_advance_account_id"/>
+                        </div>
+                        <div class="row">
+                            <label for="l10n_pe_income_payable_account_id" class="col-lg-5 o_light_label"/>
+                            <field name="l10n_pe_income_payable_account_id"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

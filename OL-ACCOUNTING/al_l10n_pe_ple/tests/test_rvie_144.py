@@ -332,3 +332,59 @@ class TestRvie144(AccountTestInvoicingCommon):
         self.assertEqual(fields_[25], '4130.00', 'total en soles')
         self.assertEqual(fields_[26], 'USD')
         self.assertEqual(fields_[27], '3.500')
+
+    # ------------------------------------------------------------------
+    # Notas sobre comprobantes que no están en Odoo (R5)
+    # ------------------------------------------------------------------
+    def _orphan_credit_note(self, **origin):
+        doc_07 = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '07'), ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        note = self.env['account.move'].with_company(self.company).create(dict({
+            'move_type': 'out_refund',
+            'partner_id': self.customer.id,
+            'journal_id': self.sale_journal.id,
+            'invoice_date': date(2026, 3, 16),
+            'date': date(2026, 3, 16),
+            'l10n_latam_document_type_id': doc_07.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product.id, 'quantity': 1, 'price_unit': 100.0,
+                'tax_ids': [(6, 0, self.sale_tax.ids)] if self.sale_tax else False})],
+        }, **origin))
+        note.action_post()
+        return note
+
+    def test_credit_note_with_manual_origin(self):
+        """Una NC sobre una factura de 2024 que no está en Odoo sale con los
+        datos escritos del comprobante modificado (campos 29 a 32) y, por ser
+        de un periodo anterior, como descuento."""
+        doc_01 = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '01'), ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        note = self._orphan_credit_note(
+            l10n_pe_origin_document_type_id=doc_01.id, l10n_pe_origin_serie='f001',
+            l10n_pe_origin_number='00000815', l10n_pe_origin_date=date(2024, 11, 20))
+        self.assertTrue(note.l10n_pe_is_note)
+        self.assertFalse(note.l10n_pe_origin_linked)
+        fields_ = self._fields_of(note)
+        self.assertEqual(fields_[28], '20/11/2024', 'campo 29: fecha del modificado')
+        self.assertEqual(fields_[29], '01', 'campo 30: tipo')
+        self.assertEqual(fields_[30], 'F001', 'campo 31: serie')
+        self.assertEqual(fields_[31], '815', 'campo 32: número')
+        self.assertEqual(fields_[14], '0.00', 'periodo anterior: sin base negativa')
+        self.assertTrue(fields_[15].startswith('-'), 'campo 16: descuento')
+
+    def test_linked_origin_wins_over_manual(self):
+        origin = self._create_invoice(invoice_date=date(2026, 3, 5))
+        refund = self._create_credit_note(origin, date(2026, 3, 20))
+        data = refund._l10n_pe_modified_document()
+        self.assertEqual(data['move'], origin)
+        self.assertEqual(data['type'], '01')
+
+    def test_rejected_cdr_is_cancelled_in_official_report_columns(self):
+        """Los informes PLE de l10n_pe_reports reciben el rechazado como
+        anulado (importe cero, estado 2), no como error."""
+        invoice = self._create_invoice()
+        self._reject_cdr(invoice)
+        handler = self.env['l10n_pe.tax.ple.report.handler']
+        columns = handler._l10n_pe_ple_columns(invoice, {})
+        self.assertEqual(columns['status'], 'cancel')
+        self.assertEqual(columns['edi_state'], 'cancelled')

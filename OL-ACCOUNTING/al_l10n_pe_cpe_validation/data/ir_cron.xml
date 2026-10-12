@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Desactivada por defecto: se activa con las credenciales configuradas. -->
+    <record id="ir_cron_cpe_validate" model="ir.cron">
+        <field name="name">Perú: validar en SUNAT las compras sin consultar</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_l10n_pe_cpe_validate()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

@@ -134,10 +134,12 @@ class L10nPeSireRvie(models.Model):
 
         # NC de un comprobante de periodo anterior: los montos van a las
         # columnas de descuento; del mismo periodo, a las columnas normales.
-        origin = move.reversed_entry_id
+        # Fecha del comprobante modificado: la del original enlazado o la
+        # escrita en la nota si el original no está en Odoo.
+        origin_date = (move._l10n_pe_modified_document() or {}).get('date')
         discount_columns = (
-            sign < 0 and origin and origin.invoice_date
-            and origin.invoice_date.strftime('%Y%m') != '%04d%s' % (self.year, self.month))
+            sign < 0 and origin_date
+            and origin_date.strftime('%Y%m') != '%04d%s' % (self.year, self.month))
         vals = {
             'car_sunat': self._sire_car_sunat(move, self.company_id.root_id.vat),
             'fecha_emision': move.invoice_date,

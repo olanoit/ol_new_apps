@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_bank_form_batch" model="ir.ui.view">
+        <field name="name">res.bank.form.pe.batch</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+            <field name="bic" position="after">
+                <field name="l10n_pe_batch_format"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_partner_bank_form_batch" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.pe.batch</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <field name="acc_number" position="after">
+                <field name="l10n_pe_account_kind"/>
+                <field name="l10n_pe_cci" placeholder="20 dígitos"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_partner_bank_list_batch" model="ir.ui.view">
+        <field name="name">res.partner.bank.list.pe.batch</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+        <field name="arch" type="xml">
+            <field name="acc_number" position="after">
+                <field name="l10n_pe_cci" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_journal_form_batch" model="ir.ui.view">
+        <field name="name">account.journal.form.pe.batch</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="bank_id" position="after">
+                <field name="l10n_pe_batch_format" invisible="not bank_id"/>
+                <field name="l10n_pe_batch_service_code" invisible="not l10n_pe_batch_format"/>
+                <field name="l10n_pe_batch_company_code" invisible="l10n_pe_batch_format != 'interbank'"/>
+                <field name="l10n_pe_batch_process_type" invisible="l10n_pe_batch_format != 'bbva'"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_batch_payment_form_pe" model="ir.ui.view">
+        <field name="name">account.batch.payment.form.pe</field>
+        <field name="model">account.batch.payment</field>
+        <field name="inherit_id" ref="account_batch_payment.view_batch_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_method_code" position="after">
+                <field name="l10n_pe_export_count" invisible="payment_method_code != 'pe_bank_txt' or not l10n_pe_export_count"/>
+                <field name="l10n_pe_export_total" invisible="payment_method_code != 'pe_bank_txt' or not l10n_pe_export_count"/>
+            </field>
+        </field>
+    </record>
+</odoo>

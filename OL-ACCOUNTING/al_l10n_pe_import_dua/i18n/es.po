@@ -1,0 +1,64 @@
+# Traducción al español de al_l10n_pe_import_dua.
+# Los textos propios ya están en español; aquí se traducen los campos
+# heredados de los mixins. Generado con docs/validacion/generar_es_po.py.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields.selection,name:al_l10n_pe_import_dua.selection__account_move__l10n_pe_dua_split_method__by_current_cost_price
+msgid "By Current Cost"
+msgstr "Por costo actual"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields.selection,name:al_l10n_pe_import_dua.selection__account_move__l10n_pe_dua_split_method__by_quantity
+msgid "By Quantity"
+msgstr "Por cantidad"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields.selection,name:al_l10n_pe_import_dua.selection__account_move__l10n_pe_dua_split_method__by_volume
+msgid "By Volume"
+msgstr "Por volumen"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields.selection,name:al_l10n_pe_import_dua.selection__account_move__l10n_pe_dua_split_method__by_weight
+msgid "By Weight"
+msgstr "Por peso"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model,name:al_l10n_pe_import_dua.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model,name:al_l10n_pe_import_dua.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields,field_description:al_l10n_pe_import_dua.field_account_move__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_import_dua.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_import_dua.field_res_company__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_import_dua.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model.fields.selection,name:al_l10n_pe_import_dua.selection__account_move__l10n_pe_dua_split_method__equal
+msgid "Equal"
+msgstr "Igual"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model,name:al_l10n_pe_import_dua.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: al_l10n_pe_import_dua
+#: model:ir.model,name:al_l10n_pe_import_dua.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"

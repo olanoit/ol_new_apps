@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class AccountMove(models.Model):
@@ -7,6 +7,79 @@ class AccountMove(models.Model):
 
     # Glosa peruana (descripción del asiento para el PLE / libros).
     l10n_pe_gloss = fields.Char(string='Glosa', copy=False)
+
+    # Comprobante que modifica una nota de crédito o débito cuando el original
+    # no está en Odoo (p. ej. una factura de antes de la implementación): el
+    # PLE (8.4 y 14.4) y el SIRE lo informan en las columnas del documento
+    # modificado. Con el original enlazado, mandan los datos de ese original.
+    l10n_pe_origin_document_type_id = fields.Many2one(
+        'l10n_latam.document.type', string='Tipo del comprobante modificado', copy=False,
+        domain="[('country_id.code', '=', 'PE')]")
+    l10n_pe_origin_serie = fields.Char(string='Serie del comprobante modificado', copy=False)
+    l10n_pe_origin_number = fields.Char(string='Número del comprobante modificado', copy=False)
+    l10n_pe_origin_date = fields.Date(string='Fecha del comprobante modificado', copy=False)
+    l10n_pe_is_note = fields.Boolean(string='Es nota', compute='_compute_l10n_pe_note_origin')
+    l10n_pe_origin_linked = fields.Boolean(
+        string='Original enlazado', compute='_compute_l10n_pe_note_origin')
+
+    @api.depends('move_type', 'l10n_latam_document_type_id', 'reversed_entry_id')
+    def _compute_l10n_pe_note_origin(self):
+        for move in self:
+            document_type = move.l10n_latam_document_type_id
+            move.l10n_pe_is_note = move.move_type in ('out_refund', 'in_refund') or \
+                document_type.internal_type in ('credit_note', 'debit_note')
+            move.l10n_pe_origin_linked = bool(move._l10n_pe_origin_move())
+
+    def _l10n_pe_origin_move(self):
+        """Comprobante de Odoo que modifica la nota (o vacío)."""
+        self.ensure_one()
+        origin = self.reversed_entry_id
+        if not origin and 'debit_origin_id' in self._fields:
+            origin = self.debit_origin_id
+        return origin
+
+    def _l10n_pe_customs_total(self):
+        """Total de una DAM o DSI (tipos 50-54): base + IGV/IPM + otros.
+
+        La factura de Odoo solo debe a la Aduana derechos e impuestos; el
+        valor en aduana va contra una cuenta puente (línea base con IGV y su
+        compensación sin impuesto), así que ``amount_total`` no es el total
+        del comprobante. El ad valorem ya está dentro de la base; los «otros
+        derechos» (si el registro de la DUA los marca) se suman aparte."""
+        self.ensure_one()
+        lines = self.invoice_line_ids.filtered(lambda line: line.display_type == 'product')
+        base = sum(abs(line.balance) for line in lines if line.tax_ids)
+        if 'l10n_pe_dua_line_kind' in lines._fields:
+            base += sum(abs(line.balance) for line in lines
+                        if line.l10n_pe_dua_line_kind == 'other' and not line.tax_ids)
+        return base + sum(abs(line.balance) for line in self.line_ids if line.tax_line_id)
+
+    def _l10n_pe_modified_document(self):
+        """Datos del comprobante que modifica la nota, para el PLE y el SIRE:
+        ``{'date', 'type', 'serie', 'number', 'move'}``. Del original enlazado
+        si existe; si no, de los campos escritos en la nota. Vacío si no hay
+        ninguno de los dos."""
+        self.ensure_one()
+        origin = self._l10n_pe_origin_move()
+        if origin:
+            name = (origin.l10n_latam_document_number or origin.name or '').replace(' ', '')
+            serie, _sep, number = name.partition('-') if '-' in name else ('', '', name)
+            return {
+                'date': origin.invoice_date,
+                'type': origin.l10n_latam_document_type_id.code or '',
+                'serie': serie,
+                'number': number,
+                'move': origin,
+            }
+        if self.l10n_pe_origin_document_type_id and self.l10n_pe_origin_number:
+            return {
+                'date': self.l10n_pe_origin_date,
+                'type': self.l10n_pe_origin_document_type_id.code or '',
+                'serie': (self.l10n_pe_origin_serie or '').strip().upper(),
+                'number': self.l10n_pe_origin_number.strip(),
+                'move': self.browse(),
+            }
+        return {}
 
     def l10n_pe_is_pe(self):
         """Es un comprobante de una compañía peruana."""

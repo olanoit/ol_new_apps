@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_pe_monthly_tax" name="Declaración mensual (621)"
+              parent="al_account_base.al_l10n_pe_root" action="action_l10n_pe_monthly_tax"
+              groups="account.group_account_user" sequence="44"/>
+    <menuitem id="menu_l10n_pe_tax_regime" name="Régimen tributario"
+              parent="al_account_base.al_l10n_pe_config_tax" action="action_l10n_pe_tax_regime"
+              groups="account.group_account_manager" sequence="60"/>
+</odoo>

@@ -53,6 +53,11 @@ es el nativo del pago.
    «transf») y escriba el **Número de operación banco**.
 3. Haga clic en **Crear pago**.
 
+!!! note "Nota"
+    Si la **Fecha de pago** es posterior a hoy, el asistente y el pago muestran
+    un aviso. No impide crear ni publicar el pago, pero queda anotado en su
+    historial: suele ser un error de digitación.
+
 ![Asistente Pagar con el medio de pago y el número de operación](payment_methods/register-payment-wizard.png)
 
 Para pagar varias facturas del mismo proveedor de una vez, selecciónelas en la

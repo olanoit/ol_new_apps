@@ -39,6 +39,8 @@ RCE_WITHHOLDING_TAX_GROUPS = (
 
 # Tipos de comprobante propios del registro de no domiciliados (8.5).
 RCE_NON_DOMICILED_DOC_TYPES = ('00', '91', '97', '98')
+#: DAM y DSI: número «aduana-año-régimen-número» (p. ej. 118-2026-10-204518).
+RCE_CUSTOMS_DOC_TYPES = ('50', '51', '52', '53', '54')
 
 # Tipos de comprobante que no forman parte del 8.4: los recibos por
 # honorarios (02) van al RHE, y los del 8.5 no pueden salir también aquí
@@ -194,13 +196,30 @@ class L10nPeRceExtractor(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _rce_serie_folio(self, move):
-        """(serie, número) a partir del número de documento LATAM."""
+        """(serie, número) a partir del número de documento LATAM. En una
+        DAM o DSI la serie es el código de aduana y el número, el último
+        tramo (cortar en el primer guion dejaba «2026-10-204518»)."""
+        parts = self._rce_customs_parts(move)
+        if parts:
+            return parts[0], parts[2]
         name = (move.l10n_latam_document_number or move.name or '').strip()
         name = name.replace(' ', '')
         if '-' in name:
             serie, _, folio = name.partition('-')
             return serie, folio
         return '', name
+
+    @api.model
+    def _rce_customs_parts(self, move):
+        """(aduana, año, número) de una DAM o DSI numerada como
+        aduana-año-régimen-número; vacío en otro caso."""
+        if (move.l10n_latam_document_type_id.code or '') not in RCE_CUSTOMS_DOC_TYPES:
+            return ()
+        number = (move.l10n_latam_document_number or move.ref or '').replace(' ', '')
+        parts = [part for part in number.split('-') if part]
+        if len(parts) >= 3 and len(parts[1]) == 4 and parts[1].isdigit():
+            return parts[0][:3], parts[1], parts[-1].lstrip('0') or parts[-1]
+        return ()
 
     @api.model
     def _rce_partner_document(self, move):
@@ -214,17 +233,13 @@ class L10nPeRceExtractor(models.AbstractModel):
 
     @api.model
     def _rce_modified_document(self, move):
-        """(fecha, tipo, serie, número) del comprobante que se modifica."""
-        origin = move.reversed_entry_id or move.debit_origin_id
-        if not origin:
+        """(fecha, tipo, serie, número) del comprobante que se modifica: el
+        original enlazado o, si no está en Odoo, los datos escritos en la nota
+        (``al_account_base``)."""
+        data = move._l10n_pe_modified_document()
+        if not data:
             return False, '', '', ''
-        serie, folio = self._rce_serie_folio(origin)
-        return (
-            origin.invoice_date,
-            origin.l10n_latam_document_type_id.code or '',
-            serie,
-            folio,
-        )
+        return data['date'], data['type'], data['serie'], data['number']
 
     @api.model
     def _rce_exchange_rate(self, move):
@@ -258,11 +273,19 @@ class L10nPeRceExtractor(models.AbstractModel):
         IGV y la renta que retiene el comprador
         (``al_l10n_pe_edi_purchase_settlement``)."""
         sign = -1 if move.move_type in ('in_refund', 'out_refund') else 1
+        if (move.l10n_latam_document_type_id.code or '') in RCE_CUSTOMS_DOC_TYPES:
+            return sign * self._rce_customs_total(move)
         groups = self._rce_withholding_tax_groups(move.company_id)
         withheld = abs(sum(
             line.balance for line in move.line_ids
             if line.tax_line_id.tax_group_id in groups))
         return sign * (abs(move.amount_total_signed) + withheld)
+
+    @api.model
+    def _rce_customs_total(self, move):
+        """Total de una DAM o DSI (base + IGV/IPM + otros): el ``amount_total``
+        de la factura excluye el valor en aduana y el campo 21 salía negativo."""
+        return move._l10n_pe_customs_total()
 
     @api.model
     def _rce_withholding_tax_groups(self, company):
@@ -287,13 +310,15 @@ class L10nPeRceExtractor(models.AbstractModel):
         orphans = moves.filtered(
             lambda move: move.l10n_latam_document_type_id.code
             in ('07', '08', '87', '88')
-            and not (move.reversed_entry_id or move.debit_origin_id))
+            and not move._l10n_pe_modified_document())
         if orphans:
             raise UserError(_(
                 'Estas notas de crédito o débito no están enlazadas al '
                 'comprobante que modifican (registro %(book)s) y SUNAT las '
                 'rechazaría. Regístrelas desde la factura de origen '
-                '(«Nota de crédito» / «Nota de débito»):\n%(moves)s',
+                '(«Nota de crédito» / «Nota de débito») o, si el original no '
+                'está en Odoo, escriba sus datos en la pestaña «Comprobante '
+                'modificado» de la nota:\n%(moves)s',
                 book=book,
                 moves='\n'.join('· %s' % name for name in orphans.mapped(
                     'display_name')[:30])))

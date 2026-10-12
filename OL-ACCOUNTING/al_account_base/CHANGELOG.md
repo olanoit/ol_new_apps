@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261012 — 12/10/2026
+
+- Notas de crédito y débito cuyo comprobante original no está en Odoo: pestaña «Comprobante modificado» con tipo, serie, número y fecha, que usan el PLE y el SIRE (_l10n_pe_modified_document).
+- Total de la DAM o DSI (_l10n_pe_customs_total): base + IGV + otros derechos, común al PLE y al SIRE.
+
 ## 13.20261011 — 11/10/2026
 
 - Retención del IGV del cliente agente (_l10n_pe_customer_retention): 3 % del comprobante de más de S/ 700, sin detracción, con IGV y si la compañía no es agente ni buen contribuyente; la usan el comprobante impreso, el XML y el factoring.

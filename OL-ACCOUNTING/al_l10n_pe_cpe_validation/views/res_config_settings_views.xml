@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_cpe_validation" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.cpe.validation</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="67"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Consulta de comprobantes" name="pe_cpe_validation_block">
+                    <setting company_dependent="1" string="Credenciales de API SUNAT"
+                             help="Client ID y client secret generados en SUNAT Operaciones en Línea ▸ Credenciales de API SUNAT. Son del RUC: las sucursales usan los de la compañía principal. Vacíos: se usan los del SIRE."
+                             groups="base.group_system">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="l10n_pe_cpe_client_id" string="Client ID" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_cpe_client_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cpe_client_secret" string="Client secret" class="col-lg-4 o_light_label"/>
+                                <field name="l10n_pe_cpe_client_secret" password="True"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Al publicar una factura de proveedor"
+                             help="Consulta el comprobante en SUNAT al publicarlo: solo avisa en el historial o, además, impide publicar los que SUNAT no da por válidos.">
+                        <field name="l10n_pe_cpe_post_mode"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

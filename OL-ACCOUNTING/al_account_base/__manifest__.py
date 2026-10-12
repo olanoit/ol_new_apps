@@ -28,11 +28,13 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '13.20261011',
+    'version': '14.20261012',
     'license': 'OPL-1',
     # El formato de los documentos impresos (encabezado, pie y estilos del
     # comprobante A4) vive en al_report_base, común a toda la suite.
-    'depends': ['account', 'al_report_base'],
+    # l10n_latam_invoice_document: tipo de documento del comprobante modificado
+    # de las notas cuyo original no está en Odoo (PLE y SIRE).
+    'depends': ['account', 'al_report_base', 'l10n_latam_invoice_document'],
     'data': [
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',

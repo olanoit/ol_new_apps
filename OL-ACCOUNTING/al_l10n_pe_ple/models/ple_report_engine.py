@@ -73,10 +73,13 @@ class L10nPePleReportHandler(models.AbstractModel):
         amounts = extractor._rce_amounts(move, group_ids)
         partner = move.partner_id.commercial_partner_id
         identification = partner.l10n_latam_identification_type_id
-        mod_date, mod_type, _serie, _folio = \
+        mod_date, mod_type, mod_serie, mod_folio = \
             extractor._rce_modified_document(move)
-        origin = move.reversed_entry_id or move.debit_origin_id
         dua = move.l10n_pe_dua_invoice_id
+        # Nota 4 del anexo 2 (R.S. 112-2021/SUNAT): un comprobante con CDR
+        # rechazado se anota como anulado (importe cero), no se excluye ni se
+        # marca como error; en Odoo sigue publicado.
+        rejected = move.state == 'posted' and move._l10n_pe_cdr_rejected()
 
         return {
             'move_name': move.name,
@@ -112,9 +115,9 @@ class L10nPePleReportHandler(models.AbstractModel):
             'detraction_number': move.l10n_pe_detraction_number,
             'emission_date_related': mod_date,
             'document_type_related': mod_type,
-            'related_document': origin.name if origin else '',
-            'status': move.state,
-            'edi_state': move.edi_state,
+            'related_document': '-'.join(filter(None, (mod_serie, mod_folio))),
+            'status': 'cancel' if rejected else move.state,
+            'edi_state': 'cancelled' if rejected else move.edi_state,
             'invoice_dua_name': dua.name if dua else '',
             'invoice_dua_document_type': (
                 dua.l10n_latam_document_type_id.code or '') if dua else '',

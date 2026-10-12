@@ -273,11 +273,34 @@ con el mismo TXT oficial:
   valorizado, con **XLSX 12.1** y **XLSX 13.1**. El kárdex imprimible está en
   [Kárdex valorizado](../../../inventory_and_mrp/inventory/kardex.md).
 
+## Notas sobre comprobantes que no están en Odoo
+
+Las notas de crédito y débito (07, 08, 87, 88) informan el comprobante que
+modifican (campos 28 a 32 del 8.4 y 29 a 32 del 14.4). Si el original está en
+Odoo, se toma de él. Si no lo está (por ejemplo, una factura de antes de la
+implementación):
+
+1. Abra la nota y vaya a **Facturación PE ‣ Comprobante modificado**.
+2. Escriba el **Tipo**, la **Serie**, el **Número** y la **Fecha** del
+   comprobante modificado.
+
+Con esos datos la nota ya no bloquea el TXT, y si el original es de un periodo
+anterior se informa como descuento.
+
+## Comprobantes rechazados por SUNAT
+
+Un comprobante con CDR de rechazo no se excluye del registro: la nota 4 del
+anexo 2 de la R.S. 112-2021/SUNAT obliga a anotarlo con importe cero, como los
+anulados. Así sale en el TXT del 14.4 y en los informes PLE de Odoo, aunque en
+Odoo siga publicado.
+
 ## Casos especiales
 
 | Situación | Qué pasa | Qué hacer |
 |---|---|---|
+| «…no están enlazadas al comprobante que modifican…» | Una nota sin original enlazado ni datos escritos | Escriba los datos en **Comprobante modificado** |
 | «…no tiene configurado un RUC válido…» | Falta el RUC de la compañía | Complételo en la ficha de la compañía |
+| DAM o DSI (tipos 50-54) numerada aduana-año-régimen-número | El 8.4 lleva la aduana (campo 8), el año de la DAM tomado del número (campo 9) y el número (campo 10); el total es base + IGV + otros derechos, sin la cuenta puente del valor en aduana | Nada: registre la DAM con su número completo |
 | «Indique el mes…» | Se marcó un libro mensual sin mes | Elija el mes |
 | «Los siguientes activos no tienen configurado…» | Falta un dato SUNAT en los activos | Complete la pestaña **PLE SUNAT** |
 | «Los formatos simplificados… Habilítelos en Ajustes» | Falta la opción en Ajustes | Active **Libros PLE simplificados** |

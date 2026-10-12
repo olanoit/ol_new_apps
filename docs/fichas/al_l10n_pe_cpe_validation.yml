@@ -1,0 +1,86 @@
+titulo: Consulta de validez de comprobantes en SUNAT
+subtitulo: >-
+  Cada factura de proveedor consultada en el servicio web oficial de SUNAT:
+  si el comprobante existe y si su emisor está activo y habido, antes de usar
+  el crédito fiscal.
+categoria: Localización Perú · Compras
+etiquetas: [SUNAT, Comprobantes de pago, Crédito fiscal, Compras, API SUNAT]
+portada: screenshots/01-lista.png
+
+destacados_intro: >-
+  Un comprobante que SUNAT no tiene registrado, que fue anulado o cuyo emisor
+  no está habido pone en riesgo el crédito fiscal de la compra.
+destacados:
+  - icono: "✓"
+    titulo: Validar en SUNAT
+    texto: >-
+      Botón en la factura o nota de crédito de proveedor y la misma acción en la
+      lista, para consultar varias a la vez.
+  - icono: "!"
+    titulo: Resultado en la factura
+    texto: >-
+      Válido, válido con observaciones (emisor no activo o no habido) o no
+      válido, con el estado del comprobante, del emisor y de su domicilio.
+  - icono: "■"
+    titulo: Aviso o bloqueo al publicar
+    texto: >-
+      Consulta al publicar y solo avisa en el historial, o además impide
+      publicar lo que SUNAT no da por válido.
+  - icono: "⟳"
+    titulo: Consulta diaria
+    texto: >-
+      Acción programada, desactivada por defecto, que consulta las compras de
+      los últimos 60 días aún sin resultado.
+
+contexto:
+  titulo: El servicio de SUNAT
+  texto: >-
+    SUNAT ofrece el servicio web «Consulta integrada de comprobante de pago»:
+    con las credenciales de API que se generan en SUNAT Operaciones en Línea,
+    devuelve el estado del comprobante (no existe, aceptado, anulado,
+    autorizado o no autorizado), el del contribuyente emisor y la condición de
+    su domicilio fiscal.
+  nota: >-
+    **Credenciales.** Son del RUC: las sucursales usan las de la compañía
+    principal. Si no se configuran, el módulo usa el client ID y el client
+    secret del SIRE.
+
+pasos_intro: >-
+  Primero se configuran las credenciales en Ajustes ▸ Perú; después cada
+  factura de proveedor se puede consultar.
+pasos:
+  - titulo: Credenciales y comportamiento al publicar
+    ruta: Ajustes ▸ Perú ▸ Consulta de comprobantes
+    texto: >-
+      Escriba el client ID y el client secret de API SUNAT y elija qué hacer al
+      publicar una factura de proveedor: no consultar, avisar o bloquear.
+    imagen: screenshots/04-ajustes.png
+
+  - titulo: Resultado en la lista de compras
+    ruta: Contabilidad ▸ Proveedores ▸ Facturas
+    texto: >-
+      La columna SUNAT muestra el resultado de cada comprobante; los filtros
+      separan los válidos, los no válidos o con observaciones y los que faltan
+      consultar. Seleccione varios y use Acciones ▸ Validar en SUNAT.
+    imagen: screenshots/01-lista.png
+
+  - titulo: Comprobante no válido
+    ruta: Factura de proveedor ▸ Otra información
+    texto: >-
+      SUNAT no tiene registrado el comprobante: el resultado queda en «No
+      válido» con la observación que devolvió el servicio.
+    imagen: screenshots/02-no-valido.png
+
+  - titulo: Emisor no habido
+    ruta: Factura de proveedor ▸ Otra información
+    texto: >-
+      El comprobante existe, pero el domicilio del emisor figura como no
+      habido: el resultado es «Válido con observaciones».
+    imagen: screenshots/03-observado.png
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Consulta integrada de comprobantes de pago de SUNAT para facturas, boletas, liquidaciones de compra, notas y recibos por honorarios de proveedores: botón, acción en lote, aviso o bloqueo al publicar y acción programada."
+      - "Credenciales de API SUNAT del RUC con el token renovado solo; si no se configuran, se usan las del SIRE."

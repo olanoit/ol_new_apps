@@ -43,6 +43,31 @@
                 </page>
             </xpath>
 
+            <!-- Comprobante modificado de una nota cuyo original no está en
+                 Odoo: lo usan el PLE y el SIRE. -->
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Comprobante modificado" name="l10n_pe_origin_document"
+                      invisible="not l10n_pe_is_note or l10n_pe_origin_linked">
+                    <p class="text-muted">
+                        La nota no está enlazada a un comprobante de Odoo. Escriba los datos
+                        del comprobante que modifica: el PLE y el SIRE los informan en las
+                        columnas del documento modificado.
+                    </p>
+                    <group>
+                        <group>
+                            <field name="l10n_pe_is_note" invisible="1"/>
+                            <field name="l10n_pe_origin_linked" invisible="1"/>
+                            <field name="l10n_pe_origin_document_type_id" options="{'no_create': True}"/>
+                            <field name="l10n_pe_origin_date"/>
+                        </group>
+                        <group>
+                            <field name="l10n_pe_origin_serie"/>
+                            <field name="l10n_pe_origin_number"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="invisible">state not in ('cancel', 'posted') or inalterable_hash or need_cancel_request</attribute>
             </xpath>

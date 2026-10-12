@@ -470,6 +470,10 @@ class L10nPeSireMixin(models.AbstractModel):
                        if line.tax_line_id.tax_group_id in groups))
 
     def _sire_total(self, move):
+        if (move.l10n_latam_document_type_id.code or '') in ('50', '51', '52', '53', '54'):
+            # DAM o DSI: base + IGV/IPM + otros (el valor en aduana va contra
+            # una cuenta puente y no está en amount_total).
+            return move._l10n_pe_customs_total()
         return abs(move.amount_total_signed) + self._sire_withheld(move)
 
     def _sire_partner_doc_type(self, partner):
@@ -610,18 +614,26 @@ class L10nPeSireMixin(models.AbstractModel):
         return destinations
 
     def _sire_reversed_doc_vals(self, move):
-        """Datos del comprobante modificado (para notas de crédito/débito)."""
-        origin = move.reversed_entry_id
-        if not origin and 'debit_origin_id' in move._fields:
-            origin = move.debit_origin_id
-        if not origin:
+        """Datos del comprobante modificado (para notas de crédito/débito):
+        del original enlazado o, si no está en Odoo, de los datos escritos en
+        la nota (``al_account_base``)."""
+        origin = move._l10n_pe_origin_move()
+        if origin:
+            serie, folio = self._sire_serie_folio(origin)
+            return {
+                'fecha_emision_mod': origin.invoice_date,
+                'tipo_cp_mod': origin.l10n_latam_document_type_id.code or '',
+                'serie_cp_mod': serie,
+                'nro_cp_mod': folio,
+            }
+        data = move._l10n_pe_modified_document()
+        if not data:
             return {}
-        serie, folio = self._sire_serie_folio(origin)
         return {
-            'fecha_emision_mod': origin.invoice_date,
-            'tipo_cp_mod': origin.l10n_latam_document_type_id.code or '',
-            'serie_cp_mod': serie,
-            'nro_cp_mod': folio,
+            'fecha_emision_mod': data['date'],
+            'tipo_cp_mod': data['type'],
+            'serie_cp_mod': data['serie'],
+            'nro_cp_mod': data['number'],
         }
 
     # ------------------------------------------------------------------

@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 7.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Mapa de pantallas con los módulos de pagos masivos, declaración mensual (621), validación de comprobantes y DUA de importación (302 pantallas)."
   - version: 6.20261012
     fecha: 12/10/2026
     cambios:

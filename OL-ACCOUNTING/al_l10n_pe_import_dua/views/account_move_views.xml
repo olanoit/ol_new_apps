@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_dua" model="ir.ui.view">
+        <field name="name">account.move.form.dua</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_dua_generate_lines" type="object"
+                        string="Generar líneas de la DUA" class="btn-secondary"
+                        invisible="not l10n_pe_dua_is_dua or state != 'draft'"/>
+                <button name="action_l10n_pe_dua_create_landed_costs" type="object"
+                        string="Costos en destino" class="btn-secondary"
+                        invisible="not l10n_pe_dua_is_dua or state != 'posted'"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_l10n_pe_dua_view_perceptions" type="object"
+                        class="oe_stat_button" icon="fa-percent"
+                        invisible="not l10n_pe_dua_perception_count">
+                    <field name="l10n_pe_dua_perception_count" widget="statinfo"
+                           string="Percepción"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="DUA" name="l10n_pe_dua" invisible="not l10n_pe_dua_is_dua">
+                    <field name="l10n_pe_dua_is_dua" invisible="1"/>
+                    <group>
+                        <group string="Número de la DAM">
+                            <field name="l10n_pe_dua_customs_code" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_year" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_regime" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_sequence" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Liquidación">
+                            <field name="l10n_pe_dua_customs_value" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_ad_valorem" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_isc" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_other_duties" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_tax_base"/>
+                            <field name="l10n_pe_dua_igv_tax_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_dua_perception" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Importación">
+                            <field name="l10n_pe_dua_foreign_invoice_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_dua_picking_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Costos en destino">
+                            <field name="l10n_pe_dua_expense_move_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_dua_split_method"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_dua" model="ir.actions.act_window">
+        <field name="name">DUA de importación</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="account.view_in_invoice_bill_tree"/>
+        <field name="domain">[('l10n_pe_dua_is_dua', '=', True)]</field>
+        <field name="context">{'default_move_type': 'in_invoice', 'display_account_trust': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre su primera DUA</p>
+            <p>Cree una factura de proveedor a nombre de la Aduana con el tipo de documento
+               50 (DUA), complete la liquidación en la pestaña DUA y genere sus líneas.</p>
+        </field>
+    </record>
+</odoo>

@@ -1931,6 +1931,14 @@
         <field name="path">applications/finance/accounting/bills_of_exchange/#enviar-las-letras-al-banco</field>
         <field name="section">Enviar las letras al banco</field>
     </record>
+    <record id="help_l10n_pe_monthly_tax" model="al.docs.help">
+        <field name="key">l10n_pe.monthly.tax</field>
+        <field name="kind">model</field>
+        <field name="name">Declaración mensual IGV - Renta (621)</field>
+        <field name="module">al_l10n_pe_monthly_tax</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/monthly_tax/</field>
+        <field name="section">Declaración mensual IGV y renta (621)</field>
+    </record>
     <record id="help_l10n_pe_partner_economic_activity" model="al.docs.help">
         <field name="key">l10n_pe.partner.economic.activity</field>
         <field name="kind">model</field>
@@ -2226,6 +2234,14 @@
         <field name="module">l10n_pe_vat_sunat</field>
         <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
         <field name="section">Consulta de RUC y DNI</field>
+    </record>
+    <record id="help_l10n_pe_tax_regime" model="al.docs.help">
+        <field name="key">l10n_pe.tax.regime</field>
+        <field name="kind">model</field>
+        <field name="name">Régimen tributario</field>
+        <field name="module">al_l10n_pe_monthly_tax</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/monthly_tax/</field>
+        <field name="section">Declaración mensual IGV y renta (621)</field>
     </record>
     <record id="help_l10n_pe_term_deposit" model="al.docs.help">
         <field name="key">l10n_pe.term.deposit</field>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_monthly_tax_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.monthly.tax.list</field>
+        <field name="model">l10n_pe.monthly.tax</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'draft'" decoration-success="state == 'declared'">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
+                <field name="regime" optional="hide"/>
+                <field name="igv_result" sum="Total"/>
+                <field name="applied_perception" optional="show"/>
+                <field name="applied_retention" optional="show"/>
+                <field name="igv_to_pay" sum="Total"/>
+                <field name="income_tax_to_pay" sum="Total"/>
+                <field name="total_to_pay" sum="Total"/>
+                <field name="next_credit" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-info="state == 'calculated'"
+                       decoration-success="state == 'declared'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_monthly_tax_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.monthly.tax.form</field>
+        <field name="model">l10n_pe.monthly.tax</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_compute" type="object" string="Calcular" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_compute" type="object" string="Volver a calcular"
+                            invisible="state != 'calculated'"/>
+                    <button name="action_declare" type="object" string="Marcar como declarado"
+                            invisible="state != 'calculated'"/>
+                    <button name="action_post_income_move" type="object" string="Registrar asiento del pago a cuenta"
+                            invisible="state == 'draft' or income_move_id or not income_tax_to_pay"/>
+                    <button name="action_reset" type="object" string="Volver a borrador"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="year" invisible="state != 'draft'" options="{'format': false}"/>
+                            <field name="month" invisible="state != 'draft'"/>
+                            <field name="date_from" invisible="state == 'draft'"/>
+                            <field name="date_to" invisible="state == 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="regime"/>
+                            <field name="previous_id"/>
+                            <field name="income_move_id" invisible="not income_move_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="IGV" name="igv">
+                            <group>
+                                <group string="Ventas y compras">
+                                    <field name="sale_base"/>
+                                    <field name="sale_igv"/>
+                                    <field name="purchase_base"/>
+                                    <field name="purchase_igv"/>
+                                    <field name="igv_result"/>
+                                </group>
+                                <group string="Saldo a favor">
+                                    <field name="previous_credit" readonly="state != 'draft' or previous_id"/>
+                                    <field name="next_credit"/>
+                                    <field name="igv_payable"/>
+                                </group>
+                                <group string="Percepciones">
+                                    <field name="previous_perception" readonly="state != 'draft' or previous_id"/>
+                                    <field name="period_perception"/>
+                                    <field name="applied_perception"/>
+                                    <field name="next_perception"/>
+                                </group>
+                                <group string="Retenciones">
+                                    <field name="previous_retention" readonly="state != 'draft' or previous_id"/>
+                                    <field name="period_retention"/>
+                                    <field name="applied_retention"/>
+                                    <field name="next_retention"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Renta" name="income">
+                            <group>
+                                <group>
+                                    <field name="net_income"/>
+                                    <field name="year_net_income"/>
+                                </group>
+                                <group>
+                                    <field name="coefficient"/>
+                                    <field name="income_rate_label"/>
+                                    <field name="income_tax"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note" placeholder="Número de orden de la declaración, observaciones…"/>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer">
+                        <field name="igv_to_pay"/>
+                        <field name="income_tax_to_pay"/>
+                        <field name="total_to_pay" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_pe_monthly_tax_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.monthly.tax.search</field>
+        <field name="model">l10n_pe.monthly.tax</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="year"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="calculated" string="Calculado" domain="[('state', '=', 'calculated')]"/>
+                <filter name="declared" string="Declarado" domain="[('state', '=', 'declared')]"/>
+                <group>
+                    <filter name="group_year" string="Año" context="{'group_by': 'year'}"/>
+                    <filter name="group_company" string="Compañía" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_monthly_tax" model="ir.actions.act_window">
+        <field name="name">Declaración mensual (621)</field>
+        <field name="res_model">l10n_pe.monthly.tax</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree el periodo a declarar</p>
+            <p>El resumen reúne el IGV del mes, el saldo a favor, las percepciones y
+               retenciones sufridas con su arrastre y el pago a cuenta del impuesto a la renta.</p>
+        </field>
+    </record>
+
+    <record id="l10n_pe_tax_regime_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.tax.regime.list</field>
+        <field name="model">l10n_pe.tax.regime</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                <field name="date_from"/>
+                <field name="regime"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_tax_regime" model="ir.actions.act_window">
+        <field name="name">Régimen tributario</field>
+        <field name="res_model">l10n_pe.tax.regime</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

@@ -1,0 +1,91 @@
+titulo: DUA de importación y costos en destino
+subtitulo: >-
+  La DUA (tipo 50) como documento de compra a nombre de la Aduana: IGV e IPM con
+  crédito fiscal, derechos aduaneros como costo del producto y percepción
+  aduanera registrada.
+categoria: Contabilidad · Importaciones
+etiquetas: [DUA, DAM, Importaciones, Costos en destino, Percepción aduanera, Registro de compras]
+portada: screenshots/01-dua.png
+
+destacados_intro: >-
+  La importación completa en Odoo: la factura del exterior, la DUA, los gastos de
+  aduana y el costo final del producto.
+destacados:
+  - icono: "50"
+    titulo: DUA como documento de compra
+    texto: >-
+      Tipo 50 (52 la simplificada) a nombre de la Aduana, con el número de la DAM en
+      sus partes: aduana, año, régimen y número.
+  - icono: "%"
+    titulo: IGV con crédito fiscal
+    texto: >-
+      La base imponible (valor en aduana más derechos) lleva el IGV del 18 %
+      (16 % + IPM 2 %); la DUA suma lo que se paga a la Aduana.
+  - icono: "+"
+    titulo: Costos en destino
+    texto: >-
+      Ad valorem, ISC, otros derechos y los gastos de aduana van al costo del
+      producto, repartidos por cantidad, peso, volumen, valor o en partes iguales.
+  - icono: "P"
+    titulo: Percepción aduanera
+    texto: >-
+      Con el módulo de percepciones instalado, la percepción que cobra la Aduana se
+      registra al publicar la DUA para aplicarla en el F.V. 621.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Una importación tiene tres documentos: la factura del proveedor del exterior
+    (el valor de la mercancía), la DUA (los tributos que se pagan a la Aduana) y
+    los gastos de aduana (agente, flete, almacén). El IGV de la DUA es crédito
+    fiscal; los derechos y los gastos son costo del producto. Este módulo los une
+    en Odoo y deja la DUA lista para el registro de compras.
+  nota: >-
+    **Por qué la DUA suma solo los tributos.** La base imponible del IGV incluye el
+    valor en aduana, que se paga al proveedor del exterior. La línea de la base y
+    su compensación van a la misma cuenta puente y se anulan: la DUA queda por los
+    derechos y el IGV, y el registro de compras lee la base del impuesto.
+
+pasos_intro: >-
+  Datos «DEMO DUA» de ol_pe_v19 (OL-ACCOUNTING/al_l10n_pe_import_dua/tools/import_dua_demo_data.py).
+pasos:
+  - titulo: La DUA y su liquidación
+    ruta: Perú ▸ DUA de importación
+    texto: >-
+      Factura de proveedor a nombre de la Aduana con el tipo 50. En la pestaña DUA
+      se completan el número de la DAM (118-2026-10-204518) y la liquidación: valor
+      en aduana S/ 37 450, ad valorem S/ 2 247, otros derechos S/ 120 y percepción
+      S/ 1 633,15.
+    imagen: screenshots/01-dua.png
+  - titulo: Líneas generadas
+    ruta: DUA ▸ Generar líneas de la DUA
+    texto: >-
+      Los derechos como costo en destino, la base imponible de S/ 39 817 con el IGV
+      del 18 % (S/ 7 167,06) y su compensación: la DUA suma S/ 9 534,06.
+    imagen: screenshots/02-lineas.png
+  - titulo: Costo en destino
+    ruta: DUA ▸ Costos en destino
+    texto: >-
+      Con los derechos de la DUA y la comisión del agente de aduana (S/ 350), sobre
+      la recepción de la mercadería y repartido por cantidad. Al validarlo, el
+      costo del producto sube en S/ 2 717.
+    imagen: screenshots/03-costo-en-destino.png
+  - titulo: Ajustes
+    ruta: Ajustes ▸ Perú ▸ Importaciones (DUA)
+    texto: >-
+      Aduana, diario de las DUA y cuenta puente de la base imponible.
+    imagen: screenshots/04-ajustes.png
+
+configuracion:
+  - "Cree el contacto de la Aduana (SUNAT, R.U.C. 20131312955) y la cuenta puente del valor en aduana, y regístrelos en Ajustes ▸ Perú ▸ Importaciones (DUA)."
+  - "Revise la cuenta de gasto de los productos de derechos (Ad valorem, ISC y Otros derechos aduaneros): es la que usa el costo en destino."
+  - "Para la percepción aduanera, instale Percepciones del IGV y configure su cuenta de percepciones por aplicar."
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "DUA (tipo 50 y 52) como documento de compra con el número de la DAM (aduana-año-régimen-número) que leen el PLE y el SIRE."
+      - "Liquidación de la DUA: derechos como costo en destino y base imponible con el IGV de importación (crédito fiscal)."
+      - "Percepción aduanera registrada al publicar (con al_l10n_pe_perception)."
+      - "Facturas del exterior y recepciones vinculadas; costos en destino con los derechos y los gastos de aduana."

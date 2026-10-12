@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261012 — 12/10/2026
+
+- Las notas cuyo original no está en Odoo toman los datos escritos en «Comprobante modificado» (8.4 y 14.4) y ya no bloquean el TXT.
+- Los informes PLE de Odoo reciben el comprobante con CDR rechazado como anulado (importe cero, nota 4 del anexo 2 de la R.S. 112-2021/SUNAT) en lugar de marcarlo como error.
+- DAM y DSI (tipos 50-54) numeradas aduana-año-régimen-número: el 8.4 lleva la aduana en el campo 8, el año de la DAM (del número) en el 9 y el número en el 10; el total es base + IGV + otros derechos, sin la cuenta puente del valor en aduana (el campo 21 ya no sale negativo).
+
 ## 24.20261011 — 11/10/2026
 
 - RCE 8.1/8.4: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV.

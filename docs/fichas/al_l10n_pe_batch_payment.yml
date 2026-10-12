@@ -1,0 +1,80 @@
+titulo: Pagos masivos a proveedores
+subtitulo: >-
+  Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank,
+  Scotiabank y Banco de la Nación, con la cuenta o el CCI de cada proveedor y
+  los totales de control.
+categoria: Contabilidad · Tesorería
+etiquetas: [Pagos, Bancos, Tesorería, CCI]
+portada: screenshots/01-lote.png
+
+destacados_intro: >-
+  La tesorería semanal en un solo archivo por banco, con los controles que
+  evitan que el banco lo rechace.
+destacados:
+  - icono: "▤"
+    titulo: Un archivo por banco
+    texto: >-
+      El lote toma el formato del banco de su diario: BCP (Telecrédito), BBVA
+      (net cash), Interbank, Scotiabank o Banco de la Nación.
+  - icono: "#"
+    titulo: Cuenta o CCI
+    texto: >-
+      El proveedor con cuenta en el mismo banco se paga a su cuenta; el de otro
+      banco, a su CCI de 20 dígitos.
+  - icono: "✓"
+    titulo: Controles al validar
+    texto: >-
+      Formato y cuenta de cargo del diario, cuenta y CCI del proveedor, moneda
+      del lote, RUC del proveedor y depósitos de detracción.
+  - icono: "Σ"
+    titulo: Totales de control
+    texto: >-
+      El lote guarda el número de registros y el total del archivo, y adjunta
+      el archivo en su historial.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Pagar a decenas de proveedores por la banca por internet exige un archivo
+    con el formato de cada banco. Armarlo a mano en una hoja de cálculo es
+    lento y cualquier dígito mal copiado hace que el banco rechace el archivo o
+    abone a otra cuenta.
+  nota: >-
+    **Valide el primer archivo con su banco.** Los bancos entregan la
+    especificación de sus archivos a cada empresa afiliada; las estructuras del
+    módulo parten de los formatos de pago masivo que la suite usa en planillas
+    y tienen parámetros por diario (código del servicio y de la empresa).
+
+pasos_intro: >-
+  Configure una vez el banco y el diario; después cada lote genera su archivo.
+pasos:
+  - titulo: El lote con su archivo
+    ruta: Contabilidad ▸ Proveedores ▸ Pagos por lote
+    texto: >-
+      Cree el lote con el diario del banco y el método «Pago masivo (TXT de
+      banco peruano)», agregue los pagos y valide. El archivo se adjunta al
+      lote con el número de registros y el total.
+    imagen: screenshots/01-lote.png
+
+  - titulo: La cuenta y el CCI del proveedor
+    ruta: Contactos ▸ proveedor ▸ Facturación ▸ Cuentas bancarias
+    texto: >-
+      Registre el banco, el número de cuenta, el tipo de cuenta y el CCI de 20
+      dígitos; marque la cuenta como de confianza para poder pagarle.
+    imagen: screenshots/02-cuenta-cci.png
+
+  - titulo: El formato en el diario
+    ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ diario del banco
+    texto: >-
+      El formato sale del banco de la cuenta; el código del servicio (BCP,
+      Interbank, Scotiabank) y el código de la empresa (Interbank) los asigna
+      el banco al afiliarse.
+    imagen: screenshots/03-diario.png
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Método de pago «Pago masivo (TXT de banco peruano)» en los lotes de pago, con archivo para BCP, BBVA, Interbank, Scotiabank y Banco de la Nación."
+      - "Cuenta del proveedor o su CCI de 20 dígitos según el banco; controles de formato, cuenta de cargo, moneda, documento y detracciones al validar el lote."
+      - "Número de registros y total del archivo guardados en el lote."

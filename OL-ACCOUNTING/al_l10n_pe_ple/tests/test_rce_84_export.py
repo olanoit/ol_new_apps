@@ -388,3 +388,57 @@ class TestRce84Review(RceExportCommon):
         with self.assertRaises(UserError):
             self._export()
         self.assertTrue(self._export(full_row=True)['file_content'])
+
+
+@tagged('post_install', '-at_install')
+class TestRce84CustomsDeclaration(RceExportCommon):
+    """DAM tipo 50 numerada aduana-año-régimen-número con la base contra una
+    cuenta puente (como la registra al_l10n_pe_import_dua)."""
+
+    def _create_dua(self):
+        doc_50 = self.env['l10n_latam.document.type'].search(
+            [('code', '=', '50'), ('country_id', '=', self.env.ref('base.pe').id)], limit=1)
+        if not doc_50:
+            self.skipTest('sin tipo 50 en la localización')
+        igv = self.company_data['default_tax_purchase']
+        bridge = self.company_data['default_account_expense']
+        line_fields = self.env['account.move.line']._fields
+        has_kind = 'l10n_pe_dua_line_kind' in line_fields
+
+        def line(name, price, taxes=False, kind=False):
+            vals = {'name': name, 'quantity': 1, 'price_unit': price,
+                    'account_id': bridge.id, 'tax_ids': [(6, 0, taxes.ids)] if taxes else False}
+            if has_kind and kind:
+                vals['l10n_pe_dua_line_kind'] = kind
+            return (0, 0, vals)
+
+        bill = self.env['account.move'].with_company(self.company).create({
+            'move_type': 'in_invoice',
+            'partner_id': self.supplier.id,
+            'invoice_date': date(2026, 3, 9),
+            'date': date(2026, 3, 9),
+            'l10n_latam_document_type_id': doc_50.id,
+            'l10n_latam_document_number': '118-2025-10-0204518',
+            'invoice_line_ids': [
+                line('Ad valorem', 2247.0, kind='ad_valorem'),
+                line('Otros derechos', 120.0, kind='other'),
+                line('Base imponible del IGV', 39817.0, igv, kind='base'),
+                line('Compensación de la base', -39817.0, kind='offset'),
+            ],
+        })
+        bill.action_post()
+        return bill, has_kind
+
+    def test_customs_folio_year_and_total(self):
+        bill, has_kind = self._create_dua()
+        row = next(line.split('|') for line in self._lines(self._export())
+                   if line.split('|')[9] == '204518')
+        igv = sum(abs(line.balance) for line in bill.line_ids if line.tax_line_id)
+        others = 120.0 if has_kind else 0.0
+        # Campo 8 = aduana, campo 9 = año de la DAM (del número, no de la
+        # fecha), campo 10 = número sin el año ni el régimen.
+        self.assertEqual(row[7], '118')
+        self.assertEqual(row[8], '2025')
+        self.assertEqual(row[20], '%.2f' % others)
+        self.assertEqual(row[24], '%.2f' % (39817.0 + igv + others))
+        self.assertEqual(bill._l10n_pe_customs_total(), 39817.0 + igv + others)
