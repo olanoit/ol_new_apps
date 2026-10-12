@@ -15,7 +15,7 @@ existencias y el umbral de S/ 10 000.
 |---|---|---|
 | 0.1 | Odoo.sh ▸ ConstruccionDEV ▸ última compilación | Verde. Si falla con «module not found», Odoo.sh no recorre las carpetas `OL-*/` del submódulo (ver §6) |
 | 0.2 | Aplicaciones, filtro «al_» | Aparecen módulos de varias áreas (`al_l10n_pe_…`, `al_hr_pe…`), con la categoría `OL-<ÁREA>/Apps` |
-| 0.3 | Aplicaciones ▸ «Requerimiento de obra» | Instalable o instalado. Instala también `base_tier_validation` (carpeta `OL-THIRD-PARTY/`) y `purchase_request` (submódulo `purchase-workflow`) |
+| 0.3 | Aplicaciones ▸ «Requerimiento de obra» | Instalable o instalado. Instala también `base_tier_validation` (carpeta `OL-THIRD-PARTY/`) y `purchase_request` (los dos en la carpeta `OL-THIRD-PARTY/`) |
 | 0.4 | Si no estaba instalado: instalarlo | Sin errores. Aparece el menú raíz «Requerimientos de obra» |
 
 > Los datos demo del módulo solo se cargan si el módulo se instala al crear

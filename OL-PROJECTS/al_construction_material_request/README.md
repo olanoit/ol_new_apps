@@ -76,7 +76,9 @@ borrador.
 ## Dependencias OCA
 
 `purchase_request` (OCA/purchase-workflow 19.0) y `base_tier_validation`
-(OCA/tier-validation 19.0, **AGPL-3**; por eso este módulo es LGPL-3).
+(OCA/tier-validation 19.0, **AGPL-3**; por eso este módulo es LGPL-3). Ambos
+van copiados sin modificar en `OL-THIRD-PARTY/`; no hace falta añadir los
+repositorios de OCA al `addons_path`.
 
 ## Limitaciones conocidas
 
