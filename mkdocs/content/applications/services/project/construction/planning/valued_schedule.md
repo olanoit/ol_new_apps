@@ -23,7 +23,7 @@ atender hoy.
 
 ## Cronograma valorizado
 
-1. Vaya a **Planificación de obra ‣ Reportes ‣ Cronograma valorizado**, o haga
+1. Vaya a **Planificación de obra ‣ Informes ‣ Cronograma valorizado ‣ Cronograma valorizado**, o haga
    clic en el botón de la obra o en el ícono de gráfico del inicio.
 2. Elija la obra y el escenario:
     - **Plan**: cada línea del plan se reparte en los días hábiles de su etapa

@@ -14,7 +14,7 @@ tipología). Todo se puede cargar a mano, como se explica aquí, o de una vez co
 
 ## Actividades y tarifas
 
-1. Vaya a **Planificación de obra ‣ Configuración ‣ Actividades de obra** y
+1. Vaya a **Planificación de obra ‣ Configuración ‣ Plan de obra ‣ Actividades de obra** y
    cree cada actividad de las contratas con su **driver** (unidad, ML o módulo),
    su **etapa** y su precio. Las actividades de personal propio van en horas y
    con su **rol**.
@@ -42,7 +42,7 @@ necesita cada material.
 
 ## Tipologías
 
-Vaya a **Planificación de obra ‣ Configuración ‣ Tipologías** y cree una por
+Vaya a **Planificación de obra ‣ Configuración ‣ Plan de obra ‣ Tipologías** y cree una por
 cada tipo de ambiente de la obra (p. ej. «Cocina tipo 01»), con:
 
 - **Módulos**: código, tipo (bajo, alto, cajonera, campana…), ancho en mm,

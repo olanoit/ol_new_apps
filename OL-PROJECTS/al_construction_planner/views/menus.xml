@@ -7,86 +7,80 @@
               action="action_construction_planner_home"
               groups="group_planner_progress" sequence="46"/>
 
+    <!-- Organización como la app Contabilidad: pocos menús principales,
+         secciones (encabezados del desplegable) y acciones; sin cuarto
+         nivel, que el desplegable de Odoo no muestra.
+           10 Obras           obras, plan de recursos, cronograma
+           20 Ejecución       avance y contratas
+           30 Abastecimiento
+           40 Ingresos
+           60 Informes        plan, cronograma valorizado, compras
+           90 Configuración -->
+
     <menuitem id="menu_planner_works" name="Obras" parent="menu_planner_root" sequence="10">
-        <menuitem id="menu_planner_home" name="Inicio"
-                  action="action_construction_planner_home" sequence="1"/>
-        <menuitem id="menu_planner_plans" name="Planes de recursos"
-                  action="action_construction_resource_plan" sequence="10"/>
-        <menuitem id="menu_planner_plan_tree" name="Árbol de recursos"
-                  action="action_construction_plan_tree" sequence="15"/>
-        <menuitem id="menu_planner_space_stages" name="Etapas del cronograma"
-                  action="action_construction_space_stage" sequence="17"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_tree" name="Tareas de la obra"
-                  action="action_construction_tree" sequence="20"/>
-        <menuitem id="menu_planner_lines" name="Recursos planificados"
-                  action="action_construction_resource_plan_line" sequence="30"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_analysis" name="Análisis del plan"
-                  action="action_construction_resource_plan_line_analysis" sequence="35"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_sites" name="Obras"
-                  action="action_planner_construction_sites" sequence="40"
-                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_works_main" name="Obras y tareas" sequence="10">
+            <menuitem id="menu_planner_home" name="Inicio"
+                      action="action_construction_planner_home" sequence="1"/>
+            <menuitem id="menu_planner_sites" name="Obras"
+                      action="action_planner_construction_sites" sequence="10"
+                      groups="group_planner_planner"/>
+            <menuitem id="menu_planner_tree" name="Tareas de la obra"
+                      action="action_construction_tree" sequence="20"/>
+        </menuitem>
+        <menuitem id="menu_planner_plan_section" name="Plan de recursos" sequence="20">
+            <menuitem id="menu_planner_plans" name="Planes de recursos"
+                      action="action_construction_resource_plan" sequence="10"/>
+            <menuitem id="menu_planner_plan_tree" name="Árbol de recursos"
+                      action="action_construction_plan_tree" sequence="20"/>
+            <menuitem id="menu_planner_lines" name="Recursos planificados"
+                      action="action_construction_resource_plan_line" sequence="30"
+                      groups="group_planner_planner"/>
+        </menuitem>
+        <!-- Cronograma de la obra y el Gantt de todos los proyectos: con el
+             planificador instalado, la aplicación «Gantt» se oculta
+             (models/ir_ui_menu.py) y se llega a él desde aquí. -->
+        <menuitem id="menu_planner_schedule_root" name="Cronograma" sequence="30"
+                  groups="group_planner_user,al_project_gantt_base.group_gantt_user">
+            <menuitem id="menu_planner_schedule" name="Cronograma de la obra"
+                      action="action_construction_schedule" sequence="10"
+                      groups="group_planner_user"/>
+            <menuitem id="menu_planner_space_stages" name="Etapas del cronograma"
+                      action="action_construction_space_stage" sequence="20"
+                      groups="group_planner_planner"/>
+            <menuitem id="menu_planner_gantt" name="Gantt de proyectos"
+                      action="al_project_gantt_backend.action_gantt_backend" sequence="30"
+                      groups="al_project_gantt_base.group_gantt_user"/>
+        </menuitem>
     </menuitem>
 
-    <!-- Cronograma de la obra y el Gantt de todos los proyectos: con el
-         planificador instalado, la aplicación «Gantt» se oculta
-         (models/ir_ui_menu.py) y se llega a él desde aquí. -->
-    <menuitem id="menu_planner_schedule_root" name="Cronograma" parent="menu_planner_root" sequence="20"
-              groups="group_planner_user,al_project_gantt_base.group_gantt_user">
-        <menuitem id="menu_planner_schedule" name="Cronograma de la obra"
-                  action="action_construction_schedule" sequence="10"
-                  groups="group_planner_user"/>
-        <menuitem id="menu_planner_gantt" name="Gantt de proyectos"
-                  action="al_project_gantt_backend.action_gantt_backend" sequence="20"
-                  groups="al_project_gantt_base.group_gantt_user"/>
+    <menuitem id="menu_planner_execution" name="Ejecución" parent="menu_planner_root" sequence="20">
+        <menuitem id="menu_planner_progress" name="Avance" sequence="10">
+            <menuitem id="menu_planner_progress_register" name="Registrar avance"
+                      action="action_plan_progress_wizard" sequence="10"/>
+            <menuitem id="menu_planner_progress_to_validate" name="Avances por validar"
+                      action="action_construction_progress_to_validate" sequence="20"/>
+            <menuitem id="menu_planner_progress_all" name="Avances"
+                      action="action_construction_progress" sequence="30"/>
+        </menuitem>
+        <menuitem id="menu_planner_contracts" name="Contratas" sequence="20">
+            <menuitem id="menu_planner_contract_assign" name="Asignar contrata"
+                      action="action_plan_contract_wizard" sequence="10"
+                      groups="group_planner_planner"/>
+            <menuitem id="menu_planner_crew_assign" name="Asignar cuadrilla"
+                      action="action_plan_crew_wizard" sequence="15"
+                      groups="group_planner_planner"/>
+            <menuitem id="menu_planner_service_orders" name="OC de servicio"
+                      action="action_construction_service_orders" sequence="20"
+                      groups="purchase.group_purchase_user"/>
+            <menuitem id="menu_planner_settlements" name="Liquidaciones semanales"
+                      action="action_construction_contract_settlement" sequence="30"/>
+        </menuitem>
     </menuitem>
 
-    <menuitem id="menu_planner_progress" name="Avance" parent="menu_planner_root" sequence="30">
-        <menuitem id="menu_planner_progress_register" name="Registrar avance"
-                  action="action_plan_progress_wizard" sequence="10"/>
-        <menuitem id="menu_planner_progress_to_validate" name="Avances por validar"
-                  action="action_construction_progress_to_validate" sequence="20"/>
-        <menuitem id="menu_planner_progress_all" name="Avances"
-                  action="action_construction_progress" sequence="30"/>
-    </menuitem>
-
-    <menuitem id="menu_planner_contracts" name="Contratas" parent="menu_planner_root" sequence="40">
-        <menuitem id="menu_planner_contract_assign" name="Asignar contrata"
-                  action="action_plan_contract_wizard" sequence="10"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_crew_assign" name="Asignar cuadrilla"
-                  action="action_plan_crew_wizard" sequence="15"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_service_orders" name="OC de servicio"
-                  action="action_construction_service_orders" sequence="20"
-                  groups="purchase.group_purchase_user"/>
-        <menuitem id="menu_planner_settlements" name="Liquidaciones semanales"
-                  action="action_construction_contract_settlement" sequence="30"/>
-    </menuitem>
-
-    <menuitem id="menu_planner_income" name="Ingresos" parent="menu_planner_root" sequence="45"
-              groups="group_planner_user">
-        <menuitem id="menu_planner_deliveries" name="Entregas semanales"
-                  action="action_construction_weekly_delivery" sequence="10"/>
-        <menuitem id="menu_planner_valuations" name="Valorizaciones"
-                  action="action_construction_valuation" sequence="20"/>
-        <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización"
-                  action="action_construction_valuation_prepare_wizard" sequence="30"/>
-        <menuitem id="menu_planner_collections" name="Cobranza de la obra"
-                  action="action_construction_collections" sequence="40"
-                  groups="account.group_account_invoice"/>
-    </menuitem>
-
-    <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="50"
+    <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="30"
               groups="group_planner_planner">
         <menuitem id="menu_planner_supply_board" name="Abastecimiento de la obra"
                   action="action_construction_supply_board" sequence="5"/>
-        <menuitem id="menu_planner_purchase_prices" name="Precios de compra del producto"
-                  action="action_construction_purchase_price_analysis" sequence="6"/>
-        <menuitem id="menu_planner_purchase_price_report" name="Compras por producto"
-                  action="action_construction_purchase_price_report" sequence="7"/>
         <menuitem id="menu_planner_material_requests" name="Requerimientos de obra"
                   action="al_construction_material_request.action_construction_material_request"
                   sequence="10"/>
@@ -99,42 +93,68 @@
                   action="action_construction_resource_plan_allocation" sequence="40"/>
     </menuitem>
 
-    <menuitem id="menu_planner_reports" name="Reportes" parent="menu_planner_root" sequence="60"
+    <menuitem id="menu_planner_income" name="Ingresos" parent="menu_planner_root" sequence="40"
+              groups="group_planner_user">
+        <menuitem id="menu_planner_deliveries" name="Entregas semanales"
+                  action="action_construction_weekly_delivery" sequence="10"/>
+        <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización"
+                  action="action_construction_valuation_prepare_wizard" sequence="20"/>
+        <menuitem id="menu_planner_valuations" name="Valorizaciones"
+                  action="action_construction_valuation" sequence="30"/>
+        <menuitem id="menu_planner_collections" name="Cobranza de la obra"
+                  action="action_construction_collections" sequence="40"
+                  groups="account.group_account_invoice"/>
+    </menuitem>
+
+    <menuitem id="menu_planner_reports" name="Informes" parent="menu_planner_root" sequence="60"
               groups="group_planner_planner,group_planner_revenue">
-        <menuitem id="menu_planner_schedule_report" name="Cronograma valorizado"
-                  action="action_construction_schedule_report_screen" sequence="10"
-                  groups="group_planner_manager,group_planner_revenue"/>
-        <menuitem id="menu_planner_schedule_report_analysis" name="Análisis del cronograma valorizado"
-                  action="action_construction_schedule_report" sequence="15"
-                  groups="group_planner_manager,group_planner_revenue"/>
-        <menuitem id="menu_planner_control" name="Control de saldo"
-                  action="action_construction_plan_control" sequence="20"
-                  groups="group_planner_planner"/>
-        <menuitem id="menu_planner_report_prices" name="Precios de compra"
-                  action="action_construction_purchase_price_analysis" sequence="30"
-                  groups="group_planner_planner"/>
+        <menuitem id="menu_planner_reports_plan" name="Plan" sequence="10"
+                  groups="group_planner_planner">
+            <menuitem id="menu_planner_analysis" name="Análisis del plan"
+                      action="action_construction_resource_plan_line_analysis" sequence="10"/>
+            <menuitem id="menu_planner_control" name="Control de saldo"
+                      action="action_construction_plan_control" sequence="20"/>
+        </menuitem>
+        <menuitem id="menu_planner_reports_schedule" name="Cronograma valorizado" sequence="20"
+                  groups="group_planner_manager,group_planner_revenue">
+            <menuitem id="menu_planner_schedule_report" name="Cronograma valorizado"
+                      action="action_construction_schedule_report_screen" sequence="10"/>
+            <menuitem id="menu_planner_schedule_report_analysis" name="Análisis del cronograma valorizado"
+                      action="action_construction_schedule_report" sequence="20"/>
+        </menuitem>
+        <menuitem id="menu_planner_reports_purchase" name="Compras" sequence="30"
+                  groups="group_planner_planner">
+            <menuitem id="menu_planner_purchase_prices" name="Precios de compra del producto"
+                      action="action_construction_purchase_price_analysis" sequence="10"/>
+            <menuitem id="menu_planner_purchase_price_report" name="Compras por producto"
+                      action="action_construction_purchase_price_report" sequence="20"/>
+        </menuitem>
     </menuitem>
 
     <menuitem id="menu_planner_config" name="Configuración" parent="menu_planner_root" sequence="90"
               groups="group_planner_planner">
-        <menuitem id="menu_planner_typologies" name="Tipologías"
-                  action="action_construction_typology" sequence="10"/>
-        <menuitem id="menu_planner_master_import" name="Importar maestro y ETO"
-                  action="action_construction_master_import_wizard" sequence="15"/>
-        <menuitem id="menu_planner_activities" name="Actividades de obra"
-                  action="action_construction_labor_activity" sequence="20"/>
-        <menuitem id="menu_planner_rates" name="Tarifas de contrata"
-                  action="action_construction_labor_rate" sequence="30"
-                  groups="group_planner_manager"/>
         <menuitem id="menu_planner_settings" name="Ajustes"
                   action="action_construction_planner_settings" sequence="5"
                   groups="group_planner_manager"/>
-        <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"
-                  action="action_construction_plan_tier_definition" sequence="40"
-                  groups="group_planner_manager"/>
-        <menuitem id="menu_planner_gantt_colors" name="Colores del Gantt"
-                  action="al_project_gantt_base.al_gantt_state_color_action" sequence="50"
-                  groups="al_project_gantt_base.group_gantt_manager"/>
+        <menuitem id="menu_planner_config_plan" name="Plan de obra" sequence="10">
+            <menuitem id="menu_planner_typologies" name="Tipologías"
+                      action="action_construction_typology" sequence="10"/>
+            <menuitem id="menu_planner_activities" name="Actividades de obra"
+                      action="action_construction_labor_activity" sequence="20"/>
+            <menuitem id="menu_planner_rates" name="Tarifas de contrata"
+                      action="action_construction_labor_rate" sequence="30"
+                      groups="group_planner_manager"/>
+            <menuitem id="menu_planner_master_import" name="Importar maestro y ETO"
+                      action="action_construction_master_import_wizard" sequence="40"/>
+        </menuitem>
+        <menuitem id="menu_planner_config_other" name="Aprobaciones y Gantt" sequence="20">
+            <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"
+                      action="action_construction_plan_tier_definition" sequence="10"
+                      groups="group_planner_manager"/>
+            <menuitem id="menu_planner_gantt_colors" name="Colores del Gantt"
+                      action="al_project_gantt_base.al_gantt_state_color_action" sequence="20"
+                      groups="al_project_gantt_base.group_gantt_manager"/>
+        </menuitem>
     </menuitem>
 
 </odoo>

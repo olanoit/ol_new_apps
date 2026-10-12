@@ -62,7 +62,7 @@ Con el planificador de obra instalado:
 
 | Dónde | Qué abre el botón ? |
 |---|---|
-| Planificación de obra ‣ Inicio | Planificación de obra, sección del cronograma valorizado y el inicio |
+| Planificación de obra ‣ Obras ‣ Obras y tareas ‣ Inicio | Planificación de obra, sección del cronograma valorizado y el inicio |
 | Configuración ‣ Importar maestro y ETO (asistente) | Planificación de obra, sección de la importación del maestro y el ETO |
 | Un plan de recursos | Planificación de obra |
 | Contabilidad ‣ Facturas | Configuración contable básica de la localización peruana |

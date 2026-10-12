@@ -14,7 +14,7 @@ carga semanal de cada contrata.
 
 ## Abrir el cronograma
 
-1. Vaya a **Planificación de obra ‣ Cronograma ‣ Cronograma de la obra**, o haga clic en **Cronograma**
+1. Vaya a **Planificación de obra ‣ Obras ‣ Cronograma ‣ Cronograma de la obra**, o haga clic en **Cronograma**
    en el plan.
 2. Al generar el plan, cada ambiente recibe sus etapas con líneas, una semana
    por etapa desde el inicio del plan. Contrata, cuadrilla, monto y avance salen

@@ -55,7 +55,7 @@ pasos:
     imagen: screenshots/01-boton-barra.png
 
   - titulo: El botón en un asistente
-    ruta: Planificación de obra ▸ Configuración ▸ Importar maestro y ETO
+    ruta: Planificación de obra ▸ Configuración ▸ Plan de obra ▸ Importar maestro y ETO
     texto: >-
       En el asistente, el **?** de la cabecera abre la página «Importar el
       maestro y el ETO».

@@ -40,7 +40,7 @@ y [ETO de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner/stat
 ## Importar el maestro
 
 1. Cree la obra (proyecto con **Es obra**) y su cuenta analítica.
-2. Vaya a **Planificación de obra ‣ Configuración ‣ Importar maestro y ETO**, o
+2. Vaya a **Planificación de obra ‣ Configuración ‣ Plan de obra ‣ Importar maestro y ETO**, o
    haga clic en **Importar maestro y ETO** en la obra. **Descargar plantilla**
    da el libro vacío; **Descargar ejemplo** y **Descargar ETO de ejemplo**, los
    del ejemplo.

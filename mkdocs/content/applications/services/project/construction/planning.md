@@ -20,6 +20,20 @@ ventas de Odoo. No alimenta libros PLE ni archivos SUNAT.
 
 ![Árbol de recursos de una obra con los montos acumulados por nivel](planning/resource-tree.png)
 
+## Menú de la aplicación
+
+**Planificación de obra** se organiza como Contabilidad: pocos menús
+principales y, dentro de cada uno, secciones por tema.
+
+| Menú | Secciones y pantallas |
+|---|---|
+| **Obras** | **Obras y tareas** (inicio, obras, tareas de la obra), **Plan de recursos** (planes, árbol de recursos, recursos planificados) y **Cronograma** (cronograma de la obra, etapas, Gantt de proyectos) |
+| **Ejecución** | **Avance** (registrar, por validar, avances) y **Contratas** (asignar contrata o cuadrilla, OC de servicio, liquidaciones semanales) |
+| **Abastecimiento** | Tablero de abastecimiento, requerimientos de obra y de compra, órdenes de fabricación y asignaciones del plan |
+| **Ingresos** | Entregas semanales, preparar valorización, valorizaciones y cobranza |
+| **Informes** | **Plan** (análisis, control de saldo), **Cronograma valorizado** y **Compras** (precios de compra, compras por producto) |
+| **Configuración** | Ajustes, **Plan de obra** (tipologías, actividades, tarifas, importar maestro y ETO) y **Aprobaciones y Gantt** |
+
 ## Configuración
 
 1. Instale **Planificación de obra** (`al_construction_planner`) desde
@@ -27,7 +41,7 @@ ventas de Odoo. No alimenta libros PLE ni archivos SUNAT.
 2. En cada obra, vaya a **Proyecto ‣ (proyecto) ‣ Ajustes** y active **Es
    obra**. La obra necesita su cuenta analítica (o cada línea su distribución)
    para crear el presupuesto del plan. Las obras de la aplicación están en
-   **Planificación de obra ‣ Obras ‣ Obras**.
+   **Planificación de obra ‣ Obras ‣ Obras y tareas ‣ Obras**.
 
     !!! tip "Consejo"
         Si las obras nacen de una venta, marque **Crea una obra** en el producto

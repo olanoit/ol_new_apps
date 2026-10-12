@@ -66,7 +66,7 @@ electrónica salga correcta.
 
 ## Pedir materiales
 
-1. Vaya a **Requerimientos de obra ‣ Requerimientos ‣ Nuevo**.
+1. Vaya a **Requerimientos de obra ‣ Requerimientos ‣ Requerimientos ‣ Nuevo**.
 2. Elija la **Obra** y la **Fecha requerida**, y agregue los materiales con su
    cantidad. El requerimiento toma la ubicación de la obra y su analítica, y
    recibe el número `RQO/AAAA/#####`.

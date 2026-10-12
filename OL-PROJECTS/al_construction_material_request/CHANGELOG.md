@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261012 — 12/10/2026
+
+- Menú «Requerimientos» con Requerimientos y Materiales pedidos, como Compras ▸ Pedidos, en vez de dos acciones sueltas en el primer nivel.
+
 ## 11.20261012 — 12/10/2026
 
 - Los datos de demostración (existencias de cemento y fierro) ya no impiden actualizar el módulo en una base con demo: se cargan una sola vez y no se reescriben en cada actualización.

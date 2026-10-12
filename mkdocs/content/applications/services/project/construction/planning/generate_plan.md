@@ -22,7 +22,7 @@ que elija.
 
 ## Crear y generar el plan
 
-1. Vaya a **Planificación de obra ‣ Obras ‣ Planes de recursos ‣ Nuevo** y elija
+1. Vaya a **Planificación de obra ‣ Obras ‣ Plan de recursos ‣ Planes de recursos ‣ Nuevo** y elija
    la obra. El plan recibe el número `PLR/AAAA/#####` · v1 en borrador. Cada
    obra tiene como máximo un plan vigente (aprobado o en ejecución) y uno en
    preparación (borrador o en aprobación).

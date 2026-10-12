@@ -66,7 +66,7 @@ En **Ajustes ‣ Técnico ‣ Parámetros del sistema** (modo desarrollador):
 ## Abrir el diagrama
 
 1. Vaya a **Gantt ‣ Diagrama de Gantt** (con la planificación de obra
-   instalada, **Planificación de obra ‣ Cronograma ‣ Gantt de proyectos**), o
+   instalada, **Planificación de obra ‣ Obras ‣ Cronograma ‣ Gantt de proyectos**), o
    abra un proyecto en **Proyecto** y
    haga clic en el botón **Gantt**, que muestra cuántas tareas tiene
    planificadas y abre el diagrama acotado a ese proyecto.

@@ -5,13 +5,15 @@
               web_icon="al_construction_material_request,static/description/icon.png"
               groups="group_construction_requester" sequence="46"/>
 
-    <menuitem id="menu_construction_requests" name="Requerimientos"
-              parent="menu_construction_root" action="action_construction_material_request"
-              sequence="10"/>
-
-    <menuitem id="menu_construction_request_lines" name="Materiales pedidos"
-              parent="menu_construction_root" action="action_construction_material_request_line"
-              groups="group_construction_logistics" sequence="20"/>
+    <!-- Como Compras ▸ Pedidos: un menú principal con sus acciones. -->
+    <menuitem id="menu_construction_requests_root" name="Requerimientos"
+              parent="menu_construction_root" sequence="10">
+        <menuitem id="menu_construction_requests" name="Requerimientos"
+                  action="action_construction_material_request" sequence="10"/>
+        <menuitem id="menu_construction_request_lines" name="Materiales pedidos"
+                  action="action_construction_material_request_line"
+                  groups="group_construction_logistics" sequence="20"/>
+    </menuitem>
 
     <!-- Configuración propia de la app, como Proyecto: Ajustes primero. -->
     <menuitem id="menu_construction_config" name="Configuración"

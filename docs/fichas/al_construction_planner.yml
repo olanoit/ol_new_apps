@@ -333,7 +333,7 @@ pasos_intro: >-
   MOMEN-35-26»).
 pasos:
   - titulo: Árbol de recursos
-    ruta: Planificación de obra ▸ Obras ▸ Árbol de recursos
+    ruta: Planificación de obra ▸ Obras ▸ Plan de recursos ▸ Árbol de recursos
     texto: >-
       Elija el plan arriba a la izquierda. Cada nivel se abre con la flecha y
       trae sus módulos, ML, material, contrata y total: el piso 05 suma 66
@@ -360,7 +360,7 @@ pasos:
       La versión 1 del piso 05 aprobada y la versión 2 en preparación
       (`tools/planner_demo_baseline.py`).
   - titulo: Resumen por etapa
-    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos ▸ plan ▸ Resumen por etapa
+    ruta: Planificación de obra ▸ Obras ▸ Plan de recursos ▸ Planes de recursos ▸ plan ▸ Resumen por etapa
     texto: >-
       Material, contrata, planificado, presupuesto, diferencia, comprometido,
       real y saldo por etapa. En la versión aprobada el presupuesto es igual
@@ -401,7 +401,7 @@ pasos:
       líneas.
     imagen: screenshots/09-aplicar-costo.png
   - titulo: Análisis del plan
-    ruta: Planificación de obra ▸ Obras ▸ Análisis del plan
+    ruta: Planificación de obra ▸ Informes ▸ Plan ▸ Análisis del plan
     texto: >-
       Pivote y gráfico de las líneas de los planes vigentes por etapa y tipo
       de recurso.
@@ -411,7 +411,7 @@ pasos:
       Compra masiva, requerimientos y una OF generados desde la versión
       vigente del piso 05 (`tools/planner_demo_supply.py`).
   - titulo: Plan en ejecución
-    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos ▸ plan vigente
+    ruta: Planificación de obra ▸ Obras ▸ Plan de recursos ▸ Planes de recursos ▸ plan vigente
     texto: >-
       El primer documento generado pasa el plan a «En ejecución». En la
       cabecera, «Compra masiva», «Requerimiento de obra» y «Orden de
@@ -565,7 +565,7 @@ pasos:
       previa muestra la necesidad actual y la nueva.
     imagen: screenshots/27-cambiar-fechas.png
   - titulo: Cronograma con recursos
-    ruta: Planificación de obra ▸ Cronograma (o el botón «Cronograma» del plan)
+    ruta: Planificación de obra ▸ Obras ▸ Cronograma (o el botón «Cronograma» del plan)
     texto: >-
       El Gantt de proyectos con los pisos, departamentos y ambientes de la
       obra y, debajo de cada ambiente, sus etapas (producción, armado,
@@ -796,7 +796,7 @@ campos:
       - [Estado del módulo, "Planificado, en producción, producido, en obra, instalado, entregado.", Planificado, Con seguimiento]
       - [Monto planificado, Suma del plan vigente del nivel y de lo que tiene debajo., Calculado, "—"]
   - grupo: Tipología
-    ruta: Planificación de obra ▸ Configuración ▸ Tipologías
+    ruta: Planificación de obra ▸ Configuración ▸ Plan de obra ▸ Tipologías
     campos:
       - ["Obra, familia, código", Identificación única por obra y familia., "—", "—"]
       - ["Módulos", "Código, tipo, ancho, grupo ML, actividad de armado y BOM opcional.", "—", "Uno por módulo de la plantilla"]
@@ -811,7 +811,7 @@ campos:
       - [Tarifa base, Precio si no hay tarifa., "0", "—"]
       - ["Tarifa: obra, contrata, vigencia, retención", Precio por combinación., "—", Sin superposición]
   - grupo: Plan de recursos
-    ruta: Planificación de obra ▸ Obras ▸ Planes de recursos
+    ruta: Planificación de obra ▸ Obras ▸ Plan de recursos ▸ Planes de recursos
     campos:
       - [Número y versión, "PLR/año/##### · vN.", Automático, Una versión vigente y una en preparación por obra]
       - ["Inicio y fin", Fechas del plan., De la obra, "—"]
@@ -1111,7 +1111,7 @@ configuracion:
   - "Cree las **tipologías** de la obra con sus módulos, actividades y lista de materiales, indicando la **etapa de consumo** de cada componente."
   - "Cree el árbol: pisos, departamentos y ambientes con su tipología."
   - "Cree el **plan de recursos** de la obra y pulse **Generar plan**."
-  - "Defina las **reglas de aprobación** del plan en **Planificación de obra ▸ Configuración ▸ Reglas de aprobación**."
+  - "Defina las **reglas de aprobación** del plan en **Planificación de obra ▸ Configuración ▸ Aprobaciones y Gantt ▸ Reglas de aprobación**."
   - "La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento de obra viene con el módulo; sus revisores necesitan ver los requerimientos (grupo de aprobador del requerimiento)."
   - "Para la compra masiva y los requerimientos, el planificador necesita también los grupos de requerimientos de compra y de requerimientos de obra."
   - "Revise la semana de las contratas en **Ajustes ▸ Planificación de obra** (jueves, jueves y sábado) y, si se quiere la factura por el neto, la **cuenta de retención**; cada obra puede cambiar los días en su pestaña Ajustes."
@@ -1217,6 +1217,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 19.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús organizados como Contabilidad: de 8 menús principales a Obras (obras y tareas, plan de recursos, cronograma), Ejecución (avance y contratas), Abastecimiento, Ingresos, Informes (plan, cronograma valorizado, compras) y Configuración (plan de obra, aprobaciones y Gantt); se quita el menú repetido «Precios de compra»."
   - version: 18.20261011
     fecha: 11/10/2026
     cambios:

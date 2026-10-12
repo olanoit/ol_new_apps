@@ -14,7 +14,7 @@ historia.
 
 ## Configuración
 
-1. En **Planificación de obra ‣ Configuración ‣ Reglas de aprobación**, defina
+1. En **Planificación de obra ‣ Configuración ‣ Aprobaciones y Gantt ‣ Reglas de aprobación**, defina
    los niveles por grupo o usuario, con condición por monto (`amount_total`).
    Las reglas de ejemplo piden la jefatura y, sobre S/ 100 000, la gerencia. Sin
    reglas, el plan se aprueba al solicitarlo.

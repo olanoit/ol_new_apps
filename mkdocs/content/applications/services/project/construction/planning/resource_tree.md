@@ -14,7 +14,7 @@ fabricar, asignar contratas o cuadrillas, registrar avance o cambiar fechas.
 
 ## Recorrer el árbol
 
-1. Vaya a **Planificación de obra ‣ Obras ‣ Árbol de recursos**, o haga clic en
+1. Vaya a **Planificación de obra ‣ Obras ‣ Plan de recursos ‣ Árbol de recursos**, o haga clic en
    **Árbol de recursos** en el plan.
 2. Abra cada nivel con la flecha: se carga a demanda, para que una obra con
    miles de módulos siga siendo ágil. Cada fila trae sus módulos, ML, material,

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261012 — 12/10/2026
+
+- Menús organizados como Contabilidad: de 8 menús principales a Obras (obras y tareas, plan de recursos, cronograma), Ejecución (avance y contratas), Abastecimiento, Ingresos, Informes (plan, cronograma valorizado, compras) y Configuración (plan de obra, aprobaciones y Gantt); se quita el menú repetido «Precios de compra».
+
 ## 18.20261011 — 11/10/2026
 
 - Más rápido con obras grandes: la tabla de valorizaciones previstas de la obra y el control de las líneas al generar ya no reúnen las líneas de una en una.

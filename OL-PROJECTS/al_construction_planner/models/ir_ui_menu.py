@@ -8,7 +8,7 @@ class IrUiMenu(models.Model):
     def _load_menus_blacklist(self):
         """Con el planificador instalado, la aplicación «Gantt» se oculta: su
         diagrama, los colores por estado y el cronograma de la obra están en
-        «Planificación de obra ▸ Cronograma» y «Configuración». Se oculta
+        «Planificación de obra ▸ Obras ▸ Cronograma» y «Configuración». Se oculta
         desde el código (no se archiva el menú): al desinstalar el
         planificador, el Gantt vuelve a aparecer solo."""
         res = super()._load_menus_blacklist()

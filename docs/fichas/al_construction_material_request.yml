@@ -150,7 +150,7 @@ pasos:
   - seccion: Pedir materiales
     texto: Lo hace el personal de obra, en el escritorio o en el celular.
   - titulo: Crear el requerimiento
-    ruta: Requerimientos de obra ▸ Requerimientos ▸ Nuevo
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos ▸ Nuevo
     texto: >-
       Elija la **Obra**: la **Ubicación de obra** y la analítica se completan
       solas. Agregue los materiales con su cantidad. La columna **Disponible
@@ -163,7 +163,7 @@ pasos:
     imagen: screenshots/03-borrador.png
     pie: "Requerimiento DEMO: 2.000 ladrillos (sin stock) y 10 kg de clavos (50 kg libres). Valor estimado S/ 2.268,00."
   - titulo: Desde el celular
-    ruta: Requerimientos de obra ▸ Requerimientos
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos
     texto: >-
       El mismo formulario en la vista móvil de Odoo. El residente pide sin
       pasar por la oficina.
@@ -175,7 +175,7 @@ pasos:
       que hay en el almacén central, y un toque abre el formulario de la línea.
     imagen: screenshots/16-movil-materiales.png
   - titulo: Lista y tablero
-    ruta: Requerimientos de obra ▸ Requerimientos
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos
     texto: >-
       Lista con prioridad, obra, solicitante, fecha requerida y estado, y
       tablero por estado. Filtros **Mis requerimientos**, **Necesita mi
@@ -183,13 +183,13 @@ pasos:
       solicitante.
     imagen: screenshots/01-lista.png
   - titulo: Tablero por estado
-    ruta: Requerimientos de obra ▸ Requerimientos ▸ Kanban
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos ▸ Kanban
     texto: >-
       Tarjetas con prioridad, obra, valor estimado, número, fecha requerida,
       actividades, estado y solicitante.
     imagen: screenshots/02-kanban.png
   - titulo: Calendario de fechas requeridas
-    ruta: Requerimientos de obra ▸ Requerimientos ▸ Calendario
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos ▸ Calendario
     texto: >-
       Cada requerimiento en su fecha requerida, con color por obra: logística
       ve qué tiene que llegar cada día.
@@ -285,7 +285,7 @@ pasos:
       recibir, la mercadería entra en la ubicación de la obra.
     imagen: screenshots/10-orden-compra.png
   - titulo: Requerimiento Hecho
-    ruta: Requerimientos de obra ▸ Requerimientos
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos
     texto: >-
       Cuando todo lo pedido está en la ubicación de la obra, el requerimiento
       pasa solo a **Hecho**. La columna **Recibido en obra** suma lo
@@ -305,7 +305,7 @@ campos_intro: >-
   Cada campo del requerimiento y de los modelos que el módulo amplía.
 campos:
   - grupo: Requerimiento de obra
-    ruta: Requerimientos de obra ▸ Requerimientos
+    ruta: Requerimientos de obra ▸ Requerimientos ▸ Requerimientos
     campos:
       - [Número, "Secuencia RQO/año/#####.", Automático, "Documento origen de transferencias y compras"]
       - [Obra, Proyecto marcado como obra., Vacío, Define la ubicación de obra y la analítica]
@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 12.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú «Requerimientos» con Requerimientos y Materiales pedidos, como Compras ▸ Pedidos, en vez de dos acciones sueltas en el primer nivel."
   - version: 11.20261012
     fecha: 12/10/2026
     cambios:
