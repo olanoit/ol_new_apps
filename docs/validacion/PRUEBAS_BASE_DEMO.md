@@ -61,7 +61,14 @@ que corta el proceso si el log no avanza en 15 minutos:
 
 ## 3. Resultado
 
-RESULTADO_FINAL
+| Lote | Tests | Fallos | Estado |
+|---|---|---|---|
+| 1 (repetición, 25 módulos) | 730 | 0 | verde |
+| 2 | 1011 | 2 | corregidos (ver §4) |
+| 3 | 414 | 1 | corregido; `al_l10n_pe_ple` repetido: 121 tests, 0 fallos |
+| **Total** | **2155** | **3** | **todos corregidos** |
+
+Todos los módulos de la suite pasan sus pruebas en una compañía peruana nueva, con los datos de demostración cargados.
 
 ## 4. Fallos encontrados, por causa
 
@@ -159,4 +166,9 @@ activo. Sin él, la exportación del PLE 7.1 fallaba.
 
 Los tests modificados se ejecutaron también en `ol_pe_v19`, con un lock y un puerto propios:
 
-COMPAT_V19
+| Lote | Tests | Fallos |
+|---|---|---|
+| Módulos con tests modificados (1) | 783 | 0 |
+| Módulos con tests modificados (2) | 499 | 0 |
+
+En `ol_pe_v19` la compañía ya es peruana, así que `use_pe_company` no cambia nada y los tests siguen pasando como antes.

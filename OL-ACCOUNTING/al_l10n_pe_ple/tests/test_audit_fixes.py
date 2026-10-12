@@ -8,6 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
 
+from odoo.addons.al_account_base.tests.common import use_pe_company
 from odoo.addons.al_l10n_pe_ple.models.rce_extractor import RCE_EXCLUDED_DOC_TYPES
 
 from .test_rce_84_export import RceExportCommon
@@ -107,6 +108,7 @@ class TestPleWizardFixes(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if not (cls.company.vat and len(cls.company.vat) == 11):
             cls.company.vat = RUC_TEST
